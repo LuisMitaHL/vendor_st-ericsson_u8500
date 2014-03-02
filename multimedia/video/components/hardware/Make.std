@@ -1,0 +1,35 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MM_MAKEFILES_DIR)/VideoStdConfig.mk
+COMPONENT_TOP_DIR=.
+
+LIBNAME = hardware
+LIBOBJ = bpu_api dma_api mtf_api mtf_hwloop
+ifeq ($(SVA_SUBSYSTEM),ndk8500_a0)
+LIBOBJ += hed_api mmdsp_api
+endif
+
+ifeq ($(findstring 500_v2,$(PLATFORM)),500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+ifeq ($(PLATFORM),svp8530_v1-think)
+CPPFLAGS += -D_8500_V2_
+endif
+
+CPPFLAGS += -DFINAL_IMPLEMENTATION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION) 
+CPPFLAGS += -Iinc/$(SVA_SUBSYSTEM) -Iinc
+
+INSTALL_LIB = libhardware.$(LIB_EXT)
+
+todo: dir_headers lib 
+#install everything whatever the platform (symbian ....)
+install: dir_headers
+
+dir_headers:
+	$(GEN_LN) -d $(COMPONENT_TOP_DIR)/inc/$(SVA_SUBSYSTEM) $(INSTALL_HEADER_DIR)/$(SVA_SUBSYSTEM)
+	$(GEN_LN) -d $(COMPONENT_TOP_DIR)/src $(INSTALL_NMF_COMP_SRC_MMDSP_DIR)/video_hardware
+
+
+include $(MM_MAKEFILES_DIR)/VideoStdRules.mk
+

@@ -1,0 +1,186 @@
+GLOBAL &SourcePath
+GLOBAL &TargetFolderPath
+GLOBAL &ModemScriptsPath
+GLOBAL &FlagCDA
+GLOBAL &NewCDA
+&FlagCDA=0xFFFFFFFF
+
+&NewCDA=0
+
+area
+&ModemScriptsPath=os.pwd()
+
+os.hidden perl -v
+if os.return()!=0
+(
+	print "Perl does not seem to be installed. Exiting."
+	enddo
+)
+
+if simulator()
+(
+	Print "Please choose Coredump Folder !!!  "
+	cd *
+	&TargetFolderPath=os.pwd()
+
+	if os.file("modem_priv")
+	(
+		Print ""
+		Print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		Print "!!!!COREDUMP FROM SD CARD DETECTED!!!!"
+		Print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		Print ""
+		data.load.binary modem_priv 0x0F000000
+		data.load.binary modem_shared 0x0EF00000
+		data.load.binary modem_trace 0x0E000000
+
+		if "&r4core"=="CPU1"
+		(
+			;data.load.binary TCM_L1 0x04800000
+			data.load.binary TCM_L1 0x00000000
+		)
+		else
+		(
+			;data.load.binary TCM_L2 0x06800000
+			data.load.binary TCM_L2 0x00000000
+		)
+	)
+	else
+	(
+		Print ""
+		Print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		Print "!!!!COREDUMP FROM MODEM TRACE DETECTED!!!!"
+		Print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		Print ""
+		Print "Please choose CDA file created with Latte in same location as your coredump (CDA.cmm)!!!"
+		dialog.file "*CDA.cmm"
+
+		// ACCEPT THE CDA.cmm File in Space Directories
+		entry %LINE &file
+		Print "os.area perl &ModemScriptsPath/changeCDA.pl &file"
+		os.area perl "&ModemScriptsPath/changeCDA.pl" "&file"
+
+		// Retrieve flag to identify if new or old CDA file
+		data.load.binary "NewCDAFileFlag" &FlagCDA /NOSYMBOL
+		&NewCDA=data.string(d:&FlagCDA)
+
+		if &NewCDA==1
+		(
+			Print "CDA file generated with NEW version of coredump tool!!!"
+			&PathCDAFile=OS.FILE.PATH("&file")
+			cd "&PathCDAFile"
+
+			// Generate DO files in the same folder as CDA.cmm file
+			Print "Please choose modem image file(.fs)!!!  "
+			dialog.file "*.fs"
+
+			// ACCEPT THE .FS File in Space Directories
+			Print "DO Files generation ongoing!!!  "
+			entry %LINE &fileFS
+			os.area perl "&ModemScriptsPath/fs_unpack.pl" "&fileFS" .
+
+			do "&file"
+			goto CMM_END
+		)
+		else
+		(
+			Print "CDA file generated with OLD version of coredump tool!!!"
+			do CDA_STE
+		)
+	)
+)
+
+Print "Please choose l1.lauterbach.out or l23.lauterbach.out depending of your core (L1 or L2)!!!"
+dialog.file "*.out"
+
+entry &outFilename
+data.load.auto "&outFilename" /NOCODE /SPART 9
+;data.load.auto "&outFilename" /NOCODE /sourcepath
+
+if !simulator()
+(
+	&PathOutFile=OS.FILE.PATH("&outFilename")
+	cd &PathOutFile
+)
+ext.debug 2
+ext.config &ModemScriptsPath/mexedo.t32
+
+; Window to choose if DO files are loaded
+DIALOG
+(
+	HEADER "Load all DO files:"
+	POS 1. 0. 32.
+	A.YES:	CHOOSEBOX "Yes" ""
+	A.NO:	CHOOSEBOX "No" ""
+	POS 12. 3. 10.
+	DEFBUTTON "OK" "continue"
+)
+DIALOG.SET A.YES
+STOP
+
+IF dialog.boolean(A.YES)
+(
+	DIALOG.END
+	Print "Please choose modem image file(.fs)!!!  "
+	dialog.file "*.fs"
+
+	// ACCEPT THE .FS File in Space Directories
+	Print "DO Files generation ongoing!!!  "
+	entry %LINE &file
+	os.area perl "&ModemScriptsPath/fs_unpack.pl" "&file" .
+)
+ELSE
+(
+	DIALOG.END
+	PRINT "DO files not loaded"
+	dialog.message "!!!DO already generated. Please remove folder unpacked_fs if you want to regenerate them!!!"
+)
+do "&ModemScriptsPath/loadalldo" ./
+
+ext.mxi
+ext.mxd
+
+
+CMM_END:
+if simulator()
+(
+	cd "&TargetFolderPath"
+)
+
+Print "Please choose Mont-Blanc code folder !!!  "
+dialog.dir *
+entry &SourcePath
+
+do "&ModemScriptsPath/spathr.cmm"
+
+WINPOS 1.6667 15.308 48. 32. 0. 0. W002
+register.view /SPOTLIGHT
+
+WINPOS 55.5 15.077 102. 49. 15. 1. W001
+WINTABS 10. 10. 25. 62.
+Data.List
+
+WINPAGE.SELECT P000
+
+if !simulator()
+(
+	b __aeabi_assert
+)
+else
+(
+	; Display the historic
+	VAR.FRAME /LOCALS /CALLER
+
+	; Create file Output_StackHistory.txt
+	Printer.FileType ASCIIE
+	Printer.File Output_StackHistory.txt
+	wp.var.frame /Locals /Caller
+	v.v %ASCII \\INTEG\Global\do_version[0].entry.version_s[0..41]
+	if "&r4core"=="CPU2"
+	(
+		Var.View %ASCII REL_VERSION_NAME
+	)
+	la.list
+)
+
+

@@ -1,0 +1,30 @@
+SVA_SUBSYSTEM := $(subst -symbian,,$(subst -android,,$(subst -think,,$(subst -linux,,$(PLATFORM)))))
+SVA_SUBSYSTEM := $(subst svp8500_ed,ndk8500_ed,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst mop500_ed,ndk8500_ed,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst svp8500_v1,ndk8500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst mop500_v1,ndk8500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst svp8500_v2,ndk8500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst x86_8820,ndk20,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst x86_8500ed,ndk8500_ed,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst x86_8500,ndk8500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst href_ed_v1_0,ndk8500_ed,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst href_v1,ndk8500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst svp5500_v1,ndk5500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst u5500_v1,ndk5500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst u8500_v2,ndk8500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst mop500_v2,ndk8500_a0,$(SVA_SUBSYSTEM))
+SVA_SUBSYSTEM := $(subst u9540_v1,ndk8500_a0,$(SVA_SUBSYSTEM))
+
+#For HVA task descriptor (HW specific)
+HVA_CUT := $(subst -symbian,,$(subst -android,,$(subst -think,,$(subst -linux,,$(PLATFORM)))))
+HVA_CUT := $(subst u5500_v1,720p_v2,$(HVA_CUT))
+HVA_CUT := $(subst svp5500_v1,720p_v2,$(HVA_CUT))
+HVA_CUT := $(subst u9540_v1,1080p60,$(HVA_CUT))
+HVA_CUT := $(subst l8540_v1,1080p60,$(HVA_CUT))
+
+#for installed idt 
+ifneq ($(MMSYSTEM),symbian)
+CPPFLAGS += -I$(MM_NMF_COMP_SRC_COMMON_DIR) -I$(MMBUILDIN)/$(NMF_COMP_SRC_COMMON_DIR)
+SRCPATH += $(MM_NMF_COMP_SRC_COMMON_DIR) $(MMBUILDIN)/$(NMF_COMP_SRC_COMMON_DIR)
+endif
+

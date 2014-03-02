@@ -1,0 +1,675 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#ifndef __CGPSMAIN_HIT__
+#define __CGPSMAIN_HIT__
+/**
+* \file cgpsmain.hit
+* \date 04/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all struct used by cgps0main.c\n
+*
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 04.04.08</TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+*     <TR>
+*             <TD> 07.05.08</TD><TD> Y.DESAPHI </TD><TD> SUPL implementation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+
+
+/**
+* \struct t_CgpsRegisterResult
+* \brief Context for result of Registration request
+*/
+typedef struct
+{
+    uint32_t     v_Handle;
+    e_cgps_Error v_Result;
+    MC_PCC_FILL_STRUCT3
+} t_CgpsRegisterResult;
+
+
+/**
+* \struct t_CgpsDeregisterResult
+* \brief Context for result of Deregistration request
+*/
+typedef struct
+{
+    e_cgps_Error v_Result;
+} t_CgpsDeregisterResult;
+
+
+
+/**
+* \struct t_CgpsNaf
+* \brief Context dedicated to internal applications (NAF)
+*/
+typedef struct
+{
+    uint32_t                       v_LastApplicationUpdateTime;  /**< Time when call to p_Callback */
+    uint32_t                       v_AgeLimit;                   /**< Age limit of the position fix [milliseconds]. Need to be stored only id data not available while registering (Used for single shot fix) */
+    uint32_t                       v_FixRate;                    /**< Fix rate (used for periodic fix). It's a multiple of underlying GPS FixInterval */
+    t_cgps_NavigationCallback      p_Callback;                   /**< NULL if not registered, or Single shot expired */
+    t_cgps_NavigationCallback      p_ThirdPartyPositionCallback; /**< NULL if not registered, callback for sending location information of third party */
+    uint32_t                       v_DeadlineOSTimeMS;           /**< "Position required by" deadline OS Time [ms] */
+    uint32_t                       v_Timeout;                    /**< "Timeout requested by the MMI */
+#ifdef CMCC_LOGGING_ENABLE
+    uint32_t                       v_RegisterTime;
+#endif 
+    uint16_t                       v_HorizAccuracy;              /**< Horizontal Quality of Position requirements [m] */
+    uint16_t                       v_VertAccuracy ;              /**< Vert Quality of Position requirements [m] */
+//  s_GN_AGPS_QoP                  s_Qop;                        /**< A-GPS Quality of Position requirements */
+    e_naf_context_state            v_State;                      /**< State of the current context */
+    uint8_t                        v_Config;                     /**< Configuration about Autonomous/ Network Assisted / NBP */
+    uint8_t                        v_Mode;                       /**< Type of mode (0: Single shot, 1: periodic) */
+    uint8_t                        v_OutputType;                 /**< Type of requested GPS sentence (0: NMEA, 1: s_CgpsNavData 'C' variable) */
+    uint8_t                        v_Suspended;                  /**< TRUE if the application is suspended see operator rules */
+#ifdef CMCC_LOGGING_ENABLE
+    uint8_t                        v_AlreadyUpdated;
+    MC_PCC_FILL_STRUCT3
+#endif  
+    uint16_t                       v_Mask;                       /**< Nmea mask (refer to [CGPS ISD] for details about field allocation of this variable */
+    /* +LMSqc37499 */
+    uint8_t                        v_FirstFixDone;               /**< TRUE if first fix has been calculated for the application */
+    /* -LMSqc37499 */
+    e_cgps_RelativePosition        v_CurrentPositionStatus;      /**< Defines the current position status with reference to target area and user position */
+    e_cgps_AreaEventType           v_AreaEventType;              /**< Defines if positioning needs to be done based on occurence of area event thus defined */
+    t_cgps_GeographicTargetArea*   p_TargetArea;                 /**< Defines the target area to be considered to check if area event has occured */
+    uint32_t                       v_StartTime;                  /**< Defines the time at which positioning session needs to start. 
+                                                                                    Time is in milliseconds relative to OS time at which positioning session request was received */
+    uint32_t                       v_StopTime;                  /**< Defines the time at which positioning session needs to end. Time is in milliseconds relative to OS time  */
+                                                                                                                    
+    t_cgps_ApplicationID_Info      v_ApplicationIDInfo;
+}t_CgpsNaf;
+
+
+
+/**
+* \struct t_Cgps_Coordinate
+* \brief Descibes position of a point on earth in GAD representation.
+*/
+typedef struct
+{
+    uint8_t  v_LatitudeSign;           ///< Latitude sign [0=North, 1=South]
+    uint32_t v_Latitude;               ///< Latitude      [range 0..8388607 for 0..90 degrees]
+    int32_t  v_Longitude;              ///< Longitude     [range -8388608..8388607 for -180..+180 degrees]
+} t_Cgps_Coordinate;
+
+#ifdef AGPS_UP_FTR
+/**
+* \struct t_CgpsSuplBearer
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    int8_t*                   s_APN;               /**< APN (valid For GPRS (NULL string for CSD)) to be retrieved from EEPROM */
+    int8_t*                   s_PhoneCalledNumber; /**< Phone called number (valid For CSD (NULL string for GPRS)) to be retrieved from EEPROM */
+    int8_t*                   s_Login;             /**< to be retrieved from EEPROM */
+    int8_t*                   s_Password;          /**< to be retrieved from EEPROM */
+    e_cgps_Bearer_State     v_BearerState;       /**< Current Bearer state */
+    e_lsimup_BearerType     v_BearerType;        /**< Bearer type (CSD or GPRS) to be retrieved from EEPROM */
+    e_lsimup_SelectedModem  v_SelectedModem;     /**< Selected modem (valid For GPRS (NULL string for CSD)) to be retrieved from EEPROM */
+    MC_PCC_FILL_STRUCT2
+} t_CgpsSuplBearer;
+/* +SUPLv2.0 Modifications */
+
+
+/**
+* \struct t_cgps_AreaIdSet
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    e_cgps_AreaIdSet v_AreaIdSet;            /**< Describes the Area ID set */
+    uint16_t         v_GSMRefMcc;            /**< GSM Mobile Country Code */
+    uint16_t         v_GSMRefMnc;            /**< GSM Mobile Network Code */
+    uint16_t         v_GSMRefLac;            /**< GSM Location Area Code */
+    uint16_t         v_GSMRefCi;             /**< GSM Cell Global Identity*/
+    uint16_t         v_WCDMARefMcc;          /**< WCDMA Mobile Country Code*/
+    uint16_t         v_WCDMARefMnc;          /**< WCDMA Mobile Network Code */
+    uint16_t         v_WCDMARefLac;          /**< WCDMA Location Area Code */
+    uint32_t         v_WCDMARefUc;           /**< WCDMA Cell Identity*/
+    uint16_t         v_CDMARefSid;           /**< CDMA System ID*/
+    uint16_t         v_CDMARefNid;           /**< CDMA Network ID */
+    uint16_t         v_CDMARefBaseid;        /**< CDMA Base ID */
+    uint8_t          a_HRPDRefSectorId[128]; /**< HRPD Sector ID*/
+    uint16_t         v_UMBRefMcc;            /**< UMB MCC */
+    uint16_t         v_UMBRefMnc;            /**< UMB MNC */
+    uint8_t          a_UMBRefSectorId[128];  /**< UMB     Sector ID*/
+    uint16_t         v_LTERefMcc;            /**< LTE MCC */
+    uint16_t         v_LTERefMnc;            /**< LTE MNC */
+    uint8_t          a_LTERefCi[29];         /**< LTE Cell-ID */
+    uint8_t          a_WLANAPMcAddr[29];     /**< WLAN AP MAC Address */
+    uint8_t          a_WIMAXBsIdMsb[24];     /**< WIMAX BS ID MSB*/
+    uint8_t          a_WIMAXBsIdLsb[24];     /**< WIMAX BS ID LSB*/
+}t_cgps_AreaIdSet;
+
+
+/**
+* \struct t_cgps_GeoAreaMappingList
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    uint8_t                     a_GeoAreaIndex[K_CGPS_MAX_NUM_GEO_AREA];   /**< Describes the number of Area Id */
+}t_cgps_GeoAreaMappingList;
+
+
+/**
+* \struct t_cgps_AreaIdList
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    uint8_t                     v_NumAreaId;                           /**< Describes the number of Area Id */
+    uint8_t                     v_NumGeoArea;                          /**< Describes the Number of  Gegraphic Area */
+    t_cgps_GeoAreaMappingList   a_GeoAreaMapping[K_CGPS_MAX_NUM_GEO_AREA];  /**<  */
+    e_cgps_AreaIdSetType        v_AreaIdSetType;                       /**< Describes the Area ID set type = border, within */
+    t_cgps_AreaIdSet            a_AreaIdSetParms[K_CGPS_MAX_AREA_ID];       /**< gives the lists of area ids */
+}t_cgps_AreaIdList;
+
+
+
+/**
+* \struct t_cgps_AreaDefinition
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    uint8_t                            v_NumGeoArea;          /**< Describes the number of Geographic Area*/
+    uint8_t                            v_NumAreaIdLists;      /**< Describes the number of Area Id List*/
+    t_cgps_GeographicTargetArea        a_GeographicTargetArea[K_CGPS_MAX_NUM_GEO_AREA]; /**<  */
+    t_cgps_AreaIdList                  a_AreaIdLists[K_CGPS_MAX_AREA_ID_LIST]; /**<  */
+}t_cgps_AreaDefinition;
+
+
+/**
+* \struct t_cgps_AreaEventTrigger
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    /* Need to populate the structure based on SUPL Library call */
+    e_cgps_AreaEventType   v_AreaEventType;       /**< Describes the area event trigger type. This parameter describes what kind of event should trigger a report 
+                                                                                   0 =  EnteringArea, 1 = InsideArea, 2 = OutsideArea, 3 = LeavingArea*/
+    uint16_t               v_MaximumReports;      /**< Defines the maximum number of reports in an Area Event Trigger session.
+                                                                                    Range: (1..1024)*/
+    uint32_t               v_MinIntervalTime;     /**< Defines the minimum time between reports from SET in an Area Event Trigger session. Unit is milliseconds 
+                                                                                    Range  (1 to 3600000)*/
+    uint32_t               v_StartTime;           /**< Start time in milliseconds which is set in terms of OS Time tick.  Start time can be maximum of 2678400 sec in future*/
+    uint32_t               v_StopTime;            /**< Stop time in milliseconds which is set in terms of OS Time tick.  
+                                                                                   Stop time can be maximum 8639999 sec ahead of start time or maximum 11318399 sec in future*/
+    t_cgps_AreaDefinition  v_AreaDefinition;
+}t_cgps_AreaEventTrigger;
+
+
+/**
+* \struct t_cgps_PeriodicTrigger
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    /* Need to populate the structure based on SUPL Library call */
+    uint32_t v_NumFixes;        /**< Describes the number of fixes during the periodic triggered session. (range: 1 to 8639999). */
+    uint32_t v_IntervalFix;     /**< Describes the interval between the start of position
+                               fixes for periodic trigger.  Unit is milliseconds */
+    uint32_t v_StartTime;       /**< Start time in milliseconds which is set in terms of OS Time tick */
+}t_cgps_PeriodicTrigger;
+
+
+/* -SUPLv2.0 Modifications */
+
+/**
+* \struct t_CgpsSuplAppli
+* \brief Internal context dedicated to SUPL
+*/
+typedef struct
+{
+    void*                       v_GPSHandle;         /**< SUPL handle provided by GN_GPS */
+#ifdef CMCC_LOGGING_ENABLE
+    uint32_t                    v_RegisterTime;
+#endif //#ifdef CMCC_LOGGING_ENABLE
+    t_lsimup_ConnectionHandle   v_ConnectionHandle;  /**< TCP/IP handle provided by LSIMUP */
+    s_GN_SUPL_Connect_Req_Parms v_ConnectionParm;    /**< Connection parameters provided by the SUPL lib */
+    t_CgpsSuplBearer*           v_bearer;            /**< Pointer to the bearer context associated to this application */
+    uint8_t                     v_IsRegistered;      /**< Set to TRUE if external SUPL application is registered. Set to FALSE (default) if not registered  */
+    uint8_t                     v_Suspended;         /**<  */
+/* +SUPLv2.0 Modifications */
+    t_cgps_PeriodicTrigger      v_PeriodicTriggeredParams; /**< Structure to define the Area Event trigger parameters */
+    t_cgps_AreaEventTrigger     v_AreaEventTriggerParams;  /**< Structure to define the Area Event trigger parameters */
+    e_cgps_RelativePosition     v_PrevPositionStatus;      /**< Status of the last target area computed */
+    e_cgps_RelativePosition     v_PrevCellIdPositionStatus;      /**< Status of the last cell id computed */
+    e_cgps_TriggerType          v_TriggeredEventType;      /**< To define the Event type as Periodic or Area Event Type */
+/* -SUPLv2.0 Modifications */
+    MC_PCC_FILL_STRUCT2
+} t_CgpsSuplAppli;
+
+#endif /* AGPS_UP_FTR */
+
+#ifdef AGPS_FTR
+/**
+* \struct t_CgpsCpAppli
+* \brief Internal context dedicated to CP
+*/
+typedef struct
+{
+    uint32_t                   v_PeriodicInterval;           /**< Periodic interval for periodic request [milliseconds] */
+    uint32_t                   v_Timeout;                    /**< Timeout for a single shot request [milliseconds] */
+    uint32_t                   v_LastApplicationUpdateTime;  /**< Time when last fix or measurement as sent was sent */
+    uint32_t                   v_PreviousTimeLib;            /**<  The preivous time library was called for position or measurement*/
+    s_GN_AGPS_Meas             v_Meas;                       /**<  Measurement cache to hold best measurement for 3 secs in case the quality dips during iteration*/
+    e_cgps_CpSessionType       v_SessionType;                /**< Type of session : K_CGPS_MS_BASED or K_CGPS_MS_ASSISTED */
+    uint16_t                   v_HorizAccuracy;              /**< Horizontal Quality of Position requirements [m], used only for single shot request */
+    uint16_t                   v_VertAccuracy;               /**< Vert Quality of Position requirements [m], used only for single shot request */
+    uint8_t                    v_IsRegistered;               /**< Set to TRUE if external CP application is registered. Set to FALSE (default) if not registered  */
+    uint8_t                    v_SessionID;                  /**< Session ID provide by LSIM */
+    uint8_t                    v_OptField;                   /**< Carry the information about optional elements. */
+    uint8_t                    v_EnvChar;                    /**< Environmental Characterization */
+    uint8_t                    v_Suspended;                  /**< TRUE if the current session is suspended */
+/*  +LMSqc34406 */
+    uint16_t                   v_ReportingAmount;            /**< Reporting Amount for periodic fix as sent by network */
+/*  -LMSqc34406 */
+} t_CgpsCpAppli;
+
+
+/**
+* \struct t_CgpsCpMoAppli
+* \brief Internal context dedicated to Mobile Originated CP
+*/
+typedef struct
+{
+    e_cgps_CpMoSessionType      v_SessionType;                /**< Type of session : K_CGPS_MS_BASED or K_CGPS_MS_ASSISTED */
+
+    uint8_t                     v_IsRegistered;               /**< Set to TRUE if external CP application is registered. Set to FALSE (default) if not registered  */
+    uint8_t                     v_SessionId;                          /**< Session ID provide by LSIM */
+    uint8_t                     v_Suspended;                  /**< TRUE if the current session is suspended */
+    void *                      v_NafHandle;                  /**< Store the NAF handle whihc may have triggered the MOLR */
+} t_CgpsCpMoAppli;
+
+
+#endif /* AGPS_FTR */
+
+#if defined(AGPS_FTR) || defined(AGPS_UP_FTR)
+/**
+* \struct t_CgpsPendingNotification
+* \brief Internal context dedicated to notification
+*/
+typedef struct
+{
+    e_cgps_NotificationType       v_DefaultNotificationType;  /**< Type of Notification to apply if timeout expires */
+    uint32_t                      v_Timeout;                  /**< Time when the notification must be cancelled if the user hasn't answered */
+    e_cgps_HandleType             v_HandleType;               /**<  */
+    uint32_t                      v_Handle;                   /**< Notification handle to manage multiple SUPL/CP request */
+    uint8_t                       v_IsPending;                /**< TRUE if this context is already used */
+    MC_PCC_FILL_STRUCT2
+} t_CgpsPendingNotification;
+
+#endif /* AGPS_FTR || AGPS_UP_FTR */
+
+#if defined(AGPS_TEST_MODE_FTR)
+
+/* + LMSqc32518 */
+#ifdef ATT_LOGGING_ENABLE
+/* - LMSqc32518 */
+typedef struct
+{
+    e_cgps_EventType v_EventType;
+    MC_PCC_FILL_STRUCT3
+    double              v_Latitude;
+    double              v_Longitude;
+    double              v_Altitude;
+}t_CgpsEventInformation;
+
+/* + LMSqc32518 */
+#endif /*ATT_LOGGING_ENABLE*/
+/* - LMSqc32518 */
+#endif /*AGPS_TEST_MODE_FTR*/
+
+
+/*!
+    \struct t_cgps_QopIndexFormat
+    \brief Quality of Position Required by Application
+*/
+
+typedef struct 
+{
+   e_cgps_DelayType v_Delay;     ///< Type of Delay. lowdelay-0, delaytolerant-1.
+   uint8_t   v_Horacc;           ///< Horizontal accuracy       INTEGER (0..127).
+   int8_t    v_Veracc;           ///< Vertical accuracy         INTEGER (0..127)   OPTIONAL (-1 = Not present).
+   int32_t   v_MaxLocAge;        ///< Maximum age of location[seconds]   INTEGER (0..65535) OPTIONAL (-1 = Not present).
+}t_cgps_QopIndexFormat;
+
+
+
+/**************************************************************************************************************************/
+/*                                                   Messages declaration                                                 */
+/**************************************************************************************************************************/
+
+/*
+* In RTKe a message/event must be contain :
+*    3 bits of operation type
+*    5 bits of function
+*    8 bits of interface
+*/
+
+/**
+* \def CGPS_FF_NEW_NAF_REGISTERED_IND
+* define the Function and the type of new NAF message
+*
+*/
+#define CGPS_FF_NEW_NAF_REGISTERED_IND MC_PCC_FUNCTION_TYPE(CGPS_F_NEW_NAF_REGISTERED,PCC_T_IND)
+
+/**
+* \note CGPS_NEW_NAF_REGISTERED_IND
+* Define message CGPS_NEW_NAF_REGISTERED_IND
+* this message is sent when a new application has been registered
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_NEW_NAF_REGISTERED_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_NEW_NAF_REGISTERED_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_NewNaf)
+MC_PCC_FIELD( t_cgps_ApplicationID_Info *, p_AppIdInfo) 
+MC_PCC_FIELD( t_CgpsRegisterResult *, v_out) /*!< Pointer to return area */
+MC_PCC_END_STRUC(t_CGPS_NewNaf)
+
+/**
+* \def CGPS_FF_NAF_DEREGISTERED_IND
+* define the Function and the type of NAF deregister message
+*
+*/
+#define CGPS_FF_NAF_DEREGISTERED_IND MC_PCC_FUNCTION_TYPE(CGPS_F_NAF_DEREGISTERED,PCC_T_IND)
+
+/**
+* \note CGPS_NAF_DEREGISTERED_IND
+* Define message CGPS_NAF_DEREGISTERED_IND
+* this message is sent when an application has been deregistered
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_NAF_DEREGISTERED_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_NAF_DEREGISTERED_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_NafDeregistered)
+MC_PCC_FIELD( uint32_t, v_Handle) /*!< handle to deregister */
+MC_PCC_FIELD( t_CgpsDeregisterResult *, v_out) /*!< Pointer to return area */
+MC_PCC_END_STRUC(t_CGPS_NafDeregistered)
+
+
+/**
+* \def CGPS_FF_UTC_CORRUPT_IND
+* define the Function and the type of UTC corrupt message
+*
+*/
+#define CGPS_FF_UTC_CORRUPT_IND MC_PCC_FUNCTION_TYPE(CGPS_F_UTC_CORRUPT,PCC_T_IND)
+
+/**
+* \note CGPS_UTC_CORRUPT_IND
+* Define message CGPS_UTC_CORRUPT_IND
+* this message is sent when the callback register in gsecurity is called.
+* UTC is corrupted
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_UTC_CORRUPT_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_UTC_CORRUPT_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_UtcCorrupt)
+MC_PCC_END_STRUC(t_CGPS_UtcCorrupt)
+
+/**
+* \def CGPS_FF_NMEA_TEST_CONTROL
+* define the Function and the type of NMEA test control indication
+*
+*/
+#define CGPS_FF_NMEA_TEST_CONTROL_IND MC_PCC_FUNCTION_TYPE(CGPS_F_NMEA_TEST_CONTROL,PCC_T_IND)
+
+/**
+* \note CGPS_NMEA_TEST_CONTROL_IND
+* Define message CGPS_NMEA_TEST_CONTROL_IND
+* this message is sent when an external application requests to write a PGNV command
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_NMEA_TEST_CONTROL_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_NMEA_TEST_CONTROL_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_NmeaTestControlInd)
+MC_PCC_FIELD( uint8_t*, p_Data)
+MC_PCC_FIELD( uint32_t, v_Length)
+MC_PCC_END_STRUC(t_CGPS_NmeaTestControlInd)
+
+
+
+
+#define CGPS_FF_FIX_REQ_IND MC_PCC_FUNCTION_TYPE(CGPS_F_FIX_REQ_IND,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_FIX_REQ_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_FIX_REQ_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_FixReqInd)
+MC_PCC_FIELD( t_CgpsNaf* , v_Handle)
+/*+ LMSqc04080 */
+/* MC_PCC_FIELD( bool , v_Result ) */
+MC_PCC_FIELD( bool* , v_Result )
+/*- LMSqc04080 */
+MC_PCC_FILL_STRUCT3
+MC_PCC_END_STRUC(t_CGPS_FixReqInd)
+
+#define CGPS_FF_USER_NOTIFY_ANS MC_PCC_FUNCTION_TYPE(CGPS_F_USER_NOTIFY_ANS,PCC_T_IND)
+
+#if defined(AGPS_FTR) || defined(AGPS_UP_FTR)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_USER_NOTIFY_ANS,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_USER_NOTIFY_ANS))
+MC_PCC_BEGIN_STRUC(t_CGPS_UserNotifyAns)
+MC_PCC_FIELD( e_cgps_UserAnswer, v_UserAnswer)
+MC_PCC_FILL_STRUCT3
+MC_PCC_FIELD( void *,            v_Handle)
+MC_PCC_END_STRUC(t_CGPS_UserNotifyAns)
+#endif /* AGPS_FTR || AGPS_UP_FTR */
+
+
+#define CGPS_FF_INIT_IND MC_PCC_FUNCTION_TYPE(CGPS_F_INIT_IND,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_INIT_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_INIT_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_initInd)
+MC_PCC_END_STRUC(t_CGPS_initInd)
+/* +LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+#if defined (DUAL_OS_GEN_FTR) || defined (CR_LMSQC18522_CPR)
+
+#define CGPS_FF_HWL_INIT_IND MC_PCC_FUNCTION_TYPE(CGPS_F_HWL_INIT_IND,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_HWL_INIT_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_HWL_INIT_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_init_hwl)
+MC_PCC_END_STRUC(t_CGPS_init_hwl)
+
+#endif
+/* -LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+
+#ifdef AGPS_FTR
+
+#define CGPS_FF_EMERGENCY_START_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_EMERGENCY_START_REQ,PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_EMERGENCY_START_REQ,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_EMERGENCY_START_REQ))
+MC_PCC_BEGIN_STRUC(t_CGPS_EStartReq)
+MC_PCC_END_STRUC(t_CGPS_EStartReq)
+
+#define CGPS_FF_EMERGENCY_STOP_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_EMERGENCY_STOP_REQ,PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_EMERGENCY_STOP_REQ,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_EMERGENCY_STOP_REQ))
+MC_PCC_BEGIN_STRUC(t_CGPS_EStopReq)
+MC_PCC_END_STRUC(t_CGPS_EStopReq)
+
+#endif /* AGPS_FTR */
+
+/* + LMSQC16384 : LMSQC16386 SUPL WAP Push */
+#ifdef AGPS_UP_FTR
+
+#define CGPS_FF_SUPL_PUSH_IND MC_PCC_FUNCTION_TYPE(CGPS_F_SUPL_PUSH_IND,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_SUPL_PUSH_IND,
+/* + LMSQC18321 : Wrong CGPS_SUPL_PUSH_IND defn */
+/*            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_EMERGENCY_START_REQ))*/
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS, CGPS_FF_SUPL_PUSH_IND))
+/* - LMSQC18321 : Wrong CGPS_SUPL_PUSH_IND defn */
+MC_PCC_BEGIN_STRUC(t_CGPS_SuplPushInd)
+    MC_PCC_FIELD( t_cgps_SuplPush , v_SuplPush)
+MC_PCC_END_STRUC(t_CGPS_SuplPushInd)
+
+#endif /* AGPS_UP_FTR */
+/* - LMSQC16384 : LMSQC16386 SUPL WAP Push */
+
+
+#define CGPS_FF_UPDATE_USER_CONFIG MC_PCC_FUNCTION_TYPE(CGPS_F_UPDATE_USER_CONFIG,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_UPDATE_USER_CONFIG,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_UPDATE_USER_CONFIG))
+MC_PCC_BEGIN_STRUC(t_CGPS_UserConfig)
+MC_PCC_FIELD( t_cgps_Config , v_Config)
+MC_PCC_END_STRUC(t_CGPS_UserConfig)
+
+
+#define CGPS_FF_UPDATE_PLATFORM_CONFIG MC_PCC_FUNCTION_TYPE(CGPS_F_UPDATE_PLATFORM_CONFIG,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_UPDATE_PLATFORM_CONFIG,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_UPDATE_PLATFORM_CONFIG))
+MC_PCC_BEGIN_STRUC(t_CGPS_PlatformConfig)
+MC_PCC_FIELD( t_cgps_PlatformConfig , v_Config)
+MC_PCC_END_STRUC(t_CGPS_PlatformConfig)
+
+
+#define CGPS_FF_UPDATE_TRACE_CONFIG MC_PCC_FUNCTION_TYPE(CGPS_F_UPDATE_TRACE_CONFIG,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_UPDATE_TRACE_CONFIG,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_UPDATE_TRACE_CONFIG))
+MC_PCC_BEGIN_STRUC(t_cgps_TraceConfig)
+MC_PCC_FIELD( t_cgps_ModuleTraceConfig , v_Config)
+MC_PCC_END_STRUC(t_cgps_TraceConfig)
+
+
+
+/* + LMSqb92911 */
+#define CGPS_FF_SAVE_NV_STORE_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_SAVE_NV_STORE,PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_SAVE_NV_STORE_REQ,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_SAVE_NV_STORE_REQ))
+MC_PCC_BEGIN_STRUC(t_CGPS_SaveNvStoreReq)
+MC_PCC_END_STRUC(t_CGPS_SaveNvStoreReq)
+/* - LMSqb92911 */
+
+/*+ LMSqc13768 : DeleteGpsData */
+
+#define CGPS_FF_DELETE_GPS_DATA_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_DELETE_GPS_DATA,PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_DELETE_GPS_DATA_REQ,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_DELETE_GPS_DATA_REQ))
+MC_PCC_BEGIN_STRUC(t_CGPS_DeleteGpsDataReq)
+MC_PCC_FIELD( uint32_t , v_FieldsToDelete)
+MC_PCC_END_STRUC(t_CGPS_DeleteGpsDataReq)
+/*- LMSqc13768 : DeleteGpsData */
+
+
+/*+ LMSqc32518 */
+#ifdef CGPS_UPLOAD_PATCH_AT_INIT_FTR
+#define CGPS_FF_INITIALIZED_IND MC_PCC_FUNCTION_TYPE(CGPS_F_INITIALIZED_IND, PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_INITIALIZED_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_INITIALIZED_IND))
+MC_PCC_BEGIN_STRUC(t_CGPS_InitializedCgpsInd)
+MC_PCC_END_STRUC(t_CGPS_InitializedCgpsInd)
+#endif /*CGPS_UPLOAD_PATCH_AT_INIT_FTR*/
+
+
+
+#if defined AGPS_TEST_MODE_FTR && defined CGPS_CNO_VALUE_FTR
+
+/*
+* \var CGPS_GET_CNO_VALUE_REQ
+* This message is sent by CGPS to handle a request for starting Production test
+* to get a Carrier/Noise ratio from the GPS chip\n
+*/
+#define CGPS_FF_GET_CNO_VALUE_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_GET_CNO_VALUE_REQ, PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_GET_CNO_VALUE_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_GET_CNO_VALUE_REQ))
+MC_PCC_BEGIN_STRUC( t_CGPS_GetCnoValueReq )
+MC_PCC_FIELD( t_CGPS_CnoCriteria, v_Criteria )
+MC_PCC_END_STRUC( t_CGPS_GetCnoValueReq )
+
+#endif /*AGPS_TEST_MODE_FTR && CGPS_CNO_VALUE_FTR */
+
+#if defined AGPS_FTR || defined AGPS_UP_FTR
+/*- LMSqc32518 */
+/*
+* \var CGPS_FF_MOLF_START_IND
+*/
+#define CGPS_FF_MOLF_START_IND MC_PCC_FUNCTION_TYPE(CGPS_F_MOLF_START_IND, PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_MOLF_START_IND,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_MOLF_START_IND))
+MC_PCC_BEGIN_STRUC( t_CGPS_MolfStartInd )
+MC_PCC_FIELD( uint32_t, vp_Handle)
+MC_PCC_FIELD( t_cgps_ClientInfo, vp_ClientInfo)
+MC_PCC_FIELD( e_cgps_LcsServiceType, vp_ServType)
+MC_PCC_FIELD( t_cgps_QoP,  vp_QoP)
+MC_PCC_END_STRUC( t_CGPS_MolfStartInd )
+#endif /* AGPS_FTR || AGPS_UP_FTR*/
+
+#if defined AGPS_UP_FTR
+/*- LMSqc32518 */
+/*
+* \var CGPS_FF_LOCATION_RETRIEVAL_REQ
+*/
+#define CGPS_FF_LOCATION_RETRIEVAL_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_LOCATION_RETRIEVAL_REQ, PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_LOCATION_RETRIEVAL_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_LOCATION_RETRIEVAL_REQ))
+MC_PCC_BEGIN_STRUC( t_CGPS_ThirdPartyReqInd )
+MC_PCC_FIELD( uint32_t, vp_Handle)
+MC_PCC_FIELD( t_cgps_ClientInfo, vp_ClientInfo)
+MC_PCC_FIELD( e_cgps_LcsServiceType, vp_ServType)
+MC_PCC_FIELD( t_cgps_QoP,  vp_QoP)
+MC_PCC_FIELD( t_cgps_ApplicationID_Info *, p_AppIdInfo)
+MC_PCC_END_STRUC( t_CGPS_ThirdPartyReqInd )
+#endif /* AGPS_UP_FTR*/
+
+#ifdef AGPS_TEST_MODE_FTR
+/*
+* \var CGPS_FF_PRODUCTION_TEST_START_REQ
+* This message is sent by CGPS to handle a request for starting Production Test Strat Request
+*/
+#define CGPS_FF_PRODUCTION_TEST_START_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_PRODUCTION_TEST_START_REQ, PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_PRODUCTION_TEST_START_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_PRODUCTION_TEST_START_REQ))
+MC_PCC_BEGIN_STRUC( t_CGPS_ProdTestStartReq )
+    MC_PCC_FIELD( uint32_t, v_State)
+    MC_PCC_FIELD( uint16_t, v_TestMask)
+    MC_PCC_FIELD( t_CGPS_TestRequest*, p_ProdTestReq)
+MC_PCC_END_STRUC( t_CGPS_ProdTestStartReq )
+
+
+/*
+* \var CGPS_FF_PRODUCTION_TEST_STOP_REQ
+* This message is sent by CGPS to handle a request for starting Production Test Stop Request
+*/
+#define CGPS_FF_PRODUCTION_TEST_STOP_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_PRODUCTION_TEST_STOP_REQ, PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_PRODUCTION_TEST_STOP_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_PRODUCTION_TEST_STOP_REQ))
+MC_PCC_BEGIN_STRUC( t_CGPS_ProdTestStopReq )
+MC_PCC_FIELD( uint16_t, v_TestMask)
+MC_PCC_FIELD( uint8_t, v_Status)
+MC_PCC_END_STRUC( t_CGPS_ProdTestStopReq )
+#endif /* AGPS_TEST_MODE_FTR */
+
+
+#endif /* __CGPSMAIN_HIT__ */

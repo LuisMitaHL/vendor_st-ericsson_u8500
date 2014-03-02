@@ -1,0 +1,26 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+#include $(MMROOT)/audio/mdrc/make.ost_conf
+
+#OST_COMPONENT_ID = $(KUidDicStAudioMdrcNmfHost)
+#OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmfil_host
+#OST_SRC_DIR = nmfil/host
+#CPPFLAGS+= -I$(OST_COMPONENT_INC)/autogentraces
+#INSTALL_DICO = $(OST_DICO_NAME).xml
+
+
+CPPFLAGS+=-DNVERBOSE -DUNIX
+#CPPFLAGS+=-I$(MM_HEADER_DIR)/afm
+CXXFLAGS+=-g
+CPPFLAGS+=-I$(MM_NMF_COMP_SRC_COMMON_DIR)/libeffects/libmdrc5b/include/
+
+ITFS_HEADER+= mdrc.nmfil.host.effect.configure
+
+COMPONENTS= mdrc.nmfil.host.effect
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

@@ -1,0 +1,15 @@
+#ifndef LSIMFTA_HIM
+#define LSIMFTA_HIM
+
+#define MC_LSIMCP_CALCULATE_GSM_CELL_TIME(bit_no,ts,frmno) (bit_no + ((uint16_t)ts * 625) + ((uint64_t)frmno * 5000))
+
+#define MC_LSIMCP_CALCULATE_GSM_DELTA_CELL_TIME(qb_delta_time) (qb_delta_time % (26 * 51 * 2048))
+
+#define MC_LSIMCP_GSM_QUADRA_BITS_TO_MICROSECONDS(qb_delta_time) ((qb_delta_time * 60)/(13 * 5))
+
+#define MC_LSIMCP_CONVERT_TO_WCDMA_SFN_TO_MICROSECONDS(sfn) (((uint64_t)sfn * 10) * 1000 )
+#define MC_LSIMCP_CONVERT_WCDMA_CELLFRAME_MSLS_TO_NUMBER_OF_CHIP(cellframeLS,cellframeMS) (((uint64_t)cellframeMS * 0x100000000ull) + (uint64_t)cellframeLS)
+#define MC_LSIMCP_CONVERT_WCDMA_CHIP_TO_MICROSECONDS(chip) ((chip/3840)*1000 )
+
+#endif
+

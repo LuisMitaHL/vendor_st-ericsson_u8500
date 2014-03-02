@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_audio/amrwb=bin
+NO_STD_BUILD_audio/amrwb=1
+BUILD_MMDSP_NMF_audio/amrwb=bin
+BUILD_ARM_PROC_audio/amrwb=bin
+BUILD_ARM_CODE_audio/amrwb=src
+BUILD_ARM_NMF_audio/amrwb=src
+BUILD_XP70_SIA_CODE_audio/amrwb=false

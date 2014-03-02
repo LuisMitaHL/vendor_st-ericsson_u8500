@@ -1,0 +1,34 @@
+---------------------
+README FOR AUTOLOGCAT
+---------------------
+
+
+USAGE:
+-----
+During tests autologcat can be used to log to file on an SDcard even after several reboots. 
+It is configured using a file with the logcat command to issue.
+
+The configuration file with the logcat command to run is named "autologcat.conf".
+Default configuration logs ADM server (audio) messages and nothing else to files on a mounted SDcard.
+
+
+PREREQUISITS:
+------------
+
+BUILD:
+
+Autologcat will only be built in engineering and development mode.
+
+
+AUTOMATIC START AT BOOT:
+
+In order for autologcat to log automatically it has to be started as a service, e.g. in init.rc.
+
+An example addition to init.rc :
+
+#STE: Android longterm autologging service : autologcat
+service autologcat /system/bin/autologcat
+    user root
+    oneshot
+
+

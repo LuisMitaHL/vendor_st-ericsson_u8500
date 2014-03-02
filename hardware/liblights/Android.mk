@@ -1,0 +1,28 @@
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := lights.$(TARGET_BOARD_PLATFORM)
+
+LOCAL_MODULE_TAGS := optional
+
+LOCAL_PRELINK_MODULE := false
+
+LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
+
+LOCAL_SHARED_LIBRARIES := liblog libcutils
+# include any shared library dependencies
+
+ifeq ($(LIBLIGHTS_SET_PLATFORM), u8500)
+LOCAL_SRC_FILES := lights_u8500.c
+else ifeq ($(LIBLIGHTS_SET_PLATFORM), u9540)
+LOCAL_SRC_FILES := lights_u8500.c
+else ifeq ($(LIBLIGHTS_SET_PLATFORM), u5500)
+LOCAL_SRC_FILES := lights_u5500.c
+endif
+
+ifeq ($(LIBLIGHTS_SET_PLATFORM), u9540)
+LOCAL_CFLAGS := -DU9540_USE_REMAPPED_LED_PATHS
+endif
+
+include $(BUILD_SHARED_LIBRARY)

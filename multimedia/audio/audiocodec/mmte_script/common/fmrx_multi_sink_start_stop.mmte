@@ -1,0 +1,134 @@
+test_start	CODEC_0014
+test_property	TEST_NAME FMRX_MULTISINKS_START_STOP
+
+test_start FM RX playback
+                                                                         
+          
+OMX_GetHandle        	FmRx 			OMX.ST.AFM.FM_SOURCE
+
+
+OMX_GetHandle    	avsink 			OMX.ST.AFM.NOKIA_AV_SINK
+
+
+#disable ports
+OMX_SendCommand  	FmRx 			OMX_CommandPortDisable 0
+OMX_SendCommand  	avsink 			OMX_CommandPortDisable 1 
+OMX_SendCommand  	avsink 			OMX_CommandPortDisable 0
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent 		FmRx 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+#pcm settings
+OMX_SetParameter     	FmRx 			OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000
+OMX_SetParameter 	avsink 			OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000
+
+# Tunneling
+OMX_SetupTunnel 	FmRx 0 			avsink 0
+
+#go to idle
+MMTE_DispatchState 	OMX_StateIdle		FmRx:0
+MMTE_DispatchState 	OMX_StateIdle 		avsink:0
+
+#go to exe
+MMTE_DispatchState 	OMX_StateExecuting 	FmRx
+OMX_SetConfig 		avsink 			OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100
+OMX_SetConfig 		avsink 			OMX_IndexConfigAudioMute bMute=OMX_FALSE
+MMTE_DispatchState 	OMX_StateExecuting 	avsink:0
+
+#enabling ports
+OMX_SendCommand 	avsink 			OMX_CommandPortEnable  0
+OMX_SendCommand 	FmRx 			OMX_CommandPortEnable  0
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent 		FmRx 			OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+mmte_sleep 2000
+
+#disabling ports
+OMX_SendCommand 	FmRx 			OMX_CommandPortDisable 0
+OMX_SendCommand 	avsink 			OMX_CommandPortDisable 0
+MMTE_WaitEvent 		FmRx 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+#stop avsink
+MMTE_DispatchState 	OMX_StateIdle 		avsink
+MMTE_DispatchState 	OMX_StateLoaded 	avsink
+OMX_FreeHandle		avsink
+
+#get ihf ready
+OMX_GetHandle   	ihf 			OMX.ST.AFM.IHF
+OMX_SendCommand 	ihf 			OMX_CommandPortDisable 1
+OMX_SendCommand 	ihf 			OMX_CommandPortDisable 0
+MMTE_WaitEvent 		ihf 			OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent 		ihf 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SetParameter 	ihf 			OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 
+
+# Tunneling
+OMX_SetupTunnel 	FmRx 0 			ihf 0
+
+#ihf to exe
+OMX_SetConfig 		ihf 			OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100
+OMX_SetConfig 		ihf 			OMX_IndexConfigAudioMute bMute=OMX_FALSE
+MMTE_DispatchState 	OMX_StateIdle 		ihf:0
+MMTE_DispatchState 	OMX_StateExecuting      ihf:0
+
+#enabling ports
+OMX_SendCommand 	ihf 			OMX_CommandPortEnable  0
+OMX_SendCommand 	FmRx 			OMX_CommandPortEnable  0
+MMTE_WaitEvent 		ihf 			OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent 		FmRx 			OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+mmte_sleep 2000
+
+#disabling ports
+OMX_SendCommand 	FmRx 			OMX_CommandPortDisable 0
+OMX_SendCommand 	ihf 			OMX_CommandPortDisable 0
+MMTE_WaitEvent 		FmRx 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent 		ihf 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+#stop ihf
+MMTE_DispatchState 	OMX_StateIdle 		ihf
+MMTE_DispatchState 	OMX_StateLoaded 	ihf
+OMX_FreeHandle		ihf
+
+#av to idle
+OMX_GetHandle    	avsink 			OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand  	avsink 			OMX_CommandPortDisable 1 
+OMX_SendCommand  	avsink 			OMX_CommandPortDisable 0
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SetParameter 	avsink 			OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000
+OMX_SetupTunnel 	FmRx 0 			avsink 0
+MMTE_DispatchState 	OMX_StateIdle 		avsink:0
+
+#av to exe
+OMX_SetConfig 		avsink 			OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100
+OMX_SetConfig 		avsink 			OMX_IndexConfigAudioMute bMute=OMX_FALSE
+MMTE_DispatchState 	OMX_StateExecuting 	avsink:0
+
+#enabling ports
+OMX_SendCommand 	avsink 			OMX_CommandPortEnable  0
+OMX_SendCommand 	FmRx 			OMX_CommandPortEnable  0
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent 		FmRx 			OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+mmte_sleep 2000
+
+#disabling ports
+OMX_SendCommand 	FmRx 			OMX_CommandPortDisable 0
+OMX_SendCommand 	avsink 			OMX_CommandPortDisable 0
+MMTE_WaitEvent 		FmRx 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent 		avsink 			OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+#stop avsink
+MMTE_DispatchState 	OMX_StateIdle 		avsink
+MMTE_DispatchState 	OMX_StateLoaded 	avsink
+
+#stop fmrx
+MMTE_DispatchState 	OMX_StateIdle 		FmRx
+MMTE_DispatchState 	OMX_StateLoaded 	FmRx
+
+
+
+MMTE_CheckMemoryStatus
+ens_network_destroy
+test_end

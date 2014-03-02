@@ -1,0 +1,43 @@
+clear;
+close all;
+ord=12;
+epsilon=1e-10;
+fs=48000;
+fstop=48000/12;
+%fpass=.91*fstop;
+fpass=.865*fstop;
+rp=.1;
+%rs=116;
+rs=100;
+%[num,den]=butter(ord,2*fpass/fs);
+[num,den]=ellip(ord,rp,rs,2*fpass/fs);
+
+figure;
+npts=4096;
+[h,w]=freqz(num,den,npts);
+respdb=20*log10(abs(h)+epsilon);
+freq=fs*w/(2*pi);
+mindb=-140;maxdb=5;
+yval=(mindb:1:maxdb);
+[dummy nval]=size(yval);
+xval=fstop*ones(1,nval);
+subplot(2,1,1),plot(freq,respdb);
+hold on;
+subplot(2,1,1),plot(xval,yval,'r');
+hold off;
+grid on;
+zoom on;
+axis([0 fs/2 mindb maxdb]);
+title('Frequency responsedB of decimiir for 48000 to 8000Hz');
+dw=(2*pi*fs/2)/npts;
+phase=unwrap(angle(h));
+for i=1:npts-1
+    dphase(i)=phase(i+1)-phase(i);
+end
+dphase(npts)=dphase(npts-1);
+gpdelms=-1000*dphase/dw;
+subplot(2,1,2),plot(freq,gpdelms);
+grid on;
+zoom on;
+axis([0 fs/2 0 10]);
+title('Group delay in msec (compare with 6msec for FIR)');

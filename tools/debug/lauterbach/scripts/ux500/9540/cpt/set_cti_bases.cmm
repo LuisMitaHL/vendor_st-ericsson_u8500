@@ -1,0 +1,50 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: set_cti_bases.cmm               #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This scripts set cti base addresses used by the cti.cmm file <cti_number> parameter. Call this script before cti.cmm.
+;
+; example:
+; 1. set the cti base addresses: 0: CTI associated to CortexA9-CPU0; 1: CTI-SoC.
+; do set_cti_base 0x801bc000 0x80180000  1: CTI associated to CortexA9-CPU0
+; ==> do cti xxx 0 x x; configure the CTI associated to CortexA9-CPU0
+;     do cti xxx 1 x x; configure the CTI-SoC
+;
+; 2. set the cti base addresses: 0: CTI associated to the ETB&TPIU; 1: CTI associated to CortexA9-CPU0
+; do set_cti_base 0x801b5000 0x801bc000
+; ==> do cti xxx 0 x x ; configure the CTI associated to the ETB&TPIU
+;     do cti xxx 1 x x ; configure the CTI associated to CortexA9-CPU0
+;
+; Created by HED/CSP/CPT/ACT on 2009-07
+; Contact: jingyi-xiaoyan.lu@st.com
+
+global &CTI0_base &CTI1_base &CTI2_base &CTI3_base &CTI4_base &CTI5_base &CTI6_base &CTI7_base &nb_cti
+entry &base0 &base1 &base2 &base3 &base4 &base5 &base6 &base7
+
+&CTI0_base=&base0 
+&CTI1_base=&base1 
+&CTI2_base=&base2 
+&CTI3_base=&base3 
+&CTI4_base=&base4 
+&CTI5_base=&base5 
+&CTI6_base=&base6 
+&CTI7_base=&base7 
+
+if "&CTI0_base"==""
+  &nb_cti="0"
+else if "&CTI1_base"==""
+  &nb_cti="1"
+else if "&CTI2_base"==""
+  &nb_cti="2"
+else if "&CTI3_base"==""
+  &nb_cti="3"
+else if "&CTI4_base"==""
+  &nb_cti="4"
+else if "&CTI5_base"==""
+  &nb_cti="5"
+else if "&CTI6_base"==""
+  &nb_cti="6"
+else if "&CTI7_base"==""
+  &nb_cti="7"
+   
+enddo

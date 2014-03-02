@@ -1,0 +1,67 @@
+#include <bool.idt>
+#include <samplefreq.idt>
+#include <memorybank.idt>
+#include <mixer/nmfil/common/mixer_defines.idt>
+
+#define INPUT_UPMIX_POSITION    65534
+#define INPUT_DOWNMIX_POSITION  65532
+#define INPUT_VOLCTRL_POSITION  65535
+#define INPUT_SRC_POSITION      65533
+
+typedef struct {
+    // Params
+    t_sample_freq       nSamplingRate;
+    t_uint16            nChannels;
+    t_uint16            nBlockSize; 
+    t_memory_bank       nMemoryBank;
+
+    // Configs
+    BOOL                bDisabled;
+    BOOL                bPaused;
+} InputPortParam_t;
+
+typedef struct {
+    t_uint16            nBlockSize; 
+    t_sample_freq       nSamplingRate;
+    t_uint16            nChannels;
+    BOOL                bDisabled;    
+} OutputPortParam_t;
+
+
+typedef struct {
+    InputPortParam_t    inputPortParam[MIXER_INPUT_PORT_COUNT];
+    OutputPortParam_t   outputPortParam;
+    t_uint32            traceAddr;
+} MixerParam_t;
+
+typedef struct {
+    t_uint24            nbConfigs;
+    void *              pEffectConfigTable;
+    t_uint48            configStructArmAddress;
+} MixerConfig_t;
+
+typedef struct {
+    t_uint24            portIdx;
+    t_uint24            effectPosition;
+    t_uint24            configIndex;
+    t_uint24            isStaticConfiguration;
+    void *              pSpecificConfigStruct;            
+    t_uint24            dummyfield;    
+    t_uint48            specificConfigStructHandle;
+} MixerEffectConfig_t;
+
+void setParameter(MixerParam_t mixerParam);
+void setInputPortParameter(t_uint16 portIdx, InputPortParam_t inputPortParam);
+
+// used to configure effects (static or dynamic configuration)
+void configureEffects(t_uint32 paramDspAddress);
+
+// configs
+void setPausedInputPort(t_uint16 portIdx, BOOL bIsPaused);
+
+// misc
+void setSamplesPlayedCounter(t_uint16 portIdx, t_uint32 value);
+
+// set effect config Ptr to allow proxy to retrieve some effect informations
+void setEffectGetInfoPtr(t_uint16 portIdx, t_uint16 positionId, void * ptr);
+

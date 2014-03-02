@@ -1,0 +1,42 @@
+# -*- Mode: Makefile -*-
+
+#
+# This makefile set common path to usefull Directories.
+# The variable BASEDIR must have been defined first
+#
+
+# strip white spaces
+BASEDIR := $(strip $(BASEDIR))
+
+# Audiolibs 
+AUDIOLIBSDIR     = $(BASEDIR)/../audiolibs
+AUDIOLIBSLIBSDIR = $(AUDIOLIBSDIR)/common/lib
+AUDIOLIBSINCDIR  = $(AUDIOLIBSDIR)/common/include
+
+# Aep
+AEPDIR    = ${BASEDIR}/../aep
+AEPINCDIR = $(AEPDIR)/common/include
+
+# hamaca
+HAMACADIR    = $(BASEDIR)/../hamaca
+HAMACAINCDIR = $(HAMACADIR)/include
+
+# Codec
+RTILINC_DIR    = $(BASEDIR)/../rtil/common/include
+
+# local dir 
+COMMONDIR      = $(BASEDIR)/common
+INCDIR         = $(BASEDIR)/common/include
+LIBDIR         = $(BASEDIR)/common/lib
+OBJDIR         = $(LOCALDIR)/obj/$(ARCHI_NAME)
+BINDIR         = $(LOCALDIR)/bin
+INCDIR        += $(LOCALDIR)/include
+DEPDIR         = $(LOCALDIR)/dep
+EFFECT_DIR     = $(BASEDIR)/effect
+EFFECTINC_DIR  = $(EFFECT_DIR)/include
+INTERFACE_DIR  = $(BASEDIR)/eil
+
+
+
+# Include dir
+INCLUDEDIR = $(INCDIR) $(AUDIOLIBSINCDIR) $(AEPINCDIR) $(HAMACAINCDIR) $(EFFECTINC_DIR) $(RTILINC_DIR)

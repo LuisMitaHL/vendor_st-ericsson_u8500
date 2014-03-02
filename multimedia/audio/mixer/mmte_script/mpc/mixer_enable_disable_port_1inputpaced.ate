@@ -1,0 +1,210 @@
+test_start mix_0005
+
+# instantiate and configure mixer
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+
+#OMX_SetConfig    mixer ENS_IndexConfigTraceSetting nTraceEnable=65535
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/samplerateconv/streams/Portal_8m.pcm 0 0 0
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/src_pcm_8k_mono_48k_mono_mix_0005.out
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/samplerateconv/streams/Portal_8k_mono_48k_mono.ref.out
+alias REF_DIGEST    $(AUDIO_STREAMS)/samplerateconv/streams/Portal_8k_mono_48k_mono_digest.hash
+
+# test OMX state machine 
+
+# disable / re-enable ports in loaded state
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SendCommand mixer OMX_CommandPortEnable  0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+# disable  ports in loaded state
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+# Go to Idle with both ports disabled
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# re-enable ports
+OMX_SendCommand mixer OMX_CommandPortEnable  0
+MMTE_AllocateBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+# disable / re-enable ports in Idle
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers mixer 0
+MMTE_FreeBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers mixer 1
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand mixer OMX_CommandPortEnable  0
+MMTE_AllocateBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+# disable ports
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers mixer 0
+MMTE_FreeBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers mixer 1
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+# Go to Executing with ports disabled
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# enable ports
+
+OMX_SendCommand mixer OMX_CommandPortEnable  0
+MMTE_AllocateBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 0
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 0
+
+# disable ports in Executing
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers mixer 0
+MMTE_FreeBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers mixer 1
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+# Go to Pause with ports disabled
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# re-enable ports
+OMX_SendCommand mixer OMX_CommandPortEnable  0
+MMTE_AllocateBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+# disable / re-enable ports in Pause
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers mixer 0
+MMTE_FreeBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers mixer 1
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand mixer OMX_CommandPortEnable  0
+MMTE_AllocateBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+# disable ports
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers mixer 0
+MMTE_FreeBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers mixer 1
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+# Go to Idle with ports disabled
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer OMX_CommandPortEnable  0
+MMTE_AllocateBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+# Go to Loaded with ports disabled
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+
+MMTE_CheckMemoryStatus
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+
+ens_network_destroy
+test_end

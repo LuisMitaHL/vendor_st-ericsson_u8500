@@ -1,0 +1,17 @@
+\chapter{Introduction}
+NMF technology provide both a component base development environment but also a
+runtime engine which is the component execution environment. In the case of
+MMDSP this runtime engine is call MPCEE. Design specification of MPCEE is the
+subject of this document.
+
+Main property of NMF runtime engines (and so of MPCEE) is that they use a run to
+completion model. This means that user function run to their end before a new
+function is selected. 
+
+There is two variants of MPCEE call synchronous scheduler and hybrid scheduler.
+In the case of synchronous scheduler there is no preemption between priorities
+whereas in the hybrid scheduler there is preemption between priorities. In both
+cases there are three levels of priorities.
+
+This report will only document hybrid scheduler since synchronous scheduler is
+no more in use.

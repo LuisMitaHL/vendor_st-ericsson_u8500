@@ -1,0 +1,14 @@
+#!/bin/sh
+
+RES=`grep "hsi_char" /proc/devices | cut -d " " -f 1`
+if [ -e /dev/hsi_char ]
+then
+rm -rf /dev/hsi_char
+fi
+
+mknod -m 666 /dev/hsi_char c $RES 0
+if [ -e /dev/hsi_char ]
+then
+echo "/dev/chsi_char installed"
+fi
+exit

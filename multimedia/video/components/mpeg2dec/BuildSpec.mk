@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_video/components/mpeg2dec=bin
+NO_STD_BUILD_video/components/mpeg2dec=1
+BUILD_MMDSP_NMF_video/components/mpeg2dec=bin
+BUILD_ARM_PROC_video/components/mpeg2dec=bin
+BUILD_ARM_CODE_video/components/mpeg2dec=src
+BUILD_ARM_NMF_video/components/mpeg2dec=src
+BUILD_XP70_SIA_CODE_video/components/mpeg2dec=false

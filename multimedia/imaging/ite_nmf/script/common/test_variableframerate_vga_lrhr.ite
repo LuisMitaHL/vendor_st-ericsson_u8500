@@ -1,0 +1,71 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/test_variableframerate_vga_lrhr.ite
+
+LogPE disable
+
+setusecase HR VGA YUV422RI
+setusecase LR VGA YUV422RI
+
+usagemode video
+
+VariableFramerate_Set 1
+manualfps max 30
+
+LRHR prepare
+LRHR start
+
+# test on start-stop
+TestVariableFrameRate
+
+zoomset 3
+manualfps 15 NIL
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+## test zoom alone
+zoomset 6
+getfps HR
+TestVariableFrameRate
+
+### test fps alone
+manualfps 30 NIL
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+LRHR stop
+
+## Now test in case of BMS
+setusecase BMS MODE0 RAW12
+usagemode still
+bmsmode STILL
+bmsout BAYERSTORE2
+
+manualfps 5 5
+
+bms prepare
+getusecase
+bms start
+wait 1
+TestVariableFrameRate
+bms stop
+
+usagemode video
+## now back to streaming
+manualfps NIL 30
+LRHR start
+getfps HR
+TestVariableFrameRate
+
+## test zoom alone
+zoomset 6
+getfps HR
+TestVariableFrameRate
+
+## test framerate alone
+manualfps 30 NIL
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+LRHR stop

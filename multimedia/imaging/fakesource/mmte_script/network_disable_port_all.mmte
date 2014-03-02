@@ -1,0 +1,12 @@
+if BUFFER_SUPPLY_WAY == output
+OMX_SendCommand	tested_component	OMX_CommandPortDisable OMX_ALL
+OMX_SendCommand	my_sink_1			OMX_CommandPortDisable OMX_ALL
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandPortDisable	0
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandPortDisable	0
+endif
+if BUFFER_SUPPLY_WAY == input
+OMX_SendCommand	my_sink_1			OMX_CommandPortDisable OMX_ALL
+OMX_SendCommand	tested_component	OMX_CommandPortDisable OMX_ALL
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandPortDisable	0
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandPortDisable	0
+endif

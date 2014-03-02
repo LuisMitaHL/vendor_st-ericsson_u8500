@@ -1,0 +1,20 @@
+#ifndef _SHM_PCM_CONFIG_H_
+#define _SHM_PCM_CONFIG_H_
+
+#include <bool.idt>
+#include <samplefreq.idt>
+#include <common/bindings/swap.idt>
+
+typedef struct {
+    t_uint16                nb_buffer;
+    t_swap_mode             swap_bytes;
+    t_uint16                bitsPerSampleIn;
+    t_uint16                bitsPerSampleOut;
+    t_uint16                channelsIn;
+    t_uint16                channelsOut;
+    t_sample_freq           sampleFreq;
+    BOOL                    isSynchronized;
+    BOOL                    hostMpcSyncEnabled;
+} ShmPcmConfig_t;
+
+#endif

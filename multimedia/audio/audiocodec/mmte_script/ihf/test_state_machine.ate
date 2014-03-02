@@ -1,0 +1,10 @@
+test_start SINKS_203 IHF Test State Machine
+
+OMX_GetHandle   renderer OMX.ST.AFM.IHF
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+do $(NOMADIK)/audiocodec/mmte_script/state_machine.ate renderer
+
+test_end
+

@@ -1,0 +1,44 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+export MODULE
+MODULE=../..
+MODULE_NAME:=mpeg4enc
+include $(MMROOT)/video/makefiles/Make.nmf.config
+ITF_PREFIX := video_$(MODULE_NAME)_mpeg4enc
+
+COMPONENTS += $(MODULE_NAME)
+
+CONFFILES =	$(MODULE_NAME)/mpc/$(MODULE_NAME)/$(MODULE_NAME).conf		\
+			$(MODULE_NAME)/mpc/algo/algo.conf
+
+SRCPATH+= \
+	$(MM_IDT_DIR) 				\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share	\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc \
+    $(MMROOT)/video/components/resource_manager/idt
+
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc		\
+	-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/common/inc						\
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/mpc/algo/inc/$(SVA_SUBSYSTEM)	\
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/mpc/algo/inc
+
+USER2MPCITFS +=	
+
+ifdef NO_OMX_BUILD
+MPC2USERITFS +=	$(MODULE_NAME).mpc.api.end_algo
+endif
+
+ASYNCITFS += $(MODULE_NAME).mpc.api.algo $(MODULE_NAME).mpc.api.end_algo
+
+PREBUILD_COMPONENTS = conf-check $(CONFFILES) link_hardware
+
+
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+.PHONY: link_hardware
+

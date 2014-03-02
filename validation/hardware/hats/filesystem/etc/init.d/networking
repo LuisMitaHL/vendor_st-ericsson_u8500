@@ -1,0 +1,36 @@
+#!/bin/sh
+case $1 in
+    start)
+    echo "Starting $0..."
+#Check hardware to assign the IP address expected by Windows host
+    hardware=`grep -e "^Hardware.*" /proc/cpuinfo`
+    isSimulator=`echo $hardware | grep -i simulator`
+    if [ -n "$isSimulator" ]
+	then
+	address="192.168.1.1"
+    else
+	address="192.168.0.2"
+    fi
+    echo "Apply ifconfig"
+    ifconfig lo 127.0.0.1 netmask 255.255.255.0
+    ifconfig usb0 $address up
+    route add default gw $address
+    echo "Start telnetd"
+    mkdir -p /dev/pts
+    mount -t devpts none /dev/pts
+    echo /bin/sh --login > /tmp/mysh
+    chmod +x /tmp/mysh
+    telnetd -l /tmp/mysh
+    udpsvd -v -E 0 69 tftpd / &
+    ;;
+    stop)
+    echo "Stopping $0..."
+    echo "Nothing to be done"
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

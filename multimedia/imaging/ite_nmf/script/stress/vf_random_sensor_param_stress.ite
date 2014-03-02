@@ -1,0 +1,54 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/vf_random_sensor_param_stress.ite
+
+## LR with histogram and glace stats (change exposure time, analog gain and frame rate) ##
+
+## For setting exposure and analog gain paramaters, use:
+## set_sensor_param <random_exposure_value|default> <random_gain_value|default>
+## where, default should be used for skipping the parameter configuration.
+## For example,
+## set_sensor_param 50000 256
+## set_sensor_param default 1024
+
+alias LOOP_TESTS $1
+
+do $(IMAGING_PATH)/ite_nmf/script/stress/stress_test_config.ite
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+loop LOOP_TESTS
+
+    gen_random_val float FPS_LOWER_LIMIT FPS_UPPER_LIMIT
+    manualfps RANDOM_GENERATED_VALUE
+
+## variable framerate could also be enabled here
+
+    glacehistoexp reqnowait
+    LR prepare
+    LR start
+
+# update exposure time and analog gain
+    gen_random_val int EXPOSURE_LOWER_LIMIT EXPOSURE_UPPER_LIMIT
+    alias RANDOM_EXP RANDOM_GENERATED_VALUE
+    gen_random_val int AG_LOWER_LIMIT AG_UPPER_LIMIT 256
+    alias RANDOM_AG RANDOM_GENERATED_VALUE
+
+    set_sensor_param RANDOM_EXP RANDOM_AG
+
+    glacehistoexp waitstatready
+
+# update exposure time and analog gain
+    gen_random_val int EXPOSURE_LOWER_LIMIT EXPOSURE_UPPER_LIMIT
+    alias RANDOM_EXP RANDOM_GENERATED_VALUE
+    gen_random_val int AG_LOWER_LIMIT AG_UPPER_LIMIT 256
+    alias RANDOM_AG RANDOM_GENERATED_VALUE
+
+    set_sensor_param RANDOM_EXP RANDOM_AG
+
+    glacehistoexp req
+
+    LR stop
+    LR free
+
+endloop
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite

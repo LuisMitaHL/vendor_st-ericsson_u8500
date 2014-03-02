@@ -1,0 +1,66 @@
+#AFM TESTS + mixer (paced/notPaced configs)
+do $(NOMADIK)/mixer/mmte_script/host/config.ate # KO volume ramps unsupported
+do $(NOMADIK)/mixer/mmte_script/host/mixer_state_machine_1inputpaced_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_state_machine_2inputspaced_host.ate
+
+do $(NOMADIK)/mixer/mmte_script/host/mixer_enable_disable_port_1inputpaced_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_enable_disable_port_2inputspaced_host.ate
+
+# volctrl specific only
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_stereo_nochange_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_stereo_dec_3dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_stereo_dec_12dB_host.ate # failed: to be debugged
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_stereo_ramping_host.ate
+
+# samplerateconv specific only
+# upsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_8k_mono_16k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_8k_mono_48k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_16k_mono_44k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_16k_mono_48k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_11k_mono_24k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_12k_mono_32k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_22k_mono_48k_mono_host.ate
+# downsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_48k_mono_8k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_48k_mono_16k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_mono_22k_mono_host.ate
+
+# mixer
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_8k_mono_8k_mono_8k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_8k_stereo_8k_stereo_8k_stereo_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_8k_mono_22k_mono_48k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_48k_stereo_44k_stereo_16k_stereo_host.ate
+
+#non paced test
+#do $(NOMADIK)/mixer/mmte_script/host/mixer_enable_disable_port_1inputnotpaced_host.ate
+#do $(NOMADIK)/mixer/mmte_script/host/mixer_enable_disable_port_2inputsnotpaced_host.ate
+
+# mix syncronized and non-sychronized inputs
+#do $(NOMADIK)/mixer/mmte_script/host/mixer_state_machine_2inputs_host.ate
+
+do $(NOMADIK)/mixer/mmte_script/host/mixer_upmix_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_downmix_host.ate # failed: to be debugged
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_upmix_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_downmix_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_remap_host.ate
+
+# multichannel volctrl specific only
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_5_1_48k_dec_3dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_5_1_48k_ramping_1channel_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_5_1_48k_ramping_all_host.ate
+
+# multichannel samplerateconv specific only
+# upsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_8k_5_1_16k_5_1_host.ate
+
+# downsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_48k_5_1_8k_5_1_host.ate
+
+# non synchronized port
+do $(NOMADIK)/mixer/mmte_script/host/mixer_test_nonsync_port_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_test_nonsync_port2_host.ate
+
+# setparam on disabled port
+do $(NOMADIK)/mixer/mmte_script/host/mixer_test_setparameter_on_disable_port_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_test_setparameter_on_disable_port_sfreq_host.ate 

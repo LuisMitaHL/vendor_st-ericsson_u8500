@@ -1,0 +1,169 @@
+//=========================================================================
+// A script to read/write Page Elements
+//=========================================================================
+if run()
+   Break
+
+//-----------------------------------------------------
+// Dialog
+//-----------------------------------------------------
+DIALOG
+(
+	HEADER "Page Elements"
+	POS 0. 0.
+	LINE "PE"
+	POS 12. 0.
+PE:	EDIT "0x140" ""
+
+	POS 0. 1.
+	LINE "value"
+	POS 12. 1.
+VALUE:	EDIT "" ""
+
+	POS 0. 2.
+UNIT: PULLDOWN "hex,dec,float" ""
+
+	POS 12. 2.
+BT_READ: BUTTON "Read"
+	(
+		GOSUB ReadPE
+	)
+BT_WRITE: BUTTON "Write"
+	(
+		GOSUB WritePE
+	)
+)
+stop
+enddo
+
+
+//-----------------------------------------------------
+ReadPE:
+//-----------------------------------------------------
+	local &pe &value &float &unit 
+	local &opcode &transaction_id &busy &retries &ack
+ 	&pe=dialog.string(PE)
+ 	&unit=dialog.string(UNIT)
+
+	//.............................................
+	// Disable interrupt (XP70->MMDSP)
+	//.............................................
+	PER.S A:0xA0252210 %LONG 2		//ITM_FW_EVENT0_EN_BCLR (disbale int)
+
+	//.............................................
+	// Read PE
+	//.............................................
+	PER.S A:0xa0252064 %WORD &pe		//USER_IF_PAGE_ELEMENT
+
+	&opcode=d.w(A:0xa0252068)		//USER_IF_OPC
+	&transaction_id=&opcode/0x100
+	&transaction_id=(&transaction_id+1)%0x100
+	&opcode=(&transaction_id*0x100)+0	//opcode=read
+	//print "opcode=&opcode"
+	PER.S A:0xa0252068 %WORD &opcode	//USER_IF_OPC
+
+	//.............................................
+	//Wait for USER_IF_ACK / ack
+	//.............................................
+	&retries=100.
+	&busy=1
+	REPEAT
+	(
+		&ack=d.w(A:0xa0252074)	//USER_IF_ACK
+		if (&ack==&opcode)
+			&busy=0
+		else
+			&retries=&retries-1
+	)
+	WHILE (&busy==1)&&(&retries>0)
+
+	//.............................................
+	//Read and format value
+	//.............................................
+	if (&retries==0)
+	(
+		&value="timeout"
+	)
+	else
+	(
+		if "&unit"=="float"
+			&value=d.f("IEEE",A:0xa0252070)	//USER_IF_RD_DATA
+		else
+			&value=d.l(A:0xa0252070)	//USER_IF_RD_DATA
+		if "&unit"=="dec"
+			&value=FORMAT.DECIMAL(0,&value)+"."
+	)
+ 	dialog.set VALUE "&value"
+
+	//.............................................
+	// Re-enable interrupt (XP70->MMDSP)
+	//.............................................
+	PER.S A:0xA0252208 %LONG 2		//ITM_FW_EVENT0_STATUS_BCLR (clear int)
+	PER.S A:0xA0252214 %LONG 2		//ITM_FW_EVENT0_EN_BSET (enable int)
+
+	RETURN
+
+//-----------------------------------------------------
+WritePE:
+//-----------------------------------------------------
+	local &pe &value &unit &float &opcode &transaction_id
+ 	&pe=dialog.string(PE)
+ 	&value=dialog.string(VALUE)
+ 	&unit=dialog.string(UNIT)
+
+	//.............................................
+	// Disable interrupt (XP70->MMDSP)
+	//.............................................
+	PER.S A:0xA0252210 %LONG 2		//ITM_FW_EVENT0_EN_BCLR (disbale int)
+
+	//.............................................
+	// Write Page Element
+	//.............................................
+	PER.S A:0xa0252064 %WORD &pe		//USER_IF_PAGE_ELEMENT
+	if "&unit"=="hex"
+	(
+		if STRING.SCAN(STRING.UPR("&value"),"0X",0)==-1
+			&value="0x"+"&value"
+	)
+	if "&unit"=="dec"
+	(
+		if STRING.SCAN(STRING.UPR("&value"),".",0)==-1
+			&value="&value"+"."
+	)
+	if "&unit"=="float"
+		PER.S A:0xa025206C %Float.Ieee &value	//USER_IF_WR_DATA
+	else
+		PER.S A:0xa025206C %LONG &value	//USER_IF_WR_DATA
+
+	&opcode=d.w(A:0xa0252068)		//USER_IF_OPC
+	&transaction_id=&opcode/0x100
+	&transaction_id=(&transaction_id+1)%0x100
+	&opcode=(&transaction_id*0x100)+1	//opcode=write
+	print "opcode=&opcode"
+	PER.S A:0xa0252068 %WORD &opcode	//USER_IF_OPC
+
+	//.............................................
+	//Wait for USER_IF_ACK / ack
+	//.............................................
+	&retries=100.
+	&busy=1
+	REPEAT
+	(
+		&ack=d.w(A:0xa0252074)	//USER_IF_ACK
+		if (&ack==&opcode)
+			&busy=0
+		else
+			&retries=&retries-1
+	)
+	WHILE (&busy==1)&&(&retries>0)
+
+	if (&retries==0)
+	 	dialog.set VALUE "timeout"
+
+	//.............................................
+	// Re-enable interrupt (XP70->MMDSP)
+	//.............................................
+	PER.S A:0xA0252208 %LONG 2		//ITM_FW_EVENT0_STATUS_BCLR (clear int)
+	PER.S A:0xA0252214 %LONG 2		//ITM_FW_EVENT0_EN_BSET (enable int)
+
+	RETURN

@@ -1,0 +1,27 @@
+primitive jpegenc.arm_nmf.hva_wrapper
+{
+
+	provides lifecycle.constructor                             as constructor
+	
+	// Provided interfaces to a jpeg decoder component
+	provides jpegenc.arm_nmf.api.algo             as iAlgo
+	
+	provides jpegenc.arm_nmf.api.setMemoryParam as setMemoryParam
+
+	// Required interfaces to a jpeg decoder component
+	requires jpegenc.arm_nmf.api.end_algo         as oEndAlgo
+	
+
+	//requires jpegenc.arm_nmf.api.start_codec        as iStartCodec
+	//provides jpegenc.arm_nmf.api.end_codec          as iEndCodec
+	
+	requires hva_drv.arm_nmf.api.start_codec        as iStartCodec
+	provides hva_drv.arm_nmf.api.end_codec          as iEndCodec	
+
+	//- Source files
+	sources src/hva_wrapper.cpp
+	
+	option memories EMB24RAM|EMB16RAM|XROM|EXT24RAM|EXT16RAM	
+	option CPPFLAGS "-g -O0"
+ 
+}

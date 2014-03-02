@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+/*!
+ * \brief C/C++ component starter interface
+ *
+ * The lifecycle.starter interface must be implement
+ * by a component in order to provide an starter that will be called by
+ * the component manager when the component will enter to RUNNABLE state.
+ *
+ * Such code in your primitive ADL component must be used to provide starter:
+ * \code
+ * primitive your.component.name {
+ *     ...
+ *     provides lifecycle.starter as starter
+ *     ...
+ * }
+ * \endcode
+ */
+interface lifecycle.starter {
+    /*!
+     * \brief Start interface method.
+     */
+    void start(void);
+}

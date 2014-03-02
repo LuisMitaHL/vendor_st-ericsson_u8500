@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlcharge">
+  	<argument path="/DTH/CHARGE/config/menus/menu_04charge.xml" type="FILE" user_data="ACT_CHARGE_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlcharge/config/menus\nFilename=menu_04charge.xml</info> 
+	  </argument>
+	  <argument path="/DTH/CHARGE/config/panels/panel_charge.xml" type="FILE" user_data="ACT_CHARGE_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlcharge/config/panels\nFilename=panel_charge.xml</info> 
+	  </argument>
+	  <action path="/DTH/CHARGE/Act_InitCharge/Init_Charge" type="U8" user_data="ACT_INITCHARGE" set="Dth_ActCHARGEParam_Set" exec="Dth_ActCHARGE_exec">
+	    <enum>
+          <enum_item value="0">DEACTIVATE</enum_item>
+          <enum_item value="1">ACTIVATE</enum_item>
+	    </enum>
+	  <argument path="/DTH/CHARGE/Act_InitCharge/Init_Charge/AlgoChargeState" type="STRING" user_data="ACT_ALGO" get="Dth_ActCHARGEParam_Get">
+	  </argument>
+		<info>Label Action:InitAlgoCharge</info>
+    </action>
+    <action path="/DTH/CHARGE/Act_BatOK/Bat_OK" type="STRING" user_data="ACT_BATOK" exec="Dth_ActCHARGE_exec">
+      <info>Label Action:Battok falling thresholds value\n</info>
+      <argument path="/DTH/CHARGE/Act_BatOK/Bat_OK/Out_battOK1R_Sel1" type="FLOAT" user_data="OUT_BATOK1RSEL1" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_BatOK/Bat_OK/Out_battOK2R_Sel1" type="FLOAT" user_data="OUT_BATOK2RSEL1" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_BatOK/Bat_OK/Out_battOKF_Sel1" type="FLOAT" user_data="OUT_BATOKFSEL1" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_BatOK/Bat_OK/Out_battOK1R_Sel0" type="FLOAT" user_data="OUT_BATOK1RSEL0" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_BatOK/Bat_OK/Out_battOK2R_Sel0" type="FLOAT" user_data="OUT_BATOK2RSEL0" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_BatOK/Bat_OK/Out_battOKF_Sel0" type="FLOAT" user_data="OUT_BATOKFSEL0" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+    </action>
+    <action path="/DTH/CHARGE/Act_OTPTemp/OTP_Temp" type="STRING" user_data="ACT_OTPTEMP" exec="Dth_ActCHARGE_exec">
+      <info>Label Action:OTP temp value\n</info>
+      <argument path="/DTH/CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP2BtempCmpLow" type="STRING" user_data="OUT_OTP2" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP3BtempCmpHigh" type="STRING" user_data="OUT_OTP3" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP4BtempCmpLowHigh" type="STRING" user_data="OUT_OTP4" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP11BtempCmpMedium" type="STRING" user_data="OUT_OTP11" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP12BtempCmpMedium" type="STRING" user_data="OUT_OTP12" get="Dth_ActCHARGEParam_Get"/>
+    </action>
+    <action path="/DTH/CHARGE/Act_GChargerInfo/Get_Charger_Info" type="STRING" user_data="ACT_GCHINFO" exec="Dth_ActCHARGE_exec">
+      <info>Label Action:Get Charger Info\n</info>
+      <argument path="/DTH/CHARGE/Act_GChargerInfo/Get_Charger_Info/Out_AutoMainChInputCurr" type="STRING" user_data="OUT_AUTOMAINCHINCURR" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_GChargerInfo/Get_Charger_Info/Out_AutoVbusChInputCurr" type="STRING" user_data="OUT_AUTOVBUSCHINCURR" get="Dth_ActCHARGEParam_Get"/>
+    </action>
+    <action path="/DTH/CHARGE/Act_GUSBInfo/Get_USB_Charger_Info" type="STRING" user_data="ACT_GUSBINFO" exec="Dth_ActCHARGE_exec">
+      <info>Label Action:Get USB Info\n</info>
+      <argument path="/DTH/CHARGE/Act_GUSBInfo/Get_USB_Charger_Info/Out_USBLinkStatus" type="STRING" user_data="OUT_USBLINKSTATUS" get="Dth_ActCHARGEParam_Get"/>
+    </action>
+    <action path="/DTH/CHARGE/Act_SMainCharger/Set_Main_Charge" type="U8" user_data="ACT_SMAINCHINFO" set="Dth_ActCHARGEParam_Set" exec="Dth_ActCHARGE_exec">
+      <enum>
+        <enum_item value="0">ENABLE</enum_item>
+        <enum_item value="1">DISABLE</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Action:Set MAIN Charger\n</info>
+      <argument path="/DTH/CHARGE/Act_SMainCharger/Set_Main_Charge/In_ChOutputCurrent" type="U8" user_data="IN_CHOUTCUR" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">100mA</enum_item>
+          <enum_item value="1">200mA</enum_item>
+          <enum_item value="2">300mA</enum_item>
+          <enum_item value="3">400mA</enum_item>
+          <enum_item value="4">500mA</enum_item>
+          <enum_item value="5">600mA</enum_item>
+          <enum_item value="6">700mA</enum_item>
+          <enum_item value="7">800mA</enum_item>
+          <enum_item value="8">900mA</enum_item>
+          <enum_item value="9">1000mA</enum_item>
+          <enum_item value="10">1100mA</enum_item>
+          <enum_item value="11">1200mA</enum_item>
+          <enum_item value="12">1300mA</enum_item>
+          <enum_item value="13">1400mA</enum_item>
+          <enum_item value="14">1500mA</enum_item>
+        </enum>
+        <range min="0" max="14"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SMainCharger/Set_Main_Charge/In_ChOutputCurrent_Max" type="U8" user_data="IN_CHOUTCURMAX" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">100mA</enum_item>
+          <enum_item value="1">200mA</enum_item>
+          <enum_item value="2">300mA</enum_item>
+          <enum_item value="3">400mA</enum_item>
+          <enum_item value="4">500mA</enum_item>
+          <enum_item value="5">600mA</enum_item>
+          <enum_item value="6">700mA</enum_item>
+          <enum_item value="7">800mA</enum_item>
+          <enum_item value="8">900mA</enum_item>
+          <enum_item value="9">1000mA</enum_item>
+          <enum_item value="10">1100mA</enum_item>
+          <enum_item value="11">1200mA</enum_item>
+          <enum_item value="12">1300mA</enum_item>
+          <enum_item value="13">1400mA</enum_item>
+          <enum_item value="14">1500mA</enum_item>
+        </enum>
+        <range min="0" max="14"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SMainCharger/Set_Main_Charge/In_ChVoltLevel" type="U8" user_data="IN_CHVOLTLEVEL" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">3.5V</enum_item>
+          <enum_item value="1">3.6V</enum_item>
+          <enum_item value="2">3.7V</enum_item>
+          <enum_item value="3">3.8V</enum_item>
+          <enum_item value="4">3.9V</enum_item>
+          <enum_item value="5">4.0V</enum_item>
+          <enum_item value="6">4.05V</enum_item>
+          <enum_item value="7">4.1V</enum_item>
+          <enum_item value="8">4.15V</enum_item>
+          <enum_item value="9">4.2V</enum_item>
+          <enum_item value="10">4.25V</enum_item>
+          <enum_item value="11">4.3V</enum_item>
+          <enum_item value="12">4.4V</enum_item>
+          <enum_item value="13">4.5V</enum_item>
+          <enum_item value="14">4.6V</enum_item>
+        </enum>
+        <range min="0" max="14"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SMainCharger/Set_Main_Charge/In_MainChInputCurrent" type="U8" user_data="IN_CHINCUR" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">100mA</enum_item>
+          <enum_item value="1">200mA</enum_item>
+          <enum_item value="2">300mA</enum_item>
+          <enum_item value="3">400mA</enum_item>
+          <enum_item value="4">500mA</enum_item>
+          <enum_item value="5">600mA</enum_item>
+          <enum_item value="6">700mA</enum_item>
+          <enum_item value="7">800mA</enum_item>
+          <enum_item value="8">900mA</enum_item>
+          <enum_item value="9">1000mA</enum_item>
+          <enum_item value="10">1100mA</enum_item>
+          <enum_item value="11">12000mA</enum_item>
+          <enum_item value="12">1300mA</enum_item>
+          <enum_item value="13">1400mA</enum_item>
+          <enum_item value="14">1500mA</enum_item>
+        </enum>
+        <range min="0" max="14"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SMainCharger/Set_Main_Charge/In_Auto_Input_Current_Ena" type="U8" user_data="IN_AUTOINCURENA" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="CHARGE_ENABLE">DISABLE</enum_item>
+          <enum_item value="CHARGE_DISABLE">ENABLE</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+    <action path="/DTH/CHARGE/Act_SUSBCharger/Set_USB_Charge" type="U8" user_data="ACT_SUSBCHINFO" set="Dth_ActCHARGEParam_Set" exec="Dth_ActCHARGE_exec">
+      <enum>
+        <enum_item value="CHARGE_ENABLE">ENABLE</enum_item>
+        <enum_item value="CHARGE_DISABLE">DISABLE</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Action:Set USB Charger\n</info>
+      <argument path="/DTH/CHARGE/Act_SUSBCharger/Set_USB_Charge/In_ChOutputCurrent" type="U8" user_data="IN_CHOUTCUR" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">100mA</enum_item>
+          <enum_item value="1">200mA</enum_item>
+          <enum_item value="2">300mA</enum_item>
+          <enum_item value="3">400mA</enum_item>
+          <enum_item value="4">500mA</enum_item>
+          <enum_item value="5">600mA</enum_item>
+          <enum_item value="6">700mA</enum_item>
+          <enum_item value="7">800mA</enum_item>
+          <enum_item value="8">900mA</enum_item>
+          <enum_item value="9">1000mA</enum_item>
+          <enum_item value="10">1100mA</enum_item>
+          <enum_item value="11">1200mA</enum_item>
+          <enum_item value="12">1300mA</enum_item>
+          <enum_item value="13">1400mA</enum_item>
+          <enum_item value="14">1500mA</enum_item>
+        </enum>
+        <range min="0" max="14"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SUSBCharger/Set_USB_Charge/In_ChOutputCurrent_Max" type="U8" user_data="IN_CHOUTCURMAX" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">100mA</enum_item>
+          <enum_item value="1">200mA</enum_item>
+          <enum_item value="2">300mA</enum_item>
+          <enum_item value="3">400mA</enum_item>
+          <enum_item value="4">500mA</enum_item>
+          <enum_item value="5">600mA</enum_item>
+          <enum_item value="6">700mA</enum_item>
+          <enum_item value="7">800mA</enum_item>
+          <enum_item value="8">900mA</enum_item>
+          <enum_item value="9">1000mA</enum_item>
+          <enum_item value="10">1100mA</enum_item>
+          <enum_item value="11">1200mA</enum_item>
+          <enum_item value="12">1300mA</enum_item>
+          <enum_item value="13">1400mA</enum_item>
+          <enum_item value="14">1500mA</enum_item>
+        </enum>
+        <range min="0" max="14"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SUSBCharger/Set_USB_Charge/In_ChVoltLevel" type="U8" user_data="IN_CHVOLTLEVEL" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">3.5V</enum_item>
+          <enum_item value="1">3.6V</enum_item>
+          <enum_item value="2">3.7V</enum_item>
+          <enum_item value="3">3.8V</enum_item>
+          <enum_item value="4">3.9V</enum_item>
+          <enum_item value="5">4.0V</enum_item>
+          <enum_item value="6">4.05V</enum_item>
+          <enum_item value="7">4.1V</enum_item>
+          <enum_item value="8">4.15V</enum_item>
+          <enum_item value="9">4.2V</enum_item>
+          <enum_item value="10">4.25V</enum_item>
+          <enum_item value="11">4.3V</enum_item>
+          <enum_item value="12">4.4V</enum_item>
+          <enum_item value="13">4.5V</enum_item>
+          <enum_item value="14">4.6V</enum_item>
+        </enum>
+        <range min="0" max="14"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SUSBCharger/Set_USB_Charge/In_VbusChInputCurrent" type="U8" user_data="IN_CHINCUR" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">50mA</enum_item>
+          <enum_item value="1">98mA</enum_item>
+          <enum_item value="2">193mA</enum_item>
+          <enum_item value="3">290mA</enum_item>
+          <enum_item value="4">380mA</enum_item>
+          <enum_item value="5">450mA</enum_item>
+          <enum_item value="6">500mA</enum_item>
+          <enum_item value="7">600mA</enum_item>
+          <enum_item value="8">700mA</enum_item>
+          <enum_item value="9">800mA</enum_item>
+          <enum_item value="10">900mA</enum_item>
+          <enum_item value="11">1000mA</enum_item>
+          <enum_item value="12">1100mA</enum_item>
+          <enum_item value="13">1300mA</enum_item>
+          <enum_item value="14">1400mA</enum_item>
+          <enum_item value="15">1500mA</enum_item>
+        </enum>
+        <range min="0" max="15"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_SUSBCharger/Set_USB_Charge/In_Auto_Input_Current_Ena" type="U8" user_data="IN_AUTOINCURENA" set="Dth_ActCHARGEParam_Set">
+        <enum>
+          <enum_item value="0">DISABLE</enum_item>
+          <enum_item value="1">ENABLE</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+    <action path="/DTH/CHARGE/Act_ChargeWD_AK/Charge_WD_Auto_Kick" type="STRING" user_data="ACT_CHWDAK" exec="Dth_ActCHARGE_exec">
+      <info>Label Action:Charger WatchDog AutoKick \nCyclic:10\n</info>
+    </action>
+    <action path="/DTH/CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting" type="STRING" user_data="ACT_GMAINCHSETT" set="Dth_ActCHARGEParam_Set" exec="Dth_ActCHARGE_exec">
+      <info>Label Action:Get MAIN Charger Setting\n</info>
+      <argument path="/DTH/CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChOutputCurrent" type="STRING" user_data="OUT_CHOUTCUR" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChOutputCurrent_Max" type="STRING" user_data="OUT_CHOUTCURMAX" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChVoltLevel" type="FLOAT" user_data="OUT_CHVOLTLEVEL" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_MainChInputCurrent" type="STRING" user_data="OUT_CHINCUR" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_Auto_Input_Current_Ena" type="STRING" user_data="OUT_AUTOINCURENA" get="Dth_ActCHARGEParam_Get"/>
+    </action>
+    <action path="/DTH/CHARGE/Act_GUSBChargerSet/Get_USB_Charger_Setting" type="STRING" user_data="ACT_GUSBCHSETT" exec="Dth_ActCHARGE_exec">
+      <info>Label Action:Get USB Charger Setting\n</info>
+      <argument path="/DTH/CHARGE/Act_GUSBChargerSet/Get_USB_Charger_Setting/Out_ChOutputCurrent" type="STRING" user_data="OUT_CHOUTCUR" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_GUSBChargerSet/Get_USB_Charger_Setting/Out_ChOutputCurrent_Max" type="STRING" user_data="OUT_CHOUTCURMAX" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_GUSBChargerSet/Get_USB_Charger_Setting/Out_ChVoltLevel" type="FLOAT" user_data="OUT_CHVOLTLEVEL" get="Dth_ActCHARGEParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/CHARGE/Act_GUSBChargerSet/Get_USB_Charger_Setting/Out_USBChInputCurrent" type="STRING" user_data="OUT_CHINCUR" get="Dth_ActCHARGEParam_Get"/>
+      <argument path="/DTH/CHARGE/Act_GUSBChargerSet/Get_USB_Charger_Setting/Out_Auto_Input_Current_Ena" type="STRING" user_data="OUT_AUTOINCURENA" get="Dth_ActCHARGEParam_Get"/>
+    </action>
+  </module>
+</dthapi>

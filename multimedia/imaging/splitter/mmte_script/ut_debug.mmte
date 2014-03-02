@@ -1,0 +1,30 @@
+alias S_CURRENT_PATH $(IMAGING_PATH)/splitter/mmte_script
+do $(S_CURRENT_PATH)/init.mmte
+
+
+alias S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY OMX_TRUE
+
+
+do $(S_CURRENT_PATH)/network_init_to_loaded.mmte
+
+do $(S_CURRENT_PATH)/network_tunnels_set.mmte
+
+do $(S_CURRENT_PATH)/network_loaded_to_idle.mmte
+
+do $(S_CURRENT_PATH)/network_configure_idle.mmte
+
+do $(S_CURRENT_PATH)/network_idle_to_executing.mmte
+
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+
+do $(S_CURRENT_PATH)/network_executing_to_idle.mmte
+
+mmte_sleep 1000
+
+do $(S_CURRENT_PATH)/network_idle_to_loaded.mmte
+
+do $(S_CURRENT_PATH)/network_clean.mmte

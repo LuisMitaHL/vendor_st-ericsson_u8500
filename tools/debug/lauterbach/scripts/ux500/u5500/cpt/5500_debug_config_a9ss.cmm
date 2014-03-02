@@ -1,0 +1,494 @@
+; #####################################################################
+; # DB5500 debug & Trace script file: 5500_debug_config_a9ss.cmm      #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for Trace32 debug configuration on 5500.
+; Crated by HED/CSP/CPT/ACT on 2010-01-20
+; Contact jingyi-xiaoyan.lu@st.com
+; 2010-09-17: EVB platform support.
+; 2010-10-17: clean-up: removed old Trace versions support. 
+;	      Removed dbgcfg.cmm call and do it inside this script 
+; 2011-02-24: restructure ==> the main body is more readable.
+; 2011-03-15: added "semihost" parameter in dbg_config.
+;	      change the JtagClock to be 10Mhz in case of cJTAG 2pin.
+; 2011-06-17: JTAG frequency tuning.
+;	      ReadSecSts is only called by the first T32 instance.
+
+local &prcmu &connection_mode &cjtag2pin &dbg_thr_reset &pwrdwn &inv_dbg0_permitted &inv_dbg1_permitted &inv_dbg_permitted
+local &idcode &secsts1 &corebase0 &corebase1
+&cur_dir=os.ppd()
+ENTRY &5500_ver &platform &dbg_config &core &debug_stop_the_other_core
+
+;--- handle the parameters
+gosub HandleParameters
+
+;--- Resets all parameters to their original position
+if &cjtag2pin!=1
+	sys.reset
+
+;--- cpu setting
+gosub SetCpuName
+
+;--- jtag clock
+gosub SetJtagClockFreq
+
+;--- read security status	
+if system.usecore()<=1
+	gosub ReadSecSts
+
+;--- configure the JTAG/cJTAG, TAPs topology and the TAP position
+gosub ScanChainCfg
+do "&cur_dir/debugPortCfg" &cjtag2pin
+
+;--- configure the CS components bases addresses
+gosub SetCSBaseAddrs
+
+; --- read the security configuration and the core(s) state(s)
+&cjtag2pin_retry=0
+&in_lab2=0
+&in_lab4=0
+prepare:
+gosub CheckSecurityCoreState
+
+;--- connection
+gosub DoConnection
+
+;--- AMP mode only: force the other core to enter the debug mode
+gosub ForceOtherCoreHalt
+
+; --- allow the debug modify memory domain access permission
+sys.o.dacr on
+
+enddo (0==0)
+
+
+
+
+
+
+
+; =================== Sub Functions ===================
+
+
+lab1:
+   if system.up()
+   	DIALOG.OK "SoC config failed after SYS.UP!"
+   else
+        DIALOG.OK "SYS.UP FAILED"
+   enddo (1==0)
+
+lab2:
+   DIALOG.OK "Read APB memory failed!"
+   enddo (1==0)
+
+lab4:
+	if &idcode==0xDEADBEEF||(&secsts1>>14.&1)==0
+	(
+		dialog.ok "The debug is not available. The JTAG is disabled by the security control logic!"
+		enddo (1==0)
+	)
+	if &prcmu==1&&(&secsts1>>13.&1)==0
+	(
+		dialog.ok "The PRCMU debug is disabled by the security control logic. Cannot include PRCMU-TAP!"
+		enddo (1==0)
+	)
+   	DIALOG.OK "SYS.M.PREPARE failed!"
+	enddo (1==0)
+
+lab5:
+   if system.up()
+	dialog.ok "Connected but error occured during SYS.M.ATTACH!"
+   else
+	DIALOG.OK "SYS.M.ATTACH failed!"
+   enddo (1==0)
+
+ScanChainCfg:
+	;--- configure the JTAG/cJTAG, TAPs topology and the TAP position
+	if system.up()
+		sys.down
+	print "Configuring the scan chain topology for DB5500 ..."
+	&cfg_connect_val=0x3
+	if &prcmu==1
+	       	&cfg_connect_val=&cfg_connect_val&0xC
+	sys.config.cfgconnect &cfg_connect_val
+	print "DONE."
+	return
+	
+HandleParameters:
+	;---- transform all parameter to uppercase
+	&5500_ver=string.upr("&5500_ver")
+	&platform=string.upr("&platform")
+	&core=string.upr("&core")
+	&debug_stop_the_other_core=string.upr("&debug_stop_the_other_core")
+	
+	
+	;---- extract the dbg_config parameters
+	&connection_mode=""
+	&cjtag2pin=0
+	&prcmu=0
+	&dbg_thr_reset=0
+	&pwrdwn=0
+	&semihost=0
+	&save_dbg_config="&dbg_config"
+	while string.len("&dbg_config")!=0
+	(
+		&plus_idx=STRING.SCAN("&dbg_config","+",0)
+		if &plus_idx==0
+		(
+			print "init_5500.cmm: Invalid parameter: &dbg_config !"
+			enddo (1==0)
+		)
+		if &plus_idx==-1 // there is not any "+", i.e. &dbg_config contains only 1 word
+			&plus_idx=string.len("&dbg_config")
+	
+		// extract the first parameter
+		&temp=string.mid("&dbg_config",0,&plus_idx)
+		&param=string.lwr("&temp")
+	
+		// check the extraited paramter's validity
+		if "&param"!="attach"&&"&param"!="up"&&"&param"!="cjtag2pin"&&"&param"!="prcmu"&&"&param"!="dbg_thr_reset"&&"&param"!="pwrdwn"&&"&param"!="semihost"
+		(
+			print "init_5500.cmm: Invalid configuration parameter: &temp !"
+			enddo (1==0)
+		)
+	
+		// if dbg_config contains several "up" or "attach" at a time, the last "up" or "attach" covers the previous ones.
+		if "&param"=="up"||"&param"=="attach"
+			&connection_mode="&param"
+		else
+			&&(param)=1
+	
+	
+		// cut off the first parameter and the "+"
+		&dbg_config=string.cut("&dbg_config",&plus_idx+1)
+	)
+	&dbg_config="&save_dbg_config"
+	if "&connection_mode"==""
+	(
+		print "init_5500.cmm: ""up"" or ""attach"" is needed by the parameter ""dbg_config""!"
+		enddo (1==0)
+	)
+	return
+
+SetCpuName:
+	if &smp==1
+		sys.cpu DB5500
+	else if "&core"=="CPU0"
+		sys.cpu DB5500APE-CORE0
+	else //CPU1
+		sys.cpu DB5500APE-CORE1
+	return
+
+SetJtagClockFreq:
+	if "&platform"=="PALLADIUM"
+		sys.jc 100khz
+	else if "&platform"=="EVB"
+		sys.jc 10Mhz
+	else
+	(
+		if analyzer()
+			sys.jc 5Mhz
+		else if &cjtag2pin==1
+			sys.jc ctck 20Mhz
+		else
+		(
+			if combiprobe()
+				sys.jc 35Mhz
+			else
+				sys.jc ctck 35Mhz
+		)
+	)
+	return
+
+CheckSecurityCoreState:
+	&inv_dbg0_permitted=1.
+	&inv_dbg1_permitted=1.
+	&inv_dbg_permitted=1.
+	if ("&platform"=="B5500"||"&platform"=="S5500"||"&platform"=="EVB")&&&dbg_thr_reset!=1
+	(
+		//////////////////////////////////////////////////////////////////
+		// increase the value below if the boot needs bigger latency. 
+		//////////////////////////////////////////////////////////////////
+		&MAX_LOOP_TIMES=60000.
+		
+		on ERROR goto lab4
+		sys.o.resbreak off
+		sys.o.enreset on
+		sys.o.waitreset on
+		sys.o.pwrcheck off
+		// only the first instance drives the RESETn
+		if system.usecore()>1||"&connection_mode"=="attach"||&in_lab2==1||&in_lab4==1
+		(
+			sys.o.enreset off
+			sys.o.waitreset off
+		)
+		sys.mode.prepare
+		
+		if &in_lab2==1
+			&in_lab2=0
+		if &in_lab4==1
+			&in_lab4=0
+		
+		on ERROR goto lab2
+		&inv_dbg0_permitted=0.
+		&inv_dbg1_permitted=0.
+		&inv_dbg_permitted=0.
+		&ns_state0=d.l(EAPB:&corebase0+0x88)>>18.&1
+		&ns_state1=d.l(EAPB:&corebase1+0x88)>>18.&1
+		&print_security_state0=""
+		&print_security_state1=""
+		
+		; 1) --- determine the remap i.e. bypass romcode or not
+		//&loop=0
+		//&last_ns_state0=&ns_state0
+		//while &loop<&MAX_LOOP_TIMES
+		//(
+		//&ns_state0=d.l(APB:&corebase0+0x88)>>18.&1
+		//if &last_ns_state0!=&ns_state0
+		//    print "CPU0 ns_state changed last one is ", &last_ns_state0, "current one is ", &ns_state0
+		//&last_ns_state0=&ns_state0
+		//&loop=&loop+1
+		//)
+		
+		&remap=0
+		if &ns_state0==0 
+		(
+			print "Detected the board boots from FSMC."
+			&remap=1
+		)
+		else
+		(
+			print "Detected the board boots from ROMCODE."
+			&remap=0
+		)
+		
+		; 2) --- determine whether the invasive debug is permitted
+		&s_inv0=d.l(EAPB:&corebase0+0xFB8)>>4&1
+		&s_inv1=d.l(EAPB:&corebase1+0xFB8)>>4&1
+		if &s_inv0==1&&&s_inv1==1
+		(
+			print "Detected UNLOCKED chip."
+			print "Invasive debugging is ENABLED."
+			&inv_dbg_permitted=1
+			&inv_dbg0_permitted=1.
+			&inv_dbg1_permitted=1.
+		)
+		else
+		(
+			print "Detected LOCKED chip"
+			if &remap==1  // bypass romcode
+			(
+				print "Invasive debugging is DISABLED! Check the remap setting on your board!"
+				enddo (1==0)
+			)
+		
+			; with romcode
+			; we expect that the NS invasive debug is opened by romcode
+			&loop=0
+			while &inv_dbg_permitted==0&&&loop<10000.
+			(
+				&dbgen0=d.l(EAPB:&corebase0+0xFB8)&1
+				&dbgen1=d.l(EAPB:&corebase1+0xFB8)&1
+				
+				if &smp==1.
+					&inv_dbg_permitted=&dbgen0&&dbgen1
+				else if string.upr("&core")=="CPU0"
+					&inv_dbg_permitted=&dbgen0
+				else
+					&inv_dbg_permitted=&dbgen1
+				
+				&loop=&loop+1
+			)
+			
+			print "After detecting debug permission (", %decimal &loop, " times):"
+			if &inv_dbg_permitted==0
+			(
+			  print "Invasive debugging is DISABLED. Consequently you can not halt the core or change the current core state."
+			  if &remap==0
+				print "Your board is possibly NOT flashed!!!"
+			)
+			else
+			  print "Invasive debugging is ENABLED in non-secure mode."
+		)
+		
+		; 3) --- determine the end of the boot phase by the CPU1 state (non-secure is expected without normal_appli)
+		; !!!! whether the board is flashed or not, we detect the CPU1 state to non-secure, 
+		; !!!! which penalize the case of non-flashed board booted with romcode
+		if &remap==0&&&inv_dbg_permitted==1
+		(
+			&loop=0
+		 	if "&connection_mode"=="up"
+			(
+				print "Waiting the end of boot (can be up to 30 seconds) ......"
+				while &ns_state1==0&&&loop<&MAX_LOOP_TIMES
+				(
+					&ns_state1=d.l(EAPB:&corebase1+0x88)>>18.&1
+					&loop=&loop+1
+				)
+			)
+			else  //attach
+				&ns_state1=d.l(EAPB:&corebase1+0x88)>>18.&1
+			&ns_state0=d.l(EAPB:&corebase0+0x88)>>18.&1	
+		
+		 	if "&connection_mode"=="up"		
+				print "After detecting CPU1 state (", %decimal &loop, " times):"
+			if &ns_state0==0
+				&print_security_state0="SECURE"
+			else
+				&print_security_state0="NON-SECURE"
+			if &ns_state1==0
+				&print_security_state1="SECURE"
+			else
+				&print_security_state1="NON-SECURE"
+			
+			if string.upr("&core")=="CPU0"||&smp==1
+			   print "CPU0 is currently in &print_security_state0 mode."
+			if string.upr("&core")=="CPU1"||&smp==1
+			   print "CPU1 is currently in &print_security_state1 mode."
+		)
+	)
+	
+	on ERROR NOTHING
+	return
+
+SetCSBaseAddrs:
+	&ctibase0=0x801CC000
+	&ctibase1=0x801CD000
+	&corebase0=0x801C8000
+	&corebase1=0x801CA000
+	if &smp==1
+		sys.config.ctibase APB:&ctibase0 &ctibase1
+	else if string.upr("&core")=="CPU0"
+		sys.config.ctibase APB:&ctibase0
+	else
+		sys.config.ctibase APB:&ctibase1
+	return
+
+
+DoConnection:
+	sys.o.pwrcheck on
+	if &dbg_thr_reset==1  // debug through reset use case
+	(
+		sys.o.resbreak on
+		sys.o.enreset on
+		sys.o.waitreset on
+	)
+	else
+	(
+		sys.o.enreset off
+		sys.o.resBreak off
+		sys.o.waitReset off
+	)
+	
+	if &pwrdwn==1
+	(
+		print "Warning: pwrdwn to be restored."
+		//sys.o.pwrdwn on
+	)
+	else
+		sys.o.pwrdwn off
+	
+	if "&connection_mode"=="up"
+	(
+		if system.up()
+			sys.down
+		on ERROR goto lab1
+		if &inv_dbg_permitted==1
+		(
+			sys.up
+			if system.up()
+				print "SYS.UP OK!"
+		)
+		else
+		(
+			print "Attach to the target core ..."
+			sys.m.attach
+			if system.up()
+				print "SYS.M.ATTACH OK!"
+		)
+		on ERROR NOTHING
+	)
+	else
+	(
+		if system.up()
+			sys.down
+		on ERROR goto lab5
+		sys.m.attach
+		if system.up()
+			print "SYS.M.ATTACH OK!"
+		on ERROR NOTHING
+	)
+	if &dbg_thr_reset==1  // debug through reset use case
+	(
+		sys.o.resbreak off
+		sys.o.enreset off
+		sys.o.waitreset off
+	)
+	return
+
+ForceOtherCoreHalt:
+	if &inv_dbg_permitted==1&&&smp==0&&string.upr("&debug_stop_the_other_core")=="Y"&&"&connection_mode"=="up"
+	(
+		&dscr_addr=&corebase1+0x88
+		&drcr_addr=&corebase1+0x90
+		&the_other_core="CPU1"
+		&the_other_inv_dbg_permitted=&inv_dbg1_permitted
+		if  string.upr("&core")=="CPU1"
+		(
+		  &dscr_addr=&corebase0+0x88
+		  &drcr_addr=&corebase0+0x90
+		  &the_other_core="CPU0"
+		  &the_other_inv_dbg_permitted=&inv_dbg0_permitted
+		)
+	
+		if &the_other_inv_dbg_permitted==1
+		(
+		  data.set APB:&drcr_addr %long d.l(APB:&drcr_addr)|0x1
+		  &loop=1
+		  while (d.l(APB:&dscr_addr)&0x1)!=0x1&&&loop<100.
+		  (
+		   &loop=&loop+1
+		  )
+		  if &loop>=100.
+		  (
+		   print "Warning: Failed to make the &the_other_core enter in debug state!"
+		  )
+		  //print "number of polling: ", &loop  //print "number of polling: ", &loop
+		)
+	)
+	return
+
+
+ReadSecSts:
+	&idcode=0
+	&secsts1=0
+	jtag.lock
+	jtag.pin enable
+	jtag.pin NTRST 0
+ 	wait 0.1s
+	jtag.pin NTRST 1
+	; goto Select-DR
+	jtag.shifttms 1 1 1 1 1 1 0 0 1 
+	; read IDCODE	
+	jtag.shifttms 0 0
+	jtag.shifttdi 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+	&idcodelow=jtag.shift()
+	jtag.shiftreg 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+	&idcodehigh=jtag.shift()
+	&idcode=&idcodehigh<<16.|&idcodelow
+	jtag.shifttms 1 1
+	; shift in IR=CTRL
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 0 1 0 1 1 1
+	jtag.shifttms 1 0 0 1 0 0
+	; shift in DR=0b0100
+	jtag.shiftreg 0 0 1 0
+	jtag.shifttms 1 1 0 0
+	; shift out the value
+	jtag.shiftreg 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+	&secsts1=jtag.shift()
+	jtag.shifttms 1 1
+	jtag.pin disable
+	jtag.unlock
+	//print "IDCODE = 0x",%HEX &idcode," secsts1 = 0x",%HEX &secsts1
+	return	

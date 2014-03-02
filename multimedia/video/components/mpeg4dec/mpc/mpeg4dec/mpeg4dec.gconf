@@ -1,0 +1,62 @@
+//
+//       Configuration file for      mpeg4dec
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite mpeg4dec.mpc.mpeg4dec singleton
+{
+//singleton
+
+// Sub components
+contains mpeg4dec.mpc.algo                      as  cAlgo
+
+// Provided interfaces
+provides mpeg4dec.mpc.api.algo                  as iAlgo
+provides mpeg4dec.mpc.api.update_algo 		as iUpdateAlgo
+
+provides resource_manager.api.signal                  as iSignal
+
+//
+// Required interfaces to a mpeg4_decoder_ddep component
+//requires mpeg4dec.mpc.api.end_algo              as iResultMpeg4Decoder0
+//requires mpeg4dec.mpc.api.end_algo              as iResultMpeg4Decoder1
+requires resource_manager.api.buffer                  as iBuffer
+requires resource_manager.api.mtf                     as iMtf
+requires resource_manager.api.interrupt				as iInterrupt
+requires resource_manager.api.tcm_mem_alloc					as iTcmAlloc
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo                                      to cAlgo.iAlgo
+binds this.iUpdateAlgo				to cAlgo.iUpdateAlgo
+binds this.iSignal		                  to cAlgo.iSignal
+binds cAlgo.iInterrupt								to this.iInterrupt
+
+
+//binds cAlgo.iResultMpeg4Decoder0                      to this.iResultMpeg4Decoder0
+//binds cAlgo.iResultMpeg4Decoder1                      to this.iResultMpeg4Decoder1
+binds cAlgo.iBuffer                                   to this.iBuffer
+binds cAlgo.iMtf                                      to this.iMtf
+binds cAlgo.iInterrupt                                      to this.iInterrupt
+binds cAlgo.iTcmAlloc								to this.iTcmAlloc
+//binds cAlgo.iAlgo1R to cAlgo.iAlgo1P asynchronous fifo=2
+
+
+// Binds between sub components
+// n/a
+
+// 
+// Additionnal informations : 
+//      -----------------
+//      - Version numbers :
+// Current revision : SVA_FW_NMF_VDC_MPEG4_3.0.0
+property mpeg4_decoder_major    = 3
+property mpeg4_decoder_minor    = 0
+property mpeg4_decoder_revision = 0
+
+//    ----------------------------------------
+option stack = 512
+
+}

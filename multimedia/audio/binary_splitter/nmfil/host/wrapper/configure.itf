@@ -1,0 +1,21 @@
+#include <bool.idt>
+#include <samplefreq.idt>
+
+typedef enum {
+  PCMPROCESSING_MODE_INPLACE_PUSH,
+  PCMPROCESSING_MODE_INPLACE_PULL,
+  PCMPROCESSING_MODE_NOT_INPLACE,
+  PCMPROCESSING_MODE_COUNT // Last value
+} t_pcmprocessing_mode;
+
+typedef struct {
+  t_pcmprocessing_mode  mode;
+  t_uint32              block_size;
+  t_sample_freq         out_freq;
+  t_uint16              out_nof_channels;
+  t_uint16              out_nof_bits_per_sample;
+} t_pcmprocessing_config_host;
+
+void setParameter(t_pcmprocessing_config_host config);
+void setSynchronizedOutputPort(t_uint16 portIdx, BOOL bIsSynchronized);
+

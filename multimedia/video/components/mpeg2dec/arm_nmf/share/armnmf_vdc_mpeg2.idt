@@ -1,0 +1,157 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#ifndef _ARMNMF_VDC_MPEG2_IDT_
+#define _ARMNMF_VDC_MPEG2_IDT_
+
+enum armnmf_error{
+PARSED_SCAN=0,
+PARSING_FINISHED,
+PARSING_ABORTED,
+FIFO_FULL,
+FLUSH
+};
+
+typedef enum {
+	DMPEG2_NO_ERROR,
+	DMPEG2_MALLOC_ERROR
+}t_dmpeg2ErrorCode;
+
+typedef struct 
+{
+    t_uint8 *addr;   /**< current read byte address */
+    t_uint8 *start;  /**< address of the first byte of the buffer */
+    t_uint8 *end;    /**< address of the last byte of the buffer */
+    t_uint16 os;     /**< bit offset inside the current byte */
+    t_uint16 inuse;  /**< marker to know if buffer is currenlty under processing by HW or/and by SW */
+    t_uint32 reserved;
+    void *nal_boundaries;
+    void *next; 
+} t_bit_buffer;
+
+
+/** \brief strucure used to store mp2 bitstream parsing results    */
+typedef struct
+{
+/* set when decoding a MPEG2 stream */
+    t_uint16                      MPEG2_Flag;
+
+/* Sequence extension Header */
+    t_uint16                      profile;
+    t_uint16                      level;
+    t_uint16                      progressive_sequence;
+    t_uint16                      chroma_format;
+
+/* Sequence Header */
+    t_uint16                      horizontal_size;
+    t_uint16                      vertical_size;
+    t_uint16                      mb_width;
+    t_uint16                      mb_height;
+    t_uint16                      aspect_ratio_information;
+    t_uint16                      frame_rate_code;
+    t_uint16                      bit_rate_value_h;
+    t_uint16                      bit_rate_value_l;
+    t_uint32                      bit_rate;
+    t_uint32                      frame_rate;
+    t_uint16                      low_delay;
+    t_uint32                      vbv_buffer_size;
+    t_uint16                      constrained_parameters_flag;
+    t_uint16                      load_intra_quantizer_matrix;
+    t_uint16                      load_non_intra_quantizer_matrix;
+    t_uint16                      coded_intra_quantizer_matrix[64];
+    t_uint16                      coded_non_intra_quantizer_matrix[64];
+
+/* Group Of Pictures Header */
+    t_uint16                      gop_flag;
+    t_uint16                      hour;
+    t_uint16                      minute;
+    t_uint16                      seconds;
+    t_uint16                      frame;
+    t_uint16                      closed_gop;
+    t_uint16                      broken_link;
+
+/* Picture Header */
+    t_uint16                      pict_scal;    /* --- picture spatial scalable extension --- */
+    t_uint16                      temporal_reference;
+    t_uint16                      picture_coding_type;
+    t_uint16                      last_picture_coding_type;
+    t_uint16                      vbv_delay;
+    t_uint16                      full_pel_forward_vector;
+    t_uint16                      forward_f_code;
+    t_uint16                      full_pel_backward_vector;
+    t_uint16                      backward_f_code;
+
+/* slice_header */
+    t_uint16                      scalable_mode;    /* --- sequence scalable extension --- */
+    t_uint16                      q_scale_type;
+    t_uint16                      priority_breakpoint;
+    t_uint16                      quantizer_scale;
+    t_uint16                      intra_slice;
+
+/* sequence_display_extension */
+    t_uint16                      video_format;
+    t_uint16                      color_primaries;
+    t_uint16                      transfer_characteristics;
+    t_uint16                      matrix_coefficients;
+    t_uint16                      display_horizontal_size;
+    t_uint16                      display_vertical_size;
+
+/* sequence_scalable_extension */
+    t_uint16                      layer_id;
+    t_uint16                      lower_layer_prediction_horizontal_size;
+    t_uint16                      lower_layer_prediction_vertical_size;
+    t_uint16                      horizontal_subsampling_factor_m;
+    t_uint16                      horizontal_subsampling_factor_n;
+    t_uint16                      vertical_subsampling_factor_m;
+    t_uint16                      vertical_subsampling_factor_n;
+
+/* --- ISO/IEC 13818-2 section 6.2.3.3: picture_display_extension header ---- */
+    t_uint16                      frame_center_horizontal_offset[3];
+    t_uint16                      frame_center_vertical_offset[3];
+
+/* picture_coding_extension */
+    t_uint16                      f_code[2][2];
+    t_uint16                      intra_dc_precision;
+    t_uint16                      picture_structure;
+    t_uint16                      top_field_first;
+    t_uint16                      frame_pred_frame_dct;
+    t_uint16                      concealment_motion_vectors;
+    t_uint16                      intra_vlc_format;
+    t_uint16                      repeat_first_field;
+    t_uint16                      chroma_420_type;
+    t_uint16                      progressive_frame;
+    t_uint16                      composite_display_flag;
+    t_uint16                      v_axis;
+    t_uint16                      field_sequence;
+    t_uint16                      sub_carrier;
+    t_uint16                      burst_amplitude;
+    t_uint16                      sub_carrier_phase;
+    t_uint16                      alternate_scan;
+
+/* --- ISO/IEC 13818-2 section 6.2.3.5: picture_spatial_scalable_extension -- */
+    t_uint16                      lower_layer_temporal_reference;
+    t_uint16                      lower_layer_horizontal_offset;
+    t_uint16                      lower_layer_vertical_offset;
+    t_uint16                      spatial_temporal_weight_code_table_index;
+    t_uint16                      lower_layer_progressive_frame;
+    t_uint16                      lower_layer_deinterlaced_field_select;
+
+/* --- ISO/IEC 13818-2 section 6.2.3.6: copyright_extension header ---------- */
+    t_uint16                      copyright_flag;
+    t_uint16                      copyright_identifier;
+    t_uint16                      original_or_copy;
+    t_uint16                      copyright_number_1_h;
+    t_uint16                      copyright_number_1_l;
+    t_uint16                      copyright_number_2_h;
+    t_uint16                      copyright_number_2_l;
+    t_uint16                      copyright_number_3_h;
+    t_uint16                      copyright_number_3_l;
+
+} ts_mp2;
+
+typedef ts_mp2 *tps_mp2;
+
+#endif

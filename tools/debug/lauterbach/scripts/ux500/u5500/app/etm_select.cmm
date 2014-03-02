@@ -1,0 +1,289 @@
+;------------------------------------------------------------
+; etm_select.cmm
+;------------------------------------------------------------
+; Create dialog for selectionof cores that should be traced
+;
+; 090507 - KM Initial version
+;-----------------------------------------------------------
+
+dialog
+(&
+	header "Etm Selection"
+
+	pos 0. 0. 19. 12.
+	box "ETM/DataTrace"
+
+	pos 1. 1. 6. 1.
+	text "En/Dis"
+
+	pos 8. 1. 10. 1.
+	text "Datatrace"
+	pos 1. 2. 6. 1.
+App:	checkbox "APP " "gosub EtmApp"
+	pos 1. 4. 6. 1.
+Acc:	checkbox "ACC " "gosub EtmAcc"	
+	pos 8. 4. 10. 1.
+AccDataTrace: 	pulldown "OFF,ON,ReadAddress,WriteAddress,Address,ReadData,WriteData,Data,Read,Write" "gosub EtmDataAcc"
+	pos 1. 6. 6. 1.
+Ceva:	checkbox "Ceva " "gosub EtmCeva"
+	pos 8. 6. 10. 1.
+CevaDataTrace: 	pulldown "OFF,ON,ReadAddress,WriteAddress,Address,ReadData,WriteData,Data,Read,Write" "gosub EtmDataCeva"
+	pos 1. 8. 5. 1.
+	text "PortSize:"
+	pos 8. 8. 6. 1.
+EtmSize:	pulldown "8.,16." "gosub EtmPortSize"
+	pos 1. 10. 5. 1.
+Button "Save" "gosub ButtonSave"
+	pos 7. 10. 9. 1.
+Button "Save and Close" "gosub ButtonSaveClose"
+	CLOSE "goto winclose"
+)
+
+;What cores are we debugging?
+
+if INTERCOM.PING(&icAcc)
+	&AccStarted="True"
+else
+	&AccStarted="False"	
+
+if INTERCOM.PING(&icApp)
+	&AppStarted="True"
+else
+	&Acpptarted="False"
+
+if INTERCOM.PING(&icCeva)
+	&CevaStarted="True"
+else
+	&CevaStarted="False"
+
+
+gosub InitVariables
+gosub InitDialog
+
+stop
+
+
+winclose:
+	dialog.end
+	enddo
+
+InitVariables:
+	if "&AccDataTrace"==""
+	(
+		&AccDataTrace="OFF" 
+	)
+	
+	if "&CevaDataTrace"==""
+	(
+		&CevaDataTrace="OFF"
+	)
+	
+
+	if "&EtmApp"==""
+		&EtmApp="True"
+		
+
+	if "&EtmAcc"==""
+	(
+		&EtmAcc="True"
+	
+	)
+	if "&EtmCeva"==""
+	(
+		&EtmCeva="True"
+
+	)
+	
+	if "&EtmPortSize"==""
+		&EtmPortSize="8."
+	
+	if ("&AccStarted"=="True")
+	(
+		intercom.execute &icAcc do etm_update_variables &EtmAcc &AccDataTrace &EtmPortSize
+		wait 1s
+	)
+	if ("&CevaStarted"=="True")
+	(
+		intercom.execute &icCeva do etm_update_variables &EtmCeva &CevaDataTrace &EtmPortSize
+		wait 1s
+	)
+	
+	
+	
+	Return
+
+InitDialog:
+	if "&EtmApp"=="True"
+		dialog.set App "ON"
+	else 
+		dialog.set App "OFF"
+		
+	if "&EtmAcc"=="True"
+		dialog.set Acc "ON"
+	else 
+		dialog.set Acc "OFF"
+
+	if "&EtmCeva"=="True"
+		dialog.set Ceva "ON"
+	else 
+		dialog.set Ceva "OFF"
+	
+	dialog.set AccDataTrace "&AccDataTrace"
+	dialog.set CevaDataTrace "&CevaDataTrace"
+	dialog.set EtmSize "&EtmPortSize"
+	Return
+
+EtmApp:
+	if dialog.boolean(App)
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp etm.on		
+			wait 1s
+		)
+		&EtmApp="True"
+	)
+	else
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp etm.off		
+			wait 1s
+		)
+		&EtmApp="False"
+	)
+	Return
+
+EtmAcc:
+	if dialog.boolean(Acc)
+	(
+		if ("&AccStarted"=="True")
+		(
+			intercom.execute &icAcc etm.on			
+			intercom.execute &icAcc do etm_update_variables True &AccDataTrace
+			wait 1s
+		)
+		&EtmAcc="True"
+	)
+	else
+	(
+		if ("&AccStarted"=="True")
+		(
+			intercom.execute &icAcc etm.off
+			intercom.execute &icAcc do etm_update_variables False &AccDataTrace		
+			wait 1s
+		)
+		&EtmAcc="False"
+	)
+	Return
+
+EtmCeva:
+	if dialog.boolean(Ceva)
+	(
+		if ("&CevaStarted"=="True")
+		(
+			intercom.evaluate &icCeva system.up()
+			if EVAL()!=0
+				intercom.execute &icCeva etm.on
+			wait 1s
+			intercom.execute &icCeva do etm_update_variables True &CevaDataTrace			
+			wait 1s
+		)
+		&EtmCeva="True"
+	)
+	else
+	(
+		if ("&CevaStarted"=="True")
+		(
+			intercom.evaluate &icCeva system.up()
+			if EVAL()!=0
+				intercom.execute &icCeva etm.off	
+			wait 1s
+			intercom.execute &icCeva do etm_update_variables False &CevaDataTrace	
+			wait 1s
+		)
+		&EtmCeva="False"
+	)
+	Return
+
+
+EtmDataAcc:
+	&AccDataTrace=dialog.string(AccDataTrace)
+	if ("&AccStarted"=="True")
+		(			
+			intercom.execute &icAcc do etm_update_variables &EtmAcc &AccDataTrace
+			wait 1s
+			intercom.execute &icAcc etm.datatrace &AccDataTrace
+		)
+
+	Return
+
+EtmDataCeva:
+	&CevaDataTrace=dialog.string(CevaDataTrace)
+	if ("&CevaStarted"=="True")
+		(			
+			intercom.execute &icCeva do etm_update_variables &EtmCeva &CevaDataTrace
+			wait 1s
+			intercom.evaluate &icCeva system.up()
+			if EVAL()!=0
+				intercom.execute &icCeva etm.datatrace &CevaDataTrace
+
+		)
+
+	Return
+
+EtmPortSize:
+	if ("&AppStarted"=="True")
+	(
+		&EtmPortSize=dialog.string(EtmSize)
+		intercom.execute &icApp etm.portsize &EtmPortSize
+	)
+	if ("&AccStarted"=="True")
+	(
+		intercom.execute &icAcc do etm_update_variables &EtmAcc &AccDataTrace &EtmPortSize
+		intercom.execute &icAcc etm.portsize &EtmPortSize
+	)
+	if ("&CevaStarted"=="True")
+	(
+		intercom.execute &icCeva do etm_update_variables &EtmCeva &CevaDataTrace &EtmPortSize
+		wait 1s
+		intercom.evaluate &icCeva system.up()
+		if EVAL()!=0
+			intercom.execute &icCeva etm.portsize &EtmPortSize
+	)
+	
+	Return
+
+ButtonSave:
+	if ("&AccStarted"=="True")
+	(
+		intercom.execute &icAcc do writesettings
+		intercom.wait &icAcc
+		wait 1s
+	)
+	if ("&CevaStarted"=="True")
+	(
+		intercom.execute &icCeva do writesettings
+		intercom.wait &icCeva
+		wait 1s
+	)
+	do writesettings.cmm
+	RETURN
+ButtonSaveClose:
+	if ("&AccStarted"=="True")
+	(
+		intercom.execute &icAcc do writesettings
+		intercom.wait &icAcc
+		wait 1s
+	)
+	if ("&CevaStarted"=="True")
+	(
+		intercom.execute &icCeva do writesettings
+		intercom.wait &icCeva
+		wait 1s
+	)
+	do writesettings.cmm
+	goto winclose
+
+
+

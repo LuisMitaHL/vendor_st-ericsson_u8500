@@ -1,0 +1,60 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+/*F(*************************************************************************** 
+* File name  : lsimfta.hit
+* Module     : LSIMFTA
+*----------------------------------------------------------------------------* 
+*----------------------------------------------------------------------------* 
+*                             DESCRIPTION
+*  This file contains the internal structures used by the module.
+*
+* 
+*----------------------------------------------------------------------------* 
+***************************************************************************)F*/
+/* == HISTORY ===============================================================*/
+/*  Name     |    Date       |     Action                                    */
+/*---------------------------------------------------------------------------*/ 
+/*  Raghav   | 02-MAR-2011   | Creation                                      */
+/*---------------------------------------------------------------------------*/
+
+/**
+\file LSIMFTA.hit
+*/
+
+#ifndef LSIMFTA_HIT
+#define LSIMFTA_HIT
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsim_FTAInfo
+    \brief  GPS Reference Time and Cell time information
+    \received in REF_TIME message.
+*/
+
+
+typedef struct
+{
+   t_lsimcp_RefTime v_RefTime;         /*A-GPS Control Plane Refrence Time Data.*/
+   u_lsimcp_CellTime   v_CellTime;    /*A-GPS Control Plane Cell Time Data.*/
+   t_lsimcp_CellTimeType v_CellType;   /* Provides RAT information refer t_lsimcp_CellTimeType*/
+}t_lsim_FTAInfo;
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsim_PulseInfo
+    \brief Cell time information received from the FTA Pulse confirmation
+*/
+typedef struct
+{
+   t_lsimcp_CellTimeType v_CellType;  /* Provides RAT information refer t_lsimcp_CellTimeType*/
+   uint32_t  v_PulseTimetimestamp;    /*Time at which the the information in v_PulseTime was received*/
+   u_lsimcp_CellTime   v_PulseTime;   /*A-GPS Control Plane Cell Time Data.*/
+   
+}t_lsim_PulseInfo;
+
+
+#endif /* LSIMFTA_HIT */
+

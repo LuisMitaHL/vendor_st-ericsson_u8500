@@ -1,0 +1,560 @@
+/*!
+	\mainpage Audio services : User Guide
+	\section introduction Introduction
+		This document aims to give information on audio services users. \n
+		It focuses on ALSA library usage and aimed to answer to the following problematic :\n
+		- What are the functionalities offered		
+		<p>
+	\section doc_structure The document is structured like this
+		- \subpage alsa_snd_card
+		\n Aiming to present ALSA sound card capabilities
+		- \subpage Interface_for_console
+		\n Aiming to explain how to use sound card using consol or scripts
+		- \subpage C_Interface
+		\n Aiming to provide interface in c language to use sound card
+
+@section GeneralInfo Document information
+
+<TABLE  BORDER=1 CELLSPACING=1>
+    <TR BGCOLOR="#C0C0C0">
+      <TH><B>Info</TH><TH>Content</B></TH>
+    </TR>
+    <TR><TD><B>	Project Name		</B></TD>      <TD>	Trail			</TD></TR>
+    <TR><TD><B>	Project Id		</B></TD>      <TD>	VYp1160a				</TD></TR>
+    <TR><TD><B>	Author			</B></TD>      <TD>	Stephane Danieau/ Arnaud  Pouliquen	</TD></TR>    
+    <TR><TD><B>	Department		</B></TD>      <TD>	BL CS - MST SySol, Le Mans	</TD></TR>
+    <TR><TD><B>	Doc. Reference       	</B></TD>      <TD>     VYn_ps29393		     </TD></TR>
+    <TR><TD><B>	Doc. Version         	</B></TD>      <TD>     1.1		     </TD></TR>
+    <TR><TD><B>	Status			</B></TD>      <TD>	proposed 3		</TD></TR>
+    <TR><TD><B>	Date			</B></TD>      <TD>	jan 2010	</TD></TR>    
+</TABLE>
+
+
+@section references References
+
+<TABLE  BORDER=1 CELLSPACING=1>
+    <TR BGCOLOR="#C0C0C0">
+      <TH><B>Reference</TH><TH>Id.</TH><TH>Document name</TH><TH>Date Issued</TH>
+      <TH>Status</TH><TH>Vers.</B></TH>
+    </TR>
+    <TR>
+      <TD></TD>
+      <TD></TD>
+      <TD>  </TD>
+      <TD> </TD>
+      <TD></TD>
+      <TD></TD>
+    </TR>
+</TABLE>
+
+
+@section  history Revision history
+<TABLE  BORDER=1 CELLSPACING=1>
+    <TR BGCOLOR="#C0C0C0">
+      <TH><B>Version</TH><TH>Date</TH><TH>Description/Status</TH><TH>Writer</B></TH>
+    </TR>
+    <TR>
+      <TD>1.0</TD>
+      <TD>March  2009</TD>
+      <TD>      	 Creation
+      </TD>
+      <TD>Stephane Danieau/ Arnaud  Pouliquen</TD>
+    </TR>
+    <TR>
+      <TD>1.1 p1</TD>
+      <TD>April  2009</TD>
+      <TD>      	 update for alignement with   <A HREF = "https://codex.cro.st.com/plugins/docman/?group_id=1202&action=show&id=80270" > Mont Blanc ALSA Driver Specifications  v0.5 </A>
+      </TD>      <TD>Arnaud  Pouliquen</TD>
+    </TR>
+    <TR>
+      <TD>1.1 p2</TD>
+      <TD>May  2009</TD>
+      <TD>      	 Add st4500 loop and speech call services
+      </TD>      <TD>Arnaud  Pouliquen</TD>
+    </TR>
+    <TR>
+      <TD>1.1 p3</TD>
+      <TD>Jan  2010</TD>
+      <TD>
+      - update for alignement with   <A HREF = "https://codex.cro.st.com/file/showfiles.php?group_id=1202" > Mont Blanc ALSA Driver Specifications forom DV ALSA W949 </A>
+      - Add services to convert 16 or 32 bits wave file into 20 bits wav file
+      - Add services to convert 16 or 32 bits wave file into 20 bits wav file
+      </TD>      
+      <TD>Arnaud  Pouliquen</TD>
+    </TR>
+
+*/
+
+/*! \page Interface_for_console command-line interface
+
+This acces mode allows user to pilot alsa sound card using standard ALSA 
+application. 
+This acces type should be used in scope of script devellopement or console used for debug.
+<p>	
+On User space side, three standard applications allow to manage the sound card : 
+- \b aplay : allowing to manage PCM playback (To get details of aplay interface, refer to <A HREF = "http://man-wiki.net/index.php/1:aplay " > Description of "aplay" usage </A>)
+- \b arecord : allowing to record PCM data  (To get details of arecord interface, refer to <A HREF = "http://man-wiki.net/index.php/1:arecord " > Description of "arecord" usage </A>)
+- \b amixer : allowing to update ALSA controls defined below.(To get more information about ALSA controls, refer to \ref alsa_snd_card) (to get details of arecord interface, refer to <A HREF = "http://man-wiki.net/index.php/1:amixer " > Description of "amixer" usage </A>)
+
+<p>	
+
+ 	\section command_line_sct  the following pages describe services available using examples:
+ 	Notices that Devices and associated controls are defined in  <A HREF = "https://codex.cro.st.com/plugins/docman/?group_id=1202&action=show&id=80270" > Mont Blanc ALSA Driver Specifications </A>
+
+		- \subpage playback_mngt
+		\n Aiming to explain how to launch and configure a PCM Payback
+		- \subpage capture_mngt
+		\n Aiming to explain how to launch and configure a PCM record
+		- \subpage control_mngt
+		\n Aiming to explain how to reconfigure sound card during playback or capture
+		- \subpage sccall_mngt
+		\n Aiming to explain how to start and stop a speech call (audio part)
+	
+*/
+
+
+
+/*! \page alsa_snd_card ALSA Sound Card
+
+Following diagram explains the role of ALSA library and ALSA driver in MontBlanc Architecture.
+<p>
+\image html ALSA_Architecture.JPG
+<p>	
+ALSA architecture is splitted between User space and Kernel space. \n
+On User space side, three standard applications allow to manage the sound card : 
+- \b aplay : allowing to manage PCM playback (To get details of aplay interface, refer to <A HREF = "http://man-wiki.net/index.php/1:aplay " > Description of "aplay" usage </A>)
+- \b arecord : allowing to record PCM data  (To get details of arecord interface, refer to <A HREF = "http://man-wiki.net/index.php/1:arecord " > Description of "arecord" usage </A>)
+- \b amixer : allowing to update ALSA controls defined below.(To get more information about ALSA controls, refer to \ref control_mngt) (to get details of arecord interface, refer to <A HREF = "http://man-wiki.net/index.php/1:amixer " > Description of "amixer" usage </A>)
+<p>
+On kernel side, the sound card is controlled in a specific driver "ALSA Driver". \n It uses services provided by the layer "4500 Audio Codec Driver"
+to access to 4500 registers (refer to  <A HREF = "https://codex.cro.st.com/plugins/docman/?group_id=1202&action=show&id=80270" > Mont Blanc ALSA Driver Specifications </A>)
+<p>	
+
+- To pilot sound card 4 subdevices are available( associated to device 0:
+		- \b Subdevice \b 0: it's the normal device to play PCM on "standard" output(handset, headset, handsfree...)
+		- \b Subdevice \b 1: it's the normal device to capture PCM from  "standard" input ( analog and digital micros)
+		- \b Subdevice \b 2: it's the Bluetooth subdevice. It provides speech/music over Bluetooth link. Audio/speech Data coming from ALSA driver will be routed to BT module via MSP0.
+		- \b Subdevice \b 3: it's the HDMI subdevice. It provides sending high definition audio data to HDMI line out interface. 
+		Audio/speech Data coming from ALSA driver will be routed to HDMI module via MSP2.
+<p>	
+
+- Only one PCM playback is available at a time : 
+	- Output can be specified via "Sink control" \n
+	- Input power can be managed  via "Sink power Control".
+	- Rendering mode can be selected via "Rendering Mode". This control provides the various ways to send data to audio codec.
+		- \b NORMAL_PLAYBACK_MODE : In this mode ARM will send decoded audio packets to STn4500 audio codec and audio codec 30 ms FIFO will not be used.
+		- \b FM_PLAYBACK_MODE : This mode will provide FM listening feature. Audio codec will receive digital data from IF1 interface which is connected to FM module and then data will be
+		routed to some output device like Headset, Speaker, etc.
+		- \b FM_TX_MODE : This mode will provide FM transmission feature. For instance, one would
+		listen to mp3 streams stored in mobile phone on the car kit. Audio codec will receive PCM data
+		from MSP1 through its IF0 interface and then will route this data to IF1 interface which is
+		connected to FM module. FM module will then modulate and transmit the modulated data.
+		- \b DIGITAL_LOOPBACK_MODE – This mode provides digital loopback capability. PCM data from audio codec interface IF0 will be looped back to IF1 and vice versa. \n
+	- Volume and mute controls are provided.
+
+- Only one PCM capture is available at a time :
+	- Input can be specified via "Src Control".
+	- Input power is managed  via "Src power Control".
+	- Capture mode  can be selected : 
+		- \b NORMAL_CAPTURE_MODE : This is the classical way of recording. ALSA driver will
+		fetch PCM data from MSP1 connected with audio codec interface IF0 and will send to user
+		space.
+		- \b FM_CAPTURE_MODE :  This mode will provide FM recording capabilities. FM digital
+		coming audio codec interface IF1 will be routed to audio codec interface IF0 and will come out
+		through MSP1. ALSA driver will then fetch FM PCM data from MSP1 and will send to user
+		space (APE).
+		- \b ANALOG_LOOPBACK_MODE : This mode provides analog loopback 
+		capability. Source organe is fixed to LINEIN, sink organ is fixed to 
+		headset. 
+	- Volume and mute controls are provided.
+
+- In addition some general control are defined :
+	- \b Master \b volume: to manage a general volume that will be mixed with source and sink volumes.
+	- \b Master \b mute: to manage a general mute.
+	- \b Multi \b channel \b mode: to specify the MSP configuration to allow the playback of several stream in parallel
+	
+*/
+
+/*! \page playback_mngt How to do a PCM playback
+	
+\section list_playback_device To list PCM playback devices
+\cmdline{
+> aplay -l
+}
+
+\section playback_headset_normal To start a PCM playback in headset
+In this example : playback is stored in "test.wav" file \n
+Destination is set to headset,\n
+mode is specifed as Normal \n
+Initialize the volume level and the mute state.
+\cmdline{
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Sink'\,device=0\,subdevice=0 'CODEC_DEST_HEADSET'
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Power'\,device=0\,subdevice=0 'ENABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Switch'\,device=0\,subdevice=0 1
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Volume'\,device=0\,subdevice=0  50\,50
+> aplay -Dhw:0\,0  test.wav &
+}
+To stop the playback before the end of the playback :
+\cmdline{
+> Ctrl+C or kill -2 [process_Id]
+}
+
+\section playback_bluetooth To start a PCM playback on bluetooth accessory
+In this example : playback is stored in "test.wav" file \n
+Destination is not usefull in this usecase,\n
+Mode is specifed as bluetooth mode \n
+Initialize the volume level and the mute state.
+\cmdline{
+> aplay -Dhw:0\,2 test.wav &
+}
+To stop the playback before the end of the playback : 
+\cmdline{
+Ctrl+C or kill -2 [process_Id]
+}
+
+\section playback_hdmi To start a PCM playback on HDMI
+In this example : playback is stored in "test.wav" file \n
+Destination is not usefull in this usecase,\n
+Mode is specifed as HDMI mode \n
+\cmdline{
+> aplay -Dhw:0\,3 test.wav &
+}
+To stop the playback before the end of the playback : 
+\cmdline{
+Ctrl+C or kill -2 [process_Id]
+}
+
+\section playback_digitalLoop To start a PCM digital loop from MIC1 to Handsfree 
+In this example  no playback file is needed" file \n
+Destination ans srce is not usefull in this usecase,\n
+Mode is specifed as digital loop mode \n
+Initialize the volume level and the mute state.
+\cmdline{
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Source'\,device=0\,subdevice=0 'CODEC_SRC_MICROPHONE_1'
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Sink'\,device=0\,subdevice=0 'CODEC_DEST_HANDSFREE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Power'\,device=0\,subdevice=0 'ENABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Power'\,device=0\,subdevice=1 'ENABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Switch'\,device=0\,subdevice=0 1
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Switch'\,device=0\,subdevice=1 1
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Volume'\,device=0\,subdevice=0  50\\,50
+> amixer -c 0 cset iface=MIXER\,name='Digital Loopback'\,device=0  'ENABLE'
+}
+To stop the playback before the end of the playback : 
+\cmdline{
+> amixer -c 0 cset iface=MIXER\,name='Digital Loopback'\,device=0  'DISABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Power'\,device=0\,subdevice=0 'DISABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Power'\,device=0\,subdevice=1 'DISABLE'
+}
+
+*/
+
+/*! \page capture_mngt How to do a PCM Capture
+\section capture_microphone_normal To start a PCM capture from analog microphone
+In this example : capture is stored in "test.wav" file \n
+Source is set to analog microphone input,\n
+mode is specifed as Normal \n
+Initialize the volume level and the mute state.
+\cmdline{
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Source'\,device=0\,subdevice=1 'CODEC_SRC_MICROPHONE_1'
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Power'\,device=0\,subdevice=1 'ENABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Switch'\,device=0\,subdevice=1 1
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Volume'\,device=0\,subdevice=1  50\\,50
+> arecord -Dhw:0\,1 -f S16_LE -c2 -r44100 test.wav &
+}
+To stop the capture : 
+\cmdline{
+Ctrl+C or kill -2 [process_Id]
+}
+To make a finite record (with a given duration) use option -d [time_in_seconds]
+
+\section capture_analog_loop To start an analog loop from line In to handset
+In this example : no need to specify a file, asource nor a sink \n
+mode is specifed as analog loop back \n
+\cmdline{
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Power'\,device=0\,subdevice=0 'ENABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Power'\,device=0\,subdevice=1 'ENABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Volume'\,device=0\,subdevice=0  50\\,50
+> amixer -c 0 cset iface=MIXER\,name='Analog Loopback'\,device=0  'ENABLE'
+}
+To stop the playback before the end of the playback : 
+\cmdline{
+> amixer -c 0 cset iface=MIXER\,name='Analog Loopback'\,device=0  'DISABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Power'\,device=0\,subdevice=0 'DISABLE'
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Power'\,device=0\,subdevice=1 'DISABLE'
+}
+*/
+
+/*! \page control_mngt How to update additionnal controls
+
+Every controls can be updated before during or after the playback (resp. capture). \n
+amixer program has to be used to update these controls. \n
+Following parts give examples of amixer usage
+
+\section ctrl_update_organ  update controls during the playback 
+In this example, a PCM playback is launched on headset, then output is updated to handsfree. \n
+A volume then a mute is done during this playback.\n
+\cmdline{
+> ...
+> aplay -Dhw:0\,0 test.wav &
+>...
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Sink'\,device=0\,subdevice=0 'CODEC_DEST_HANDSFREE'
+>...
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Volume'\,device=0\,subdevice=0   10\\,100
+>...
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Switch'\,device=0\,subdevice=0 0
+}
+
+\section ctrl_update_organ  Update controls during the digital loop 
+In this example, an digital loop is launched between line in and headset. \n
+input is updated to microphone then output is updated to handsfree \n
+\cmdline{
+>...
+> amixer -c 0 cset iface=MIXER\,name='Digital Loopback'\,device=0  'ENABLE'
+>...
+> amixer -c 0 cset iface=MIXER\,name='PCM Capture Source'\,device=0\,subdevice=0 'CODEC_SRC_MICROPHONE_1'
+>...
+> amixer -c 0 cset iface=MIXER\,name='PCM Playback Sink'\,device=0\,subdevice=0 'CODEC_DEST_HANDSFREE'
+}
+
+\section ctrl_get_state  To get status of a ALSA controls
+To retrieve current state of a control, use the "sget" service : 
+\cmdline{
+> amixer sget 'PCM Playback Sink'
+}
+
+*/
+
+/*! \page sccall_mngt How to do a speech call( audio part only)
+
+it's recommanded to start audio part of the speech call after the modem sub-system \n
+MMTE application is used to run a script that start or stop the speech call. \n
+Following parts give MMTE usage
+
+\section SC_call_start start a speech call 
+\cmdline{
+> MMTE -f /usr/bin/StartCSCall.ate
+}
+
+\section SC_call_start start a speech call 
+\cmdline{
+> MMTE -f /usr/bin/StartCSCall.ate
+}
+
+\section SC_call_start stop a speech call 
+\cmdline{
+> MMTE -f /usr/bin/StopCSCall.ate
+}
+
+*/
+
+/*! \page C_Interface C-interface for player-recorder library
+
+This interface allows to control the sound card in an application using a C-library.
+<p>	
+The library is an adaptation layer using the standard ALSA application aplay, 
+arecord and amixer (refer to \ref Interface_for_console for details)
+<p>	
+
+	\section Services_desc Services are provided to:
+                  - Start a PCM playback or capture.
+                  - Stop a PCM playback or capture.
+                  - Select the input organ.
+                  - Select the sink organ.
+                  - Get the current input organ.
+                  - Get the current sink organ.
+                  - Set playback, capture or master  volume.
+                  - Get playback or capture volume.
+                  - Set the mute state of playback, capture or master.
+                  - Get the mute state of playback or capture. 
+                  - Set the multichannel mode.
+                  
+ 	\section device_ID To pilot sound card 3 devices are available:
+		- \b AUDIO_DEVICE_0: it's the normal device to play or capture PCm on "standard" input and output organ( analog and digital micro, handset, headset, handsfree...)
+		- \b AUDIO_DEVICE_BT : it's the Bluetooth device. It provides speech/music over Bluetooth link. Audio/speech Data coming from ALSA driver will be routed to BT module via MSP0.
+		- \b AUDIO_DEVICE_HDMI: it's the HDMI device. It provides sending high definition audio data to HDMI line out interface. 
+		Audio/speech Data coming from ALSA driver will be routed to HDMI module via MSP2.
+
+	For details on the interface refer to \ref audio_services
+
+ 	\section Services_c  the following pages describe services available using examples:
+		- \subpage c_playback_mngt
+		\n Aiming to explain how to launch and configure a PCM Payback
+		- \subpage capture_mngt_c
+		\n Aiming to explain how to launch and configure a PCM record
+		- \subpage c_control_mngt
+		\n Aiming to explain how to reconfigure sound card during playback or capture
+		- \subpage c_sccall_mngt
+		\n Aiming to explain how to start and stop a speech call (audio part)
+
+*/
+
+
+/*! \page c_playback_mngt How to do a PCM playback
+\section c_playback_headset_normal To start a PCM playback in headset
+In this example : playback is stored in "test.wav" file \n
+Destination is set to headset,\n
+mode is specifed as Normal \n
+Initialize the volume level and the mute state.\n
+
+\c    SetSink(AUDIO_DEVICE_0,CODEC_DEST_HEADSET);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, 50, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_PLAYBACK, NORMAL_PLAYBACK_MODE, "test.wav")
+
+To stop the playback before the end of the playback : 
+\c StopPCMTransfer (AUDIO_DEVICE_0,CODEC_PLAYBACK);
+
+\section c_playback_bluetooth To start a PCM playback on bluetooth accessory
+In this example : playback is stored in "test.wav" file \n
+Destination is not usefull in this usecase,\n
+Mode is specifed as bluetooth mode \n
+Initialize the volume level and the mute state.
+
+\c    SetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, 60, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_PLAYBACK, BT_MODE, "test.wav");
+
+To stop the playback before the end of the playback : 
+\c StopPCMTransfer (AUDIO_DEVICE_0,CODEC_PLAYBACK);
+
+\section c_playback_hdmi To start a PCM playback on HDMI
+In this example : playback is stored in "test.wav" file \n
+Destination is not usefull in this usecase,\n
+Mode is specifed as HDMI mode \n
+Initialize the volume level and the mute state.
+
+\c    SetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, 60, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_PLAYBACK, HDMI_MODE, "test.wav");
+
+To stop the playback before the end of the playback : 
+\c StopPCMTransfer (AUDIO_DEVICE_0,CODEC_PLAYBACK);
+
+\section c_playback_digitalLoop To start a digital loop from digital microphone to handsfree
+In this example : no need to specify a file \n
+Source is set to digital microphone,\n
+Sink is set to handsfree
+mode is specifed as analog loop back
+
+\n\c    SetSink(AUDIO_DEVICE_0,CODEC_DEST_HANDSFREE);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, 60, 50);
+\n\c    SetSrc(AUDIO_DEVICE_0,CODEC_SRC_D_MICROPHONE_12);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_CAPTURE, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_CAPTURE, 50, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_PLAYBACK, DIGITAL_LOOPBACK_MODE, NULL);
+
+To stop the loop : 
+\c StopPCMTransfer(AUDIO_DEVICE_0,CODEC_PLAYBACK);
+*/
+
+/*! \page capture_mngt_c How to do a PCM Capture
+
+\section c_capture_microphone_normal To start a PCM capture from analog microphone
+In this example : capture is stored in "test.wav" file \n
+Source is set to analog microphone input,\n
+mode is specifed as Normal \n
+Initialize the volume level and the mute state.
+
+\c    SetSrc(AUDIO_DEVICE_0,CODEC_SRC_MICROPHONE_1);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_CAPTURE, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_CAPTURE, 50, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_CAPTURE, NORMAL_CAPTURE_MODE, "test.wav");
+
+To stop the capture : 
+\c StopPCMTransfer (AUDIO_DEVICE_0,CODEC_CAPTURE);
+
+\section c_capture_bluetooth To start a PCM capture from bluetooth
+In this example : capture is stored in "test.wav" file \n
+Source is not used,\n
+mode is specifed as bluetooth \n
+Initialize the volume level and the mute state.
+
+\c    SetSrc(AUDIO_DEVICE_0,CODEC_SRC_MICROPHONE_1);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_CAPTURE, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_CAPTURE, 50, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_CAPTURE, BT_CAPTURE_MODE, "test.wav");
+
+To stop the capture : 
+\c StopPCMTransfer (AUDIO_DEVICE_0,CODEC_CAPTURE);
+
+\section c_capture_analog_loop To start an analog loop from line In to handset
+In this example : no need to specify a file, asource nor a sink \n
+mode is specifed as analog loop back \n
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_CAPTURE, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_CAPTURE, 50, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_CAPTURE, ANALOG_LOOPBACK_MODE, NULL);
+
+To stop the capture : 
+\c StopPCMTransfer (AUDIO_DEVICE_0,CODEC_CAPTURE);
+
+*/
+
+/*! \page c_control_mngt How to update additionnal controls
+
+Every controls can be updated before during or after the playback (resp. capture). \n
+amixer program has to be used to update these controls. \n
+Following parts give examples of amixer usage
+
+\section c_ctrl_update_organ  update controls during the playback 
+In this example, a PCM playback is launched on headset, then output is updated to handsfree. \n
+A volume then a mute is done during this playback.\n
+\c    SetSink(AUDIO_DEVICE_0,CODEC_DEST_HEADSET);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, 50, 50);
+\n\c    StartPCMTransfer(AUDIO_DEVICE_0 , CODEC_PLAYBACK, NORMAL_PLAYBACK_MODE, "test.wav")
+
+\n\c    SetSink(AUDIO_DEVICE_0,CODEC_DEST_HANDSFREE);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, 10, 100);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, STREAM_MUTED);
+
+\section c_ctrl_update_organ  Update controls during the analog loop 
+In this example, an analog loop is launched between line in and headset. \n
+input is updated to microphone then output is updated to handsfree \n
+
+\c    SetSink(AUDIO_DEVICE_0,CODEC_DEST_HEADSET);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, 60, 50);
+\n\c    SetSrc(AUDIO_DEVICE_0,CODEC_SRC_LINEIN);
+\n\c    SetMute(AUDIO_DEVICE_0,CODEC_CAPTURE, STREAM_UNMUTED);
+\n\c    SetVolume(AUDIO_DEVICE_0,CODEC_CAPTURE, 50, 50);
+\n\c    StartPCMTransfer (AUDIO_DEVICE_0 , CODEC_PLAYBACK, DIGITAL_LOOPBACK_MODE, NULL);
+\n\c    SetSrc(AUDIO_DEVICE_0,CODEC_SRC_MICROPHONE_1);
+\n\c    SetSink(AUDIO_DEVICE_0,CODEC_DEST_HANDSFREE);
+
+
+\section c_ctrl_get_state  To get status of a ALSA controls
+To retrieve current state of a controls, use the "get" services : 
+
+To get current sink organ:
+\n\c e_stw4500Output_t* p_CurrentSink;
+\n\c GetSink(AUDIO_DEVICE_0,e_stw4500Output_t* p_CurrentSink);
+
+To get current source organ:
+\n\c e_stw4500Input_t* p_CurrentScr;
+\n\c GetSrc(AUDIO_DEVICE_0, p_CurrentScr);
+
+To get current volumes:
+\n\c e_stw4500Input_t *p_ScrLVol, *p_DestLVol,*p_ScrRVol, *p_DestRVol;
+\n\c GetVolume(AUDIO_DEVICE_0,CODEC_CAPTURE, p_ScrLVol, p_ScrRVol);
+\n\c GetVolume(AUDIO_DEVICE_0,CODEC_PLAYBACK, p_DestLVol, p_DestRVol);
+
+To get current mute states:
+\c e_stw4500Input_t* p_SrcmuteState, *p_SinkmuteState ;
+\n\c GetMute(AUDIO_DEVICE_0,CODEC_PLAYBACK, p_SinkmuteState);
+\n\c GetMute(AUDIO_DEVICE_0,CODEC_CAPTURE, p_SrcmuteState);
+*/
+
+/*! \page c_sccall_mngt How to do a speech call (audio part only)
+
+it's recommanded to start audio part of the speech call after the modem sub-system \n
+MMTE application is used to run a script that start or stop the speech call. \n
+Following parts give MMTE usage
+
+\section c_SC_call_start start a speech call 
+\c StartSpeechCall(AUDIO_DEVICE_0);
+
+\section SC_call_stop stop a speech call 
+\c StopSpeechCall(AUDIO_DEVICE_0);
+
+*/

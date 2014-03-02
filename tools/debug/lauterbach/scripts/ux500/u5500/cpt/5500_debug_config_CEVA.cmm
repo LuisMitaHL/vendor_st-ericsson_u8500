@@ -1,0 +1,108 @@
+; #####################################################################
+; # DB5500 debug & Trace script file: 5500_debug_config_CEVA.cmm      #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for Trace32-CEVA debug configuration on 5500.
+; Crated by HED/CSP/CPT/ACT on 2010-06-10
+; Contact jingyi-xiaoyan.lu@st.com
+
+entry &5500_ver &platform &dbg_config &core
+
+;---- check the trace32-ceva version
+if version.build()<21597.
+(
+	print "Too old Trace32-CEVA version! Please update it!"
+	enddo
+)
+
+;---- extract the dbg_config parameters
+&cjtag2pin=0
+&attach=0
+&up=0
+while string.len("&dbg_config")!=0
+(
+	&plus_idx=STRING.SCAN("&dbg_config","+",0)
+	if &plus_idx==0
+	(
+		print "Invalid parameter: &dbg_config !"
+		enddo
+	)
+	if &plus_idx==-1 // there is not any "+", i.e. &dbg_config contains only 1 word
+		&plus_idx=string.len("&dbg_config")
+
+	// extract the first parameter
+	&temp=string.mid("&dbg_config",0,&plus_idx)
+	&param=string.lwr("&temp")
+
+	// check the extraited paramter's validity
+	if "&param"!="attach"&&"&param"!="up"&&"&param"!="cjtag2pin"
+	(
+		print "Invalid configuration parameter: &temp !"
+		enddo
+	)
+
+	&&(param)=1
+
+	// cut off the first parameter and the "+"
+	&dbg_config=string.cut("&dbg_config",&plus_idx+1)
+)
+
+;---- reset everything
+if &cjtag2pin!=1
+	sys.reset
+
+;---- cpu setting
+//diag 3414 1
+sys.cpu &core
+
+;---- jtag clock
+if "&platform"=="PALLADIUM"
+	sys.jc 60khz
+else
+	sys.jc 10Mhz
+
+;---- connection
+sys.config.cticonfig armv1
+if &up==1
+(
+	if system.up()
+		sys.down
+	on ERROR goto lab1
+	sys.up
+	if system.up()
+		print "SYS.UP OK!"
+	on ERROR NOTHING
+)
+else
+(
+	if system.up()
+		sys.down
+	on ERROR goto lab2
+	sys.m.attach
+	if system.up()
+		print "SYS.M.ATTACH OK!"
+	on ERROR NOTHING
+)
+
+; --- enabling the cross triggering now. No more needed to do here when LTB fix the ctibase setting bug.
+if version.build()<21831.
+(
+	sys.config.ctibase 0
+	sys.config.ctibase APB:0x801B8000
+)
+
+; --- enable the external break by cross triggering 
+//per.s IO:0x45C %L 0xf
+//tronchip.set ext1 on
+
+enddo
+
+lab1:
+   if !system.up()
+     DIALOG.OK "SYS.UP FAILED"
+   enddo
+
+lab2:
+	if !system.up()
+     DIALOG.OK "SYS.M.ATTACH failed!"
+   enddo

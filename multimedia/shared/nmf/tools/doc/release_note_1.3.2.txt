@@ -1,0 +1,185 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 1.3.2)      *
+**********************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Component manager binary & api
+    - Synchronous & Hybrid execution engine binaries
+    - Component tool chain binary
+    - Example source codes (Hello World's, Training, Mandelbrot's, Jpeg)
+        Jpeg fully based on Host local execution domain
+    - Documentations (User guide, programming model, CM API, MPC API)
+        User guide not fully in line with delivery
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+    
+Defects must be logged on VI:
+	 http://gnb500137.gnb.st.com/VIWebDev/default.asp
+	 	/Dev/OS and Platform/NMF/**
+	 		_Support if category unknown
+
+Supported target:
+    - STn8815 SAA & SVA Cut A0/B0/C0
+    - STn8820 SAA & SVA & SIA Cut A0/A2
+    
+Changes:
+--------
+[CM]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    - User FIFO API no more supported and removed from delivery
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    - API change: update CM_GetComponentDescription with one more parameter to retrieve the
+      priority of the component (See bug ID #20590).
+
+[MPC Executive Engine]
+    - Using traceUser() does not more need to require an interface.
+    - Add __mmdsp_profile_func_enter() and __mmdsp_profile_func_exit() to allow profiling. No
+      require interface are need to use these functions. So instrumentation is completely transparent
+      for user.
+    
+[OS integration guidelines]
+	- Package has been split. thus, you must also install nmf_think provided in 
+	  another package in order to run example.
+	  Thus purpose is to not change NMF version while only Think has changed.
+	- Due to an API update of CM_GetComponentDescription (See bug ID #20590), the corresponding
+	  syscall CM_SYSCALL_GetComponentDescription has also been updated with one more parameter.
+    
+[Tools]    
+    - Allow ".." in description on source paths in primitive component.
+    
+[Programming model]
+	- Allow recognition of integer ending with L, U or UL in IDL/IDT parser.
+	- AC environment variable renamed by MMDSPAC in order to avoid conflict with
+	  compiler.
+	- In order to make doxygen happy when commenting interface which recognize .idl
+	  file, allow *.itf or *.idl to be used as extension.
+         
+
+Bug fixes:
+---------
+	- [ Defect #52364 ] Under stress, some NMCALL from host to some MPC failed with 
+	  error -100 (CM_MPC_NOT_RESPONDING)
+	  In order to not fill the command FIFO COM, allow handling of interruption
+	  while polling on full callback FIFO COM which is synchronize with OS interrupt 
+	  management latency, including communication one (which will flush in real-time 
+	  this FIFO).
+	- [ Defect #37165 ] dependency issue with an itf file including idt file
+	- Correct component de-instantiation code which use pointer after un-allocate it
+	  which crash in Symbian integration.
+	- [ ID #20537 ] syntax error with source keyword in conf file. 
+	- [ ID #20590 ] Component introspection
+	- [ Defect #51008 ] Using itdispatcher with arch file
+	- [ Defect #52950 ] LOS_MutexTryLock not implemented
+	- [ Defect #54048 ] stdio no protected against re-entrance
+	- [ ID #20579] LOS_Free issue when applied to memory mode LOS_MAPPING_CREATE_UNCACHED_BUFFERED
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+    - Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        
+    - MP3 example supported only on nmf_bare environment.
+        This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+        Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+    
+    
+Pre-requires:
+-------------
+    - At least MMDSP Toolset 4.0.0 final release.
+    	With patch #5 (fix MMIO issue).
+    - Recent ARM codesourcery compiler for running examples. 
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment :
+------------------
+    - Environments:
+        Board: 
+            NDK15 Cut B0
+            NDK20 Cut A0
+        MPC: 
+            SAA & SVA on NDK15
+            SAA & SVA & SIA on NDK20
+        Execution Engine: Synchronous, Hybrid
+        Semaphores: local, hardware
+        Environment: think, tlm
+        ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593
+
+    - Tests:
+        * 'ADL' class
+            check 'Architecture Description Language' features from programming model
+            test limit of some ADL features (name length, collection size,...)
+            check error codes returned by ADL tool
+
+        * 'Attribute' class
+            operations on attributes inside component (mpc side)
+            check attribute api on host side
+            api error management
+
+        * 'Binding' class
+            synchronous/asynchronous intra-MPC communication
+            ARM -> MPC
+            MPC -> ARM
+            inter MPCs (asynchronous)
+            MPC -> MPC (on 8815B0)
+            Static intra-MPC optimized binding
+            interruption
+            error management
+
+        * 'Collection' class :
+            Behavior with binds between primitives component using collections interfaces
+            Primitive collections interface introspection
+
+        * 'Composite' class:
+            Behavior with binds between composites component using collections interfaces
+            Behavior with binds defined in composites components (conf. files) using collections interfaces
+            Composite collections interfaces introspection
+
+        * 'Dynamic loading' class: 
+            segment loading (RO, RW, ZI)
+                Mono-instance
+                Multi-instances on same DSP
+                Multi-instances on both DSP
+            error management
+
+        * 'IDL' class
+            check 'Interface Description Language' features from programming model
+            check error codes returned by ADL tool
+
+        * 'Interface' class
+            interfaces introspection for primitives and composites components (except collections interfaces)
+
+        * 'Lifecycle' class
+            check the behavior using the lifecycle API
+
+        * 'Memory' class
+            allocate/free api management for SDRAM and MPC memories
+            check address/status features
+            api error management
+
+        * 'Misc' class
+            'singleton' features (network construction/destruction)
+            communication stressing (mandelbrot applications)
+            multiple instantiation to fill memory
+            component priority inside network
+
+        * 'Network' class
+            components (primitives or composites) introspection (without interfaces)
+
+        * 'Panic' class
+            Behavior upon each Panic (reason) detection and after the detection.
+
+        * 'Properties' class
+            Get property information in component network (primitive/composite)
+            api error management
+
+        * 'Stack' class
+            check the MPC stack evolution combined with the TCM_X MPC dynamic allocation
+

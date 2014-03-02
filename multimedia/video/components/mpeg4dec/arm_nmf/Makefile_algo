@@ -1,0 +1,57 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+
+export MODULE
+MODULE:=..
+COMPONENT_PATH = $(MMROOT)/video/components
+
+CORE=arm
+include $(MMROOT)/video/makefiles/Make.nmf.config
+PREBUILD_COMPONENTS = conf-check $(CONFFILES)	
+
+COMPONENTS+= mpeg4dec.arm_nmf.mpeg4dec_test_sw 
+CONFFILES = mpeg4dec/arm_nmf/mpeg4dec_test_sw/mpeg4dec_test_sw.conf \
+           mpeg4dec/arm_nmf/algo/algo.conf \
+	   mpeg4dec/arm_nmf/algo_deblock/algo_deblock.conf
+	   
+#CONFFILES = mpeg4dec_sw/arm_nmf/algo/algo.conf
+INSTALL_LIB = mpeg4dec_test_sw.a 
+#CPPFLAGS+= -D_CB_CR_INTERLEAVE_
+CPPFLAGS+= -DCA9 -D__NMF -D__T1XHV_NMF_ENV -DNMF_BUILD \
+	   -DCORTEX -DCORTEX_PROFILE -DCORTEX_FRAME_CYCLES
+
+CPPFLAGS += \
+	    -I$(COMPONENT_PATH)/mpeg4dec/arm_nmf/algo/inc \
+	    -I$(COMPONENT_PATH)/mpeg4dec/arm_nmf/api      \
+	    -I$(COMPONENT_PATH)/mpeg4dec/arm_nmf/share    \
+	    -I$(COMPONENT_PATH)/mpeg4dec/arm_nmf/common/inc \
+	    -I$(COMPONENT_PATH)/mpeg4dec/arm_nmf/algo_deblock/inc
+
+SRCPATH += \
+	   $(COMPONENT_PATH)/mpeg4dec/arm_nmf/api \
+	   $(COMPONENT_PATH)/mpeg4dec/arm_nmf/share \
+	   $(COMPONENT_PATH)/mpeg4dec/arm_nmf/algo/inc
+
+CPPFLAGS += \
+           -I$(MMROOT)/shared/nmf/linux/api \
+           -I$(MMROOT)/shared/nmf/tools/api/smpee\
+	   -I$(MMROOT)/shared/nmf/tools/api/c/inc \
+	   -I$(MM_HEADER_DIR) \
+	   -I$(MMROOT)/video/components/common/inc \
+	   -I$(MMROOT)/video/components/common/nmf/idt \
+	   -I$(MMROOT)/shared/nmf/linux/src/share/inc \
+	   -I$(TMPDIR)/mpeg4dec_arm_nmf_decoder/src/mpeg4dec/arm_nmf \
+           -I$(TMPDIR)/mpeg4dec_arm_nmf_decoder/src/mpeg4dec/arm_nmf/api 
+             
+SRCPATH+= $(MMROOT)/video/idt/$(MMDSPPROCESSOR) \
+	  $(MM_IDT_DIR) \
+	  $(TMPDIR)/mpeg4dec_arm_nmf_decoder/src/mpeg4dec/arm_nmf \
+	  $(NMF)/$(MMSYSTEM)/api
+# Hack until finding a way to have subsystem dependant compilation for ARM components (same for SVA_SUBSYSTEM forcing)
+SRCPATH+=  $(NMF)/tools/api/smpee 
+first_target : $(CONFFILES) all
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+ 
+ 
+

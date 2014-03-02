@@ -1,0 +1,51 @@
+;------------------------------------------------------------
+; linux.cmm
+;------------------------------------------------------------
+; Linux specific settings
+;
+; 091207 - KM Initial version
+; 110526 - KM Adapted to fit U5500
+;-----------------------------------------------------------
+
+if "&ExeMem"=="RAM"
+(
+	do a-tag_settings
+	r.set pc 0x8000 /core 0
+	r.set pc 0x8000 /core 1
+
+)
+
+
+
+; print "initializing debugger MMU for 256Mb of RAM..."
+if y.exist(swapper_pg_dir)
+	MMU.FORMAT LINUX swapper_pg_dir 0xc0000000--0xdfffffff 0x00000000
+TRANSlation.Create 0xc0000000--0xdfffffff 0x00000000
+TRANSlation.COMMON 0xbf000000--0xffffffff
+if simulator()
+	TRANSlation.TableWalk ON   ; debugger uses a table walk to decode virtual addresses
+TRANSlation.ON
+
+group.create "Kernel" 0xc0000000--0xdfffffff /RED
+
+;Thread support
+;task.o threading tgroup
+
+;Enable this option if kernel is modified to provide thread info using the contextid
+task.o thrctx off
+
+
+; Recommended for Android
+TASK.Option NameMode ARG0COMM
+
+;Configure the autoloader, use modified autoloader script on network that use strippart
+&temp1="do "
+&temp1="&temp1&CMM_PATH_BASE"
+&temp2="/autoload.cmm "
+&temp1="&temp1&temp2"
+sYmbol.AutoLoad.CHECKLINUX "&temp1"
+
+;Enable autoload for processes
+task.y.o autoload process
+
+ENDDO

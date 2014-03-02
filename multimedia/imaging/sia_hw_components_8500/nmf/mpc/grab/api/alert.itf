@@ -1,0 +1,78 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   nmf method declaration
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <grab_types.idt>
+
+/** \addtogroup rmInformResourceGroup informResourceStatus
+ *  \ingroup rmRequiredInterfaceGroup
+ *  \{
+ */
+
+ /**
+ * Informs the caller of an important information regarding the grab process, like
+ * a buffer_filled or stab_finished
+ *
+ * \param info_id an identifier of the information type, see type
+ * \param buffer_id identifier of the buffer (as passed by \ref startGrab) being processed
+ * \param frame_id identifier of the frame sent, this to ensure coherency between the frame and the stat in SDRAM
+ * \param stabvect_x in the case where info_id is STAB_COMPLETED, horizontal value of motion vector, otherwise ignored
+ * \param stabvect_y in the case where info_id is STAB_COMPLETED, vertical value of motion vector, otherwise ignored
+ * \param timestamp the timestamp from the event, as taken from SIA 90khz hardware timer
+ *
+ * The host may unsubscribe from notification of info events through the \ref grabItf unsubscribe method. By
+ * default, all info alerts are enabled.
+ *
+ * \note Dispatching of events through alertError, alertInfo or alertDebug is subject
+ * to change: today's error is tomorrow debug info, and vice-versa.
+ * \todo alertInfo IDs are grouped with alertError and alertDebug IDs
+ */
+void info(enum e_grabInfo info_id, t_uint16 buffer_id, t_uint16 frame_id, t_uint32 timestamp);
+
+/**
+ * Informs the caller of an important error in the grab process, like a FIFO overflow
+ * \param error_type an identifier of the error. Specific values are yet to be determined.
+ * \param data extra information regarding the error (such as error register value)
+ * \param buffer_id identifier of the buffer (as passed by \ref startGrab) being processed when the error was encountered
+ * \param timestamp the timestamp from the event, as taken from SIA 90khz hardware timer
+ *
+ * The host may unsubscribe from notification of error events through the \ref grabItf unsubscribe method. By
+ * default, all error alerts are enabled.
+ *
+ * \note Dispatching of events through alertError, alertInfo or alertDebug is subject
+ * to change: today's error is tomorrow debug info, and vice-versa
+ *
+ * \todo Determine specific values for error_type, probably turn it to an enum, as there's
+ * little chance that multiple errors will happen at the same time.
+ * \todo alertError IDs are grouped with alertInfo and alertDebug IDs
+ */
+void error(enum e_grabError error_id, t_uint16 data, t_uint16 buffer_id, t_uint32 timestamp);
+
+/**
+ * Informs the caller of an miscellaneous information regarding the grab process, like
+ * a buffer_filled or stab_finished
+ *
+ * \param info_id an identifier of the information type, see type
+ * \param buffer_id identifier of the buffer (as passed by \ref startGrab) being processed when the error was encountered
+ * \param stabvect_x in the case where info_id is STAB_COMPLETED, horizontal value of motion vector, otherwise ignored
+ * \param stabvect_y in the case where info_id is STAB_COMPLETED, vertical value of motion vector, otherwise ignored
+ * \param timestamp the timestamp from the event, as taken from SIA 90khz hardware timer
+ *
+ * The host may subscribe to notification of debug events through the \ref grabItf subscribe method. By
+ * default, all debug alerts are disabled.
+ *
+ * \note Dispatching of events through alertError, alertInfo or alertDebug is subject
+ * to change: today's error is tomorrow debug info, and vice-versa.
+ * \todo alertDebug IDs are grouped with alertInfo and alertError IDs
+ */
+void debug(enum e_grabDebug debug_id, t_uint16 buffer_id, t_uint16 data1, t_uint16 data2, t_uint32 timestamp);
+
+/* @} */

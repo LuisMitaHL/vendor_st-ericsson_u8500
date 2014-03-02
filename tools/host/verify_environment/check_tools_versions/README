@@ -1,0 +1,48 @@
+check-tools-versions.py
+-----------------------
+
+.Purpose
+
+The purpose of the script is to verify that the user has the all the required tools installed and also
+that the atleast the minimum required versions of the tools are met. 
+
+IMPORTANT: If you add or change the tools of a product you *must* update this script.
+
+.Usage
+ 
+Run the script manually, in the build system or during environment setup. It can be used in two ways:
+
+	* all tools, i.e. ./check-tools-versions.py, this will check all tools
+	* single tool, i.e. ./check-tools-versions.py gcc, this will only check one specific tool
+
+
+IMPORTANT: This script requires python 2.4 or later. This is tested against 32 bit Ubuntu 9.10 and may not work on other linux distributions.
+
+.Adding or Updating Tools
+
+The script has five tables:  
+
+	* a table for tools provided by the system called "universal_application_table" 
+	* a table for tools provided by the STE platform called "ste_application_table" 
+	* a table for Android specific tools called "android_application_table" 
+	* a table is called "non_ste_application_table" and is only used for optionally verifying tools used by 3rd party components.
+
+Each tool in the tables could have up to four values, the name of the tool, the version command the tool uses to display its version or package if it is a package, the expected version number of the tool, a upper limit for the version number if the tool needs to be within a certain range of versions.
+
+.Note
+****
+You can specify 5 modifiers to the version number of a tool:
+
+	* "=" to specify the exact version of the tool
+	* ">" to specify a version greater than the provided number
+	* "<" to specify a version less than the provided number
+	* ">=" to specify a version equal to or greater than the provided number
+	* "<=" to specify a version equal to or less than the provided number
+
+To check for a package specify "package" as the second parameter
+****
+
+IMPORTANT: Remember if you add a new tool, add it to the correct table, i.e STE specific tools in the
+"ste_application_table".
+
+

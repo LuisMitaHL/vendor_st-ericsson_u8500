@@ -1,0 +1,67 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSEE_HIV__
+#define __CGPSEE_HIV__
+/**
+* \file cgpsee.hiv
+* \date 19/01/2012
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all varaibale used by cgps4utils.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 19.01.12</TD><TD>Saswatha </TD><TD> Extended Ephemeris   </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __CGPS11EE_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS11EE_C__*/
+
+
+
+/**
+* \var vg_CGPS_NavDataList
+* \brief Used to store Navigational data information
+*/
+GLOBAL t_cgps_NavDataList vg_CGPS_NavDataList;
+
+
+/**
+* \var vg_CGPS_EEReqTimestamp
+* \brief Used to store the timestamp for EE request.
+*/
+GLOBAL uint64_t vg_CGPS_EEReqTimestamp
+#ifdef __CGPS11EE_C__
+= 0
+#endif
+;
+
+/**
+* \var vg_CGPS_GLONEEReqTimestamp
+* \brief Used to store the timestamp for glon EE request.
+*/
+GLOBAL uint64_t vg_CGPS_GLONEEReqTimestamp
+#ifdef __CGPS11EE_C__
+= 0
+#endif
+;
+
+
+
+#undef GLOBAL
+#endif /* __CGPSEE_HIV__ */

@@ -1,0 +1,83 @@
+test_start mix_0021
+test_property        TEST_NAME mixer_1input_nontunneled_44k_mono_22k_mono 
+# This script creates the following audio network:
+# (1) mixer
+#
+# Script's arguments:
+#   1: script name for mixer
+#   2: script name for input 1 PCM (contains specific configuration for a given stream)
+#   3: script name for output PCM (contains specific configuration for a given stream)
+#   4: script name for commands sent while playing
+
+alias TIMEOUT 0
+
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/samplerateconv/streams/Portal_44m.pcm 0 0 0
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=22050 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/src_pcm_44k_mono_22k_mono_mix_0021.out
+ate_attach_io       mixer 0 MEM  $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/samplerateconv/streams/Portal_44k_mono_22k_mono.ref.out
+alias REF_DIGEST    $(AUDIO_STREAMS)/samplerateconv/streams/Portal_44k_mono_22k_mono_digest.hash
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers mixer 0
+MMTE_AllocateAndUseBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Start
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#do _unknown_4_ mixer
+
+#Wait EOS
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+unalias REF_DIGEST
+unalias TIMEOUT
+ens_network_destroy
+test_end

@@ -1,0 +1,49 @@
+OMX_GetHandle   capturer OMX.ST.AFM.NOKIA_AV_SOURCE
+OMX_GetHandle   playback OMX.ST.AFM.NOKIA_AV_SINK
+
+OMX_SendCommand playback OMX_CommandPortDisable 1
+MMTE_WaitEvent  playback OMX_EventCmdComplete OMX_CommandPortDisable 1
+OMX_SetParameter    playback OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       playback 0 MEM ./doriano48_low.wav 0 0
+OMX_SetConfig playback OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=90 sVolume.nMin=0 sVolume.nMax=100
+MMTE_DispatchState OMX_StateIdle playback:0
+MMTE_DispatchState OMX_StateExecuting playback
+
+OMX_SetParameter    capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       capturer 0 MEM rec_avsource.wav 2000000 0 0
+OMX_SetConfig capturer ENS_IndexConfigTraceSetting nTraceEnable=65535
+
+MMTE_DispatchState OMX_StateIdle capturer:0
+MMTE_DispatchState OMX_StatePause capturer
+MMTE_DispatchState OMX_StateExecuting capturer
+
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=90
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+###RECORD ONGOING
+
+mmte_sleep 6000
+
+#Stop
+MMTE_DispatchState OMX_StateIdle capturer
+MMTE_DispatchState OMX_StateLoaded capturer:0
+
+MMTE_DispatchState OMX_StateIdle playback
+MMTE_DispatchState OMX_StateLoaded playback:0
+
+OMX_SetParameter playback OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelCF
+ate_attach_io playback 0 MEM rec_avsource.wav 0 0
+
+MMTE_DispatchState OMX_StateIdle playback:0
+MMTE_DispatchState OMX_StateExecuting playback
+
+# Playback...
+mmte_sleep 8000
+
+#Stop
+MMTE_DispatchState OMX_StateIdle playback
+MMTE_DispatchState OMX_StateLoaded playback
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+

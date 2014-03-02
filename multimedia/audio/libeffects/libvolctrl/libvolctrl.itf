@@ -1,0 +1,21 @@
+#include <libeffects/libvolctrl/include/volctrl.h>
+
+interface libeffects.libvolctrl.libvolctrl unmanaged {
+
+void process_one_channel_no_cross_gain( MMshort *chan, MMshort *out, MMshort gain_idx,
+											   MMshort nb_sample, MMshort offset,
+											   VOLCTRL_LOCAL_STRUCT_T *ctx);
+
+void process_one_channel_with_cross_gain( MMshort *direct_chan, MMshort *cross_chan,
+												 MMshort *out, MMshort strideout, MMshort nb_sample,
+												 MMshort direct_gain_idx, MMshort cross_gain_idx,
+												 VOLCTRL_LOCAL_STRUCT_T *ctx );
+
+void process_two_channel_with_cross_gain( MMshort *chan, MMshort *out, MMshort nb_sample,
+												 VOLCTRL_LOCAL_STRUCT_T *ctx );
+
+void volctrl_set_new_config(VOLCTRL_LOCAL_STRUCT_T *volctrl);
+void volctrl_set_new_config_core(VOLCTRL_LOCAL_STRUCT_T *volctrl,int config_index, unsigned int duration);
+
+void volctrl_init(VOLCTRL_LOCAL_STRUCT_T *volctrl,int freq_enum);
+}

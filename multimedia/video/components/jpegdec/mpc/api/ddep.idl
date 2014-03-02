@@ -1,0 +1,16 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#include <vfm_common.idt>
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_jpeg.idt>
+
+interface jpegdec.mpc.api.ddep {
+void setConfig(t_uint16 channelId);
+void setParameter(t_uint16 channelId, t_t1xhv_algo_id algoId, ts_ddep_buffer_descriptor ddep_sdc_jpeg_param_desc);
+void setNeeds(t_uint16 channelId,ts_ddep_buffer_descriptor bbm_desc, ts_ddep_buffer_descriptor debugBuffer_desc);
+void disableFWCodeexection(t_bool value);
+}

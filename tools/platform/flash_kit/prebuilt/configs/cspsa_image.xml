@@ -1,0 +1,34 @@
+﻿<?xml version="1.0"?>
+<!-- The following DTD must not be included in every configuration file. It is only used when   -->
+<!-- validating the XML document                                                                -->
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                    	(bax:flash_archive?, bax:ram_image?)>
+    <!ELEMENT bax:source                              	(#PCDATA)>
+    <!ELEMENT bax:flash_archive                       	(bax:entry*)>
+    <!ELEMENT bax:ram_image								(bax:entry*)>
+    <!ELEMENT bax:entry                               	(bax:source,bax:attribute*)>
+    <!ELEMENT bax:attribute                         	(#PCDATA)>
+
+    <!ATTLIST target_configuration      xmlns:bax       CDATA                                   	#FIXED "TBD">
+    <!ATTLIST bax:entry                 name      		CDATA                         				#REQUIRED>
+    <!ATTLIST bax:entry                 type      		CDATA										#REQUIRED>
+    <!ATTLIST bax:attribute             name      		CDATA                         				#REQUIRED>
+]>
+
+<target_configuration>
+
+	<bax:flash_archive>
+
+		<bax:entry name="cspsa.bin" type="x-empflash/image">
+			<bax:source>cspsa.bin</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/CSPSA0, 0xFFFFFFFF </bax:attribute>
+			<bax:attribute name="TOC-ID">CSPSA0</bax:attribute>
+		</bax:entry>
+
+	</bax:flash_archive>
+
+</target_configuration>
+

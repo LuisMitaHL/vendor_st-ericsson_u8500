@@ -1,0 +1,74 @@
+**********************************************************
+* Think Test Environment (version 1.7.0)                 *
+**********************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Light ARM component-based environment configured for NMF test and development 
+        This environment is based on Think open source component-based OS.
+    - Light Operating System services API specification
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Supported target:
+    - STn8815 SAA & SVA 
+        * Cut A0/B0/C0
+    - STn8820 SAA & SVA & SIA 
+        * Cut A0/A2
+    - STn8500 SVA & SIA
+        * SVP 2.3.0
+        * PEPS 8500 ARMSS V1.0.4.1
+    
+Changes:
+--------
+[NMF Think]
+    - New think implementation : 
+        - to ease a future use of both core think implementation has change. This add the following impact for user :
+            - Due to rvdebug 3.1 bug with sharing svc call for semihosting and system call with trustzone then
+              context switch use undefined exception handler. So your debugger must be configure to not catch
+              undefined exception.
+                - for t32 use 'tronchip.set undef off'
+                - for rvdebug use 'bglobal ,disable undef'
+            - IPs are no more map in virtual memory space. To map then in your virtual address space use
+              LOS_Remap() api.
+            - To use a flat memory mode add anywhere in your code 'int __think_memory__flat_mapping;' (instead
+              of ' __think_configuration_flat_mapping' in previous think release). Note that you still need to
+              use LOS_Remap() to map physical memory in virtual memory space but both addresses will be equal.
+    - New entry point for your code :
+        - entry point in your code is now the 'main' symbol with the following prototype :
+            - 'int main(int argc , char **argv)'
+        - implementation use symbol overriding provide by arm toolchain. To go until main use following
+          line in your debugger :
+            - for t32 use 'go $Super$$main'
+            - for rvdebug use 'go main'
+    - Arguments to entry point are now provide by debugger :
+        - arguments to main now comes from debugger. First arguments must be the elf image given to debugger. So
+          according to your debugger use following way to provide arguments :
+            - for rvdebug arguments are provide when loading elf file. See LOAD command help. Rvdebug automatically
+              add elf image as the first argument so you don't have to provide it.
+                - e.g : load/pd/sp '"host.axf";;foo bar'
+            - for t32 use term.cmdline command. In that case you must explicitly provide elf file as first argument.
+                - e.g : term.cmdline host.axf foo bar
+            - for svp without debugger attach use -arm_opt option. Svp automatically add elf image as the first
+              argument so you don't have to provide it.
+                - e.g : tlm_run.exe -arm_lib host.axf -arm_opt foo bar
+        - total size of argument must not exceed 256 bytes.
+
+Bug fixes:
+---------
+
+Known Issues:
+-------------
+    - vi 20938 : Need new function in iLos to configure XbusDma connection
+    - vi 21365 : Pmu api needed for initialization, start/stop of DSP timer (HTIMEN) from Pmu
+    - vi 21734 : change request: set default stack size to 8 KBytes in Think environment
+
+Notes:
+------
+    
+    
+Pre-requires:
+-------------
+    - Compatible with RVCT 2.2-sp1-616 and 3.2-sp1-688

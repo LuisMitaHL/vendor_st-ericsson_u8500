@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/queue.idt>
+
+typedef struct {
+    t_queue_link event;
+    void *pReaction;
+    void *THIS;
+    t_uint32 mutexHandle;
+    t_sint16 priority;
+    t_sint16 subpriority;
+} t_sched_event;
+
+
+interface ee.api.scheduler {
+    IMPORT_SHARED void nmfSchedulerSchedEvent(t_sched_event *pEvent);
+    IMPORT_SHARED void* EEgetDistributionChannel(t_uint32 priority);
+    IMPORT_SHARED t_uint32 signalComponentCreation(t_uint32 priority); // return 0 in case of success
+    IMPORT_SHARED t_uint32 signalComponentDestruction(t_uint32 priority); //return 0 in case of success
+    IMPORT_SHARED t_queue_link *nmfSchedulerRemove(void* targetTHIS, t_uint16 priority, t_uint16 subpriority);
+    IMPORT_SHARED t_uint32 nmfSchedulerWait();
+}
+

@@ -1,0 +1,161 @@
+;------------------------------------------------------------
+; load_code.cmm
+;------------------------------------------------------------
+; Startup file to load code to bigboard
+;
+; 060509 - KM/PH Initial version
+; 070405 - PH Adaption to fit new startup.cmm
+; 071212 - KM Added kernel awareness for Linux
+; 071213 - KM Added functionality for loading many elf:s
+; 081118 - NJ Adaptation to use with StripPATH option
+; 090403 - NJ Modified for U380 
+; 090612 - KM Modified for Ewa
+;------------------------------------------------------------
+
+if !("&ElfFile"=="")
+(
+	
+
+	if simulator()
+		data.load "&ElfFile" &LOptionStrip /noclear
+	else
+	(	
+		if (run()&&("&ExeMem"=="RAM")&&("&LOption"!="/NOCODE"))
+		(
+			; need to stop execution to load code in RAM (&avoid access error)
+			break
+		)
+		data.load.elf "&ElfFile" &LOption &LOptionVM &LOptionStrip /noclear
+		GOSUB load_vm
+	)
+
+	;system.option multiplesfix on
+	print "Elf File Loaded"
+)
+
+
+
+;Load OSE Modules
+if "&LoadModPath"!=""
+(
+	do load_modules
+)
+
+if !("&SrcPath"=="")
+(
+	if "&LinuxDebug"=="TRUE"
+		y.spath.setbasedir "&SrcPath"
+	else if "&RSrcPath"=="TRUE"
+		y.spath.setrecursedir "&SrcPath"
+	else
+		y.spath.setdir "&SrcPath"
+	print "Source Path Set"
+)	
+
+;Load Ramdisk
+if "&RamdiskFile"!=""
+(
+	if y.exist(Image$$ER_RAMDISK$$Base)
+		data.load.binary "&RamdiskFile" Image$$ER_RAMDISK$$Base /noclear
+)
+
+if "&LinuxDebug"=="TRUE"
+(
+	if os.file(~~/demo/arm/kernel/linux/linux.t32)
+	(
+		task.config ~~/demo/arm/kernel/linux/linux.t32
+	)
+	else if os.file(C:\T32\demo\arm\kernel\linux\linux.t32)
+	(
+		task.config C:\T32\demo\arm\kernel\linux\linux.t32
+	)
+	else if os.file(&CMM_PATH_BASE/Etc/linux.t32)
+	(
+		print "WARNING : no Linux awareness lib in T32 installation path, use Etc one"
+		task.config &CMM_PATH_BASE/Etc/linux.t32
+	)
+
+	if os.file(~~/demo/arm/kernel/linux/linux.men)
+	(
+		menu.reprogram ~~/demo/arm/kernel/linux/linux.men
+	)
+	else if os.file(C:\T32\demo\arm\kernel\linux\linux.men)
+	(
+		menu.reprogram C:\T32\demo\arm\kernel\linux\linux.men
+	)
+	else if os.file(&CMM_PATH_BASE/Etc/linux.men)
+	(
+		print "WARNING : no Linux awareness menu in T32 installation path, use Etc one"
+		menu.reprogram &CMM_PATH_BASE/Etc/linux.men
+	)
+
+	if os.file(&CMM_PATH_BASE/Etc/ste_linux.men)
+	(
+		&toolsPath="&CMM_PATH_BASE/Etc"
+		PATH + &toolsPath
+		menu.reprogram &CMM_PATH_BASE/Etc/ste_linux.men
+	)
+)
+else
+(
+	
+	MENU.rp
+	(
+		add
+		menu
+		(
+			popup "OSE Delta"
+			(
+				menuitem "Enable OSEDelta awareness" "do osedelta"
+			)
+		)
+	)
+	
+)
+
+
+ENDDO
+
+;Load code to VM for segment that have virtual addresses
+load_vm:
+	;Segments for IAR4
+	if (y.exist(INTVEC_D$$base))&&(y.exist(INTVEC_D$$limit))
+		data.copy vm:INTVEC_D$$base--vm:INTVEC_D$$limit vm:0
+	if (y.exist(RAMCODE_AD$$base))&&(y.exist(RAMCODE_AD$$limit))&&(y.exist(RAMCODE_A$$base))
+		data.copy vm:RAMCODE_AD$$base--vm:RAMCODE_AD$$limit vm:RAMCODE_A$$base
+	if (y.exist(RAMCODE_CD$$base))&&(y.exist(RAMCODE_CD$$limit))&&(y.exist(RAMCODE_C$$base))
+		data.copy vm:RAMCODE_CD$$base--vm:RAMCODE_CD$$limit vm:RAMCODE_C$$base
+	if (y.exist(RAMCODE_TD$$base))&&(y.exist(RAMCODE_TD$$limit))&&(y.exist(RAMCODE_T$$base))
+		data.copy vm:RAMCODE_TD$$base--vm:RAMCODE_TD$$limit vm:RAMCODE_T$$base
+	if (y.exist(TCM_AD$$base))&&(y.exist(TCM_AD$$limit))&&(y.exist(TCM_A$$base))
+		data.copy vm:TCM_AD$$base--vm:TCM_AD$$limit vm:TCM_A$$base
+	if (y.exist(TCM_TD$$base))&&(y.exist(TCM_TD$$limit))&&(y.exist(TCM_T$$base))
+		data.copy vm:TCM_TD$$base--vm:TCM_TD$$limit vm:TCM_T$$base
+
+	;Segments for IAR5
+	if (y.exist(INTVEC_init$$Base))&&(y.exist(INTVEC_init$$Limit))
+		data.copy vm:INTVEC_init$$Base--vm:INTVEC_init$$Limit vm:0
+	if (y.exist(RAMCODE_A_init$$Base))&&(y.exist(RAMCODE_A_init$$Limit))&&(y.exist(RAMCODE_A$$Base))
+		data.copy vm:RAMCODE_A_init$$Base--vm:RAMCODE_A_init$$Limit vm:RAMCODE_A$$Base
+	if (y.exist(RAMCODE_C_init$$Base))&&(y.exist(RAMCODE_C_init$$Limit))&&(y.exist(RAMCODE_C$$Base))
+		data.copy vm:RAMCODE_C_init$$Base--vm:RAMCODE_C_init$$Limit vm:RAMCODE_C$$Base
+	if (y.exist(RAMCODE_T_init$$Base))&&(y.exist(RAMCODE_T_init$$Limit))&&(y.exist(RAMCODE_T$$Base))
+		data.copy vm:RAMCODE_T_init$$Base--vm:RAMCODE_T_init$$Limit vm:RAMCODE_T$$Base
+	if (y.exist(TCM_A_init$$Base))&&(y.exist(TCM_A_init$$Limit))&&(y.exist(TCM_A$$Base))
+		data.copy vm:TCM_A_init$$Base--vm:TCM_A_init$$Limit vm:TCM_A$$Base
+	if (y.exist(TCM_T_init$$Base))&&(y.exist(TCM_T_init$$Limit))&&(y.exist(TCM_T$$Base))
+		data.copy vm:TCM_T_init$$Base--vm:TCM_T_init$$Limit vm:TCM_T$$Base
+	
+	;Segments for ARM
+	if (y.exist(Image$$ER_ITCM$$Length))&&(y.exist(Load$$ER_ITCM$$Base))
+		data.copy vm:Load$$ER_ITCM$$Base--vm:(Load$$ER_ITCM$$Base+Image$$ER_ITCM$$Length-1) vm:0
+	RETURN
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,43 @@
+test_start tonegen_default
+
+OMX_GetHandle         source  OMX.ST.AFM.tonegenerator
+mmte_sleep 100
+
+ate_attach_io         source  0 MEM $(OUTPUT_DIR)/tonegen_default.out 1000000 0 0
+mmte_sleep 100
+
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers  source  0
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+mmte_sleep 100
+
+MMTE_set_nb_buffer    source  0 2
+mmte_sleep 100
+
+#Start
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+mmte_sleep 100
+
+loop 50
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+mmte_sleep 100
+
+#Stop
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+mmte_sleep 100
+
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers      source  0
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+mmte_sleep 100
+
+OMX_FreeHandle        source
+mmte_sleep 100
+
+file_comp $(AUDIO_STREAMS)/tonegen/streams/tonegen_default.pcm $(OUTPUT_DIR)/tonegen_default.out
+
+test_end

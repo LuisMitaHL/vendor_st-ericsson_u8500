@@ -1,0 +1,60 @@
+test_start SINKS_501 Playback_multisink_Headset_IHF
+
+alias TIMEOUT 0
+ 
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+ 
+OMX_GetHandle   renderer_2 OMX.ST.AFM.IHF
+OMX_SendCommand renderer_2 OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer_2 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 0 
+
+
+OMX_SetParameter    renderer_2 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer_2 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/gossip.pcm 0 0 
+
+MMTE_DispatchState OMX_StateIdle renderer_2:0
+
+OMX_SetConfig renderer_2 OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=70
+OMX_SetConfig renderer_2 OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig renderer OMX_IndexConfigAudioChannelMute nPortIndex=0 nChannel=OMX_ALL bMute=OMX_FALSE
+MMTE_DispatchState OMX_StateIdle renderer:0
+
+mmte_sleep 1000
+MMTE_NMF_ListComponent
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+MMTE_DispatchState OMX_StateExecuting renderer_2
+
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+MMTE_WaitEvent renderer_2 OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer
+MMTE_DispatchState OMX_StateIdle renderer_2
+
+ 
+MMTE_DispatchState OMX_StateLoaded renderer:0
+MMTE_DispatchState OMX_StateLoaded renderer_2:0
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+MMTE_NMF_ListComponent
+unalias TIMEOUT
+
+#check_test
+
+test_end
+

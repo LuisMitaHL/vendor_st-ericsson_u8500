@@ -1,0 +1,82 @@
+# Playback - ARM-Mixer, Alsasink, "hw:0,0", 2 channels, single
+# Copyright 2010 ST-Ericsson
+#
+
+alias TIMEOUT 0
+
+# [Alsasink] Setup
+OMX_GetHandle              sink OMX.ST.AFM.alsasink
+OMX_SetParameter           sink OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF eChannelMapping[2]=OMX_AUDIO_ChannelLFE eChannelMapping[3]=OMX_AUDIO_ChannelCF eChannelMapping[4]=OMX_AUDIO_ChannelLS eChannelMapping[5]=OMX_AUDIO_ChannelRS
+#OMX_SetParameter          sink AFM_IndexParamForceStandardTunneling nPortIndex=0 bIsStandardTunneling=1
+
+# [Alsasink] Config
+# cDevice = "hw:0,0"
+OMX_SetConfig              sink OMX_IndexConfigALSADevice cDeviceName[0]=104 cDeviceName[1]=119 cDeviceName[2]=58 cDeviceName[3]=48 cDeviceName[4]=44 cDeviceName[5]=48 cDeviceName[6]=0
+
+# [ARM-Mixer] Setup
+OMX_GetHandle              mixer OMX.ST.AFM.mixer_host
+OMX_SendCommand            mixer OMX_CommandPortDisable 2
+MMTE_WaitEvent             mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand            mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent             mixer  OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand            mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent             mixer  OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand            mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent             mixer  OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand            mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent             mixer  OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand            mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent             mixer  OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand            mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent             mixer  OMX_EventCmdComplete OMX_CommandPortDisable 8
+OMX_SetParameter           mixer OMX_IndexParamPortDefinition nPortIndex=1 nBufferCountActual=2 nBufferCountMin=2 nBufferSize=8192 bEnabled=1 bPopulated=0 bBuffersContiguous=0 nBufferAlignment=4
+OMX_SetParameter           mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nBitPerSample=16 nSamplingRate=48000 eEndian=OMX_EndianLittle ePCMMode=0 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF eChannelMapping[2]=OMX_AUDIO_ChannelLFE eChannelMapping[3]=OMX_AUDIO_ChannelCF eChannelMapping[4]=OMX_AUDIO_ChannelLS eChannelMapping[5]=OMX_AUDIO_ChannelRS
+OMX_SetParameter           mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nBitPerSample=16 nSamplingRate=48000 ePCMMode=0 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF eChannelMapping[2]=OMX_AUDIO_ChannelLFE eChannelMapping[3]=OMX_AUDIO_ChannelCF eChannelMapping[4]=OMX_AUDIO_ChannelLS eChannelMapping[5]=OMX_AUDIO_ChannelRS
+OMX_SetParameter           mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=0
+#OMX_SetParameter          mixer AFM_IndexParamForceStandardTunneling nPortIndex=0 bIsStandardTunneling=1
+
+# [ARM-Mixer] Attach wav-file
+MMTE_attach_io             mixer 1 MEM ./doriano48_low.wav
+
+# [ARM-Mixer, Alsasink] Setup tunnel
+OMX_SetupTunnel            mixer 0 sink 0 
+
+# [ARM-Mixer, Alsasink] OMX-state: Idle
+# Allocate buffers
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand            mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers       mixer 1
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent             mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# [ARM-Mixer, Alsasink] OMX-state: Executing
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand            mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent             mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# Playback...
+mmte_sleep 8000
+
+# [ARM-Mixer, Alsasink] OMX-state: Idle
+OMX_SendCommand            mixer OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent             mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# [ARM-Mixer, Alsasink] OMX-state: Loaded
+# Free buffers
+OMX_SendCommand            mixer OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers           mixer 1
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent             mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# Cleanup
+MMTE_detach_io             mixer 1
+OMX_FreeHandle             sink
+OMX_FreeHandle             mixer
+
+# Exit MMTE
+quit
+

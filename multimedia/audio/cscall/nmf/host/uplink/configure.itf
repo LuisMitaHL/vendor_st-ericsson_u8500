@@ -1,0 +1,14 @@
+#include <samplefreq.idt>
+
+typedef struct {
+  // Threshold and targeted wait time in us (accuracy 500 us in symbian)
+  t_uint16      threshold;
+  t_uint16      targetWaitTime;
+  // How many time we get over the threshold before reconfiguring 
+  t_uint16      waitBeforeReconfigure;
+} UlMaxWaitTime_t;
+
+
+void setParameter(t_bool real_time_input);
+void setSampleFreq(t_sample_freq sample_freq);
+void setMaxWaitTime(UlMaxWaitTime_t maxWaitTime);

@@ -1,0 +1,85 @@
+\chapter{Top level description}
+This chapter will give a high level view of main MPCEE components with their
+roles and their code location. MPCEE is written in C code with some part in
+MMDSP assembly. It's written using NMF component technology.
+\section{Scheduler}
+Scheduler module role is to accept new NMF reactions posting and then to
+execute them according to their priorities. Reactions can be post from either host code,
+other MMDSP core or betweens NMF components if they are connected with
+asynchronous bindings. When there is no more reactions to execute scheduler is
+also responsible to call power module to save power.
+
+Code is mainly located in :
+\begin{itemize}
+  \item rtos/hybrid/hybrid/*
+  \item rtos/common/src/lowscheduler.c
+  \item rtos/common/inc/lowscheduler.h
+\end{itemize}
+
+\section{Communications}
+Communication module role is to provide communication primitive to allow posting
+of reactions between host and MMDSP but also between two MMDSP.
+
+Code is mainly located in :
+\begin{itemize}
+  \item communication/*
+  \item semaphores/*
+\end{itemize}
+
+\section{Services}
+Services module role is to allow remote execution of code from CM driver to
+perform components and NMFEE maintenance operations.
+
+Code is mainly located in :
+\begin{itemize}
+  \item communication/src/services.c
+\end{itemize}
+
+\section{Power}
+Power module role is to allow to reduce power when there is no more reactions to
+execute. There is two level of low power mode implemented.
+
+Code is mainly located in :
+\begin{itemize}
+  \item rtos/hybrid/hybrid/src/scheduler.c@METH(enter)
+  \item sleep/ulp/*
+  \item sleep/prcmu/*
+\end{itemize}
+
+\section{Interrupts dispatcher}
+Interrupt module role is to allow the dispatch of interrupt for NMF components
+that provide interrupt handler.
+
+Code is mainly located in :
+\begin{itemize}
+  \item rtos/itdispatcher/nofpu/*
+\end{itemize}
+
+\section{Trace}
+Trace module role is to trace component execution to help debugging. It also a
+printf like api for code debugging.
+
+Code is mainly located in :
+\begin{itemize}
+  \item rtos/trace/xti/*
+  \item rtos/common/src/service.c
+\end{itemize}
+
+\section{Startup}
+Startup module role is to boot MMDSP either after a cold boot or after a deep
+sleep wake-up. It also allow to catch call to non binding interface and to
+generate a panic call.
+
+Code is mainly located in :
+\begin{itemize}
+  \item rtos/vector/*
+\end{itemize}
+
+\section{Panic}
+Panic module role is to halt mmdsp and to signal CM driver when a panic occur.
+Source of panic is either internal to MPCEE or call from user code.
+
+Code is mainly located in :
+\begin{itemize}
+  \item rtos/common/src/service.c
+\end{itemize}

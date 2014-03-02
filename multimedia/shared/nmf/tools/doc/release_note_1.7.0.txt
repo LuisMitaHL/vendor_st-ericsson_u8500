@@ -1,0 +1,209 @@
+*********************************************************************
+* Nomadik Multiprocessing Framework (version 1.7.0) "Mortimer"      *
+*********************************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Component manager binary & api
+    - Synchronous & Hybrid execution engine binaries
+    - Component tool chain binary
+    - Example source codes (Hello World's, Training, Mandelbrot's, Jpeg)
+        Jpeg fully based on Host local execution domain
+    - Documentations (User guide, programming model, CM API, MPC API)
+        User guide not fully in line with delivery
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Defects must be logged on VI:
+	 http://gnb500137.gnb.st.com/VIWebDev/default.asp
+	 	/Dev/OS and Platform/Multimedia/COMMON/NMF/**
+	 		_Support if category unknown
+
+Notes:
+------
+Supported targets:
+    - STn8815 SAA & SVA
+    	* Cut A0
+			Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+		* Cut B0
+		* Cut C0
+    - STn8820 SAA & SVA & SIA 
+    	* Cut A0
+    - STn8500 SVA & SIA
+    	* SVP 2.2
+    	
+Unsupported targets:
+    - STn8500 SVA & SIA
+    	* SVP 2.0 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+			STM IP trace not available    		
+    	* SVP 2.1 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+		* PEPS IP
+			Issue in MMDSP model 
+
+Other target unsupported and not tested.
+    
+
+Changes:
+--------
+[Summary]
+
+[CM]
+	
+
+[MPC Execution Engine]
+
+
+[SMP Execution Engine]
+
+
+[OS integration guidelines]
+    - Replace Macro CMAPI by EXPORT_SHARED in c files and IMPORT_SHARED in h files to ease shared library creation. This
+      concern CM user lib but also SMPEE and arm components.
+
+[Tools]    
+	- Do not anymore generate a NMF composite header containing the class that
+	  must be instantiate. Generate a method factory for instantiate it.
+	  Thus use, 
+	  	component_Name* componentNameCreate()
+	  	void componentNameDestroy(component_Name* instance)
+	  to create a new instance of your composite component.    
+	- Allow singleton ARM composite component by returning same instance
+	  in the Factory.
+    
+[Programming model]
+
+		
+
+Bug fixes:
+---------
+	- Not crash either if no SKEL/STUB registered.
+	
+
+Known Issues:
+-------------
+        
+            
+Pre-requires:
+-------------
+	- Launcher 1.0.4
+    - MMENV 1.1.2
+	    - MMDSP Toolset 4.1.0.
+	    - RVCT 2.2 & 4.0
+	    - SVP 2.3
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)      
+
+
+Installation:
+-------------
+	* automatic installation using mmtools
+		update your components file with the correct package versions
+		mmtools extract
+	* manual installation
+		* untar mmenv package into any location: <MMENV>
+			tar xzvf mmenv-x.y.z.tgz
+		* set MMENV_PATH environment variable to point to the mmenv location
+			setenv MMENV_PATH <MMENV>
+		* see mmenv documentation on how to set the target platform
+			e.g. PLATFORM=ndk15b06-think 
+		* create a NMF directory 
+			mkdir <NMF_ROOT>
+		* go in this directory 
+			cd <NMF_ROOT>
+		* untar tools and Think package
+			tar xvfz nmf_tools-Vx.y.z.tgz
+			tar xvfz nmf_think-Vx.y.z.tgz
+
+
+Test environment :
+------------------
+    - Environments:
+    	Compiler and compilation options set according MMENV environments  
+        Execution Engine: Synchronous, Hybrid
+        Semaphores: local, hardware
+        Environment: Think (OSI)
+
+	- Report available here : 
+		http://gnx2487:9000/NMF_1.7.0RC4
+
+    - Tests:
+        * 'ADL' class
+            check 'Architecture Description Language' features from programming model
+            test limit of some ADL features (name length, collection size,...)
+            check error codes returned by ADL tool
+
+        * 'Attribute' class
+            operations on attributes inside component (mpc side)
+            check attribute api on host side
+            api error management
+
+        * 'Binding' class
+            synchronous/asynchronous intra-MPC communication
+            ARM -> MPC
+            MPC -> ARM
+            inter MPCs (asynchronous)
+            MPC -> MPC (on 8815B0)
+            Static intra-MPC optimized binding
+            interruption
+            error management
+
+        * 'Collection' class :
+            Behavior with binds between primitives component using collections interfaces
+            Primitive collections interface introspection
+
+        * 'Composite' class:
+            Behavior with binds between composites component using collections interfaces
+            Behavior with binds defined in composites components (conf. files) using collections interfaces
+            Composite collections interfaces introspection
+
+        * 'Dynamic loading' class: 
+            segment loading (RO, RW, ZI)
+                Mono-instance
+                Multi-instances on same DSP
+                Multi-instances on both DSP
+            error management
+
+        * 'IDL' class
+            check 'Interface Description Language' features from programming model
+            check error codes returned by ADL tool
+
+        * 'Interface' class
+            interfaces introspection for primitives and composites components (except collections interfaces)
+
+        * 'Lifecycle' class
+            check the behavior using the lifecycle API
+
+        * 'Memory' class
+            allocate/free api management for SDRAM and MPC memories
+            check address/status features
+            api error management
+
+        * 'Misc' class
+            communication stressing (mandelbrot applications)
+            multiple instantiation to fill memory
+
+        * 'Network' class
+            components (primitives or composites) introspection (without interfaces)
+
+        * 'Panic' class
+            Behavior upon each Panic (reason) detection and after the detection.
+            
+        * 'Power' class
+            IP usage status that is used by the power management (IP = hsem, saa, sva, arm, esram..)
+
+        * 'Properties' class
+            Get property information in component network (primitive/composite)
+            api error management
+            
+        * 'Priorities' class
+            priorities of the hybrid EE, using mandelbrot calculations
+            
+        * 'Singleton' class
+            Singleton component instantiation test
+
+        * 'Stack' class
+            check the MPC stack evolution combined with the TCM_X MPC dynamic allocation

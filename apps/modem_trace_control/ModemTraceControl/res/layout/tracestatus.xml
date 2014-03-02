@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:padding="5dp"
+    android:background="@color/STE_orange">
+
+    <TextView
+        android:id="@+id/traceDirLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:text="@string/traceDirLabel"
+        android:textColor="@color/white"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:id="@+id/pathLabel"
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/traceDirLabel"
+        android:text="@string/pathLabel" />
+
+    <TextView
+        android:id="@+id/ongoingTraceStatusLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ongoingTraceStatusLabel"
+        android:textColor="@color/white"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/pathLabel" />
+
+    <ScrollView android:id="@+id/traceStatusScroller"
+        android:layout_width="fill_parent"
+        android:layout_height="210dp"
+        android:layout_marginLeft="1dp"
+        android:fillViewport="true"
+        android:layout_below="@+id/ongoingTraceStatusLabel">
+       <TextView
+           android:id="@+id/statusTextBox"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:gravity="left|top"
+           android:inputType="text|textMultiLine|textNoSuggestions"
+           android:background="@android:drawable/editbox_background"
+           android:singleLine="false"
+           android:textSize="14.5sp"
+           android:textColor="@color/black" />
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/labelVersionInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:textSize="8dp"
+        android:text="@string/labelVersionInfo"/>
+
+    <ImageView android:id="@+id/ImageViewPageInd"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/labelVersionInfo"
+        android:src="@drawable/second_page_indication" />
+
+</RelativeLayout>

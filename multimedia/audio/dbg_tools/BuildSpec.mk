@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_audio/dbg_tools=bin
+NO_STD_BUILD_audio/dbg_tools=1
+BUILD_MMDSP_NMF_audio/dbg_tools=bin
+BUILD_ARM_PROC_audio/dbg_tools=bin
+BUILD_ARM_CODE_audio/dbg_tools=bin
+BUILD_ARM_NMF_audio/dbg_tools=bin
+BUILD_XP70_SIA_CODE_audio/dbg_tools=false

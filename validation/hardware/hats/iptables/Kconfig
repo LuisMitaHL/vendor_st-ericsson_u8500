@@ -1,0 +1,29 @@
+#
+# Iptables configuration
+#
+
+menuconfig IPTABLES
+	bool "Iptables Configuration"
+	help
+	  iptables is the userspace command line program used to configure
+	  the Linux 2.4.x and 2.6.x IPv4 packet filtering ruleset. 
+	  It is targeted towards system administrators. 
+
+if IPTABLES
+
+config IPTABLES_DIR
+	string
+	default ./iptables
+
+config IPTABLES_DEPS
+	string
+	default ""
+
+config IPTABLES_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on IPTABLES
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # IPTABLES

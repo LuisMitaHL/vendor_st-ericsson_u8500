@@ -1,0 +1,92 @@
+/* synchronous_8815_hsem.arch - EE.
+ *
+ * Copyright (c) 2006, 2007, 2008 STMicroelectronics.
+ *
+ * Reproduction and Communication of this document is strictly prohibited
+ * unless specifically authorized in writing by STMicroelectronics.
+ * 
+ * Written by NMF team.
+ */
+composite rtos.ee
+	<
+		RTOS : rtos.rtosType,
+		SEM : semaphores,
+		SLEEP : sleep.sleepType
+	> 
+{
+	provides rtos.api.ee 						as ee
+	provides rtos.api.helper					as helper 
+	provides rtos.api.panic						as panic 
+	provides ee.api.debug						as debug 
+	provides communication.api.communication 	as com 
+	provides communication.api.service 			as service 
+	provides ee.api.sleep                       as sleep
+	provides ee.api.sleepRegister               as sleepRegister
+	
+	requires exception.handler 					as it[32] optional
+	//this is temp until we have prcmu firmware
+    requires sleep.api.prcmu                    as prcmu optional
+	
+	contains RTOS				 	as rtos
+	binds this.ee 				to rtos.ee
+	binds this.helper 			to rtos.helper
+	binds this.panic 			to rtos.panic
+	binds this.debug 			to rtos.debug
+	binds rtos.ulp              to sleep.ulp
+	
+	contains communication			as comms
+	binds this.com 				to comms.communication
+	binds this.service 			to comms.service
+	binds comms.ee				to rtos.ee
+	binds comms.panic			to rtos.panic
+	
+	contains SLEEP                 as sleep
+	binds this.sleep               to sleep.sleep
+	binds this.sleepRegister       to sleep.registerSleep
+	binds sleep.scheduler          to rtos.sched
+	//this is temp until we have prcmu firmware
+	binds sleep.prcmu              to this.prcmu
+
+	contains SEM					as semaphores
+	binds semaphores.registerSleep  to sleep.registerSleep
+	
+	contains rtos.cache.instruction.lock       as lock
+	binds lock.registerSleep                   to sleep.registerSleep
+    binds comms.lock                           to lock.lock
+	
+	binds rtos.it[0] to this.it[0]
+	binds rtos.it[1] to this.it[1]
+	binds rtos.it[2] to this.it[2]
+	binds rtos.it[3] to this.it[3]
+	binds rtos.it[4] to this.it[4]
+	binds rtos.it[5] to this.it[5]
+	binds rtos.it[6] to this.it[6]
+	binds rtos.it[7] to this.it[7]
+	binds rtos.it[8] to this.it[8]
+	binds rtos.it[9] to this.it[9]
+	binds rtos.it[10] to this.it[10]
+	binds rtos.it[11] to this.it[11]
+	binds rtos.it[12] to this.it[12]
+	binds rtos.it[13] to this.it[13]
+	binds rtos.it[14] to this.it[14]
+	binds rtos.it[15] to this.it[15]
+	binds rtos.it[16] to this.it[16]
+	binds rtos.it[17] to this.it[17]
+	binds rtos.it[18] to this.it[18]
+	binds rtos.it[19] to this.it[19]
+	binds rtos.it[20] to this.it[20]
+	binds rtos.it[21] to this.it[21]
+	binds rtos.it[22] to this.it[22]
+	binds rtos.it[23] to this.it[23]
+	binds rtos.it[24] to this.it[24]
+	binds rtos.it[25] to this.it[25]
+	binds rtos.it[26] to this.it[26]
+	binds rtos.it[27] to this.it[27]
+	binds rtos.it[28] to this.it[28]
+	binds rtos.it[29] to this.it[29]
+	binds rtos.it[30] to this.it[30]
+	binds rtos.it[31] to this.it[31]
+	
+	option CFLAGS = "-O3"
+	option LDFLAGS = "+nostdio -nostartup"
+}

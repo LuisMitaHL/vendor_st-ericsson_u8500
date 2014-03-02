@@ -1,0 +1,23 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_mpeg4.idt>
+//#include <buffer.idt>
+//#include <t1xhv_resource_manager.idt>
+//#include <t1xhv_vpp.idt>
+
+interface mpeg4dec.arm_nmf.api.log_event { 
+
+void eventEndAlgo(t_t1xhv_status status, t_t1xhv_decoder_info info, t_uint32 durationInTicks, t_uint32 bitstream_size);
+void eventVPPEndAlgo(t_uint32 status, t_uint32 info, t_uint32 durationInTicks);
+void eventProcess();
+void event_informResourceStatus(t_uint32 status,t_uint32 resource);
+void eventEOS(t_uint32 flag);
+//+ER352606
+void registerEvents(t_t1xhv_status status,t_t1xhv_decoder_info errors,t_uint32 durationInTicks,t_uint32 bitstream_size,t_uint8 event_type);
+//-ER352606
+}

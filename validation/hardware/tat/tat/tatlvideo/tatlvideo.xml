@@ -1,0 +1,894 @@
+<?xml version="1.0"?>
+<!DOCTYPE setup SYSTEM '../DTDDynamicConfigurationFile.dtd'>
+
+<dthapi>
+  <module name="tatlvideo">
+  
+    <argument path="/DTH/VIDEO/config/menus/menu_video.xml" type="FILE" user_data="ACT_MODEM_MENU_CONFIG_FILE">
+      <info>Automatic Procedure\nFilepath=/var/local/tat/tatlvideo/config/menus\nFilename=menu_09video.xml</info> 
+    </argument>
+    <argument path="/DTH/VIDEO/config/panels/camera_static_conf.xml" type="FILE" user_data="ACT_VIDEO_CAMERA_STATIC_CONF_PANEL_FILE">
+      <info>Automatic Procedure\nFilepath=/var/local/tat/tatlvideo/config/panels\nFilename=camera_static_conf.xml</info> 
+    </argument>
+    <argument path="/DTH/VIDEO/config/panels/camera_dynamic_conf.xml" type="FILE" user_data="ACT_VIDEO_CAMERA_DYNAMIC_CONF_PANEL_FILE">
+      <info>Automatic Procedure\nFilepath=/var/local/tat/tatlvideo/config/panels\nFilename=camera_dynamic_conf.xml</info> 
+    </argument>
+    <argument path="/DTH/VIDEO/config/panels/video_lcd_main.xml" type="FILE" user_data="ACT_VIDEO_LCD_MAIN_PANEL_FILE">
+      <info>Automatic Procedure\nFilepath=/var/local/tat/tatlvideo/config/panels\nFilename=video_lcd_main.xml</info> 
+    </argument>
+<!--    <argument path="/DTH/VIDEO/config/panels/video_lcd_sub.xml" type="FILE" user_data="ACT_VIDEO_LCD_SUB_PANEL_FILE">
+      <info>Automatic Procedure\nFilepath=/var/local/tat/tatlvideo/config/panels\nFilename=video_lcd_sub.xml</info> 
+    </argument> -->
+    <argument path="/DTH/VIDEO/config/panels/video_extdisp_cvbs.xml" type="FILE" user_data="ACT_VIDEO_EXTDISP_CVBS_PANEL_FILE">
+      <info>Automatic Procedure\nFilepath=/var/local/tat/tatlvideo/config/panels\nFilename=video_extdisp_cvbs.xml</info> 
+    </argument>
+    <argument path="/DTH/VIDEO/config/panels/video_extdisp_hdmi.xml" type="FILE" user_data="ACT_VIDEO_EXTDISP_HDMI_PANEL_FILE">
+      <info>Automatic Procedure\nFilepath=/var/local/tat/tatlvideo/config/panels\nFilename=video_extdisp_hdmi.xml</info>
+    </argument>
+    
+    <action path="/DTH/VIDEO/Camera/Staticconf/Init" type="U8" user_data="ACT_CAMERA_INIT" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="ACT_CAMERA_INIT_InitSensor"> Init Sensor</enum_item>
+        <enum_item value="ACT_CAMERA_INIT_PageElementDth"> Mount PE dth</enum_item>
+        <enum_item value="ACT_CAMERA_INIT_PageElementStub"> PageElementStub</enum_item>
+      </enum>
+      <info>Horizontal:5\nLabel Action:Initialisation parameters for the Sensor\n9ptimeout:50000</info>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Init/In_SensorID" type="U32" user_data="IN_SENSOR_ID" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set"> 
+        <enum>
+          <enum_item value="0">Primary</enum_item>
+          <enum_item value="1">Secondary</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+    
+    <action path="/DTH/VIDEO/Camera/Staticconf/Set_Video" type="U32" user_data="ACT_SET_VIDEO" exec="Dth_ActVIDEO_exec" set="Dth_ActVIDEOParam_Set" get ="Dth_ActVIDEOParam_Get">
+      <enum>
+        <enum_item value="ACT_SET_VIDEO_PARAM">Set_Video</enum_item>
+        <enum_item value="ACT_SET_VIDEO_RESOLUTION_UPDATE">Update Resolution</enum_item>
+        <enum_item value="ACT_SET_VIDEO_1ST_SETTINGS">Settings 1st</enum_item>
+        <enum_item value="ACT_SET_VIDEO_2ND_SETTINGS">Settings 2nd</enum_item>
+      </enum>
+      <range min="0" max="3"/>
+      <info>Horizontal:5\nLabel Action:Set Video properties\n9ptimeout:50000</info>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Video/Resolution" type="U32" user_data="Set_Video_Resolution" set="Dth_ActVIDEOParam_Set" get ="Dth_ActVIDEOParam_Get">
+        <enum>
+          <enum_item value="Set_Video_Resolution_SQCIF"> 0128x0096: SQCIF</enum_item>
+          <enum_item value="Set_Video_Resolution_QQVGA"> 0160x0120: QQVGA</enum_item>
+          <enum_item value="Set_Video_Resolution_QCIF"> 0176x0144: QCIF</enum_item>
+          <enum_item value="Set_Video_Resolution_QVGA"> 0320x0240: QVGA</enum_item>
+          <enum_item value="Set_Video_Resolution_QVGAp"> 0240x0320: QVGAp</enum_item>
+          <enum_item value="Set_Video_Resolution_WQVGA"> 0400x0240: WQVGA</enum_item>
+          <enum_item value="Set_Video_Resolution_CIF"> 0352x0288: CIF</enum_item>
+          <enum_item value="Set_Video_Resolution_HVGA"> 0480x0320: HVGA</enum_item>
+          <enum_item value="Set_Video_Resolution_nHD"> 0640x0360: nHD</enum_item>
+          <enum_item value="Set_Video_Resolution_VGA"> 0640x0480: VGA  </enum_item>
+          <enum_item value="Set_Video_Resolution_D1"> 0720x0576: D1</enum_item>
+          <enum_item value="Set_Video_Resolution_SVGA"> 0800x0600: SVGA</enum_item>
+          <enum_item value="Set_Video_Resolution_WVGA"> 0848x0480: WVGA</enum_item>
+          <enum_item value="Set_Video_Resolution_qHD"> 0960x0540: qHD</enum_item>
+          <enum_item value="Set_Video_Resolution_XVGA"> 1024x0768: XVGA</enum_item>
+          <enum_item value="Set_Video_Resolution_SXGA"> 1280x1024: SXGA</enum_item>
+          <enum_item value="Set_Video_Resolution_UXGA"> 1600x1200: UXGA</enum_item>
+          <enum_item value="Set_Video_Resolution_QXGA"> 2048x1536: QXGA</enum_item>
+          <enum_item value="Set_Video_Resolution_5MP"> 2608x1952: 5MP</enum_item>
+        </enum>
+      	<range min="0" max="18"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Video/In_VideoWidth" type="U32" user_data="IN_VIDEO_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="640"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Video/In_VideoHeight" type="U32" user_data="IN_VIDEO_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="480"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Video/In_VideoFrameRate" type="U32" user_data="IN_VIDEO_FRAMERATE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="30"/>
+      </argument>
+    </action>
+    <action path="/DTH/VIDEO/Camera/Staticconf/Set_Preview" type="U32" user_data="ACT_SET_PREVIEW" exec="Dth_ActVIDEO_exec" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+      <enum>
+        <enum_item value="ACT_SET_PREVIEW_PARAM">Set_Preview</enum_item>
+        <enum_item value="ACT_SET_PREVIEW_RESOLUTION_UPDATE">Update Resolution</enum_item>
+        <enum_item value="ACT_SET_PREVIEW_1ST_SETTINGS">Settings 1st</enum_item>
+        <enum_item value="ACT_SET_PREVIEW_2ND_SETTINGS">Settings 2nd</enum_item>
+      </enum>
+        <range min="0" max="3"/>
+      <info>Horizontal:5\nLabel Action:Set Preview properties</info>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_DisplayID" type="U8" user_data="IN_PREVIEW_ID" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="0">Main</enum_item>
+          <enum_item value="3">tvo_cvbs_AV8100</enum_item>
+          <enum_item value="4">tvo_hdmi</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/Resolution" type="U32" user_data="Set_Preview_Resolution" set="Dth_ActVIDEOParam_Set" get ="Dth_ActVIDEOParam_Get">
+       <enum>
+         <enum_item value="Set_Preview_Resolution_SQCIF"> 0128x0096: SQCIF</enum_item>
+         <enum_item value="Set_Preview_Resolution_QQVGA"> 0160x0120: QQVGA</enum_item>
+          <enum_item value="Set_Preview_Resolution_QCIF"> 0176x0144: QCIF</enum_item>
+          <enum_item value="Set_Preview_Resolution_QVGA"> 0320x0240: QVGA</enum_item>
+         <enum_item value="Set_Preview_Resolution_QVGAp"> 0240x0320: QVGAp</enum_item>
+         <enum_item value="Set_Preview_Resolution_WQVGA"> 0400x0240: WQVGA</enum_item>
+           <enum_item value="Set_Preview_Resolution_CIF"> 0352x0288: CIF</enum_item>
+          <enum_item value="Set_Preview_Resolution_HVGA"> 0480x0320: HVGA</enum_item>
+           <enum_item value="Set_Preview_Resolution_nHD"> 0640x0360: nHD</enum_item>
+           <enum_item value="Set_Preview_Resolution_VGA"> 0640x0480: VGA  </enum_item>
+            <enum_item value="Set_Preview_Resolution_D1"> 0720x0576: D1</enum_item>
+          <enum_item value="Set_Preview_Resolution_SVGA"> 0800x0600: SVGA</enum_item>
+          <enum_item value="Set_Preview_Resolution_WVGA"> 0848x0480: WVGA</enum_item>
+         <enum_item value="Set_Preview_Resolution_WVGAp"> 0480x0848: WVGAp</enum_item>
+           <enum_item value="Set_Preview_Resolution_qHD"> 0960x0540: qHD</enum_item>
+          <enum_item value="Set_Preview_Resolution_XVGA"> 1024x0768: XVGA</enum_item>
+          <enum_item value="Set_Preview_Resolution_SXGA"> 1280x1024: SXGA</enum_item>
+          <enum_item value="Set_Preview_Resolution_UXGA"> 1600x1200: UXGA</enum_item>
+          <enum_item value="Set_Preview_Resolution_QXGA"> 2048x1536: QXGA</enum_item>
+           <enum_item value="Set_Preview_Resolution_5MP"> 2608x1952: 5MP</enum_item>
+        </enum>
+      	<range min="0" max="19"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_PreviewWidth" type="U32" user_data="IN_PREVIEW_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="1600"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_PreviewHeight" type="U32" user_data="IN_PREVIEW_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="1600"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_PreviewFrameRate" type="U32" user_data="IN_PREVIEW_FRAMERATE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="30"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_ScanMode" type="U8" user_data="IN_PREVIEW_SCAN_MODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="0">Interlaced</enum_item>
+          <enum_item value="1">Progressive</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_DisplayWidth" type="U32" user_data="IN_PREVIEW_DISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="1920"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_DisplayHeight" type="U32" user_data="IN_PREVIEW_DISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="1080"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Preview/In_DisplayFrameRate" type="U32" user_data="IN_PREVIEW_DISPLAY_FRAMERATE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="60"/>
+      </argument>
+    </action>
+    <action path="/DTH/VIDEO/Camera/Staticconf/Set_Picture" type="U32" user_data="ACT_SET_PICTURE" exec="Dth_ActVIDEO_exec" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+      <enum>
+        <enum_item value="ACT_SET_PICTURE_PARAM">Set_Picture</enum_item>
+        <enum_item value="ACT_SET_PICTURE_RESOLUTION_UPDATE">Update Resolution</enum_item>
+        <enum_item value="ACT_SET_PICTURE_1ST_SETTINGS">Settings 1st</enum_item>
+        <enum_item value="ACT_SET_PICTURE_2ND_SETTINGS">Settings 2nd</enum_item>
+        <enum_item value="ACT_SET_PICTURE_SD_CONFIG">SD Card config</enum_item>
+      </enum>
+      <range min="0" max="4"/>
+      <info>Horizontal:5\nLabel Action:Set Picture properties</info>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Picture/In_PictureFormat" type="U8" user_data="IN_PICTURE_FORMAT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="0">RAW</enum_item>
+          <enum_item value="1">BMP</enum_item>
+          <enum_item value="2">RGB888</enum_item>
+          <enum_item value="3">PNG</enum_item>
+          <enum_item value="4">JPEG</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Picture/Resolution" type="U32" user_data="Set_Picture_Resolution" set="Dth_ActVIDEOParam_Set" get ="Dth_ActVIDEOParam_Get">
+       <enum>
+         <enum_item value="Set_Picture_Resolution_SQCIF"> 0128x0096: SQCIF</enum_item>
+         <enum_item value="Set_Picture_Resolution_QQVGA"> 0160x0120: QQVGA</enum_item>
+          <enum_item value="Set_Picture_Resolution_QCIF"> 0176x0144: QCIF</enum_item>
+          <enum_item value="Set_Picture_Resolution_QVGA"> 0320x0240: QVGA</enum_item>
+         <enum_item value="Set_Picture_Resolution_QVGAp"> 0240x0320: QVGAp</enum_item>
+         <enum_item value="Set_Picture_Resolution_WQVGA"> 0400x0240: WQVGA</enum_item>
+           <enum_item value="Set_Picture_Resolution_CIF"> 0352x0288: CIF</enum_item>
+          <enum_item value="Set_Picture_Resolution_HVGA"> 0480x0320: HVGA</enum_item>
+           <enum_item value="Set_Picture_Resolution_nHD"> 0640x0360: nHD</enum_item>
+           <enum_item value="Set_Picture_Resolution_VGA"> 0640x0480: VGA  </enum_item>
+            <enum_item value="Set_Picture_Resolution_D1"> 0720x0576: D1</enum_item>
+          <enum_item value="Set_Picture_Resolution_SVGA"> 0800x0600: SVGA</enum_item>
+          <enum_item value="Set_Picture_Resolution_WVGA"> 0848x0480: WVGA</enum_item>
+           <enum_item value="Set_Picture_Resolution_qHD"> 0960x0540: qHD</enum_item>
+          <enum_item value="Set_Picture_Resolution_XVGA"> 1024x0768: XVGA</enum_item>
+          <enum_item value="Set_Picture_Resolution_SXGA"> 1280x1024: SXGA</enum_item>
+          <enum_item value="Set_Picture_Resolution_UXGA"> 1600x1200: UXGA</enum_item>
+          <enum_item value="Set_Picture_Resolution_QXGA"> 2048x1536: QXGA</enum_item>
+           <enum_item value="Set_Picture_Resolution_5MP"> 2608x1952: 5MP</enum_item>
+        </enum>
+      	<range min="0" max="18"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Picture/In_PictureWidth" type="U32" user_data="IN_PICTURE_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="2608"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Picture/In_PictureHeight" type="U32" user_data="IN_PICTURE_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="1952"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Picture/In_PictureFrameRate" type="U32" user_data="IN_PICTURE_FRAMERATE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="30"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Picture/In_PicturePath" type="STRING" user_data="IN_PICTURE_PATH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+      <info>/mnt/UserFS2/</info>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Set_Picture/In_PictureSave" type="FILE" user_data="IN_PICTURE_SAVE">
+    <info>Automatic Procedure\nFilepath=/tmp\nFilename=picture.bmp</info>
+      </argument>
+    </action>
+    <action path="/DTH/VIDEO/Camera/Staticconf/Shot" type="U8" user_data="ACT_TAKE_PICTURE" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="0">START_IDLE</enum_item>
+        <enum_item value="1">TAKE PICTURE</enum_item>
+        <enum_item value="2">STOP_BURST</enum_item>
+        <enum_item value="3">PAUSE</enum_item>
+        <enum_item value="4">RESUME</enum_item>
+        <enum_item value="5">START_PREVIEW</enum_item>
+        <enum_item value="6">START_VIDEO</enum_item>
+        <enum_item value="7">START_MMTE</enum_item>
+        <enum_item value="8">LS_storage</enum_item>
+        <enum_item value="9">PAL Settings</enum_item> 
+      	<enum_item value="10">STOP_PREVIEW</enum_item>
+        <enum_item value="11">STOP_VIDEO</enum_item>
+        <enum_item value="12">STOP_MMTE</enum_item> 
+        <enum_item value="13">RM_storage</enum_item> 
+        <enum_item value="14">NTSC Settings</enum_item>
+        <enum_item value="15">STOP_IDLE</enum_item>
+        <enum_item value="16">mmte_trace</enum_item>
+        <enum_item value="17">reboot</enum_item>
+      </enum>
+      <info>Horizontal:5\nLabel Action:Start Preview, set the path to save the picture and take a picture\n9ptimeout:60000</info>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Shot/CurrentState" type="U8" user_data="CURRENT_STATE" get ="Dth_ActVIDEOParam_Get">
+       <enum>
+         <enum_item value="CURRENT_STATE_INIT"> Init</enum_item>
+         <enum_item value="CURRENT_STATE_IDLE"> Idle</enum_item>
+         <enum_item value="CURRENT_STATE_VIEWFINDER"> ViewFinder</enum_item>
+         <enum_item value="CURRENT_STATE_STILLPICTURE"> StillPicture</enum_item>
+         <enum_item value="CURRENT_STATE_VIDEO"> Video</enum_item>
+         <enum_item value="CURRENT_STATE_PAUSE"> Pause</enum_item>
+        </enum>
+      	<range min="0" max="5"/>
+    </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Shot/shotmode" type="U32" user_data="IN_PICTURE_SHOTMODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="0">SINGLE_SHOT</enum_item>
+          <enum_item value="1">BURST_SHOT</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/VIDEO/Camera/Staticconf/Shot/burstmode" type="U32" user_data="IN_PICTURE_BURSTMODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="0">FINITE_BURST</enum_item>
+          <enum_item value="1">INFINITE_BURST</enum_item>
+        </enum>
+      </argument>
+    <argument path="/DTH/VIDEO/Camera/Staticconf/Shot/nFrameLimited" type="U32" user_data="IN_PICTURE_FINITEBURSTFRAME" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+      <range min="0" max="255"/>
+    </argument>
+    </action>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Primary_Camera/In_FrameRate_Pri" type="U8" user_data="IN_FRAME_RATE_1" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <range min="0" max="60"/>
+      <info>Label Box:PRIMARY  FrameRate\nDynamic Control: TRUE\n Display: Slider Horizontal</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Primary_Camera/In_FlashType_Pri" type="U32" user_data="IN_FLASH_TYPE_1" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Xenon</enum_item>
+        <enum_item value="1">Led</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Box:FlashType\nDynamic Control:TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Primary_Camera/In_FlashMode_Pri" type="U32" user_data="IN_FLASH_MODE_1" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Off</enum_item>
+        <enum_item value="1">On</enum_item>
+        <enum_item value="2">Auto</enum_item>
+        <enum_item value="3">Red_eye_reduction</enum_item>
+        <enum_item value="4">Torch</enum_item>
+      </enum>
+      <range min="0" max="4"/>
+      <info>Label Box:FlashMode\nDynamic Control: TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Primary_Camera/In_FocusMode_Pri" type="U32" user_data="IN_FOCUS_MODE_1" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Off</enum_item>
+        <enum_item value="1">Auto</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Box:FocusMode\nDynamic Control: TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Primary_Camera/In_ZoomType_Pri" type="U32" user_data="IN_ZOOM_TYPE_1" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Digital</enum_item>
+        <enum_item value="1">Optical</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Box:ZoomType\nDynamic Control: TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Primary_Camera/In_ZoomValue_Pri" type="U8" user_data="IN_ZOOM_VALUE_1" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <range min="0" max="100"/>
+      <info>Label Box:ZoomValue\nDynamic Control: TRUE\n Display: Slider Horizontal</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Secondary_Camera/In_FrameRate_Sec" type="U8" user_data="IN_FRAME_RATE_2" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <range min="0" max="60"/>
+      <info>Label Box:SECONDARY FrameRate\nDynamic Control:TRUE \n Display: Slider Horizontal</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Secondary_Camera/In_FlashType_Sec" type="U32" user_data="IN_FLASH_TYPE_2" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Xenon</enum_item>
+        <enum_item value="1">Led</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Box:FlashType\nDynamic Control: TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Secondary_Camera/In_FlashMode_Sec" type="U32" user_data="IN_FLASH_MODE_2" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Off</enum_item>
+        <enum_item value="1">On</enum_item>
+        <enum_item value="2">Auto</enum_item>
+        <enum_item value="3">Red_eye_reduction</enum_item>
+        <enum_item value="4">Torch</enum_item>
+      </enum>
+      <range min="0" max="4"/>
+      <info>Label Box:FlashMode\nDynamic Control: TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Secondary_Camera/In_FocusMode_Sec" type="U32" user_data="IN_FOCUS_MODE_2" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Off</enum_item>
+        <enum_item value="1">Auto</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Box:FocusMode\nDynamic Control: TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Secondary_Camera/In_ZoomType_Sec" type="U32" user_data="IN_ZOOM_TYPE_2" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <enum>
+        <enum_item value="0">Digital</enum_item>
+        <enum_item value="1">Optical</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Box:ZoomType\nDynamic Control: TRUE</info>
+    </argument>
+    <argument path="/DTH/VIDEO/Camera/Dynamicconf/Secondary_Camera/In_ZoomValue_Sec" type="U8" user_data="IN_ZOOM_VALUE_2" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <range min="0" max="100"/>
+      <info>Label Box:ZoomValue\nDynamic Control: TRUE\n Display: Slider Horizontal</info>
+    </argument>
+    
+     <action path="/DTH/VIDEO/Display/LCDMAIN/MAIN_SetPowerMode" type="U8" user_data="ACT_SET_MAINDISPWRMODE" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Set Power Mode of Display MAIN</info>
+        <enum>
+          <enum_item value="DTHVIDEO_OFF">Power OFF</enum_item>
+          <enum_item value="DTHVIDEO_ON">Power ON</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+    </action>   
+    
+     <action path="/DTH/VIDEO/Display/LCDMAIN/MAIN_Init" type="STRING" user_data="ACT_MAINDISPLAY_INIT" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Initialisation of Display MAIN</info>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_Init/Out_DisplayWidth" type="U32" user_data="OUT_DISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_Init/Out_DisplayHeight" type="U32" user_data="OUT_DISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_Init/Out_DisplayBpp" type="U32" user_data="OUT_DISPLAY_DEPTH" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="32"/>
+      </argument>
+    </action>   
+    
+    <action path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture" type="U8" user_data="ACT_MAINDISPLAYPICTURE" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="DTHSTARTDISPLAY">START_DISPLAY</enum_item>
+        <enum_item value="DTHSTOPDISPLAY">STOP_DISPLAY</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Action:Display Picture on Display MAIN\nelementperline:6</info>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict1_Path" type="STRING" user_data="IN_DISPLAY_PATH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <info>/share/multimediaservices/videoservices/chess_864x480_rgb888.rgb</info>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict1_Type" type="U8" user_data="IN_PICTDISPLAY_FORMAT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ARGB8888">ARGB8888</enum_item>
+          <enum_item value="DTHVIDEO_RGB888">RGB888</enum_item>
+          <enum_item value="DTHVIDEO_PNG">PNG</enum_item>
+          <enum_item value="DTHVIDEO_JPEG">JPEG</enum_item>
+          <enum_item value="DTHVIDEO_RAW">RAW</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict1_Width_RGBonly" type="U32" user_data="IN_PICTDISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict1_Height_RGBonly" type="U32" user_data="IN_PICTDISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict1_Duration_ms" type="U32" user_data="IN_PICTDISPLAY_DURATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict1_Rotation" type="U8" user_data="IN_PICTDISPLAY_ROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>      
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict2_Path" type="STRING" user_data="IN_DISPLAY2_PATH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <info>/share/multimediaservices/videoservices/st-ericsson_864x480.png</info>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Format2" type="U8" user_data="IN_PICTDISPLAY2_FORMAT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ARGB8888">ARGB8888</enum_item>
+          <enum_item value="DTHVIDEO_RGB888">RGB888</enum_item>
+          <enum_item value="DTHVIDEO_PNG">PNG</enum_item>
+          <enum_item value="DTHVIDEO_JPEG">JPEG</enum_item>
+          <enum_item value="DTHVIDEO_RAW">RAW</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict2_Width_RGBonly" type="U32" user_data="IN_PICTDISPLAY2_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict2_Height_RGBonly" type="U32" user_data="IN_PICTDISPLAY2_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict2_Duration_ms" type="U32" user_data="IN_PICTDISPLAY2_DURATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/Pict2_Rotation" type="U8" user_data="IN_PICTDISPLAY2_ROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>         
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/MAIN_DisplayPicture/LoopMode" type="U32" user_data="IN_LOOPMODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_NOLOOP">NO_LOOP</enum_item>
+          <enum_item value="DTHVIDEO_FIXEDRATE">FIXED_RATE</enum_item>
+          <enum_item value="DTHVIDEO_MAXSPEED">MAX_SPEED</enum_item>
+          <enum_item value="DTHVIDEO_TOGGLE_LOOP">TOGGLE_LOOP</enum_item>
+        </enum>
+      </argument>
+    </action>
+    
+    <action path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN" type="U8" user_data="ACT_MAINDISPLAYPATTERN" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="TATVIDEO_GRAY_SCALE">Grey Scale</enum_item>
+        <enum_item value="TATVIDEO_COLOR">Color</enum_item>
+        <enum_item value="TATVIDEO_CENTER">Center</enum_item>
+        <enum_item value="TATVIDEO_CHESS">Chess</enum_item>
+        <enum_item value="TATVIDEO_ALIGN">Align</enum_item>
+        <enum_item value="TATVIDEO_VERTCOLORBAR">Vertical Color Bar</enum_item>
+      </enum>
+      <range min="0" max="5"/>
+      <info>Label Action:Display Pattern on Display MAIN\nelementperline:5</info>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Alpha1" type="U8" user_data="IN_PATTERNALPHA1" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Red1" type="U8" user_data="IN_PATTERNRED1" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Green1" type="U8" user_data="IN_PATTERNGREEN1" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Blue1" type="U8" user_data="IN_PATTERNBLUE1" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Alpha2" type="U8" user_data="IN_PATTERNALPHA2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>      
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Red2" type="U8" user_data="IN_PATTERNRED2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Green2" type="U8" user_data="IN_PATTERNGREEN2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Blue2" type="U8" user_data="IN_PATTERNBLUE2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Size" type="U8" user_data="IN_PATTERNSIZE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="1" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/In_Rotation" type="U8" user_data="IN_PATTERNROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>   
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/Pattern_Width" type="U32" user_data="IN_PATTERN_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/LCDMAIN/DisplayPattern_on_MAIN/Pattern_Height" type="U32" user_data="IN_PATTERN_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>     
+    </action>
+    <argument path="/DTH/VIDEO/Display/LCDDYNMAIN/MAIN_DYNAMIC_BacklightPWMVal" type="U16" user_data="IN_MAINDIS_BLPWMVAL" get="Dth_ActVIDEOParam_Get" set="Dth_ElemVIDEOParam_Set">
+      <range min="0" max="255"/>
+      <info>Dynamic Control: TRUE\n Display: Slider Horizontal</info>
+    </argument>
+      <action path="/DTH/VIDEO/Display/LCD/Get_AmbientLightSensor" type="STRING" user_data="ACT_GET_ALS" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Get Ambient Light Sensor</info>
+      <argument path="/DTH/VIDEO/Display/LCD/Get_AmbientLightSensor/Out_ALSvalue" type="U32" user_data="OUT_ALS_VALUE" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+    </action>  
+    
+    <action path="/DTH/VIDEO/Display/CVBS/SelectConnector" type="STRING" user_data="ACT_CVBSCONNECTOR" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Source Selection of AVConnector</info>
+      <argument path="/DTH/VIDEO/Display/CVBS/SelectConnector/In_AVConnectorSourceSelection" type="U8" user_data="IN_TVOCONNECTOR_ID" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="0">VIDEO_SOURCE</enum_item>
+          <enum_item value="1"> AUDIO_SOURCE</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+    <action path="/DTH/VIDEO/Display/CVBS/CVBS_Init" type="STRING" user_data="ACT_CVBSDISPLAY_INIT" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Initialisation of Display CVBS</info>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_Init/In_DisplayID" type="U8" user_data="IN_TVODISPLAY_ID" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="1">tvo_cvbs_AV8100</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_Init/Out_DisplayWidth" type="U32" user_data="OUT_DISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_Init/Out_DisplayHeight" type="U32" user_data="OUT_DISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+    </action>
+    <action path="/DTH/VIDEO/Display/CVBS/CVBS_SetPowerMode" type="STRING" user_data="ACT_SET_CVBSDISPWRMODE" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Set Power Mode of Display CVBS</info>
+        <enum>
+          <enum_item value="DTHVIDEO_OFF">POWER OFF</enum_item>
+          <enum_item value="DTHVIDEO_ON">POWER ON</enum_item>
+          <enum_item value="DTHVIDEO_LOWPOWER">LOW POWER</enum_item>
+        </enum>
+        <range min="0" max="2"/>
+    </action>
+    <action path="/DTH/VIDEO/Display/CVBS/CVBS_Detection" type="STRING" user_data="ACT_CVBS_DETECT" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Detection of CVBS</info>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_Detection/Out_CVBS_state" type="U32" user_data="OUT_TVODETECT_STATE" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+    </action>
+    <action path="/DTH/VIDEO/Display/CVBS/CVBS_SetProperties" type="STRING" user_data="ACT_SET_CVBSDISPROP" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Set Properties of Display CVBS</info>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_SetProperties/In_DisplayWidth" type="U32" user_data="IN_TVODISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_SetProperties/In_DisplayHeight" type="U32" user_data="IN_TVODISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_SetProperties/In_DisplayFrequency" type="U32" user_data="IN_TVODISPLAY_FREQUENCY" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/CVBS_SetProperties/In_ScanMode" type="U8" user_data="IN_SCANMODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_NONE">None</enum_item>
+          <enum_item value="DTHVIDEO_PROGRESSIVE">Progressive</enum_item>
+          <enum_item value="DTHVIDEO_INTERLACED">Interlaced</enum_item>
+          <enum_item value="DTHVIDEO_PLUGGED">Plugged</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>
+    </action>
+        <action path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS" type="U8" user_data="ACT_CVBSDISPLAYPICTURE" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="DTHSTARTDISPLAY">START_DISPLAY</enum_item>
+        <enum_item value="DTHSTOPDISPLAY">STOP_DISPLAY</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Action:Display Picture on External Display\nelementperline:6</info>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict1_Path" type="STRING" user_data="IN_DISPLAY_PATH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <info>/share/multimediaservices/videoservices/chess_864x480_rgb888.rgb</info>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict1_Type" type="U8" user_data="IN_PICTDISPLAY_FORMAT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ARGB8888">ARGB8888</enum_item>
+          <enum_item value="DTHVIDEO_RGB888">RGB888</enum_item>
+          <enum_item value="DTHVIDEO_PNG">PNG</enum_item>
+          <enum_item value="DTHVIDEO_JPEG">JPEG</enum_item>
+          <enum_item value="DTHVIDEO_RAW">RAW</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict1_Width_RGBonly" type="U32" user_data="IN_PICTDISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict1_Height_RGBonly" type="U32" user_data="IN_PICTDISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict1_Duration_ms" type="U32" user_data="IN_PICTDISPLAY_DURATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict1_Rotation" type="U8" user_data="IN_PICTDISPLAY_ROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>      
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict2_Path" type="STRING" user_data="IN_DISPLAY2_PATH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <info>/share/multimediaservices/videoservices/st-ericsson_864x480.png</info>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Format2" type="U8" user_data="IN_PICTDISPLAY2_FORMAT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ARGB8888">ARGB8888</enum_item>
+          <enum_item value="DTHVIDEO_RGB888">RGB888</enum_item>
+          <enum_item value="DTHVIDEO_PNG">PNG</enum_item>
+          <enum_item value="DTHVIDEO_JPEG">JPEG</enum_item>
+          <enum_item value="DTHVIDEO_RAW">RAW</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict2_Width_RGBonly" type="U32" user_data="IN_PICTDISPLAY2_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict2_Height_RGBonly" type="U32" user_data="IN_PICTDISPLAY2_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict2_Duration_ms" type="U32" user_data="IN_PICTDISPLAY2_DURATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/Pict2_Rotation" type="U8" user_data="IN_PICTDISPLAY2_ROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>         
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPicture_on_CVBS/LoopMode" type="U32" user_data="IN_LOOPMODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_NOLOOP">NO_LOOP</enum_item>
+          <enum_item value="DTHVIDEO_FIXEDRATE">FIXED_RATE</enum_item>
+          <enum_item value="DTHVIDEO_MAXSPEED">MAX_SPEED</enum_item>
+          <enum_item value="DTHVIDEO_TOGGLE_LOOP">TOGGLE_LOOP</enum_item>
+        </enum>
+      </argument>
+    </action>
+    
+    <action path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS" type="U8" user_data="ACT_CVBSDISPLAYPATTERN" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="TATVIDEO_GRAY_SCALE">Grey Scale</enum_item>
+        <enum_item value="TATVIDEO_COLOR">Color</enum_item>
+        <enum_item value="TATVIDEO_CENTER">Center</enum_item>
+        <enum_item value="TATVIDEO_CHESS">Chess</enum_item>
+        <enum_item value="TATVIDEO_ALIGN">Align</enum_item>
+        <enum_item value="TATVIDEO_VERTCOLORBAR">Vertical Color Bar</enum_item>        
+      </enum>
+      <range min="0" max="5"/>
+      <info>Label Action:Display Pattern on External Display\nelementperline:5</info>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Alpha1" type="U8" user_data="IN_PATTERNALPHA1" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Red1" type="U8" user_data="IN_PATTERNRED1" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Green1" type="U8" user_data="IN_PATTERNGREEN1" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Blue1" type="U8" user_data="IN_PATTERNBLUE1" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Alpha2" type="U8" user_data="IN_PATTERNALPHA2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>      
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Red2" type="U8" user_data="IN_PATTERNRED2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Green2" type="U8" user_data="IN_PATTERNGREEN2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Blue2" type="U8" user_data="IN_PATTERNBLUE2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Size" type="U8" user_data="IN_PATTERNSIZE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="1" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/In_Rotation" type="U8" user_data="IN_PATTERNROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>   
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/Pattern_Width" type="U32" user_data="IN_PATTERN_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/CVBS/DisplayPattern_on_CVBS/Pattern_Height" type="U32" user_data="IN_PATTERN_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>     
+    </action>
+
+    <action path="/DTH/VIDEO/Display/HDMI/HDMI_Init" type="STRING" user_data="ACT_HDMIDISPLAY_INIT" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Initialisation of Display HDMI</info>
+      <argument path="/DTH/VIDEO/Display/HDMI/HDMI_Init/Out_DisplayWidth" type="U32" user_data="OUT_DISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/HDMI_Init/Out_DisplayHeight" type="U32" user_data="OUT_DISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+    </action>
+    
+    <action path="/DTH/VIDEO/Display/HDMI/HDMI_SetPowerMode" type="STRING" user_data="ACT_SET_HDMIDISPWRMODE" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Set Power Mode of Display HDMI</info>
+      <enum>
+        <enum_item value="DTHVIDEO_OFF">POWER OFF</enum_item>
+        <enum_item value="DTHVIDEO_ON">POWER ON</enum_item>
+        <enum_item value="DTHVIDEO_LOWPOWER">LOW POWER</enum_item>
+      </enum>
+      <range min="0" max="2"/>
+    </action>
+    
+    <action path="/DTH/VIDEO/Display/HDMI/HDMI_Detection" type="STRING" user_data="ACT_HDMI_DETECT" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Detection of HDMI</info>
+      <argument path="/DTH/VIDEO/Display/HDMI/HDMI_Detection/Out_HDMI_state" type="U32" user_data="OUT_TVODETECT_STATE" get="Dth_ActVIDEOParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+    </action>
+    <action path="/DTH/VIDEO/Display/HDMI/HDMI_SetProperties" type="STRING" user_data="ACT_SET_HDMIDISPROP" exec="Dth_ActVIDEO_exec">
+      <info>Label Action:Set Properties of Display HDMI</info>
+      <argument path="/DTH/VIDEO/Display/HDMI/HDMI_SetProperties/In_DisplayWidth" type="U32" user_data="IN_TVODISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/HDMI_SetProperties/In_DisplayHeight" type="U32" user_data="IN_TVODISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/HDMI_SetProperties/In_DisplayFrequency" type="U32" user_data="IN_TVODISPLAY_FREQUENCY" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/HDMI_SetProperties/In_ScanMode" type="U32" user_data="IN_SCANMODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_NONE">None</enum_item>
+          <enum_item value="DTHVIDEO_PROGRESSIVE">Progressive</enum_item>
+          <enum_item value="DTHVIDEO_INTERLACED">Interlaced</enum_item>
+          <enum_item value="DTHVIDEO_PLUGGED">Plugged</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+    </action>
+    
+    <action path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI" type="U8" user_data="ACT_HDMIDISPLAYPICTURE" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="DTHSTARTDISPLAY">START_DISPLAY</enum_item>
+        <enum_item value="DTHSTOPDISPLAY">STOP_DISPLAY</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Action:Display Picture on External Display\nelementperline:6</info>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict1_Path" type="STRING" user_data="IN_DISPLAY_PATH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <info>/share/multimediaservices/videoservices/chess_864x480_rgb888.rgb</info>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict1_Type" type="U8" user_data="IN_PICTDISPLAY_FORMAT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ARGB8888">ARGB8888</enum_item>
+          <enum_item value="DTHVIDEO_RGB888">RGB888</enum_item>
+          <enum_item value="DTHVIDEO_PNG">PNG</enum_item>
+          <enum_item value="DTHVIDEO_JPEG">JPEG</enum_item>
+          <enum_item value="DTHVIDEO_RAW">RAW</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict1_Width_RGBonly" type="U32" user_data="IN_PICTDISPLAY_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict1_Height_RGBonly" type="U32" user_data="IN_PICTDISPLAY_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict1_Duration_ms" type="U32" user_data="IN_PICTDISPLAY_DURATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict1_Rotation" type="U8" user_data="IN_PICTDISPLAY_ROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>      
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict2_Path" type="STRING" user_data="IN_DISPLAY2_PATH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <info>/share/multimediaservices/videoservices/st-ericsson_864x480.png</info>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Format2" type="U8" user_data="IN_PICTDISPLAY2_FORMAT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ARGB8888">ARGB8888</enum_item>
+          <enum_item value="DTHVIDEO_RGB888">RGB888</enum_item>
+          <enum_item value="DTHVIDEO_PNG">PNG</enum_item>
+          <enum_item value="DTHVIDEO_JPEG">JPEG</enum_item>
+          <enum_item value="DTHVIDEO_RAW">RAW</enum_item>
+        </enum>
+        <range min="0" max="4"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict2_Width_RGBonly" type="U32" user_data="IN_PICTDISPLAY2_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict2_Height_RGBonly" type="U32" user_data="IN_PICTDISPLAY2_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict2_Duration_ms" type="U32" user_data="IN_PICTDISPLAY2_DURATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/Pict2_Rotation" type="U8" user_data="IN_PICTDISPLAY2_ROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>         
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPicture_on_HDMI/LoopMode" type="U32" user_data="IN_LOOPMODE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_NOLOOP">NO_LOOP</enum_item>
+          <enum_item value="DTHVIDEO_FIXEDRATE">FIXED_RATE</enum_item>
+          <enum_item value="DTHVIDEO_MAXSPEED">MAX_SPEED</enum_item>
+          <enum_item value="DTHVIDEO_TOGGLE_LOOP">TOGGLE_LOOP</enum_item>
+        </enum>
+      </argument>
+    </action>
+    
+    <action path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI" type="U8" user_data="ACT_HDMIDISPLAYPATTERN" set="Dth_ActVIDEOParam_Set" exec="Dth_ActVIDEO_exec">
+      <enum>
+        <enum_item value="TATVIDEO_GRAY_SCALE">Grey Scale</enum_item>
+        <enum_item value="TATVIDEO_COLOR">Color</enum_item>
+        <enum_item value="TATVIDEO_CENTER">Center</enum_item>
+        <enum_item value="TATVIDEO_CHESS">Chess</enum_item>
+        <enum_item value="TATVIDEO_ALIGN">Align</enum_item>
+        <enum_item value="TATVIDEO_VERTCOLORBAR">Vertical Color Bar</enum_item>        
+      </enum>
+      <range min="0" max="5"/>
+      <info>Label Action:Display Pattern on External Display\nelementperline:5</info>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Alpha1" type="U8" user_data="IN_PATTERNALPHA1" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Red1" type="U8" user_data="IN_PATTERNRED1" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Green1" type="U8" user_data="IN_PATTERNGREEN1" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Blue1" type="U8" user_data="IN_PATTERNBLUE1" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Alpha2" type="U8" user_data="IN_PATTERNALPHA2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>      
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Red2" type="U8" user_data="IN_PATTERNRED2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Green2" type="U8" user_data="IN_PATTERNGREEN2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Blue2" type="U8" user_data="IN_PATTERNBLUE2" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Size" type="U8" user_data="IN_PATTERNSIZE" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="1" max="255"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/In_Rotation" type="U8" user_data="IN_PATTERNROTATION" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <enum>
+          <enum_item value="DTHVIDEO_ROTATE_UR">ROTATE_UR(0)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CW">ROTATE_CW(90)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_UD">ROTATE_UD(180)</enum_item>
+          <enum_item value="DTHVIDEO_ROTATE_CCW">ROTATE_CCW(270)</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>   
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/Pattern_Width" type="U32" user_data="IN_PATTERN_WIDTH" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/VIDEO/Display/HDMI/DisplayPattern_on_HDMI/Pattern_Height" type="U32" user_data="IN_PATTERN_HEIGHT" get="Dth_ActVIDEOParam_Get" set="Dth_ActVIDEOParam_Set">
+        <range min="0" max="4294967295"/>
+      </argument>     
+    </action> 
+  </module>
+</dthapi>

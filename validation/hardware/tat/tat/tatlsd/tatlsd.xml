@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlsd">
+  	<argument path="/DTH/STORAGE/config/menus/menu_12sd.xml" type="FILE" user_data="ACT_SD_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsd/config/menus\nFilename=menu_12sd.xml</info> 
+	  </argument>
+	  <argument path="/DTH/STORAGE/config/panels/sd_tests.xml" type="FILE" user_data="ACT_SD_TESTS_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsd/config/panels\nFilename=sd_tests.xml</info> 
+	  </argument>
+	  
+     <action path="/DTH/STORAGE/SD_Card/ActionCheck/Check_SDCard_Presence" type="STRING" user_data="ACTSD_CHECKPRESENCE" exec="Dth_ActSDPresence_exec">
+      <argument path="/DTH/STORAGE/SD_Card/ActionCheck/Check_SDCard_Presence/Out_IsSDCardInserted" type="U8" user_data="OUT_PRESENCECHECK" get="Dth_ActSDParamDetection_Get">
+        <enum>
+          <enum_item value="0">Not Inserted</enum_item>
+          <enum_item value="1">Inserted</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/STORAGE/SD_Card/ActionCheck/Check_SDCard_Presence/Out_IsGoodPowerSupplyValue" type="U8" user_data="OUT_VOLTAGECHECK" get="Dth_ActSDParamVoltage_Get">
+        <enum>
+          <enum_item value="0">NaN</enum_item>
+          <enum_item value="7">2.9V</enum_item>
+        </enum>
+        <range min="0" max="7"/>
+      </argument>
+	<argument path="/DTH/STORAGE/SD_Card/ActionCheck/Check_SDCard_Presence/Out_IsGoodRegulatorValue" type="U8" user_data="OUT_REGVAL" get="Dth_ActSDParamRegulator_Get">
+        <enum>
+          <enum_item value="0">Not Correct</enum_item>
+          <enum_item value="1">Correct</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+       <argument path="/DTH/STORAGE/SD_Card/ActionCheck/Check_SDCard_Presence/Out_IsGoodControlerStatus" type="U8" user_data="OUT_CTRLSTATUS" get="Dth_ActSDParamControler_Get">
+        <enum>
+          <enum_item value="0">Not Correct</enum_item>
+          <enum_item value="3">Correct</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>
+    <argument path="/DTH/STORAGE/SD_Card/ActionCheck/Check_SDCard_Presence/Out_IsGoodClockStatus" type="U8" user_data="OUT_CTRLSTATUS" get="Dth_ActSDParamClock_Get">
+        <enum>
+          <enum_item value="0">Not Correct</enum_item>
+          <enum_item value="1">Correct</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+    <action path="/DTH/STORAGE/SD_Card/ActionWrite/Write_File_In_SDCard" type="STRING" user_data="ACTSD_WRITEFILE" exec="Dth_ActSDWriteFile_exec">
+      <argument path="/DTH/STORAGE/SD_Card/ActionWrite/Write_File_In_SDCard/Out_IsSDCardMounted" type="U8" user_data="OUT_SDMOUNTED" get="Dth_ActSDMounted_Get">
+        <enum>
+          <enum_item value="0">Not Mounted</enum_item>
+          <enum_item value="1">Mounted</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/STORAGE/SD_Card/ActionWrite/Write_File_In_SDCard/Out_IsFileCopied" type="U8" user_data="OUT_SDFILECOPIED" get="Dth_ActSDFileCopied_Get">
+        <enum>
+          <enum_item value="0">Not Copied</enum_item>
+          <enum_item value="1">Copied</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/STORAGE/SD_Card/ActionWrite/Write_File_In_SDCard/Out_IsGoodChecksum" type="U8" user_data="OUT_SDFILECOPIED" get="Dth_ActSDFileChecksum_Get">
+        <enum>
+          <enum_item value="0">Checksums does not match</enum_item>
+          <enum_item value="1">Checksums match</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+  </module>
+</dthapi>

@@ -1,0 +1,19 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/priority.idt>
+
+interface ee.api.priority {
+    // Should return number of thread that is (or will be) created for this priority level without
+    //taking into account distribution thread
+    // In case of error in thread start. It should return a negative number that indicate number of
+    //thread already started before error (0 means 0, -1 means 1 ...). Implementation should try to first
+    //start distribution thread if required.
+    t_sint32 notifyStart(t_uint32 priority, t_uint32 distributionChannel);
+    void notifyStop(t_uint32 priority, t_uint32 distributionChannel);
+    t_bool isDistributionThread(t_uint32 priority);
+}

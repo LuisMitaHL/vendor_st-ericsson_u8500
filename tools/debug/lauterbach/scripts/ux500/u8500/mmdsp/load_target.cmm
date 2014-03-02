@@ -1,0 +1,154 @@
+;------------------------------------------------------------
+; Load_target.cmm
+;------------------------------------------------------------
+; Startup file to  setup target
+;
+; 120213 - Initial version
+;-----------------------------------------------------------
+local &mmdsp_core
+local &debug_path
+
+;Check if there are settings for this target
+if os.file(&UsrPath/T32_settings.txt)
+(
+	do readsettings.cmm
+
+	if "&TrgExist"=="FALSE"
+	(
+		dialog.ok "No default settings found for &Target target! " \
+		          "Use EMP target setup dialog to setup target"
+		goto OpenMenu
+	)
+)
+else
+(
+	dialog.ok "No default settings found (&UsrPath/T32_settings.txt missing)! " \
+	          "Use EMP target setup dialog to setup target"
+	goto OpenMenu
+)
+
+; check settings
+gosub CheckSettings
+
+; init and attach target
+if string.scan(os.ID(),"SVA",0)>-1
+	&mmdsp_core="8500v"
+else
+	&mmdsp_core="8500i"
+
+&debug_path="&(chip_version)"
+
+if "&ModemTapEnabled"=="TRUE"
+	&debug_path="&debug_path"+"+mod"
+
+do 8500_T32MMDSP_init &debug_path &mmdsp_core 2Mhz "slave"
+
+if simulator()
+(
+	sys.m.up
+	do load_coredump
+)
+else
+(
+	sys.m.attach
+)
+
+if system.up()
+(
+	path + &CMM_PATH_BASE/Etc/mmdsp
+
+	if "&LinuxDebug"=="TRUE"
+	(
+		do nmf_menu.cmm
+		do nmf
+	)
+	else
+	(
+		; ==========================================================================================
+		; Semihosting terminal and area messages window popup
+		; ==========================================================================================
+		do mmterm
+	)
+
+	if "&UsrCmm"!=""
+	(
+		do &UsrCmm
+	)
+)
+else
+(
+	print "ERROR : SYS.UP FAILED."
+	print ">> If all HOST_ID[x]=0x0, MMDSP is Power-Off."
+)
+
+enddo
+
+
+
+CheckSettings:
+; Check if current config is still valid
+	if "&LinuxDebug"=="TRUE"  ;; Note LinuxDebug variable actually "means" NmfDebug
+	(
+		local &repo
+		local &good_repo
+		local &invalid_repo
+		local &offset1
+		local &offset2
+
+		if "&ElfFile"==""
+		(
+			dialog.message "NMf repository not set" \
+			               "Please specify at least one repository or disable NMF autoloader"
+			goto OpenMenu
+		)
+
+		&offset1=0
+		&offset2=0
+		&offset1=string.scan("&ElfFile",",",&offset2)
+		while &offset1>-1
+		(
+			&repo=string.mid("&ElfFile",&offset2,&offset1-&offset2)
+			&offset2=&offset1+1
+			&offset1=string.scan("&ElfFile",",",&offset2)
+			if os.dir("&repo")
+				&good_repo="&good_repo"+","+"&repo"
+			else
+				&invalid_repo="&invalid_repo"+","+"&repo"
+		)
+		&repo=string.mid("&ElfFile",&offset2,string.len("&ElfFile"))
+		if os.dir("&repo")
+			&good_repo="&good_repo"+","+"&repo"
+		else
+			&invalid_repo="&invalid_repo"+","+"&repo"
+
+		if "&good_repo"==""
+		(
+			dialog.message "All repositories set are invalid" \
+			               "Please update them"
+			goto OpenMenu
+		)
+		else if "&invalid_repo"!=""
+		(
+			dialog.yesno "The following NMF repositories are invalid" \
+			             "&invalid_repo" \
+			             "Do you want to update them ?"
+			entry &result
+			if &result
+				goto OpenMenu
+		)
+
+		if "&SrcPath"!=""&&!os.dir("&SrcPath")
+		(
+			dialog.yesno "Current Source Path is not valid" \
+			             "&SrcPath" \
+			             "Do you want to update it"
+			entry &result
+			if &result
+				goto OpenMenu
+		)
+	)
+	return
+
+OpenMenu:
+	run startup.cmm
+	enddo

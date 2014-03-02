@@ -1,0 +1,77 @@
+#DTH script
+#Author: GBE
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE Bat_OK
+BEGIN Bat_OK
+EXEC /CHARGE/Act_BatOK/Bat_OK
+READ /CHARGE/Act_BatOK/Bat_OK/Out_battOK1R_Sel1
+READ /CHARGE/Act_BatOK/Bat_OK/Out_battOK2R_Sel1
+READ /CHARGE/Act_BatOK/Bat_OK/Out_battOKF_Sel1
+READ /CHARGE/Act_BatOK/Bat_OK/Out_battOK1R_Sel0
+READ /CHARGE/Act_BatOK/Bat_OK/Out_battOK2R_Sel0
+READ /CHARGE/Act_BatOK/Bat_OK/Out_battOKF_Sel0
+END Bat_OK
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE OTP_Temp
+BEGIN OTP_Temp
+EXEC /CHARGE/Act_OTPTemp/OTP_Temp
+READ /CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP2BtempCmpLow
+READ /CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP3BtempCmpHigh
+READ /CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP4BtempCmpLowHigh
+READ /CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP11BtempCmpMedium
+READ /CHARGE/Act_OTPTemp/OTP_Temp/Out_OTP12BtempCmpMedium
+END OTP_Tempp
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE Get_USB_Charger_Info
+BEGIN USB_Charger_Info
+EXEC /CHARGE/Act_GUSBInfo/Get_USB_Charger_Info
+READ /CHARGE/Act_GUSBInfo/Get_USB_Charger_Info/Out_USBLinkStatus
+END USB_Charger_Info
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE Set_Main_Charge
+BEGIN Main_Charger
+WRITE /CHARGE/Act_SMainCharger/Set_Main_Charge/In_ChOutputCurrent 0 
+WRITE /CHARGE/Act_SMainCharger/Set_Main_Charge/In_ChOutputCurrent_Max 0 
+WRITE /CHARGE/Act_SMainCharger/Set_Main_Charge/In_ChVoltLevel 0 
+WRITE /CHARGE/Act_SMainCharger/Set_Main_Charge/In_MainChInputCurrent 0 
+WRITE /CHARGE/Act_SMainCharger/Set_Main_Charge/In_Auto_Input_Current_Ena 1 
+WRITE /CHARGE/Act_SMainCharger/Set_Main_Charge 0 
+EXEC /CHARGE/Act_SMainCharger/Set_Main_Charge 
+
+WRITE /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting Get_Main_Charger_Setting 
+EXEC /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting EXEC /DTH/CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting 
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChOutputCurrent
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChOutputCurrent_Max
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChVoltLevel
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_MainChInputCurrent
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_Auto_Input_Current_Ena ENABLE
+END Main_Charger
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE Set_USB_Charge
+BEGIN USB_Charger
+WRITE /CHARGE/Act_SUSBCharger/Set_USB_Charge/In_ChOutputCurrent 0 
+WRITE /CHARGE/Act_SUSBCharger/Set_USB_Charge/In_ChOutputCurrent_Max 0 
+WRITE /CHARGE/Act_SUSBCharger/Set_USB_Charge/In_ChVoltLevel 0 
+WRITE /CHARGE/Act_SUSBCharger/Set_USB_Charge/In_VbusChInputCurrent 0 
+WRITE /CHARGE/Act_SUSBCharger/Set_USB_Charge/In_Auto_Input_Current_Ena 1 
+WRITE /CHARGE/Act_SUSBCharger/Set_USB_Charge 0 
+EXEC /CHARGE/Act_SUSBCharger/Set_USB_Charge
+
+EXEC /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting 
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChOutputCurrent
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChOutputCurrent_Max
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_ChVoltLevel
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_MainChInputCurrent
+READ /CHARGE/Act_GMainChargerSet/Get_Main_Charger_Setting/Out_Auto_Input_Current_Ena ENABLE
+END USB_Charger
+#-------------------------------------------------------------------------------------------------------------

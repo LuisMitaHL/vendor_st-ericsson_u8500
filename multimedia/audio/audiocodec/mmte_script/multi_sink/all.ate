@@ -1,0 +1,113 @@
+test_start SINKS_513 Playback_multi_Sinks_IHF_Headset_Vibra_Left_Right
+
+alias TIMEOUT 0
+
+OMX_GetHandle   renderer_ihf OMX.ST.AFM.IHF
+OMX_SendCommand renderer_ihf OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer_ihf OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_GetHandle   renderer_hs OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer_hs OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer_hs OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_GetHandle    vibl OMX.ST.HAPTICS_RENDERER.PCM.VIBL
+OMX_GetHandle    vibr OMX.ST.HAPTICS_RENDERER.PCM.VIBR
+
+
+
+
+
+
+
+
+ 
+OMX_SetParameter vibl OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle 
+OMX_GetParameter  vibl OMX_IndexParamAudioHapticsDriverProperties 
+OMX_SetParameter vibr OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle 
+OMX_GetParameter  vibr OMX_IndexParamAudioHapticsDriverProperties 
+OMX_SetParameter    renderer_ihf OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter    renderer_hs OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+
+ate_attach_io       vibl 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/vibra_stream.pcm 0 0 0
+ate_attach_io       vibr 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/vibra_stream.pcm 0 0 0
+ate_attach_io       renderer_ihf 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/gossip.pcm 0 0 
+ate_attach_io       renderer_hs 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 0 
+
+
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers vibl 0
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers vibr 0
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_DispatchState OMX_StateIdle renderer_ihf
+MMTE_DispatchState OMX_StateIdle renderer_hs
+
+OMX_SetConfig renderer_ihf OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50 
+OMX_SetConfig renderer_ihf OMX_IndexConfigAudioMute bMute=OMX_FALSE
+ 
+OMX_SetConfig renderer_hs OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig renderer_hs OMX_IndexConfigAudioMute bMute=OMX_FALSE
+ 
+MMTE_NMF_ListComponent
+
+
+#Start Playback
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand renderer_ihf OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand renderer_hs OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent renderer_ihf OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent renderer_hs OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+
+#Wait EOS
+MMTE_WaitEvent vibl OMX_EventBufferFlag 0 TIMEOUT
+MMTE_WaitEvent vibr OMX_EventBufferFlag 0 TIMEOUT
+MMTE_WaitEvent renderer_ihf OMX_EventBufferFlag 0 TIMEOUT
+MMTE_WaitEvent renderer_hs OMX_EventBufferFlag 0 TIMEOUT
+
+
+#Stop Playback
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateIdle
+
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_DispatchState OMX_StateIdle renderer_ihf
+MMTE_DispatchState OMX_StateIdle renderer_hs
+
+
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers vibl 0
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers vibr 0
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand renderer_ihf OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers renderer_ihf 0
+MMTE_WaitEvent renderer_ihf OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand  renderer_hs OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers  renderer_hs 0
+MMTE_WaitEvent  renderer_hs OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+#check_test
+
+test_end
+
+# end test

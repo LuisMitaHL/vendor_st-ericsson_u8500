@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+/*F(*************************************************************************** 
+* File name  : lsimccm.hec
+* Module     : LSIMCCM_HEC
+*----------------------------------------------------------------------------* 
+*----------------------------------------------------------------------------* 
+*                             DESCRIPTION
+*  This file contains the internal structures used by the module.
+*
+* 
+*----------------------------------------------------------------------------* 
+***************************************************************************)F*/
+/* == HISTORY ===============================================================*/
+/*  Name     |    Date       |     Action                                    */
+/*---------------------------------------------------------------------------*/ 
+/*  Balaji   | 08-MAR-2010   | Creation                                      */
+/*---------------------------------------------------------------------------*/
+
+/**
+\file LSIMCC.hec
+*/
+
+#ifndef LSIMCCM_HEC
+#define LSIMCCM_HEC
+
+typedef enum
+{
+    LSIMCCM_F_CLOCK_CAL_IND = FIRST_LSIMCCM_MSG_ENUM,
+    LSIMCCM_F_CLOCK_CAL_REQ,
+}
+t_lsimccm_MessageIdentifier;
+
+
+typedef enum{
+    LSIMCCM_CLOCK_CAL_STOP                       = 0,    /*!< Stop  Clock Calibration. */
+    LSIMCCM_CLOCK_CAL_START                      = 1,    /*!< Start Clock Calibration. */
+
+} t_lsimccm_ClockCalCommand;
+
+
+/*!
+ *  \enum   LSIMCCM_ClockStatus
+ *      List of constant used to indicate a registration state.
+ */
+typedef enum{
+    LSIMCCM_CLOCK_STAT_ACTIVE                  = 0,    /*!< 0 - Clock Calibration Active, Pulse is being generated. */
+    LSIMCCM_CLOCK_STAT_NOT_ACTIVE              = 1,    /*!< 1 - Clock Calibration Not Active, Pulse is stopped or not started. */
+    LSIMCCM_CLOCK_STAT_NOT_SUPPORTED           = 2,    /*!< 2 - Clock Calibration Not Supported. */
+    LSIMCCM_CLOCK_STAT_ALTERNATE_FREQ          = 3,    /*!< 3 - Clock Calibration Not Started-Frequency requested for pulse not supported.. */
+    LSIMCCM_CLOCK_STAT_UNKOWN                  = 255,  /*!< 255 - Unknown Values. */
+
+} t_lsimccm_ClockStatus;
+
+
+/*!
+ *  \enum   LSIMCCM_FreqLockStatus
+ *      List of constant used to indicate a registration state.
+ */
+typedef enum{
+    LSIMCCM_FREQ_LOCKED                          = 0,    /*!< Frequency is locked to carrier. */
+    LSIMCCM_FREQ_NOT_LOCKED                      = 1,    /*!< Frequency is not locked to carrier. */
+} t_lsimccm_FreqLockStatus;
+
+
+#endif /* LSIMCCM_HEC */
+
+

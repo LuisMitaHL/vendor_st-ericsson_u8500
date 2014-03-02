@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/traceMainScroller"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:fillViewport="true" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/STE_lightBlue"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        android:padding="5dp" >
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/linearLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="45dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal" >
+
+            <ToggleButton
+                android:id="@+id/buttonTrace"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOff="@string/buttontraceStop"
+                android:textOn="@string/buttonTraceStart"
+                android:textSize="12dp" />
+
+            <ToggleButton
+                android:id="@+id/buttonTrigger"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textOff="@string/buttonTriggerStop"
+                android:textOn="@string/buttonTriggerStart"
+                android:textSize="12dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelTraceDir"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linearLayout"
+            android:layout_marginLeft="1dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/labelTraceDir"
+            android:textSize="10dp" />
+
+        <EditText
+            android:id="@+id/editTextTraceDir"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/labelTraceDir"
+            android:layout_marginLeft="1dp"
+            android:background="@android:drawable/editbox_background"
+            android:gravity="left"
+            android:inputType="text|textNoSuggestions"
+            android:singleLine="true"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/labelLogOutput"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextTraceDir"
+            android:layout_marginLeft="1dp"
+            android:layout_marginTop="5dp"
+            android:text="@string/labelLogOutput"
+            android:textSize="10dp" />
+
+        <ScrollView
+            android:id="@+id/scroller"
+            android:layout_width="fill_parent"
+            android:layout_height="128dp"
+            android:layout_below="@+id/labelLogOutput"
+            android:layout_marginLeft="1dp"
+            android:fillViewport="true" >
+
+            <EditText
+                android:id="@+id/editTextLogOutput"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/editbox_background"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="left|top"
+                android:inputType="text|textMultiLine|textNoSuggestions"
+                android:singleLine="false"
+                android:textSize="14.5sp" />
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/ongoingTraceStatusLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/scroller"
+            android:layout_marginTop="5dp"
+            android:text="@string/ongoingTraceStatusLabel"
+            android:textSize="10dp" />
+
+        <EditText
+            android:id="@+id/traceStatusText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ongoingTraceStatusLabel"
+            android:background="@android:drawable/editbox_background"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:gravity="left|top"
+            android:inputType="text|textMultiLine|textNoSuggestions"
+            android:singleLine="false"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/triggerOnPoweroffBox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/traceStatusText"
+            android:layout_below="@+id/traceStatusText"
+            android:checked="true"
+            android:text="@string/labelTriggerOnPoweroffBox" />
+
+        <TextView
+            android:id="@+id/labelVersionInfo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:text="@string/labelVersionInfo"
+            android:textSize="8dp" />
+
+        <ImageView
+            android:id="@+id/ImageViewPageInd"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/labelVersionInfo"
+            android:src="@drawable/first_page_indication" />
+    </RelativeLayout>
+
+</ScrollView>

@@ -1,0 +1,109 @@
+#ifndef _vc1type_idt
+#define _vc1type_idt
+
+#include <arm_codec_type.idt> 
+
+/**
+ * Description:
+ * Bitstream profile enumeration
+ */
+
+typedef enum
+{
+    PROFILE_SIMPLE = 0,  /** Simple profile */
+    PROFILE_MAIN = 1,        /** Main profile */
+    PROFILE_FORBIDEN    /** Reserved */
+} t_vc1_profile;
+
+/**
+ * Description:
+ * Profile level enumeration
+ */
+
+typedef enum
+{
+    LEVEL_LOW    = 0,    /** Simple/Main profile low level */
+    LEVEL_MEDIUM = 1,    /** Simple/Main profile medium level */
+    LEVEL_HIGH   = 2,    /** Simple/Main profile high level */
+
+    LEVEL_L0     = 0,    /** Advanced profile level 0 */
+    LEVEL_L1     = 1,    /** Advanced profile level 1 */
+    LEVEL_L2     = 2,    /** Advanced profile level 2 */
+    LEVEL_L3     = 3,    /** Advanced profile level 3 */
+    LEVEL_L4     = 4,    /** Advanced profile level 4 */
+
+    /* 5 to 7 reserved */
+
+    LEVEL_UNKNOWN = 255  /** Unknown profile */
+} t_vc1_level;
+
+/**
+ * Description:
+ * Quantizer mode enumeration
+ */
+typedef enum
+{
+    QUANTIZER_IMPLICIT   = 0,    /** Quantizer implied by quantizer step size */
+    QUANTIZER_EXPLICIT   = 1,    /** Quantizer explicitly signaled */
+    QUANTIZER_NON_UNIFORM = 2,    /** Non-uniform quantizer */
+    QUANTIZER_UNIFORM    = 3     /** Uniform quantizer */
+} t_vc1_quantizer;
+
+typedef struct
+{
+    t_vc1_profile       profile;                   /** See standard */
+    t_vc1_level         level;                     /** See standard */
+
+    t_vc1_quantizer     quantizer;                 /** See standard */
+    t_uint8             dquant;                     /** See standard */
+    t_uint8             max_b_frames;                 /** See standard */
+    t_uint8             q_framerate_for_postproc;      /** See standard */
+    t_uint8             q_bitrate_for_postproc;        /** See standard */
+
+    t_bool              loop_filter_enabled;                 /** See standard */
+    t_bool              multires_coding_enabled;             /** See standard */
+    t_bool              fast_uvmc_enabled;                   /** See standard */
+    t_bool              extended_mv_enabled;                 /** See standard */
+    t_bool              variable_size_transform_enabled;                /** See standard */
+    t_bool              overlap_transform_enabled;    /** See standard */
+    t_bool              syncmarker_enabled;             /** See standard */
+    t_bool              rangered_enabled;               /** See standard */
+    t_bool              frame_interpolation_enabled;     /** See standard */
+} ts_sequence_parameters;
+
+typedef ts_sequence_parameters * tps_sequence_parameters;
+
+typedef struct
+{
+    t_uint16    max_picture_width;  /**  picture width */
+    t_uint16    max_picture_height; /**  picture height */
+    t_uint32    frame_rate; 
+    t_uint32    number_of_frames;        
+    t_uint32    bit_rate;
+
+} ts_decoder_configuration;
+
+typedef ts_decoder_configuration * tps_decoder_configuration;
+
+typedef struct
+{
+    t_uint16 error_type;         		/**<\brief Error status */
+    t_uint16 frame_interpolation_hint_enabled;  /**< \brief picture layer frame interpolation hint set (INTERPFRM)   */
+    t_uint16 range_reduction_frame_enabled;     /**< \brief picture layer frame rangered flag  (RANGEREDFRM)   */
+    t_uint16 b_fraction_numerator;              /**< \brief picture layer b fraction numerator (BFRACTION)  */
+    t_uint16 b_fraction_denominator;            /**< \brief picture layer b fraction denominatror (BFRACTION)  */
+    t_uint16 buffer_fullness;                   /**< \brief picture layer buffer fullness (BF)   */
+    t_uint16 picture_res;                       /**< \brief picture resolution: 1x1 == 0 2x1 == 1,1x2 == 2, 2x2 = 3  */
+    t_uint16 max_picture_width;                 /**< \brief maximum width of the picture (Annex J HORIZ_SIZE)   */
+    t_uint16 max_picture_height;                /**< \brief maximum height of the picture (Annex J VERT_SIZE)   */
+    t_uint16 picture_width;                     /**< \brief true width of the decoded picture (including res)   */
+    t_uint16 picture_height;                    /**< \brief true height of the decoded picture   */
+    t_uint16 picture_type;                      /**< \brief picture type: I==0, P==1,B==2,BI==3,SKIPPED==4   */
+    t_uint32 padding1;
+    t_uint32 padding2;
+
+} t_param_out;
+
+
+
+#endif

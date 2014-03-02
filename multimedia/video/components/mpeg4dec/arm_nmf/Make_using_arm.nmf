@@ -1,0 +1,115 @@
+
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+MODULE_NAME:=mpeg4dec
+CORE=arm
+export CORE
+COMPONENT_PATH += $(MMROOT)/video/components
+
+SRCPATH += $(MMROOT)/shared/ens
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENTS+= mpeg4dec.arm_nmf.mpeg4dec_sw
+
+CONFFILES =     $(MODULE_NAME)/arm_nmf/ddep/ddep.conf			\
+		$(MODULE_NAME)/arm_nmf/parser_arm/parser_arm.conf               \
+                $(MODULE_NAME)/arm_nmf/algo/algo.conf			\
+                $(MODULE_NAME)/arm_nmf/mpeg4deccontroller/mpeg4deccontroller.conf               \
+                $(MODULE_NAME)/arm_nmf/mpeg4dec_sw/mpeg4dec_sw.conf	\
+		$(MODULE_NAME)//arm_nmf/algo_deblock/algo_deblock.conf       
+                		
+CPPPATH += -I$(MMROOT)/shared/ens/components/common
+
+# OST capability
+include ../make.ost_conf
+OST_SRC_DIR += parser_arm/src
+OST_SRC_DIR += mpeg4deccontroller/src
+OST_SRC_DIR += ddep/src
+OST_SRC_DIR += algo/src
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_ARM_1)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_arm
+CPPFLAGS  += -I$(MMROOT)/video/components/mpeg4dec/inc/autogentraces
+
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/api/memoryRequirements.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/Copy.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/sendportSettings.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/portSettings.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/algo.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/ddep.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/emptythisheader.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/end_algo.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/fillthisheader.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/log_event.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/update_algo.idl
+ifeq ($(findstring 5500,$(PLATFORM)),5500)
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/algo_deblock.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/end_algodeblock.idl
+endif
+PREBUILD_COMPONENTS = conf-check $(CONFFILES)	
+
+SRCPATH += $(NMF)/$(MMSYSTEM)/api
+SRCPATH += $(MM_IDT_DIR)
+SRCPATH += $(MMROOT)/shared/ens/nmf/common
+SRCPATH += $(MMROOT)/shared/ens/nmf
+SRCPATH += $(MMROOT)/shared/ens/nmf/mpc/common
+SRCPATH += $(MMROOT)/shared/ens/nmf/host
+SRCPATH += $(MMROOT)/shared/ens/nmf/host/common
+ifneq ($(findstring 5500,$(PLATFORM)),5500)
+SRCPATH += $(MMROOT)/video/components/vpp/mpc      
+SRCPATH += $(MMROOT)/video/components/vpp/mpc/share     
+SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/share
+endif
+SRCPATH += $(MMROOT)/shared/nmf/tools/api/mpcee
+
+SRCPATH+= \
+        $(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/ddep/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser_arm/src    \
+        $(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/algo/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/algo/src/NEON    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/common/src \
+        $(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/mpeg4deccontroller/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/share  
+
+ifeq ($(MMPROCESSOR),arm11) # RVDS_2_2 is specific flag to be enabled for cpu arm11 on rvds 2.2 
+  CPPFLAGS+= -DRVDS_2_2 
+endif
+
+ifeq ($(findstring 5500,$(PLATFORM)),5500)
+    CPPFLAGS+= -I$(MM_NMF_REPO_DIR)/$(MMPROCESSOR)-x-$(MMCOMPILER)-x -D__CACHE_OPTI  -D_CACHE_OPT_
+endif 
+        
+CPPFLAGS +=  -D__MPEG4DEC_ARM_NMF    -DSOFT_DECODER   -DCA9
+CPPFLAGS += -D_CACHE_OPT_
+CPPFLAGS += -D__CACHE_OPTI
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/ddep/inc    \
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser_arm/inc	\
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/algo/inc
+ifeq ($(findstring 5500,$(PLATFORM)),5500)
+CPPFLAGS += \
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/algo_deblock/inc
+endif
+CPPFLAGS += \
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/common/inc \
+        -I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/api \
+	-I$(SHARED_REPOSITORY) \
+	-I$(MMROOT)/shared/ens/proxy/omxil \
+	-I$(MMROOT)/shared/ens/proxy/include	\
+       
+CPPFLAGS += -DRELEASE -D__RELEASE
+CPPFLAGS+= -I$(MMROOT)/video/include
+
+
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+
+
+       
+        
+
+
+
+    

@@ -1,0 +1,54 @@
+Release Notes
+=============
+
+FlashKit RCP provides features for signing and flashing mobile equipment firmware.
+The FlashKit RCP is designed to run on both Microsoft Windows and Linux operation system. 
+
+Main features
+-------------
+- Track one or more service mode connected Mobile Equipment
+- Support for Flash and Customize Use Cases
+- Flash software to mobile equipment (Flash signed flash archives, dump area, erase area) 
+- Collecting dumps
+- Customize ME (IMEI, (P)AF, …)
+- Management configuration files (*.mesp, *.prfl)
+
+FlashKit RCP contains
+---------------------
+Flash Tool Backend
+Flash Tool GUI 
+ - wizards for Certificates and licenses 
+ - wizards for Sign Packages
+ - wizard for Signed Software 
+
+
+COPYRIGHT
+---------
+(c) Copyright 2010 ST-Ericsson
+
+These products includes software developed by:
+
+Apache Software Foundation <http://www.apache.org/> under Apache License
+
+Eclipse Foundation <http://www.eclipse.org/>  under EPL License
+
+Legion Of Bouncy Castle <http://www.bouncycastle.org/> under MIT X11 License
+
+LibUsb  <http://www.libusb.org/> under LGPL License
+
+NewLib  <http://sourceware.org/newlib/> under Multiple Licenses
+
+
+KNOWN ISSUES
+------------
+Following is a list of known issues 
+
+* In case the remote connection port has been changed the restart of the 
+application is needed!  
+* During development we have met unstable behaviour of Libusb under
+Windows for communication of multiple USB devices. This problem made us
+to implement minor fixes in windows.c file. The changed code is
+distributed under the same license as the original one, LGPL v. 2.1.
+We expect that a new version of Libusb for Windows will appear which
+would solve this issue. When it happens, the library changed by us will
+be replaced by the newer version.

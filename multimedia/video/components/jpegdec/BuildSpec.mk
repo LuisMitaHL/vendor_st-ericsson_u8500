@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_video/components/jpegdec=bin
+NO_STD_BUILD_video/components/jpegdec=1
+BUILD_MMDSP_NMF_video/components/jpegdec=bin
+BUILD_ARM_PROC_video/components/jpegdec=bin
+BUILD_ARM_CODE_video/components/jpegdec=src
+BUILD_ARM_NMF_video/components/jpegdec=src
+BUILD_XP70_SIA_CODE_video/components/jpegdec=false

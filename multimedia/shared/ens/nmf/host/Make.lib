@@ -1,0 +1,80 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+#-------------------------------
+# Default Config
+#-------------------------------
+
+
+#ifndef MMSYSTEM
+MMSYSTEM=x
+#endif
+#ifndef MMBOARD
+MMBOARD=x
+#endif
+
+include ../../make.ost_conf
+#KStEnsOstTraceNmfHost   = KStUidCommonDefine016 = 0x2003064B = 537069131
+OST_COMPONENT_ID = 537069131
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_hst
+OST_SRC_DIR = fsm
+CPPFLAGS+=-I$(COMPONENT_TOP_DIR)/inc/autogentraces
+INSTALL_DICO=ENS_nmf_hst.xml
+
+include $(MM_MAKEFILES_DIR)/SharedConfig.mk
+
+ifndef ENS_VERSION
+$(error ENS_VERSION must be defined)
+endif
+
+ifndef MEDIUM
+$(error MEDIUM must be defined)
+endif
+
+ifeq ($(MEDIUM),shared)
+LIBSUFFIX =
+else
+LIBSUFFIX = _$(MEDIUM)
+endif
+
+#----------------------------
+#     Entry for Make.rules
+#
+#VPATH    : Search Path for prerequisites.(see default value in Make.rules)
+#CFLAGS   : Extra flags to give to the C compiler. (see default value in Make.rules)
+#CXXFLAGS : Extra flags to give to the C++ compiler. (see default value in Make.rules)
+#CPPFLAGS : Extra flags to give to the C preprocessor.(see default value in Make.rules)
+#
+#DEP_DEP  : Dependencies of dependency files. 
+#           (for example generated header file before generating *.d)
+#TOBECLEAN: List of files you want to delete on realclean target.
+#
+#LIBNAME  : Name of the library without the prefix lib.
+#LIBOBJ   : List of object file to put in the lib
+#
+#EXENAME  : Name of executable
+#EXEOBJ   : List of object file needed to build executable
+#         For multiple executable, suffix these to variable with _1, _2 ...  
+#
+#----------------------------
+CPPFLAGS := -Ifsm/generic -Ifsm/component -Icommon -I$(COMPONENT_TOP_DIR)/proxy/include $(CPPFLAGS)
+
+VPATH+= common fsm/generic fsm/component fsm/controller
+LIBOBJ= FSM PortQueue Port Component Controller
+
+LIBNAME           = st_ensfsm_host$(LIBSUFFIX)
+INSTALL_LIB       = lib$(LIBNAME).a
+INSTALL_HEADERDIR = fsm/component fsm/generic fsm/controller common
+
+#WARNING todo target is MANDATORY (exe and/or lib)clear
+todo: lib
+
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MM_MAKEFILES_DIR)/SharedRules.mk
+
+#-------------------------------
+# local Rules
+#-------------------------------
+

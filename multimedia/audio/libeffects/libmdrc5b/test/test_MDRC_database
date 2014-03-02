@@ -1,0 +1,242 @@
+#!/bin/sh
+
+# test multiple sample rate
+exe="../standalone/bin/x86_mmdsp/mdrc5b.exe"
+paradir="./MDRC-test-database/config_files"
+indir="./MDRC-test-database/input"
+outdir="./MDRC-test-database/output"
+
+${exe} ${paradir}/p_mdrc_limiter_8k  ${indir}/sweep8k.pcm  ${outdir}/sweep8k_mdrc_limiter_8k-nk.pcm   1 8000  48  B
+${exe} ${paradir}/p_mdrc_limiter_12k ${indir}/sweep12k.pcm ${outdir}/sweep12k_mdrc_limiter_12k-nk.pcm 1 12000 48  B
+${exe} ${paradir}/p_mdrc_limiter_11k ${indir}/sweep11k.pcm ${outdir}/sweep11k_mdrc_limiter_11k-nk.pcm 1 11025 48  B
+
+${exe} ${paradir}/p_mdrc_limiter_48k ${indir}/sweep48k.pcm ${outdir}/sweep48k_mdrc_limiter_48k-nk.pcm 1 48000 48  B
+${exe} ${paradir}/p_mdrc_limiter_44k ${indir}/sweep44k.pcm ${outdir}/sweep44k_mdrc_limiter_44k-nk.pcm 1 44100 48  B
+${exe} ${paradir}/p_mdrc_limiter_32k ${indir}/sweep32k.pcm ${outdir}/sweep32k_mdrc_limiter_32k-nk.pcm 1 32000 48  B
+${exe} ${paradir}/p_mdrc_limiter_24k ${indir}/sweep24k.pcm ${outdir}/sweep24k_mdrc_limiter_24k-nk.pcm 1 24000 48  B
+${exe} ${paradir}/p_mdrc_limiter_22k ${indir}/sweep22k.pcm ${outdir}/sweep22k_mdrc_limiter_22k-nk.pcm 1 22050 48  B
+${exe} ${paradir}/p_mdrc_limiter_16k ${indir}/sweep16k.pcm ${outdir}/sweep16k_mdrc_limiter_16k-nk.pcm 1 16000 48  B
+
+
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_attack_1m       MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_attack_1m.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_attack_1s       MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_attack_1s.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_lmt_disable     MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_lmt_disable.pcm     2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_mdrc_3b         MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_mdrc_3b.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_mdrc_5b         MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_mdrc_5b.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_mdrc_disable    MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_mdrc_disable.pcm    2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_pg_m45dB        MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_pg_m45dB.pcm        2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_release_10m     MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_release_10m.pcm     2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_release_5s      MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-p_release_5s.pcm      2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_amplitude   MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_amplitude.pcm   2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_ihf         MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_ihf.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_kneepoint10 MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_kneepoint10.pcm 2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_mode0       MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_mode0.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_mode1       MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_mode1.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_mode2       MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_mode2.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_rms         MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_rms.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_thresh-1    MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_thresh-1.pcm    2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_thresh-60   MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-param_thresh-60.pcm   2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params1           MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-params1.pcm           2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params2           MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-params2.pcm           2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params3           MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-params3.pcm           2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params4           MDRC-test-database/input/Sample1_1.pcm MDRC-test-database/output/Sample1_1-nk-params4.pcm           2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_attack_1m       MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_attack_1m.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_attack_1s       MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_attack_1s.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_lmt_disable     MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_lmt_disable.pcm     2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_mdrc_3b         MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_mdrc_3b.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_mdrc_5b         MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_mdrc_5b.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_mdrc_disable    MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_mdrc_disable.pcm    2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_pg_m45dB        MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_pg_m45dB.pcm        2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_release_10m     MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_release_10m.pcm     2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/p_release_5s      MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-p_release_5s.pcm      2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_amplitude   MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_amplitude.pcm   2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_ihf         MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_ihf.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_kneepoint10 MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_kneepoint10.pcm 2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_mode0       MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_mode0.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_mode1       MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_mode1.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_mode2       MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_mode2.pcm       2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_rms         MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_rms.pcm         2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_thresh-1    MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_thresh-1.pcm    2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/param_thresh-60   MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-param_thresh-60.pcm   2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params1           MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-params1.pcm           2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params2           MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-params2.pcm           2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params3           MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-params3.pcm           2 48000 48
+../standalone/bin/x86_mmdsp/mdrc5b.exe MDRC-test-database/config_files/params4           MDRC-test-database/input/sweep_new.pcm MDRC-test-database/output/sweep_new-nk-params4.pcm           2 48000 48
+
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_attack_1m.pcm_2       MDRC-test-database/output/Sample1_1-nk-p_attack_1m.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_attack_1m.pcm_2       MDRC-test-database/output/Sample1_1-nk-p_attack_1m.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_attack_1s.pcm_2       MDRC-test-database/output/Sample1_1-nk-p_attack_1s.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_attack_1s.pcm_2       MDRC-test-database/output/Sample1_1-nk-p_attack_1s.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_lmt_disable.pcm_2     MDRC-test-database/output/Sample1_1-nk-p_lmt_disable.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_lmt_disable.pcm_2     MDRC-test-database/output/Sample1_1-nk-p_lmt_disable.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_mdrc_3b.pcm_2         MDRC-test-database/output/Sample1_1-nk-p_mdrc_3b.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_mdrc_3b.pcm_2         MDRC-test-database/output/Sample1_1-nk-p_mdrc_3b.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_mdrc_5b.pcm_2         MDRC-test-database/output/Sample1_1-nk-p_mdrc_5b.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_mdrc_5b.pcm_2         MDRC-test-database/output/Sample1_1-nk-p_mdrc_5b.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_mdrc_disable.pcm_2    MDRC-test-database/output/Sample1_1-nk-p_mdrc_disable.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_mdrc_disable.pcm_2    MDRC-test-database/output/Sample1_1-nk-p_mdrc_disable.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_pg_m45dB.pcm_2        MDRC-test-database/output/Sample1_1-nk-p_pg_m45dB.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_pg_m45dB.pcm_2        MDRC-test-database/output/Sample1_1-nk-p_pg_m45dB.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_release_10m.pcm_2     MDRC-test-database/output/Sample1_1-nk-p_release_10m.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_release_10m.pcm_2     MDRC-test-database/output/Sample1_1-nk-p_release_10m.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-p_release_5s.pcm_2      MDRC-test-database/output/Sample1_1-nk-p_release_5s.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-p_release_5s.pcm_2      MDRC-test-database/output/Sample1_1-nk-p_release_5s.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_amplitude.pcm_2   MDRC-test-database/output/Sample1_1-nk-param_amplitude.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_amplitude.pcm_2   MDRC-test-database/output/Sample1_1-nk-param_amplitude.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_ihf.pcm_2         MDRC-test-database/output/Sample1_1-nk-param_ihf.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_ihf.pcm_2         MDRC-test-database/output/Sample1_1-nk-param_ihf.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_kneepoint10.pcm_2 MDRC-test-database/output/Sample1_1-nk-param_kneepoint10.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_kneepoint10.pcm_2 MDRC-test-database/output/Sample1_1-nk-param_kneepoint10.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_mode0.pcm_2       MDRC-test-database/output/Sample1_1-nk-param_mode0.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_mode0.pcm_2       MDRC-test-database/output/Sample1_1-nk-param_mode0.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_mode1.pcm_2       MDRC-test-database/output/Sample1_1-nk-param_mode1.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_mode1.pcm_2       MDRC-test-database/output/Sample1_1-nk-param_mode1.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_mode2.pcm_2       MDRC-test-database/output/Sample1_1-nk-param_mode2.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_mode2.pcm_2       MDRC-test-database/output/Sample1_1-nk-param_mode2.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_rms.pcm_2         MDRC-test-database/output/Sample1_1-nk-param_rms.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_rms.pcm_2         MDRC-test-database/output/Sample1_1-nk-param_rms.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_thresh-1.pcm_2    MDRC-test-database/output/Sample1_1-nk-param_thresh-1.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_thresh-1.pcm_2    MDRC-test-database/output/Sample1_1-nk-param_thresh-1.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-param_thresh-60.pcm_2   MDRC-test-database/output/Sample1_1-nk-param_thresh-60.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-param_thresh-60.pcm_2   MDRC-test-database/output/Sample1_1-nk-param_thresh-60.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-params1.pcm_2           MDRC-test-database/output/Sample1_1-nk-params1.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-params1.pcm_2           MDRC-test-database/output/Sample1_1-nk-params1.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-params2.pcm_2           MDRC-test-database/output/Sample1_1-nk-params2.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-params2.pcm_2           MDRC-test-database/output/Sample1_1-nk-params2.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-params3.pcm_2           MDRC-test-database/output/Sample1_1-nk-params3.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-params3.pcm_2           MDRC-test-database/output/Sample1_1-nk-params3.pcm
+echo "diff MDRC-test-database/output/Sample1_1-nk-params4.pcm_2           MDRC-test-database/output/Sample1_1-nk-params4.pcm"
+diff       MDRC-test-database/output/Sample1_1-nk-params4.pcm_2           MDRC-test-database/output/Sample1_1-nk-params4.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_attack_1m.pcm_2       MDRC-test-database/output/sweep_new-nk-p_attack_1m.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_attack_1m.pcm_2       MDRC-test-database/output/sweep_new-nk-p_attack_1m.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_attack_1s.pcm_2       MDRC-test-database/output/sweep_new-nk-p_attack_1s.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_attack_1s.pcm_2       MDRC-test-database/output/sweep_new-nk-p_attack_1s.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_lmt_disable.pcm_2     MDRC-test-database/output/sweep_new-nk-p_lmt_disable.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_lmt_disable.pcm_2     MDRC-test-database/output/sweep_new-nk-p_lmt_disable.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_mdrc_3b.pcm_2         MDRC-test-database/output/sweep_new-nk-p_mdrc_3b.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_mdrc_3b.pcm_2         MDRC-test-database/output/sweep_new-nk-p_mdrc_3b.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_mdrc_5b.pcm_2         MDRC-test-database/output/sweep_new-nk-p_mdrc_5b.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_mdrc_5b.pcm_2         MDRC-test-database/output/sweep_new-nk-p_mdrc_5b.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_mdrc_disable.pcm_2    MDRC-test-database/output/sweep_new-nk-p_mdrc_disable.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_mdrc_disable.pcm_2    MDRC-test-database/output/sweep_new-nk-p_mdrc_disable.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_pg_m45dB.pcm_2        MDRC-test-database/output/sweep_new-nk-p_pg_m45dB.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_pg_m45dB.pcm_2        MDRC-test-database/output/sweep_new-nk-p_pg_m45dB.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_release_10m.pcm_2     MDRC-test-database/output/sweep_new-nk-p_release_10m.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_release_10m.pcm_2     MDRC-test-database/output/sweep_new-nk-p_release_10m.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-p_release_5s.pcm_2      MDRC-test-database/output/sweep_new-nk-p_release_5s.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-p_release_5s.pcm_2      MDRC-test-database/output/sweep_new-nk-p_release_5s.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_amplitude.pcm_2   MDRC-test-database/output/sweep_new-nk-param_amplitude.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_amplitude.pcm_2   MDRC-test-database/output/sweep_new-nk-param_amplitude.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_ihf.pcm_2         MDRC-test-database/output/sweep_new-nk-param_ihf.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_ihf.pcm_2         MDRC-test-database/output/sweep_new-nk-param_ihf.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_kneepoint10.pcm_2 MDRC-test-database/output/sweep_new-nk-param_kneepoint10.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_kneepoint10.pcm_2 MDRC-test-database/output/sweep_new-nk-param_kneepoint10.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_mode0.pcm_2       MDRC-test-database/output/sweep_new-nk-param_mode0.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_mode0.pcm_2       MDRC-test-database/output/sweep_new-nk-param_mode0.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_mode1.pcm_2       MDRC-test-database/output/sweep_new-nk-param_mode1.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_mode1.pcm_2       MDRC-test-database/output/sweep_new-nk-param_mode1.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_mode2.pcm_2       MDRC-test-database/output/sweep_new-nk-param_mode2.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_mode2.pcm_2       MDRC-test-database/output/sweep_new-nk-param_mode2.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_rms.pcm_2         MDRC-test-database/output/sweep_new-nk-param_rms.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_rms.pcm_2         MDRC-test-database/output/sweep_new-nk-param_rms.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_thresh-1.pcm_2    MDRC-test-database/output/sweep_new-nk-param_thresh-1.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_thresh-1.pcm_2    MDRC-test-database/output/sweep_new-nk-param_thresh-1.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-param_thresh-60.pcm_2   MDRC-test-database/output/sweep_new-nk-param_thresh-60.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-param_thresh-60.pcm_2   MDRC-test-database/output/sweep_new-nk-param_thresh-60.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-params1.pcm_2           MDRC-test-database/output/sweep_new-nk-params1.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-params1.pcm_2           MDRC-test-database/output/sweep_new-nk-params1.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-params2.pcm_2           MDRC-test-database/output/sweep_new-nk-params2.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-params2.pcm_2           MDRC-test-database/output/sweep_new-nk-params2.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-params3.pcm_2           MDRC-test-database/output/sweep_new-nk-params3.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-params3.pcm_2           MDRC-test-database/output/sweep_new-nk-params3.pcm
+echo "diff MDRC-test-database/output/sweep_new-nk-params4.pcm_2           MDRC-test-database/output/sweep_new-nk-params4.pcm"
+diff       MDRC-test-database/output/sweep_new-nk-params4.pcm_2           MDRC-test-database/output/sweep_new-nk-params4.pcm
+
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_attack_1m.pcm       MDRC-test-database/ref_output/Sample1_1-nk-p_attack_1m.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_attack_1m.pcm       MDRC-test-database/ref_output/Sample1_1-nk-p_attack_1m.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_attack_1s.pcm       MDRC-test-database/ref_output/Sample1_1-nk-p_attack_1s.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_attack_1s.pcm       MDRC-test-database/ref_output/Sample1_1-nk-p_attack_1s.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_lmt_disable.pcm     MDRC-test-database/ref_output/Sample1_1-nk-p_lmt_disable.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_lmt_disable.pcm     MDRC-test-database/ref_output/Sample1_1-nk-p_lmt_disable.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_mdrc_3b.pcm         MDRC-test-database/ref_output/Sample1_1-nk-p_mdrc_3b.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_mdrc_3b.pcm         MDRC-test-database/ref_output/Sample1_1-nk-p_mdrc_3b.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_mdrc_5b.pcm         MDRC-test-database/ref_output/Sample1_1-nk-p_mdrc_5b.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_mdrc_5b.pcm         MDRC-test-database/ref_output/Sample1_1-nk-p_mdrc_5b.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_mdrc_disable.pcm    MDRC-test-database/ref_output/Sample1_1-nk-p_mdrc_disable.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_mdrc_disable.pcm    MDRC-test-database/ref_output/Sample1_1-nk-p_mdrc_disable.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_pg_m45dB.pcm        MDRC-test-database/ref_output/Sample1_1-nk-p_pg_m45dB.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_pg_m45dB.pcm        MDRC-test-database/ref_output/Sample1_1-nk-p_pg_m45dB.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_release_10m.pcm     MDRC-test-database/ref_output/Sample1_1-nk-p_release_10m.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_release_10m.pcm     MDRC-test-database/ref_output/Sample1_1-nk-p_release_10m.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_release_5s.pcm      MDRC-test-database/ref_output/Sample1_1-nk-p_release_5s.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-p_release_5s.pcm      MDRC-test-database/ref_output/Sample1_1-nk-p_release_5s.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_amplitude.pcm   MDRC-test-database/ref_output/Sample1_1-nk-param_amplitude.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_amplitude.pcm   MDRC-test-database/ref_output/Sample1_1-nk-param_amplitude.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_ihf.pcm         MDRC-test-database/ref_output/Sample1_1-nk-param_ihf.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_ihf.pcm         MDRC-test-database/ref_output/Sample1_1-nk-param_ihf.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_kneepoint10.pcm MDRC-test-database/ref_output/Sample1_1-nk-param_kneepoint10.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_kneepoint10.pcm MDRC-test-database/ref_output/Sample1_1-nk-param_kneepoint10.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_mode0.pcm       MDRC-test-database/ref_output/Sample1_1-nk-param_mode0.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_mode0.pcm       MDRC-test-database/ref_output/Sample1_1-nk-param_mode0.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_mode1.pcm       MDRC-test-database/ref_output/Sample1_1-nk-param_mode1.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_mode1.pcm       MDRC-test-database/ref_output/Sample1_1-nk-param_mode1.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_mode2.pcm       MDRC-test-database/ref_output/Sample1_1-nk-param_mode2.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_mode2.pcm       MDRC-test-database/ref_output/Sample1_1-nk-param_mode2.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_rms.pcm         MDRC-test-database/ref_output/Sample1_1-nk-param_rms.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_rms.pcm         MDRC-test-database/ref_output/Sample1_1-nk-param_rms.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_thresh-1.pcm    MDRC-test-database/ref_output/Sample1_1-nk-param_thresh-1.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_thresh-1.pcm    MDRC-test-database/ref_output/Sample1_1-nk-param_thresh-1.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_thresh-60.pcm   MDRC-test-database/ref_output/Sample1_1-nk-param_thresh-60.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-param_thresh-60.pcm   MDRC-test-database/ref_output/Sample1_1-nk-param_thresh-60.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params1.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params1.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params1.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params1.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params2.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params2.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params2.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params2.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params3.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params3.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params3.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params3.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params4.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params4.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/Sample1_1-nk-params4.pcm           MDRC-test-database/ref_output/Sample1_1-nk-params4.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_attack_1m.pcm       MDRC-test-database/ref_output/sweep_new-nk-p_attack_1m.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_attack_1m.pcm       MDRC-test-database/ref_output/sweep_new-nk-p_attack_1m.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_attack_1s.pcm       MDRC-test-database/ref_output/sweep_new-nk-p_attack_1s.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_attack_1s.pcm       MDRC-test-database/ref_output/sweep_new-nk-p_attack_1s.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_lmt_disable.pcm     MDRC-test-database/ref_output/sweep_new-nk-p_lmt_disable.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_lmt_disable.pcm     MDRC-test-database/ref_output/sweep_new-nk-p_lmt_disable.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_mdrc_3b.pcm         MDRC-test-database/ref_output/sweep_new-nk-p_mdrc_3b.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_mdrc_3b.pcm         MDRC-test-database/ref_output/sweep_new-nk-p_mdrc_3b.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_mdrc_5b.pcm         MDRC-test-database/ref_output/sweep_new-nk-p_mdrc_5b.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_mdrc_5b.pcm         MDRC-test-database/ref_output/sweep_new-nk-p_mdrc_5b.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_mdrc_disable.pcm    MDRC-test-database/ref_output/sweep_new-nk-p_mdrc_disable.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_mdrc_disable.pcm    MDRC-test-database/ref_output/sweep_new-nk-p_mdrc_disable.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_pg_m45dB.pcm        MDRC-test-database/ref_output/sweep_new-nk-p_pg_m45dB.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_pg_m45dB.pcm        MDRC-test-database/ref_output/sweep_new-nk-p_pg_m45dB.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_release_10m.pcm     MDRC-test-database/ref_output/sweep_new-nk-p_release_10m.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_release_10m.pcm     MDRC-test-database/ref_output/sweep_new-nk-p_release_10m.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_release_5s.pcm      MDRC-test-database/ref_output/sweep_new-nk-p_release_5s.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-p_release_5s.pcm      MDRC-test-database/ref_output/sweep_new-nk-p_release_5s.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_amplitude.pcm   MDRC-test-database/ref_output/sweep_new-nk-param_amplitude.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_amplitude.pcm   MDRC-test-database/ref_output/sweep_new-nk-param_amplitude.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_ihf.pcm         MDRC-test-database/ref_output/sweep_new-nk-param_ihf.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_ihf.pcm         MDRC-test-database/ref_output/sweep_new-nk-param_ihf.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_kneepoint10.pcm MDRC-test-database/ref_output/sweep_new-nk-param_kneepoint10.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_kneepoint10.pcm MDRC-test-database/ref_output/sweep_new-nk-param_kneepoint10.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_mode0.pcm       MDRC-test-database/ref_output/sweep_new-nk-param_mode0.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_mode0.pcm       MDRC-test-database/ref_output/sweep_new-nk-param_mode0.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_mode1.pcm       MDRC-test-database/ref_output/sweep_new-nk-param_mode1.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_mode1.pcm       MDRC-test-database/ref_output/sweep_new-nk-param_mode1.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_mode2.pcm       MDRC-test-database/ref_output/sweep_new-nk-param_mode2.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_mode2.pcm       MDRC-test-database/ref_output/sweep_new-nk-param_mode2.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_rms.pcm         MDRC-test-database/ref_output/sweep_new-nk-param_rms.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_rms.pcm         MDRC-test-database/ref_output/sweep_new-nk-param_rms.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_thresh-1.pcm    MDRC-test-database/ref_output/sweep_new-nk-param_thresh-1.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_thresh-1.pcm    MDRC-test-database/ref_output/sweep_new-nk-param_thresh-1.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_thresh-60.pcm   MDRC-test-database/ref_output/sweep_new-nk-param_thresh-60.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-param_thresh-60.pcm   MDRC-test-database/ref_output/sweep_new-nk-param_thresh-60.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params1.pcm           MDRC-test-database/ref_output/sweep_new-nk-params1.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params1.pcm           MDRC-test-database/ref_output/sweep_new-nk-params1.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params2.pcm           MDRC-test-database/ref_output/sweep_new-nk-params2.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params2.pcm           MDRC-test-database/ref_output/sweep_new-nk-params2.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params3.pcm           MDRC-test-database/ref_output/sweep_new-nk-params3.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params3.pcm           MDRC-test-database/ref_output/sweep_new-nk-params3.pcm
+echo                        "rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params4.pcm           MDRC-test-database/ref_output/sweep_new-nk-params4.pcm"
+../../../afm/tools/bin/Linux/rmsdiff -b -m -r MDRC-test-database/output/sweep_new-nk-params4.pcm           MDRC-test-database/ref_output/sweep_new-nk-params4.pcm

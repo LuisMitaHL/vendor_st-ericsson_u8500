@@ -1,0 +1,16 @@
+#include <pcmprocessings/effectconfig.idt>
+
+typedef enum {
+  PCMPROCESSING_MODE_HOST_INPLACE_PUSH,
+  PCMPROCESSING_MODE_HOST_INPLACE_PULL,
+  PCMPROCESSING_MODE_HOST_NOT_INPLACE,
+  PCMPROCESSING_MODE_HOST_COUNT // Last value
+} t_host_pcmprocessing_mode;
+
+typedef struct {
+    t_host_pcmprocessing_mode    processingMode;
+    t_host_effect_config         effectConfig;
+} t_host_pcmprocessing_config;
+
+void setParameter(t_host_pcmprocessing_config config);
+

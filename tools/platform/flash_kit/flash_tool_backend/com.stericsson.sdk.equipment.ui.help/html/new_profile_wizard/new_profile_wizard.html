@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>New Profile Wizard General Settings</title>
+<style>
+h1 {
+	font-family: sans-serif, verdana;
+	font-size: 16pt;
+	font-weight: normal;
+}
+
+h2 {
+	font-family: sans-serif, verdana;
+	font-size: 12pt;
+	font-weight: bold;
+}
+
+h3 {
+	font-family: sans-serif, verdana;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+p {
+	font-family: sans-serif, verdnana;
+	font-size: 10pt;
+}
+
+li {
+	font-family: sans-serif, verdnana;
+	font-size: 10pt;
+}
+</style>
+</head>
+<body>
+<h1>Profile General Settings Wizard</h1>
+<p>Different MEs may have different configurations, both in terms of hardware and software. A profile is a text file containing the following information
+for a certain ME configuration:</p>
+<ul>
+	<li>Profile Name - specifies the name of the profile</li>
+	<li>Platform Filter - defines for which ME's platform this profile is intended, e.g. U8500</li>
+	<li>Software Type and Path - the type of software and path to it. This software is used for communication between Flash Kit and ME, e.g. loader.</li>
+	<li>Properties - specifies common properties like "Uses loader communication", "Boot indication", etc. These properties define behavior of the ME in connection to Flash Kit</li>
+	<li>Security Properties - consist of list of security properties which can be set up in ME, e.g. IMEI, Control Keys.</li>
+</ul>
+<h2>Instructions</h2>
+<p>Open the New Profile Wizard by completing the
+following steps:</p>
+<ul>
+	<li>In the Eclipse menu, select File -&gt; New &gt; Other... (or
+	press Ctrl+N)</li>
+	<li>Expand the Flash Kit category</li>
+	<li>Select the New Profile and press Next</li>
+</ul>
+<p>The following wizard will pop-up.</p>
+<img src="../../images/new_profile_wizard_general.png" />
+<p>Required Fields:</p>
+<ul>
+	<li>Name: Profile name</li>
+	<li>Platform: Select one of platform filters</li>
+	<li>Type: Select one of software types</li>
+	<li>Boot image: Path to file of selected software type</li>
+	<li>Save to file: File where newly created profile will be stored.</li>
+</ul>
+
+<h2>Properties Settings</h2>
+<p>The second page of New Profile Wizard enables to set different properties which will be stored in profile file.
+Security and common properties can be specified.</p>
+<p>Common properties can be set up on the upper part of this page. Only those checkbox-style properties, 
+which are set to true, will be exported to newly created profile file. All other properties are exported automatically.</p>
+<p>The lower part of this page provides UI for creating a list of security properties which can be set on the ME of specified platform 
+(of this platform, for which this profile is being created). It is necessary to define ID and Name of such security property, and possibly 
+also place thick whether this property should be readable and/or writable.</p>
+<img src="../../images/new_profile_wizard_properties.png" />
+
+<h2>Summary</h2>
+<p>The last page of this wizard shows the content of newly created profile file. This is the last step when it is possible to return
+to previous pages and repair the entered data. When "Finish" is pressed, the profile file with specified name is created in the defined path.</p>
+<img src="../../images/new_profile_wizard_summary.png" />
+</body>
+</html>

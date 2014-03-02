@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+* Copyright (C) ST-Ericsson SA 2011
+* License terms: 3-clause BSD license
+-->
+<?xml-stylesheet type="text/xml" href="command_ids_h.xsl"?>
+<?xml-stylesheet type="text/xml" href="commands_marshal.xsl"?>
+<?xml-stylesheet type="text/xml" href="commands_h.xsl"?>
+<?xml-stylesheet type="text/xml" href="commands_impl_h.xsl"?>
+
+<commandspec>
+
+  <typedef>
+    <interface type="loader" name="SupportedCommand"/>
+    <value type="uint32" name="Group">Application Group number</value>
+    <value type="uint32" name="Command">Command number</value>
+    <value type="uint32" name="Permitted">Permission value</value>
+  </typedef>
+
+  <typedef>
+    <interface type="loader" name="ListDevice"/>
+    <value type="char_array" name="Path_p" size="256">Absolute device path pointing of the described device</value>
+    <value type="char_array" name="Type_p" size="256">Type of the device</value>
+    <value type="uint64" name="BlockSize">Size of the smallest addressable unit in the device in bytes</value>
+    <value type="uint64" name="Start">Offset in bytes of the start of the device relative to its parents offset 0 with a granularity of its parents block size</value>
+    <value type="uint64" name="Length">Length of the device in bytes</value>
+  </typedef>
+
+  <typedef>
+    <interface type="loader" name="DirEntry"/>
+    <value type="string" name="Name_p">Name of file or directory</value>
+    <value type="uint64" name="Size">Size of file or directory</value>
+    <value type="uint32" name="Mode">Indicator if it is file or directory</value>
+    <value type="uint32" name="Time">Time of last modification</value>
+  </typedef>
+
+  <typedef>
+    <interface type="loader" name="Cipher"/>
+    <value type="string" name="Name_p">supported ciphers</value>
+  </typedef>
+
+  <AuthenticationList>
+    <value number="1" name="A1">A1</value>
+    <value number="2" name="CA">CA</value>
+  </AuthenticationList>
+
+  <PermissionList>
+    <value number="0" name="ServiceModeLevel">ServiceModeLevel</value>
+    <value number="1" name="FlashModeLevel">FlashModeLevel</value>
+    <value number="64" name="AdvanceServiceModeLevel">AdvanceServiceModeLevel</value>
+    <value number="65" name="LimitedProductionModeLevel">LimitedProductionModeLevel</value>
+    <value number="66" name="VeryLimitedProductionModeLevel">VeryLimitedProductionModeLevel</value>
+    <value number="127" name="ProductionModeLevel">ProductionModeLevel</value>
+  </PermissionList>
+
+  <!--
+  Predefine generic type of data are: uint32, string and buffer.
+  !!!!! IMPORTANT !!!!!
+  All new types of data (structures or vectors of structures) that need to be defined should first be reviewed and approved by:
+  Hans Holmberg (QHANHOL) for loaders, Mikael Sjolen XX for PTK and Daniel Chong for PA.
+ -->
+
+  <group number="1" name="System application">
+    <documentation>
+      System commands group (0x01)
+    </documentation>
+    <interface type="loader" name="System"/>
+
+    <command number="1" name="Loader Start-up Status" ADbg="false" source="ME">
+      <interface type="loader" name="LoaderStartUpStatus"/>
+      <documentation>
+        The Loader Start-up Status command is sent by the ME to notify the host that it has started. The Status parameter indicates in what mode the Loader started.
+      </documentation>
+      <input>
+        <value type="uint32" name="Status">0 = started successfully, 1 = failed to start (lack of permissions), 2 = software module failed to initialize</value>
+        <value type="string" name="LoaderVersion_p">Loader version identifier</value>
+        <value type="string" name="ProtocolVersion_p">Protocol version identifier</value>
+      </input>
+      <output>
+      </output>
+    </command>
+
+    <command number="2" name="Change Uart Baud Rate" ADbg="false" source="PC" supportedcmdtype="longrunning">
+      <interface type="loader" name="ChangeBaudRate"/>
+      <documentation>
+        This command is used to change the loader UART baudrate.
+      </documentation>
+      <input>
+        <value type="uint32" name="BaudRate">Baud rate.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="3" name="System Reboot" ADbg="false" source="PC">
+      <interface type="loader" name="Reboot"/>
+      <documentation>
+        The Reboot command is used to instruct the Loader to reset the ME. Upon receiving this command, the Loader shuts down in a controlled fashion and restarts the ME. The Mode parameter is used to select the mode of reset.
+      </documentation>
+      <input>
+        <value type="uint32" name="Mode">0 = normal restart, 1 = restart in service mode, 2 = restart with JTAG debugging enabled, 3 = restart in service mode and with JTAG debugging enabled</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="4" name="System Shutdown" ADbg="false" source="PC">
+      <interface type="loader" name="ShutDown"/>
+      <documentation>
+        The Loader shuts down in a controlled fashion and proceeds to shut down the ME itself.
+      </documentation>
+      <input>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="5" name="System Supported Command" ADbg="false" source="PC">
+      <interface type="loader" name="SupportedCommands"/>
+      <documentation>
+        The Loader returns a list of implemented commands and whether they are permitted to execute in the current Loader state. Further fine-grained permission controls might also deny execution of a specific command.
+      </documentation>
+      <input>
+      </input>
+      <output>
+        <value type="uint32" name="CommandCount">Number of implemented commands</value>
+        <value type="SupportedCommand" name="Commands" length="CommandCount">An array of command identifiers. The Permitted field indicates whether the command can be executed at the current time (non-zero value means allowed)</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="6" name="System Execute Software" ADbg="false" source="PC">
+      <interface type="loader" name="ExecuteSoftware"/>
+      <documentation>
+        Receive, verify and execute software, which can be a signed Loader. After having sent this command, the ME will attempt to read the software payload data from the host using the Bulk protocol or from the flash file system depending on the selected path.
+      </documentation>
+      <input>
+        <value type="uint32" name="ExecuteMode">Execute mode: 1 = execution from specified address, 2 = first load the software then execute.</value>
+        <value type="string" name="SourcePath_p">File system or Bulk id path</value>
+        <value type="uint64" name="Length">Total length of the execute software file</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="7" name="System Authenticate" ADbg="false" source="PC">
+      <interface type="loader" name="Authenticate"/>
+      <documentation>
+        This command is used to escalate the privileges of the operator. Two modes of authentication are available by default; Control Key authentication and Certificate based authentication. The authentication command sets the loader in a specific authentication context when it takes control over the command flow. After receiving the authentication command, the Loader will send the appropriate request for information to the PC.
+      </documentation>
+      <input>
+        <value type="uint32" name="Type">Authentication type: 0 = Control Key authentication, 1 = Certificate authentication.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="8" name="System Get Control Keys" ADbg="false" source="ME">
+      <interface type="loader" name="GetControlKeys"/>
+      <documentation>
+        This command is used by the Loader to retrieve the SimLock Control Keys from the host in order to authenticate a user. The command is used in authentication context.
+      </documentation>
+      <input>
+      </input>
+      <output>
+        <value type="string" name="NLCKLock_p"/>
+        <value type="string" name="NSLCKLock_p"/>
+        <value type="string" name="SPLCKLock_p"/>
+        <value type="string" name="CLCKLock_p"/>
+        <value type="string" name="PCKLock_p"/>
+        <value type="string" name="ESLCKLock_p"/>
+        <value type="string" name="NLCKUnlock_p"/>
+        <value type="string" name="NSLCKUnlock_p"/>
+        <value type="string" name="SPLCKUnlock_p"/>
+        <value type="string" name="CLCKUnlock_p"/>
+        <value type="string" name="PCKUnlock_p"/>
+        <value type="string" name="ESLCKUnlock_p"/>
+      </output>
+    </command>
+
+    <command number="9" name="System Authentication Challenge" ADbg="false" source="ME">
+      <interface type="loader" name="AuthenticationChallenge"/>
+      <documentation>
+        This command is used by the Loader to perform a certificate authentication. The command is only used in authentication context.
+      </documentation>
+      <input>
+        <value type="uint32" name="ChallengeBlockLength">Authentication Challenge buffer length</value>
+        <value type="buffer" name="ChallengeBlock_p" length="ChallengeBlockLength">Authentication Challenge that must be signed using the correct certificate and returned to the Loader</value>
+      </input>
+      <output>
+        <value type="uint32" name="ResponseBlockLength">Updated authentication challenge buffer length</value>
+        <value type="buffer" name="ResponseBlock_p" length="ResponseBlockLength">Signed authentication challenge together with the requested permissions.</value>
+      </output>
+    </command>
+
+    <command number="10" name="System Collect Data" ADbg="false" source="PC">
+      <interface type="loader" name="CollectData"/>
+      <documentation>
+        This command is used to collect printouts (debug data) and measurements results.
+      </documentation>
+      <input>
+        <value type="uint32" name="Type">Type of requested data.</value>
+      </input>
+      <output>
+        <value type="uint32" name="DataLenght">Length of output buffer.</value>
+        <value type="buffer" name="CollectedData_p" length="DataLenght">Output data buffer. Contain debug data (printouts) or measurement data.</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="11" name="System Get Progress Status" ADbg="false" source="PC">
+      <interface type="loader" name="GetProgressStatus"/>
+      <documentation>
+        This command is used by the Loader to get the minimal progress status from all running commands.
+      </documentation>
+      <input>
+      </input>
+      <output>
+        <value type="uint32" name="ProgressStatus">Command progress status presented in percent.</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="12" name="Set System Time" ADbg="false" source="PC">
+      <interface type="loader" name="SetSystemTime"/>
+      <documentation>
+        The Set System Time command is used to instruct the Loader to use real world time and date during its run time. Upon receiving this command, the Loader sets internal Real Time Clock. This command can be issued more then once by PC tool.
+      </documentation>
+      <input>
+        <value type="uint32" name="EpochTime">Number of seconds since January 1, 1970 (midnight UTC/GMT).</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="13" name="Switch Communication Device" ADbg="false" source="PC" supportedcmdtype="longrunning">
+      <interface type="loader" name="SwitchCommunicationDevice"/>
+      <documentation>
+        This command is used to instruct the Loader to switch to a new communication device.
+      </documentation>
+      <input>
+        <value type="uint32" name="Device">Communication device number to switch to.</value>
+        <value type="uint32" name="DeviceParam">Communication device parameters.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="14" name="System Get Control Keys Data" ADbg="false" source="ME">
+      <interface type="loader" name="GetControlKeysData"/>
+      <documentation>
+        This command is used by the Loader to retrieve the SimLock Control Keys data buffer from the host in order to authenticate a user. The command is used in authentication context.
+      </documentation>
+      <input>
+      </input>
+      <output>
+      <value type="uint32" name="iDataSize">Length of output buffer.</value>
+      <value type="buffer" length="iDataSize" name="SIMLockKeysData_p">Data buffer with all SIMLock keys.</value>
+      </output>
+    </command>
+
+    <command number="15" name="System Start Communication Relay" ADbg="false" source="PC" supportedcmdtype="longrunning">
+      <interface type="loader" name="StartCommRelay"/>
+      <documentation>
+        The Loader shuts down the global communication and enters in a Relay working mode.
+      </documentation>
+      <input>
+        <value type="uint32" name="HostDeviceId">Communication device number of the relay input (host device).</value>
+        <value type="uint32" name="TargetDeviceId">Communication device number of the relay ouptut (target device).</value>
+        <value type="uint32" name="ControlDeviceId">Communication device number for the loader commands (control device).</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+       <value ref="A1"/>
+       <value ref="CA"/>
+      </authentication>
+      <permissions>
+       <value ref="ServiceModeLevel"/>
+       <value ref="FlashModeLevel"/>
+       <value ref="AdvanceServiceModeLevel"/>
+       <value ref="ProductionModeLevel"/>
+       <value ref="LimitedProductionModeLevel"/>
+       <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="16" name="System Deauthenticate" ADbg="false" source="PC" supportedcmdtype="longrunning">
+      <interface type="loader" name="Deauthenticate"/>
+      <documentation>
+        This command is used by the Loader to deauthenticates the ME from prior authentications to prevent unauthorized access.
+      </documentation>
+      <input>
+        <value type="uint32" name="Type">Deauthentication type: 1 = permanent deauthentication, 0 = deauthenticate until next reboot of the ME.</value>
+      </input>
+      <output>
+      </output>
+    </command>
+  </group>
+
+  <group number="2" name="Flash application">
+    <documentation>
+      Flash Commands group (0x02)
+    </documentation>
+
+    <interface type="loader" name="Flash"/>
+
+    <command number="1" name="Process File" ADbg="false" source="PC">
+      <documentation>
+        This command is used to initiate a flashing session.  The Type argument is used to select the type of file to process and Length parameter defines the total size of the file.
+      </documentation>
+      <interface type="loader" name="ProcessFile"/>
+      <input>
+        <value type="uint64" name="Length">Total length of the opened file</value>
+        <value type="string" name="Type_p">Type of the opened file. Currently the only supported type is    x-empflash/flasharchive   </value>
+        <value type="string" name="SourcePath_p">File system or Bulk id path</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="2" name="List Devices" ADbg="false" source="PC">
+      <documentation>
+        The Loader returns a list of detected block devices. A block device can be a physical device (   flash0   ,    mmc0   ,    usb0   ), a logical device (   cabs0   ,    mbbs0   ) or a file system volume (   boot   ,    sys   ). Together they form paths on the form     /flash0/mbbs0    or    /flash1/cabs1/vfat   .
+      </documentation>
+      <interface type="loader" name="ListDevices"/>
+      <input>
+      </input>
+      <output>
+        <value type="uint32" name="DeviceCount">Indicates the number of returned devices</value>
+        <value type="ListDevice" name="Devices" length="DeviceCount">Absolute device path, Type of the device, Block Size, Start address of the device, Length of the device</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="3" name="Dump Area" ADbg="false" source="PC">
+      <documentation>
+        This command is used to initiate a Dump session.
+      </documentation>
+      <interface type="loader" name="DumpArea"/>
+      <input>
+        <value type="string" name="Path_p">Path to the device to dump.</value>
+        <value type="uint64" name="Start">Start of the dump relative to the start of the device indicated by Path in bytes. Actual start is determined by the Mode parameter.</value>
+        <value type="uint64" name="Length">Length of the dump in bytes. Actual length is determined by the Mode parameter.</value>
+        <value type="string" name="TargetPath_p">File system or bulk id path.</value>
+        <value type="uint32" name="RedundantArea">If set to 0 dump flash including redundant area, if set to 1 dump flash without redundant area.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="4" name="Erase Area" ADbg="false" source="PC">
+      <documentation>
+        This command is used to erase a flash device or part of a flash device.
+      </documentation>
+      <interface type="loader" name="EraseArea"/>
+      <input>
+        <value type="string" name="Path_p">Path to the device to erase.</value>
+        <value type="uint64" name="Start">Start of the dump relative to the start of the device indicated by Path in bytes. This must be a multiple of the block size of the device.</value>
+        <value type="uint64" name="Length">Length of the dump in bytes. This must be a multiple of the block size of the device.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="5" name="Flash RAW" ADbg = "false" source="PC">
+      <documentation>
+        This command is used to flash raw flash image.
+      </documentation>
+      <interface type="loader" name="FlashRaw" />
+      <input>
+        <value type="uint64" name="Start">Address where RAW image should be written. This must be a multiple of the block size of the device.</value>
+        <value type="uint64" name="Length">Length of RAW data in bytes</value>
+        <value type="uint32" name="Device">Target flash device.[0,1]</value>
+        <value type="string" name="SourcePath_p">Bulk id path</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+       <value ref ="A1"/>
+       <value ref ="CA"/>
+      </authentication>
+      <permissions>
+       <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+	<command number="6" name="Set Enhanced Area" ADbg="false" source="PC" supportedcmdtype="longrunning">
+      <documentation>
+        This command is used to set enhanced area on eMC card.
+      </documentation>
+      <interface type="loader" name="SetEnhancedArea"/>
+      <input>
+        <value type="string" name="Path_p">Path to the device where area will be set.</value>
+        <value type="uint64" name="Start">Start address of enhanced area in bytes.</value>
+        <value type="uint64" name="Length">Length of the enhanced area in bytes.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+       <value ref="A1"/>
+       <value ref="CA"/>
+      </authentication>
+      <permissions>
+       <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="7" name="Select Loader Options" ADbg="false" source="PC">
+      <interface type="loader" name="SelectLoaderOptions"/>
+      <documentation>
+        This command is used to select (enable) specific options in the Loader.
+      </documentation>
+      <input>
+        <value type="uint32" name="Property">ID of the option to be enabled.</value>
+        <value type="uint32" name="Value">ID of the option to be enabled.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+  </group>
+
+  <group number="3" name="File system operations">
+    <documentation>
+      File System Commands Group (0x03)
+    </documentation>
+    <interface type="loader" name="File_System_Operations"/>
+    <command number="2" name="Volume Properties" ADbg="false" source="PC">
+      <documentation>
+        Retrieve properties of the specified file system volume
+      </documentation>
+      <interface type="loader" name="VolumeProperties"/>
+      <input>
+        <value type="string" name="DevicePath_p">Path of file system volume</value>
+      </input>
+      <output>
+        <value type="string" name="FS_Type_p">File system type</value>
+        <value type="uint64" name="Size">Total size of the file system (in bytes)</value>
+        <value type="uint64" name="Free">Available space (in bytes)</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="3" name="Format Volume" ADbg="false" source="PC">
+      <documentation>
+        Formats an unmounted file system volume. This operation fails if the volume is currently in use.
+      </documentation>
+
+      <interface type="loader" name="FormatVolume"/>
+      <input>
+        <value type="string" name="DevicePath_p">Device path of the file system volume</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="4" name="List Directory" ADbg="false" source="PC">
+      <documentation>
+        List files and directories residing in a specified path
+      </documentation>
+      <interface type="loader" name="ListDirectory"/>
+      <input>
+        <value type="string" name="Path_p">File system path</value>
+      </input>
+      <output>
+        <value type="uint32" name="EntriesCount">Number of directory entries</value>
+        <value type="DirEntry" name="Entries" length="EntriesCount">Name and Size of file or directory, Mode as indicator if it is file or directory, Time of last modification</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="5" name="Move File" ADbg="false" source="PC">
+      <documentation>
+        Moves or renames a file.
+      </documentation>
+      <interface type="loader" name="MoveFile"/>
+      <input>
+        <value type="string" name="SourcePath_p">File system path (source)</value>
+        <value type="string" name="DestinationPath_p">File system path (destination)</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="6" name="Delete File" ADbg="false" source="PC">
+      <documentation>
+        Deletes the specified file or directory. The Loader will only delete empty directories.
+      </documentation>
+      <interface type="loader" name="DeleteFile"/>
+      <input>
+        <value type="string" name="TargetPath_p">File system path</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="7" name="Copy File" ADbg="false" source="PC">
+      <documentation>
+        Copies a file from the PC to the ME, between two directories or file systems on the ME or from the ME to the PC.
+      </documentation>
+      <interface type="loader" name="CopyFile"/>
+      <input>
+        <value type="string" name="SourcePath_p">File system or bulk id path (source)</value>
+        <value type="string" name="DestinationPath_p">File system or bulk id path (destination)</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="8" name="Create Directory" ADbg="false" source="PC">
+      <documentation>
+        Creates a directory
+      </documentation>
+      <interface type="loader" name="CreateDirectory"/>
+      <input>
+        <value type="string" name="TargetPath_p">File system path</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="9" name="Properties (Stat)" ADbg="false" source="PC,ME">
+      <documentation>
+        Retrieves the properties of a file or directory
+      </documentation>
+      <interface type="loader" name="Properties"/>
+      <input>
+        <value type="string" name="TargetPath_p">File system path</value>
+      </input>
+      <output>
+        <value type="uint32" name="Mode">File Type and Access restrictions descriptor (see 5.1)</value>
+        <value type="uint64" name="Size">File size in bytes</value>
+        <value type="uint32" name="MTime">Last modification time stamp</value>
+        <value type="uint32" name="ATime">Last access time stamp</value>
+        <value type="uint32" name="CTime">Creation time stamp</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="10" name="Change Access (Chmod)" ADbg="false" source="PC">
+      <documentation>
+        Changes the access permissions of a path
+      </documentation>
+      <interface type="loader" name="ChangeAccess"/>
+      <input>
+        <value type="string" name="TargetPath_p">File system path</value>
+        <value type="uint32" name="Access">New access permissions</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="11" name="Read Load Modules Manifests" ADbg="false" source="PC">
+      <documentation>
+        Read all manifests in elf files and send it to PC
+      </documentation>
+      <interface type="loader" name="ReadLoadModulesManifests"/>
+      <input>
+        <value type="string" name="TargetPath_p">File system path</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+  </group>
+
+  <group number="4" name="OTP">
+    <documentation>
+      OTP handling commands Group (0x04)
+    </documentation>
+    <interface type="loader" name="OTP"/>
+
+    <command number="1" name="Read Bits" ADbg="false" source="PC">
+      <documentation>
+        Reads the specified bits from the OTP
+      </documentation>
+      <interface type="loader" name="ReadBits"/>
+      <input>
+        <value type="uint32" name="OTP_id">Indicates which OTP memory is to be read</value>
+        <value type="uint32" name="Start">Starting offset in bits</value>
+        <value type="uint32" name="Length">Length of read in bits</value>
+      </input>
+      <output>
+        <value type="uint32" name="BitsLength">Length of read bits</value>
+        <value type="uint32" name="DataBitsLength">Length of the DataBits buffer</value>
+        <value type="buffer" name="DataBits_p" length="DataBitsLength">A left-adjusted buffer of the read data. Padded with zeroes. Length of returned value (in bytes), equal to floor((Length + 7) / 8). </value>
+        <value type="uint32" name="LockStatusBitsLength">Length of the LockStatus of read bits</value>
+        <value type="uint32" name="LockStatusLength">Length of the LockStatus buffer</value>
+        <value type="buffer" name="LockStatus_p" length="LockStatusLength">A left-adjusted buffer of the lock status of each read bit. Padded with zeroes. Length of returned value (in bytes), equal to floor((Length + 7) / 8). </value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="2" name="Set Bits" flagbitsset="trueset" ADbg="false" source="PC">
+      <documentation>
+        Writes and locks the specified bits in the OTP
+      </documentation>
+      <interface type="loader" name="SetBits"/>
+      <input>
+        <value type="uint32" name="OTP_id">Indicates which OTP memory is to be read</value>
+        <value type="uint32" name="Start">Starting offset in bits</value>
+        <value type="uint32" name="BitsLength">Length of write in bits</value>
+        <value type="uint32" name="DataBitsLength">Length of DataBits buffer</value>
+        <value type="buffer" name="DataBits_p" length="DataBitsLength">Left-adjusted byte buffer containing the data to be written. Only Length bits will be written.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="3" name="Write and Lock OTP" flagbitsset="trueset" ADbg="false" source="PC">
+      <documentation>
+        Writes and locks the specified bits in the OTP
+      </documentation>
+      <interface type="loader" name="WriteAndLock"/>
+      <input>
+        <value type="uint32" name="OTP_id">Indicates which OTP memory is to be written and locked</value>
+        <value type="uint32" name="ForceWrite">If = 0 - Write only complete lockable areas. If != 0 Write complete lockable areas even if not all bit are received in cache. </value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="4" name="Store Secure Object" flagbitsset="trueset" ADbg="false" source="PC">
+      <documentation>
+        Installs Secure objects into OTP or Flash
+      </documentation>
+      <interface type="loader" name="StoreSecureObject"/>
+      <input>
+        <value type="string" name="SourcePath">File system or bulk id path</value>
+        <value type="uint32" name="SecureObjectDestination">Secure Object destination address</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+  </group>
+
+  <group number="5" name="Parameter Storage">
+    <documentation>
+      Parameter Storage Commands Group (0x05)
+    </documentation>
+    <interface type="loader" name="ParameterStorage"/>
+
+    <command number="1" name="Read Global Data Unit" ADbg="false" source="PC">
+      <documentation>
+        Reads the specified unit from Global Data area
+      </documentation>
+      <interface type="loader" name="ReadGlobalDataUnit"/>
+      <input>
+        <value type="string" name="DevicePath_p">GD storage area to read from (gdfs, trim area)</value>
+        <value type="uint32" name="Unit_id">Unit id to read</value>
+      </input>
+      <output>
+        <value type="uint32" name="DataBuffLength">Length of the Data buffer</value>
+        <value type="buffer" name="DataBuff_p" length="DataBuffLength">The read data</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="2" name="Write Global Data Unit" ADbg="false" source="PC">
+      <documentation>
+        Writes the specified unit to Global Data area
+      </documentation>
+      <interface type="loader" name="WriteGlobalDataUnit"/>
+      <input>
+        <value type="string" name="DevicePath_p">GD storage area to write to (gdfs, trim area)</value>
+        <value type="uint32" name="Unit_id">Unit id to write</value>
+        <value type="uint32" name="DataBuffLength">Length of the Data buffer</value>
+        <value type="buffer" name="DataBuff_p" length="DataBuffLength">The data to write</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="3" name="Read Global Data Set" ADbg="false" source="PC">
+      <documentation>
+        Reads a complete Global Data area
+      </documentation>
+      <interface type="loader" name="ReadGlobalDataSet"/>
+      <input>
+        <value type="string" name="DevicePath_p">GD storage area to read (gdfs, trim area)</value>
+        <value type="string" name="TargetPath_p">File system or bulk id path indicating the destination of the read operation</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="4" name="Write Global Data Set" ADbg="false" source="PC">
+      <documentation>
+        Writes a complete Global Data area
+      </documentation>
+      <interface type="loader" name="WriteGlobalDataSet"/>
+      <input>
+        <value type="string" name="DevicePath_p">GD storage area to write (gdfs, trim area)</value>
+        <value type="uint64" name="DataLength">Data Length when is used bulk transfer </value>
+        <value type="string" name="SourcePath_p">File system or bulk id path indicating the source of the write operation</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="5" name="Erase Global Data Set" ADbg="false" source="PC">
+      <documentation>
+        Erases a complete Global Data area
+      </documentation>
+      <interface type="loader" name="EraseGlobalDataSet"/>
+      <input>
+        <value type="string" name="DevicePath_p">GD storage area to erase (gdfs, trim area)</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+  </group>
+
+  <group number="6" name="Security">
+    <documentation>
+      Security settings Commands Group (0x06)
+    </documentation>
+    <interface type="loader" name="Security"/>
+
+    <command number="1" name="Set Domain" ADbg="false" source="PC">
+      <documentation>
+        Set the ME domain
+      </documentation>
+      <interface type="loader" name="SetDomain"/>
+      <input>
+        <value type="uint32" name="Domain">Target domain</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="2" name="Get Domain" ADbg="false" source="PC">
+      <documentation>
+        Get the ME domain
+      </documentation>
+      <interface type="loader" name="GetDomain"/>
+      <input>
+      </input>
+      <output>
+        <value type="uint32" name="CurrentDomain">The ME Domain</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="3" name="Get Properties" ADbg="false" source="PC">
+      <documentation>
+        Reads a security data unit (such as a secure static or dynamic data unit)
+      </documentation>
+      <interface type="loader" name="GetProperties"/>
+      <input>
+        <value type="uint32" name="Unit_id">Unit id to read</value>
+      </input>
+      <output>
+        <value type="uint32" name="DataBuffLength">Length of the Data buffer</value>
+        <value type="buffer" name="DataBuff_p" length="DataBuffLength">The unit data</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="4" name="Set Properties" ADbg="false" source="PC">
+      <documentation>
+        Writes a security data unit (such as a secure static or dynamic data unit)
+      </documentation>
+      <interface type="loader" name="SetProperties"/>
+      <input>
+        <value type="uint32" name="Unit_id">Unit id to write</value>
+        <value type="uint32" name="DataBuffLength">Length of the Data buffer</value>
+        <value type="buffer" name="DataBuff_p" length="DataBuffLength">The data to write</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="5" name="Bind Properties" ADbg="false" source="PC">
+      <documentation>
+        Associates all security data units with the current ME
+      </documentation>
+      <interface type="loader" name="BindProperties"/>
+      <input>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="6" name="Init ARBTable" ADbg="false" source="PC">
+      <documentation>
+        Initialize a SW version table, intended for checking the ARB functionality.
+      </documentation>
+      <interface type="loader" name="InitARBTable"/>
+      <input>
+        <value type="uint32" name="Type">ARB Type to update</value>
+        <value type="uint32" name="DataLength">Length of the Data buffer</value>
+        <value type="buffer" name="DataBuff_p" length="DataLength">The data to write</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="7" name="Write RPMB Key" ADbg="false" source="PC">
+      <documentation>
+        Invokes programming of RPMB authentication key.
+      </documentation>
+      <interface type="loader" name="WriteRPMBKey"/>
+      <input>
+       <value type="uint32" name="Dev_id">he device ID of the RPMB device</value>
+       <value type="uint32" name="Commercial">Defines whether to generate key for development or commercial purpose.</value>
+      </input>
+      <output>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+      </permissions>
+    </command>
+
+  </group>
+
+  <group number="8" name="ADbg application">
+    <documentation>
+      ADbg test suite (automatic test tool)
+    </documentation>
+
+    <interface type="loader" name="ADbg"/>
+
+    <command number="1" name="List all modules, test cases and its parameters " flag="true" ADbg="true" source="PC">
+      <interface type="loader" name="ListCase"/>
+      <documentation>
+        List all modules, test cases and its parameters
+      </documentation>
+      <input>
+      </input>
+      <output>
+        <value type="uint32" name="CmdDataLength"/>
+        <value type="buffer" name="CmdDataPayLoad_p" length="CmdDataLength">CmdData</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="2" name="List all modules, interface groups, interface functions and its parameters " flag="true" ADbg="true" source="PC">
+      <interface type="loader" name="ListInterface"/>
+      <documentation>
+        List all modules, interface groups, interface functions and its parameters
+      </documentation>
+      <input>
+      </input>
+      <output>
+        <value type="uint32" name="CmdDataLength"/>
+        <value type="buffer" name="CmdDataPayLoad_p" length="CmdDataLength">CmdData</value>
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="3" name="Set test case precondition " flag="true" ADbg="true" source="PC">
+      <interface type="loader" name="SetPrecondition"/>
+      <documentation>
+        Set test case precondition
+      </documentation>
+      <input>
+        <value type="uint32" name="ModuleId">ModuleId</value>
+        <value type="uint32" name="IntGroupId">IntGroupId</value>
+        <value type="uint32" name="IntFunctionId">IntFunctionId</value>
+        <value type="uint32" name="RecoveryFlag">RecoveryFlag</value>
+        <value type="uint32" name="PreconditionLength"/>
+        <value type="buffer" name="Precondition_p" length="PreconditionLength">Precondition_p</value>
+      </input>
+      <output>
+
+
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="4" name="Recovery test case condition " flag="true" ADbg="true" source="PC">
+      <interface type="loader" name="RecoveryCondition"/>
+      <documentation>
+        Recovery test case condition
+      </documentation>
+      <input>
+        <value type="uint32" name="ModuleId">ModuleId</value>
+        <value type="uint32" name="IntGroupId">IntGroupId</value>
+        <value type="uint32" name="IntFunctionId">IntFunctionId</value>
+      </input>
+      <output>
+
+
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+    <command number="5" name="Run test case " flag="true" ADbg="true" source="PC">
+      <interface type="loader" name="Run"/>
+      <documentation>
+        Run test case
+      </documentation>
+      <input>
+        <value type="uint32" name="ModuleId">ModuleId</value>
+        <value type="uint32" name="CaseId">CaseId</value>
+        <value type="uint32" name="PreconditionLength"/>
+        <value type="buffer" name="Precondition_p" length="PreconditionLength">Precondition_p</value>
+      </input>
+      <output>
+        <value type="uint32" name="AssertStatus"/>
+
+      </output>
+      <authentication depandancy="or" factory="TRUE" rd="TRUE" product="TRUE" service="TRUE">
+        <value ref="A1"/>
+        <value ref="CA"/>
+      </authentication>
+      <permissions>
+        <value ref="ServiceModeLevel"/>
+        <value ref="FlashModeLevel"/>
+        <value ref="AdvanceServiceModeLevel"/>
+        <value ref="ProductionModeLevel"/>
+        <value ref="LimitedProductionModeLevel"/>
+        <value ref="VeryLimitedProductionModeLevel"/>
+      </permissions>
+    </command>
+
+  </group>
+</commandspec>

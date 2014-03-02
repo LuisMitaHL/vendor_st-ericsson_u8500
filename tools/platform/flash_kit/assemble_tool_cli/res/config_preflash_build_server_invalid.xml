@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!-- The following DTD must not be included in every configuration file. It is only used when   -->
+<!-- validating the XML document                                                                -->
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                    	(bax:flash_archive?, bax:binary_image?, bax:preflash_image?)>
+    <!ELEMENT bax:source                              	(#PCDATA)>  
+    <!ELEMENT bax:flash_archive                       	(bax:entry*)>
+	<!ELEMENT bax:binary_image							(bax:entry*)>
+	<!ELEMENT bax:preflash_image                       	(bax:entry*, bax:profile)>
+    <!ELEMENT bax:entry                               	(bax:source,bax:attribute*)>
+    <!ELEMENT bax:attribute                         	(#PCDATA)>
+    <!ELEMENT bax:profile	                         	(#PCDATA)>
+    
+    <!ATTLIST target_configuration      xmlns:bax       CDATA                                   	#FIXED "TBD">
+    <!ATTLIST bax:entry                 name      		CDATA                         				#REQUIRED>
+    <!ATTLIST bax:entry                 type      		CDATA										#REQUIRED>
+    <!ATTLIST bax:attribute             name      		CDATA                         				#REQUIRED>
+    <!ATTLIST bax:profile	            path      		CDATA                         				#REQUIRED>
+]>
+<target_configuration>
+	<bax:preflash_image>
+	    <bax:entry name="preflash" type="x-empflash/flasharchive">
+			<bax:source>FLASHARCHIVE</bax:source>
+		</bax:entry>
+		<bax:entry name="gdfs" type="x-empflash/gdfs">
+			<bax:source>GDFS</bax:source>
+		</bax:entry>
+		<bax:profile path="assemble_tool_cli/res/preflash_profile_empty.mesp" />
+	</bax:preflash_image>
+</target_configuration>

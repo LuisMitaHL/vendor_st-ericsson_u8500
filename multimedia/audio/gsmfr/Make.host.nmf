@@ -1,0 +1,21 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+CPPFLAGS+=-DNVERBOSE
+CPPFLAGS+=-I$(COMPONENT_TOP_DIR)/common/include -I$(COMPONENT_TOP_DIR)/codec/include
+CXXFLAGS+=-g
+
+ITFS_HEADER+= gsmfr.nmfil.host.decoder.configure \
+              gsmfr.nmfil.host.encoder.configure
+
+COMPONENTS= gsmfr.nmfil.host.composite.decalgo \
+            gsmfr.nmfil.host.composite.encalgo
+
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk
+

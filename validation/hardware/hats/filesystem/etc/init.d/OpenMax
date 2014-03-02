@@ -1,0 +1,17 @@
+#!/bin/sh
+case $1 in
+    start)
+    # add symlink to enable MM scripts to access SDCard
+    ln -sf /mnt/SDCard /sdcard
+    echo "/system/lib/libste_ensloader.so" > /.omxloaders
+    ;;
+    stop)
+    echo "Stopping drivers used for OMX/MMTE"
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

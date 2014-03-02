@@ -1,0 +1,23 @@
+#ifndef _VOLCTRL_CONFIG_H_
+#define _VOLCTRL_CONFIG_H_
+
+typedef struct {
+    t_uint16 iDownMix;
+    t_uint16 igll;
+    t_uint16 iglr;
+    t_uint16 igrl;
+    t_uint16 igrr;
+    t_uint24 ialpha;
+    t_uint16 iDBRamp;
+} VolctrlConfig_t;
+
+typedef struct {
+    t_uint16 iStartVolume; // Start from 
+    t_uint16 iEndVolume;   // End volume
+    t_uint24 ialpha;       // Ramp Duration in 10 µs
+    t_uint16 iDBRamp;      // TRUE
+    t_uint16 iChannel;     // Select Left(1)/Right(2) or both(3)
+    t_uint16 iTerminate;   // Stop the ramp (TRUE/FALSE)
+} VolctrlRampConfig_t;
+
+#endif

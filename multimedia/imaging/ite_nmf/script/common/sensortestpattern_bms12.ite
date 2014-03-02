@@ -1,0 +1,149 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/sensortestpattern_bms12.ite
+
+##############################################################################################################
+# The Use case will test Sensor Test Pattern for BMS Store2
+# Pre Requisite :- Set Use Case for BMS Store with Resoultion and Format.
+#  1. Set Required Color Format 
+#  2. Prepare and Start BMS Store2 
+#  3. Once ISP Pipe is sync with frames, write data from BMS Store 2 into sdcard for verification.
+#  
+##############################################################################################################
+# This Use case can configure Following Sensor Test Patterns
+# 1. Color Bar
+# 2. Fade 2 Color Bar
+# 3. Horizontal, Veritical and Diagnoal Grey Scale Modes
+# 4. PN9
+# 5. Solid Color with Different R,G1,G2,B Combinations
+##############################################################################################################
+
+usagemode still
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode COLORBAR
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_COLORBAR 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode PN28
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_PN28 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode NORMAL_MODE
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_NORMAL_MODE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode FADETOGREY_COLORBAR
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_FADETOGREY_COLORBAR 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode HORIZ_GREY_SCALE
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_HORIZ_GREY_SCALE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode VERT_GREY_SCALE
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_VERT_GREY_SCALE 2
+bms stop
+
+
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_YELLOW
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_YELLOW 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_CYAN
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_CYAN 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_MAGENTA
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_MAGENTA 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_BLACK
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_BLACK 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_WHITE
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_WHITE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_RED
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_RED 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_BLUE
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_BLUE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+sensormode SOLIDBAR_GREEN
+bms prepare
+bms start
+writebmp BMS BMS12_Sensor_SOLIDBAR_GREEN 2
+bms stop
+
+bms free
+
+

@@ -1,0 +1,49 @@
+#!/bin/sh
+VAL_HSI=`cat /sys/devices/platform/modem-hwcfg/config_hsi`
+VAL_C2C=`cat /sys/devices/platform/modem-hwcfg/config_c2c`
+
+if [ $# = 0 ]
+then
+LOWER=1
+fi
+
+if [ $# = 1 ]
+then
+if [ $1 = "M" ]
+then
+LOWER=0
+else if [ $1 = "l" ]
+then
+LOWER=1
+else
+echo "usage modem_config [option]"
+echo -e "\toption"
+echo -e "\t\tM: echo result in Capital letter"
+echo -e "\t\tl: echo reuslt in Normal letter"
+exit
+fi
+fi
+fi
+
+if [ "$VAL_HSI" = "1" ]
+then
+if [ $LOWER = 0  ]
+then
+echo HSI
+else
+echo hsi
+fi
+else
+if [ "$VAL_C2C" = "1" ]
+then
+if [ $LOWER = 0 ]
+then
+echo C2C
+else
+echo c2c
+fi
+fi
+fi
+
+exit
+

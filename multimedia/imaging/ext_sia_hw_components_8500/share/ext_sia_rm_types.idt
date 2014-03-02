@@ -1,0 +1,83 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   Interface Description Type file: Types used in SIA Resource Manager interfaces
+* \author  ST-Ericsson
+*/
+
+#ifndef _sia_rm_types_idt
+#define _sia_rm_types_idt
+
+/** \addtogroup sia_rm_group SIA Resource Manager
+ * \{
+ */
+ 
+#define SIA_RM_MAX_RESOURCES 9
+//#define SIA_RM_MAX_CLIENTS 17
+#define SIA_RM_MAX_CLIENTS 2
+ 
+/**  \ingroup types_group
+ *  \{
+ */
+
+
+/**
+ * Resource types that are handled by this RM component. They can be ORed
+ * to regroup them in an allocation or free request.
+ */
+enum e_SiaResource {
+	SIARSRC_PIPE_LR=0x01, /**< also called Pipe1 in some docs */
+	SIARSRC_PIPE_HR=0x02, /**< also called Pipe0 in some docs */
+	SIARSRC_PIPE_RAW_OUTPUT=0x04, /**< also called Pipe2a in some docs */
+	SIARSRC_PIPE_RAW_INPUT=0x08,  /**< also called Pipe2b in some docs */
+	SIARSRC_PIPE_CAM=0x10,  /**< also called Pipe3 in some docs */
+	SIARSRC_CCP1=0x20, /**< usually called CCP0 on some boards */
+	SIARSRC_CCP2=0x40, /**< usually called CCP1 (vs CCP0) on some boards */
+	SIARSRC_CCIR=0x80,
+	SIARSRC_CSI2=0x100
+};
+
+/* \} 
+ * \addtogroup sia_rm_group SIA Resource Manager
+ *  \ingroup types_group
+ *  \{
+ */
+
+
+/** 
+ * identifiers of information type for \ref sia_rm.alert.info
+ */
+enum e_siarmInfo {
+	SIARM_RSRC_ALLOCATED, /**< the associated resources have been allocated */
+	SIARM_RSRC_NOTALLOCATED, /**< the associated resources have NOT been allocated. The request
+	is remembered, and the caller will eventually be informed about the availability 
+	of resources (no polling is required). Provided for debug purposes. */
+	SIARM_RSRC_STATUS /**< the associated ressources are available (no allocation action has been taken) */
+};
+
+/**
+ * Identifiers of error type for \ref sia_rm.alert.error
+ */
+enum e_siarmError {
+	SIARM_ERR_BADRESOURCE, /**< requested an invalid resource. Either no resource, or unknown value */
+	SIARM_ERR_INTERNALERROR /**< Internal error! Currently, happens if we run out of nodes to track requests and allocations. */
+};
+
+/**
+ * Identifiers of debug type for \ref sia_rm.alert.debug
+ */
+enum e_siarmDebug {
+	SIARM_DBG_RSRCNOTALLOC, /**< A resource to be free()-d wasn't allocated */
+	SIARM_DBG_RQNODELOST, /**< Couldn't find a resources request node when looking through the request node list */
+	SIARM_DBG_FREEFREEDRSRC, /**< A freed resource was absent from its associated request node (double-free?) */
+	SIARM_DBG_RQROLLBACKPENDING /**< when rolling back a failed allocation request, the action made a pending allocation request succeed. */
+};
+
+/* \}
+ *\} 
+ */
+#endif /* _sia_rm_types_idt */

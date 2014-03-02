@@ -1,0 +1,15 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE -DUNIX
+CPPFLAGS+=-I$(MM_HEADER_DIR)/updownmix
+CXXFLAGS+=-g
+
+ITFS_HEADER+= volctrl.nmfil.host.effect.configure
+
+COMPONENTS= volctrl.nmfil.host.effect
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

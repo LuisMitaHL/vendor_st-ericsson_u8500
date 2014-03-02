@@ -1,0 +1,344 @@
+; #####################################################################
+; # DB9540 debug & Trace script file: 9540_SxA_STbus_config.cmm       #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Script for configuration of MMDSP SxA STBus on STN9540 SoC
+; Created by HED/CSP/CPT/ACT on 2009-10-06
+; -----------------------------------------------------------
+; Parameters:
+; <target_version> 	mandatory, can be : V1 = 9540V1 architecture
+; <DSPCORE> 	mandatory, can be : V for SVA, I for SIA, VI for SVA+SIA
+; <MEM_TYPE> 	optional, can be : DDR for mapping STbus config on DDR ; other values means ESRAM
+; <BASES_2_3_4> optional, to activate additional DATA Bases. You can specify Bases Number values : 0x2, 0x3, 0x4
+; <PRG_2_3_4>	optional, to activate additional PRG Bases. You can specify Bases Number values : 0x2, 0x3, 0x4
+;
+;
+; Usage 9540V1:
+; --------------
+; 9540V1-SVA DDR : 9540_SxA_STbus_config.cmm v1 v ddr
+; 9540V1-SIA DDR : 9540_SxA_STbus_config.cmm v1 i ddr
+; 9540V1-SVA+SIA DDR : 9540_SxA_STbus_config.cmm v1 vi ddr
+; 9540V1-SVA ESRAM : 9540_SxA_STbus_config.cmm v1 v esram
+; 9540V1-SIA ESRAM : 9540_SxA_STbus_config.cmm v1 i esram
+; 9540V1-SVA+SIA DDR : 9540_SxA_STbus_config.cmm v1 vi esram
+;
+;
+;
+;==============================================================================
+
+
+local 	&core \
+ 		&PRG_BASE_ADR \
+ 		&PRG_BASE2_ACTIV \
+ 		&DATA_STBUS_BASE \
+ 		&DATA_STBUS_TOP \
+ 		&DATA_STBUS_BASE2 \
+ 		&DATA_STBUS_TOP2 \
+ 		&external_io_base_data_ahb_top \
+ 		&DATA_TOP1624_CHK \
+ 		&DATA2_1624_XA_BASE \
+ 		&DATA_BASE2_ACTIV \
+		&STBUS_ID_CONF \
+		&PRG_BASE34_ADR \
+		&DATA_STBUS_BASE3 \
+		&DATA_STBUS_BASE4 \
+		&DATA_STBUS_TOP3 \
+		&DATA_STBUS_TOP4
+
+local	&data24_base2_base &data24_base2_top &data16_base2_base &data16_base2_top
+local	&data24_base3_base &data24_base3_top &data16_base3_base &data16_base3_top
+local	&data24_base4_base &data24_base4_top &data16_base4_base &data16_base4_top
+local	&R1_24 &R2_24 &R3_24 &R1_16 &R2_16 &R3_16
+local 	&R1_prg &R2_prg &R3_prg
+
+;======== SCRIPT ENTRY POINT		
+ENTRY &target_version &DSPCORE &MEM_TYPE &BASES_2_3_4 &PRG_2_3_4
+;====
+
+;======== PARAMETERS FORMATTING  ================
+&target_version=string.lwr("&target_version")
+&DSPCORE=string.lwr("&DSPCORE")
+&MEM_TYPE=string.upr("&MEM_TYPE")
+&BASES_2_3_4=string.lwr("&BASES_2_3_4")
+&PRG_2_3_4=string.lwr("&PRG_2_3_4")
+;================================================
+
+
+if (string.mid(cpu(),0,8)!="CortexA9")&&(string.mid(cpu(),0,6)!="DB8540")  // APE-DAP
+(
+        ;; Due to DMA boarder effects on new MMDSP v80-3 archi, force MMDSP STBus config init from APE
+        print ""
+        print "ERROR : This script can only be executed on DB8540 APE !"
+        print ""
+        enddo
+)
+;======== PARAMETERS CHECK ... ==================
+if ("&target_version"!="v1")&&("&target_version"!="v2")
+(
+	print "ERROR >> Incorrect SoC version [&target_version] - [v1|v2]"
+	enddo
+)
+
+if ("&DSPCORE"!="v")&&("&DSPCORE"!="i")&&("&DSPCORE"!="vi")&&("&DSPCORE"!="iv")
+(
+	print "ERROR >> Incorrect DSP Core type [&DSPCORE] - [v|i|vi]"
+	enddo
+)
+
+if ("&MEM_TYPE"=="DDR")
+(
+	&MEM_TYPE="DDR"
+)
+else
+(
+	&MEM_TYPE="ESRAM"
+)
+
+if ("&BASES_2_3_4"=="")
+(
+	&BASES_2_3_4=0x1 ;; only base1 is used
+)
+if ("&PRG_2_3_4"=="")
+(
+	&&PRG_2_3_4=0x1 ;; only base1 is used
+)
+
+if (&BASES_2_3_4>0x4)
+(
+	&BASES_2_3_4=0x4
+)
+if (&PRG_2_3_4>0x4)
+(
+	&PRG_2_3_4=0x4
+)
+
+;======= END of PARAMs check  ====================
+
+;======= INITIAL VALUES ==========================
+&prg_base_size=0x2000
+&data24_base_size=0x1000
+&data16_base_size=0x0800
+&ext_periph_base_adr=0x80100000 ;; external peripheric base addr. 0x80180000 = CTI_SOC
+&ddr_base=0x0 ;; DDR Chip-select 0 start addr
+&ddr_top=0x1FFFFFFF ;; DDR Chip-select 0 max addr
+&esram_base=0x40030000 ;; ESRAM bank0 can not be used, it is in secure access. 
+&esram_top=0x4009FFFF ;; ESRAM max addr
+&mmdsp_data24_base=0x010000 ;; base addr in MMDSP X Space for ext Data24
+&mmdsp_data16_base=0x800000 ;; base addr in MMDSP X Space for ext Data16
+;==================================================
+
+
+;======= PROCESSING ===============================
+
+&DATA_TOP1624_CHK=0x0 ;; enable/disable check on top base setting
+
+if (&BASES_2_3_4>=0x2)
+(
+	&DATA_BASE2_ACTIV=0x1 ;; enable data bases 2, 3, 4
+)
+else
+(
+	&DATA_BASE2_ACTIV=0x0 ;; disable data bases 2, 3, 4
+)
+
+&config_start_addr=0x0
+&max_mem_addr=0x0
+if ("&MEM_TYPE"=="ESRAM")
+(
+	&config_start_addr=&esram_base
+	&max_mem_addr=&esram_top ;; esram max data section addr
+)
+if ("&MEM_TYPE"=="DDR")
+(
+	&config_start_addr=&ddr_base
+	&max_mem_addr=&ddr_top ;; DDR chip-select 0 max data section addr
+)
+
+;==============================================================================================
+; Configure AHB bases/tops addresses of the external memory area allocated for the MMDSP+
+;===============================================================================================
+; !!!!! modify the following variables if necessary to make your own AHB bases/tops configuration. !!!!!
+
+&prg_base1_adr=&config_start_addr
+&data_section_start_addr=&config_start_addr+(&PRG_2_3_4*&prg_base_size) ;; data section placed above program section.
+
+&data24_base1_base=&data_section_start_addr
+&data16_base1_base=&data_section_start_addr+(&BASES_2_3_4*&data24_base_size)
+
+;print ">>data24_base1_base= &data24_base1_base"
+;print ">>data16_base1_base= &data16_base1_base"
+
+&data24_base1_top=&data24_base1_base+&data24_base_size-0x1
+&data16_base1_top=&data16_base1_base+&data16_base_size-0x1
+
+;print ">>data24_base1_top= &data24_base1_top"
+;print ">>data16_base1_top= &data16_base1_top"
+
+&DATA_STBUS_BASE=(&data16_base1_base<<32.)+&data24_base1_base
+&DATA_STBUS_TOP=(&data16_base1_top<<32.)+&data24_base1_top
+
+&external_io_base_data_ahb_top=(&ext_periph_base_adr<<32.)+(&max_mem_addr)
+
+
+;; MULTIPLE PROGRAM BASES SETTING
+
+&prg_base2_adr=0x0
+&PRG_BASE2_ACTIV=0x0
+if (&PRG_2_3_4>=0x2)
+(
+	&prg_base2_adr=&prg_base1_adr+&prg_base_size
+	&PRG_BASE2_ACTIV=0x1
+)
+&PRG_BASE_ADR=(&prg_base2_adr<<32.)+&prg_base1_adr
+
+&prg_base3_adr=0x0
+&prg_base4_adr=0x0
+if (&PRG_2_3_4>=0x3)
+(
+	&prg_base3_addr=&prg_base2_adr+&prg_base_size
+	&prg_base4_addr=&prg_base3_adr+&prg_base_size
+	&PRG_BASE34_ADR=(&prg_base4_addr<<32.)+&prg_base3_addr
+)
+
+
+;; MULTIPLE DATA BASES SETTING
+
+if (&BASES_2_3_4>=0x2)
+(
+	&data24_base2_base=&data24_base1_top+0x1
+	&data24_base2_top=&data24_base_size+&data24_base1_top
+	
+	&data16_base2_base=&data16_base1_top+0x1
+	&data16_base2_top=&data16_base_size+&data16_base1_top
+	
+	&DATA_STBUS_BASE2=(&data16_base2_base<<32.)+&data24_base2_base
+	&DATA_STBUS_TOP2=(&data16_base2_top<<32.)+&data16_base2_base
+)
+else
+(
+	&DATA_STBUS_BASE2="NULL"
+	&DATA_STBUS_TOP2="NULL"
+)
+
+if (&BASES_2_3_4>=0x3)
+(
+	&data24_base3_base=&data24_base2_top+0x1
+	&data24_base3_top=&data24_base_size+&data24_base2_top
+	
+	&data16_base3_base=&data16_base2_top+0x1
+	&data16_base3_top=&data16_base_size+&data16_base2_top
+	
+	&DATA_STBUS_BASE3=(&data16_base3_base<<32.)+&data24_base3_base
+	&DATA_STBUS_TOP3=(&data16_base3_top<<32.)+&data16_base3_base
+)
+
+if (&BASES_2_3_4>=0x4)
+(
+	&data24_base4_base=&data24_base3_top+0x1
+	&data24_base4_top=&data24_base_size+&data24_base3_top
+	
+	&data16_base4_base=&data16_base3_top+0x1
+	&data16_base4_top=&data16_base_size+&data16_base3_top
+	
+	&DATA_STBUS_BASE4=(&data16_base4_base<<32.)+&data24_base4_base
+	&DATA_STBUS_TOP4=(&data16_base4_top<<32.)+&data16_base4_base
+)
+
+if ("&target_version"=="v1")||("&target_version"=="v2")
+(
+	;; MMDSP Data @ are 24bits. ==> Need 4 ARM word of 8bits
+	;; We take only the 10st most significant bits of each Boundaries
+	&R1_24=(&mmdsp_data24_base+((1*&data24_base_size)/4))>>16.
+	&R2_24=(&mmdsp_data24_base+((2*&data24_base_size)/4))>>16.
+	&R3_24=(&mmdsp_data24_base+((3*&data24_base_size)/4))>>16.
+	&R1_16=(&mmdsp_data16_base+((1*&data16_base_size)/4))>>16.
+	&R2_16=(&mmdsp_data16_base+((2*&data16_base_size)/4))>>16.
+	&R3_16=(&mmdsp_data16_base+((3*&data16_base_size)/4))>>16.
+
+	&DATA2_1624_XA_BASE=(&R3_16<<48.)+(&R2_16<<40.)+(&R1_16<<32.)+(&R3_24<<16.)+(&R2_24<<8.)+&R1_24
+	
+	;; MMDSP Instructions are 64 bits ==> Need 8 ARM words of 8bits
+	&R1_prg=((&(prg_base_size)*0x1)/8)>>19. ;; we need only 10bits of MMDSP space addr for prog_base2 boundary (32-3-19 = 10)
+	&R2_prg=((&(prg_base_size)*0x2)/8)>>19. ;; we need only 10bits of MMDSP space addr for prog_base3 boundary
+	&R3_prg=((&(prg_base_size)*0x3)/8)>>19. ;; we need only 10bits of MMDSP space addr for prog_base4 boundary
+
+	&PRG_BASE2_ACTIV=(&R3_prg<<48.)+(&R2_prg<<32.)+(&R1_prg<<16.)+&PRG_BASE2_ACTIV ;; adding Program bases boundaries
+)
+
+;print "Params list :\
+		&core \
+ 		&PRG_BASE_ADR \
+ 		&PRG_BASE2_ACTIV \
+ 		&DATA_STBUS_BASE \
+ 		&DATA_STBUS_TOP \
+ 		&DATA_STBUS_BASE2 \
+ 		&DATA_STBUS_TOP2 \
+ 		&external_io_base_data_ahb_top \
+ 		&DATA_TOP1624_CHK \
+ 		&DATA2_1624_XA_BASE \
+ 		&DATA_BASE2_ACTIV \
+		&STBUS_ID_CONF \
+		&PRG_BASE34_ADR \
+		&DATA_STBUS_BASE3 \
+		&DATA_STBUS_TOP3 \
+		&DATA_STBUS_BASE4 \
+		&DATA_STBUS_TOP4"
+
+if string.find("&DSPCORE","i")
+(
+ &core="8500i"
+ &STBUS_ID_CONF=0xb4 
+ 
+ do AHB_Config_for_SxA_ext_mem_access &core \
+ 		&PRG_BASE_ADR \
+ 		&PRG_BASE2_ACTIV \
+ 		&DATA_STBUS_BASE \
+ 		&DATA_STBUS_TOP \
+ 		&DATA_STBUS_BASE2 \
+ 		&DATA_STBUS_TOP2 \
+ 		&external_io_base_data_ahb_top \
+ 		&DATA_TOP1624_CHK \
+ 		&DATA2_1624_XA_BASE \
+ 		&DATA_BASE2_ACTIV \
+		&STBUS_ID_CONF \
+		&PRG_BASE34_ADR \
+		&DATA_STBUS_BASE3 \
+		&DATA_STBUS_TOP3 \
+		&DATA_STBUS_BASE4 \
+		&DATA_STBUS_TOP4
+
+)
+
+if string.find("&DSPCORE","v")
+(
+ &core="8500v"
+ &STBUS_ID_CONF=0x4
+
+ do AHB_Config_for_SxA_ext_mem_access &core \
+ 		&PRG_BASE_ADR \
+ 		&PRG_BASE2_ACTIV \
+ 		&DATA_STBUS_BASE \
+ 		&DATA_STBUS_TOP \
+ 		&DATA_STBUS_BASE2 \
+ 		&DATA_STBUS_TOP2 \
+ 		&external_io_base_data_ahb_top \
+ 		&DATA_TOP1624_CHK \
+ 		&DATA2_1624_XA_BASE \
+ 		&DATA_BASE2_ACTIV \
+		&STBUS_ID_CONF \
+		&PRG_BASE34_ADR \
+		&DATA_STBUS_BASE3 \
+		&DATA_STBUS_TOP3 \
+		&DATA_STBUS_BASE4 \
+		&DATA_STBUS_TOP4
+		
+)
+
+print "STBus Configuration for 8540&(target_version) S&(DSPCORE)A (&MEM_TYPE) : done!"
+
+print ""
+
+
+enddo
+
+

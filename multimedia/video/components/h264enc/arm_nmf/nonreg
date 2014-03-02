@@ -1,0 +1,454 @@
+set cmd="tlm_run.exe -arm_lib ./test_appli/bin/cortexA9-think-rvct-svp8500_ed/h264encnmf.axf -arm_opt"
+set arg="./build/host.axf SVASIA"
+set inf="$MMROOT/../tmp_"
+
+set test=VERIF_h264_vec_intra_1
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 32 -sfh 32 -n 1 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 1 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_2
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 176 -sfh 32 -n 1 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 40 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_3
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 32 -sfh 144 -n 1 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 30 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_4
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 32 -sfh 32 -n 2 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 40 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_5
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 48 -sfh 48 -n 1 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 2 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 10 -QPPSlice 10 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_6
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 80 -sfh 96 -n 2 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 600 -UseConstrainedIntraPred 0 -QPISlice 10 -QPPSlice 10 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_7
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 128 -sfh 96 -n 2 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 24 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 25 -QPPSlice 50 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_8
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 128 -sfh 96 -n 5 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 1500 -UseConstrainedIntraPred 0 -QPISlice 45 -QPPSlice 45 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_9
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 176 -sfh 144 -n 3 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 55 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 6 -QPPSlice 6 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_10
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 176 -sfh 144 -n 10 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 40 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 34 -QPPSlice 34 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_11
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 352 -sfh 288 -n 3 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 2000 -UseConstrainedIntraPred 0 -QPISlice 25 -QPPSlice 25 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_intra_12
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 640 -sfh 480 -n 10 -IntraPeriod 1 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 300 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 20 -QPPSlice 30 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_1
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 32 -sfh 32 -n 2 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 1 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_2
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 176 -sfh 32 -n 2 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 40 -UseConstrainedIntraPred 0 -QPISlice 10 -QPPSlice 10 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_3
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 32 -sfh 144 -n 2 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 30 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_4
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 32 -sfh 32 -n 3 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 1 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_5
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 48 -sfh 48 -n 2 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 1000 -UseConstrainedIntraPred 0 -QPISlice 20 -QPPSlice 20 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_6
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 128 -sfh 96 -n 2 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 24 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 25 -QPPSlice 50 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_7
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 128 -sfh 96 -n 10 -IntraPeriod 4 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 1500 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_8
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 176 -sfh 144 -n 10 -IntraPeriod 5 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 40 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 34 -QPPSlice 34 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_9
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 352 -sfh 288 -n 3 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 2000 -UseConstrainedIntraPred 0 -QPISlice 25 -QPPSlice 25 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_inter_10
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 640 -sfh 480 -n 10 -IntraPeriod 9 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 300 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 20 -QPPSlice 30 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_deb_1
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 32 -sfh 32 -n 2 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 1 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 40 -QPPSlice 40 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_deb_2
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 128 -sfh 96 -n 2 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 1 -MbSliceSize 24 -ByteSliceSize 0 -UseConstrainedIntraPred 0 -QPISlice 25 -QPPSlice 50 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+
+set test=VERIF_h264_vec_deb_3
+echo $test
+rm -f output
+cp "$inf/$test/input_frames.hex" input
+cp "$inf/$test/out.264" .
+set args="-sfw 352 -sfh 288 -n 3 -IntraPeriod 2 -IDRIntraEnable 0 -SliceMode 2 -MbSliceSize 0 -ByteSliceSize 2000 -UseConstrainedIntraPred 0 -QPISlice 25 -QPPSlice 25 -OutFileMode 0 -PicOrderCntType 2 -HrdSendMessages 0"
+set c="$cmd \"$arg $args\""
+echo $c
+$cmd "$arg $args"
+#diff output out.264
+set res=`diff output out.264`
+if (-e output && "$res" == "") then
+	echo Test $test : OK
+else
+	echo Test $test : ERROR
+endif
+echo
+

@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_audio/audio_chipset_apis=bin
+NO_STD_BUILD_audio/audio_chipset_apis=1
+BUILD_MMDSP_NMF_audio/audio_chipset_apis=bin
+BUILD_ARM_PROC_audio/audio_chipset_apis=bin
+BUILD_ARM_CODE_audio/audio_chipset_apis=bin
+BUILD_ARM_NMF_audio/audio_chipset_apis=bin
+BUILD_XP70_SIA_CODE_audio/audio_chipset_apis=false

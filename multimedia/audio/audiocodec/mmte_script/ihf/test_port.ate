@@ -1,0 +1,10 @@
+test_start SINKS_202 IHF_Test_Port
+
+test_property TEST_NAME testportihf
+OMX_GetHandle   renderer OMX.ST.AFM.IHF
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+do $(NOMADIK)/audiocodec/mmte_script/enable_disable_port_common_sink.ate renderer
+
+test_end

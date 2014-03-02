@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<project name="signing_cli" basedir="." default="signing_cli_release_test">
+
+	<property name="signing_cli_src_folder" value="./src" />
+	<property name="signing_cli_build_folder" value="./build" />
+	<property name="signing_cli_doc_folder" value="./doc/" />
+	<property name="signing_cli_script_folder" value="./scripts" />
+	<property name="signing_cli_classes_folder" value="${signing_cli_build_folder}/classes" />
+	<property name="signing_cli_test_classes_folder" value="${signing_cli_build_folder}/tests" />
+	<property name="signing_cli_jar_folder" value="${signing_cli_build_folder}/jar" />
+	<property name="signing_cli_release_folder" value="${signing_cli_build_folder}/release" />
+	<property name="signing_cli_jar_name" value="com.stericsson.sdk.signing.cli.jar" />
+	<property name="signing_cli_lib_folder" value="./lib" />
+	<property name="signing_cli_test_src_folder" value="./test" />
+	<property name="signing_cli_test_reports_folder" value="${signing_cli_build_folder}/reports" />
+	<property name="signign_cli_manpage_folder" value="${signing_cli_release_folder}/manpages" />
+
+	<path id="signing_cli_build_classpath">
+		<pathelement location="${signing_cli_lib_folder}/commons-cli-1.2.jar" />
+		<pathelement location="${signing_cli_lib_folder}/bcprov-ext-jdk15-143.jar" />
+		<pathelement location="${signing_cli_lib_folder}/log4j-1.2.15.jar" />
+		<pathelement location="${signing_cli_lib_folder}/com.stericsson.sdk.libs.jar" />
+	</path>
+
+	<path id="signing_cli_build_test_classpath">
+		<pathelement location="${signing_cli_lib_folder}/junit-4.6.jar" />
+		<pathelement location="${signing_cli_lib_folder}/commons-cli-1.2.jar" />
+		<pathelement location="${signing_cli_lib_folder}/bcprov-ext-jdk15-143.jar" />
+		<pathelement location="${signing_cli_lib_folder}/easymock.jar" />
+		<pathelement location="${signing_cli_lib_folder}/log4j-1.2.15.jar" />
+		<pathelement location="${signing_cli_lib_folder}/com.stericsson.sdk.libs.jar" />
+		<pathelement path="${signing_cli_classes_folder}" />
+	</path>
+
+	<target name="signing_cli_release_test" depends="signing_cli_test, signing_cli_release, generate_man_pages" />
+	
+	<target name="signing_cli_release" depends="signing_cli_jar, signing_cli_test_compile, generate_man_pages">
+		<!-- copy libraries produced by this project -->
+		<copy file="${signing_cli_jar_folder}/${signing_cli_jar_name}" todir="${signing_cli_release_folder}" />
+		<!-- copy dependency libraries -->
+		<copy file="${signing_cli_lib_folder}/commons-cli-1.2.jar" todir="${signing_cli_release_folder}" />
+		<copy file="${signing_cli_lib_folder}/bcprov-ext-jdk15-143.jar" todir="${signing_cli_release_folder}" />
+		<copy file="${signing_cli_lib_folder}/log4j-1.2.15.jar" todir="${signing_cli_release_folder}" />
+		<copy file="${signing_cli_lib_folder}/com.stericsson.sdk.libs.jar" todir="${signing_cli_release_folder}" />
+
+		<!--copy scripts to release folder-->
+		<copy todir="${signing_cli_release_folder}">
+			<fileset dir="${signing_cli_script_folder}/" />
+		</copy>
+		
+		<!--copy manpages to release folder-->
+		<copy todir="${signing_cli_release_folder}">
+			<fileset dir="${signing_cli_doc_folder}/manpages/" />
+		</copy>
+	</target>
+
+
+	<target name="signing_cli_jar" depends="signing_cli_compile">
+		<!-- create jar of compiled files -->
+		<jar destfile="${signing_cli_jar_folder}/${signing_cli_jar_name}" basedir="${signing_cli_classes_folder}" />
+	</target>
+
+	<target name="signing_cli_compile" depends="signing_cli_init">
+		<!-- compile java sources -->
+		<javac srcdir="${signing_cli_src_folder}" destdir="${signing_cli_classes_folder}" classpathref="signing_cli_build_classpath" />
+	</target>
+
+	<target name="signing_cli_test_compile" depends="signing_cli_compile">
+		<!-- compile java sources -->
+		<javac srcdir="${signing_cli_test_src_folder}" destdir="${signing_cli_test_classes_folder}" classpathref="signing_cli_build_test_classpath" />
+	</target>
+
+	<target name="signing_cli_init" depends="signing_cli_clean">
+		<!-- create output directories -->
+		<mkdir dir="${signing_cli_jar_folder}" />
+		<mkdir dir="${signing_cli_classes_folder}" />
+		<mkdir dir="${signing_cli_release_folder}" />
+		<mkdir dir="${signing_cli_test_classes_folder}" />
+		<mkdir dir="${signing_cli_test_reports_folder}" />
+	</target>
+
+	<target name="signing_cli_clean">
+		<!-- delete output directories -->
+		<delete dir="${signing_cli_jar_folder}" />
+		<delete dir="${signing_cli_classes_folder}" />
+		<delete dir="${signing_cli_release_folder}" />
+		<delete dir="${signing_cli_test_classes_folder}" />
+		<delete dir="${signing_cli_test_reports_folder}" />
+	</target>
+
+	<target name="generate_man_pages">
+		<mkdir dir="${signign_cli_manpage_folder}" />
+		<antcall target="generate_man_pages_cont">
+			<param name="xsl_definition" value="/proj/EMP_Linux/tmp/testing/etc/asciidoc/docbook-xsl/manpage.xsl" />
+			<param name="doc_folder" value="./doc/" />
+		</antcall>
+	</target>
+
+	<target name="generate_man_pages_cont">
+		<antcall target="generate_man_page">
+			<param name="manpage" value="sterc.1" />
+			<param name="xsl_definition" value="${xsl_definition}" />
+			<param name="doc_folder" value="${doc_folder}" />
+		</antcall>
+		<antcall target="generate_man_page">
+			<param name="manpage" value="ste-sign.1" />
+			<param name="xsl_definition" value="${xsl_definition}" />
+			<param name="doc_folder" value="${doc_folder}" />
+		</antcall>
+		<antcall target="generate_man_page">
+			<param name="manpage" value="ste-signrc.1" />
+			<param name="xsl_definition" value="${xsl_definition}" />
+			<param name="doc_folder" value="${doc_folder}" />
+		</antcall>
+	</target>
+
+	<target name="generate_man_page">
+		<antcall target="generate_man_page_cont">
+			<param name="manpage" value="${manpage}" />
+			<param name="result_file" value="${manpage}.xml" />
+			<param name="result_file_html" value="${manpage}.html" />
+			<param name="input_file" value="${manpage}.txt" />
+			<param name="xsl_definition" value="${xsl_definition}" />
+			<param name="doc_folder" value="${doc_folder}" />
+		</antcall>
+	</target>
+
+	<target name="generate_man_page_cont">
+		<exec executable="asciidoc" os="Linux">
+			<arg value="-o" />
+			<arg value="${signign_cli_manpage_folder}/${result_file_html}" />
+			<arg value="${doc_folder}/${input_file}" />
+		</exec>
+		<exec executable="asciidoc" os="Linux">
+			<arg value="-d" />
+			<arg value="manpage" />
+			<arg value="-b" />
+			<arg value="docbook" />
+			<arg value="-o" />
+			<arg value="${signign_cli_manpage_folder}/${result_file}" />
+			<arg value="${doc_folder}/${input_file}" />
+		</exec>
+		<exec executable="xsltproc" os="Linux">
+			<arg value="--nonet" />
+			<arg value="-o" />
+			<arg value="${signign_cli_manpage_folder}/${manpage}" />
+			<arg value="${xsl_definition}" />
+			<arg value="${signign_cli_manpage_folder}/${result_file}" />
+		</exec>
+	</target>
+
+	<target name="signing_cli_test" depends="signing_cli_test_compile">
+		<junit printsummary="yes" haltonfailure="no" showoutput="yes">
+			<classpath>
+				<pathelement location="${signing_cli_lib_folder}/junit-4.6.jar" />
+				<pathelement location="${signing_cli_lib_folder}/easymock.jar" />
+				<pathelement location="${signing_cli_lib_folder}/bcprov-ext-jdk15-143.jar" />
+				<pathelement location="${signing_cli_lib_folder}/commons-cli-1.2.jar" />
+				<pathelement location="${signing_cli_lib_folder}/com.stericsson.sdk.libs.jar" />
+				<pathelement path="${signing_cli_classes_folder}" />
+				<pathelement path="${signing_cli_test_classes_folder}" />
+			</classpath>
+
+			<formatter type="xml" />
+
+			<batchtest fork="yes" todir="${signing_cli_test_reports_folder}">
+				<fileset dir="${signing_cli_test_src_folder}">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTest*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${signing_cli_test_reports_folder}">
+			<fileset dir="${signing_cli_test_reports_folder}">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${signing_cli_test_reports_folder}/html" />
+		</junitreport>
+	</target>
+
+
+</project>

@@ -1,0 +1,31 @@
+alias S_CURRENT_PATH $(IMAGING_PATH)/fakesource/mmte_script
+do $(S_CURRENT_PATH)/init.mmte
+
+alias S_SOURCE_LOOP_ON_INPUT_FILE				OMX_TRUE
+alias S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE	0
+alias S_FRAME_RATE 0x10000
+
+alias S_NBUFFERCOUNT 0
+
+loop 5
+	arithmeticalias S_NBUFFERCOUNT+ 1
+	echo S_NBUFFERCOUNT
+	do $(S_CURRENT_PATH)/network_init_to_loaded.mmte
+	do $(S_CURRENT_PATH)/network_tunnels_set.mmte
+	do $(S_CURRENT_PATH)/network_loaded_to_idle.mmte
+	do $(S_CURRENT_PATH)/network_configure_idle.mmte
+	if FAKESOURCE_TEST == trace_extrada
+	OMX_SetConfig my_sink_1 OMX_IndexParamActiveStream nU32=3
+	endif
+	do $(S_CURRENT_PATH)/network_idle_to_executing.mmte
+	mmte_sleep 1001
+	mmte_sleep 1000
+	mmte_sleep 1000
+	mmte_sleep 1000
+	mmte_sleep 1000
+	mmte_sleep 1000
+	mmte_sleep 1000
+	do $(S_CURRENT_PATH)/network_executing_to_idle.mmte
+	do $(S_CURRENT_PATH)/network_idle_to_loaded.mmte
+	do $(S_CURRENT_PATH)/network_clean.mmte
+endloop

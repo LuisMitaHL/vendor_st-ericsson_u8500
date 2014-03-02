@@ -1,0 +1,35 @@
+#
+# Tatlpws configuration
+#
+
+menuconfig TATLPWS
+	bool "Tatlpws"
+	depends on DTHSRVHELPER && LIBAB && TATTOOLS && POWERSERVICES && AB_APE
+	help
+	  depends on DTHSRVHELPER, LIBAB, TATTOOLS, POWERSERVICES and AB_APE
+
+if TATLPWS
+
+config TATLPWS_DIR
+	string
+	default ../tat/tat/tatlpws
+
+config TATLPWS_DEPS
+	string
+	default "DTHSRVHELPER LIBAB TATTOOLS POWERSERVICES AB_APE"
+
+config TATLPWS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLPWS
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLPWS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLPWS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLPWS

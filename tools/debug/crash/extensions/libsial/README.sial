@@ -1,0 +1,97 @@
+
+	This file (README.sial) gives some information specific to the crash(1) 
+	integration of sial.
+
+	Please refer to the README file generic libsial informations.
+
+	An example script can be found as ../scripts/sial.c
+
+	PATHS and ENVIRONMENT
+	=====================
+
+	The default location to look for macros and include files are 
+	/usr/share/sial/.sial and ~/..sial 
+
+	The default 'root' for #include location are thus:
+
+	/usr/share/sial/crash/include and ~/.sial/include.
+
+	There are two environment variables that control these locations.
+
+	SIAL_IPATH : path to use for include files.
+	ex: setenv SIAL_IPATH /usr/include:$(ROOT)/usr/include:~/.lcrash/include
+
+	SIAL_MPATH : path to use for finding macro files.
+	ex: setenv SIAL_MPATH /usr/tmp/macs:~/.sial
+
+	#define's
+	=====================
+
+        The current independent #define's are:
+
+        Name                    Value/format
+        ====                    =====
+        linux                   1
+        __linux                 1
+        __linux__               1
+        unix                    1
+        __unix                  1
+        __unix                  1
+        LINUX_RELEASE           0x%08x
+        LINUX_2_2_16            (LINUX_RELEASE==0x020210)
+        LINUX_2_2_17            (LINUX_RELEASE==0x020211)
+        LINUX_2_4_0             (LINUX_RELEASE==0x020400)
+        LINUX_2_2_X             (((LINUX_RELEASE) & 0xffff00) == 0x020200)
+        LINUX_2_4_X             (((LINUX_RELEASE) & 0xffff00) == 0x020400)
+
+        For i386 images/cores only.
+
+        Name			Value
+        ====			====
+        i386                    1
+        __i386                  1
+        __i386__                1
+
+        For ia64 images/cores only.
+
+        Name			Value
+        ====			=====
+        ia64                    1
+        __ia64                  1
+        __ia64__                1
+        __LP64__                1
+        _LONGLONG               1
+        __LONG_MAX__            9223372036854775807L
+
+        If you feel there should be more standard defined pushed 
+        there, let me know. 
+
+
+	Loading/Unloading
+	=====================
+
+	crash defines two new commands for loading and unloading sial
+	macros called "sload" and "sunload", respectively.
+
+	Using "sload" should be enough, since sial automaticly "sunload's"
+	the previous copy after successfully compiling the new one.
+
+	DSO's must be unload'ed before you can reload them.
+
+	Editing
+	=====================
+	
+	To facilitate macro editing, crash makes a "edit" command available.
+	edit  <funcname> will get you directly in the macro file that 
+	defines function "funcname" at the line where "funcname" starts.
+
+	edit -f /somedir/somefile, will start editing a new/old file.
+
+	edit -l will get you position on the "l"ast compile or runtime error.
+
+	Macro integration into the crash framework
+	=============================================
+
+	Refer to the README file on writing a user level command.
+	Also look at the 'sial.c' example in the scripts directory
+        

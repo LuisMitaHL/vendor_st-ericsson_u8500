@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+<project name="flash-tool-cli" basedir="." default="flash-tool-cli.RELEASE">
+
+	<property name="flash-tool-cli.SOURCE_FOLDER" value="./src" />
+	<property name="flash-tool-cli.BUILD_FOLDER" value="./build" />
+	<property name="flash-tool-cli.SCRIPTS_FOLDER" value="./scripts" />
+	<property name="flash-tool-cli.CLASSES_FOLDER" value="${flash-tool-cli.BUILD_FOLDER}/classes" />
+	<property name="flash-tool-cli.TEST_CLASSES_FOLDER" value="${flash-tool-cli.BUILD_FOLDER}/tests" />
+	<property name="flash-tool-cli.JAR_FOLDER" value="${flash-tool-cli.BUILD_FOLDER}/jar" />
+	<property name="flash-tool-cli.RELEASE_FOLDER" value="${flash-tool-cli.BUILD_FOLDER}/release" />
+	<property name="flash-tool-cli.JAR_NAME" value="flash-tool-cli.jar" />
+	<property name="flash-tool-cli.LIB_FOLDER" value="./lib" />
+	<property name="flash-tool-cli.TEST_SOURCE_FOLDER" value="./test" />
+	<property name="flash-tool-cli.TEST_REPORTS_FOLDER" value="${flash-tool-cli.BUILD_FOLDER}/reports" />
+	<property name="flash-tool-cli.KPI_FOLDER" value="./kpi" />
+	<property name="flash-tool-cli.INSTRUMENTED_FOLDER" value="${flash-tool-cli.BUILD_FOLDER}/instrumented" />
+	<property name="flash-tool-cli.CHECKSTYLE_CFG_FOLDER" value="${flash-tool-cli.KPI_FOLDER}/checkstyle" />
+	<property name="flash-tool-cli.DOC_FOLDER" value="./doc" />
+	<property name="flash-tool-cli.RELEASE_DOC_FOLDER" value="${flash-tool-cli.RELEASE_FOLDER}/doc" />
+	<property name="flash-tool-cli.JUNIT_JAR" value="${flash-tool-cli.LIB_FOLDER}/junit-4.6.jar" />
+
+	<path id="flash-tool-cli.CLASSPATH">
+		<pathelement location="${flash-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+		<pathelement location="${flash-tool-cli.LIB_FOLDER}/brp.jar" />
+	</path>
+
+	<path id="flash-tool-cli.TEST_CLASSPATH">
+		<pathelement location="${flash-tool-cli.JUNIT_JAR}" />
+		<pathelement location="${flash-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+		<pathelement location="${flash-tool-cli.LIB_FOLDER}/brp.jar" />
+		<pathelement path="${flash-tool-cli.CLASSES_FOLDER}" />
+	</path>
+
+	<!-- configure cobertura ant task -->
+
+	<property name="flash-tool-cli.COBERTURA_FOLDER" value="${flash-tool-cli.KPI_FOLDER}/cobertura" />
+
+	<path id="flash-tool-cli.COBERTURA_CLASSPATH">
+		<fileset dir="${flash-tool-cli.COBERTURA_FOLDER}">
+			<include name="cobertura.jar" />
+			<include name="lib/**/*.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="flash-tool-cli.COBERTURA_CLASSPATH" resource="tasks.properties" />
+
+	<!-- end configure cobertura ant task -->
+
+	<!-- configure checkstyle ant task -->
+
+	<property name="flash-tool-cli.CHECKSTYLE_FOLDER" value="${flash-tool-cli.KPI_FOLDER}/checkstyle" />
+
+	<path id="flash-tool-cli.CHECKSTYLE_CLASSPATH">
+		<fileset dir="${flash-tool-cli.CHECKSTYLE_FOLDER}">
+			<include name="checkstyle-all-4.4.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="flash-tool-cli.CHECKSTYLE_CLASSPATH" resource="checkstyletask.properties" />
+
+	<!-- end configure checkstyle ant task -->
+
+	<target name="flash-tool-cli.RELEASE_WITH_TEST" depends="flash-tool-cli.TEST, flash-tool-cli.RELEASE" />
+
+	<target name="flash-tool-cli.RELEASE" depends="flash-tool-cli.JAR, flash-tool-cli.TEST_COMPILE">
+		<!-- copy libraries produced by this project -->
+		<copy file="${flash-tool-cli.JAR_FOLDER}/${flash-tool-cli.JAR_NAME}" todir="${flash-tool-cli.RELEASE_FOLDER}" />
+		<!-- copy dependency libraries -->
+		<copy file="${flash-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" todir="${flash-tool-cli.RELEASE_FOLDER}" />
+		<copy file="${flash-tool-cli.LIB_FOLDER}/brp.jar" todir="${flash-tool-cli.RELEASE_FOLDER}" />
+
+		<!--copy scripts to release folder-->
+		<copy todir="${flash-tool-cli.RELEASE_FOLDER}">
+			<fileset dir="${flash-tool-cli.SCRIPTS_FOLDER}/">
+				<exclude name="runAllCommands.bat" />
+			</fileset>
+		</copy>
+		<!--copy docs to release folder-->
+		<copy todir="${flash-tool-cli.RELEASE_DOC_FOLDER}">
+			<fileset dir="${flash-tool-cli.DOC_FOLDER}/">
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="flash-tool-cli.JAR" depends="flash-tool-cli.COMPILE">
+		<!-- create jar of compiled files -->
+		<jar destfile="${flash-tool-cli.JAR_FOLDER}/${flash-tool-cli.JAR_NAME}" basedir="${flash-tool-cli.CLASSES_FOLDER}" />
+	</target>
+
+	<target name="flash-tool-cli.COMPILE" depends="flash-tool-cli.INIT">
+		<!-- compile java sources -->
+		<javac srcdir="${flash-tool-cli.SOURCE_FOLDER}" destdir="${flash-tool-cli.CLASSES_FOLDER}" classpathref="flash-tool-cli.CLASSPATH" debug="true" />
+	</target>
+
+	<target name="flash-tool-cli.TEST_COMPILE" depends="flash-tool-cli.COMPILE">
+		<!-- compile java sources -->
+		<javac srcdir="${flash-tool-cli.TEST_SOURCE_FOLDER}" destdir="${flash-tool-cli.TEST_CLASSES_FOLDER}" classpathref="flash-tool-cli.TEST_CLASSPATH" />
+	</target>
+
+	<target name="flash-tool-cli.INIT" depends="flash-tool-cli.CLEAN">
+		<!-- create output directories -->
+		<mkdir dir="${flash-tool-cli.JAR_FOLDER}" />
+		<mkdir dir="${flash-tool-cli.CLASSES_FOLDER}" />
+		<mkdir dir="${flash-tool-cli.RELEASE_FOLDER}" />
+		<mkdir dir="${flash-tool-cli.TEST_CLASSES_FOLDER}" />
+		<mkdir dir="${flash-tool-cli.TEST_REPORTS_FOLDER}" />
+		<mkdir dir="${flash-tool-cli.RELEASE_DOC_FOLDER}" />
+	</target>
+
+	<target name="flash-tool-cli.CLEAN">
+		<!-- delete output directories -->
+		<delete dir="${flash-tool-cli.JAR_FOLDER}" />
+		<delete dir="${flash-tool-cli.CLASSES_FOLDER}" />
+		<delete dir="${flash-tool-cli.RELEASE_FOLDER}" />
+		<delete dir="${flash-tool-cli.TEST_CLASSES_FOLDER}" />
+		<delete dir="${flash-tool-cli.TEST_REPORTS_FOLDER}" />
+	</target>
+
+	<target name="flash-tool-cli.TEST" depends="flash-tool-cli.TEST_COMPILE">
+		<mkdir dir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit" />
+		<junit printsummary="yes" haltonfailure="no" showoutput="yes">
+			<classpath>
+				<pathelement location="${flash-tool-cli.JUNIT_JAR}" />
+				<pathelement location="${flash-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+				<pathelement location="${flash-tool-cli.LIB_FOLDER}/brp.jar" />
+				<pathelement path="${flash-tool-cli.CLASSES_FOLDER}" />
+				<pathelement path="${flash-tool-cli.TEST_CLASSES_FOLDER}" />
+			</classpath>
+
+			<formatter type="xml" />
+
+			<batchtest fork="yes" todir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<fileset dir="${flash-tool-cli.TEST_SOURCE_FOLDER}">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTest*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit">
+			<fileset dir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit/html" />
+		</junitreport>
+	</target>
+
+	<target name="flashtool_cli.ALL_REPORTS" depends="flashtool_cli.COBERTURA_REPORT, flashtool_cli.CHECKSTYLE" />
+
+	<!-- cobertura targets -->
+
+	<target name="flashtool_cli.TEST_INSTRUMENTED" depends="flashtool_cli.COBERTURA_INSTRUMENT">
+		<mkdir dir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit" />
+		<junit fork="yes" forkmode="once" printsummary="yes" haltonfailure="no" showoutput="yes">
+			<classpath>
+				<pathelement path="${flash-tool-cli.INSTRUMENTED_FOLDER}" />
+				<pathelement location="${flash-tool-cli.JUNIT_JAR}" />
+				<pathelement location="${flash-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+				<pathelement location="${flash-tool-cli.LIB_FOLDER}/brp.jar" />
+				<pathelement path="${flash-tool-cli.CLASSES_FOLDER}" />
+				<pathelement path="${flash-tool-cli.TEST_CLASSES_FOLDER}" />
+			</classpath>
+			<classpath refid="flash-tool-cli.COBERTURA_CLASSPATH" />
+
+			<formatter type="xml" />
+
+			<batchtest todir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<fileset dir="${flash-tool-cli.TEST_SOURCE_FOLDER}">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTest*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit">
+			<fileset dir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${flash-tool-cli.TEST_REPORTS_FOLDER}/junit/html" />
+		</junitreport>
+	</target>
+
+	<target name="flashtool_cli.COBERTURA_REPORT" depends="flashtool_cli.TEST_INSTRUMENTED">
+
+		<delete dir="${flash-tool-cli.TEST_REPORTS_FOLDER}/code-coverage" />
+
+		<!-- create coverage report -->
+		<cobertura-report format="html" destdir="${flash-tool-cli.TEST_REPORTS_FOLDER}/code-coverage">
+			<!-- include every source folder for instrumented classes -->
+			<fileset dir="${flash-tool-cli.SOURCE_FOLDER}" includes="**/*.java" />
+		</cobertura-report>
+	</target>
+
+	<target name="flashtool_cli.COBERTURA_INSTRUMENT" depends="flash-tool-cli.TEST_COMPILE">
+
+		<delete file="cobertura.ser" />
+		<delete dir="${flash-tool-cli.INSTRUMENTED_FOLDER}" />
+
+		<mkdir dir="${flash-tool-cli.INSTRUMENTED_FOLDER}" />
+
+		<!-- execute the instrumentation task on release bundles -->
+		<cobertura-instrument todir="${flash-tool-cli.INSTRUMENTED_FOLDER}">
+			<fileset dir="${flash-tool-cli.CLASSES_FOLDER}" />
+		</cobertura-instrument>
+	</target>
+
+	<!-- end cobertura targets -->
+
+	<!-- checkstyle targets -->
+
+	<target name="flashtool_cli.CHECKSTYLE" depends="flash-tool-cli.COMPILE">
+		<mkdir dir="${flash-tool-cli.TEST_REPORTS_FOLDER}/checkstyle" />
+		<checkstyle config="${flash-tool-cli.CHECKSTYLE_CFG_FOLDER}/ruleset.xml" failOnViolation="false">
+			<classpath>
+				<pathelement location="${flash-tool-cli.CLASSES_FOLDER}" />
+				<pathelement location="${flash-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+			</classpath>
+			<!-- every .java file that should be checked -->
+			<fileset dir="${flash-tool-cli.SOURCE_FOLDER}" includes="**/*.java" />
+			<formatter type="xml" toFile="${flash-tool-cli.TEST_REPORTS_FOLDER}/checkstyle/report.xml" />
+		</checkstyle>
+		<xslt in="${flash-tool-cli.TEST_REPORTS_FOLDER}/checkstyle/report.xml" out="${flash-tool-cli.TEST_REPORTS_FOLDER}/checkstyle/report.html" style="${flash-tool-cli.CHECKSTYLE_CFG_FOLDER}/checkstyle-noframes-sorted.xsl" />
+	</target>
+
+	<!-- end checkstyle targets -->
+
+</project>

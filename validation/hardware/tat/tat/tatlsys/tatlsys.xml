@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlsys">
+  	<argument path="/DTH/SYSTEM/config/menus/menu_00system.xml" type="FILE" user_data="ACT_SYSTEM_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsys/config/menus\nFilename=menu_00system.xml</info> 
+	  </argument>
+	  <argument path="/DTH/SYSTEM/config/panels/panel_system.xml" type="FILE" user_data="ACT_SYSTEM_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsys/config/panels\nFilename=panel_system.xml</info> 
+	  </argument>
+
+    <action path="/DTH/SYSTEM/SHUTDOWN/Poweroff" type="U8" user_data="ACT_POWEROFF" exec="Dth_ActSYS_exec">
+      <info>Label Action:Halt the system and do a poweroff\n</info>
+    </action>
+    
+    <action path="/DTH/SYSTEM/SHUTDOWN/Reboot" type="U8" user_data="ACT_REBOOT" exec="Dth_ActSYS_exec">
+      <info>Label Action:Halt the system and restart\n</info>
+    </action>
+    
+    <argument path="/DTH/SYSTEM/config/version/HATSVersion.xml" type="FILE" user_data="ACT_HATSVERSION">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsys/config/version\nFilename=HATSVersion.xml</info> 
+	  </argument>
+    
+  </module>
+</dthapi>

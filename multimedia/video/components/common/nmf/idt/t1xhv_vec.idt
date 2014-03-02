@@ -1,0 +1,303 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    
+* \brief   Common data structure and/or definition for all NMF ALGO encoder 
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+
+#ifndef	_t1xhv_vec_idt
+#define _t1xhv_vec_idt
+
+#include <t1xhv_retarget.idt>
+
+/* ****************************** Enumerates ******************************** */
+
+/** @ingroup vecAlgoAPIGroup
+ *  Kind of type an ALGO component will be assigned
+ *  @{ 
+ */
+
+typedef enum {
+
+  /**  Job complete with No error (provided with a status STATUS_JOB_COMPLETE)   */
+  VEC_ERT_NONE,
+
+  /**  Job complete with void execution of codec (provided with a status STATUS_JOB_COMPLETE)   */
+  VEC_VOID,
+  
+  /**  Job complete with a frame skip request information (provided with a status STATUS_JOB_COMPLETE)  */
+  VEC_INFO_SKIP,
+
+  /**  All error codes following VEC_ERT are provided with a status STATUS_JOB_ABORTED */
+  VEC_ERT,
+  
+  /**  The requested feature is not supported */
+  VEC_ERT_NOT_SUPPORTED,                
+
+  /**  One of the input parameter is wrong */
+  VEC_ERT_BAD_PARAMETER,
+
+  /**  Something is wrong (inconsistency internal state) */
+  VEC_ERT_FATAL_ERROR,
+
+  /** addr_source_buffer is not a multiple of 256 */
+  VEC_ERT_ADDR_SOURCE_BUFFER           /*=0x0080*/,
+
+  /** addr_fwd_ref_buffer is not a multiple of 256 */
+  VEC_ERT_ADDR_FWD_REF_BUFFER          /*=0x0081*/,
+
+  /** addr_grab_ref_buffer is not a multiple of 256 */
+  VEC_ERT_ADDR_GRAB_REF_BUFFER         /*=0x0082*/,
+
+  /** addr_dest_buffer is not a multiple of 256 */
+  VEC_ERT_ADDR_DEST_BUFFER             /*=0x0083*/,
+
+  /** addr_deblocking_param_buffer is not a multiple of 4 */
+  VEC_ERT_ADDR_DEBLOCKING_PARAM_BUFFER /*=0x0084*/,
+
+  /** addr_motion_vector_buffer is not a multiple of 16 */
+  VEC_ERT_ADDR_MOTION_VECTOR_BUFFER    /*=0x0085*/,
+
+  /** addr_intra_refresh_buffer is not a multiple of 16 */
+  VEC_ERT_ADDR_INTRA_REFRESH_BUFFER    /*=0x0086*/,
+
+  /** addr_search_window_buffer is not a multiple of 256 */
+  VEC_ERT_ADDR_SEARCH_WINDOW_BUFFER    /*=0x0087*/,
+
+  /** addr_search_window_end is not a multiple of 256 */
+  VEC_ERT_ADDR_SEARCH_WINDOW_END       /*=0x0088*/,
+
+  /** addr_jpeg_run_level_buffer is not a multiple of 16 */
+  VEC_ERT_ADDR_JPEG_RUN_LEVEL_BUFFER   /*=0x0089*/,
+
+  /** addr_header_buffer is not a multiple of 16 */
+  VEC_ERT_ADDR_HEADER_BUFFER           /*=0x008a*/,
+
+  /** addr_bitstream_start is not a multiple of 16 */
+  VEC_ERT_ADDR_BITSTREAM_START         /*=0x008b*/,
+
+  /** addr_buffer_start is not a multiple of 16 */
+  VEC_ERT_ADDR_BUFFER_START            /*=0x008c*/,
+
+  /** addr_buffer_end is not a multiple of 16 */
+  VEC_ERT_ADDR_BUFFER_END              /*=0x008d*/,
+
+  /** addr_window_start is not a multiple of 16 */
+  VEC_ERT_ADDR_WINDOW_START            /*=0x008e*/,
+
+  /** addr_window_end is not a multiple of 16 */
+  VEC_ERT_ADDR_WINDOW_END              /*=0x008f*/,
+
+  /** frame_width is not a multiple of 16 */
+  VEC_ERT_FRAME_WIDTH                  /*=0x00a0*/,
+
+  /** frame_height is not a multiple of 16 */
+  VEC_ERT_FRAME_HEIGHT                 /*=0x00a1*/,
+
+  /** window_width is not a multiple of 16 (MPEG4/H263)or 8 (JPEG) */
+  VEC_ERT_WINDOW_WIDTH                 /*=0x00a2*/,
+
+  /** window_height is not a multiple of 16 (MPEG4/H263)or 8 (JPEG) */
+  VEC_ERT_WINDOW_HEIGHT                /*=0x00a3*/,
+
+  /** window_horizontal_offset is not a multiple of 8 (JPEG) */
+  VEC_ERT_WINDOW_HORIZONTAL_OFFSET     /*=0x00a4*/,
+
+  /** window_vertical_offset is not a multiple of 8 (JPEG) */
+  VEC_ERT_WINDOW_VERTICAL_OFFSET       /*=0x00a5*/,
+
+  /** quant is equal to 0 */
+  VEC_ERT_QUANT                        /*=0x00c0*/,
+
+  /** vop_fcode_forward is equal to 0 */
+  VEC_ERT_VOP_FCODE_FORWARD            /*=0x00c1*/,
+
+  /** quant_table is equal to 0 */
+  VEC_ERT_QUANT_TABLE                  /*=0x00c2*/,
+
+  /** data_partitioned=1 while frame size is greater than CIF */
+  VEC_ERT_DATA_PARTITIONED             /*=0x00c6*/,
+  
+  ERR_ENCODE_NOT_FOUND 								 /*=0x0101*/
+
+} t_t1xhv_encoder_info;
+
+/** \brief This structure defines a Encode input frame buffers. */
+typedef struct {
+    t_ahb_address  addr_source_buffer;        /**<\brief Address of Source Buffer to encode (i.e. start address of the source buffer, 
+                                                which contains the original frame to be encoded (possibly with cropping).
+                                              \n Usage : <b>ALL SUPPORTED STILL IMAGE and VIDEO ENCODERS.</b>
+                                              \n Remark : MPEG4/H263 encode use the YCbCr 4:2:0 macroblock format. JPEG encode 
+                                              use YCbCr separate component macroblock format (Y only, YCbCr 4:2:0, 4:2:2 or 4:4:4) 
+                                              or YCbCr 4:2:0 macroblock format, depending on sampling_mode.
+                                              \n Remark : For an MPEG4/H263 encode, or JPEG if sampling_mode>3, the luminance data is stored 
+                                              first, the chrominance data is stored at address addr_source_buffer+frame_width*frame_height.
+                                              \n For a JPEG encode, the luminance data is stored first, the Cb chrominance data is 
+                                              stored at address addr_source_buffer+frame_width*frame_height, the Cr chrominance data is 
+                                              stored at address addr_source_buffer+frame_width*frame_height+((frame_width/2+8)&0xFFF0)*((frame_height/2+8)&0xFFF0)
+                                              if sampling_mode=1, or
+                                              addr_source_buffer+frame_width*frame_height+((frame_width/2+8)&0xFFF0)*frame_height if sampling_mode=2, or
+                                              addr_source_buffer+frame_width*frame_height*2 if sampling_mode=3).
+                                              \n <b>The minimum buffer size (in bytes) should be: 
+                                              \n For an MPEG4/H263 encode, or JPEG if sampling_mode>3 : frame_width*frame_height*3/2.
+                                              \n For a JPEG encode subtask : 
+                                              \n • frame_width*frame_height if sampling_mode=0
+                                              \n • frame_width*frame_height+((frame_width/2+8)&0xFFF0)*((frame_height/2+8)&0xFFF0)*2 if sampling_mode=1
+                                              \n • frame_width*frame_height+((frame_width/2+8)&0xFFF0)*frame_height*2 if sampling_mode=2
+                                              \n • frame_width*frame_height*3 if sampling_mode=3</b>
+                                              \n Alignment : Multiple of 256.*/
+    t_ahb_address  addr_fwd_ref_buffer;       /**<\brief Address of Forward reference buffer (i.e. start address of the forward reference buffer, which 
+                                              contains the previous reconstructed frame, used as a reference for motion estimation (while encoding a Pframe
+                                              or an I-frame).
+                                              \n Usage : <b>ALL SUPPORTED VIDEO ENCODERS.</b>
+                                              \n Remark : The luminance data is stored first, the chrominance data is stored at address:
+                                              addr_fwd_ref_buffer+window_width*window_height.
+                                              \n <b>The minimum buffer size (in bytes) should be: window_width*window_height*3/2. </b>
+                                              \n Alignment : Multiple of 256.*/
+    t_ahb_address  addr_grab_ref_buffer;      /**<\brief (Not yet implemented) Address of Grabbing reference buffer (i.e. TBD)
+                                              \n Usage : <b>(Not yet implemented).</b>
+                                              \n Remark : TBD.
+                                              \n <b>The minimum buffer size (in bytes) should be: TBD </b>
+                                              \n Alignment : Multiple of TBD.*/
+    t_ahb_address  addr_intra_refresh_buffer; /**<\brief Address of Intra refresh buffer (i.e. start address of the intra refresh buffer, which
+                                              contains the initial macroblock AIR/CIR counters.
+                                              \n Usage : <b>ALL SUPPORTED VIDEO ENCODERS.</b>
+                                              \n Remark : addr_intra_refresh_buffer is the address of the first 32-bit word that belongs to the intra 
+                                              refresh buffer. It is not used if intra_refresh_type=0. 
+                                              \n <b>The minimum buffer size (in bytes) should be: 
+                                              \n for MPEG encoder : ((window_width/16)*(window_height/16)*2+15)&0xFFF0
+                                              \n for H264 encoder : ((window_width/16)*(window_height/16)*4+15)&0xFFF0</b>
+                                              \n Alignment : Multiple of 16.*/
+} ts_t1xhv_vec_frame_buf_in;
+
+/*!
+* \typedef ts_t1xhv_vec_frame_buf_in *tps_t1xhv_vec_frame_buf_in;
+*/
+typedef ts_t1xhv_vec_frame_buf_in *tps_t1xhv_vec_frame_buf_in;
+
+/** \brief This structure defines a Encode Output frame buffer. */
+typedef struct {
+    t_ahb_address  addr_dest_buffer;             /**<\brief Address of Destination buffer  (i.e. start address of the destination 
+                                              buffer, which contains the current reconstructed frame).
+                                              \n Usage : <b>ALL SUPPORTED STILL IMAGE and VIDEO ENCODERS.</b>
+                                              \n Remark : The luminance data is stored first, the chrominance data is stored at address:
+                                              addr_dest_buffer+window_width*window_height.
+                                              \n <b>The minimum buffer size (in bytes) should be: window_width*window_height*3/2 </b>
+                                              \n Alignment : Multiple of 256.*/
+    t_ahb_address  addr_deblocking_param_buffer; /**<\brief (Not yet implemented) Address of Deblocking parameter buffer (i.e. TBD)
+                                              \n Usage : <b>(Not yet implemented).</b>
+                                              \n Remark : TBD.
+                                              \n <b>The minimum buffer size (in bytes) should be: TBD </b>
+                                              \n Alignment : Multiple of TBD.*/
+    t_ahb_address  addr_motion_vector_buffer;    /**<\brief Address of Motion vector buffer (i.e. start address of the motion vector buffer, 
+                                              which contains the last value of the motion vectors, in order to perform motion estimation. 
+                                              \n Usage : <b>ALL SUPPORTED VIDEO ENCODERS.</b>
+                                              \n Remark : addr_motion_vector_buffer is the address of the first 32-bit word that belongs to the 
+                                              motion vector buffer.
+                                              \n <b>The minimum buffer size (in bytes) should be:
+                                              \n for MPEG4 encoder : ((window_width/16+2)*(window_height/16+2)*4+15)&0xFFF0
+                                              \n for H264 encoder : ((window_width/16+2)*(window_height/16+2)*8+15)&0xFFF0 </b>
+                                              \n Alignment : Multiple of 16.*/
+    t_ahb_address  addr_intra_refresh_buffer;    /**<\brief Address of Intra refresh buffer (i.e. start address of the intra refresh buffer,
+                                              which contains the final macroblock AIR/CIR counters.
+                                              \n Usage : <b>ALL SUPPORTED VIDEO ENCODERS.</b>
+                                              \n Remark : It is not used if intra_refresh_type=0.
+                                              \n <b>The minimum buffer size (in bytes) should be:
+                                              \n for MPEG4 encoder : ((window_width/16+2)*(window_height/16+2)*4+15)&0xFFF0
+                                              \n for H264 encoder : ((window_width/16+2)*(window_height/16+2)*8+15)&0xFFF0 </b>
+                                              \n Alignment : Multiple of 16.*/
+    t_ahb_address  addr_ime_mv_field_buffer;     /**<\brief Add. of MV field buffer of IME */
+    t_ahb_address  addr_ime_mv_field_buffer_end; /**<\brief Add. of MV field buffer of IME */    
+    t_ahb_address  addr_debug_mtf_buffer;        /**<\brief addr_debug_mtf_buffer          */    
+    t_ahb_address  reserved_3;					 /**<\brief reserved */   
+} ts_t1xhv_vec_frame_buf_out;
+
+/*!
+* \typedef ts_t1xhv_vec_frame_buf_out *tps_t1xhv_vec_frame_buf_out;
+*/
+typedef ts_t1xhv_vec_frame_buf_out *tps_t1xhv_vec_frame_buf_out;
+
+
+/** \brief This structure defines a Encode internal buffer. */
+typedef struct {
+    t_ahb_address  addr_search_window_buffer;  /**<\brief Address of Search window buffer start (i.e. start address of the search window buffer, 
+                                              which is used to store part of the forward reference buffer in order to optimize data access during 
+                                              motion estimation.
+                                              \n Usage : <b>ALL SUPPORTED VIDEO ENCODERS.</b>
+                                              \n Remark : addr_search_window_buffer is the address of the first 32-bit word that belongs to the search window buffer.
+                                              \n <b>The minimum buffer size (in bytes) should be:
+                                              \n For a +/-16 pixel vertical motion vector range : window_width*64.
+                                              \n For a +/-32 pixel vertical motion vector range : window_width*96. </b>
+                                              \n Alignment : Multiple of 256.*/
+    t_ahb_address  addr_search_window_end;     /**<\brief Address of Search window buffer end (i.e. end address of the search window buffer, which 
+                                              is used to store part of the forward reference buffer in order to optimize data access during motion estimation.
+                                              \n Usage : <b>ALL SUPPORTED VIDEO ENCODERS.</b>
+                                              \n Remark : addr_search_window_end is the address of the 32-bit word following the last word that belongs to
+                                              the search window buffer.
+                                              \n <b>The minimum buffer size (in bytes) should be:
+                                              \n For a +/-16 pixel vertical motion vector range : window_width*64.
+                                              \n For a +/-32 pixel vertical motion vector range : window_width*96.</b>
+                                              \n Alignment : Multiple of 256.*/
+    t_ahb_address  addr_jpeg_run_level_buffer; /**<\brief Address of JPEG Run level buffer (i.e. start address of the JPEG run level 
+                                                buffer, which contains intermediate data of a JPEG encode subtask. 
+                                              \n Usage : <b>ALL SUPPORTED STILL IMAGE ENCODERS.</b>
+                                              \n Remark : This buffer is also used as intermediate buffer for thumbnail generation if sampling mode>3
+                                                (YUV420 mb format) and algo_id=ID_SEC_JPEG_THUMBNAIL. Note that if thumbnail generation is disabled and sampling_mode=4, 
+                                                this intermediate buffer is not used by the FW).
+                                              \n <b>The minimum buffer size (in bytes) should be: 
+                                              \n frame_width*32*4 if sampling_mode=0
+                                              \n frame_width*32*6 if sampling_mode=1
+                                              \n frame_width*32*8 if sampling_mode=2
+                                              \n frame_width*32*12 if sampling_mode=3 
+                                              \n In case of thumbnail generation, the minimum buffer size must be: (((SFW/8)+15)&FFF0)*(((SFH/8)+15)&0xFFF0)*3/2 
+                                              This corresponds to a YUV420 planar buffer with luminance width/height multiple of 16 pixels</b>
+                                              \n Alignment : Multiple of 16.*/
+    t_ahb_address  addr_h264e_H4D_buffer;      /**<\brief (Not yet implemented) Address of temporary buffer used by H4D for H264.(i.e. TBD)
+                                              \n Remark : TBD.
+                                              \n <b>The minimum buffer size (in bytes) should be: TBD </b>
+                                              \n Alignment : Multiple of TBD.*/
+    t_ahb_address  addr_h264e_rec_local;       /**<\brief Address of temporary buffer used for reconstruction local buffer for H264. */
+    t_ahb_address  addr_h264e_metrics;         /**<\brief Address of temporary buffer used for coding choice and metrics for H264. */
+    t_ahb_address  addr_h264e_cup_context;     /**<\brief Add for context of CUP HW block                   */
+    t_ahb_address  reserved_1;                 /**<\brief Reserved 32  */
+} ts_t1xhv_vec_internal_buf;
+
+/*!
+* \typedef ts_t1xhv_vec_internal_buf *tps_t1xhv_vec_internal_buf;
+*/
+typedef ts_t1xhv_vec_internal_buf *tps_t1xhv_vec_internal_buf;
+
+
+/** \brief This structure define an header buffer. */
+typedef struct {
+    t_ahb_address  addr_header_buffer;  /**<\brief Address of the Bitstream header buffer (i.e. start address of the header buffer, which contains 
+                                              the header data to be copied into the bitstream buffer at the beginning of the picture bitstream, before 
+                                              the actual encoded bitstream starting at the motion_shape_texture (MPEG4) or the gob_layer level (H263) 
+                                              is written. For JPEG encode, the header data are copied before writing the MCUs only if 
+                                              enable_optimized_quant=0 and enable_optimized_huffman=0 (otherwise the encode subtask writes the whole 
+                                              bitstream from SOI to EOI codes). 
+                                              \n Alignment : Multiple of 16.*/
+    t_ulong_value  header_size;         /**<\brief Bitstream header size (i.e. number of bits to be copied from the header buffer into the bitstream
+                                              buffer. It is not used in a JPEG encode subtask if enable_optimized_quant=1 or enable_optimized_huffman=1.
+                                        */
+    t_ahb_address  reserved_1;          /**<\brief Reserved 32                     */
+    t_ahb_address  reserved_2;          /**<\brief Reserved 32                     */
+
+} ts_t1xhv_vec_header_buf;
+
+/*!
+* \typedef ts_t1xhv_vec_header_buf *tps_t1xhv_vec_header_buf;
+*/
+typedef ts_t1xhv_vec_header_buf *tps_t1xhv_vec_header_buf;
+
+
+/** @} */ // end of vecAlgoAPIGroup
+
+#endif /* _t1xhv_vec_idt */

@@ -1,0 +1,80 @@
+test_start Test_mute
+
+
+OMX_GetHandle       mixer OMX.ST.AFM.mixer
+
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nBitPerSample=16 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/sinus_1k.pcm 0 0 0
+MMTE_set_nb_buffer  mixer 1 8
+
+
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nBitPerSample=16 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/mix_mpc_mute.out
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 6000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/mixer/streams/mix_mpc_mute.out.ref
+
+# mute set in loaded state
+OMX_SetConfig  mixer OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_TRUE
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers mixer 0
+MMTE_AllocateAndUseBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+#Start
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# wait until our input buffers have been processed
+MMTE_wait_transfer mixer 1
+
+# unxet mute
+OMX_SetConfig  mixer OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_FALSE
+MMTE_resume_transfer mixer 1 0
+
+#Wait EOS
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand  mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent   mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+
+test_end
+

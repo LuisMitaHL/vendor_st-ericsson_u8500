@@ -1,0 +1,738 @@
+#DTH script
+#> Author: GBE - PER
+#> Script NonRegCOEX_P1.txt Version : 1.0
+
+#> COEX Agressor
+
+#> CG2900 ACTIVATION
+WRITE /COEX/CG2900/StartCG2900 0 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 0
+READ /COEX/CG2900/StartCG2900/Out_Error
+
+#> CW12000 ACTIVATION
+WRITE /COEX/CW1200/StartCW1200 0 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 0
+READ /COEX/CW1200/StartCW1200/Out_Error
+
+#> TX ACTIVITY
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartTx2G5
+BEGIN /RF/Tx2G5/StartTx2G5
+WRITE /RF/Tx2G5/StartTx2G5/In_FreqBand 2 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxChannel 62 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxOperationMode 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_AfcTableSelection 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_AfcValue 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxModulationType 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_Data_type 2 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxPowerLevelUnit 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxPowerLevel 5 
+WRITE /RF/Tx2G5/StartTx2G5 0 
+EXEC /RF/Tx2G5/StartTx2G5
+
+WRITE /RF/Tx2G5/StartTx2G5/In_FreqBand 2 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxChannel 62 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxOperationMode 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_AfcTableSelection 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_AfcValue 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxModulationType 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_Data_type 2 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxPowerLevelUnit 0 
+WRITE /RF/Tx2G5/StartTx2G5/In_TxPowerLevel 5 
+WRITE /RF/Tx2G5/StartTx2G5 1 
+EXEC /RF/Tx2G5/StartTx2G5
+END /RF/Tx2G5/StartTx2G5
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartTx3G
+BEGIN /RF/Tx3G/StartTx3G
+WRITE /RF/Tx3G/StartTx3G/In_FreqBand 1 
+WRITE /RF/Tx3G/StartTx3G/In_TxUarfcnChannel 9750 
+WRITE /RF/Tx3G/StartTx3G/In_TxPowerLevel 0 
+WRITE /RF/Tx3G/StartTx3G/In_AfcTabSelect 0 
+WRITE /RF/Tx3G/StartTx3G/In_MaxPowerLimit 0 
+WRITE /RF/Tx3G/StartTx3G/In_AfcValue 0 
+WRITE /RF/Tx3G/StartTx3G/In_DPDCH 1 
+WRITE /RF/Tx3G/StartTx3G/In_ACKNACK 0 
+WRITE /RF/Tx3G/StartTx3G/In_CQI 0 
+WRITE /RF/Tx3G/StartTx3G/In_Modulation 0 
+WRITE /RF/Tx3G/StartTx3G/In_E_DPDCH_number 0 
+WRITE /RF/Tx3G/StartTx3G/In_E_DPDCH_TTI 0 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_C 120 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_D 225 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_HS 5 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_EC 5 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED1 0 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED2 0 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED3 8 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED4 8 
+WRITE /RF/Tx3G/StartTx3G/In_scrambling_code 0 
+WRITE /RF/Tx3G/StartTx3G/In_DPDCH_spread_factor 256 
+WRITE /RF/Tx3G/StartTx3G/In_EDPDCH_spread_factor 256 
+WRITE /RF/Tx3G/StartTx3G/In_HSDPA_activation_delay 0 
+WRITE /RF/Tx3G/StartTx3G 0 
+EXEC /RF/Tx3G/StartTx3G
+READ /RF/Tx3G/StartTx3G/In_MaxPowerLimit
+READ /RF/Tx3G/StartTx3G/In_DPDCH
+READ /RF/Tx3G/StartTx3G/In_ACKNACK
+READ /RF/Tx3G/StartTx3G/In_CQI
+READ /RF/Tx3G/StartTx3G/In_Modulation
+READ /RF/Tx3G/StartTx3G/In_E_DPDCH_number
+READ /RF/Tx3G/StartTx3G/In_E_DPDCH_TTI
+READ /RF/Tx3G/StartTx3G/In_BETA_C
+READ /RF/Tx3G/StartTx3G/In_BETA_D
+READ /RF/Tx3G/StartTx3G/In_BETA_HS
+READ /RF/Tx3G/StartTx3G/In_BETA_EC
+READ /RF/Tx3G/StartTx3G/In_BETA_ED1
+READ /RF/Tx3G/StartTx3G/In_BETA_ED2
+READ /RF/Tx3G/StartTx3G/In_BETA_ED3
+READ /RF/Tx3G/StartTx3G/In_BETA_ED4
+READ /RF/Tx3G/StartTx3G/In_scrambling_code
+READ /RF/Tx3G/StartTx3G/In_DPDCH_spread_factor
+READ /RF/Tx3G/StartTx3G/In_EDPDCH_spread_factor
+READ /RF/Tx3G/StartTx3G/In_HSDPA_activation_delay
+
+WRITE /RF/Tx3G/StartTx3G/In_FreqBand 1 
+WRITE /RF/Tx3G/StartTx3G/In_TxUarfcnChannel 9750 
+WRITE /RF/Tx3G/StartTx3G/In_TxPowerLevel 0 
+WRITE /RF/Tx3G/StartTx3G/In_AfcTabSelect 0 
+WRITE /RF/Tx3G/StartTx3G/In_MaxPowerLimit 0 
+WRITE /RF/Tx3G/StartTx3G/In_AfcValue 0 
+WRITE /RF/Tx3G/StartTx3G/In_DPDCH 1 
+WRITE /RF/Tx3G/StartTx3G/In_ACKNACK 0 
+WRITE /RF/Tx3G/StartTx3G/In_CQI 0 
+WRITE /RF/Tx3G/StartTx3G/In_Modulation 0 
+WRITE /RF/Tx3G/StartTx3G/In_E_DPDCH_number 0 
+WRITE /RF/Tx3G/StartTx3G/In_E_DPDCH_TTI 0 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_C 120 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_D 225 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_HS 5 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_EC 5 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED1 0 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED2 0 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED3 8 
+WRITE /RF/Tx3G/StartTx3G/In_BETA_ED4 8 
+WRITE /RF/Tx3G/StartTx3G/In_scrambling_code 0 
+WRITE /RF/Tx3G/StartTx3G/In_DPDCH_spread_factor 256 
+WRITE /RF/Tx3G/StartTx3G/In_EDPDCH_spread_factor 256 
+WRITE /RF/Tx3G/StartTx3G/In_HSDPA_activation_delay 0 
+WRITE /RF/Tx3G/StartTx3G 1 
+EXEC /RF/Tx3G/StartTx3G
+READ /RF/Tx3G/StartTx3G/In_MaxPowerLimit
+READ /RF/Tx3G/StartTx3G/In_DPDCH
+READ /RF/Tx3G/StartTx3G/In_ACKNACK
+READ /RF/Tx3G/StartTx3G/In_CQI
+READ /RF/Tx3G/StartTx3G/In_Modulation
+READ /RF/Tx3G/StartTx3G/In_E_DPDCH_number
+READ /RF/Tx3G/StartTx3G/In_E_DPDCH_TTI
+READ /RF/Tx3G/StartTx3G/In_BETA_C
+READ /RF/Tx3G/StartTx3G/In_BETA_D
+READ /RF/Tx3G/StartTx3G/In_BETA_HS
+READ /RF/Tx3G/StartTx3G/In_BETA_EC
+READ /RF/Tx3G/StartTx3G/In_BETA_ED1
+READ /RF/Tx3G/StartTx3G/In_BETA_ED2
+READ /RF/Tx3G/StartTx3G/In_BETA_ED3
+READ /RF/Tx3G/StartTx3G/In_BETA_ED4
+READ /RF/Tx3G/StartTx3G/In_scrambling_code
+READ /RF/Tx3G/StartTx3G/In_DPDCH_spread_factor
+READ /RF/Tx3G/StartTx3G/In_EDPDCH_spread_factor
+READ /RF/Tx3G/StartTx3G/In_HSDPA_activation_delay
+END /RF/Tx3G/StartTx3G
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> CONNECTIVITY BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartUART0
+BEGIN /COEX/Agressors/Buses/UART0/StartUART0
+WRITE /COEX/Agressors/Buses/UART0/StartUART0 0 
+EXEC /COEX/Agressors/Buses/UART0/StartUART0
+READ /COEX/Agressors/Buses/UART0/StartUART0/Out_State  0
+READ /COEX/Agressors/Buses/UART0/StartUART0/Out_Error
+
+WRITE /COEX/Agressors/Buses/UART0/StartUART0 1
+EXEC /COEX/Agressors/Buses/UART0/StartUART0
+READ /COEX/Agressors/Buses/UART0/StartUART0/Out_State  1
+READ /COEX/Agressors/Buses/UART0/StartUART0/Out_Error
+END /COEX/Agressors/Buses/UART0/StartUART0
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartI2S
+BEGIN /COEX/Agressors/Buses/I2S/StartI2S
+WRITE /COEX/Agressors/Buses/I2S/StartI2S 0 
+EXEC /COEX/Agressors/Buses/I2S/StartI2S
+READ /COEX/Agressors/Buses/I2S/StartI2S/Out_State  0
+READ /COEX/Agressors/Buses/I2S/StartI2S/Out_Error
+
+WRITE /COEX/Agressors/Buses/I2S/StartI2S 1 
+EXEC /COEX/Agressors/Buses/I2S/StartI2S
+READ /COEX/Agressors/Buses/I2S/StartI2S/Out_State  1
+READ /COEX/Agressors/Buses/I2S/StartI2S/Out_Error
+END /COEX/Agressors/Buses/I2S/StartI2S
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartBTTX
+BEGIN /COEX/Agressors/BT/StartBTTX
+WRITE /COEX/Agressors/BT/StartBTTX 0 
+EXEC /COEX/Agressors/BT/StartBTTX
+READ /COEX/Agressors/BT/StartBTTX/Out_State  0
+READ /COEX/Agressors/BT/StartBTTX/Out_Error
+
+WRITE /COEX/Agressors/BT/StartBTTX 1 
+EXEC /COEX/Agressors/BT/StartBTTX
+READ /COEX/Agressors/BT/StartBTTX/Out_State  1
+READ /COEX/Agressors/BT/StartBTTX/Out_Error
+END /COEX/Agressors/BT/StartBTTX
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartFMTX
+BEGIN /COEX/Agressors/FM/StartFMTX
+WRITE /COEX/Agressors/FM/StartFMTX 0 
+EXEC /COEX/Agressors/FM/StartFMTX
+READ /COEX/Agressors/FM/StartFMTX/Out_State  0
+READ /COEX/Agressors/FM/StartFMTX/Out_Error
+
+WRITE /COEX/Agressors/FM/StartFMTX 1 
+EXEC /COEX/Agressors/FM/StartFMTX
+READ /COEX/Agressors/FM/StartFMTX/Out_State  1
+READ /COEX/Agressors/FM/StartFMTX/Out_Error
+END /COEX/Agressors/FM/StartFMTX
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartWLANTX
+BEGIN /COEX/Agressors/WLAN/StartWLANTX
+WRITE /COEX/Agressors/WLAN/StartWLANTX 0 
+EXEC /COEX/Agressors/WLAN/StartWLANTX
+READ /COEX/Agressors/WLAN/StartWLANTX/Out_State  0
+READ /COEX/Agressors/WLAN/StartWLANTX/Out_Error
+
+WRITE /COEX/Agressors/WLAN/StartWLANTX 1 
+EXEC /COEX/Agressors/WLAN/StartWLANTX
+READ /COEX/Agressors/WLAN/StartWLANTX/Out_State  1
+READ /COEX/Agressors/WLAN/StartWLANTX/Out_Error
+END /COEX/Agressors/WLAN/StartWLANTX
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartCG2900
+BEGIN /COEX/CG2900/StartCG2900
+WRITE /COEX/CG2900/StartCG2900 1 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 1
+READ /COEX/CG2900/StartCG2900/Out_Error
+
+WRITE /COEX/CG2900/StartCG2900 0 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 0
+READ /COEX/CG2900/StartCG2900/Out_Error
+
+WRITE /COEX/CG2900/StartCG2900 1 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 1
+READ /COEX/CG2900/StartCG2900/Out_Error
+
+WRITE /COEX/CG2900/StartCG2900 0 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 0
+READ /COEX/CG2900/StartCG2900/Out_Error
+END /COEX/CG2900/StartCG2900
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartCW1200
+BEGIN /COEX/CW1200/StartCW1200
+WRITE /COEX/CW1200/StartCW1200 1 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 1
+READ /COEX/CW1200/StartCW1200/Out_Error
+
+WRITE /COEX/CW1200/StartCW1200 0 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 0
+READ /COEX/CW1200/StartCW1200/Out_Error
+
+WRITE /COEX/CW1200/StartCW1200 1 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 1
+READ /COEX/CW1200/StartCW1200/Out_Error
+
+WRITE /COEX/CW1200/StartCW1200 0 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 0
+READ /COEX/CW1200/StartCW1200/Out_Error
+END /COEX/CW1200/StartCW1200
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> I2C BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartI2C0
+BEGIN /COEX/Agressors/Buses/I2C0/StartI2C0
+WRITE /COEX/Agressors/Buses/I2C0/StartI2C0 0 
+EXEC /COEX/Agressors/Buses/I2C0/StartI2C0
+READ /COEX/Agressors/Buses/I2C0/StartI2C0/Out_State  1
+READ /COEX/Agressors/Buses/I2C0/StartI2C0/Out_Error
+
+WRITE /COEX/Agressors/Buses/I2C0/StartI2C0 1 
+EXEC /COEX/Agressors/Buses/I2C0/StartI2C0
+READ /COEX/Agressors/Buses/I2C0/StartI2C0/Out_State  0
+READ /COEX/Agressors/Buses/I2C0/StartI2C0/Out_Error
+END /COEX/Agressors/Buses/I2C0/StartI2C0
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartI2C2
+BEGIN /COEX/Agressors/Buses/I2C2/StartI2C2
+WRITE /COEX/Agressors/Buses/I2C2/StartI2C2 0 
+EXEC /COEX/Agressors/Buses/I2C2/StartI2C2
+READ /COEX/Agressors/Buses/I2C2/StartI2C2/Out_State  1
+READ /COEX/Agressors/Buses/I2C2/StartI2C2/Out_Error
+
+WRITE /COEX/Agressors/Buses/I2C2/StartI2C2 1 
+EXEC /COEX/Agressors/Buses/I2C2/StartI2C2
+READ /COEX/Agressors/Buses/I2C2/StartI2C2/Out_State  0
+READ /COEX/Agressors/Buses/I2C2/StartI2C2/Out_Error
+END /COEX/Agressors/Buses/I2C2/StartI2C2
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartI2C3
+BEGIN /COEX/Agressors/Buses/I2C3/StartI2C3
+WRITE /COEX/Agressors/Buses/I2C3/StartI2C3 0 
+EXEC /COEX/Agressors/Buses/I2C3/StartI2C3
+READ /COEX/Agressors/Buses/I2C3/StartI2C3/Out_State  1
+READ /COEX/Agressors/Buses/I2C3/StartI2C3/Out_Error
+
+WRITE /COEX/Agressors/Buses/I2C3/StartI2C3 1 
+EXEC /COEX/Agressors/Buses/I2C3/StartI2C3
+READ /COEX/Agressors/Buses/I2C3/StartI2C3/Out_State  0
+READ /COEX/Agressors/Buses/I2C3/StartI2C3/Out_Error
+END /COEX/Agressors/Buses/I2C3/StartI2C3
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartModI2C
+BEGIN /COEX/Agressors/Buses/MODI2C/StartModI2C
+WRITE /COEX/Agressors/Buses/MODI2C/StartModI2C 0 
+EXEC /COEX/Agressors/Buses/MODI2C/StartModI2C
+READ /COEX/Agressors/Buses/MODI2C/StartModI2C/Out_State  0
+READ /COEX/Agressors/Buses/MODI2C/StartModI2C/Out_Error
+
+WRITE /COEX/Agressors/Buses/MODI2C/StartModI2C 1 
+EXEC /COEX/Agressors/Buses/MODI2C/StartModI2C
+READ /COEX/Agressors/Buses/MODI2C/StartModI2C/Out_State  1
+READ /COEX/Agressors/Buses/MODI2C/StartModI2C/Out_Error
+END /COEX/Agressors/Buses/MODI2C/StartModI2C
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartApeI2C
+BEGIN /COEX/Agressors/Buses/APEI2C/StartApeI2C
+WRITE /COEX/Agressors/Buses/APEI2C/StartApeI2C 0 
+EXEC /COEX/Agressors/Buses/APEI2C/StartApeI2C
+READ /COEX/Agressors/Buses/APEI2C/StartApeI2C/Out_State  0
+READ /COEX/Agressors/Buses/APEI2C/StartApeI2C/Out_Error
+
+WRITE /COEX/Agressors/Buses/APEI2C/StartApeI2C 1 
+EXEC /COEX/Agressors/Buses/APEI2C/StartApeI2C
+READ /COEX/Agressors/Buses/APEI2C/StartApeI2C/Out_State  1
+READ /COEX/Agressors/Buses/APEI2C/StartApeI2C/Out_Error
+END /COEX/Agressors/Buses/APEI2C/StartApeI2C
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> DSI BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartDSI0
+BEGIN /COEX/Agressors/Buses/DSI0/StartDSI0
+WRITE /COEX/Agressors/Buses/DSI0/StartDSI0 0 
+EXEC /COEX/Agressors/Buses/DSI0/StartDSI0
+READ /COEX/Agressors/Buses/DSI0/StartDSI0/Out_State  0
+READ /COEX/Agressors/Buses/DSI0/StartDSI0/Out_Error
+
+WRITE /COEX/Agressors/Buses/DSI0/StartDSI0 1 
+EXEC /COEX/Agressors/Buses/DSI0/StartDSI0
+READ /COEX/Agressors/Buses/DSI0/StartDSI0/Out_State  1
+READ /COEX/Agressors/Buses/DSI0/StartDSI0/Out_Error
+END /COEX/Agressors/Buses/DSI0/StartDSI0
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartDSI2
+BEGIN /COEX/Agressors/Buses/DSI2/StartDSI2
+WRITE /COEX/Agressors/Buses/DSI2/StartDSI2 0 
+EXEC /COEX/Agressors/Buses/DSI2/StartDSI2
+READ /COEX/Agressors/Buses/DSI2/StartDSI2/Out_State  0
+READ /COEX/Agressors/Buses/DSI2/StartDSI2/Out_Error
+
+WRITE /COEX/Agressors/Buses/DSI2/StartDSI2 1 
+EXEC /COEX/Agressors/Buses/DSI2/StartDSI2
+READ /COEX/Agressors/Buses/DSI2/StartDSI2/Out_State  1
+READ /COEX/Agressors/Buses/DSI2/StartDSI2/Out_Error
+END /COEX/Agressors/Buses/DSI2/StartDSI2
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> CSI BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartCSI0
+BEGIN /COEX/Agressors/Buses/CSI0/StartCSI0
+WRITE /COEX/Agressors/Buses/CSI0/StartCSI0 0 
+EXEC /COEX/Agressors/Buses/CSI0/StartCSI0
+READ /COEX/Agressors/Buses/CSI0/StartCSI0/Out_State  0
+READ /COEX/Agressors/Buses/CSI0/StartCSI0/Out_Error
+
+WRITE /COEX/Agressors/Buses/CSI0/StartCSI0 1 
+EXEC /COEX/Agressors/Buses/CSI0/StartCSI0
+READ /COEX/Agressors/Buses/CSI0/StartCSI0/Out_State  1
+READ /COEX/Agressors/Buses/CSI0/StartCSI0/Out_Error
+END /COEX/Agressors/Buses/CSI0/StartCSI0
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartCSI1
+BEGIN /COEX/Agressors/Buses/CSI1/StartCSI1
+WRITE /COEX/Agressors/Buses/CSI1/StartCSI1 0 
+EXEC /COEX/Agressors/Buses/CSI1/StartCSI1
+READ /COEX/Agressors/Buses/CSI1/StartCSI1/Out_State  0
+READ /COEX/Agressors/Buses/CSI1/StartCSI1/Out_Error
+
+WRITE /COEX/Agressors/Buses/CSI1/StartCSI1 1 
+EXEC /COEX/Agressors/Buses/CSI1/StartCSI1
+READ /COEX/Agressors/Buses/CSI1/StartCSI1/Out_State  1
+READ /COEX/Agressors/Buses/CSI1/StartCSI1/Out_Error
+END /COEX/Agressors/Buses/CSI1/StartCSI1
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> PWM BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartPWM1
+BEGIN /COEX/Agressors/Buses/PWM1/StartPWM1
+WRITE /COEX/Agressors/Buses/PWM1/StartPWM1 0 
+EXEC /COEX/Agressors/Buses/PWM1/StartPWM1
+READ /COEX/Agressors/Buses/PWM1/StartPWM1/Out_State  0
+READ /COEX/Agressors/Buses/PWM1/StartPWM1/Out_Error
+
+WRITE /COEX/Agressors/Buses/PWM1/StartPWM1 1 
+EXEC /COEX/Agressors/Buses/PWM1/StartPWM1
+READ /COEX/Agressors/Buses/PWM1/StartPWM1/Out_State  1
+READ /COEX/Agressors/Buses/PWM1/StartPWM1/Out_Error
+END /COEX/Agressors/Buses/PWM1/StartPWM1
+#-------------------------------------------------------------------------------------------------------------
+
+#> VIB BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartVIB
+BEGIN /COEX/Agressors/Buses/VIB/StartVIB
+WRITE /COEX/Agressors/Buses/VIB/StartVIB 0 
+EXEC /COEX/Agressors/Buses/VIB/StartVIB
+READ /COEX/Agressors/Buses/VIB/StartVIB/Out_State  0
+READ /COEX/Agressors/Buses/VIB/StartVIB/Out_Error
+
+WRITE /COEX/Agressors/Buses/VIB/StartVIB 1 
+EXEC /COEX/Agressors/Buses/VIB/StartVIB
+READ /COEX/Agressors/Buses/VIB/StartVIB/Out_State  1
+READ /COEX/Agressors/Buses/VIB/StartVIB/Out_Error
+END /COEX/Agressors/Buses/VIB/StartVIB
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> DMIC BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartDMIC
+BEGIN /COEX/Agressors/Buses/DMIC/StartDMIC
+WRITE /COEX/Agressors/Buses/DMIC/StartDMIC 0 
+EXEC /COEX/Agressors/Buses/DMIC/StartDMIC
+READ /COEX/Agressors/Buses/DMIC/StartDMIC/Out_State  0
+READ /COEX/Agressors/Buses/DMIC/StartDMIC/Out_Error
+
+WRITE /COEX/Agressors/Buses/DMIC/StartDMIC 1 
+EXEC /COEX/Agressors/Buses/DMIC/StartDMIC
+READ /COEX/Agressors/Buses/DMIC/StartDMIC/Out_State  1
+READ /COEX/Agressors/Buses/DMIC/StartDMIC/Out_Error
+END /COEX/Agressors/Buses/DMIC/StartDMIC
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> MSP BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartMSP0
+BEGIN /COEX/Agressors/Buses/MSP0/StartMSP0
+WRITE /COEX/Agressors/Buses/MSP0/StartMSP0 0 
+EXEC /COEX/Agressors/Buses/MSP0/StartMSP0
+READ /COEX/Agressors/Buses/MSP0/StartMSP0/Out_State  0
+READ /COEX/Agressors/Buses/MSP0/StartMSP0/Out_Error
+
+WRITE /COEX/Agressors/Buses/MSP0/StartMSP0 1 
+EXEC /COEX/Agressors/Buses/MSP0/StartMSP0
+READ /COEX/Agressors/Buses/MSP0/StartMSP0/Out_State  1
+READ /COEX/Agressors/Buses/MSP0/StartMSP0/Out_Error
+END /COEX/Agressors/Buses/MSP0/StartMSP0
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartMSP1
+BEGIN /COEX/Agressors/Buses/MSP1/StartMSP1
+WRITE /COEX/Agressors/Buses/MSP1/StartMSP1 0 
+EXEC /COEX/Agressors/Buses/MSP1/StartMSP1
+READ /COEX/Agressors/Buses/MSP1/StartMSP1/Out_State  0
+READ /COEX/Agressors/Buses/MSP1/StartMSP1/Out_Error
+
+WRITE /COEX/Agressors/Buses/MSP1/StartMSP1 1 
+EXEC /COEX/Agressors/Buses/MSP1/StartMSP1
+READ /COEX/Agressors/Buses/MSP1/StartMSP1/Out_State  1
+READ /COEX/Agressors/Buses/MSP1/StartMSP1/Out_Error
+END /COEX/Agressors/Buses/MSP1/StartMSP1
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartMSP2
+BEGIN /COEX/Agressors/Buses/MSP2/StartMSP2
+WRITE /COEX/Agressors/Buses/MSP2/StartMSP2 0 
+EXEC /COEX/Agressors/Buses/MSP2/StartMSP2
+READ /COEX/Agressors/Buses/MSP2/StartMSP2/Out_State  0
+READ /COEX/Agressors/Buses/MSP2/StartMSP2/Out_Error
+
+WRITE /COEX/Agressors/Buses/MSP2/StartMSP2 1 
+EXEC /COEX/Agressors/Buses/MSP2/StartMSP2
+READ /COEX/Agressors/Buses/MSP2/StartMSP2/Out_State  1
+READ /COEX/Agressors/Buses/MSP2/StartMSP2/Out_Error
+END /COEX/Agressors/Buses/MSP2/StartMSP2
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> MC BUS ACTIVITY
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartMC0
+BEGIN /COEX/Agressors/Buses/MC0/StartMC0
+WRITE /COEX/Agressors/Buses/MC0/StartMC0 0 
+EXEC /COEX/Agressors/Buses/MC0/StartMC0
+READ /COEX/Agressors/Buses/MC0/StartMC0/Out_State  1
+READ /COEX/Agressors/Buses/MC0/StartMC0/Out_Error
+
+WRITE /COEX/Agressors/Buses/MC0/StartMC0 1 
+EXEC /COEX/Agressors/Buses/MC0/StartMC0
+READ /COEX/Agressors/Buses/MC0/StartMC0/Out_State  0
+READ /COEX/Agressors/Buses/MC0/StartMC0/Out_Error
+END /COEX/Agressors/Buses/MC0/StartMC0
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartMC1
+BEGIN /COEX/Agressors/Buses/MC1/StartMC1
+WRITE /COEX/Agressors/Buses/MC1/StartMC1 0 
+EXEC /COEX/Agressors/Buses/MC1/StartMC1
+READ /COEX/Agressors/Buses/MC1/StartMC1/Out_State  0
+READ /COEX/Agressors/Buses/MC1/StartMC1/Out_Error
+
+WRITE /COEX/Agressors/Buses/MC1/StartMC1 1 
+EXEC /COEX/Agressors/Buses/MC1/StartMC1
+READ /COEX/Agressors/Buses/MC1/StartMC1/Out_State  1
+READ /COEX/Agressors/Buses/MC1/StartMC1/Out_Error
+END /COEX/Agressors/Buses/MC1/StartMC1
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartMC2
+BEGIN /COEX/Agressors/Buses/MC2/StartMC2
+WRITE /COEX/Agressors/Buses/MC2/StartMC2 0 
+EXEC /COEX/Agressors/Buses/MC2/StartMC2
+READ /COEX/Agressors/Buses/MC2/StartMC2/Out_State  1
+READ /COEX/Agressors/Buses/MC2/StartMC2/Out_Error
+
+WRITE /COEX/Agressors/Buses/MC2/StartMC2 1 
+EXEC /COEX/Agressors/Buses/MC2/StartMC2
+READ /COEX/Agressors/Buses/MC2/StartMC2/Out_State  0
+READ /COEX/Agressors/Buses/MC2/StartMC2/Out_Error
+END /COEX/Agressors/Buses/MC2/StartMC2
+#-------------------------------------------------------------------------------------------------------------
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartMC4
+BEGIN /COEX/Agressors/Buses/MC4/StartMC4
+WRITE /COEX/Agressors/Buses/MC4/StartMC4 0 
+EXEC /COEX/Agressors/Buses/MC4/StartMC4
+READ /COEX/Agressors/Buses/MC4/StartMC4/Out_State  1
+READ /COEX/Agressors/Buses/MC4/StartMC4/Out_Error
+
+WRITE /COEX/Agressors/Buses/MC4/StartMC4 1 
+EXEC /COEX/Agressors/Buses/MC4/StartMC4
+READ /COEX/Agressors/Buses/MC4/StartMC4/Out_State  0
+READ /COEX/Agressors/Buses/MC4/StartMC4/Out_Error
+END /COEX/Agressors/Buses/MC4/StartMC4
+#-------------------------------------------------------------------------------------------------------------
+
+#> COEX Victim
+
+#> CG2900 ACTIVATION
+WRITE /COEX/CG2900/StartCG2900 0 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 0
+READ /COEX/CG2900/StartCG2900/Out_Error
+
+#> CW12000 ACTIVATION
+WRITE /COEX/CW1200/StartCW1200 0 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 0
+READ /COEX/CW1200/StartCW1200/Out_Error
+
+#-> RX ACTIVITY
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartBTRX
+BEGIN /COEX/Victims/BT/StartBTRX/
+WRITE /COEX/Victims/BT/StartBTRX/ChannelBT 39 
+WRITE /COEX/Victims/BT/StartBTRX/AddrIdx 0 
+WRITE /COEX/Victims/BT/StartBTRX/PktType 2 
+WRITE /COEX/Victims/BT/StartBTRX 0 
+EXEC /COEX/Victims/BT/StartBTRX
+READ /COEX/Victims/BT/StartBTRX/ChannelBT  39
+READ /COEX/Victims/BT/StartBTRX/AddrIdx  0
+READ /COEX/Victims/BT/StartBTRX/PktType  2
+READ /COEX/Victims/BT/StartBTRX/RSSI
+READ /COEX/Victims/BT/StartBTRX/BER
+READ /COEX/Victims/BT/StartBTRX/Out_State
+READ /COEX/Victims/BT/StartBTRX/Out_Error
+
+WRITE /COEX/Victims/BT/StartBTRX/ChannelBT 39 
+WRITE /COEX/Victims/BT/StartBTRX/AddrIdx 0 
+WRITE /COEX/Victims/BT/StartBTRX/PktType 2 
+WRITE /COEX/Victims/BT/StartBTRX 1
+EXEC /COEX/Victims/BT/StartBTRX
+END /COEX/Victims/BT/StartBTRX/
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartFMRX
+BEGIN /COEX/Victims/FM/StartFMRX
+WRITE /COEX/Victims/FM/StartFMRX/ChannelFM 95000 
+WRITE /COEX/Victims/FM/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FM/StartFMRX/Emp 0 
+WRITE /COEX/Victims/FM/StartFMRX 0 
+EXEC /COEX/Victims/FM/StartFMRX
+READ /COEX/Victims/FM/StartFMRX/ChannelFM  95000
+READ /COEX/Victims/FM/StartFMRX/RSSI
+READ /COEX/Victims/FM/StartFMRX/Out_State
+READ /COEX/Victims/FM/StartFMRX/Out_Error
+
+WRITE /COEX/Victims/FM/StartFMRX/ChannelFM 95000 
+WRITE /COEX/Victims/FM/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FM/StartFMRX/Emp 0 
+WRITE /COEX/Victims/FM/StartFMRX 1
+END /COEX/Victims/FM/StartFMRX
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartFMRX_All_Channels
+BEGIN /COEX/Victims/FMAll/StartFMRX
+WRITE /COEX/Victims/FMAll/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FMAll/StartFMRX/FChannelFM 80000 
+WRITE /COEX/Victims/FMAll/StartFMRX/LChannelFM 108000 
+WRITE /COEX/Victims/FMAll/StartFMRX/In_Step 100 
+WRITE /COEX/Victims/FMAll/StartFMRX/Hold 50 
+WRITE /COEX/Victims/FMAll/StartFMRX 0 
+EXEC /COEX/Victims/FMAll/StartFMRX 
+READ /COEX/Victims/FMAll/StartFMRX/FChannelFM  80000
+READ /COEX/Victims/FMAll/StartFMRX/LChannelFM  108000
+READ /COEX/Victims/FMAll/StartFMRX/In_Step  100
+READ /COEX/Victims/FMAll/StartFMRX/Hold  50
+READ /COEX/Victims/FMAll/StartFMRX/Out_State
+READ /COEX/Victims/FMAll/StartFMRX/Out_Error
+
+WRITE /COEX/Victims/FMAll/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FMAll/StartFMRX/FChannelFM 80000 
+WRITE /COEX/Victims/FMAll/StartFMRX/LChannelFM 108000 
+WRITE /COEX/Victims/FMAll/StartFMRX/In_Step 100 
+WRITE /COEX/Victims/FMAll/StartFMRX/Hold 50 
+WRITE /COEX/Victims/FMAll/StartFMRX 1
+EXEC /COEX/Victims/FMAll/StartFMRX
+END /COEX/Victims/FMAll/StartFMRX
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartGPS
+BEGIN /DTH/COEX/Victims/GPS/StartGPS
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Interval 500 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Latitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Altitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/SatNum 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS 0 
+EXEC /DTH/COEX/Victims/GPS/StartGPS 
+READ /DTH/COEX/Victims/GPS/StartGPS/Interval  500
+READ /DTH/COEX/Victims/GPS/StartGPS/Longitude
+READ /DTH/COEX/Victims/GPS/StartGPS/Latitude
+READ /DTH/COEX/Victims/GPS/StartGPS/Altitude
+READ /DTH/COEX/Victims/GPS/StartGPS/SatNum
+READ /DTH/COEX/Victims/GPS/StartGPS/Sat_SNRData
+READ /DTH/COEX/Victims/GPS/StartGPS/Out_State
+READ /DTH/COEX/Victims/GPS/StartGPS/Out_Error
+
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Interval 500 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Latitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Altitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/SatNum 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS 1
+END /DTH/COEX/Victims/GPS/StartGPS
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartWLANRX
+BEGIN /DTH/COEX/Victims/WLAN/StartWLANRX
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand 2 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN 6 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/Errors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PER 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX 0 
+EXEC /DTH/COEX/Victims/WLAN/StartWLANRX 
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand  2
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN  6
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Errors
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PER
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_State
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_Error
+
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand 2 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN 6 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/Errors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PER 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX 1
+EXEC /DTH/COEX/Victims/WLAN/StartWLANRX 
+END /DTH/COEX/Victims/WLAN/StartWLANRX
+#-------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,265 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+Author:         Jean-Philippe Fassino & NMF Team
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.7.0 "Cuvée des jonquilles"
+Date:           June 14th, 2010
+
+1.2 Board configuration:
+
+    Successfully tested configuration:
+        - STn8500 SVA & SIA (Only flashed with UBoot)
+            * MOP500-ED & HREF-ED V1.0
+            * MOP500 V1.0 & HREF V1.0
+            * MOP500 V1.1 & HREF V1.1
+
+    Not 100% successfully tested configuration:
+
+    Not (or no more) supported configuration:
+        - STn8500 SVA & SIA
+            * SVP 2.0 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                STM IP trace not available
+            * SVP 2.2 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                Argc/Argv not supported
+            * SVP 2.3 (No more tested)
+            * SVP 2.4 (No more tested)
+            * SVP 3.2.0
+                Issue in MMDSP simulator where code execution in ESRAM failed
+            * SVP 3.2.4
+                Issue in MMDSP simulator where 16bits based accessed failed
+            * PEPS 8500
+                PEPS SIA with an ED mapping + MMDSP V1
+
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version:
+        - RVCT 4.0 for 8500
+
+    MMDSP compiler version
+        - MMDSP Toolset 4.3.0
+
+    - Java SE Runtime Environment
+        http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - RODOS
+        http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+    - Week delivery
+        Ready to use components.txt for Linux environments (com.stericsson.nmf/components.txt)
+            # RODOS components.txt
+            include rod+package://com.stericsson.nmf:{year MMD delivery}.{week MMD delivery}.{patch}/component.txt
+
+
+3   RELEASE CONTENT
+
+    See tools/doc/file_hierarchies.txt about file tree organization !
+
+    - Toolbox
+
+    - Component Manager
+
+    - Execution Engine
+
+
+3.1 Component Manager
+    
+    - OMX server isolation
+        In order to allow safeness between several OMX servers, such enhancement has been done:
+            * Associate Domain -> client (== Process ID)
+            * Associate Component -> Domain
+            * Associate Memory -> Domain
+            Thus if a process is killed, the CM is able to destroy whole resources allocated by process.
+            Note: such deallocation is done without respecting creation order
+        In order to allow protection between process, singleton component no more shared between different client.
+            Furthermore, domain can't be shared between process and CM check that only the
+            associated client used the domain.
+        NOTE: No API break if you don't break security
+            -> This scenario (where one new error could be returned) is not manageable by API break process
+
+    - Fix issue in CM in case of lack of memory during deployment
+          
+
+3.2 MPC Execution Engine
+
+    - Remove deprecated API CM_GetDefaultDomain
+
+    
+3.3 Host Execution Engine
+
+    - Remove deprecated ADL grammar:
+            contains A as a SIA
+            contains A as a SVA
+        You have to pass explicitly the domain created by yourself or RME, like that:
+            contains A as a domainX
+            
+            Composite->domainX = ...; // Assigned before calling Composite->construct();
+            
+    - Add Component Timer for Symbian & Linux
+      . Two interfaces are added: timer.api.alarm and timer.api.timer
+      . The timer.api.timer interface implements these two API:
+          // Start a timer - times are relative and expressed in millisecond
+        // Any subsequent calls reset and restart the timer
+        // fisrtAlarm: time of the first alarm
+        // period: period of the periodic timer or 0 if none
+        // return 0 or an error code
+        t_uint32 startTimer(t_uint32 fisrtAlarm, t_uint32 period);
+        // Stop a timer
+        void stopTimer(void);
+
+      . The timer.api.alarm interface expects the following API as handler:
+        void signal(void);
+
+      . You should use them in your ADL like that:
+              ...
+              provides timer.api.alarm   as alarm
+        requires timer.api.timer   as timer
+              ...
+
+      . In your main program, you should handle a timer component like that:
+        #include <timer/timerWrapped.hpp>
+        ...
+        timerWrapped *pTimer;
+        ...
+        pTimer = timerWrappedCreate();
+        pTimer->construct();
+        pTimer->start();
+        my_component->bindComponent("timer", pTimer, "timer");
+        pTimer->bindAsynchronous("alarm", 1, &my_component, "alarm");
+        pTimer->stop();
+        pTimer->destroy();
+        timerWrappedDestroy(pTimer);
+
+      . In Linux, link your program with the library nmftimer (libnmftimer.a
+        or libnmftimer.so)
+
+
+3.4 OS integration guidelines
+
+    - Add OSAL_Alloc_Zero API where allocated memory must be set to zero before returning.
+        Note: Null size must return null
+        
+    - Remove CM_OS/ENGINE_GetDefaultDomain
+    
+    - CM_ENGINE_InstantiateComponent take a clientId as parameter for security check
+    
+    - CM_ENGINE_AllocMpcMemory take a clientId as parameter for security check
+
+    - Implement the timer host-component.
+      . It must:
+              provides timer.api.timer                as timer
+            requires timer.api.alarm        as alarm
+      . It must be provided as a separate library
+      . The generated header file timerWrapped.hpp must be deliveres in an include
+        directory named "timer", such a way that users can include it like this:
+        #include <timer/timerWrapped.hpp>
+
+
+3.5 Tools
+
+
+3.6 Programming model
+
+
+3.7 Linux & Symbian
+
+
+3.8 Examples
+
+
+3.9 Packaging
+
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    29035   "asynchronous" in a wrapper adl causes segfault at runtime
+    29020   Error in generated code when DSP component are embedded in ARM-composite (C++)
+    28849   Lots of warnings when compiling NMF generated code on x86-linux
+    28748   UnbindToMpc do not reset subcomponent itf
+    28397   Singleton must not been shared between two PID
+    28387   ARM allocation null return should be checked
+    
+
+4.2 Active defect list
+
+    26043   Functions in a Static-Required-Interface of an NMF ARM component giving linking error, when compiled in NMF-MMTE
+    23121   setConfig argument passing by pointer instead of structure
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+
+
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+    - Component manager
+        All warnings and errors removed.
+
+
+6.2 Code Static analysis result
+
+    - Component manager
+        Coverity done (each remaining issue could be explained).
+
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Done.
+
+6.4 Confidentiality safe
+
+    Done.
+
+7   DOCUMENTS
+
+    Test report available at:
+        http://gnx2487:9000/

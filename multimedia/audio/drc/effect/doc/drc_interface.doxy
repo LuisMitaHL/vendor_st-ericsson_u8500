@@ -1,0 +1,66 @@
+/** 
+ * \file drc_interface.doxy
+ * \brief Main documentation page
+ *
+ * \mainpage
+ * \section intro_sec Introduction
+ *
+ * Dynamic Range Control (DRC) varies the output level of a signal, based on its input level, in
+ * non-linear fashion. It can gate, expand, compress, and limit the dynamic range of an audio 
+ * signal. Typically used to decrease the dynamic range to equalize the perceived loudness 
+ * between quite and loud parts of the audio signal.
+ *
+ * The DRC Proxy Component realizes the OMXIL component interface and manages the DRC Processing 
+ * Component that realizes the processing part by means of NMF. The PcmProc Wrapper is common to
+ * all PCM Processors. It is associated with the actual algorithm, in this case the DRC PcmProc 
+ * Algo component that implements the DRC algorithm. The processing component is responsible for
+ * establishing this association. The figure shows the internal design in the ENS/NMF framework.
+ *
+ * This documentation aims to describe the interface to be implemented by one library in order to
+ * be used as processing library inside the ST-Ericsson OMX Dynamic Range Control component.
+ *
+ * \image html ste_drc.jpg
+ *
+ * \section tech_sec  Technical Solution
+ *
+ * The dynamic range control consists of three main blocks, as displayed in the figure.
+ *
+ *   - <em>Level Detector (LD)</em> estimates the current amplitude information from the audio content. 
+ *         The input amplitude is LP filtered to extract the envelope function of the input. The envelope
+ *         function describes the current average input level, called slow input in this document.
+ *
+ *   - <em>Gain Processor (GP)</em> is the block that attenuates or amplifies the signal before output. 
+ *         The slow input level is translated in the DRC Static Curve (Figure 3) to a desired output gain. 
+ *         The current applied gain (slow gain) will slowly move towards the desired gain determined by 
+ *         the Static Curve.
+ *
+ *   - <em>Delay allows a 'look ahead'</em> time (measured in milliseconds) functionality that can be 
+ *         used to avoid short spikes, a drum hit for example, to pass without being attenuated. It 
+ *         introduces a time delay into the audio path.\n\n
+ *
+ * \image html drc_algo.jpg
+ *
+ * \section cases_sec Use Case
+ *
+ *   - Compression and expansion
+ *   - Limiter
+ *   - Noise gate
+ *   - Speech processing
+ *
+ * \section signal_proc_sec Signal processing
+ *
+ *   - Peak measurement using anti-symmetric filtering
+ *   - Adaptive gain calculation based on desired gain curve
+ *
+ * \section req_sec	Implementation Features
+ *
+ *   - 16-bit PCM audio streams
+ *   - Interleaved or non-interleaved signal processing
+ *   - Mono and stereo output at the sample rates 8 kHz, 11.025 kHz, 12kHz, 16 kHz, 22.050 kHz, 
+ *     24 kHz, 32kHz, 44,1 kHz and 48 kHz
+ *   - Gains in the range of at least -30 to 30 dB
+ *   - Attack and release times for at least 10 seconds
+ *   - Maximum delay 'look ahead' is 1 second
+ *   - The perceived loudness of a speech and music signals without introducing saturation increases.
+ *
+ */ 

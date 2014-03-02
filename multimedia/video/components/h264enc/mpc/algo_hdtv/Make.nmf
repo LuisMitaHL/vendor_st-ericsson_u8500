@@ -1,0 +1,44 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+ITF_PREFIX := video_h264enc_algo_hdtv
+
+COMPONENTS += h264enc.mpc.algo_hdtv
+
+CONFFILES =	h264enc/mpc/algo_hdtv/algo_hdtv.conf
+
+SRCPATH+= \
+	$(MM_IDT_DIR) \
+	$(MMROOT)/video/idt/$(MMDSPPROCESSOR) \
+	$(MMROOT)/video/idt 				\
+	$(MMROOT)/video/components/h264enc/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/h264enc/mpc/share
+
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc		\
+	-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/common/inc
+
+ifeq ($(findstring svp8500_v2,$(PLATFORM)),svp8500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+ifeq ($(findstring u8500_v2,$(PLATFORM)),u8500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+ifeq ($(findstring mop500_v2,$(PLATFORM)),mop500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+
+USER2MPCITFS +=	
+
+MPC2USERITFS +=	h264enc.mpc.api.end_algo
+
+ASYNCITFS += h264enc.mpc.api.algo h264enc.mpc.api.end_algo
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+

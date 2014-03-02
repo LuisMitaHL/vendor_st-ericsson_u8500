@@ -1,0 +1,70 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+typedef enum {
+  TRANSFERT_MTF_ONLY,
+  TRANSFERT_MTF_HW_LOOP
+} t_mtf_mode;
+
+interface resource_manager.api.mtf { 
+
+/** @addtogroup rmWriteThroughMTFGroup writeThroughMTF
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Write data from firmware to memory (internal/external depending on
+ 	 		    bit0 of dstDataAddress i.e. 0:internal 1:external)
+   
+ \param[in]  dstDataAddress Address location (no endianess to be handled as this
+				param is unmarshalled by NMF engine).
+ \param[in]  Size Data size to be written
+ \param[in]  srcDataAddress Pointer on data to read
+ 
+ No concurent access has to be allowed. It has to be checked before.
+ */
+
+void writeThroughMTF(t_uint32 dstDataAddress, t_uint16 Size, void *srcDataAddress);
+
+/** @} */ // end of rmWriteThroughMTFGroup
+
+
+
+/** @addtogroup rmReadThroughMTFGroup readThroughMTF
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : ead data from firmware from memory (internal/external depending on
+ 	 		    bit0 of srcDataAddress i.e. 0:internal 1:external)
+   
+ \param[in]  srcDataAddress Address location (no endianess to be handled as this
+				param is unmarshalled by NMF engine).
+ \param[in]  Size Data size to be written
+ \param[in]  dstDataAddress Pointer on data to write
+ 
+ No concurent access has to be allowed. It has to be checked before.
+ */
+
+void readThroughMTF(t_uint32 srcDataAddress, t_uint16 Size, void *dstDataAddress);
+
+/** @} */ // end of rmReadThroughMTFGroup
+
+
+
+void mtfWriteTable(t_mtf_mode mode, t_uint32 addr_out, t_uint16 *pt_src, t_uint16 len, t_uint16 incr, t_uint16 swap_cfg);
+
+void mtfReadTable(t_mtf_mode mode, t_uint32 addr_in, t_uint16 *pt_dest, t_uint16 len, t_uint16 incr,t_uint16 swap_cfg);
+
+
+
+}

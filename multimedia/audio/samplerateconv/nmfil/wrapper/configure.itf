@@ -1,0 +1,18 @@
+#include <bool.idt>
+#include <samplefreq.idt>
+
+typedef enum {
+	SRC_UNKNOWN,
+	SRC_UPSAMPLING,
+	SRC_DOWNSAMPLING
+} t_src_convtype;
+
+void setParameter(
+	t_sample_freq input_freq, 
+	t_sample_freq output_freq, 
+	t_uint16 lowmips_to_out48, 
+	t_uint16 conv_type, 
+	t_uint16 blocksize, 
+	t_uint16 channels,
+	t_uint16 force_reconfiguration  // only read when lowmips_to_out48 is set to 6 (lowmips + lowlatency)
+);

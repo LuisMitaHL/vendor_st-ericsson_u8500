@@ -1,0 +1,144 @@
+;------------------------------------------------------------
+; menu.cmm
+;------------------------------------------------------------
+; Create target specific menu
+;
+; 071120 - KM Initial version
+;-----------------------------------------------------------
+
+MENU.rp
+(
+	add
+	menu
+	(
+		POPUP "U8500"
+		(
+			menuitem "DB8500 peripherals"
+			(
+				per "db8500_&chip_version.per"
+			)
+
+if os.file(~~/percltapdb8500&chip_version.per)
+(
+			menuitem "DB8500 TAP peripherals"
+			(
+				per ~~/percltapdb8500&chip_version.per
+			)
+)
+			menuitem "Cortex-A9 peripherals"
+			(
+				per ~~/percortexa9mpcore.per
+
+			)
+			Separator
+			popup "CoreSight"
+			(
+				menuitem "ETB"            "per etb.per 0x801B4000"
+				menuitem "CTI Core 0"	  "per cti.per 0x801BC000"
+				menuitem "CTI Core 1"	  "per cti.per 0x801BD000"
+				menuitem "TPIU"           "per tpiu.per 0x80190000"
+				menuitem "Trace Funnel"   "per trcfun.per 0x801B6000"
+				menuitem "PTM Core 0"     "per etm.per 0x801BE000"
+				menuitem "PTM Core 1"     "per etm.per 0x801BF000"
+			)
+			separator
+			;menuitem "Save CPU State" "do Save_state"
+			;separator
+			popup "Trace"
+			(
+				menuitem "Use PTM" "do etm_settings"
+				menuitem "Use ETB" "Trace.Method ONCHIP"
+				menuitem "ETM auto set-up" "a.af"
+			)
+			popup "STM Trace"
+			(
+				menuitem "Start sampling"	"do stm_sampling_start.cmm"
+				menuitem "Stop sampling"	"do stm_sampling_stop.cmm"
+			)
+			separator
+			if simulator()
+			(
+				menuitem "Reload trace and memory dump" "do load_trace_and_dump"
+				menuitem "Display (and save) backupRAM info" "do backup_ram_debug"
+				menuitem "Display (and save) prcmu reg info" "do prcmu_reg_debug"
+			)
+			else
+			(
+				menuitem "Save trace and memory" "do save_trace_and_dump"
+				separator
+				menuitem "Dump DB8500 (and a few AB8500 regulators) registers to file" "do dump_regs_dialog ALL"
+				menuitem "Dump AB8500 registers to file" "do dump_regs_dialog AB8500"
+				menuitem "Dump GPIO Muxing to file" "do gpio_muxing.cmm"
+			)
+			if !simulator()
+			(
+				separator
+				menuitem "Check PC on a running target (file saved as read_reg_pc.txt)"
+				(
+					DIALOG
+					(
+						POS 1. 1. 15.
+						TEXT "Number of iterations:"
+						POS 1. 2. 15.
+						num: EDIT "5000" ""
+						POS 6. 4. 5.
+						DEFBUTTON "OK" "CONTinue"
+					)
+					STOP
+					&num=dialog.string(num)
+					DIALOG.END
+					do read_reg_pc &(num).
+				)
+			)
+		)
+	)
+
+	add
+	toolbar
+	(
+		separator
+		toolitem "Etm Selection" "do etm_select.cmm"
+[
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+XXXCXXXXXCXCCCXC
+XCCCCCXCCCXXCXXC
+XCCCCCXCCCXCXCXC
+XCCCCCXCCCXCCCXC
+XXXCCCXCCCXCCCXC
+XCCCCCXCCCXCCCXC
+XCCCCCXCCCXCCCXC
+XXXCCCXCCCXCCCXC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+	]
+		separator
+		toolitem "Modem Debug" "do modem_debug.cmm"
+[
+RRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRR
+RRRXRXRRXRRRRRRR
+RRRXXXRXRXRRRRRR
+RRRXRXRXRXRRRRRR
+RRRXRXRXRXRRRRRR
+RRRXRXRRXRRRRRRR
+RRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRR
+RRRXXRRXXXRXRXRR
+RRRXRXRXRRRXXXRR
+RRRXRXRXXRRXRXRR
+RRRXRXRXRRRXRXRR
+RRRXXRRXXXRXRXRR
+RRRRRRRRRRRRRRRR
+RRRRRRRRRRRRRRRR
+	]
+	)
+)
+
+menu.reprogram ste_shrm.men
+
+enddo

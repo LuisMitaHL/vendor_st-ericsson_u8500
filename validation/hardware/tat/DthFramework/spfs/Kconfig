@@ -1,0 +1,34 @@
+#
+# spfs configuration
+#
+
+menuconfig SPFS
+	bool "spfs"
+	depends on DTHSRVHELPER
+	help
+
+if SPFS
+
+config SPFS_DIR
+	string
+	default ../tat/DthFramework/spfs
+
+config SPFS_DEPS
+	string
+	default "DTHSRVHELPER"
+
+config SPFS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on SPFS
+	default n
+	help
+	  This will disable strip for this module
+
+config SPFS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on SPFS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # SPFS

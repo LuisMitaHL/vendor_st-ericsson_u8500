@@ -1,0 +1,36 @@
+#
+# TatlModemSrv configuration
+#
+
+menuconfig TATLMODEMSRV
+	bool "TatlModemSrv"
+	depends on ISI_COMMON_LIB && ISI_DRIVER_LIB && MODEM_LIB
+	help
+	  depends on ISI_COMMON_LIB, ISI_DRIVER_LIB and MODEM_LIB
+
+
+if TATLMODEMSRV
+
+config TATLMODEMSRV_DIR
+	string
+	default ../tat/tat/tatlmodemsrv
+
+config TATLMODEMSRV_DEPS
+	string
+	default "ISI_COMMON_LIB ISI_DRIVER_LIB MODEM_LIB"
+
+config TATLMODEMSRV_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLMODEMSRV
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLMODEMSRV_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLMODEMSRV
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLMODEMSRV

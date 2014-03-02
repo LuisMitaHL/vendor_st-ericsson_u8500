@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_audio/aac_arm=bin
+NO_STD_BUILD_audio/aac_arm=1
+BUILD_MMDSP_NMF_audio/aac_arm=bin
+BUILD_ARM_PROC_audio/aac_arm=bin
+BUILD_ARM_CODE_audio/aac_arm=src
+BUILD_ARM_NMF_audio/aac_arm=src
+BUILD_XP70_SIA_CODE_audio/aac_arm=false

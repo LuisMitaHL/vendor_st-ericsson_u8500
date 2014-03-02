@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlgps">
+  	<argument path="/DTH/GPS/config/menus/menu_13gps.xml" type="FILE" user_data="ACT_GPS_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlgps/config/menus\nFilename=menu_13gps.xml</info> 
+	  </argument>
+	  <argument path="/DTH/GPS/config/panels/gps_self_tests.xml" type="FILE" user_data="ACT_GPS_SELF_TESTS_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlgps/config/panels\nFilename=gps_self_tests.xml</info> 
+	  </argument>
+	  
+    <action path="/DTH/GPS/SelfTest/GpsTx" type="U32" user_data="ACT_GPS_SELF_TEST_TX" set="DthGps_SelfTest_set" exec="DthGps_SelfTest_exec">
+      <enum>
+        <enum_item value="TATLGPS_ON">ON</enum_item>
+        <enum_item value="TATLGPS_OFF">OFF</enum_item>
+      </enum>
+      <info>Label Action:MODEM_TEST_ST_GPS_TX</info>
+      <argument path="DTH/GPS/SelfTest/GpsTx/CurrentTxStatus" type="U8" user_data="TX_STATUS" get="DthGps_SelfTest_get">
+	<enum>
+	  <enum_item value="TATLGPS_TX_STATUS_OFF">OFF</enum_item>
+          <enum_item value="TATLGPS_TX_STATUS_ON">ON</enum_item>
+  	  <enum_item value="TATLGPS_TX_STATUS_ERROR">ERROR</enum_item>
+	</enum>
+      </argument>
+    </action>
+    <action path="/DTH/GPS/SelfTest/GpsTimeMark" type="U32" user_data="ACT_GPS_SELF_TEST_TIMEMARK" set="DthGps_SelfTest_set" exec="DthGps_SelfTest_exec">
+      <enum>
+        <enum_item value="TATLGPS_ON">ON</enum_item>
+        <enum_item value="TATLGPS_OFF">OFF</enum_item>
+      </enum>
+      <info>Label Action:MODEM_TEST_ST_GPS_TIMEMARK</info>
+      <argument path="DTH/GPS/SelfTest/GpsTimeMark/CurrentTimeStatus" type="U8" user_data="TIME_STATUS" get="DthGps_SelfTest_get">
+	<enum>
+	  <enum_item value="TATLGPS_TIME_STATUS_OFF">OFF</enum_item>
+          <enum_item value="TATLGPS_TIME_STATUS_ON">ON</enum_item>
+  	  <enum_item value="TATLGPS_TIME_STATUS_ERROR">ERROR</enum_item>
+	</enum>
+      </argument>
+    </action>
+  </module>
+</dthapi>

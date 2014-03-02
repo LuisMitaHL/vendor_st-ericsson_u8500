@@ -1,0 +1,8 @@
+MMTE_CheckParameter $1 OMX_IndexParamAudioPcm nPortIndex=$2 nChannels=1 nSamplingRate=8000 eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+if $3 == output_reference
+alias OUTPUT_FILE2  $(OUTPUT_DIR)/pcmsplitter_pcm_output_8k_mono_2.out
+ate_attach_io       $1 $2 MEM $(OUTPUT_FILE2) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/pcm_splitter/streams/casta_8m.pcm
+alias REF_DIGEST    $(AUDIO_STREAMS)/pcm_splitter/streams/casta_8m_digest.hash
+endif

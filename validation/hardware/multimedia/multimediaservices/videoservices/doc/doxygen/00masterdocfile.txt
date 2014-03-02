@@ -1,0 +1,230 @@
+/*!
+	\mainpage Video services : User Guide
+	\section introduction Introduction
+		This document aims to give information on video services users. 		
+		<p>
+	\section doc_structure The document is structured like this
+		- \subpage Interface_for_console
+		\n explain how to use video services using console or scripts
+		- \subpage C_Interface
+		\n explain how to use video services using c language
+
+@section GeneralInfo Document information
+
+<TABLE  BORDER=1 CELLSPACING=1>
+    <TR BGCOLOR="#C0C0C0">
+      <TH><B>Info</TH><TH>Content</B></TH>
+    </TR>
+    <TR><TD><B>	Project Name		</B></TD>      <TD>	Trail			</TD></TR>
+    <TR><TD><B>	Project Id		</B></TD>      <TD>	VYp1160a				</TD></TR>
+    <TR><TD><B>	Author			</B></TD>      <TD>	M.Reulier	</TD></TR>    
+    <TR><TD><B>	Department		</B></TD>      <TD>	BL CS - MST SySol, Le Mans	</TD></TR>
+    <TR><TD><B>	Doc. Reference       	</B></TD>      <TD>     VYn_ps29386		     </TD></TR>
+</TABLE>
+
+
+@section references References
+
+<TABLE  BORDER=1 CELLSPACING=1>
+    <TR BGCOLOR="#C0C0C0">
+      <TH><B>Reference</TH><TH>Id.</TH><TH>Document name</TH><TH>Date Issued</TH>
+      <TH>Status</TH><TH>Vers.</B></TH>
+    </TR>
+    <TR>
+      <TD></TD>
+      <TD></TD>
+      <TD>  </TD>
+      <TD> </TD>
+      <TD></TD>
+      <TD></TD>
+    </TR>
+</TABLE>
+
+
+@section  history Revision history
+<TABLE  BORDER=1 CELLSPACING=1>
+    <TR BGCOLOR="#C0C0C0">
+      <TH><B>Version</TH><TH>Date</TH><TH>Description/Status</TH><TH>Writer</B></TH>
+    </TR>
+    <TR>
+      <TD>1.0_P1</TD>
+      <TD>13 March  2009</TD>
+      <TD>
+      	 Creation of the ISD for display services (including TV-OUT CVBS/HDMI) </TD> <TD> M. Reulier </TD>
+    </TR>
+
+<TR>
+      <TD>1.0</TD>
+      <TD>24 March  2009</TD>
+      <TD>
+      	 Update after review </TD> <TD> M. Reulier </TD>
+    </TR>
+
+<TR>
+      <TD>1.1_P1</TD>
+      <TD>20 April  2009</TD>
+      <TD>
+      	 Update for camera services adding (+adding of VidServ_HdmiGenerateTmdsPattern function in video service) </TD> <TD> M. Reulier </TD>
+    </TR>
+
+<TR>
+      <TD>1.1_P2</TD>
+      <TD>20 April  2009</TD>
+      <TD>
+      	 Update after review, command lines for camera are missing </TD> <TD> M. Reulier </TD>
+    </TR>
+
+<TR>
+      <TD>1.1_P3</TD>
+      <TD>04 November  2009</TD>
+      <TD>
+      	 Update for new service of Audio/Video connector selection + update max value of backlight from 64 to 1024 </TD> <TD> M. Reulier </TD>
+    </TR>
+
+<TR>
+      <TD>1.1_P4</TD>
+      <TD>17 March  2010</TD>
+      <TD>
+      	 Remove interfaces for HDMI production tests </TD> <TD> M. Reulier </TD>
+    </TR>
+<TR>
+      <TD>1.1_P5</TD>
+      <TD>26 March  2010</TD>
+      <TD>
+      	 Udpate ISD to provide interface for new CRs: 
+         CAP_1913_001: Picture toggling - Anti tearing effect tool
+         CAP_1143_001: Possibility to take picture in burst mode </TD> <TD> M. Reulier </TD>
+    </TR>
+*/
+
+/*! \page Interface_for_console command-line interface
+
+This access mode allows user to pilot video services using a application running on console.
+<p>	
+
+ 	\section command_line_sct  the following pages describe services available using examples:
+
+		- \subpage display_mngt
+		\n Aiming to explain how to display a picture on a display
+		- \subpage capture_mngt
+		\n Aiming to explain how to capture a picture
+	
+*/
+
+/*! \page display_mngt How to display a picture on a display
+
+Help for command lines is available under console using
+\cmdline{
+> VideoTests -h
+}
+	
+\section display_initialise 1/ Initialise the display where we want to display
+\cmdline{
+> VideoTests -m=0 -d=2 -dinit
+}
+-m=0 => display mode \n
+-d=2 => display selection (TV-OUT CVBS 4500 display here) \n
+-dinit => command to initialise the display \n
+Note: It should be done only once for the display to use after the boot of the kernel \n
+
+\section display_set_properties 2/ Set the properties (resolution) of the display (applicable for TV-OUT only)
+\cmdline{
+> VideoTests -m=0 -d=2 -dprop=720x480x60xI
+}
+-m=0 => display mode \n
+-d=2 => display selection (TV-OUT CVBS 4500 display here) \n
+-dprop=720x480x60xI => command to set the display to PAL (720x480 60Hz Interlaced) \n
+
+\section display_get_properties 3/ Get the properties (resolution) of the display
+\cmdline{
+> VideoTests -m=0 -d=2 -dgprop
+}
+-m=0 => display mode \n
+-d=2 => display selection (TV-OUT CVBS 4500 display here) \n
+-dgprop => command to get the display properties \n
+
+\section display_get_plug_status 4/ Get the plug status of the display (applicable for TV-OUT only)
+\cmdline{
+> VideoTests -m=0 -d=2 -dplug
+}
+-m=0 => display mode \n
+-d=2 => display selection (TV-OUT CVBS 4500 display here) \n
+-dplug => command to get the plug status (is TV-OUT cable is plugged or not) \n
+
+\section display_display_picture 5/ Display the picture
+\cmdline{
+> VideoTests -m=0 -d=2 -dpict="/tmp/st-ericsson_720x480.png"
+}
+-m=0 => display mode \n
+-d=2 => display selection (TV-OUT CVBS 4500 display here) \n
+-dpict="/tmp/st-ericsson_720x480.png" => command to display the picture at location /tmp/st-ericsson_720x480.png \n
+
+*/
+
+/*! \page capture_mngt How to capture a picture
+	
+Commands lines are not available for the moment for capture
+
+*/
+
+/*! \page C_Interface C interface
+
+This access mode allows user to pilot video services using C functions calling.
+<p>	
+
+ 	\section command_line_sct  the following pages describe services available using examples:
+
+		- \subpage c_display_mngt
+		\n Aiming to explain how to display a picture on a display
+		- \subpage c_capture_mngt
+		\n Aiming to explain how to capture a picture
+	
+*/
+
+/*! \page c_display_mngt How to display a picture on a display
+
+Help for command lines is available under console using
+	
+\section display_initialise 1/ Initialise the display where we want to display
+using of VidServ_DisplayInit(e_VidServ_DisplayId_t DisplayId);\n
+Note: It should be done only once for the display to use after the boot of the kernel \n
+
+\section display_set_properties 2/ Set the properties (resolution) of the display (applicable for TV-OUT only)
+using of VidServ_DisplaySetProperties(e_VidServ_DisplayId_t DisplayId, t_VidServ_DisplayResolution * DisplayResolution);\n
+
+\section display_get_properties 3/ Get the properties (resolution) of the display
+using of VidServ_DisplayGetProperties(e_VidServ_DisplayId_t DisplayId, t_VidServ_DisplayResolution * DisplayResolution);\n
+
+\section display_get_plug_status 4/ Get the plug status of the display (applicable for TV-OUT only)
+using of VidServ_DisplayIsPlugged(e_VidServ_DisplayId_t DisplayId, uint32_t *IsPlugged);\n
+
+\section display_display_picture 5/ Display the picture
+using of VidServ_DisplayPicture(e_VidServ_DisplayId_t DisplayId, t_VidServ_ImageProperties * ImageProperties, e_VidServ_LoopMode_t LoopMode, uint32_t LoopRate);\n
+
+*/
+
+/*! \page c_capture_mngt How to capture a picture
+	
+\section sensor_initialise 1/ Initialise the sensor we will use
+using of VidServ_CameraSensorInit(e_VidServ_SensorId_t SensorId);\n
+Note: It should be done only once for the sensor to use after the boot of the kernel \n
+
+\section sensor_set_properties 2/ Set the properties of the sensor
+using of VidServ_CameraSetSensorProp(e_VidServ_SensorId_t* SensorId, t_VidServ_SensorProperties* SensorProperties);\n
+
+\section preview_set_properties 3/ Set the properties of the preview
+using of VidServ_CameraSetPreviewProp(e_VidServ_DisplayId_t* DisplayId, t_VidServ_PreviewResolution* PreviewResolution);\n
+
+\section picture_set_properties 4/ Set the properties of the picture
+using of VidServ_CameraSetPictureProp(t_VidServ_PictureResolution* PictureResolution, e_VidServ_PictureFormat_t* PictureFormat);\n
+
+\section preview_launch 5/ Launch the preview
+using of VidServ_CameraPreviewStart(void);\n
+
+\section take_picture 6/ Take the picture
+using of VidServ_CameraTakeAShot(int8_t *outputFilePath);\n
+
+\section stop_preview 7/ Stop the preview
+using of VidServ_CameraPreviewStop(void);\n
+
+*/

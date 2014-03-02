@@ -1,0 +1,68 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: jtagcjtag.cmm                   #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; For the usage, see the "usage" sub-function below.
+; Created by HED/CSP/CPT/ACT on 2010-11-03 
+; Contact jingyi-xiaoyan.lu@st.com
+
+entry &selected_mode
+&selected_mode=string.upr("&selected_mode")
+
+; ----- JTAG vs CJTAG
+&SECR_CR_reg=0x80155000
+&cJTAGEn_bit_pos=28.
+if system.usecore()<=1 // only the master debugger change the JTAG/cJTAG mode.
+( 
+   if system.up()
+   (
+   	if "&selected_mode"=="JTAG"
+   	(
+	    print "Seleted mode: JTAG"
+            if (d.l(ZSD:&SECR_CR_reg)>>&cJTAGEn_bit_pos&0x1)==0x0
+       	    (
+       	      print "The current JTAG/CJTAG mode is JTAG, nothing to do! Quit"
+	      print "To change the scan chain topology without changing JTAG/CJTAG mode, do sys.down firstly. Then redo this command."
+       	      enddo
+       	    )
+       	    else
+       	    (
+       	      print "Change to the JTAG mode ..."
+       	      on ERROR goto continue_1
+       	      data.set ZSD:&SECR_CR_reg %long d.l(ZSD:&SECR_CR_reg)&(~(1<<&cJTAGEn_bit_pos))
+continue_1:  
+       	      print "DONE."
+       	    )
+   	)
+   	else "&selected"=="CJTAG"
+   	(
+	    print "Seleted mode: CJTAG"
+   	    if (d.l(ZSD:&SECR_CR_reg)>>&cJTAGEn_bit_pos&0x1)==0x1
+   	    (
+       	      print "The current JTAG/CJTAG mode is cJTAG, nothing to do!"
+	      print "To change the scan chain topology without changing JTAG/CJTAG mode, do sys.down firstly. Then redo this command."
+       	      enddo
+   	    )
+   	    else	
+   	    (
+       	      print "Change to the CJTAG mode ..."
+   	      on ERROR goto continue_2
+   	      data.set ZSD:&SECR_CR_reg %long d.l(ZSD:&SECR_CR_reg)|(1<<&cJTAGEn_bit_pos)
+continue_2:	  
+   	      print "DONE."
+   	    )
+   	)
+	else
+	(
+		print "Unknown mode: &selected. Expected value """jtag""" or """cjtag""""
+	  	enddo
+	)
+   )
+   else
+   (
+	print "Failed. Because the debugger is currently down/disconnected."
+	enddo
+   )
+)
+
+enddo

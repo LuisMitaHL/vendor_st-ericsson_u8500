@@ -1,0 +1,28 @@
+if NETWORK_FRAMEWORK_WITH_ISPPROC == 1
+OMX_SetConfig imgfilter IFM_Index_ConfigCommonSaveImage nPortIndex=IMGFILTER_PORT_INPUT_VPB1_1 Index=0
+OMX_SetConfig my_sink_VPB1_1 IFM_IndexParamFakesinkPathname contentURI=FAKE_SINK_PATH_BACKUP_IMAGE
+OMX_SetConfig my_sink_VPB1_1 IFM_IndexConfigIqtCaptureMode nSaveMode=2 bSaveFrameCount=10 nSaveFirstFrame=1 bSaveFrameByFrame=1 nFrameSkippingNumber=0 nInstanceNumber=FAKESINK_STILL_INSTANCE_1 nAcknowledge=OMX_TRUE
+OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigCaptureMode bContinuous=0 bFrameLimited=0 nFrameLimit=0
+OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigCapturing bEnabled=RAW_ENABLE
+else
+OMX_SetConfig imgfilter IFM_Index_ConfigCommonSaveImage nPortIndex=IMGFILTER_PORT_INPUT_VPB1_0 Index=0
+OMX_SetConfig my_sink_VPB1_0 OMX_IndexParamFakesinkPathname contentURI=FAKE_SINK_PATH_BACKUP_IMAGE
+OMX_SetConfig my_sink_VPB1_0 OMX_IndexConfigIqtCaptureMode nSaveMode=2 bSaveFrameCount=10 nSaveFirstFrame=1 bSaveFrameByFrame=1 nFrameSkippingNumber=0 nInstanceNumber=FAKESINK_STILL_INSTANCE_1 nAcknowledge=OMX_TRUE
+OMX_SetConfig my_sink_VPB1_0 OMX_IndexConfigCaptureMode bContinuous=0 bFrameLimited=0 nFrameLimit=0
+OMX_SetConfig my_sink_VPB1_0 OMX_IndexConfigCapturing bEnabled=RAW_DISABLE
+endif
+
+do $(IMG_SCRIPT)/unitary/features/cam_stillpicture.ite OMX_FALSE SINK_PORT_INPUT SINK_PORT_INPUT
+  
+EventExpected /tmp/Bmp_Saved 20
+ 
+if RAW_ENABLE == OMX_TRUE
+EventExpected /tmp/Raw_Saved_Ins$(FAKESINK_STILL_INSTANCE_1)_N1 20
+endif
+
+echo File_saved
+
+
+
+
+

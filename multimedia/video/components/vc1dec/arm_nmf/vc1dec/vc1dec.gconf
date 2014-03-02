@@ -1,0 +1,65 @@
+composite vc1dec.arm_nmf.vc1dec
+{
+//contains
+contains common.nmf.arm                         as video_common
+contains vc1dec.arm_nmf.decoder			as decoder
+contains vc1dec.mpc.vc1dec			as cVC1dec		domainSVACodec
+contains vc1dec.mpc.ddep			as cDdep		domainSVACodec urgent
+contains vc1dec.mpc.adapter			as cAdapter		domainSVACodec urgent
+contains resource_manager			as cResource_manager	domainSVACodec urgent
+
+
+//itf
+provides vc1dec.arm_nmf.api.compressed_bitstream  	as input
+provides vc1dec.arm_nmf.api.picture_to_fill		as output_buffer
+provides vc1dec.arm_nmf.api.set_decoder_parameter	as set_decoder_parameter
+requires vc1dec.arm_nmf.api.picture    			as output
+requires vc1dec.arm_nmf.api.bitstream_handshake		as nal_ctl
+provides vc1dec.arm_nmf.api.decoder_trace_init     	as decoder_trace_init
+// For ER 344032 
+requires eventhandler as proxy
+binds decoder.proxy to this.proxy
+
+
+
+//internal binding
+binds this.input    			to decoder.input
+binds this.output_buffer    		to decoder.output_buffer
+binds decoder.output			to this.output
+binds decoder.nal_ctl			to this.nal_ctl
+binds this.set_decoder_parameter 	to decoder.set_decoder_parameter
+binds this.decoder_trace_init           to decoder.decoder_trace_init
+binds decoder.mpc_trace_init            to cDdep.iTraceInitIn      	asynchronous fifo=4
+
+// decoder <-> hamac
+binds decoder.iStartCodec 		to cAdapter.iStartCodec24bits	asynchronous fifo=4
+binds cAdapter.iEndCodec24bits 		to decoder.iEndCodec		asynchronous fifo=4
+
+// adapter <-> ddep
+binds cAdapter.iStartCodec16bits	to cDdep.iStartCodec
+binds cDdep.iEndCodec			to cAdapter.iEndCodec16bits
+
+// ddep <-> ddep, rm, vc1dec
+binds cDdep.iSendLogEvent		to cDdep.iGetLogEvent		asynchronous fifo=4 
+binds cDdep.iAlgo			to cVC1dec.iAlgo		asynchronous fifo=4
+binds cDdep.iTraceInitOut            	to cVC1dec.iTraceInit      	asynchronous fifo=4
+binds cDdep.iResource			to cResource_manager.iResource	asynchronous fifo=4 
+binds cDdep.iSleep			to cResource_manager.iSleep	asynchronous fifo=4 
+
+// vc1dec <-> rm
+binds cVC1dec.iBuffer			to cResource_manager.iBuffer
+binds cVC1dec.iMtf			to cResource_manager.iMtf
+binds cVC1dec.iTcmAlloc			to cResource_manager.iTcmAlloc
+
+// Printf Messages
+contains debug.mpc.dsp_printf 		as dsp_printf			domainSVACodec 
+binds cDdep.oPrintf			to dsp_printf.iPrintf
+binds cVC1dec.oPrintf			to dsp_printf.iPrintf
+
+// OST capability
+contains osttrace.mmdsp                 as osttracedsp                          domainSVACodec
+binds    cDdep.osttrace                 to osttracedsp.osttrace
+binds    cVC1dec.osttrace               to osttracedsp.osttrace
+
+
+}

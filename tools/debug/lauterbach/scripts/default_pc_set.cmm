@@ -1,0 +1,28 @@
+; default_pc_set.cmm
+;------------------------------------------------------------
+; Startup file to set Program Counter
+;
+; 061103 - KM Initial version
+; 070405 - PH Adaption to fit new startup.cmm
+;-----------------------------------------------------------
+
+if (("&ExeMem"=="NAND")||("&ExeMem"=="NOR"))
+(
+ R.S PC 0ffff0000
+)
+else if y.exist(VECTORSTART_D)
+  r.s PC VECTORSTART_D
+else if y.exist(PFLINK_VECTOR_D_START)
+  r.s PC PFLINK_VECTOR_D_START
+else if y.exist(MEMMAP_TEXT_AREA_START)
+  r.s PC MEMMAP_TEXT_AREA_START
+else if y.exist(reset)
+  r.s PC reset
+else if y.exist(vectors)
+  r.s PC vectors
+else if y.exist(main)
+  r.s PC main 
+else
+  r.s PC 0x44000000
+
+ENDDO

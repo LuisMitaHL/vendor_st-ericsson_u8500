@@ -1,0 +1,68 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   nmf method declaration
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <grab_types.idt>
+#include <grabctl_types.idt>
+
+/**
+ * setParams: update static parameters that don't change while the component is running
+ * 
+ * \param GrabParams format parameters for grabbing a frame on a given pipe. Must be aligned with what the ISP is outputting
+ * \param idx Which port is beeing parametrized
+ * \param fifoOutsize size of the output buffer FIFO for the given pipe
+ **/
+void setParams(struct s_grabParams GrabParams,enum e_grabctlPortID port_idx, t_uint16 fifoOutsize);
+
+/**
+ * setConfig: dynamically update parameters while component is running. Applies to on the next frame
+ *
+ * \param idx an enum indicating which parameter we want to update. The updated data will be in parameter data. See e_grabctlCfgIdx doc for valid values of data depending on idx.
+ * \param data the updated data linked to the parameter index to be updated
+ * \param param_data : for GRBCTL_CAPT_CAPTURING_KEEP_BUFFERS capture_mode : number of frames before capturing bit kept at dsp
+ *                     for GRBCTL_CAPT_BURST capture_mode : number of frames in burst
+ **/
+void setConfig(enum e_grabctlPortID port_idx, enum e_grabctlCfgIdx param_idx, enum e_capturing capture_mode, t_uint8 param_data);
+
+void setConfigBMS(enum e_grabctlPortID port_idx,t_uint16 bufferAddressesH[6],t_uint16 bufferAddressesL[6], t_uint16 bufferCount, t_uint16 xsize,t_uint16 ysize,t_uint16 linelen, t_uint16 pixel_order);
+
+/**
+ * setClientID: inform GrabCTL of which idx of grab's alert interface collection it is bound to (default 0)
+ * todo: use interface delegations to get rid of this crutch
+ **/
+void setClientID(t_uint8 client_id);
+
+/**
+ * setPort2PipeMapping: update the mapping pipe-port
+ *
+ **/
+void setPort2PipeMapping(enum e_grabPipeID pipe4port0, enum e_grabPipeID pipe4port1, enum e_grabPipeID pipe4port2);
+
+
+/**
+ * setClockWaitingForStart: allows to trigger a callback to Host
+ *
+ **/
+void setClockWaitingForStart(void);
+
+/**
+ * setClockRunning: allows to trigger a callback to Host
+ *
+ **/
+void setClockRunning(void);
+/**
+ * setHiddenBMS: allows to trigger a callback to Host for HiddenBMS complete
+ *
+ **/
+void setHiddenBMS(t_uint16 hidden_bms,t_uint16 nFramesBefore);
+
+
+void endAllCaptures();

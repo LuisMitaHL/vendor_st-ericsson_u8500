@@ -1,0 +1,20 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+composite asyncflash_wrp
+{
+   contains asyncflash as iAsyncFlash priority=io
+
+   provides asyncflash.api.request as request
+   binds this.request to iAsyncFlash.request
+
+   provides asyncflash.api.error as error
+   binds this.error to iAsyncFlash.error
+
+   requires asyncflash.api.response as response
+   binds iAsyncFlash.response to this.response
+}

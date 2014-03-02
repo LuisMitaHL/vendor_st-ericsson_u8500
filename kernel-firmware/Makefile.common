@@ -1,0 +1,68 @@
+STE_KERNEL_FIRMWARE_FILES_BT = \
+	STLC2690_0603_0014_patch.fw     \
+	STLC2690_0603_0014_settings.fw  \
+	STLC2690_0604_001D_patch.fw     \
+	STLC2690_0604_001D_settings.fw  \
+	CG29XX_0200_patch.fw       \
+	CG29XX_0200_settings.fw    \
+	CG29XX_0700_patch.fw       \
+	CG29XX_0700_settings.fw	\
+	CG29XX_1004_patch.fw       \
+	CG29XX_1004_settings.fw    \
+	CG29XX_1805_patch.fw       \
+	CG29XX_1805_settings.fw    \
+	CG29XX_1806_patch.fw       \
+	CG29XX_1806_settings.fw
+
+STE_KERNEL_FIRMWARE_FILES_FM = \
+	cg2900_fm_bt_src_coeff_info.fw       \
+	cg2900_fm_ext_src_coeff_info.fw      \
+	cg2900_fm_fm_coeff_info.fw           \
+	cg2900_fm_fm_prog_info.fw            \
+	R1f.2_SoC1v20_BT_src_coeff_1.1.fw    \
+	R1f.2_SoC1v20_EXT_src_coeff_1.1.fw   \
+	R1f.2_SoC1v20_Cobra_FM_SOC1_coef.fw  \
+	R1f.2_SoC1v20_Cobra_FM_SOC1_prog.fw  \
+	R2c.2_SoC2v06_BT_src_coeff_1.1.fw    \
+	R2c.2_SoC2v06_EXT_src_coeff_1.1.fw   \
+	R2c.2_SoC2v06_Cobra_FM_SOC2_coef.fw  \
+	R2c.2_SoC2v06_Cobra_FM_SOC2_prog.fw  \
+	FM_FW_CG2910_1_0_P1_4_lut_info.fw    \
+	FM_FW_CG2910_1_0_P1_4_prog_info.fw   \
+	FM_FW_CG2910_1_0_P1_4_lut.fw         \
+	FM_FW_CG2910_1_0_P1_4_prog.fw        \
+	FM_FW_CG2905_2_1_P5_2_lut.fw         \
+	FM_FW_CG2905_2_1_P5_2_prog.fw
+
+STE_KERNEL_FIRMWARE_FILES_WLAN = \
+	sdd_10.bin  \
+	sdd_11.bin  \
+	sdd_20.bin  \
+	sdd_22.bin  \
+	sdd_5011.bin  \
+	wsm_10.bin  \
+	wsm_11.bin  \
+	wsm_20.bin  \
+	wsm_22.bin  \
+	wsm_5011.bin
+
+STE_KERNEL_FIRMWARE_FILES_HDMI = \
+	av8100.fw
+
+FILES =
+
+ifeq ($(KERNEL_FIRMWARE_ENABLE_FEATURE_BT),   true)
+	FILES += $(STE_KERNEL_FIRMWARE_FILES_BT)
+endif
+
+ifeq ($(KERNEL_FIRMWARE_ENABLE_FEATURE_FM),   true)
+	FILES += $(STE_KERNEL_FIRMWARE_FILES_FM)
+endif
+
+ifeq ($(KERNEL_FIRMWARE_ENABLE_FEATURE_WLAN), true)
+	FILES += $(STE_KERNEL_FIRMWARE_FILES_WLAN)
+endif
+
+ifeq ($(KERNEL_FIRMWARE_ENABLE_FEATURE_HDMI), true)
+	FILES += $(STE_KERNEL_FIRMWARE_FILES_HDMI)
+endif

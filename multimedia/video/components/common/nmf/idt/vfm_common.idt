@@ -1,0 +1,38 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    
+* \brief   common data definitions shared by multi-processors (HOST and MCP)
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+
+#ifndef _VFM_COMMON_IDT_
+#define _VFM_COMMON_IDT_
+
+/*
+Structures
+*/
+
+typedef struct {
+t_uint32 nSize;
+t_uint32 nPhysicalAddress;
+t_uint32 nLogicalAddress;
+t_uint32 nMpcAddress;
+} ts_ddep_buffer_descriptor;
+
+
+typedef struct {
+
+	t_uint32 control_algo_ticks[10];	//< ticks of first few control_algo
+	t_uint32 end_algo_ticks[10];		//< ticks of first few end_algo
+	t_uint32 acc_ticks;				//< accumulated ticks of the end_algo-control_algo diff, used for FW perf
+	t_uint32 count;							//< counter for accessing the control_algo/end_algo fields
+} ts_ddep_perf_param_out;
+
+#endif // _VFM_COMMON_IDT_

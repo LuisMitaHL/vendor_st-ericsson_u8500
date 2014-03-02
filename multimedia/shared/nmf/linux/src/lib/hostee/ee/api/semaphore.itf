@@ -1,0 +1,18 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+typedef t_uint32 hSem;
+
+interface ee.api.semaphore {
+    hSem create(t_uint32 value);
+    void P(hSem sem);
+    t_sint32 tryP(hSem sem);
+    t_sint32 PTimeout(hSem sem, t_uint32 timeOutInMs);
+    t_sint32 V(hSem sem);
+    t_sint32 destroy(hSem sem);
+}
+

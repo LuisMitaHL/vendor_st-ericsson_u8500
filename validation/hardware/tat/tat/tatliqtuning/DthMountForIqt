@@ -1,0 +1,47 @@
+#!/bin/sh
+case $1 in
+start) 
+
+		if [ -n "`ps | grep MmteOutputTsk | grep -v grep`" ]
+		then
+			echo "remove the previous task  MmteOutputTsk"
+			pkill MmteOutputTsk
+		fi
+
+		if [ -z "`ps | grep sl3d | grep -v grep`" ]
+		then
+			echo "run sl3d"
+			sl3d&	
+		fi
+
+		sleep 8
+		sl3d_detect=`ps | grep "/usr/bin/dth9pserver -s -p 1024" | grep -v grep`
+		sl3d_count=4
+		while [ -z "$sl3d_detect" ] && [ "$sl3d_count" != "0" ]
+		do
+			sleep 1	
+			sl3d_detect=`ps | grep "/usr/bin/dth9pserver -s -p 1024" | grep -v grep`
+			echo -n "."
+			sl3d_count=`expr $sl3d_count - 1`			
+		done
+
+		if [ "$sl3d_count" == "0" ]
+		then
+			echo -e "\r\033[31m FAIL to run dth9pserver!!!\033[0m\n"
+		else
+			if [ -z "`mount | grep dth`" ]
+			then
+				echo "mount dth"
+				mount -t 9p -oport=1024 127.0.0.1 /mnt/dth
+			fi
+
+			chmod  +x /usr/bin/dthfilter
+	
+		fi
+
+;;
+*)
+	echo -e "FullAdc start <n>\n\r n: tempo in seconds\n"
+;;
+esac
+	

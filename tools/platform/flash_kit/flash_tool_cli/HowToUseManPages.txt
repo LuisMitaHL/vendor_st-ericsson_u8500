@@ -1,0 +1,64 @@
+HOW TO USE MANUAL PAGES
+=======================
+
+  WINDOWS
+  -------
+
+  In the Tool root folder write :
+
+    man [toolName]
+
+    [toolName] - Flash_Tool_CLI
+
+  Manual page will be open in new explorer window.
+
+  LINUX
+  -----
+  There are more than one way how to "install" and open manual pages. You can choose
+  one of following :
+
+    1)
+      i) add following two lines into your '$HOME/.profile' :
+
+       MANPATH=<PathToToolsRootDir>/doc/man:$MANPATH
+       EXPORT MANPATH
+
+      ii) reload your '.profile'
+
+      iii) now you can write :
+
+           man [toolName]
+
+           manual page will be open from anywhere.
+
+    2)
+      i)  copy '<PathToToolsRootDir>/doc/man/man1/*.gz' into folder with
+        other linux manual pages /usr/share/man/man1
+      ii) now you can write :
+
+          man [toolName]
+
+          manual page will be open from anywhere.
+
+      NOTE: might need specific access rights
+
+    3)
+      i)  add following line into /etc/manpath.config or /etc/man.config ( depends on OS )
+        to section with 'MANDATORY_PATH'
+
+        MANDATORY_PATH      <PathToToolsRootDir>/doc/man
+
+      ii) now you can write :
+
+          man [toolName]
+
+          manual page will be open from anywhere.
+
+      NOTE: might need specific access rights
+
+    4)
+      i) write :
+
+         man <PathToToolsRootDir>/doc/man/man1/<ManualPageFile>
+
+         manual page will be open from anywhere.

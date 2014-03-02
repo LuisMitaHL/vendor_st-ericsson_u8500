@@ -1,0 +1,31 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/vr_random_zoom_stress.ite
+##  LRHR with random zoom ##
+
+alias LOOP_TESTS $1
+do $(IMAGING_PATH)/ite_nmf/script/stress/stress_test_config.ite
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+usagemode vr
+
+loop LOOP_TESTS
+
+    gen_random_val float FPS_LOWER_LIMIT FPS_UPPER_LIMIT
+    manualfps RANDOM_GENERATED_VALUE
+
+
+    LRHR prepare
+    LRHR start
+
+
+    gen_random_val float ZOOM_LOWER_LIMIT ZOOM_UPPER_LIMIT
+    zoomset RANDOM_GENERATED_VALUE
+
+
+    LRHR stop
+    LRHR free
+
+
+endloop
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite

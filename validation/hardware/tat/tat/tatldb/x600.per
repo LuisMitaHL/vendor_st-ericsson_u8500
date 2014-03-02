@@ -1,0 +1,6176 @@
+;==============================================================
+;tree "UART (2 instances)"
+;==============================================================
+base sd:0xF9203000
+;********************************************
+tree "UART-0"
+;********************************************
+base sd:0xF9203000
+tree "0DR"
+group 0--3
+line.long 0 "DR"
+bitfld.long 0 0.--7. " DATA "  " "
+bitfld.long 0 8. " FE "  "0 ,1 "
+bitfld.long 0 9. " PE "  "0 ,1 "
+bitfld.long 0 10. " BE "  "0 ,1 "
+bitfld.long 0 11. " OE "  "0 ,1 "
+tree.end
+
+base sd:0xF9203004
+tree "0RSR_ECR"
+group 0--3
+line.long 0 "RSR_ECR"
+bitfld.long 0 0. " FE "  "0 ,1 "
+bitfld.long 0 1. " PE "  "0 ,1 "
+bitfld.long 0 2. " BE "  "0 ,1 "
+bitfld.long 0 3. " OE "  "0 ,1 "
+tree.end
+
+base sd:0xF9203008
+tree "0DMAWM"
+group 0--3
+line.long 0 "DMAWM"
+bitfld.long 0 0.--2. " TXDMAWM "  " "
+bitfld.long 0 3.--5. " RXDMAWM "  " "
+tree.end
+
+base sd:0xF920300c
+tree "0TIMEOUT"
+group 0--3
+line.long 0 "TIMEOUT"
+bitfld.long 0 0. " TIMEOUT_PERIOD "  "0 ,1 "
+tree.end
+
+base sd:0xF9203018
+tree "0FR"
+rgroup 0--3
+line.long 0 "FR"
+bitfld.long 0 0. " CTS "  "0 ,1 "
+bitfld.long 0 1. " DSR "  "0 ,1 "
+bitfld.long 0 2. " DCD "  "0 ,1 "
+bitfld.long 0 3. " BUSY "  "0 ,1 "
+bitfld.long 0 4. " RXFE "  "0 ,1 "
+bitfld.long 0 5. " TXFF "  "0 ,1 "
+bitfld.long 0 6. " RXFF "  "0 ,1 "
+bitfld.long 0 7. " TXFE "  "0 ,1 "
+bitfld.long 0 8. " RI "  "0 ,1 "
+bitfld.long 0 9. " DCTS "  "0 ,1 "
+bitfld.long 0 10. " DDSR "  "0 ,1 "
+bitfld.long 0 11. " DDCD "  "0 ,1 "
+bitfld.long 0 12. " TERI "  "0 ,1 "
+bitfld.long 0 13. " RTXDIS "  "0 ,1 "
+tree.end
+
+base sd:0xF920301c
+tree "0LCRH_RX"
+group 0--3
+line.long 0 "LCRH_RX"
+bitfld.long 0 1. " PEN_RX "  "0 ,1 "
+bitfld.long 0 2. " EPS_RX "  "0 ,1 "
+bitfld.long 0 3. " STP2_RX "  "0 ,1 "
+bitfld.long 0 4. " FEN_RX "  "0 ,1 "
+bitfld.long 0 5.--6. " WLEN_RX "  " "
+bitfld.long 0 7. " SPS_RX "  "0 ,1 "
+tree.end
+
+base sd:0xF9203020
+tree "0ILPR"
+group 0--3
+line.long 0 "ILPR"
+bitfld.long 0 0.--7. " ILPDVSR "  " "
+tree.end
+
+base sd:0xF9203024
+tree "0IBRD"
+group 0--3
+line.long 0 "IBRD"
+bitfld.long 0 0.--15. " DIVINT "  " "
+tree.end
+
+base sd:0xF9203028
+tree "0FBRD"
+group 0--3
+line.long 0 "FBRD"
+bitfld.long 0 0.--5. " DIVFRAC "  " "
+tree.end
+
+base sd:0xF920302c
+tree "0LCRH_TX"
+group 0--3
+line.long 0 "LCRH_TX"
+bitfld.long 0 0. " BRK "  "0 ,1 "
+bitfld.long 0 1. " PEN_TX "  "0 ,1 "
+bitfld.long 0 2. " EPS_TX "  "0 ,1 "
+bitfld.long 0 3. " STP2_TX "  "0 ,1 "
+bitfld.long 0 4. " FEN_TX "  "0 ,1 "
+bitfld.long 0 5.--6. " WLEN_TX "  " "
+bitfld.long 0 7. " SPS_TX "  "0 ,1 "
+tree.end
+
+base sd:0xF9203030
+tree "0CR"
+group 0--3
+line.long 0 "CR"
+bitfld.long 0 0. " UARTEN "  "0 ,1 "
+bitfld.long 0 3. " OVSFACT "  "0 ,1 "
+bitfld.long 0 7. " LBE "  "0 ,1 "
+bitfld.long 0 8. " TXE "  "0 ,1 "
+bitfld.long 0 9. " RXE "  "0 ,1 "
+bitfld.long 0 10. " DTR "  "0 ,1 "
+bitfld.long 0 11. " RTS "  "0 ,1 "
+bitfld.long 0 14. " RTSEn "  "0 ,1 "
+bitfld.long 0 15. " CTSEn "  "0 ,1 "
+tree.end
+
+base sd:0xF9203034
+tree "0IFLS"
+group 0--3
+line.long 0 "IFLS"
+bitfld.long 0 0.--2. " TXIFLSEL "  " "
+bitfld.long 0 3.--5. " RXIFLSEL "  " "
+tree.end
+
+base sd:0xF9203038
+tree "0IMSC"
+group 0--3
+line.long 0 "IMSC"
+bitfld.long 0 0. " RIMIM "  "0 ,1 "
+bitfld.long 0 1. " CTSMIM "  "0 ,1 "
+bitfld.long 0 2. " DCDMIM "  "0 ,1 "
+bitfld.long 0 3. " DSRMIM "  "0 ,1 "
+bitfld.long 0 4. " RXIM "  "0 ,1 "
+bitfld.long 0 5. " TXIM "  "0 ,1 "
+bitfld.long 0 6. " RTIM "  "0 ,1 "
+bitfld.long 0 7. " FEIM "  "0 ,1 "
+bitfld.long 0 8. " PEIM "  "0 ,1 "
+bitfld.long 0 9. " BEIM "  "0 ,1 "
+bitfld.long 0 10. " OEIM "  "0 ,1 "
+bitfld.long 0 11. " XOFFIM "  "0 ,1 "
+bitfld.long 0 12. " TXFEIM "  "0 ,1 "
+tree.end
+
+base sd:0xF920303c
+tree "0RIS"
+rgroup 0--3
+line.long 0 "RIS"
+bitfld.long 0 0. " RIRMIS "  "0 ,1 "
+bitfld.long 0 1. " CTSRMIS "  "0 ,1 "
+bitfld.long 0 2. " DCDRMIS "  "0 ,1 "
+bitfld.long 0 3. " DSRRMIS "  "0 ,1 "
+bitfld.long 0 4. " RXRIS "  "0 ,1 "
+bitfld.long 0 5. " TXRIS "  "0 ,1 "
+bitfld.long 0 6. " RTRIS "  "0 ,1 "
+bitfld.long 0 7. " FERIS "  "0 ,1 "
+bitfld.long 0 8. " PERIS "  "0 ,1 "
+bitfld.long 0 9. " BERIS "  "0 ,1 "
+bitfld.long 0 10. " OERIS "  "0 ,1 "
+bitfld.long 0 11. " XOFFRIS "  "0 ,1 "
+bitfld.long 0 12. " TXFERIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9203040
+tree "0MIS"
+rgroup 0--3
+line.long 0 "MIS"
+bitfld.long 0 0. " RIMMIS "  "0 ,1 "
+bitfld.long 0 1. " CTSMMIS "  "0 ,1 "
+bitfld.long 0 2. " DCDMMIS "  "0 ,1 "
+bitfld.long 0 3. " DSRMMIS "  "0 ,1 "
+bitfld.long 0 4. " RXMIS "  "0 ,1 "
+bitfld.long 0 5. " TXMIS "  "0 ,1 "
+bitfld.long 0 6. " RTMIS "  "0 ,1 "
+bitfld.long 0 7. " FEMIS "  "0 ,1 "
+bitfld.long 0 8. " PEMIS "  "0 ,1 "
+bitfld.long 0 9. " BEMIS "  "0 ,1 "
+bitfld.long 0 10. " OEMIS "  "0 ,1 "
+bitfld.long 0 11. " XOFFMIS "  "0 ,1 "
+bitfld.long 0 12. " TXFEMIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9203044
+tree "0ICR"
+group 0--3
+line.long 0 "ICR"
+bitfld.long 0 0. " RIMIC "  "0 ,1 "
+bitfld.long 0 1. " CTSMIC "  "0 ,1 "
+bitfld.long 0 2. " DCDMIC "  "0 ,1 "
+bitfld.long 0 3. " DSRMIC "  "0 ,1 "
+bitfld.long 0 4. " RXIC "  "0 ,1 "
+bitfld.long 0 5. " TXIC "  "0 ,1 "
+bitfld.long 0 6. " RTIC "  "0 ,1 "
+bitfld.long 0 7. " FEIC "  "0 ,1 "
+bitfld.long 0 8. " PEIC "  "0 ,1 "
+bitfld.long 0 9. " BEIC "  "0 ,1 "
+bitfld.long 0 10. " OEIC "  "0 ,1 "
+bitfld.long 0 11. " XOFFIC "  "0 ,1 "
+tree.end
+
+base sd:0xF9203048
+tree "0DMACR"
+group 0--3
+line.long 0 "DMACR"
+bitfld.long 0 0. " RXDMAE "  "0 ,1 "
+bitfld.long 0 1. " TXDMAE "  "0 ,1 "
+bitfld.long 0 2. " DMAONERR "  "0 ,1 "
+tree.end
+
+base sd:0xF9203050
+tree "0XFCR"
+group 0--3
+line.long 0 "XFCR"
+bitfld.long 0 0. " SFEN "  "0 ,1 "
+bitfld.long 0 1.--2. " SFRMOD "  " "
+bitfld.long 0 3.--4. " SFTMOD "  " "
+bitfld.long 0 5. " XONANY "  "0 ,1 "
+bitfld.long 0 6. " SPECHR "  "0 ,1 "
+tree.end
+
+base sd:0xF9203054
+tree "0XON1"
+group 0--3
+line.long 0 "XON1"
+bitfld.long 0 0.--7. " XON1 "  " "
+tree.end
+
+base sd:0xF9203058
+tree "0XON2"
+group 0--3
+line.long 0 "XON2"
+bitfld.long 0 0.--7. " XON2 "  " "
+tree.end
+
+base sd:0xF920305c
+tree "0XOFF1"
+group 0--3
+line.long 0 "XOFF1"
+bitfld.long 0 0.--7. " XOFF1 "  " "
+tree.end
+
+base sd:0xF9203060
+tree "0XOFF2"
+group 0--3
+line.long 0 "XOFF2"
+bitfld.long 0 0.--7. " XOFF2 "  " "
+tree.end
+
+base sd:0xF9203080
+tree "0ITCR"
+group 0--3
+line.long 0 "ITCR"
+bitfld.long 0 0. " ITEN "  "0 ,1 "
+tree.end
+
+base sd:0xF9203084
+tree "0ITIP"
+group 0--3
+line.long 0 "ITIP"
+bitfld.long 0 0. " RXD "  "0 ,1 "
+bitfld.long 0 2. " DSRn "  "0 ,1 "
+bitfld.long 0 3. " CTSn "  "0 ,1 "
+bitfld.long 0 4. " DCDn "  "0 ,1 "
+bitfld.long 0 5. " RIn "  "0 ,1 "
+bitfld.long 0 6. " RXDMAC "  "0 ,1 "
+bitfld.long 0 7. " TXDMAC "  "0 ,1 "
+tree.end
+
+base sd:0xF9203088
+tree "0ITOP"
+group 0--3
+line.long 0 "ITOP"
+bitfld.long 0 0. " TXD "  "0 ,1 "
+bitfld.long 0 2. " DTRn "  "0 ,1 "
+bitfld.long 0 3. " RTSn "  "0 ,1 "
+bitfld.long 0 4. " OUT1n "  "0 ,1 "
+bitfld.long 0 5. " OUT2n "  "0 ,1 "
+bitfld.long 0 6. " I "  "0 ,1 "
+bitfld.long 0 7. " EI "  "0 ,1 "
+bitfld.long 0 8. " RTI "  "0 ,1 "
+bitfld.long 0 9. " TXI "  "0 ,1 "
+bitfld.long 0 10. " RXI "  "0 ,1 "
+bitfld.long 0 11. " MSI "  "0 ,1 "
+bitfld.long 0 12. " RXDMABR "  "0 ,1 "
+bitfld.long 0 13. " RXDMASR "  "0 ,1 "
+bitfld.long 0 14. " TXDMABR "  "0 ,1 "
+bitfld.long 0 15. " TXDMASR "  "0 ,1 "
+bitfld.long 0 16. " ABERRI "  "0 ,1 "
+bitfld.long 0 17. " ABDONEI "  "0 ,1 "
+tree.end
+
+base sd:0xF920308c
+tree "0TDR"
+group 0--3
+line.long 0 "TDR"
+bitfld.long 0 0.--10. " DATA "  " "
+tree.end
+
+base sd:0xF9203100
+tree "0ABCR"
+group 0--3
+line.long 0 "ABCR"
+bitfld.long 0 0. " ACFGEN "  "0 ,1 "
+bitfld.long 0 1. " RESTART "  "0 ,1 "
+bitfld.long 0 2. " UPDATEN "  "0 ,1 "
+tree.end
+
+base sd:0xF9203104
+tree "0ABSR"
+rgroup 0--3
+line.long 0 "ABSR"
+bitfld.long 0 0.--2. " BYTE2S "  " "
+bitfld.long 0 3.--7. " BYTE1S "  " "
+bitfld.long 0 8. " VALFMT "  "0 ,1 "
+bitfld.long 0 9.--10. " CMDERR "  " "
+bitfld.long 0 11. " BAUDERR "  "0 ,1 "
+bitfld.long 0 12. " ACDONE "  "0 ,1 "
+tree.end
+
+base sd:0xF9203108
+tree "0ABFMT"
+rgroup 0--3
+line.long 0 "ABFMT"
+bitfld.long 0 1. " PEN "  "0 ,1 "
+bitfld.long 0 2. " EPS "  "0 ,1 "
+bitfld.long 0 3. " STP2 "  "0 ,1 "
+bitfld.long 0 4. " FEN "  "0 ,1 "
+bitfld.long 0 5.--6. " WLEN "  " "
+tree.end
+
+base sd:0xF9203150
+tree "0ABDR"
+rgroup 0--3
+line.long 0 "ABDR"
+bitfld.long 0 0.--15. " AUTOBAUDBDR "  " "
+tree.end
+
+base sd:0xF9203154
+tree "0ABDFR"
+rgroup 0--3
+line.long 0 "ABDFR"
+bitfld.long 0 0.--5. " AUTOBAUDBDFR "  " "
+tree.end
+
+base sd:0xF9203158
+tree "0ABMR"
+rgroup 0--3
+line.long 0 "ABMR"
+bitfld.long 0 0.--19. " AUTOBAUDBMR "  " "
+tree.end
+
+base sd:0xF920315c
+tree "0ABIMSC"
+group 0--3
+line.long 0 "ABIMSC"
+bitfld.long 0 0. " ABERRIM "  "0 ,1 "
+bitfld.long 0 1. " ABDONEIM "  "0 ,1 "
+tree.end
+
+base sd:0xF9203160
+tree "0ABRIS"
+rgroup 0--3
+line.long 0 "ABRIS"
+bitfld.long 0 0. " ABERRRIS "  "0 ,1 "
+bitfld.long 0 1. " ABDONERIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9203164
+tree "0ABMIS"
+rgroup 0--3
+line.long 0 "ABMIS"
+bitfld.long 0 0. " ABERRMIS "  "0 ,1 "
+bitfld.long 0 1. " ABDONEMIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9203168
+tree "0ABICR"
+group 0--3
+line.long 0 "ABICR"
+bitfld.long 0 0. " ABERRIC "  "0 ,1 "
+bitfld.long 0 1. " ABDONEIC "  "0 ,1 "
+tree.end
+
+base sd:0xF9203fe0
+tree "0PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " PartNumber0 "  " "
+tree.end
+
+base sd:0xF9203fe4
+tree "0PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " PartNumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xF9203fe8
+tree "0PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xF9203fec
+tree "0PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xF9203ff0
+tree "0PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " IDO "  " "
+tree.end
+
+base sd:0xF9203ff4
+tree "0PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " ID1 "  " "
+tree.end
+
+base sd:0xF9203ff8
+tree "0PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " ID2 "  " "
+tree.end
+
+base sd:0xF9203ffc
+tree "0PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " ID3 "  " "
+tree.end
+
+tree.end
+
+base sd:0xF9008000
+;********************************************
+tree "UART-1"
+;********************************************
+base sd:0xF9008000
+tree "1DR"
+group 0--3
+line.long 0 "DR"
+bitfld.long 0 0.--7. " DATA "  " "
+bitfld.long 0 8. " FE "  "0 ,1 "
+bitfld.long 0 9. " PE "  "0 ,1 "
+bitfld.long 0 10. " BE "  "0 ,1 "
+bitfld.long 0 11. " OE "  "0 ,1 "
+tree.end
+
+base sd:0xF9008004
+tree "1RSR_ECR"
+group 0--3
+line.long 0 "RSR_ECR"
+bitfld.long 0 0. " FE "  "0 ,1 "
+bitfld.long 0 1. " PE "  "0 ,1 "
+bitfld.long 0 2. " BE "  "0 ,1 "
+bitfld.long 0 3. " OE "  "0 ,1 "
+tree.end
+
+base sd:0xF9008008
+tree "1DMAWM"
+group 0--3
+line.long 0 "DMAWM"
+bitfld.long 0 0.--2. " TXDMAWM "  " "
+bitfld.long 0 3.--5. " RXDMAWM "  " "
+tree.end
+
+base sd:0xF900800c
+tree "1TIMEOUT"
+group 0--3
+line.long 0 "TIMEOUT"
+bitfld.long 0 0. " TIMEOUT_PERIOD "  "0 ,1 "
+tree.end
+
+base sd:0xF9008018
+tree "1FR"
+rgroup 0--3
+line.long 0 "FR"
+bitfld.long 0 0. " CTS "  "0 ,1 "
+bitfld.long 0 1. " DSR "  "0 ,1 "
+bitfld.long 0 2. " DCD "  "0 ,1 "
+bitfld.long 0 3. " BUSY "  "0 ,1 "
+bitfld.long 0 4. " RXFE "  "0 ,1 "
+bitfld.long 0 5. " TXFF "  "0 ,1 "
+bitfld.long 0 6. " RXFF "  "0 ,1 "
+bitfld.long 0 7. " TXFE "  "0 ,1 "
+bitfld.long 0 8. " RI "  "0 ,1 "
+bitfld.long 0 9. " DCTS "  "0 ,1 "
+bitfld.long 0 10. " DDSR "  "0 ,1 "
+bitfld.long 0 11. " DDCD "  "0 ,1 "
+bitfld.long 0 12. " TERI "  "0 ,1 "
+bitfld.long 0 13. " RTXDIS "  "0 ,1 "
+tree.end
+
+base sd:0xF900801c
+tree "1LCRH_RX"
+group 0--3
+line.long 0 "LCRH_RX"
+bitfld.long 0 1. " PEN_RX "  "0 ,1 "
+bitfld.long 0 2. " EPS_RX "  "0 ,1 "
+bitfld.long 0 3. " STP2_RX "  "0 ,1 "
+bitfld.long 0 4. " FEN_RX "  "0 ,1 "
+bitfld.long 0 5.--6. " WLEN_RX "  " "
+bitfld.long 0 7. " SPS_RX "  "0 ,1 "
+tree.end
+
+base sd:0xF9008020
+tree "1ILPR"
+group 0--3
+line.long 0 "ILPR"
+bitfld.long 0 0.--7. " ILPDVSR "  " "
+tree.end
+
+base sd:0xF9008024
+tree "1IBRD"
+group 0--3
+line.long 0 "IBRD"
+bitfld.long 0 0.--15. " DIVINT "  " "
+tree.end
+
+base sd:0xF9008028
+tree "1FBRD"
+group 0--3
+line.long 0 "FBRD"
+bitfld.long 0 0.--5. " DIVFRAC "  " "
+tree.end
+
+base sd:0xF900802c
+tree "1LCRH_TX"
+group 0--3
+line.long 0 "LCRH_TX"
+bitfld.long 0 0. " BRK "  "0 ,1 "
+bitfld.long 0 1. " PEN_TX "  "0 ,1 "
+bitfld.long 0 2. " EPS_TX "  "0 ,1 "
+bitfld.long 0 3. " STP2_TX "  "0 ,1 "
+bitfld.long 0 4. " FEN_TX "  "0 ,1 "
+bitfld.long 0 5.--6. " WLEN_TX "  " "
+bitfld.long 0 7. " SPS_TX "  "0 ,1 "
+tree.end
+
+base sd:0xF9008030
+tree "1CR"
+group 0--3
+line.long 0 "CR"
+bitfld.long 0 0. " UARTEN "  "0 ,1 "
+bitfld.long 0 3. " OVSFACT "  "0 ,1 "
+bitfld.long 0 7. " LBE "  "0 ,1 "
+bitfld.long 0 8. " TXE "  "0 ,1 "
+bitfld.long 0 9. " RXE "  "0 ,1 "
+bitfld.long 0 10. " DTR "  "0 ,1 "
+bitfld.long 0 11. " RTS "  "0 ,1 "
+bitfld.long 0 14. " RTSEn "  "0 ,1 "
+bitfld.long 0 15. " CTSEn "  "0 ,1 "
+tree.end
+
+base sd:0xF9008034
+tree "1IFLS"
+group 0--3
+line.long 0 "IFLS"
+bitfld.long 0 0.--2. " TXIFLSEL "  " "
+bitfld.long 0 3.--5. " RXIFLSEL "  " "
+tree.end
+
+base sd:0xF9008038
+tree "1IMSC"
+group 0--3
+line.long 0 "IMSC"
+bitfld.long 0 0. " RIMIM "  "0 ,1 "
+bitfld.long 0 1. " CTSMIM "  "0 ,1 "
+bitfld.long 0 2. " DCDMIM "  "0 ,1 "
+bitfld.long 0 3. " DSRMIM "  "0 ,1 "
+bitfld.long 0 4. " RXIM "  "0 ,1 "
+bitfld.long 0 5. " TXIM "  "0 ,1 "
+bitfld.long 0 6. " RTIM "  "0 ,1 "
+bitfld.long 0 7. " FEIM "  "0 ,1 "
+bitfld.long 0 8. " PEIM "  "0 ,1 "
+bitfld.long 0 9. " BEIM "  "0 ,1 "
+bitfld.long 0 10. " OEIM "  "0 ,1 "
+bitfld.long 0 11. " XOFFIM "  "0 ,1 "
+bitfld.long 0 12. " TXFEIM "  "0 ,1 "
+tree.end
+
+base sd:0xF900803c
+tree "1RIS"
+rgroup 0--3
+line.long 0 "RIS"
+bitfld.long 0 0. " RIRMIS "  "0 ,1 "
+bitfld.long 0 1. " CTSRMIS "  "0 ,1 "
+bitfld.long 0 2. " DCDRMIS "  "0 ,1 "
+bitfld.long 0 3. " DSRRMIS "  "0 ,1 "
+bitfld.long 0 4. " RXRIS "  "0 ,1 "
+bitfld.long 0 5. " TXRIS "  "0 ,1 "
+bitfld.long 0 6. " RTRIS "  "0 ,1 "
+bitfld.long 0 7. " FERIS "  "0 ,1 "
+bitfld.long 0 8. " PERIS "  "0 ,1 "
+bitfld.long 0 9. " BERIS "  "0 ,1 "
+bitfld.long 0 10. " OERIS "  "0 ,1 "
+bitfld.long 0 11. " XOFFRIS "  "0 ,1 "
+bitfld.long 0 12. " TXFERIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9008040
+tree "1MIS"
+rgroup 0--3
+line.long 0 "MIS"
+bitfld.long 0 0. " RIMMIS "  "0 ,1 "
+bitfld.long 0 1. " CTSMMIS "  "0 ,1 "
+bitfld.long 0 2. " DCDMMIS "  "0 ,1 "
+bitfld.long 0 3. " DSRMMIS "  "0 ,1 "
+bitfld.long 0 4. " RXMIS "  "0 ,1 "
+bitfld.long 0 5. " TXMIS "  "0 ,1 "
+bitfld.long 0 6. " RTMIS "  "0 ,1 "
+bitfld.long 0 7. " FEMIS "  "0 ,1 "
+bitfld.long 0 8. " PEMIS "  "0 ,1 "
+bitfld.long 0 9. " BEMIS "  "0 ,1 "
+bitfld.long 0 10. " OEMIS "  "0 ,1 "
+bitfld.long 0 11. " XOFFMIS "  "0 ,1 "
+bitfld.long 0 12. " TXFEMIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9008044
+tree "1ICR"
+group 0--3
+line.long 0 "ICR"
+bitfld.long 0 0. " RIMIC "  "0 ,1 "
+bitfld.long 0 1. " CTSMIC "  "0 ,1 "
+bitfld.long 0 2. " DCDMIC "  "0 ,1 "
+bitfld.long 0 3. " DSRMIC "  "0 ,1 "
+bitfld.long 0 4. " RXIC "  "0 ,1 "
+bitfld.long 0 5. " TXIC "  "0 ,1 "
+bitfld.long 0 6. " RTIC "  "0 ,1 "
+bitfld.long 0 7. " FEIC "  "0 ,1 "
+bitfld.long 0 8. " PEIC "  "0 ,1 "
+bitfld.long 0 9. " BEIC "  "0 ,1 "
+bitfld.long 0 10. " OEIC "  "0 ,1 "
+bitfld.long 0 11. " XOFFIC "  "0 ,1 "
+tree.end
+
+base sd:0xF9008048
+tree "1DMACR"
+group 0--3
+line.long 0 "DMACR"
+bitfld.long 0 0. " RXDMAE "  "0 ,1 "
+bitfld.long 0 1. " TXDMAE "  "0 ,1 "
+bitfld.long 0 2. " DMAONERR "  "0 ,1 "
+tree.end
+
+base sd:0xF9008050
+tree "1XFCR"
+group 0--3
+line.long 0 "XFCR"
+bitfld.long 0 0. " SFEN "  "0 ,1 "
+bitfld.long 0 1.--2. " SFRMOD "  " "
+bitfld.long 0 3.--4. " SFTMOD "  " "
+bitfld.long 0 5. " XONANY "  "0 ,1 "
+bitfld.long 0 6. " SPECHR "  "0 ,1 "
+tree.end
+
+base sd:0xF9008054
+tree "1XON1"
+group 0--3
+line.long 0 "XON1"
+bitfld.long 0 0.--7. " XON1 "  " "
+tree.end
+
+base sd:0xF9008058
+tree "1XON2"
+group 0--3
+line.long 0 "XON2"
+bitfld.long 0 0.--7. " XON2 "  " "
+tree.end
+
+base sd:0xF900805c
+tree "1XOFF1"
+group 0--3
+line.long 0 "XOFF1"
+bitfld.long 0 0.--7. " XOFF1 "  " "
+tree.end
+
+base sd:0xF9008060
+tree "1XOFF2"
+group 0--3
+line.long 0 "XOFF2"
+bitfld.long 0 0.--7. " XOFF2 "  " "
+tree.end
+
+base sd:0xF9008080
+tree "1ITCR"
+group 0--3
+line.long 0 "ITCR"
+bitfld.long 0 0. " ITEN "  "0 ,1 "
+tree.end
+
+base sd:0xF9008084
+tree "1ITIP"
+group 0--3
+line.long 0 "ITIP"
+bitfld.long 0 0. " RXD "  "0 ,1 "
+bitfld.long 0 2. " DSRn "  "0 ,1 "
+bitfld.long 0 3. " CTSn "  "0 ,1 "
+bitfld.long 0 4. " DCDn "  "0 ,1 "
+bitfld.long 0 5. " RIn "  "0 ,1 "
+bitfld.long 0 6. " RXDMAC "  "0 ,1 "
+bitfld.long 0 7. " TXDMAC "  "0 ,1 "
+tree.end
+
+base sd:0xF9008088
+tree "1ITOP"
+group 0--3
+line.long 0 "ITOP"
+bitfld.long 0 0. " TXD "  "0 ,1 "
+bitfld.long 0 2. " DTRn "  "0 ,1 "
+bitfld.long 0 3. " RTSn "  "0 ,1 "
+bitfld.long 0 4. " OUT1n "  "0 ,1 "
+bitfld.long 0 5. " OUT2n "  "0 ,1 "
+bitfld.long 0 6. " I "  "0 ,1 "
+bitfld.long 0 7. " EI "  "0 ,1 "
+bitfld.long 0 8. " RTI "  "0 ,1 "
+bitfld.long 0 9. " TXI "  "0 ,1 "
+bitfld.long 0 10. " RXI "  "0 ,1 "
+bitfld.long 0 11. " MSI "  "0 ,1 "
+bitfld.long 0 12. " RXDMABR "  "0 ,1 "
+bitfld.long 0 13. " RXDMASR "  "0 ,1 "
+bitfld.long 0 14. " TXDMABR "  "0 ,1 "
+bitfld.long 0 15. " TXDMASR "  "0 ,1 "
+bitfld.long 0 16. " ABERRI "  "0 ,1 "
+bitfld.long 0 17. " ABDONEI "  "0 ,1 "
+tree.end
+
+base sd:0xF900808c
+tree "1TDR"
+group 0--3
+line.long 0 "TDR"
+bitfld.long 0 0.--10. " DATA "  " "
+tree.end
+
+base sd:0xF9008100
+tree "1ABCR"
+group 0--3
+line.long 0 "ABCR"
+bitfld.long 0 0. " ACFGEN "  "0 ,1 "
+bitfld.long 0 1. " RESTART "  "0 ,1 "
+bitfld.long 0 2. " UPDATEN "  "0 ,1 "
+tree.end
+
+base sd:0xF9008104
+tree "1ABSR"
+rgroup 0--3
+line.long 0 "ABSR"
+bitfld.long 0 0.--2. " BYTE2S "  " "
+bitfld.long 0 3.--7. " BYTE1S "  " "
+bitfld.long 0 8. " VALFMT "  "0 ,1 "
+bitfld.long 0 9.--10. " CMDERR "  " "
+bitfld.long 0 11. " BAUDERR "  "0 ,1 "
+bitfld.long 0 12. " ACDONE "  "0 ,1 "
+tree.end
+
+base sd:0xF9008108
+tree "1ABFMT"
+rgroup 0--3
+line.long 0 "ABFMT"
+bitfld.long 0 1. " PEN "  "0 ,1 "
+bitfld.long 0 2. " EPS "  "0 ,1 "
+bitfld.long 0 3. " STP2 "  "0 ,1 "
+bitfld.long 0 4. " FEN "  "0 ,1 "
+bitfld.long 0 5.--6. " WLEN "  " "
+tree.end
+
+base sd:0xF9008150
+tree "1ABDR"
+rgroup 0--3
+line.long 0 "ABDR"
+bitfld.long 0 0.--15. " AUTOBAUDBDR "  " "
+tree.end
+
+base sd:0xF9008154
+tree "1ABDFR"
+rgroup 0--3
+line.long 0 "ABDFR"
+bitfld.long 0 0.--5. " AUTOBAUDBDFR "  " "
+tree.end
+
+base sd:0xF9008158
+tree "1ABMR"
+rgroup 0--3
+line.long 0 "ABMR"
+bitfld.long 0 0.--19. " AUTOBAUDBMR "  " "
+tree.end
+
+base sd:0xF900815c
+tree "1ABIMSC"
+group 0--3
+line.long 0 "ABIMSC"
+bitfld.long 0 0. " ABERRIM "  "0 ,1 "
+bitfld.long 0 1. " ABDONEIM "  "0 ,1 "
+tree.end
+
+base sd:0xF9008160
+tree "1ABRIS"
+rgroup 0--3
+line.long 0 "ABRIS"
+bitfld.long 0 0. " ABERRRIS "  "0 ,1 "
+bitfld.long 0 1. " ABDONERIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9008164
+tree "1ABMIS"
+rgroup 0--3
+line.long 0 "ABMIS"
+bitfld.long 0 0. " ABERRMIS "  "0 ,1 "
+bitfld.long 0 1. " ABDONEMIS "  "0 ,1 "
+tree.end
+
+base sd:0xF9008168
+tree "1ABICR"
+group 0--3
+line.long 0 "ABICR"
+bitfld.long 0 0. " ABERRIC "  "0 ,1 "
+bitfld.long 0 1. " ABDONEIC "  "0 ,1 "
+tree.end
+
+base sd:0xF9008fe0
+tree "1PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " PartNumber0 "  " "
+tree.end
+
+base sd:0xF9008fe4
+tree "1PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " PartNumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xF9008fe8
+tree "1PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xF9008fec
+tree "1PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xF9008ff0
+tree "1PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " IDO "  " "
+tree.end
+
+base sd:0xF9008ff4
+tree "1PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " ID1 "  " "
+tree.end
+
+base sd:0xF9008ff8
+tree "1PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " ID2 "  " "
+tree.end
+
+base sd:0xF9008ffc
+tree "1PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " ID3 "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+tree "DMAC"
+;==============================================================
+base sd:0xFD824000
+tree "GCC"
+group 0--3
+line.long 0 "GCC"
+bitfld.long 0 0. " ENA "  "0 ,1 "
+bitfld.long 0 1. " STAT "  "0 ,1 "
+bitfld.long 0 8. " SE0 "  "0 ,1 "
+bitfld.long 0 9. " DE0 "  "0 ,1 "
+bitfld.long 0 10. " SE1 "  "0 ,1 "
+bitfld.long 0 11. " DE1 "  "0 ,1 "
+bitfld.long 0 12. " SE2 "  "0 ,1 "
+bitfld.long 0 13. " DE2 "  "0 ,1 "
+bitfld.long 0 14. " SE3 "  "0 ,1 "
+bitfld.long 0 15. " DE3 "  "0 ,1 "
+tree.end
+
+base sd:0xFD824004
+tree "PRTYP"
+group 0--3
+line.long 0 "PRTYP"
+bitfld.long 0 0.--1. " CP0TYP "  " "
+bitfld.long 0 2.--3. " CP1TYP "  " "
+bitfld.long 0 4.--5. " CP2TYP "  " "
+bitfld.long 0 6.--7. " CP3TYP "  " "
+bitfld.long 0 8.--9. " CP4TYP "  " "
+bitfld.long 0 10.--11. " CP5TYP "  " "
+bitfld.long 0 12.--13. " CP6TYP "  " "
+bitfld.long 0 14.--15. " CP7TYP "  " "
+bitfld.long 0 16.--17. " CP8TYP "  " "
+bitfld.long 0 18.--19. " CP9TYP "  " "
+bitfld.long 0 20.--21. " CP10TYP "  " "
+bitfld.long 0 22.--23. " CP11TYP "  " "
+bitfld.long 0 24.--25. " CP12TYP "  " "
+bitfld.long 0 26.--27. " CP13TYP "  " "
+bitfld.long 0 28.--29. " CP14TYP "  " "
+bitfld.long 0 30.--31. " CP15TYP "  " "
+tree.end
+
+base sd:0xFD824008
+tree "PRSME"
+group 0--3
+line.long 0 "PRSME"
+bitfld.long 0 0.--1. " PR0SEC "  " "
+bitfld.long 0 2.--3. " PR2SEC "  " "
+bitfld.long 0 4.--5. " PR4SEC "  " "
+bitfld.long 0 6.--7. " PR6SEC "  " "
+bitfld.long 0 8.--9. " PR8SEC "  " "
+bitfld.long 0 10.--11. " PR10SEC "  " "
+bitfld.long 0 12.--13. " PR12SEC "  " "
+bitfld.long 0 14.--15. " PR14SEC "  " "
+bitfld.long 0 16.--17. " PR16SEC "  " "
+bitfld.long 0 18.--19. " PR18SEC "  " "
+bitfld.long 0 20.--21. " PR20SEC "  " "
+bitfld.long 0 22.--23. " PR22SEC "  " "
+bitfld.long 0 24.--25. " PR24SEC "  " "
+bitfld.long 0 26.--27. " PR26SEC "  " "
+bitfld.long 0 28.--29. " PR28SEC "  " "
+bitfld.long 0 30.--31. " PR30SEC "  " "
+tree.end
+
+base sd:0xFD82400c
+tree "PRSMO"
+group 0--3
+line.long 0 "PRSMO"
+bitfld.long 0 0.--1. " PR1SEC "  " "
+bitfld.long 0 2.--3. " PR3SEC "  " "
+bitfld.long 0 4.--5. " PR5SEC "  " "
+bitfld.long 0 6.--7. " PR7SEC "  " "
+bitfld.long 0 8.--9. " PR9SEC "  " "
+bitfld.long 0 10.--11. " PR11SEC "  " "
+bitfld.long 0 12.--13. " PR13SEC "  " "
+bitfld.long 0 14.--15. " PR15SEC "  " "
+bitfld.long 0 16.--17. " PR17SEC "  " "
+bitfld.long 0 18.--19. " PR19SEC "  " "
+bitfld.long 0 20.--21. " PR21SEC "  " "
+bitfld.long 0 22.--23. " PR23SEC "  " "
+bitfld.long 0 24.--25. " PR25SEC "  " "
+bitfld.long 0 26.--27. " PR27SEC "  " "
+bitfld.long 0 28.--29. " PR29SEC "  " "
+bitfld.long 0 30.--31. " PR31SEC "  " "
+tree.end
+
+base sd:0xFD824010
+tree "PRMSE"
+group 0--3
+line.long 0 "PRMSE"
+bitfld.long 0 0.--1. " PR0MOD "  " "
+bitfld.long 0 2.--3. " PR2MOD "  " "
+bitfld.long 0 4.--5. " PR4MOD "  " "
+bitfld.long 0 6.--7. " PR6MOD "  " "
+bitfld.long 0 8.--9. " PR8MOD "  " "
+bitfld.long 0 10.--11. " PR10MOD "  " "
+bitfld.long 0 12.--13. " PR12MOD "  " "
+bitfld.long 0 14.--15. " PR14MOD "  " "
+bitfld.long 0 16.--17. " PR16MOD "  " "
+bitfld.long 0 18.--19. " PR18MOD "  " "
+bitfld.long 0 20.--21. " PR20MOD "  " "
+bitfld.long 0 22.--23. " PR22MOD "  " "
+bitfld.long 0 24.--25. " PR24MOD "  " "
+bitfld.long 0 26.--27. " PR26MOD "  " "
+bitfld.long 0 28.--29. " PR28MOD "  " "
+bitfld.long 0 30.--31. " PR30MOD "  " "
+tree.end
+
+base sd:0xFD824014
+tree "PRMSO"
+group 0--3
+line.long 0 "PRMSO"
+bitfld.long 0 0.--1. " PR1MOD "  " "
+bitfld.long 0 2.--3. " PR3MOD "  " "
+bitfld.long 0 4.--5. " PR5MOD "  " "
+bitfld.long 0 6.--7. " PR7MOD "  " "
+bitfld.long 0 8.--9. " PR9MOD "  " "
+bitfld.long 0 10.--11. " PR11MOD "  " "
+bitfld.long 0 12.--13. " PR13MOD "  " "
+bitfld.long 0 14.--15. " PR15MOD "  " "
+bitfld.long 0 16.--17. " PR17MOD "  " "
+bitfld.long 0 18.--19. " PR19MOD "  " "
+bitfld.long 0 20.--21. " PR21MOD "  " "
+bitfld.long 0 22.--23. " PR23MOD "  " "
+bitfld.long 0 24.--25. " PR25MOD "  " "
+bitfld.long 0 26.--27. " PR27MOD "  " "
+bitfld.long 0 28.--29. " PR29MOD "  " "
+bitfld.long 0 30.--31. " PR31MOD "  " "
+tree.end
+
+base sd:0xFD824018
+tree "PRMOE"
+group 0--3
+line.long 0 "PRMOE"
+bitfld.long 0 0.--1. " PR0OPT "  " "
+bitfld.long 0 2.--3. " PR2OPT "  " "
+bitfld.long 0 4.--5. " PR4OPT "  " "
+bitfld.long 0 6.--7. " PR6OPT "  " "
+bitfld.long 0 8.--9. " PR8OPT "  " "
+bitfld.long 0 10.--11. " PR10OPT "  " "
+bitfld.long 0 12.--13. " PR12OPT "  " "
+bitfld.long 0 14.--15. " PR14OPT "  " "
+bitfld.long 0 16.--17. " PR16OPT "  " "
+bitfld.long 0 18.--19. " PR18OPT "  " "
+bitfld.long 0 20.--21. " PR20OPT "  " "
+bitfld.long 0 22.--23. " PR22OPT "  " "
+bitfld.long 0 24.--25. " PR24OPT "  " "
+bitfld.long 0 26.--27. " PR26OPT "  " "
+bitfld.long 0 28.--29. " PR28OPT "  " "
+bitfld.long 0 30.--31. " PR30OPT "  " "
+tree.end
+
+base sd:0xFD82401c
+tree "PRMOO"
+group 0--3
+line.long 0 "PRMOO"
+bitfld.long 0 0.--1. " PR1OPT "  " "
+bitfld.long 0 2.--3. " PR3OPT "  " "
+bitfld.long 0 4.--5. " PR5OPT "  " "
+bitfld.long 0 6.--7. " PR7OPT "  " "
+bitfld.long 0 8.--9. " PR9OPT "  " "
+bitfld.long 0 10.--11. " PR11OPT "  " "
+bitfld.long 0 12.--13. " PR13OPT "  " "
+bitfld.long 0 14.--15. " PR15OPT "  " "
+bitfld.long 0 16.--17. " PR17OPT "  " "
+bitfld.long 0 18.--19. " PR19OPT "  " "
+bitfld.long 0 20.--21. " PR21OPT "  " "
+bitfld.long 0 22.--23. " PR23OPT "  " "
+bitfld.long 0 24.--25. " PR25OPT "  " "
+bitfld.long 0 26.--27. " PR27OPT "  " "
+bitfld.long 0 28.--29. " PR29OPT "  " "
+bitfld.long 0 30.--31. " PR31OPT "  " "
+tree.end
+
+base sd:0xFD824020
+tree "LCPA"
+group 0--3
+line.long 0 "LCPA"
+bitfld.long 0 11.--31. " LCPA "  " "
+tree.end
+
+base sd:0xFD824024
+tree "LCLA"
+group 0--3
+line.long 0 "LCLA"
+bitfld.long 0 18.--31. " LCLA "  " "
+tree.end
+
+base sd:0xFD824028
+tree "SLCPA"
+group 0--3
+line.long 0 "SLCPA"
+bitfld.long 0 11.--31. " SLCPA "  " "
+tree.end
+
+base sd:0xFD82402c
+tree "SLCLA"
+group 0--3
+line.long 0 "SLCLA"
+bitfld.long 0 18.--31. " SLCLA "  " "
+tree.end
+
+base sd:0xFD824030
+tree "SSEG1"
+group 0--3
+line.long 0 "SSEG1"
+bitfld.long 0 0.--15. " SSSEL "  " "
+bitfld.long 0 16.--31. " SSDEL "  " "
+tree.end
+
+base sd:0xFD824034
+tree "SSEG2"
+group 0--3
+line.long 0 "SSEG2"
+bitfld.long 0 0.--15. " SSSEL "  " "
+bitfld.long 0 16.--31. " SSDEL "  " "
+tree.end
+
+base sd:0xFD824038
+tree "SSEG3"
+group 0--3
+line.long 0 "SSEG3"
+bitfld.long 0 0.--15. " SSSEL "  " "
+bitfld.long 0 16.--31. " SSDEL "  " "
+tree.end
+
+base sd:0xFD82403c
+tree "SSEG4"
+group 0--3
+line.long 0 "SSEG4"
+bitfld.long 0 0.--15. " SSSEL "  " "
+bitfld.long 0 16.--31. " SSDEL "  " "
+tree.end
+
+base sd:0xFD824040
+tree "SCEG1"
+group 0--3
+line.long 0 "SCEG1"
+bitfld.long 0 0.--15. " SCSEL "  " "
+bitfld.long 0 16.--31. " SCDEL "  " "
+tree.end
+
+base sd:0xFD824044
+tree "SCEG2"
+group 0--3
+line.long 0 "SCEG2"
+bitfld.long 0 0.--15. " SCSEL "  " "
+bitfld.long 0 16.--31. " SCDEL "  " "
+tree.end
+
+base sd:0xFD824048
+tree "SCEG3"
+group 0--3
+line.long 0 "SCEG3"
+bitfld.long 0 0.--15. " SCSEL "  " "
+bitfld.long 0 16.--31. " SCDEL "  " "
+tree.end
+
+base sd:0xFD82404c
+tree "SCEG4"
+group 0--3
+line.long 0 "SCEG4"
+bitfld.long 0 0.--15. " SCSEL "  " "
+bitfld.long 0 16.--31. " SCDEL "  " "
+tree.end
+
+base sd:0xFD824050
+tree "ACTIVE"
+group 0--3
+line.long 0 "ACTIVE"
+bitfld.long 0 0.--1. " PR0AS "  " "
+bitfld.long 0 2.--3. " PR2AS "  " "
+bitfld.long 0 4.--5. " PR4AS "  " "
+bitfld.long 0 6.--7. " PR6AS "  " "
+bitfld.long 0 8.--9. " PR8AS "  " "
+bitfld.long 0 10.--11. " PR10AS "  " "
+bitfld.long 0 12.--13. " PR12AS "  " "
+bitfld.long 0 14.--15. " PR14AS "  " "
+bitfld.long 0 16.--17. " PR16AS "  " "
+bitfld.long 0 18.--19. " PR18AS "  " "
+bitfld.long 0 20.--21. " PR20AS "  " "
+bitfld.long 0 22.--23. " PR22AS "  " "
+bitfld.long 0 24.--25. " PR24AS "  " "
+bitfld.long 0 26.--27. " PR26AS "  " "
+bitfld.long 0 28.--29. " PR28AS "  " "
+bitfld.long 0 30.--31. " PR30AS "  " "
+tree.end
+
+base sd:0xFD824054
+tree "ACTIVO"
+group 0--3
+line.long 0 "ACTIVO"
+bitfld.long 0 0.--1. " PR1AS "  " "
+bitfld.long 0 2.--3. " PR3AS "  " "
+bitfld.long 0 4.--5. " PR5AS "  " "
+bitfld.long 0 6.--7. " PR7AS "  " "
+bitfld.long 0 8.--9. " PR9AS "  " "
+bitfld.long 0 10.--11. " PR11AS "  " "
+bitfld.long 0 12.--13. " PR13AS "  " "
+bitfld.long 0 14.--15. " PR15AS "  " "
+bitfld.long 0 16.--17. " PR17AS "  " "
+bitfld.long 0 18.--19. " PR19AS "  " "
+bitfld.long 0 20.--21. " PR21AS "  " "
+bitfld.long 0 22.--23. " PR23AS "  " "
+bitfld.long 0 24.--25. " PR25AS "  " "
+bitfld.long 0 26.--27. " PR27AS "  " "
+bitfld.long 0 28.--29. " PR29AS "  " "
+bitfld.long 0 30.--31. " PR31AS "  " "
+tree.end
+
+base sd:0xFD824060
+tree "PCMIS"
+group 0--3
+line.long 0 "PCMIS"
+bitfld.long 0 0.--31. " PCMIS "  " "
+tree.end
+
+base sd:0xFD824064
+tree "PCICR"
+wgroup 0--3
+line.long 0 "PCICR"
+bitfld.long 0 0.--31. " PCICR "  " "
+tree.end
+
+base sd:0xFD824068
+tree "PCTIS"
+group 0--3
+line.long 0 "PCTIS"
+bitfld.long 0 0.--31. " PCTIS "  " "
+tree.end
+
+base sd:0xFD82406c
+tree "PCEIS"
+group 0--3
+line.long 0 "PCEIS"
+bitfld.long 0 0.--31. " PCEIS "  " "
+tree.end
+
+base sd:0xFD824070
+tree "SPCMIS"
+group 0--3
+line.long 0 "SPCMIS"
+bitfld.long 0 0.--31. " SPCMIS "  " "
+tree.end
+
+base sd:0xFD824074
+tree "SPCICR"
+wgroup 0--3
+line.long 0 "SPCICR"
+bitfld.long 0 0.--31. " PCICR "  " "
+tree.end
+
+base sd:0xFD824078
+tree "SPCTIS"
+group 0--3
+line.long 0 "SPCTIS"
+bitfld.long 0 0.--31. " SPCTIS "  " "
+tree.end
+
+base sd:0xFD82407c
+tree "SPCEIS"
+group 0--3
+line.long 0 "SPCEIS"
+bitfld.long 0 0.--31. " SPCEIS "  " "
+tree.end
+
+base sd:0xFD824080
+tree "LCMIS1"
+group 0--3
+line.long 0 "LCMIS1"
+bitfld.long 0 0.--31. " LCMIS "  " "
+tree.end
+
+base sd:0xFD824084
+tree "LCMIS2"
+group 0--3
+line.long 0 "LCMIS2"
+bitfld.long 0 0.--31. " LCMIS "  " "
+tree.end
+
+base sd:0xFD824088
+tree "LCMIS3"
+group 0--3
+line.long 0 "LCMIS3"
+bitfld.long 0 0.--31. " LCMIS "  " "
+tree.end
+
+base sd:0xFD82408c
+tree "LCMIS4"
+group 0--3
+line.long 0 "LCMIS4"
+bitfld.long 0 0.--31. " LCMIS "  " "
+tree.end
+
+base sd:0xFD824090
+tree "LCICR1"
+wgroup 0--3
+line.long 0 "LCICR1"
+bitfld.long 0 0.--31. " LCICR "  " "
+tree.end
+
+base sd:0xFD824094
+tree "LCICR2"
+wgroup 0--3
+line.long 0 "LCICR2"
+bitfld.long 0 0.--31. " LCICR "  " "
+tree.end
+
+base sd:0xFD824098
+tree "LCICR3"
+wgroup 0--3
+line.long 0 "LCICR3"
+bitfld.long 0 0.--31. " LCICR "  " "
+tree.end
+
+base sd:0xFD82409c
+tree "LCICR4"
+wgroup 0--3
+line.long 0 "LCICR4"
+bitfld.long 0 0.--31. " LCICR "  " "
+tree.end
+
+base sd:0xFD8240a0
+tree "LCTIS1"
+group 0--3
+line.long 0 "LCTIS1"
+bitfld.long 0 0.--31. " LCTIS "  " "
+tree.end
+
+base sd:0xFD8240a4
+tree "LCTIS2"
+group 0--3
+line.long 0 "LCTIS2"
+bitfld.long 0 0.--31. " LCTIS "  " "
+tree.end
+
+base sd:0xFD8240a8
+tree "LCTIS3"
+group 0--3
+line.long 0 "LCTIS3"
+bitfld.long 0 0.--31. " LCTIS "  " "
+tree.end
+
+base sd:0xFD8240ac
+tree "LCTIS4"
+group 0--3
+line.long 0 "LCTIS4"
+bitfld.long 0 0.--31. " LCTIS "  " "
+tree.end
+
+base sd:0xFD8240b0
+tree "LCEIS1"
+group 0--3
+line.long 0 "LCEIS1"
+bitfld.long 0 0.--31. " LCEIS "  " "
+tree.end
+
+base sd:0xFD8240b4
+tree "LCEIS2"
+group 0--3
+line.long 0 "LCEIS2"
+bitfld.long 0 0.--31. " LCEIS "  " "
+tree.end
+
+base sd:0xFD8240b8
+tree "LCEIS3"
+group 0--3
+line.long 0 "LCEIS3"
+bitfld.long 0 0.--31. " LCEIS "  " "
+tree.end
+
+base sd:0xFD8240bc
+tree "LCEIS4"
+group 0--3
+line.long 0 "LCEIS4"
+bitfld.long 0 0.--31. " LCEIS "  " "
+tree.end
+
+base sd:0xFD8240c0
+tree "SLCMIS1"
+group 0--3
+line.long 0 "SLCMIS1"
+bitfld.long 0 0.--31. " SLCMIS "  " "
+tree.end
+
+base sd:0xFD8240c4
+tree "SLCMIS2"
+group 0--3
+line.long 0 "SLCMIS2"
+bitfld.long 0 0.--31. " SLCMIS "  " "
+tree.end
+
+base sd:0xFD8240c8
+tree "SLCMIS3"
+group 0--3
+line.long 0 "SLCMIS3"
+bitfld.long 0 0.--31. " SLCMIS "  " "
+tree.end
+
+base sd:0xFD8240cc
+tree "SLCMIS4"
+group 0--3
+line.long 0 "SLCMIS4"
+bitfld.long 0 0.--31. " SLCMIS "  " "
+tree.end
+
+base sd:0xFD8240d0
+tree "SLCICR1"
+wgroup 0--3
+line.long 0 "SLCICR1"
+bitfld.long 0 0.--31. " SLCICR "  " "
+tree.end
+
+base sd:0xFD8240d4
+tree "SLCICR2"
+wgroup 0--3
+line.long 0 "SLCICR2"
+bitfld.long 0 0.--31. " SLCICR "  " "
+tree.end
+
+base sd:0xFD8240d8
+tree "SLCICR3"
+wgroup 0--3
+line.long 0 "SLCICR3"
+bitfld.long 0 0.--31. " SLCICR "  " "
+tree.end
+
+base sd:0xFD8240dc
+tree "SLCICR4"
+wgroup 0--3
+line.long 0 "SLCICR4"
+bitfld.long 0 0.--31. " SLCICR "  " "
+tree.end
+
+base sd:0xFD8240e0
+tree "SLCTIS1"
+group 0--3
+line.long 0 "SLCTIS1"
+bitfld.long 0 0.--31. " SLCTIS "  " "
+tree.end
+
+base sd:0xFD8240e4
+tree "SLCTIS2"
+group 0--3
+line.long 0 "SLCTIS2"
+bitfld.long 0 0.--31. " SLCTIS "  " "
+tree.end
+
+base sd:0xFD8240e8
+tree "SLCTIS3"
+group 0--3
+line.long 0 "SLCTIS3"
+bitfld.long 0 0.--31. " SLCTIS "  " "
+tree.end
+
+base sd:0xFD8240ec
+tree "SLCTIS4"
+group 0--3
+line.long 0 "SLCTIS4"
+bitfld.long 0 0.--31. " SLCTIS "  " "
+tree.end
+
+base sd:0xFD8240f0
+tree "SLCEIS1"
+group 0--3
+line.long 0 "SLCEIS1"
+bitfld.long 0 0.--31. " SLCEIS "  " "
+tree.end
+
+base sd:0xFD8240f4
+tree "SLCEIS2"
+group 0--3
+line.long 0 "SLCEIS2"
+bitfld.long 0 0.--31. " SLCEIS "  " "
+tree.end
+
+base sd:0xFD8240f8
+tree "SLCEIS3"
+group 0--3
+line.long 0 "SLCEIS3"
+bitfld.long 0 0.--31. " SLCEIS "  " "
+tree.end
+
+base sd:0xFD8240fc
+tree "SLCEIS4"
+group 0--3
+line.long 0 "SLCEIS4"
+bitfld.long 0 0.--31. " SLCEIS "  " "
+tree.end
+
+base sd:0xFD824100
+tree "FSESS1"
+group 0--3
+line.long 0 "FSESS1"
+bitfld.long 0 0.--31. " FSESS1 "  " "
+tree.end
+
+base sd:0xFD824104
+tree "FSESS2"
+group 0--3
+line.long 0 "FSESS2"
+bitfld.long 0 0.--31. " FSESS2 "  " "
+tree.end
+
+base sd:0xFD824108
+tree "FSEBS1"
+group 0--3
+line.long 0 "FSEBS1"
+bitfld.long 0 0.--31. " FSEBS1 "  " "
+tree.end
+
+base sd:0xFD82410c
+tree "FSEBS2"
+group 0--3
+line.long 0 "FSEBS2"
+bitfld.long 0 0.--31. " FSEBS2 "  " "
+tree.end
+
+base sd:0xFD824110
+tree "PSEG1"
+group 0--3
+line.long 0 "PSEG1"
+bitfld.long 0 0.--15. " PSSEL1 "  " "
+bitfld.long 0 16.--31. " PSDEL1 "  " "
+tree.end
+
+base sd:0xFD824114
+tree "PSEG2"
+group 0--3
+line.long 0 "PSEG2"
+bitfld.long 0 0.--15. " PSSEL2 "  " "
+bitfld.long 0 16.--31. " PSDEL2 "  " "
+tree.end
+
+base sd:0xFD824118
+tree "PSEG3"
+group 0--3
+line.long 0 "PSEG3"
+bitfld.long 0 0.--15. " PSSEL3 "  " "
+bitfld.long 0 16.--31. " PSDEL3 "  " "
+tree.end
+
+base sd:0xFD82411c
+tree "PSEG4"
+group 0--3
+line.long 0 "PSEG4"
+bitfld.long 0 0.--15. " PSSEL4 "  " "
+bitfld.long 0 16.--31. " PSDEL4 "  " "
+tree.end
+
+base sd:0xFD824120
+tree "PCEG1"
+group 0--3
+line.long 0 "PCEG1"
+bitfld.long 0 0.--15. " PCSEL1 "  " "
+bitfld.long 0 16.--31. " PCDEL1 "  " "
+tree.end
+
+base sd:0xFD824124
+tree "PCEG2"
+group 0--3
+line.long 0 "PCEG2"
+bitfld.long 0 0.--15. " PCSEL2 "  " "
+bitfld.long 0 16.--31. " PCDEL2 "  " "
+tree.end
+
+base sd:0xFD824128
+tree "PCEG3"
+group 0--3
+line.long 0 "PCEG3"
+bitfld.long 0 0.--15. " PCSEL3 "  " "
+bitfld.long 0 16.--31. " PCDEL3 "  " "
+tree.end
+
+base sd:0xFD82412c
+tree "PCEG4"
+group 0--3
+line.long 0 "PCEG4"
+bitfld.long 0 0.--15. " PCSEL4 "  " "
+bitfld.long 0 16.--31. " PCDEL4 "  " "
+tree.end
+
+base sd:0xFD824130
+tree "RSEG1"
+group 0--3
+line.long 0 "RSEG1"
+bitfld.long 0 0.--15. " RSSEL1 "  " "
+bitfld.long 0 16.--31. " RSDEL1 "  " "
+tree.end
+
+base sd:0xFD824134
+tree "RSEG2"
+group 0--3
+line.long 0 "RSEG2"
+bitfld.long 0 0.--15. " RSSEL2 "  " "
+bitfld.long 0 16.--31. " RSDEL2 "  " "
+tree.end
+
+base sd:0xFD824138
+tree "RSEG3"
+group 0--3
+line.long 0 "RSEG3"
+bitfld.long 0 0.--15. " RSSEL3 "  " "
+bitfld.long 0 16.--31. " RSDEL3 "  " "
+tree.end
+
+base sd:0xFD82413c
+tree "RSEG4"
+group 0--3
+line.long 0 "RSEG4"
+bitfld.long 0 0.--15. " RSSEL4 "  " "
+bitfld.long 0 16.--31. " RSDEL4 "  " "
+tree.end
+
+base sd:0xFD824140
+tree "RCEG1"
+group 0--3
+line.long 0 "RCEG1"
+bitfld.long 0 0.--15. " RCSEL1 "  " "
+bitfld.long 0 16.--31. " RCDEL1 "  " "
+tree.end
+
+base sd:0xFD824144
+tree "RCEG2"
+group 0--3
+line.long 0 "RCEG2"
+bitfld.long 0 0.--15. " RCSEL2 "  " "
+bitfld.long 0 16.--31. " RCDEL2 "  " "
+tree.end
+
+base sd:0xFD824148
+tree "RCEG3"
+group 0--3
+line.long 0 "RCEG3"
+bitfld.long 0 0.--15. " RCSEL3 "  " "
+bitfld.long 0 16.--31. " RCDEL3 "  " "
+tree.end
+
+base sd:0xFD82414c
+tree "RCEG4"
+group 0--3
+line.long 0 "RCEG4"
+bitfld.long 0 0.--15. " RCSEL4 "  " "
+bitfld.long 0 16.--31. " RCDEL4 "  " "
+tree.end
+
+base sd:0xFD824fc4
+tree "STTC"
+group 0--3
+line.long 0 "STTC"
+bitfld.long 0 0.--31. " STTC1 "  " "
+tree.end
+
+base sd:0xFD824fc8
+tree "STFU"
+group 0--3
+line.long 0 "STFU"
+bitfld.long 0 0.--15. " RESULT "  " "
+bitfld.long 0 16.--19. " LCELNB "  " "
+bitfld.long 0 20. " SD "  "0 ,1 "
+bitfld.long 0 21.--25. " PRSEL "  " "
+bitfld.long 0 26.--27. " MSTSEL "  " "
+bitfld.long 0 28.--30. " MODE "  " "
+bitfld.long 0 31. " ENA "  "0 ,1 "
+tree.end
+
+base sd:0xFD824fcc
+tree "ICFG"
+rgroup 0--3
+line.long 0 "ICFG"
+bitfld.long 0 0.--2. " SCHNB "  " "
+bitfld.long 0 3.--4. " MNB "  " "
+bitfld.long 0 5.--6. " DBUFSZ "  " "
+bitfld.long 0 7. " CPSZ "  "0 ,1 "
+bitfld.long 0 8. " M1SZ "  "0 ,1 "
+bitfld.long 0 9. " M2SZ "  "0 ,1 "
+bitfld.long 0 10. " M3SZ "  "0 ,1 "
+bitfld.long 0 11. " M4SZ "  "0 ,1 "
+bitfld.long 0 12. " PTYP "  "0 ,1 "
+bitfld.long 0 16.--19. " MODEN "  " "
+tree.end
+
+base sd:0xFD824fd0
+tree "MPLUG0"
+rgroup 0--3
+line.long 0 "MPLUG0"
+bitfld.long 0 0.--31. " MPLUG0 "  " "
+tree.end
+
+base sd:0xFD824fd4
+tree "MPLUG1"
+rgroup 0--3
+line.long 0 "MPLUG1"
+bitfld.long 0 0.--31. " MPLUG1 "  " "
+tree.end
+
+base sd:0xFD824fd8
+tree "MPLUG2"
+rgroup 0--3
+line.long 0 "MPLUG2"
+bitfld.long 0 0.--31. " MPLUG2 "  " "
+tree.end
+
+base sd:0xFD824fdc
+tree "MPLUG3"
+rgroup 0--3
+line.long 0 "MPLUG3"
+bitfld.long 0 0.--31. " MPLUG3 "  " "
+tree.end
+
+base sd:0xFD824fe0
+tree "PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " PTNUM "  " "
+tree.end
+
+base sd:0xFD824fe4
+tree "PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " PTNUM "  " "
+bitfld.long 0 4.--7. " DES0 "  " "
+tree.end
+
+base sd:0xFD824fe8
+tree "PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " DES1 "  " "
+bitfld.long 0 4.--7. " REV "  " "
+tree.end
+
+base sd:0xFD824fec
+tree "PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " CONFIG "  " "
+tree.end
+
+base sd:0xFD824ff0
+tree "CellID0"
+rgroup 0--3
+line.long 0 "CellID0"
+bitfld.long 0 0.--7. " ID0 "  " "
+tree.end
+
+base sd:0xFD824ff4
+tree "CellID1"
+rgroup 0--3
+line.long 0 "CellID1"
+bitfld.long 0 0.--7. " ID1 "  " "
+tree.end
+
+base sd:0xFD824ff8
+tree "CellID2"
+rgroup 0--3
+line.long 0 "CellID2"
+bitfld.long 0 0.--7. " ID2 "  " "
+tree.end
+
+base sd:0xFD824ffc
+tree "CellID3"
+rgroup 0--3
+line.long 0 "CellID3"
+bitfld.long 0 0.--7. " ID3 "  " "
+tree.end
+
+base sd:0xFD824400
+tree "SSCFG0"
+group 0--3
+line.long 0 "SSCFG0"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824410
+tree "SDCFG0"
+group 0--3
+line.long 0 "SDCFG0"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824404
+tree "SSELT0"
+group 0--3
+line.long 0 "SSELT0"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824414
+tree "SDELT0"
+group 0--3
+line.long 0 "SDELT0"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824408
+tree "SSPTR0"
+group 0--3
+line.long 0 "SSPTR0"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD824418
+tree "SDPTR0"
+group 0--3
+line.long 0 "SDPTR0"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82440c
+tree "SSLNK0"
+group 0--3
+line.long 0 "SSLNK0"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD82441c
+tree "SDLNK0"
+group 0--3
+line.long 0 "SDLNK0"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD824420
+tree "SSCFG1"
+group 0--3
+line.long 0 "SSCFG1"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824430
+tree "SDCFG1"
+group 0--3
+line.long 0 "SDCFG1"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824424
+tree "SSELT1"
+group 0--3
+line.long 0 "SSELT1"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824434
+tree "SDELT1"
+group 0--3
+line.long 0 "SDELT1"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824428
+tree "SSPTR1"
+group 0--3
+line.long 0 "SSPTR1"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD824438
+tree "SDPTR1"
+group 0--3
+line.long 0 "SDPTR1"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82442c
+tree "SSLNK1"
+group 0--3
+line.long 0 "SSLNK1"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD82443c
+tree "SDLNK1"
+group 0--3
+line.long 0 "SDLNK1"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD824440
+tree "SSCFG2"
+group 0--3
+line.long 0 "SSCFG2"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824450
+tree "SDCFG2"
+group 0--3
+line.long 0 "SDCFG2"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824444
+tree "SSELT2"
+group 0--3
+line.long 0 "SSELT2"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824454
+tree "SDELT2"
+group 0--3
+line.long 0 "SDELT2"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824448
+tree "SSPTR2"
+group 0--3
+line.long 0 "SSPTR2"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD824458
+tree "SDPTR2"
+group 0--3
+line.long 0 "SDPTR2"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82444c
+tree "SSLNK2"
+group 0--3
+line.long 0 "SSLNK2"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD82445c
+tree "SDLNK2"
+group 0--3
+line.long 0 "SDLNK2"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD824460
+tree "SSCFG3"
+group 0--3
+line.long 0 "SSCFG3"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824470
+tree "SDCFG3"
+group 0--3
+line.long 0 "SDCFG3"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824464
+tree "SSELT3"
+group 0--3
+line.long 0 "SSELT3"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824474
+tree "SDELT3"
+group 0--3
+line.long 0 "SDELT3"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824468
+tree "SSPTR3"
+group 0--3
+line.long 0 "SSPTR3"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD824478
+tree "SDPTR3"
+group 0--3
+line.long 0 "SDPTR3"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82446c
+tree "SSLNK3"
+group 0--3
+line.long 0 "SSLNK3"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD82447c
+tree "SDLNK3"
+group 0--3
+line.long 0 "SDLNK3"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD824480
+tree "SSCFG4"
+group 0--3
+line.long 0 "SSCFG4"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824490
+tree "SDCFG4"
+group 0--3
+line.long 0 "SDCFG4"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824484
+tree "SSELT4"
+group 0--3
+line.long 0 "SSELT4"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824494
+tree "SDELT4"
+group 0--3
+line.long 0 "SDELT4"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824488
+tree "SSPTR4"
+group 0--3
+line.long 0 "SSPTR4"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD824498
+tree "SDPTR4"
+group 0--3
+line.long 0 "SDPTR4"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82448c
+tree "SSLNK4"
+group 0--3
+line.long 0 "SSLNK4"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD82449c
+tree "SDLNK4"
+group 0--3
+line.long 0 "SDLNK4"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD8244a0
+tree "SSCFG5"
+group 0--3
+line.long 0 "SSCFG5"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8244b0
+tree "SDCFG5"
+group 0--3
+line.long 0 "SDCFG5"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8244a4
+tree "SSELT5"
+group 0--3
+line.long 0 "SSELT5"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8244b4
+tree "SDELT5"
+group 0--3
+line.long 0 "SDELT5"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8244a8
+tree "SSPTR5"
+group 0--3
+line.long 0 "SSPTR5"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8244b8
+tree "SDPTR5"
+group 0--3
+line.long 0 "SDPTR5"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8244ac
+tree "SSLNK5"
+group 0--3
+line.long 0 "SSLNK5"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD8244bc
+tree "SDLNK5"
+group 0--3
+line.long 0 "SDLNK5"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD8244c0
+tree "SSCFG6"
+group 0--3
+line.long 0 "SSCFG6"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8244d0
+tree "SDCFG6"
+group 0--3
+line.long 0 "SDCFG6"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8244c4
+tree "SSELT6"
+group 0--3
+line.long 0 "SSELT6"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8244d4
+tree "SDELT6"
+group 0--3
+line.long 0 "SDELT6"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8244c8
+tree "SSPTR6"
+group 0--3
+line.long 0 "SSPTR6"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8244d8
+tree "SDPTR6"
+group 0--3
+line.long 0 "SDPTR6"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8244cc
+tree "SSLNK6"
+group 0--3
+line.long 0 "SSLNK6"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD8244dc
+tree "SDLNK6"
+group 0--3
+line.long 0 "SDLNK6"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD8244e0
+tree "SSCFG7"
+group 0--3
+line.long 0 "SSCFG7"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8244f0
+tree "SDCFG7"
+group 0--3
+line.long 0 "SDCFG7"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8244e4
+tree "SSELT7"
+group 0--3
+line.long 0 "SSELT7"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8244f4
+tree "SDELT7"
+group 0--3
+line.long 0 "SDELT7"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8244e8
+tree "SSPTR7"
+group 0--3
+line.long 0 "SSPTR7"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8244f8
+tree "SDPTR7"
+group 0--3
+line.long 0 "SDPTR7"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8244ec
+tree "SSLNK7"
+group 0--3
+line.long 0 "SSLNK7"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD8244fc
+tree "SDLNK7"
+group 0--3
+line.long 0 "SDLNK7"
+bitfld.long 0 0. " TCP "  "0 ,1 "
+bitfld.long 0 1. " LMP "  "0 ,1 "
+bitfld.long 0 2. " PRE "  "0 ,1 "
+bitfld.long 0 3.--31. " LNK "  " "
+tree.end
+
+base sd:0xFD824800
+tree "ESCFG0"
+group 0--3
+line.long 0 "ESCFG0"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824820
+tree "EDCFG0"
+group 0--3
+line.long 0 "EDCFG0"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824804
+tree "ESELT0"
+group 0--3
+line.long 0 "ESELT0"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824824
+tree "EDELT0"
+group 0--3
+line.long 0 "EDELT0"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824808
+tree "ESPTR0"
+group 0--3
+line.long 0 "ESPTR0"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD824828
+tree "EDPTR0"
+group 0--3
+line.long 0 "EDPTR0"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82480c
+tree "ESLNK0"
+group 0--3
+line.long 0 "ESLNK0"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD82482c
+tree "EDLNK0"
+group 0--3
+line.long 0 "EDLNK0"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD824810
+tree "ESEXC0"
+group 0--3
+line.long 0 "ESEXC0"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD824830
+tree "EDEXC0"
+group 0--3
+line.long 0 "EDEXC0"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD824814
+tree "ESFRM0"
+group 0--3
+line.long 0 "ESFRM0"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD824834
+tree "EDFRM0"
+group 0--3
+line.long 0 "EDFRM0"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD824818
+tree "ESRLD0"
+group 0--3
+line.long 0 "ESRLD0"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD824838
+tree "EDRLD0"
+group 0--3
+line.long 0 "EDRLD0"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD82481c
+tree "ESBLK0"
+group 0--3
+line.long 0 "ESBLK0"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+base sd:0xFD82483c
+tree "EDBLK0"
+group 0--3
+line.long 0 "EDBLK0"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+base sd:0xFD824840
+tree "ESCFG1"
+group 0--3
+line.long 0 "ESCFG1"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824860
+tree "EDCFG1"
+group 0--3
+line.long 0 "EDCFG1"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824844
+tree "ESELT1"
+group 0--3
+line.long 0 "ESELT1"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824864
+tree "EDELT1"
+group 0--3
+line.long 0 "EDELT1"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824848
+tree "ESPTR1"
+group 0--3
+line.long 0 "ESPTR1"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD824868
+tree "EDPTR1"
+group 0--3
+line.long 0 "EDPTR1"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82484c
+tree "ESLNK1"
+group 0--3
+line.long 0 "ESLNK1"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD82486c
+tree "EDLNK1"
+group 0--3
+line.long 0 "EDLNK1"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD824850
+tree "ESEXC1"
+group 0--3
+line.long 0 "ESEXC1"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD824870
+tree "EDEXC1"
+group 0--3
+line.long 0 "EDEXC1"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD824854
+tree "ESFRM1"
+group 0--3
+line.long 0 "ESFRM1"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD824874
+tree "EDFRM1"
+group 0--3
+line.long 0 "EDFRM1"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD824858
+tree "ESRLD1"
+group 0--3
+line.long 0 "ESRLD1"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD824878
+tree "EDRLD1"
+group 0--3
+line.long 0 "EDRLD1"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD82485c
+tree "ESBLK1"
+group 0--3
+line.long 0 "ESBLK1"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+base sd:0xFD82487c
+tree "EDBLK1"
+group 0--3
+line.long 0 "EDBLK1"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+base sd:0xFD824880
+tree "ESCFG2"
+group 0--3
+line.long 0 "ESCFG2"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8248a0
+tree "EDCFG2"
+group 0--3
+line.long 0 "EDCFG2"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD824884
+tree "ESELT2"
+group 0--3
+line.long 0 "ESELT2"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8248a4
+tree "EDELT2"
+group 0--3
+line.long 0 "EDELT2"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD824888
+tree "ESPTR2"
+group 0--3
+line.long 0 "ESPTR2"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8248a8
+tree "EDPTR2"
+group 0--3
+line.long 0 "EDPTR2"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD82488c
+tree "ESLNK2"
+group 0--3
+line.long 0 "ESLNK2"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD8248ac
+tree "EDLNK2"
+group 0--3
+line.long 0 "EDLNK2"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD824890
+tree "ESEXC2"
+group 0--3
+line.long 0 "ESEXC2"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD8248b0
+tree "EDEXC2"
+group 0--3
+line.long 0 "EDEXC2"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD824894
+tree "ESFRM2"
+group 0--3
+line.long 0 "ESFRM2"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD8248b4
+tree "EDFRM2"
+group 0--3
+line.long 0 "EDFRM2"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD824898
+tree "ESRLD2"
+group 0--3
+line.long 0 "ESRLD2"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD8248b8
+tree "EDRLD2"
+group 0--3
+line.long 0 "EDRLD2"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD82489c
+tree "ESBLK2"
+group 0--3
+line.long 0 "ESBLK2"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+base sd:0xFD8248bc
+tree "EDBLK2"
+group 0--3
+line.long 0 "EDBLK2"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+base sd:0xFD8248c0
+tree "ESCFG3"
+group 0--3
+line.long 0 "ESCFG3"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8248e0
+tree "EDCFG3"
+group 0--3
+line.long 0 "EDCFG3"
+bitfld.long 0 0.--3. " EVTL "  " "
+bitfld.long 0 4.--5. " TM "  " "
+bitfld.long 0 6. " LBE "  "0 ,1 "
+bitfld.long 0 7. " PRI "  "0 ,1 "
+bitfld.long 0 8.--9. " ESIZE "  " "
+bitfld.long 0 10.--11. " PSIZE "  " "
+bitfld.long 0 12. " PEN "  "0 ,1 "
+bitfld.long 0 13. " EIM "  "0 ,1 "
+bitfld.long 0 14. " TIM "  "0 ,1 "
+bitfld.long 0 15. " MST "  "0 ,1 "
+tree.end
+
+base sd:0xFD8248c4
+tree "ESELT3"
+group 0--3
+line.long 0 "ESELT3"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8248e4
+tree "EDELT3"
+group 0--3
+line.long 0 "EDELT3"
+bitfld.long 0 0.--15. " EIDX "  " "
+bitfld.long 0 16.--31. " ECNT "  " "
+tree.end
+
+base sd:0xFD8248c8
+tree "ESPTR3"
+group 0--3
+line.long 0 "ESPTR3"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8248e8
+tree "EDPTR3"
+group 0--3
+line.long 0 "EDPTR3"
+bitfld.long 0 0.--31. " PTR "  " "
+tree.end
+
+base sd:0xFD8248cc
+tree "ESLNK3"
+group 0--3
+line.long 0 "ESLNK3"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD8248ec
+tree "EDLNK3"
+group 0--3
+line.long 0 "EDLNK3"
+bitfld.long 0 0.--31. " EXC "  " "
+tree.end
+
+base sd:0xFD8248d0
+tree "ESEXC3"
+group 0--3
+line.long 0 "ESEXC3"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD8248f0
+tree "EDEXC3"
+group 0--3
+line.long 0 "EDEXC3"
+bitfld.long 0 0.--15. " EXC "  " "
+tree.end
+
+base sd:0xFD8248d4
+tree "ESFRM3"
+group 0--3
+line.long 0 "ESFRM3"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD8248f4
+tree "EDFRM3"
+group 0--3
+line.long 0 "EDFRM3"
+bitfld.long 0 0.--15. " FIDX "  " "
+bitfld.long 0 16.--31. " FCNT "  " "
+tree.end
+
+base sd:0xFD8248d8
+tree "ESRLD3"
+group 0--3
+line.long 0 "ESRLD3"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD8248f8
+tree "EDRLD3"
+group 0--3
+line.long 0 "EDRLD3"
+bitfld.long 0 0.--15. " FRLD "  " "
+bitfld.long 0 16.--31. " ERLD "  " "
+tree.end
+
+base sd:0xFD8248dc
+tree "ESBLK3"
+group 0--3
+line.long 0 "ESBLK3"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+base sd:0xFD8248fc
+tree "EDBLK3"
+group 0--3
+line.long 0 "EDBLK3"
+bitfld.long 0 0.--19. " BIDX "  " "
+bitfld.long 0 20.--31. " BCNT "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+tree "GPIO_0_31"
+;==============================================================
+base sd:0xf900e000
+tree "DAT"
+group 0--3
+line.long 0 "DAT"
+bitfld.long 0 0.--31. " GPDAT "  " "
+tree.end
+
+base sd:0xf900e004
+tree "DATS"
+group 0--3
+line.long 0 "DATS"
+bitfld.long 0 0.--31. " GPDATS "  " "
+tree.end
+
+base sd:0xf900e008
+tree "DATC"
+group 0--3
+line.long 0 "DATC"
+bitfld.long 0 0.--31. " GPDATC "  " "
+tree.end
+
+base sd:0xf900e00c
+tree "PDIS"
+group 0--3
+line.long 0 "PDIS"
+bitfld.long 0 0.--31. " PDIS "  " "
+tree.end
+
+base sd:0xf900e010
+tree "DIR"
+group 0--3
+line.long 0 "DIR"
+bitfld.long 0 0.--31. " GPDIR "  " "
+tree.end
+
+base sd:0xf900e014
+tree "DIRS"
+group 0--3
+line.long 0 "DIRS"
+bitfld.long 0 0.--31. " GPDIRS "  " "
+tree.end
+
+base sd:0xf900e018
+tree "DIRC"
+group 0--3
+line.long 0 "DIRC"
+bitfld.long 0 0.--31. " GPDIRC "  " "
+tree.end
+
+base sd:0xf900e01c
+tree "SLPM"
+group 0--3
+line.long 0 "SLPM"
+bitfld.long 0 0.--31. " SLPM "  " "
+tree.end
+
+base sd:0xf900e020
+tree "AFSELA"
+group 0--3
+line.long 0 "AFSELA"
+bitfld.long 0 0.--31. " GPAFSA "  " "
+tree.end
+
+base sd:0xf900e024
+tree "AFSELB"
+group 0--3
+line.long 0 "AFSELB"
+bitfld.long 0 0.--31. " GPAFSB "  " "
+tree.end
+
+base sd:0xf900e028
+tree "LOWEMI"
+group 0--3
+line.long 0 "LOWEMI"
+bitfld.long 0 0.--31. " LOWEMI "  " "
+tree.end
+
+base sd:0xf900e040
+tree "RIMSC"
+group 0--3
+line.long 0 "RIMSC"
+bitfld.long 0 0.--31. " RIMSC "  " "
+tree.end
+
+base sd:0xf900e044
+tree "FIMSC"
+group 0--3
+line.long 0 "FIMSC"
+bitfld.long 0 0.--31. " FIMSC "  " "
+tree.end
+
+base sd:0xf900e048
+tree "IS"
+rgroup 0--3
+line.long 0 "IS"
+bitfld.long 0 0.--31. " GPIS "  " "
+tree.end
+
+base sd:0xf900e04c
+tree "IC"
+group 0--3
+line.long 0 "IC"
+bitfld.long 0 0.--31. " GPIC "  " "
+tree.end
+
+base sd:0xf900e050
+tree "RWMSC"
+group 0--3
+line.long 0 "RWMSC"
+bitfld.long 0 0.--31. " RWMSC "  " "
+tree.end
+
+base sd:0xf900e054
+tree "FWMSC"
+group 0--3
+line.long 0 "FWMSC"
+bitfld.long 0 0.--31. " FWMSC "  " "
+tree.end
+
+base sd:0xf900e058
+tree "WKS"
+rgroup 0--3
+line.long 0 "WKS"
+bitfld.long 0 0.--31. " WKS "  " "
+tree.end
+
+base sd:0xf900e7e0
+tree "ITCR"
+group 0--3
+line.long 0 "ITCR"
+bitfld.long 0 0. " ITEN "  "0 ,1 "
+tree.end
+
+base sd:0xf900e7e4
+tree "ITOP"
+group 0--3
+line.long 0 "ITOP"
+bitfld.long 0 0. " GPIOINTR "  "0 ,1 "
+bitfld.long 0 1. " GPIOWKUP "  "0 ,1 "
+tree.end
+
+base sd:0xf900e7e8
+tree "CLKDIV"
+group 0--3
+line.long 0 "CLKDIV"
+bitfld.long 0 0.--1. " CLKDIV "  " "
+tree.end
+
+base sd:0xf900efe0
+tree "PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf900efe4
+tree "PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf900efe8
+tree "PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf900efec
+tree "PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf900eff0
+tree "PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " GPIOPCellID0 "  " "
+tree.end
+
+base sd:0xf900eff4
+tree "PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " GPIOPCellID1 "  " "
+tree.end
+
+base sd:0xf900eff8
+tree "PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " GPIOPCellID2 "  " "
+tree.end
+
+base sd:0xf900effc
+tree "PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " GPIOPCellID3 "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+tree "GPIO_32_63"
+;==============================================================
+base sd:0xf900e080
+tree "DAT"
+group 0--3
+line.long 0 "DAT"
+bitfld.long 0 0.--31. " GPDAT "  " "
+tree.end
+
+base sd:0xf900e084
+tree "DATS"
+group 0--3
+line.long 0 "DATS"
+bitfld.long 0 0.--31. " GPDATS "  " "
+tree.end
+
+base sd:0xf900e088
+tree "DATC"
+group 0--3
+line.long 0 "DATC"
+bitfld.long 0 0.--31. " GPDATC "  " "
+tree.end
+
+base sd:0xf900e08c
+tree "PDIS"
+group 0--3
+line.long 0 "PDIS"
+bitfld.long 0 0.--31. " PDIS "  " "
+tree.end
+
+base sd:0xf900e090
+tree "DIR"
+group 0--3
+line.long 0 "DIR"
+bitfld.long 0 0.--31. " GPDIR "  " "
+tree.end
+
+base sd:0xf900e094
+tree "DIRS"
+group 0--3
+line.long 0 "DIRS"
+bitfld.long 0 0.--31. " GPDIRS "  " "
+tree.end
+
+base sd:0xf900e098
+tree "DIRC"
+group 0--3
+line.long 0 "DIRC"
+bitfld.long 0 0.--31. " GPDIRC "  " "
+tree.end
+
+base sd:0xf900e09c
+tree "SLPM"
+group 0--3
+line.long 0 "SLPM"
+bitfld.long 0 0.--31. " SLPM "  " "
+tree.end
+
+base sd:0xf900e0a0
+tree "AFSELA"
+group 0--3
+line.long 0 "AFSELA"
+bitfld.long 0 0.--31. " GPAFSA "  " "
+tree.end
+
+base sd:0xf900e0a4
+tree "AFSELB"
+group 0--3
+line.long 0 "AFSELB"
+bitfld.long 0 0.--31. " GPAFSB "  " "
+tree.end
+
+base sd:0xf900e0a8
+tree "LOWEMI"
+group 0--3
+line.long 0 "LOWEMI"
+bitfld.long 0 0.--31. " LOWEMI "  " "
+tree.end
+
+base sd:0xf900e0c0
+tree "RIMSC"
+group 0--3
+line.long 0 "RIMSC"
+bitfld.long 0 0.--31. " RIMSC "  " "
+tree.end
+
+base sd:0xf900e0c4
+tree "FIMSC"
+group 0--3
+line.long 0 "FIMSC"
+bitfld.long 0 0.--31. " FIMSC "  " "
+tree.end
+
+base sd:0xf900e0c8
+tree "IS"
+rgroup 0--3
+line.long 0 "IS"
+bitfld.long 0 0.--31. " GPIS "  " "
+tree.end
+
+base sd:0xf900e0cc
+tree "IC"
+group 0--3
+line.long 0 "IC"
+bitfld.long 0 0.--31. " GPIC "  " "
+tree.end
+
+base sd:0xf900e0d0
+tree "RWMSC"
+group 0--3
+line.long 0 "RWMSC"
+bitfld.long 0 0.--31. " RWMSC "  " "
+tree.end
+
+base sd:0xf900e0d4
+tree "FWMSC"
+group 0--3
+line.long 0 "FWMSC"
+bitfld.long 0 0.--31. " FWMSC "  " "
+tree.end
+
+base sd:0xf900e0d8
+tree "WKS"
+rgroup 0--3
+line.long 0 "WKS"
+bitfld.long 0 0.--31. " WKS "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+tree "GPIO_96_127"
+;==============================================================
+base sd:0xf910e000
+tree "DAT"
+group 0--3
+line.long 0 "DAT"
+bitfld.long 0 0.--31. " GPDAT "  " "
+tree.end
+
+base sd:0xf910e004
+tree "DATS"
+group 0--3
+line.long 0 "DATS"
+bitfld.long 0 0.--31. " GPDATS "  " "
+tree.end
+
+base sd:0xf910e008
+tree "DATC"
+group 0--3
+line.long 0 "DATC"
+bitfld.long 0 0.--31. " GPDATC "  " "
+tree.end
+
+base sd:0xf910e00c
+tree "PDIS"
+group 0--3
+line.long 0 "PDIS"
+bitfld.long 0 0.--31. " PDIS "  " "
+tree.end
+
+base sd:0xf910e010
+tree "DIR"
+group 0--3
+line.long 0 "DIR"
+bitfld.long 0 0.--31. " GPDIR "  " "
+tree.end
+
+base sd:0xf910e014
+tree "DIRS"
+group 0--3
+line.long 0 "DIRS"
+bitfld.long 0 0.--31. " GPDIRS "  " "
+tree.end
+
+base sd:0xf910e018
+tree "DIRC"
+group 0--3
+line.long 0 "DIRC"
+bitfld.long 0 0.--31. " GPDIRC "  " "
+tree.end
+
+base sd:0xf910e01c
+tree "SLPM"
+group 0--3
+line.long 0 "SLPM"
+bitfld.long 0 0.--31. " SLPM "  " "
+tree.end
+
+base sd:0xf910e020
+tree "AFSELA"
+group 0--3
+line.long 0 "AFSELA"
+bitfld.long 0 0.--31. " GPAFSA "  " "
+tree.end
+
+base sd:0xf910e024
+tree "AFSELB"
+group 0--3
+line.long 0 "AFSELB"
+bitfld.long 0 0.--31. " GPAFSB "  " "
+tree.end
+
+base sd:0xf910e028
+tree "LOWEMI"
+group 0--3
+line.long 0 "LOWEMI"
+bitfld.long 0 0.--31. " LOWEMI "  " "
+tree.end
+
+base sd:0xf910e040
+tree "RIMSC"
+group 0--3
+line.long 0 "RIMSC"
+bitfld.long 0 0.--31. " RIMSC "  " "
+tree.end
+
+base sd:0xf910e044
+tree "FIMSC"
+group 0--3
+line.long 0 "FIMSC"
+bitfld.long 0 0.--31. " FIMSC "  " "
+tree.end
+
+base sd:0xf910e048
+tree "IS"
+rgroup 0--3
+line.long 0 "IS"
+bitfld.long 0 0.--31. " GPIS "  " "
+tree.end
+
+base sd:0xf910e04c
+tree "IC"
+group 0--3
+line.long 0 "IC"
+bitfld.long 0 0.--31. " GPIC "  " "
+tree.end
+
+base sd:0xf910e050
+tree "RWMSC"
+group 0--3
+line.long 0 "RWMSC"
+bitfld.long 0 0.--31. " RWMSC "  " "
+tree.end
+
+base sd:0xf910e054
+tree "FWMSC"
+group 0--3
+line.long 0 "FWMSC"
+bitfld.long 0 0.--31. " FWMSC "  " "
+tree.end
+
+base sd:0xf910e058
+tree "WKS"
+rgroup 0--3
+line.long 0 "WKS"
+bitfld.long 0 0.--31. " WKS "  " "
+tree.end
+
+base sd:0xf910e7e0
+tree "ITCR"
+group 0--3
+line.long 0 "ITCR"
+bitfld.long 0 0. " ITEN "  "0 ,1 "
+tree.end
+
+base sd:0xf910e7e4
+tree "ITOP"
+group 0--3
+line.long 0 "ITOP"
+bitfld.long 0 0. " GPIOINTR "  "0 ,1 "
+bitfld.long 0 1. " GPIOWKUP "  "0 ,1 "
+tree.end
+
+base sd:0xf910e7e8
+tree "CLKDIV"
+group 0--3
+line.long 0 "CLKDIV"
+bitfld.long 0 0.--1. " CLKDIV "  " "
+tree.end
+
+base sd:0xf910efe0
+tree "PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf910efe4
+tree "PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf910efe8
+tree "PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf910efec
+tree "PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf910eff0
+tree "PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " GPIOPCellID0 "  " "
+tree.end
+
+base sd:0xf910eff4
+tree "PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " GPIOPCellID1 "  " "
+tree.end
+
+base sd:0xf910eff8
+tree "PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " GPIOPCellID2 "  " "
+tree.end
+
+base sd:0xf910effc
+tree "PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " GPIOPCellID3 "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+tree "GPIO_192_223"
+;==============================================================
+base sd:0xf920e000
+tree "DAT"
+group 0--3
+line.long 0 "DAT"
+bitfld.long 0 0.--31. " GPDAT "  " "
+tree.end
+
+base sd:0xf920e004
+tree "DATS"
+group 0--3
+line.long 0 "DATS"
+bitfld.long 0 0.--31. " GPDATS "  " "
+tree.end
+
+base sd:0xf920e008
+tree "DATC"
+group 0--3
+line.long 0 "DATC"
+bitfld.long 0 0.--31. " GPDATC "  " "
+tree.end
+
+base sd:0xf920e00c
+tree "PDIS"
+group 0--3
+line.long 0 "PDIS"
+bitfld.long 0 0.--31. " PDIS "  " "
+tree.end
+
+base sd:0xf920e010
+tree "DIR"
+group 0--3
+line.long 0 "DIR"
+bitfld.long 0 0.--31. " GPDIR "  " "
+tree.end
+
+base sd:0xf920e014
+tree "DIRS"
+group 0--3
+line.long 0 "DIRS"
+bitfld.long 0 0.--31. " GPDIRS "  " "
+tree.end
+
+base sd:0xf920e018
+tree "DIRC"
+group 0--3
+line.long 0 "DIRC"
+bitfld.long 0 0.--31. " GPDIRC "  " "
+tree.end
+
+base sd:0xf920e01c
+tree "SLPM"
+group 0--3
+line.long 0 "SLPM"
+bitfld.long 0 0.--31. " SLPM "  " "
+tree.end
+
+base sd:0xf920e020
+tree "AFSELA"
+group 0--3
+line.long 0 "AFSELA"
+bitfld.long 0 0.--31. " GPAFSA "  " "
+tree.end
+
+base sd:0xf920e024
+tree "AFSELB"
+group 0--3
+line.long 0 "AFSELB"
+bitfld.long 0 0.--31. " GPAFSB "  " "
+tree.end
+
+base sd:0xf920e028
+tree "LOWEMI"
+group 0--3
+line.long 0 "LOWEMI"
+bitfld.long 0 0.--31. " LOWEMI "  " "
+tree.end
+
+base sd:0xf920e040
+tree "RIMSC"
+group 0--3
+line.long 0 "RIMSC"
+bitfld.long 0 0.--31. " RIMSC "  " "
+tree.end
+
+base sd:0xf920e044
+tree "FIMSC"
+group 0--3
+line.long 0 "FIMSC"
+bitfld.long 0 0.--31. " FIMSC "  " "
+tree.end
+
+base sd:0xf920e048
+tree "IS"
+rgroup 0--3
+line.long 0 "IS"
+bitfld.long 0 0.--31. " GPIS "  " "
+tree.end
+
+base sd:0xf920e04c
+tree "IC"
+group 0--3
+line.long 0 "IC"
+bitfld.long 0 0.--31. " GPIC "  " "
+tree.end
+
+base sd:0xf920e050
+tree "RWMSC"
+group 0--3
+line.long 0 "RWMSC"
+bitfld.long 0 0.--31. " RWMSC "  " "
+tree.end
+
+base sd:0xf920e054
+tree "FWMSC"
+group 0--3
+line.long 0 "FWMSC"
+bitfld.long 0 0.--31. " FWMSC "  " "
+tree.end
+
+base sd:0xf920e058
+tree "WKS"
+rgroup 0--3
+line.long 0 "WKS"
+bitfld.long 0 0.--31. " WKS "  " "
+tree.end
+
+base sd:0xf920e7e0
+tree "ITCR"
+group 0--3
+line.long 0 "ITCR"
+bitfld.long 0 0. " ITEN "  "0 ,1 "
+tree.end
+
+base sd:0xf920e7e4
+tree "ITOP"
+group 0--3
+line.long 0 "ITOP"
+bitfld.long 0 0. " GPIOINTR "  "0 ,1 "
+bitfld.long 0 1. " GPIOWKUP "  "0 ,1 "
+tree.end
+
+base sd:0xf920e7e8
+tree "CLKDIV"
+group 0--3
+line.long 0 "CLKDIV"
+bitfld.long 0 0.--1. " CLKDIV "  " "
+tree.end
+
+base sd:0xf920efe0
+tree "PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf920efe4
+tree "PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf920efe8
+tree "PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf920efec
+tree "PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf920eff0
+tree "PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " GPIOPCellID0 "  " "
+tree.end
+
+base sd:0xf920eff4
+tree "PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " GPIOPCellID1 "  " "
+tree.end
+
+base sd:0xf920eff8
+tree "PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " GPIOPCellID2 "  " "
+tree.end
+
+base sd:0xf920effc
+tree "PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " GPIOPCellID3 "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+tree "GPIO_224_255"
+;==============================================================
+base sd:0xf940e000
+tree "DAT"
+group 0--3
+line.long 0 "DAT"
+bitfld.long 0 0.--31. " GPDAT "  " "
+tree.end
+
+base sd:0xf940e004
+tree "DATS"
+group 0--3
+line.long 0 "DATS"
+bitfld.long 0 0.--31. " GPDATS "  " "
+tree.end
+
+base sd:0xf940e008
+tree "DATC"
+group 0--3
+line.long 0 "DATC"
+bitfld.long 0 0.--31. " GPDATC "  " "
+tree.end
+
+base sd:0xf940e00c
+tree "PDIS"
+group 0--3
+line.long 0 "PDIS"
+bitfld.long 0 0.--31. " PDIS "  " "
+tree.end
+
+base sd:0xf940e010
+tree "DIR"
+group 0--3
+line.long 0 "DIR"
+bitfld.long 0 0.--31. " GPDIR "  " "
+tree.end
+
+base sd:0xf940e014
+tree "DIRS"
+group 0--3
+line.long 0 "DIRS"
+bitfld.long 0 0.--31. " GPDIRS "  " "
+tree.end
+
+base sd:0xf940e018
+tree "DIRC"
+group 0--3
+line.long 0 "DIRC"
+bitfld.long 0 0.--31. " GPDIRC "  " "
+tree.end
+
+base sd:0xf940e01c
+tree "SLPM"
+group 0--3
+line.long 0 "SLPM"
+bitfld.long 0 0.--31. " SLPM "  " "
+tree.end
+
+base sd:0xf940e020
+tree "AFSELA"
+group 0--3
+line.long 0 "AFSELA"
+bitfld.long 0 0.--31. " GPAFSA "  " "
+tree.end
+
+base sd:0xf940e024
+tree "AFSELB"
+group 0--3
+line.long 0 "AFSELB"
+bitfld.long 0 0.--31. " GPAFSB "  " "
+tree.end
+
+base sd:0xf940e028
+tree "LOWEMI"
+group 0--3
+line.long 0 "LOWEMI"
+bitfld.long 0 0.--31. " LOWEMI "  " "
+tree.end
+
+base sd:0xf940e040
+tree "RIMSC"
+group 0--3
+line.long 0 "RIMSC"
+bitfld.long 0 0.--31. " RIMSC "  " "
+tree.end
+
+base sd:0xf940e044
+tree "FIMSC"
+group 0--3
+line.long 0 "FIMSC"
+bitfld.long 0 0.--31. " FIMSC "  " "
+tree.end
+
+base sd:0xf940e048
+tree "IS"
+rgroup 0--3
+line.long 0 "IS"
+bitfld.long 0 0.--31. " GPIS "  " "
+tree.end
+
+base sd:0xf940e04c
+tree "IC"
+group 0--3
+line.long 0 "IC"
+bitfld.long 0 0.--31. " GPIC "  " "
+tree.end
+
+base sd:0xf940e050
+tree "RWMSC"
+group 0--3
+line.long 0 "RWMSC"
+bitfld.long 0 0.--31. " RWMSC "  " "
+tree.end
+
+base sd:0xf940e054
+tree "FWMSC"
+group 0--3
+line.long 0 "FWMSC"
+bitfld.long 0 0.--31. " FWMSC "  " "
+tree.end
+
+base sd:0xf940e058
+tree "WKS"
+rgroup 0--3
+line.long 0 "WKS"
+bitfld.long 0 0.--31. " WKS "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+tree "GPIO_256_287"
+;==============================================================
+base sd:0xf930e000
+tree "DAT"
+group 0--3
+line.long 0 "DAT"
+bitfld.long 0 0.--31. " GPDAT "  " "
+tree.end
+
+base sd:0xf930e004
+tree "DATS"
+group 0--3
+line.long 0 "DATS"
+bitfld.long 0 0.--31. " GPDATS "  " "
+tree.end
+
+base sd:0xf930e008
+tree "DATC"
+group 0--3
+line.long 0 "DATC"
+bitfld.long 0 0.--31. " GPDATC "  " "
+tree.end
+
+base sd:0xf930e00c
+tree "PDIS"
+group 0--3
+line.long 0 "PDIS"
+bitfld.long 0 0.--31. " PDIS "  " "
+tree.end
+
+base sd:0xf930e010
+tree "DIR"
+group 0--3
+line.long 0 "DIR"
+bitfld.long 0 0.--31. " GPDIR "  " "
+tree.end
+
+base sd:0xf930e014
+tree "DIRS"
+group 0--3
+line.long 0 "DIRS"
+bitfld.long 0 0.--31. " GPDIRS "  " "
+tree.end
+
+base sd:0xf930e018
+tree "DIRC"
+group 0--3
+line.long 0 "DIRC"
+bitfld.long 0 0.--31. " GPDIRC "  " "
+tree.end
+
+base sd:0xf930e01c
+tree "SLPM"
+group 0--3
+line.long 0 "SLPM"
+bitfld.long 0 0.--31. " SLPM "  " "
+tree.end
+
+base sd:0xf930e020
+tree "AFSELA"
+group 0--3
+line.long 0 "AFSELA"
+bitfld.long 0 0.--31. " GPAFSA "  " "
+tree.end
+
+base sd:0xf930e024
+tree "AFSELB"
+group 0--3
+line.long 0 "AFSELB"
+bitfld.long 0 0.--31. " GPAFSB "  " "
+tree.end
+
+base sd:0xf930e028
+tree "LOWEMI"
+group 0--3
+line.long 0 "LOWEMI"
+bitfld.long 0 0.--31. " LOWEMI "  " "
+tree.end
+
+base sd:0xf930e040
+tree "RIMSC"
+group 0--3
+line.long 0 "RIMSC"
+bitfld.long 0 0.--31. " RIMSC "  " "
+tree.end
+
+base sd:0xf930e044
+tree "FIMSC"
+group 0--3
+line.long 0 "FIMSC"
+bitfld.long 0 0.--31. " FIMSC "  " "
+tree.end
+
+base sd:0xf930e048
+tree "IS"
+rgroup 0--3
+line.long 0 "IS"
+bitfld.long 0 0.--31. " GPIS "  " "
+tree.end
+
+base sd:0xf930e04c
+tree "IC"
+group 0--3
+line.long 0 "IC"
+bitfld.long 0 0.--31. " GPIC "  " "
+tree.end
+
+base sd:0xf930e050
+tree "RWMSC"
+group 0--3
+line.long 0 "RWMSC"
+bitfld.long 0 0.--31. " RWMSC "  " "
+tree.end
+
+base sd:0xf930e054
+tree "FWMSC"
+group 0--3
+line.long 0 "FWMSC"
+bitfld.long 0 0.--31. " FWMSC "  " "
+tree.end
+
+base sd:0xf930e058
+tree "WKS"
+rgroup 0--3
+line.long 0 "WKS"
+bitfld.long 0 0.--31. " WKS "  " "
+tree.end
+
+base sd:0xf930e7e0
+tree "ITCR"
+group 0--3
+line.long 0 "ITCR"
+bitfld.long 0 0. " ITEN "  "0 ,1 "
+tree.end
+
+base sd:0xf930e7e4
+tree "ITOP"
+group 0--3
+line.long 0 "ITOP"
+bitfld.long 0 0. " GPIOINTR "  "0 ,1 "
+bitfld.long 0 1. " GPIOWKUP "  "0 ,1 "
+tree.end
+
+base sd:0xf930e7e8
+tree "CLKDIV"
+group 0--3
+line.long 0 "CLKDIV"
+bitfld.long 0 0.--1. " CLKDIV "  " "
+tree.end
+
+base sd:0xf930efe0
+tree "PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf930efe4
+tree "PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf930efe8
+tree "PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf930efec
+tree "PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf930eff0
+tree "PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " GPIOPCellID0 "  " "
+tree.end
+
+base sd:0xf930eff4
+tree "PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " GPIOPCellID1 "  " "
+tree.end
+
+base sd:0xf930eff8
+tree "PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " GPIOPCellID2 "  " "
+tree.end
+
+base sd:0xf930effc
+tree "PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " GPIOPCellID3 "  " "
+tree.end
+
+tree.end
+
+;==============================================================
+;tree "MMCI (7 instances)"
+;==============================================================
+base sd:0xf9102000
+;********************************************
+tree "MMCI-0"
+;********************************************
+base sd:0xf9102000
+tree "0Power"
+group 0--3
+line.long 0 "Power"
+bitfld.long 0 0.--1. " Ctrl "  " "
+bitfld.long 0 2. " DAT2DIREN "  "0 ,1 "
+bitfld.long 0 3. " CMDDIREN "  "0 ,1 "
+bitfld.long 0 4. " DAT0DIREN "  "0 ,1 "
+bitfld.long 0 5. " DAT31DIREN "  "0 ,1 "
+bitfld.long 0 6. " OpenDrain "  "0 ,1 "
+bitfld.long 0 7. " FBCLKEn "  "0 ,1 "
+bitfld.long 0 8. " DAT74DIREN "  "0 ,1 "
+bitfld.long 0 9. " RSTNEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9102004
+tree "0Clock"
+group 0--3
+line.long 0 "Clock"
+bitfld.long 0 0.--7. " ClkDiv "  " "
+bitfld.long 0 8. " Enable "  "0 ,1 "
+bitfld.long 0 9. " PwrSave "  "0 ,1 "
+bitfld.long 0 10. " Bypass "  "0 ,1 "
+bitfld.long 0 11.--12. " Widebus "  " "
+bitfld.long 0 13. " NEGEDG "  "0 ,1 "
+bitfld.long 0 14. " FLOWCTRLEN "  "0 ,1 "
+bitfld.long 0 15. " CLKOUT_INV "  "0 ,1 "
+bitfld.long 0 16. " CLKGATE_EN "  "0 ,1 "
+tree.end
+
+base sd:0xf9102008
+tree "0Argument"
+group 0--3
+line.long 0 "Argument"
+bitfld.long 0 0.--31. " CmdArg "  " "
+tree.end
+
+base sd:0xf910200c
+tree "0Command"
+group 0--3
+line.long 0 "Command"
+bitfld.long 0 0.--5. " CmdIndex "  " "
+bitfld.long 0 6. " Response "  "0 ,1 "
+bitfld.long 0 7. " LongRsp "  "0 ,1 "
+bitfld.long 0 8. " Interrupt "  "0 ,1 "
+bitfld.long 0 9. " Pending "  "0 ,1 "
+bitfld.long 0 10. " Enable "  "0 ,1 "
+bitfld.long 0 11. " SDIOSuspend "  "0 ,1 "
+bitfld.long 0 12. " ENCMDcompl "  "0 ,1 "
+bitfld.long 0 13. " nIEN "  "0 ,1 "
+bitfld.long 0 14. " CEATACMD "  "0 ,1 "
+bitfld.long 0 15. " CBOOTMODEEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9102010
+tree "0RespCmd"
+rgroup 0--3
+line.long 0 "RespCmd"
+bitfld.long 0 0.--5. " RspCmd "  " "
+tree.end
+
+base sd:0xf9102014
+tree "0Rsp0"
+rgroup 0--3
+line.long 0 "Rsp0"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9102018
+tree "0Rsp1"
+rgroup 0--3
+line.long 0 "Rsp1"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf910201c
+tree "0Rsp2"
+rgroup 0--3
+line.long 0 "Rsp2"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9102020
+tree "0Rsp3"
+rgroup 0--3
+line.long 0 "Rsp3"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9102024
+tree "0Datatimer"
+group 0--3
+line.long 0 "Datatimer"
+bitfld.long 0 0.--31. " DataTime "  " "
+tree.end
+
+base sd:0xf9102028
+tree "0DataLength"
+group 0--3
+line.long 0 "DataLength"
+bitfld.long 0 0.--24. " DataLength "  " "
+tree.end
+
+base sd:0xf910202c
+tree "0DataCtrl"
+group 0--3
+line.long 0 "DataCtrl"
+bitfld.long 0 0. " Enable "  "0 ,1 "
+bitfld.long 0 1. " Direction "  "0 ,1 "
+bitfld.long 0 2. " Mode "  "0 ,1 "
+bitfld.long 0 3. " DMAEnable "  "0 ,1 "
+bitfld.long 0 8. " RWStart "  "0 ,1 "
+bitfld.long 0 9. " RWStop "  "0 ,1 "
+bitfld.long 0 10. " RWMode "  "0 ,1 "
+bitfld.long 0 11. " SDIOEn "  "0 ,1 "
+bitfld.long 0 12. " DMAReqCtl "  "0 ,1 "
+bitfld.long 0 13. " DBOOTMODEEN "  "0 ,1 "
+bitfld.long 0 14. " BUSYMODE "  "0 ,1 "
+bitfld.long 0 15. " DDR_mode "  "0 ,1 "
+bitfld.long 0 16.--30. " BlockSize "  " "
+tree.end
+
+base sd:0xf9102030
+tree "0DataCnt"
+group 0--3
+line.long 0 "DataCnt"
+bitfld.long 0 0.--24. " dataCount "  " "
+tree.end
+
+base sd:0xf9102034
+tree "0Status"
+rgroup 0--3
+line.long 0 "Status"
+bitfld.long 0 0. " CmdCrcFail "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFail "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOut "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOut "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrun "  "0 ,1 "
+bitfld.long 0 5. " RxOverrun "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEnd "  "0 ,1 "
+bitfld.long 0 7. " CmdSent "  "0 ,1 "
+bitfld.long 0 8. " DataEnd "  "0 ,1 "
+bitfld.long 0 9. " StBitE "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEnd "  "0 ,1 "
+bitfld.long 0 11. " CmdActive "  "0 ,1 "
+bitfld.long 0 12. " TxActive "  "0 ,1 "
+bitfld.long 0 13. " RxActive "  "0 ,1 "
+bitfld.long 0 14. " TxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 15. " RxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 16. " TxFifoFull "  "0 ,1 "
+bitfld.long 0 17. " RxFifoFull "  "0 ,1 "
+bitfld.long 0 18. " TxFifoEmpty "  "0 ,1 "
+bitfld.long 0 19. " RxFifoEmpty "  "0 ,1 "
+bitfld.long 0 20. " TxDataAvlbl "  "0 ,1 "
+bitfld.long 0 21. " RxDataAvlbl "  "0 ,1 "
+bitfld.long 0 22. " Sdioit "  "0 ,1 "
+bitfld.long 0 23. " CEATAEND "  "0 ,1 "
+bitfld.long 0 24. " CARDBUSY "  "0 ,1 "
+bitfld.long 0 25. " BOOTMODE "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERR "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUT "  "0 ,1 "
+bitfld.long 0 28. " RSTNEND "  "0 ,1 "
+tree.end
+
+base sd:0xf9102038
+tree "0Clear"
+group 0--3
+line.long 0 "Clear"
+bitfld.long 0 0. " CmdCrcFailClr "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFailClr "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOutClr "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOutClr "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrunClr "  "0 ,1 "
+bitfld.long 0 5. " RxOverrunClr "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEndClr "  "0 ,1 "
+bitfld.long 0 7. " CmdSentClr "  "0 ,1 "
+bitfld.long 0 8. " DataEndClr "  "0 ,1 "
+bitfld.long 0 9. " StBitEClr "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEndClr "  "0 ,1 "
+bitfld.long 0 22. " SDioitClr "  "0 ,1 "
+bitfld.long 0 23. " CEATAENDC "  "0 ,1 "
+bitfld.long 0 24. " BUSYENDC "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERRC "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUTC "  "0 ,1 "
+bitfld.long 0 28. " RSTNENC "  "0 ,1 "
+tree.end
+
+base sd:0xf910203c
+tree "0Mask0"
+group 0--3
+line.long 0 "Mask0"
+tree.end
+
+base sd:0xf9102040
+tree "0Mask1"
+group 0--3
+line.long 0 "Mask1"
+tree.end
+
+base sd:0xf9102044
+tree "0CardSel"
+group 0--3
+line.long 0 "CardSel"
+bitfld.long 0 0.--3. " CardSel "  " "
+tree.end
+
+base sd:0xf9102048
+tree "0FifoCnt"
+group 0--3
+line.long 0 "FifoCnt"
+bitfld.long 0 0.--23. " DataCount "  " "
+tree.end
+
+base sd:0xf9102080
+tree "0Fifo"
+group 0--3
+line.long 0 "Fifo"
+bitfld.long 0 0.--31. " FIFOData "  " "
+tree.end
+
+base sd:0xf91020c0
+tree "0DBtimer"
+group 0--3
+line.long 0 "DBtimer"
+bitfld.long 0 0.--31. " DBTIME "  " "
+tree.end
+
+base sd:0xf91020c4
+tree "0TRSCA"
+group 0--3
+line.long 0 "TRSCA"
+bitfld.long 0 0.--31. " TRSCA "  " "
+tree.end
+
+base sd:0xf9102fe0
+tree "0PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf9102fe4
+tree "0PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf9102fe8
+tree "0PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf9102fec
+tree "0PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf9102ff0
+tree "0PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " SDIPCellID0 "  " "
+tree.end
+
+base sd:0xf9102ff4
+tree "0PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " SDIPCellID1 "  " "
+tree.end
+
+base sd:0xf9102ff8
+tree "0PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " SDIPCellID2 "  " "
+tree.end
+
+base sd:0xf9102ffc
+tree "0PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " SDIPCellID3 "  " "
+tree.end
+
+tree.end
+
+base sd:0xf9101000
+;********************************************
+tree "MMCI-1"
+;********************************************
+base sd:0xf9101000
+tree "1Power"
+group 0--3
+line.long 0 "Power"
+bitfld.long 0 0.--1. " Ctrl "  " "
+bitfld.long 0 2. " DAT2DIREN "  "0 ,1 "
+bitfld.long 0 3. " CMDDIREN "  "0 ,1 "
+bitfld.long 0 4. " DAT0DIREN "  "0 ,1 "
+bitfld.long 0 5. " DAT31DIREN "  "0 ,1 "
+bitfld.long 0 6. " OpenDrain "  "0 ,1 "
+bitfld.long 0 7. " FBCLKEn "  "0 ,1 "
+bitfld.long 0 8. " DAT74DIREN "  "0 ,1 "
+bitfld.long 0 9. " RSTNEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9101004
+tree "1Clock"
+group 0--3
+line.long 0 "Clock"
+bitfld.long 0 0.--7. " ClkDiv "  " "
+bitfld.long 0 8. " Enable "  "0 ,1 "
+bitfld.long 0 9. " PwrSave "  "0 ,1 "
+bitfld.long 0 10. " Bypass "  "0 ,1 "
+bitfld.long 0 11.--12. " Widebus "  " "
+bitfld.long 0 13. " NEGEDG "  "0 ,1 "
+bitfld.long 0 14. " FLOWCTRLEN "  "0 ,1 "
+bitfld.long 0 15. " CLKOUT_INV "  "0 ,1 "
+bitfld.long 0 16. " CLKGATE_EN "  "0 ,1 "
+tree.end
+
+base sd:0xf9101008
+tree "1Argument"
+group 0--3
+line.long 0 "Argument"
+bitfld.long 0 0.--31. " CmdArg "  " "
+tree.end
+
+base sd:0xf910100c
+tree "1Command"
+group 0--3
+line.long 0 "Command"
+bitfld.long 0 0.--5. " CmdIndex "  " "
+bitfld.long 0 6. " Response "  "0 ,1 "
+bitfld.long 0 7. " LongRsp "  "0 ,1 "
+bitfld.long 0 8. " Interrupt "  "0 ,1 "
+bitfld.long 0 9. " Pending "  "0 ,1 "
+bitfld.long 0 10. " Enable "  "0 ,1 "
+bitfld.long 0 11. " SDIOSuspend "  "0 ,1 "
+bitfld.long 0 12. " ENCMDcompl "  "0 ,1 "
+bitfld.long 0 13. " nIEN "  "0 ,1 "
+bitfld.long 0 14. " CEATACMD "  "0 ,1 "
+bitfld.long 0 15. " CBOOTMODEEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9101010
+tree "1RespCmd"
+rgroup 0--3
+line.long 0 "RespCmd"
+bitfld.long 0 0.--5. " RspCmd "  " "
+tree.end
+
+base sd:0xf9101014
+tree "1Rsp0"
+rgroup 0--3
+line.long 0 "Rsp0"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9101018
+tree "1Rsp1"
+rgroup 0--3
+line.long 0 "Rsp1"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf910101c
+tree "1Rsp2"
+rgroup 0--3
+line.long 0 "Rsp2"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9101020
+tree "1Rsp3"
+rgroup 0--3
+line.long 0 "Rsp3"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9101024
+tree "1Datatimer"
+group 0--3
+line.long 0 "Datatimer"
+bitfld.long 0 0.--31. " DataTime "  " "
+tree.end
+
+base sd:0xf9101028
+tree "1DataLength"
+group 0--3
+line.long 0 "DataLength"
+bitfld.long 0 0.--24. " DataLength "  " "
+tree.end
+
+base sd:0xf910102c
+tree "1DataCtrl"
+group 0--3
+line.long 0 "DataCtrl"
+bitfld.long 0 0. " Enable "  "0 ,1 "
+bitfld.long 0 1. " Direction "  "0 ,1 "
+bitfld.long 0 2. " Mode "  "0 ,1 "
+bitfld.long 0 3. " DMAEnable "  "0 ,1 "
+bitfld.long 0 8. " RWStart "  "0 ,1 "
+bitfld.long 0 9. " RWStop "  "0 ,1 "
+bitfld.long 0 10. " RWMode "  "0 ,1 "
+bitfld.long 0 11. " SDIOEn "  "0 ,1 "
+bitfld.long 0 12. " DMAReqCtl "  "0 ,1 "
+bitfld.long 0 13. " DBOOTMODEEN "  "0 ,1 "
+bitfld.long 0 14. " BUSYMODE "  "0 ,1 "
+bitfld.long 0 15. " DDR_mode "  "0 ,1 "
+bitfld.long 0 16.--30. " BlockSize "  " "
+tree.end
+
+base sd:0xf9101030
+tree "1DataCnt"
+group 0--3
+line.long 0 "DataCnt"
+bitfld.long 0 0.--24. " dataCount "  " "
+tree.end
+
+base sd:0xf9101034
+tree "1Status"
+rgroup 0--3
+line.long 0 "Status"
+bitfld.long 0 0. " CmdCrcFail "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFail "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOut "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOut "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrun "  "0 ,1 "
+bitfld.long 0 5. " RxOverrun "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEnd "  "0 ,1 "
+bitfld.long 0 7. " CmdSent "  "0 ,1 "
+bitfld.long 0 8. " DataEnd "  "0 ,1 "
+bitfld.long 0 9. " StBitE "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEnd "  "0 ,1 "
+bitfld.long 0 11. " CmdActive "  "0 ,1 "
+bitfld.long 0 12. " TxActive "  "0 ,1 "
+bitfld.long 0 13. " RxActive "  "0 ,1 "
+bitfld.long 0 14. " TxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 15. " RxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 16. " TxFifoFull "  "0 ,1 "
+bitfld.long 0 17. " RxFifoFull "  "0 ,1 "
+bitfld.long 0 18. " TxFifoEmpty "  "0 ,1 "
+bitfld.long 0 19. " RxFifoEmpty "  "0 ,1 "
+bitfld.long 0 20. " TxDataAvlbl "  "0 ,1 "
+bitfld.long 0 21. " RxDataAvlbl "  "0 ,1 "
+bitfld.long 0 22. " Sdioit "  "0 ,1 "
+bitfld.long 0 23. " CEATAEND "  "0 ,1 "
+bitfld.long 0 24. " CARDBUSY "  "0 ,1 "
+bitfld.long 0 25. " BOOTMODE "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERR "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUT "  "0 ,1 "
+bitfld.long 0 28. " RSTNEND "  "0 ,1 "
+tree.end
+
+base sd:0xf9101038
+tree "1Clear"
+group 0--3
+line.long 0 "Clear"
+bitfld.long 0 0. " CmdCrcFailClr "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFailClr "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOutClr "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOutClr "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrunClr "  "0 ,1 "
+bitfld.long 0 5. " RxOverrunClr "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEndClr "  "0 ,1 "
+bitfld.long 0 7. " CmdSentClr "  "0 ,1 "
+bitfld.long 0 8. " DataEndClr "  "0 ,1 "
+bitfld.long 0 9. " StBitEClr "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEndClr "  "0 ,1 "
+bitfld.long 0 22. " SDioitClr "  "0 ,1 "
+bitfld.long 0 23. " CEATAENDC "  "0 ,1 "
+bitfld.long 0 24. " BUSYENDC "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERRC "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUTC "  "0 ,1 "
+bitfld.long 0 28. " RSTNENC "  "0 ,1 "
+tree.end
+
+base sd:0xf910103c
+tree "1Mask0"
+group 0--3
+line.long 0 "Mask0"
+tree.end
+
+base sd:0xf9101040
+tree "1Mask1"
+group 0--3
+line.long 0 "Mask1"
+tree.end
+
+base sd:0xf9101044
+tree "1CardSel"
+group 0--3
+line.long 0 "CardSel"
+bitfld.long 0 0.--3. " CardSel "  " "
+tree.end
+
+base sd:0xf9101048
+tree "1FifoCnt"
+group 0--3
+line.long 0 "FifoCnt"
+bitfld.long 0 0.--23. " DataCount "  " "
+tree.end
+
+base sd:0xf9101080
+tree "1Fifo"
+group 0--3
+line.long 0 "Fifo"
+bitfld.long 0 0.--31. " FIFOData "  " "
+tree.end
+
+base sd:0xf91010c0
+tree "1DBtimer"
+group 0--3
+line.long 0 "DBtimer"
+bitfld.long 0 0.--31. " DBTIME "  " "
+tree.end
+
+base sd:0xf91010c4
+tree "1TRSCA"
+group 0--3
+line.long 0 "TRSCA"
+bitfld.long 0 0.--31. " TRSCA "  " "
+tree.end
+
+base sd:0xf9101fe0
+tree "1PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf9101fe4
+tree "1PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf9101fe8
+tree "1PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf9101fec
+tree "1PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf9101ff0
+tree "1PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " SDIPCellID0 "  " "
+tree.end
+
+base sd:0xf9101ff4
+tree "1PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " SDIPCellID1 "  " "
+tree.end
+
+base sd:0xf9101ff8
+tree "1PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " SDIPCellID2 "  " "
+tree.end
+
+base sd:0xf9101ffc
+tree "1PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " SDIPCellID3 "  " "
+tree.end
+
+tree.end
+
+base sd:0xf9100000
+;********************************************
+tree "MMCI-2"
+;********************************************
+base sd:0xf9100000
+tree "2Power"
+group 0--3
+line.long 0 "Power"
+bitfld.long 0 0.--1. " Ctrl "  " "
+bitfld.long 0 2. " DAT2DIREN "  "0 ,1 "
+bitfld.long 0 3. " CMDDIREN "  "0 ,1 "
+bitfld.long 0 4. " DAT0DIREN "  "0 ,1 "
+bitfld.long 0 5. " DAT31DIREN "  "0 ,1 "
+bitfld.long 0 6. " OpenDrain "  "0 ,1 "
+bitfld.long 0 7. " FBCLKEn "  "0 ,1 "
+bitfld.long 0 8. " DAT74DIREN "  "0 ,1 "
+bitfld.long 0 9. " RSTNEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9100004
+tree "2Clock"
+group 0--3
+line.long 0 "Clock"
+bitfld.long 0 0.--7. " ClkDiv "  " "
+bitfld.long 0 8. " Enable "  "0 ,1 "
+bitfld.long 0 9. " PwrSave "  "0 ,1 "
+bitfld.long 0 10. " Bypass "  "0 ,1 "
+bitfld.long 0 11.--12. " Widebus "  " "
+bitfld.long 0 13. " NEGEDG "  "0 ,1 "
+bitfld.long 0 14. " FLOWCTRLEN "  "0 ,1 "
+bitfld.long 0 15. " CLKOUT_INV "  "0 ,1 "
+bitfld.long 0 16. " CLKGATE_EN "  "0 ,1 "
+tree.end
+
+base sd:0xf9100008
+tree "2Argument"
+group 0--3
+line.long 0 "Argument"
+bitfld.long 0 0.--31. " CmdArg "  " "
+tree.end
+
+base sd:0xf910000c
+tree "2Command"
+group 0--3
+line.long 0 "Command"
+bitfld.long 0 0.--5. " CmdIndex "  " "
+bitfld.long 0 6. " Response "  "0 ,1 "
+bitfld.long 0 7. " LongRsp "  "0 ,1 "
+bitfld.long 0 8. " Interrupt "  "0 ,1 "
+bitfld.long 0 9. " Pending "  "0 ,1 "
+bitfld.long 0 10. " Enable "  "0 ,1 "
+bitfld.long 0 11. " SDIOSuspend "  "0 ,1 "
+bitfld.long 0 12. " ENCMDcompl "  "0 ,1 "
+bitfld.long 0 13. " nIEN "  "0 ,1 "
+bitfld.long 0 14. " CEATACMD "  "0 ,1 "
+bitfld.long 0 15. " CBOOTMODEEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9100010
+tree "2RespCmd"
+rgroup 0--3
+line.long 0 "RespCmd"
+bitfld.long 0 0.--5. " RspCmd "  " "
+tree.end
+
+base sd:0xf9100014
+tree "2Rsp0"
+rgroup 0--3
+line.long 0 "Rsp0"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9100018
+tree "2Rsp1"
+rgroup 0--3
+line.long 0 "Rsp1"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf910001c
+tree "2Rsp2"
+rgroup 0--3
+line.long 0 "Rsp2"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9100020
+tree "2Rsp3"
+rgroup 0--3
+line.long 0 "Rsp3"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9100024
+tree "2Datatimer"
+group 0--3
+line.long 0 "Datatimer"
+bitfld.long 0 0.--31. " DataTime "  " "
+tree.end
+
+base sd:0xf9100028
+tree "2DataLength"
+group 0--3
+line.long 0 "DataLength"
+bitfld.long 0 0.--24. " DataLength "  " "
+tree.end
+
+base sd:0xf910002c
+tree "2DataCtrl"
+group 0--3
+line.long 0 "DataCtrl"
+bitfld.long 0 0. " Enable "  "0 ,1 "
+bitfld.long 0 1. " Direction "  "0 ,1 "
+bitfld.long 0 2. " Mode "  "0 ,1 "
+bitfld.long 0 3. " DMAEnable "  "0 ,1 "
+bitfld.long 0 8. " RWStart "  "0 ,1 "
+bitfld.long 0 9. " RWStop "  "0 ,1 "
+bitfld.long 0 10. " RWMode "  "0 ,1 "
+bitfld.long 0 11. " SDIOEn "  "0 ,1 "
+bitfld.long 0 12. " DMAReqCtl "  "0 ,1 "
+bitfld.long 0 13. " DBOOTMODEEN "  "0 ,1 "
+bitfld.long 0 14. " BUSYMODE "  "0 ,1 "
+bitfld.long 0 15. " DDR_mode "  "0 ,1 "
+bitfld.long 0 16.--30. " BlockSize "  " "
+tree.end
+
+base sd:0xf9100030
+tree "2DataCnt"
+group 0--3
+line.long 0 "DataCnt"
+bitfld.long 0 0.--24. " dataCount "  " "
+tree.end
+
+base sd:0xf9100034
+tree "2Status"
+rgroup 0--3
+line.long 0 "Status"
+bitfld.long 0 0. " CmdCrcFail "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFail "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOut "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOut "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrun "  "0 ,1 "
+bitfld.long 0 5. " RxOverrun "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEnd "  "0 ,1 "
+bitfld.long 0 7. " CmdSent "  "0 ,1 "
+bitfld.long 0 8. " DataEnd "  "0 ,1 "
+bitfld.long 0 9. " StBitE "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEnd "  "0 ,1 "
+bitfld.long 0 11. " CmdActive "  "0 ,1 "
+bitfld.long 0 12. " TxActive "  "0 ,1 "
+bitfld.long 0 13. " RxActive "  "0 ,1 "
+bitfld.long 0 14. " TxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 15. " RxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 16. " TxFifoFull "  "0 ,1 "
+bitfld.long 0 17. " RxFifoFull "  "0 ,1 "
+bitfld.long 0 18. " TxFifoEmpty "  "0 ,1 "
+bitfld.long 0 19. " RxFifoEmpty "  "0 ,1 "
+bitfld.long 0 20. " TxDataAvlbl "  "0 ,1 "
+bitfld.long 0 21. " RxDataAvlbl "  "0 ,1 "
+bitfld.long 0 22. " Sdioit "  "0 ,1 "
+bitfld.long 0 23. " CEATAEND "  "0 ,1 "
+bitfld.long 0 24. " CARDBUSY "  "0 ,1 "
+bitfld.long 0 25. " BOOTMODE "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERR "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUT "  "0 ,1 "
+bitfld.long 0 28. " RSTNEND "  "0 ,1 "
+tree.end
+
+base sd:0xf9100038
+tree "2Clear"
+group 0--3
+line.long 0 "Clear"
+bitfld.long 0 0. " CmdCrcFailClr "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFailClr "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOutClr "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOutClr "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrunClr "  "0 ,1 "
+bitfld.long 0 5. " RxOverrunClr "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEndClr "  "0 ,1 "
+bitfld.long 0 7. " CmdSentClr "  "0 ,1 "
+bitfld.long 0 8. " DataEndClr "  "0 ,1 "
+bitfld.long 0 9. " StBitEClr "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEndClr "  "0 ,1 "
+bitfld.long 0 22. " SDioitClr "  "0 ,1 "
+bitfld.long 0 23. " CEATAENDC "  "0 ,1 "
+bitfld.long 0 24. " BUSYENDC "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERRC "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUTC "  "0 ,1 "
+bitfld.long 0 28. " RSTNENC "  "0 ,1 "
+tree.end
+
+base sd:0xf910003c
+tree "2Mask0"
+group 0--3
+line.long 0 "Mask0"
+tree.end
+
+base sd:0xf9100040
+tree "2Mask1"
+group 0--3
+line.long 0 "Mask1"
+tree.end
+
+base sd:0xf9100044
+tree "2CardSel"
+group 0--3
+line.long 0 "CardSel"
+bitfld.long 0 0.--3. " CardSel "  " "
+tree.end
+
+base sd:0xf9100048
+tree "2FifoCnt"
+group 0--3
+line.long 0 "FifoCnt"
+bitfld.long 0 0.--23. " DataCount "  " "
+tree.end
+
+base sd:0xf9100080
+tree "2Fifo"
+group 0--3
+line.long 0 "Fifo"
+bitfld.long 0 0.--31. " FIFOData "  " "
+tree.end
+
+base sd:0xf91000c0
+tree "2DBtimer"
+group 0--3
+line.long 0 "DBtimer"
+bitfld.long 0 0.--31. " DBTIME "  " "
+tree.end
+
+base sd:0xf91000c4
+tree "2TRSCA"
+group 0--3
+line.long 0 "TRSCA"
+bitfld.long 0 0.--31. " TRSCA "  " "
+tree.end
+
+base sd:0xf9100fe0
+tree "2PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf9100fe4
+tree "2PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf9100fe8
+tree "2PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf9100fec
+tree "2PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf9100ff0
+tree "2PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " SDIPCellID0 "  " "
+tree.end
+
+base sd:0xf9100ff4
+tree "2PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " SDIPCellID1 "  " "
+tree.end
+
+base sd:0xf9100ff8
+tree "2PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " SDIPCellID2 "  " "
+tree.end
+
+base sd:0xf9100ffc
+tree "2PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " SDIPCellID3 "  " "
+tree.end
+
+tree.end
+
+base sd:0xf900d000
+;********************************************
+tree "MMCI-3"
+;********************************************
+base sd:0xf900d000
+tree "3Power"
+group 0--3
+line.long 0 "Power"
+bitfld.long 0 0.--1. " Ctrl "  " "
+bitfld.long 0 2. " DAT2DIREN "  "0 ,1 "
+bitfld.long 0 3. " CMDDIREN "  "0 ,1 "
+bitfld.long 0 4. " DAT0DIREN "  "0 ,1 "
+bitfld.long 0 5. " DAT31DIREN "  "0 ,1 "
+bitfld.long 0 6. " OpenDrain "  "0 ,1 "
+bitfld.long 0 7. " FBCLKEn "  "0 ,1 "
+bitfld.long 0 8. " DAT74DIREN "  "0 ,1 "
+bitfld.long 0 9. " RSTNEN "  "0 ,1 "
+tree.end
+
+base sd:0xf900d004
+tree "3Clock"
+group 0--3
+line.long 0 "Clock"
+bitfld.long 0 0.--7. " ClkDiv "  " "
+bitfld.long 0 8. " Enable "  "0 ,1 "
+bitfld.long 0 9. " PwrSave "  "0 ,1 "
+bitfld.long 0 10. " Bypass "  "0 ,1 "
+bitfld.long 0 11.--12. " Widebus "  " "
+bitfld.long 0 13. " NEGEDG "  "0 ,1 "
+bitfld.long 0 14. " FLOWCTRLEN "  "0 ,1 "
+bitfld.long 0 15. " CLKOUT_INV "  "0 ,1 "
+bitfld.long 0 16. " CLKGATE_EN "  "0 ,1 "
+tree.end
+
+base sd:0xf900d008
+tree "3Argument"
+group 0--3
+line.long 0 "Argument"
+bitfld.long 0 0.--31. " CmdArg "  " "
+tree.end
+
+base sd:0xf900d00c
+tree "3Command"
+group 0--3
+line.long 0 "Command"
+bitfld.long 0 0.--5. " CmdIndex "  " "
+bitfld.long 0 6. " Response "  "0 ,1 "
+bitfld.long 0 7. " LongRsp "  "0 ,1 "
+bitfld.long 0 8. " Interrupt "  "0 ,1 "
+bitfld.long 0 9. " Pending "  "0 ,1 "
+bitfld.long 0 10. " Enable "  "0 ,1 "
+bitfld.long 0 11. " SDIOSuspend "  "0 ,1 "
+bitfld.long 0 12. " ENCMDcompl "  "0 ,1 "
+bitfld.long 0 13. " nIEN "  "0 ,1 "
+bitfld.long 0 14. " CEATACMD "  "0 ,1 "
+bitfld.long 0 15. " CBOOTMODEEN "  "0 ,1 "
+tree.end
+
+base sd:0xf900d010
+tree "3RespCmd"
+rgroup 0--3
+line.long 0 "RespCmd"
+bitfld.long 0 0.--5. " RspCmd "  " "
+tree.end
+
+base sd:0xf900d014
+tree "3Rsp0"
+rgroup 0--3
+line.long 0 "Rsp0"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900d018
+tree "3Rsp1"
+rgroup 0--3
+line.long 0 "Rsp1"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900d01c
+tree "3Rsp2"
+rgroup 0--3
+line.long 0 "Rsp2"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900d020
+tree "3Rsp3"
+rgroup 0--3
+line.long 0 "Rsp3"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900d024
+tree "3Datatimer"
+group 0--3
+line.long 0 "Datatimer"
+bitfld.long 0 0.--31. " DataTime "  " "
+tree.end
+
+base sd:0xf900d028
+tree "3DataLength"
+group 0--3
+line.long 0 "DataLength"
+bitfld.long 0 0.--24. " DataLength "  " "
+tree.end
+
+base sd:0xf900d02c
+tree "3DataCtrl"
+group 0--3
+line.long 0 "DataCtrl"
+bitfld.long 0 0. " Enable "  "0 ,1 "
+bitfld.long 0 1. " Direction "  "0 ,1 "
+bitfld.long 0 2. " Mode "  "0 ,1 "
+bitfld.long 0 3. " DMAEnable "  "0 ,1 "
+bitfld.long 0 8. " RWStart "  "0 ,1 "
+bitfld.long 0 9. " RWStop "  "0 ,1 "
+bitfld.long 0 10. " RWMode "  "0 ,1 "
+bitfld.long 0 11. " SDIOEn "  "0 ,1 "
+bitfld.long 0 12. " DMAReqCtl "  "0 ,1 "
+bitfld.long 0 13. " DBOOTMODEEN "  "0 ,1 "
+bitfld.long 0 14. " BUSYMODE "  "0 ,1 "
+bitfld.long 0 15. " DDR_mode "  "0 ,1 "
+bitfld.long 0 16.--30. " BlockSize "  " "
+tree.end
+
+base sd:0xf900d030
+tree "3DataCnt"
+group 0--3
+line.long 0 "DataCnt"
+bitfld.long 0 0.--24. " dataCount "  " "
+tree.end
+
+base sd:0xf900d034
+tree "3Status"
+rgroup 0--3
+line.long 0 "Status"
+bitfld.long 0 0. " CmdCrcFail "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFail "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOut "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOut "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrun "  "0 ,1 "
+bitfld.long 0 5. " RxOverrun "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEnd "  "0 ,1 "
+bitfld.long 0 7. " CmdSent "  "0 ,1 "
+bitfld.long 0 8. " DataEnd "  "0 ,1 "
+bitfld.long 0 9. " StBitE "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEnd "  "0 ,1 "
+bitfld.long 0 11. " CmdActive "  "0 ,1 "
+bitfld.long 0 12. " TxActive "  "0 ,1 "
+bitfld.long 0 13. " RxActive "  "0 ,1 "
+bitfld.long 0 14. " TxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 15. " RxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 16. " TxFifoFull "  "0 ,1 "
+bitfld.long 0 17. " RxFifoFull "  "0 ,1 "
+bitfld.long 0 18. " TxFifoEmpty "  "0 ,1 "
+bitfld.long 0 19. " RxFifoEmpty "  "0 ,1 "
+bitfld.long 0 20. " TxDataAvlbl "  "0 ,1 "
+bitfld.long 0 21. " RxDataAvlbl "  "0 ,1 "
+bitfld.long 0 22. " Sdioit "  "0 ,1 "
+bitfld.long 0 23. " CEATAEND "  "0 ,1 "
+bitfld.long 0 24. " CARDBUSY "  "0 ,1 "
+bitfld.long 0 25. " BOOTMODE "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERR "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUT "  "0 ,1 "
+bitfld.long 0 28. " RSTNEND "  "0 ,1 "
+tree.end
+
+base sd:0xf900d038
+tree "3Clear"
+group 0--3
+line.long 0 "Clear"
+bitfld.long 0 0. " CmdCrcFailClr "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFailClr "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOutClr "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOutClr "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrunClr "  "0 ,1 "
+bitfld.long 0 5. " RxOverrunClr "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEndClr "  "0 ,1 "
+bitfld.long 0 7. " CmdSentClr "  "0 ,1 "
+bitfld.long 0 8. " DataEndClr "  "0 ,1 "
+bitfld.long 0 9. " StBitEClr "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEndClr "  "0 ,1 "
+bitfld.long 0 22. " SDioitClr "  "0 ,1 "
+bitfld.long 0 23. " CEATAENDC "  "0 ,1 "
+bitfld.long 0 24. " BUSYENDC "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERRC "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUTC "  "0 ,1 "
+bitfld.long 0 28. " RSTNENC "  "0 ,1 "
+tree.end
+
+base sd:0xf900d03c
+tree "3Mask0"
+group 0--3
+line.long 0 "Mask0"
+tree.end
+
+base sd:0xf900d040
+tree "3Mask1"
+group 0--3
+line.long 0 "Mask1"
+tree.end
+
+base sd:0xf900d044
+tree "3CardSel"
+group 0--3
+line.long 0 "CardSel"
+bitfld.long 0 0.--3. " CardSel "  " "
+tree.end
+
+base sd:0xf900d048
+tree "3FifoCnt"
+group 0--3
+line.long 0 "FifoCnt"
+bitfld.long 0 0.--23. " DataCount "  " "
+tree.end
+
+base sd:0xf900d080
+tree "3Fifo"
+group 0--3
+line.long 0 "Fifo"
+bitfld.long 0 0.--31. " FIFOData "  " "
+tree.end
+
+base sd:0xf900d0c0
+tree "3DBtimer"
+group 0--3
+line.long 0 "DBtimer"
+bitfld.long 0 0.--31. " DBTIME "  " "
+tree.end
+
+base sd:0xf900d0c4
+tree "3TRSCA"
+group 0--3
+line.long 0 "TRSCA"
+bitfld.long 0 0.--31. " TRSCA "  " "
+tree.end
+
+base sd:0xf900dfe0
+tree "3PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf900dfe4
+tree "3PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf900dfe8
+tree "3PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf900dfec
+tree "3PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf900dff0
+tree "3PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " SDIPCellID0 "  " "
+tree.end
+
+base sd:0xf900dff4
+tree "3PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " SDIPCellID1 "  " "
+tree.end
+
+base sd:0xf900dff8
+tree "3PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " SDIPCellID2 "  " "
+tree.end
+
+base sd:0xf900dffc
+tree "3PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " SDIPCellID3 "  " "
+tree.end
+
+tree.end
+
+base sd:0xf9204000
+;********************************************
+tree "MMCI-4"
+;********************************************
+base sd:0xf9204000
+tree "4Power"
+group 0--3
+line.long 0 "Power"
+bitfld.long 0 0.--1. " Ctrl "  " "
+bitfld.long 0 2. " DAT2DIREN "  "0 ,1 "
+bitfld.long 0 3. " CMDDIREN "  "0 ,1 "
+bitfld.long 0 4. " DAT0DIREN "  "0 ,1 "
+bitfld.long 0 5. " DAT31DIREN "  "0 ,1 "
+bitfld.long 0 6. " OpenDrain "  "0 ,1 "
+bitfld.long 0 7. " FBCLKEn "  "0 ,1 "
+bitfld.long 0 8. " DAT74DIREN "  "0 ,1 "
+bitfld.long 0 9. " RSTNEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9204004
+tree "4Clock"
+group 0--3
+line.long 0 "Clock"
+bitfld.long 0 0.--7. " ClkDiv "  " "
+bitfld.long 0 8. " Enable "  "0 ,1 "
+bitfld.long 0 9. " PwrSave "  "0 ,1 "
+bitfld.long 0 10. " Bypass "  "0 ,1 "
+bitfld.long 0 11.--12. " Widebus "  " "
+bitfld.long 0 13. " NEGEDG "  "0 ,1 "
+bitfld.long 0 14. " FLOWCTRLEN "  "0 ,1 "
+bitfld.long 0 15. " CLKOUT_INV "  "0 ,1 "
+bitfld.long 0 16. " CLKGATE_EN "  "0 ,1 "
+tree.end
+
+base sd:0xf9204008
+tree "4Argument"
+group 0--3
+line.long 0 "Argument"
+bitfld.long 0 0.--31. " CmdArg "  " "
+tree.end
+
+base sd:0xf920400c
+tree "4Command"
+group 0--3
+line.long 0 "Command"
+bitfld.long 0 0.--5. " CmdIndex "  " "
+bitfld.long 0 6. " Response "  "0 ,1 "
+bitfld.long 0 7. " LongRsp "  "0 ,1 "
+bitfld.long 0 8. " Interrupt "  "0 ,1 "
+bitfld.long 0 9. " Pending "  "0 ,1 "
+bitfld.long 0 10. " Enable "  "0 ,1 "
+bitfld.long 0 11. " SDIOSuspend "  "0 ,1 "
+bitfld.long 0 12. " ENCMDcompl "  "0 ,1 "
+bitfld.long 0 13. " nIEN "  "0 ,1 "
+bitfld.long 0 14. " CEATACMD "  "0 ,1 "
+bitfld.long 0 15. " CBOOTMODEEN "  "0 ,1 "
+tree.end
+
+base sd:0xf9204010
+tree "4RespCmd"
+rgroup 0--3
+line.long 0 "RespCmd"
+bitfld.long 0 0.--5. " RspCmd "  " "
+tree.end
+
+base sd:0xf9204014
+tree "4Rsp0"
+rgroup 0--3
+line.long 0 "Rsp0"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9204018
+tree "4Rsp1"
+rgroup 0--3
+line.long 0 "Rsp1"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf920401c
+tree "4Rsp2"
+rgroup 0--3
+line.long 0 "Rsp2"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9204020
+tree "4Rsp3"
+rgroup 0--3
+line.long 0 "Rsp3"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf9204024
+tree "4Datatimer"
+group 0--3
+line.long 0 "Datatimer"
+bitfld.long 0 0.--31. " DataTime "  " "
+tree.end
+
+base sd:0xf9204028
+tree "4DataLength"
+group 0--3
+line.long 0 "DataLength"
+bitfld.long 0 0.--24. " DataLength "  " "
+tree.end
+
+base sd:0xf920402c
+tree "4DataCtrl"
+group 0--3
+line.long 0 "DataCtrl"
+bitfld.long 0 0. " Enable "  "0 ,1 "
+bitfld.long 0 1. " Direction "  "0 ,1 "
+bitfld.long 0 2. " Mode "  "0 ,1 "
+bitfld.long 0 3. " DMAEnable "  "0 ,1 "
+bitfld.long 0 8. " RWStart "  "0 ,1 "
+bitfld.long 0 9. " RWStop "  "0 ,1 "
+bitfld.long 0 10. " RWMode "  "0 ,1 "
+bitfld.long 0 11. " SDIOEn "  "0 ,1 "
+bitfld.long 0 12. " DMAReqCtl "  "0 ,1 "
+bitfld.long 0 13. " DBOOTMODEEN "  "0 ,1 "
+bitfld.long 0 14. " BUSYMODE "  "0 ,1 "
+bitfld.long 0 15. " DDR_mode "  "0 ,1 "
+bitfld.long 0 16.--30. " BlockSize "  " "
+tree.end
+
+base sd:0xf9204030
+tree "4DataCnt"
+group 0--3
+line.long 0 "DataCnt"
+bitfld.long 0 0.--24. " dataCount "  " "
+tree.end
+
+base sd:0xf9204034
+tree "4Status"
+rgroup 0--3
+line.long 0 "Status"
+bitfld.long 0 0. " CmdCrcFail "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFail "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOut "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOut "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrun "  "0 ,1 "
+bitfld.long 0 5. " RxOverrun "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEnd "  "0 ,1 "
+bitfld.long 0 7. " CmdSent "  "0 ,1 "
+bitfld.long 0 8. " DataEnd "  "0 ,1 "
+bitfld.long 0 9. " StBitE "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEnd "  "0 ,1 "
+bitfld.long 0 11. " CmdActive "  "0 ,1 "
+bitfld.long 0 12. " TxActive "  "0 ,1 "
+bitfld.long 0 13. " RxActive "  "0 ,1 "
+bitfld.long 0 14. " TxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 15. " RxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 16. " TxFifoFull "  "0 ,1 "
+bitfld.long 0 17. " RxFifoFull "  "0 ,1 "
+bitfld.long 0 18. " TxFifoEmpty "  "0 ,1 "
+bitfld.long 0 19. " RxFifoEmpty "  "0 ,1 "
+bitfld.long 0 20. " TxDataAvlbl "  "0 ,1 "
+bitfld.long 0 21. " RxDataAvlbl "  "0 ,1 "
+bitfld.long 0 22. " Sdioit "  "0 ,1 "
+bitfld.long 0 23. " CEATAEND "  "0 ,1 "
+bitfld.long 0 24. " CARDBUSY "  "0 ,1 "
+bitfld.long 0 25. " BOOTMODE "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERR "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUT "  "0 ,1 "
+bitfld.long 0 28. " RSTNEND "  "0 ,1 "
+tree.end
+
+base sd:0xf9204038
+tree "4Clear"
+group 0--3
+line.long 0 "Clear"
+bitfld.long 0 0. " CmdCrcFailClr "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFailClr "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOutClr "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOutClr "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrunClr "  "0 ,1 "
+bitfld.long 0 5. " RxOverrunClr "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEndClr "  "0 ,1 "
+bitfld.long 0 7. " CmdSentClr "  "0 ,1 "
+bitfld.long 0 8. " DataEndClr "  "0 ,1 "
+bitfld.long 0 9. " StBitEClr "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEndClr "  "0 ,1 "
+bitfld.long 0 22. " SDioitClr "  "0 ,1 "
+bitfld.long 0 23. " CEATAENDC "  "0 ,1 "
+bitfld.long 0 24. " BUSYENDC "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERRC "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUTC "  "0 ,1 "
+bitfld.long 0 28. " RSTNENC "  "0 ,1 "
+tree.end
+
+base sd:0xf920403c
+tree "4Mask0"
+group 0--3
+line.long 0 "Mask0"
+tree.end
+
+base sd:0xf9204040
+tree "4Mask1"
+group 0--3
+line.long 0 "Mask1"
+tree.end
+
+base sd:0xf9204044
+tree "4CardSel"
+group 0--3
+line.long 0 "CardSel"
+bitfld.long 0 0.--3. " CardSel "  " "
+tree.end
+
+base sd:0xf9204048
+tree "4FifoCnt"
+group 0--3
+line.long 0 "FifoCnt"
+bitfld.long 0 0.--23. " DataCount "  " "
+tree.end
+
+base sd:0xf9204080
+tree "4Fifo"
+group 0--3
+line.long 0 "Fifo"
+bitfld.long 0 0.--31. " FIFOData "  " "
+tree.end
+
+base sd:0xf92040c0
+tree "4DBtimer"
+group 0--3
+line.long 0 "DBtimer"
+bitfld.long 0 0.--31. " DBTIME "  " "
+tree.end
+
+base sd:0xf92040c4
+tree "4TRSCA"
+group 0--3
+line.long 0 "TRSCA"
+bitfld.long 0 0.--31. " TRSCA "  " "
+tree.end
+
+base sd:0xf9204fe0
+tree "4PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf9204fe4
+tree "4PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf9204fe8
+tree "4PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf9204fec
+tree "4PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf9204ff0
+tree "4PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " SDIPCellID0 "  " "
+tree.end
+
+base sd:0xf9204ff4
+tree "4PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " SDIPCellID1 "  " "
+tree.end
+
+base sd:0xf9204ff8
+tree "4PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " SDIPCellID2 "  " "
+tree.end
+
+base sd:0xf9204ffc
+tree "4PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " SDIPCellID3 "  " "
+tree.end
+
+;tree.end
+
+tree.end
+
+base sd:0xf900c000
+;********************************************
+tree "MMCI-5"
+;********************************************
+base sd:0xf900c000
+tree "5Power"
+group 0--3
+line.long 0 "Power"
+bitfld.long 0 0.--1. " Ctrl "  " "
+bitfld.long 0 2. " DAT2DIREN "  "0 ,1 "
+bitfld.long 0 3. " CMDDIREN "  "0 ,1 "
+bitfld.long 0 4. " DAT0DIREN "  "0 ,1 "
+bitfld.long 0 5. " DAT31DIREN "  "0 ,1 "
+bitfld.long 0 6. " OpenDrain "  "0 ,1 "
+bitfld.long 0 7. " FBCLKEn "  "0 ,1 "
+bitfld.long 0 8. " DAT74DIREN "  "0 ,1 "
+bitfld.long 0 9. " RSTNEN "  "0 ,1 "
+tree.end
+
+base sd:0xf900c004
+tree "5Clock"
+group 0--3
+line.long 0 "Clock"
+bitfld.long 0 0.--7. " ClkDiv "  " "
+bitfld.long 0 8. " Enable "  "0 ,1 "
+bitfld.long 0 9. " PwrSave "  "0 ,1 "
+bitfld.long 0 10. " Bypass "  "0 ,1 "
+bitfld.long 0 11.--12. " Widebus "  " "
+bitfld.long 0 13. " NEGEDG "  "0 ,1 "
+bitfld.long 0 14. " FLOWCTRLEN "  "0 ,1 "
+bitfld.long 0 15. " CLKOUT_INV "  "0 ,1 "
+bitfld.long 0 16. " CLKGATE_EN "  "0 ,1 "
+tree.end
+
+base sd:0xf900c008
+tree "5Argument"
+group 0--3
+line.long 0 "Argument"
+bitfld.long 0 0.--31. " CmdArg "  " "
+tree.end
+
+base sd:0xf900c00c
+tree "5Command"
+group 0--3
+line.long 0 "Command"
+bitfld.long 0 0.--5. " CmdIndex "  " "
+bitfld.long 0 6. " Response "  "0 ,1 "
+bitfld.long 0 7. " LongRsp "  "0 ,1 "
+bitfld.long 0 8. " Interrupt "  "0 ,1 "
+bitfld.long 0 9. " Pending "  "0 ,1 "
+bitfld.long 0 10. " Enable "  "0 ,1 "
+bitfld.long 0 11. " SDIOSuspend "  "0 ,1 "
+bitfld.long 0 12. " ENCMDcompl "  "0 ,1 "
+bitfld.long 0 13. " nIEN "  "0 ,1 "
+bitfld.long 0 14. " CEATACMD "  "0 ,1 "
+bitfld.long 0 15. " CBOOTMODEEN "  "0 ,1 "
+tree.end
+
+base sd:0xf900c010
+tree "5RespCmd"
+rgroup 0--3
+line.long 0 "RespCmd"
+bitfld.long 0 0.--5. " RspCmd "  " "
+tree.end
+
+base sd:0xf900c014
+tree "5Rsp0"
+rgroup 0--3
+line.long 0 "Rsp0"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900c018
+tree "5Rsp1"
+rgroup 0--3
+line.long 0 "Rsp1"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900c01c
+tree "5Rsp2"
+rgroup 0--3
+line.long 0 "Rsp2"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900c020
+tree "5Rsp3"
+rgroup 0--3
+line.long 0 "Rsp3"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf900c024
+tree "5Datatimer"
+group 0--3
+line.long 0 "Datatimer"
+bitfld.long 0 0.--31. " DataTime "  " "
+tree.end
+
+base sd:0xf900c028
+tree "5DataLength"
+group 0--3
+line.long 0 "DataLength"
+bitfld.long 0 0.--24. " DataLength "  " "
+tree.end
+
+base sd:0xf900c02c
+tree "5DataCtrl"
+group 0--3
+line.long 0 "DataCtrl"
+bitfld.long 0 0. " Enable "  "0 ,1 "
+bitfld.long 0 1. " Direction "  "0 ,1 "
+bitfld.long 0 2. " Mode "  "0 ,1 "
+bitfld.long 0 3. " DMAEnable "  "0 ,1 "
+bitfld.long 0 8. " RWStart "  "0 ,1 "
+bitfld.long 0 9. " RWStop "  "0 ,1 "
+bitfld.long 0 10. " RWMode "  "0 ,1 "
+bitfld.long 0 11. " SDIOEn "  "0 ,1 "
+bitfld.long 0 12. " DMAReqCtl "  "0 ,1 "
+bitfld.long 0 13. " DBOOTMODEEN "  "0 ,1 "
+bitfld.long 0 14. " BUSYMODE "  "0 ,1 "
+bitfld.long 0 15. " DDR_mode "  "0 ,1 "
+bitfld.long 0 16.--30. " BlockSize "  " "
+tree.end
+
+base sd:0xf900c030
+tree "5DataCnt"
+group 0--3
+line.long 0 "DataCnt"
+bitfld.long 0 0.--24. " dataCount "  " "
+tree.end
+
+base sd:0xf900c034
+tree "5Status"
+rgroup 0--3
+line.long 0 "Status"
+bitfld.long 0 0. " CmdCrcFail "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFail "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOut "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOut "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrun "  "0 ,1 "
+bitfld.long 0 5. " RxOverrun "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEnd "  "0 ,1 "
+bitfld.long 0 7. " CmdSent "  "0 ,1 "
+bitfld.long 0 8. " DataEnd "  "0 ,1 "
+bitfld.long 0 9. " StBitE "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEnd "  "0 ,1 "
+bitfld.long 0 11. " CmdActive "  "0 ,1 "
+bitfld.long 0 12. " TxActive "  "0 ,1 "
+bitfld.long 0 13. " RxActive "  "0 ,1 "
+bitfld.long 0 14. " TxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 15. " RxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 16. " TxFifoFull "  "0 ,1 "
+bitfld.long 0 17. " RxFifoFull "  "0 ,1 "
+bitfld.long 0 18. " TxFifoEmpty "  "0 ,1 "
+bitfld.long 0 19. " RxFifoEmpty "  "0 ,1 "
+bitfld.long 0 20. " TxDataAvlbl "  "0 ,1 "
+bitfld.long 0 21. " RxDataAvlbl "  "0 ,1 "
+bitfld.long 0 22. " Sdioit "  "0 ,1 "
+bitfld.long 0 23. " CEATAEND "  "0 ,1 "
+bitfld.long 0 24. " CARDBUSY "  "0 ,1 "
+bitfld.long 0 25. " BOOTMODE "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERR "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUT "  "0 ,1 "
+bitfld.long 0 28. " RSTNEND "  "0 ,1 "
+tree.end
+
+base sd:0xf900c038
+tree "5Clear"
+group 0--3
+line.long 0 "Clear"
+bitfld.long 0 0. " CmdCrcFailClr "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFailClr "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOutClr "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOutClr "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrunClr "  "0 ,1 "
+bitfld.long 0 5. " RxOverrunClr "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEndClr "  "0 ,1 "
+bitfld.long 0 7. " CmdSentClr "  "0 ,1 "
+bitfld.long 0 8. " DataEndClr "  "0 ,1 "
+bitfld.long 0 9. " StBitEClr "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEndClr "  "0 ,1 "
+bitfld.long 0 22. " SDioitClr "  "0 ,1 "
+bitfld.long 0 23. " CEATAENDC "  "0 ,1 "
+bitfld.long 0 24. " BUSYENDC "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERRC "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUTC "  "0 ,1 "
+bitfld.long 0 28. " RSTNENC "  "0 ,1 "
+tree.end
+
+base sd:0xf900c03c
+tree "5Mask0"
+group 0--3
+line.long 0 "Mask0"
+tree.end
+
+base sd:0xf900c040
+tree "5Mask1"
+group 0--3
+line.long 0 "Mask1"
+tree.end
+
+base sd:0xf900c044
+tree "5CardSel"
+group 0--3
+line.long 0 "CardSel"
+bitfld.long 0 0.--3. " CardSel "  " "
+tree.end
+
+base sd:0xf900c048
+tree "5FifoCnt"
+group 0--3
+line.long 0 "FifoCnt"
+bitfld.long 0 0.--23. " DataCount "  " "
+tree.end
+
+base sd:0xf900c080
+tree "5Fifo"
+group 0--3
+line.long 0 "Fifo"
+bitfld.long 0 0.--31. " FIFOData "  " "
+tree.end
+
+base sd:0xf900c0c0
+tree "5DBtimer"
+group 0--3
+line.long 0 "DBtimer"
+bitfld.long 0 0.--31. " DBTIME "  " "
+tree.end
+
+base sd:0xf900c0c4
+tree "5TRSCA"
+group 0--3
+line.long 0 "TRSCA"
+bitfld.long 0 0.--31. " TRSCA "  " "
+tree.end
+
+base sd:0xf900cfe0
+tree "5PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf900cfe4
+tree "5PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf900cfe8
+tree "5PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf900cfec
+tree "5PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf900cff0
+tree "5PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " SDIPCellID0 "  " "
+tree.end
+
+base sd:0xf900cff4
+tree "5PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " SDIPCellID1 "  " "
+tree.end
+
+base sd:0xf900cff8
+tree "5PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " SDIPCellID2 "  " "
+tree.end
+
+base sd:0xf900cffc
+tree "5PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " SDIPCellID3 "  " "
+tree.end
+
+tree.end
+
+base sd:0xf920b000
+;********************************************
+tree "MMCI-6"
+;********************************************
+base sd:0xf920b000
+tree "6Power"
+group 0--3
+line.long 0 "Power"
+bitfld.long 0 0.--1. " Ctrl "  " "
+bitfld.long 0 2. " DAT2DIREN "  "0 ,1 "
+bitfld.long 0 3. " CMDDIREN "  "0 ,1 "
+bitfld.long 0 4. " DAT0DIREN "  "0 ,1 "
+bitfld.long 0 5. " DAT31DIREN "  "0 ,1 "
+bitfld.long 0 6. " OpenDrain "  "0 ,1 "
+bitfld.long 0 7. " FBCLKEn "  "0 ,1 "
+bitfld.long 0 8. " DAT74DIREN "  "0 ,1 "
+bitfld.long 0 9. " RSTNEN "  "0 ,1 "
+tree.end
+
+base sd:0xf920b004
+tree "6Clock"
+group 0--3
+line.long 0 "Clock"
+bitfld.long 0 0.--7. " ClkDiv "  " "
+bitfld.long 0 8. " Enable "  "0 ,1 "
+bitfld.long 0 9. " PwrSave "  "0 ,1 "
+bitfld.long 0 10. " Bypass "  "0 ,1 "
+bitfld.long 0 11.--12. " Widebus "  " "
+bitfld.long 0 13. " NEGEDG "  "0 ,1 "
+bitfld.long 0 14. " FLOWCTRLEN "  "0 ,1 "
+bitfld.long 0 15. " CLKOUT_INV "  "0 ,1 "
+bitfld.long 0 16. " CLKGATE_EN "  "0 ,1 "
+tree.end
+
+base sd:0xf920b008
+tree "6Argument"
+group 0--3
+line.long 0 "Argument"
+bitfld.long 0 0.--31. " CmdArg "  " "
+tree.end
+
+base sd:0xf920b00c
+tree "6Command"
+group 0--3
+line.long 0 "Command"
+bitfld.long 0 0.--5. " CmdIndex "  " "
+bitfld.long 0 6. " Response "  "0 ,1 "
+bitfld.long 0 7. " LongRsp "  "0 ,1 "
+bitfld.long 0 8. " Interrupt "  "0 ,1 "
+bitfld.long 0 9. " Pending "  "0 ,1 "
+bitfld.long 0 10. " Enable "  "0 ,1 "
+bitfld.long 0 11. " SDIOSuspend "  "0 ,1 "
+bitfld.long 0 12. " ENCMDcompl "  "0 ,1 "
+bitfld.long 0 13. " nIEN "  "0 ,1 "
+bitfld.long 0 14. " CEATACMD "  "0 ,1 "
+bitfld.long 0 15. " CBOOTMODEEN "  "0 ,1 "
+tree.end
+
+base sd:0xf920b010
+tree "6RespCmd"
+rgroup 0--3
+line.long 0 "RespCmd"
+bitfld.long 0 0.--5. " RspCmd "  " "
+tree.end
+
+base sd:0xf920b014
+tree "6Rsp0"
+rgroup 0--3
+line.long 0 "Rsp0"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf920b018
+tree "6Rsp1"
+rgroup 0--3
+line.long 0 "Rsp1"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf920b01c
+tree "6Rsp2"
+rgroup 0--3
+line.long 0 "Rsp2"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf920b020
+tree "6Rsp3"
+rgroup 0--3
+line.long 0 "Rsp3"
+bitfld.long 0 0.--31. " Status "  " "
+tree.end
+
+base sd:0xf920b024
+tree "6Datatimer"
+group 0--3
+line.long 0 "Datatimer"
+bitfld.long 0 0.--31. " DataTime "  " "
+tree.end
+
+base sd:0xf920b028
+tree "6DataLength"
+group 0--3
+line.long 0 "DataLength"
+bitfld.long 0 0.--24. " DataLength "  " "
+tree.end
+
+base sd:0xf920b02c
+tree "6DataCtrl"
+group 0--3
+line.long 0 "DataCtrl"
+bitfld.long 0 0. " Enable "  "0 ,1 "
+bitfld.long 0 1. " Direction "  "0 ,1 "
+bitfld.long 0 2. " Mode "  "0 ,1 "
+bitfld.long 0 3. " DMAEnable "  "0 ,1 "
+bitfld.long 0 8. " RWStart "  "0 ,1 "
+bitfld.long 0 9. " RWStop "  "0 ,1 "
+bitfld.long 0 10. " RWMode "  "0 ,1 "
+bitfld.long 0 11. " SDIOEn "  "0 ,1 "
+bitfld.long 0 12. " DMAReqCtl "  "0 ,1 "
+bitfld.long 0 13. " DBOOTMODEEN "  "0 ,1 "
+bitfld.long 0 14. " BUSYMODE "  "0 ,1 "
+bitfld.long 0 15. " DDR_mode "  "0 ,1 "
+bitfld.long 0 16.--30. " BlockSize "  " "
+tree.end
+
+base sd:0xf920b030
+tree "6DataCnt"
+group 0--3
+line.long 0 "DataCnt"
+bitfld.long 0 0.--24. " dataCount "  " "
+tree.end
+
+base sd:0xf920b034
+tree "6Status"
+rgroup 0--3
+line.long 0 "Status"
+bitfld.long 0 0. " CmdCrcFail "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFail "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOut "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOut "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrun "  "0 ,1 "
+bitfld.long 0 5. " RxOverrun "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEnd "  "0 ,1 "
+bitfld.long 0 7. " CmdSent "  "0 ,1 "
+bitfld.long 0 8. " DataEnd "  "0 ,1 "
+bitfld.long 0 9. " StBitE "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEnd "  "0 ,1 "
+bitfld.long 0 11. " CmdActive "  "0 ,1 "
+bitfld.long 0 12. " TxActive "  "0 ,1 "
+bitfld.long 0 13. " RxActive "  "0 ,1 "
+bitfld.long 0 14. " TxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 15. " RxFifoHalfFull "  "0 ,1 "
+bitfld.long 0 16. " TxFifoFull "  "0 ,1 "
+bitfld.long 0 17. " RxFifoFull "  "0 ,1 "
+bitfld.long 0 18. " TxFifoEmpty "  "0 ,1 "
+bitfld.long 0 19. " RxFifoEmpty "  "0 ,1 "
+bitfld.long 0 20. " TxDataAvlbl "  "0 ,1 "
+bitfld.long 0 21. " RxDataAvlbl "  "0 ,1 "
+bitfld.long 0 22. " Sdioit "  "0 ,1 "
+bitfld.long 0 23. " CEATAEND "  "0 ,1 "
+bitfld.long 0 24. " CARDBUSY "  "0 ,1 "
+bitfld.long 0 25. " BOOTMODE "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERR "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUT "  "0 ,1 "
+bitfld.long 0 28. " RSTNEND "  "0 ,1 "
+tree.end
+
+base sd:0xf920b038
+tree "6Clear"
+group 0--3
+line.long 0 "Clear"
+bitfld.long 0 0. " CmdCrcFailClr "  "0 ,1 "
+bitfld.long 0 1. " DataCrcFailClr "  "0 ,1 "
+bitfld.long 0 2. " CmdTimeOutClr "  "0 ,1 "
+bitfld.long 0 3. " DataTimeOutClr "  "0 ,1 "
+bitfld.long 0 4. " TxUnderrunClr "  "0 ,1 "
+bitfld.long 0 5. " RxOverrunClr "  "0 ,1 "
+bitfld.long 0 6. " CmdRespEndClr "  "0 ,1 "
+bitfld.long 0 7. " CmdSentClr "  "0 ,1 "
+bitfld.long 0 8. " DataEndClr "  "0 ,1 "
+bitfld.long 0 9. " StBitEClr "  "0 ,1 "
+bitfld.long 0 10. " DataBlockEndClr "  "0 ,1 "
+bitfld.long 0 22. " SDioitClr "  "0 ,1 "
+bitfld.long 0 23. " CEATAENDC "  "0 ,1 "
+bitfld.long 0 24. " BUSYENDC "  "0 ,1 "
+bitfld.long 0 26. " BOOTACKERRC "  "0 ,1 "
+bitfld.long 0 27. " BOOTACKTIMEOUTC "  "0 ,1 "
+bitfld.long 0 28. " RSTNENC "  "0 ,1 "
+tree.end
+
+base sd:0xf920b03c
+tree "6Mask0"
+group 0--3
+line.long 0 "Mask0"
+tree.end
+
+base sd:0xf920b040
+tree "6Mask1"
+group 0--3
+line.long 0 "Mask1"
+tree.end
+
+base sd:0xf920b044
+tree "6CardSel"
+group 0--3
+line.long 0 "CardSel"
+bitfld.long 0 0.--3. " CardSel "  " "
+tree.end
+
+base sd:0xf920b048
+tree "6FifoCnt"
+group 0--3
+line.long 0 "FifoCnt"
+bitfld.long 0 0.--23. " DataCount "  " "
+tree.end
+
+base sd:0xf920b080
+tree "6Fifo"
+group 0--3
+line.long 0 "Fifo"
+bitfld.long 0 0.--31. " FIFOData "  " "
+tree.end
+
+base sd:0xf920b0c0
+tree "6DBtimer"
+group 0--3
+line.long 0 "DBtimer"
+bitfld.long 0 0.--31. " DBTIME "  " "
+tree.end
+
+base sd:0xf920b0c4
+tree "6TRSCA"
+group 0--3
+line.long 0 "TRSCA"
+bitfld.long 0 0.--31. " TRSCA "  " "
+tree.end
+
+base sd:0xf920bfe0
+tree "6PeriphID0"
+rgroup 0--3
+line.long 0 "PeriphID0"
+bitfld.long 0 0.--7. " Partnumber0 "  " "
+tree.end
+
+base sd:0xf920bfe4
+tree "6PeriphID1"
+rgroup 0--3
+line.long 0 "PeriphID1"
+bitfld.long 0 0.--3. " Partnumber1 "  " "
+bitfld.long 0 4.--7. " Designer0 "  " "
+tree.end
+
+base sd:0xf920bfe8
+tree "6PeriphID2"
+rgroup 0--3
+line.long 0 "PeriphID2"
+bitfld.long 0 0.--3. " Designer1 "  " "
+bitfld.long 0 4.--7. " Revision "  " "
+tree.end
+
+base sd:0xf920bfec
+tree "6PeriphID3"
+rgroup 0--3
+line.long 0 "PeriphID3"
+bitfld.long 0 0.--7. " Configuration "  " "
+tree.end
+
+base sd:0xf920bff0
+tree "6PCellID0"
+rgroup 0--3
+line.long 0 "PCellID0"
+bitfld.long 0 0.--7. " SDIPCellID0 "  " "
+tree.end
+
+base sd:0xf920bff4
+tree "6PCellID1"
+rgroup 0--3
+line.long 0 "PCellID1"
+bitfld.long 0 0.--7. " SDIPCellID1 "  " "
+tree.end
+
+base sd:0xf920bff8
+tree "6PCellID2"
+rgroup 0--3
+line.long 0 "PCellID2"
+bitfld.long 0 0.--7. " SDIPCellID2 "  " "
+tree.end
+
+base sd:0xf920bffc
+tree "6PCellID3"
+rgroup 0--3
+line.long 0 "PCellID3"
+bitfld.long 0 0.--7. " SDIPCellID3 "  " "
+tree.end
+
+;tree.end
+
+tree.end
+
+
+
+

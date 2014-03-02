@@ -1,0 +1,20 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+case $1 in
+start)
+if  [ -x /system/bin/mid ];then
+        echo "Starting Mid"
+		ln -s /system/lib/modules /lib/modules
+		/system/bin/mid --cfg /etc/Flashless_mid.conf &
+		/usr/bin/mid_listener &
+else
+        echo "Mid is not install in /system/bin directory "
+fi
+;;
+stop) 	
+	echo "Stopping Mid..."
+	nkill /system/hats/usr/bin/mid
+;;
+esac
+
+exit

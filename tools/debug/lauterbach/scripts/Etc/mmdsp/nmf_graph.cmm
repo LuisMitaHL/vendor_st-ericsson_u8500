@@ -1,0 +1,105 @@
+local &os
+local &del_cmd
+local &disp_cmd
+&os=os.env(OS)
+&os=string.lwr("&os")
+if (string.scan("&os","win",0)==-1)
+(
+	&del_cmd="rm -f"
+	&disp_cmd="display" ;; assume that imagemagick is installed, if not change the viewer
+)
+else
+(
+	&del_cmd="del"
+	&disp_cmd="start"
+)
+
+local &need_run
+&need_run=0
+if run()
+(
+	break
+	&need_run=1
+)
+
+;; test if dot is available
+os.hidden dot -V
+if os.return()!=0
+	goto no_dot
+
+;; delete previous graph
+os.hidden &del_cmd nmf_graph.png
+
+;; overwrite the file
+printer.file autoload_tmp.txt
+winprint.y.al.list
+
+;; re-read info from the file
+;; there is probably a better way to do it, but I can't find it...
+open  #1 autoload_tmp.txt
+printer.open  autoload.txt 
+
+setup.var %tree.open %index
+
+while (1==1)
+(
+	read #1 %line &line
+	if EOF()
+		goto endloop
+
+	&index=string.scan("&line",".elf",0)
+	if (&index!=-1)
+	(
+		&index=&index+5
+		&index=string.scan("&line"," ",&index);
+		&index=&index+1
+		&index=string.scan("&line"," ",&index);
+		&index=&index+1
+		&index2=string.scan("&line"," ",&index);
+		&this=string.mid("&line",&index,&index2-&index)
+		&index=&index2+1
+		&index2=string.scan("&line"," ",&index);
+		&name=string.mid("&line",&index,&index2-&index)
+
+		winprint.var.watch "== [&this] [&name] =="
+		;print "[&this] [&name]"
+		r.s this x:&this
+		on error goto next
+		symbol.foreach "winprint.var.v *" \\&name\*-wrp\*
+next:
+	)
+)
+
+endloop:
+on error nothing
+
+close #1
+printer.close
+
+;; now generate graph with perl script
+&script_dir=os.ppd() ; launch
+&cur_dir=os.pwd()
+&output_graph=os.ptd()+"/nmf_graph.png"
+print "Generating graph in &output_graph ... "
+os.area perl -I &script_dir &script_dir/nmf_graph.pl autoload.txt &output_graph
+if os.return()!=0
+	goto no_perl
+
+os.hidden &del_cmd autoload.txt autoload.bak autoload_tmp.txt autoload_tmp.bak
+os.hidden &disp_cmd &output_graph
+
+if (&need_run==1)
+(
+	go
+)
+
+enddo
+
+
+no_dot:
+	dialog.message "You should first install dot (and add it in your path) => http://www.graphviz.org/"
+	enddo
+
+no_perl:
+	dialog.message "Error while running " "perl -I &script_dir &script_dir/nmf_graph.pl &cur_dir/autoload.txt &output_graph" " "
+	enddo

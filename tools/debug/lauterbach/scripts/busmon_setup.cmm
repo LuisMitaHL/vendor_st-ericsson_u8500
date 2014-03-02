@@ -1,0 +1,24 @@
+;------------------------------------------------------------
+; busmon_setup.cmm
+;------------------------------------------------------------
+; Setup of generic busmon
+;
+; 071217 - DE Initial version
+;-----------------------------------------------------------
+
+&BUSMON_IFID="i.IFID0 i.IFID1 i.IFID2 i.IFID3 i.IFID4"
+&BUSMON_OWERFLOW="i.OWERFLOW"
+&BUSMON_DATA="i.DATA00 i.DATA01 i.DATA02 i.DATA03 i.DATA04 i.DATA05 i.DATA06 i.DATA07 i.DATA08 i.DATA09 i.DATA10 i.DATA11 i.DATA12 i.DATA13 i.DATA14 i.DATA15 i.DATA16 i.DATA17 i.DATA18 i.DATA19 i.DATA20 i.DATA21 i.DATA22 i.DATA23 i.DATA24 i.DATA25 i.DATA26 i.DATA27 i.DATA28 i.DATA29 i.DATA30 i.DATA31 i.DATA32 i.DATA33"
+
+NAME.WORD w.IFID &BUSMON_IFID
+NAME.WORD w.OVERFLOW &BUSMON_OWERFLOW
+NAME.WORD w.DATA &BUSMON_DATA
+
+if powerintegrator()
+(
+	i.reprogram busmon_trigger.tap
+)
+
+print "Busmon initlized"
+
+ENDDO

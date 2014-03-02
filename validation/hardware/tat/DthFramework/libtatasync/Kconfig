@@ -1,0 +1,35 @@
+#
+# LibTatasync configuration
+#
+
+menuconfig LIBTATASYNC
+	bool "LibTatasync"
+	depends on OPENSSL && DTHFRAMEWORK-INCLUDE
+	help
+	  depends on OPENSSL, DTHFRAMEWORK-INCLUDE
+
+if LIBTATASYNC
+
+config LIBTATASYNC_DIR
+	string
+	default ../tat/DthFramework/libtatasync
+
+config LIBTATASYNC_DEPS
+	string
+	default "OPENSSL DTHFRAMEWORK-INCLUDE"
+
+config LIBTATASYNC_STRIP_DISABLED
+	bool "Disable strip"
+	depends on LIBTATASYNC
+	default n
+	help
+	  This will disable strip for this module
+
+config LIBTATASYNC_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LIBTATASYNC
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LIBTATASYNC

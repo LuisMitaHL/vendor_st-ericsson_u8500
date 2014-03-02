@@ -1,0 +1,201 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    
+* \brief   common data structure and/or definition shared by multi-processors
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#ifndef _t1xhv_common_idt
+#define _t1xhv_common_idt
+
+#include <t1xhv_retarget.idt>
+
+#include <t1xhv_post_process.idt>
+
+
+/* ********************************************************** */
+/* *****************    GENERAL elements    ***************** */
+/* ********************************************************** */
+/** \brief This structure define a bit-level position in a bitstream. */
+typedef struct {
+
+    t_ahb_address   addr_bitstream_buf_struct;  /**<\brief \b Description : Bitstream buffer structure address / As an input, this parameter defines the address of a 
+                                                              ts_t1xhv_bitstream_buf_link structure, which specifies the bitstream buffer. It must be a multiple of \b 16.
+                                                              As an output, this parameter returns the address of the bitstream buffer structure for the next
+                                                              frame/slice to be encoded. The last bit defines the location of the data: either in HAMAC Video MMDSP+ 
+                                                              data memory, or in external system memory. It thus defines two types of addresses: either an offset in the
+                                                              HAMAC Video register area, or an absolute system AHB/STBus address.*/
+                                                /**<\brief \n \b Contraints : addr_bitstream_buf_struct must a multiple of \b 16 bytes. If addr_bitstream_buf_struct=0, 
+                                                              the structure is invalid and is not accessed by HAMAC Video. */
+    t_ahb_address   addr_bitstream_start;       /**<\brief \b Description : Bitstream Start address / As an input, this parameter defines the address of the first 
+                                                              bitstream data to be written within the bitstream buffer/window. It must be a multiple of \b 16, otherwise 
+                                                              error_type is set to \b 0x88. As it must be a multiple of 16 bytes, the bitstream_offset parameter defines 
+                                                              the position of the first bit to be written, relatively to this address.
+                                                              As an output, this parameter returns the address of the first bitstream data to be written within the 
+                                                              bitstream buffer/window for the next frame (i.e. it points to the end of the current picture bitstream).*/
+                                                /**<\brief \n \b Contraints : addr_bitstream_start must a multiple of \b 16 bytes*/
+    t_ulong_value   bitstream_offset;           /**<\brief \b Description : Bitstream offset in bits / As an input, this parameter defines the offset of the first data 
+                                                              bit to be written in the bitstream buffer/window, relatively to the addr_bitstream_start address. 
+                                                              Previous bits are read and written back into the bitstream buffer before the actual bitstream is written 
+                                                              (because memory accesses are not bit-aligned).
+                                                              As an output, this parameter returns the offset of the first data bit to be written in the bitstream 
+                                                              buffer/window for the next frame (i.e. it points to the end of the current picture bitstream).*/
+                                                /**<\brief \n \b Contraints : less than 256 */
+    t_ulong_value   reserved_1;                 /**<\brief \b Description : Reserved 32                        */
+                                                /**<\brief \n \b Contraints : none */
+
+} ts_t1xhv_bitstream_buf_pos;
+
+typedef ts_t1xhv_bitstream_buf_pos *tps_t1xhv_bitstream_buf_pos;
+
+
+/** \brief This structure define a bitstream buffer. */
+typedef struct {
+
+    t_ahb_address addr_buffer_start;  /**<\brief \b Description : Buffer start                 */
+                                      /**<\brief \n \b Contraints : TBD */
+    t_ahb_address addr_buffer_end;    /**<\brief \b Description : Buffer end                   */
+                                      /**<\brief \n \b Contraints : TBD */
+    t_ahb_address addr_window_start;  /**<\brief \b Description : Window start (inside buffer) */
+                                      /**<\brief \n \b Contraints : TBD */
+    t_ahb_address addr_window_end;    /**<\brief \b Description : Windows end  (inside buffer) */
+                                      /**<\brief \n \b Contraints : TBD */
+
+} ts_t1xhv_bitstream_buf;
+
+typedef ts_t1xhv_bitstream_buf *tps_t1xhv_bitstream_buf;
+
+
+/** \brief This structure define a link buffer. */
+typedef struct {
+
+    t_ahb_address addr_next_buf_link;   /**<\brief \b Description : Next bitstream buffer link structure address / This parameter defines the address of the 
+                                                      ts_t1xhv_bitstream_buf_link structure, which specifies the next piece of bitstream buffer. It must be a multiple 
+                                                      of \b 16. The last bit defines the location of the data: either in HAMAC Video MMDSP+ data memory (0) or in 
+                                                      external system memory (1). It thus defines two types of addresses: either an offset in the HAMAC Video register 
+                                                      area, or an absolute system AHB/STBus address.*/
+                                        /**<\brief \n \b Contraints : addr_next_buf_link must a multiple of \b 16 bytes. If addr_next_buf_link=0, the structure is 
+                                                      invalid and is not accessed by HAMAC Video. */
+    t_ahb_address addr_prev_buf_link;   /**<\brief \b Description : Previous bitstream buffer link structure address / This parameter defines the address of the 
+                                                      ts_t1xhv_bitstream_buf_link structure, which specifies the previous piece of bitstream buffer. It must be a
+                                                      multiple of 16. The last bit defines the location of the data: either in HAMAC Video MMDSP+ data memory,
+                                                      or in external system memory. It thus defines two types of addresses: either an offset in the HAMAC Video 
+                                                      register area, or an absolute system AHB/STBus address. */
+                                        /**<\brief \n \b Contraints : addr_next_buf_link must a multiple of \b 16 bytes. If addr_next_buf_link=0, the structure is 
+                                                      invalid and is not accessed by HAMAC Video. */
+    t_ahb_address addr_buffer_start;    /**<\brief \b Description : Bitstream buffer start address / This parameter defines the start address of the bitstream buffer, 
+                                                      which contains the compressed input of the decode task. It must be a multiple of \b 16, otherwise error_type 
+                                                      is set to \b 0x89.*/
+                                        /**<\brief \n \b Contraints : addr_buffer_start must be a multiple of \b 16. The following relation must hold: 
+                                                      addr_buffer_start < addr_buffer_end */
+    t_ahb_address addr_buffer_end;      /**<\brief \b Description : Bitstream buffer end address / This parameter defines the end address of the bitstream buffer, which 
+                                                      contains the compressed input of the decode task. It must be a multiple of \b 16, otherwise error_type is set 
+                                                      to \b 0x8a.*/
+                                        /**<\brief \n \b Contraints : addr_buffer_end must be a multiple of \b 16. The following relation must hold: 
+                                                      addr_buffer_start < addr_buffer_end */
+
+} ts_t1xhv_bitstream_buf_link;
+
+typedef ts_t1xhv_bitstream_buf_link *tps_t1xhv_bitstream_buf_link;
+
+
+ 
+
+/** @ingroup algoApiGroup
+ *  Kind of command to be sent to a NMF ALGO Component
+ *  @{ 
+ */
+typedef enum {
+  CMD_RESET,			/**<\brief (Not yet implemented) will cause the internal reset (FW+HW). */
+  CMD_ABORT,			/**<\brief (Not yet implemented) will cause the abort to the current executing component. */
+  CMD_START,			/**<\brief will cause the start of the already configured component. */ 
+  CMD_UPDATE_BUFFER,    /**<\brief will reprograme the dma addresses to new buffer. This will be used in "updateAlgo" Method */ 
+  CMD_STOP_SLICE        /**<\brief will reprograme the dma addresses to dummy buffer. This will be used in "updateAlgo" Method */
+} t_t1xhv_command;
+
+typedef enum {
+  STATUS_JOB_COMPLETE,		/**<\brief The component run completely its job. errors should then be VDC_ERT_NONE. */
+  STATUS_JOB_ABORTED,		/**<\brief The component has been aborted. */
+  STATUS_JOB_UNKNOWN,		/**<\brief This should not happen. */
+  STATUS_BUFFER_NEEDED,		/**<\brief The component requires more buffer to complete its job*/
+  STATUS_PAYLOAD_BUFFER_NEEDED
+} t_t1xhv_status;
+
+typedef enum {
+  DBG_MODE_NORMAL,    /**<\brief Default debug mode, i.e. normal behavior of the algo NMF component. */
+  DBG_MODE_NO_HW,     /**<\brief The component will not access any HW block, but only proceed as if the
+                          entire process was successfully done (i.e. a complete decode for instance). */
+  DBG_MODE_PATTERN    /**<\brief (Not yet implemented) The component will copy the content of the input buffer to the output one. */
+} t_t1xhv_debug_mode;
+
+ /** @} */ // end of algoApiGroup
+
+
+
+
+
+
+
+
+
+
+
+/* This CODEC ID can disappear as soon as VFM is able to compile without it */
+
+typedef enum {
+  ID_VDC_MPEG4                              , /**<\brief MPEG4 video Decoder wit
+h MB output format*/
+  ID_VDC_H263                               , /**<\brief (Not yet implemented) H
+263 video Decoder with MB output format*/
+  ID_SDC_JPEG                               , /**<\brief JPEG still Decoder */
+  ID_VDC_H264                               , /**<\brief (Not yet implemented) H
+264  video Decoder */
+  ID_VDC_VC1                                , /**<\brief (Not yet implemented) V
+C1   video Decoder */
+  ID_VDC_MPEG4_RASTER_OUTPUT                , /**<\brief MPEG4 video Decoder ras
+ter output format */
+  ID_VDC_H263_RASTER_OUTPUT                 , /**<\brief (Not yet implemented) H
+264 video Decoder raster output format */
+  ID_VDC_H264_RASTER_OUTPUT                 , /**<\brief (Not yet implemented) H
+263 video Decoder raster output format */
+  ID_SDC_JPEG_NOSLICE                       , /**<\brief JPEG still decoder (wit
+hout slice mode) type */
+  ID_VDC_MPEG2                              , /**<\brief (Not yet implemented) M
+PEG2 video Decoder */
+  
+  ID_VDC_LAST,
+  /* please insert bellow this line all new Encoder codec */
+  
+  ID_VEC_MPEG4,                             /**<\brief MPEG4 video Encoder */
+  ID_SEC_JPEG,                              /**<\brief JPEG  still Encoder */
+  ID_SEC_JPEG_THUMBNAIL,                    /**<\brief JPEG  still Encoder with 
+additional thumbnail reconstructed buffer generation (YUV420 mb-tiled input buff
+er only)*/
+  ID_SEC_JPEG_RASTER_INPUT,                 /**<\brief JPEG  still Encoder with 
+YUV420 raster input buffer*/
+  ID_VEC_H264,                              /**<\brief H264  video Encoder */
+
+  ID_VEC_LAST,
+
+  /* please insert bellow this line all new Post Processing algo */
+  ID_POST_PROCESS,                          /**<\brief Video Post Process */
+
+  ID_PP_LAST,
+  
+  /* ...Please insert a resource above this line */
+  ID_ALGO_ID_MAX,                           /* \brief" allocator" NMF component 
+Internal usage only !! */
+  ID_ALGO_ID_ANY,                           /* \brief" allocator" NMF component 
+Internal usage only !! */
+  ID_ALGO_ID_NONE                           /* \brief" allocator" NMF component 
+Internal usage only !! */
+} t_t1xhv_algo_id;
+
+
+#endif /* _t1xhv_common_idt */

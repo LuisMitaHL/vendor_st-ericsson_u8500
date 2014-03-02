@@ -1,0 +1,82 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+DEC_DBLK=1
+
+include $(MMROOT)/video/makefiles/Make.std.config
+
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh mpeg4dec
+VPATH = ./mpc/algo/src/$(SVA_SUBSYSTEM) ./mpc/main/src ../scheduler/src/
+EXEOBJ = \
+	m4d_acdc_prediction \
+	m4d_get_headers \
+	m4d_get_picture \
+	m4d_motion_decode \
+	t1xhv_m4d \
+	m4d_bitstream \
+	m4d_get_block \
+	m4d_get_macroblock \
+	m4d_get_vlc \
+	m4d_post_processing \
+	t1xhv_rd1_main \
+	t1xhv_interrupt \
+	sm_decoder_mp4 \
+	sm_common \
+	sm_display \
+	m4d_get_macroblock_1080p \
+	m4d_acdc_prediction_1080p \
+	m4d_motion_decode_1080p \
+	m4d_error
+
+
+ifeq ($(DEC_DBLK),1)
+EXEOBJ += t1xhv_dpl
+CPPFLAGS += -DDECODE_DEBLOCK
+endif
+
+
+
+ifeq ($(FLAVOR),hdtv)
+EXENAME = mpeg4dec_hdtv
+#CPPFLAGS += -DOPTIM_HDTV
+else
+#CPPFLAGS += -DERR_BUF -DNOT_CODED -DMV_TYPE_BUF
+EXENAME = mpeg4dec
+#EXEOBJ += m4d_error
+endif
+
+OBJ_DIR      = ./obj/$(MMDSPPROCESSOR)/$(FLAVOR)
+DEP_DIR      = ./dep/$(UNAME)/$(MMDSPPROCESSOR)/$(FLAVOR)
+BIN_DIR      = ./bin/$(MMDSPPROCESSOR)/$(FLAVOR)
+
+ifeq ($(DEC_DBLK),1)
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT) 
+else
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT) libpostproc.$(LIB_EXT)
+endif
+
+
+CPPFLAGS += -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DSTANDALONE_VERSION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION) -DMMDSP -DT1XHV_TASK_DECODE -DT1XHV_STAB -DRASTER2MB_DISPLAY -DMTC_PACKER -DT1XHV_FIRMWARE -DMPEG4_DECODER -DM4D_HW_BITSTREAM -DM4D_HW_VLD -DCONCEAL_VP_LIMITATION -DCONCEAL_FORWARD_I_MBS -DCONCEAL_BACKWARD_I_MBS -DBDU_SCS -DT1XHV_TASK_DISPLAY -DAKC_LOW_MEM -DACDC_1080p -DGMC_ENABLE
+#-DACDC_1080p 
+
+
+ifeq ($(DEC_DBLK),1)
+CPPFLAGS += -I../scheduler/inc -I../common/inc/$(SVA_SUBSYSTEM) -I../common/inc -I../hardware/inc -I./mpc/algo/inc/$(SVA_SUBSYSTEM) -I./mpc/main/inc -I./mpc/share/$(SVA_SUBSYSTEM) -I./mpc/share
+else
+CPPFLAGS += -I../scheduler/inc -I../common/inc/$(SVA_SUBSYSTEM) -I../common/inc -I../hardware/inc -I./mpc/algo/inc/$(SVA_SUBSYSTEM) -I./mpc/main/inc -I../postproc/mpc/algo/inc -I./mpc/share/$(SVA_SUBSYSTEM) -I./mpc/share
+endif
+
+
+$(OBJ_DIR)/m4d_%.$(OBJ_EXT):CFLAGS+= -O3 
+
+MEMORYCFG = $(MMROOT)/video/components/common/memconfig/video.$(MEMCFG_EXT)
+
+ACFLAGS += -forceesramfn
+
+STACK=500
+SSTACK=500
+
+todo: exe
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

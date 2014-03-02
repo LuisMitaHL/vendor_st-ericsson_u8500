@@ -1,0 +1,84 @@
+test_start	CODEC_0015
+test_property	TEST_NAME FMRX_MULTISINKS_STATEMACHINE
+
+test_start FM RX playback
+                                                                         
+          
+OMX_GetHandle        	FmRx OMX.ST.AFM.FM_SOURCE
+OMX_SetParameter     	FmRx OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+ate_attach_io   	FmRx 0 MEM $(OUTPUT_DIR)/Fm.out 200000000 0 0
+
+OMX_GetHandle    avsink OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SetParameter avsink OMX_IndexParamAudioPcm nPortIndex=0 nSamplingRate=48000
+OMX_SendCommand  avsink OMX_CommandPortDisable 1 
+ate_attach_io    avsink 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/triangular_offset.pcm 0 0 0
+MMTE_DispatchState OMX_StateIdle avsink:0
+OMX_SetConfig avsink OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100
+OMX_SetConfig avsink OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+
+OMX_GetHandle   ihf OMX.ST.AFM.IHF
+OMX_SetParameter ihf OMX_IndexParamAudioPcm nPortIndex=0 nSamplingRate=48000
+# disable clock port
+OMX_SendCommand ihf OMX_CommandPortDisable 1 
+ate_attach_io   ihf 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/triangular_offset.pcm 0 0 0
+OMX_SetConfig ihf OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100
+OMX_SetConfig ihf OMX_IndexConfigAudioMute bMute=OMX_FALSE
+MMTE_DispatchState OMX_StateIdle ihf:0
+
+
+MMTE_DispatchState OMX_StateIdle	FmRx:0
+
+
+MMTE_DispatchState OMX_StatePause 	FmRx
+#Start
+MMTE_DispatchState OMX_StateExecuting FmRx
+
+
+################
+#FM ONGOING#
+################
+
+#avsink ON then OFF
+MMTE_DispatchState OMX_StateExecuting avsink
+MMTE_NMF_ListComponent
+mmte_sleep 2000
+MMTE_DispatchState OMX_StateIdle avsink
+MMTE_DispatchState OMX_StateLoaded avsink
+MMTE_NMF_ListComponent
+#ihf ON then OFF
+
+MMTE_DispatchState OMX_StateExecuting ihf
+mmte_sleep 2000
+MMTE_DispatchState OMX_StateIdle ihf
+MMTE_DispatchState OMX_StateLoaded ihf
+
+#avsink agin ON then OFF
+ate_attach_io    avsink 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/triangular_offset.pcm 0 0 0
+MMTE_DispatchState OMX_StateIdle avsink
+OMX_SetConfig avsink OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100
+OMX_SetConfig avsink OMX_IndexConfigAudioMute bMute=OMX_FALSE
+MMTE_DispatchState OMX_StateExecuting avsink
+mmte_sleep 2000
+MMTE_DispatchState OMX_StateIdle avsink
+MMTE_DispatchState OMX_StateLoaded avsink
+
+
+
+
+
+
+
+
+#Stop
+MMTE_DispatchState OMX_StateIdle FmRx
+
+
+MMTE_DispatchState OMX_StateLoaded FmRx
+
+
+MMTE_CheckMemoryStatus
+ens_network_destroy
+test_end

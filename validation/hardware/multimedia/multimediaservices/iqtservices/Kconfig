@@ -1,0 +1,34 @@
+#
+# Iqtservices configuration
+#
+
+menuconfig IQTSERVICES
+	bool "Iqtservices Configuration"
+	help
+	  This module provides IQ tuning tools to control and test Ux500 board
+
+if IQTSERVICES
+
+config IQTSERVICES_DIR
+	string
+	default ./multimediaservices/iqtservices
+
+config IQTSERVICES_DEPS
+	string
+	default ""
+
+config IQTSERVICES_STRIP_DISABLED
+	bool "Disable strip"
+	depends on IQTSERVICES
+	default n
+	help
+	  This will disable strip for this module
+
+config IQTSERVICES_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on IQTSERVICES
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # IQTSERVICES

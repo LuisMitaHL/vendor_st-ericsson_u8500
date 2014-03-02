@@ -1,0 +1,154 @@
+;------------------------------------------------------------
+; system_settings.cmm
+;------------------------------------------------------------
+;
+; Specific system settings
+;
+; 091207 - KM Initial version
+;-----------------------------------------------------------
+
+sys.reset
+
+sys.down
+
+if "&chip_version"=="ed"
+(
+	;CPU selection
+	if "&SmpDebug"=="TRUE"
+		sys.cpu CORTEXA9MPCORESMP2
+	else
+	(
+		sys.cpu CORTEXA9MPCORE
+	)
+
+	; JTAG Clock
+	sys.jtagclock 10MHz
+
+	;Configure JTAG scan chain, this info comes from the encrypted scrip dbgcfg, somethings could be missing
+	if "&ModemTapEnabled"=="FALSE"
+	(
+		sys.config DAPIRPOST 9.
+		sys.config DAPDRPOST 2.
+		sys.config DAPIRPRE 0
+		sys.config DAPDRPRE 0
+	)
+	else
+	(
+		sys.config DAPIRPOST 9.
+		sys.config DAPDRPOST 2.
+		sys.config DAPIRPRE 4.
+		sys.config DAPDRPRE 1.
+	)
+)
+else
+(
+	;CPU selection
+	if "&SmpDebug"=="TRUE"
+		sys.cpu DB8500
+	else
+		sys.cpu DB8500APE-CORE0
+
+	; JTAG Clock
+	sys.jtagclock 10MHz
+
+	if "&ModemTapEnabled"=="FALSE"
+		sys.mc CFGCONNECT 0xc3
+	else
+	(
+		sys.config.multitap stcltap2
+		sys.mc CFGCONNECT 0x3
+	)
+)
+
+if "&chip_version"=="v2"
+	&a9ss_base_addr=0x801A0000
+else
+	&a9ss_base_addr=0x801B0000
+
+&corebase0=&a9ss_base_addr+0x8000
+&corebase1=&a9ss_base_addr+0xA000
+&ctibase0=&a9ss_base_addr+0xC000
+&ctibase1=&a9ss_base_addr+0xD000
+&tpiubase=0x80190000
+&etbbase=&a9ss_base_addr+0x4000
+&funnelbase=&a9ss_base_addr+0x6000
+&pmubase0=&a9ss_base_addr+0x9000
+&pmubase1=&a9ss_base_addr+0xB000
+&ptmbase0=&a9ss_base_addr+0xE000
+&ptmbase1=&a9ss_base_addr+0xF000
+&ctisocbase=0x80180000
+
+;Setup multicore configuration
+if "&SmpDebug"=="TRUE"
+(
+	sys.config COREBASE &corebase0 &corebase1
+	sys.config CTIBASE APB:&ctibase0 APB:&ctibase1
+	sys.config ETMBASE APB:&ptmbase0 APB:&ptmbase1
+	sys.config ETMFUNNELPORT 0 1
+)
+else
+(
+	sys.config COREBASE &corebase0
+	sys.config CTIBASE APB:&ctibase0
+	sys.config ETMBASE APB:&ptmbase0
+	sys.config ETMFUNNELPORT 0
+)
+sys.config TPIUBASE APB:&tpiubase
+sys.config ETBBASE APB:&etbbase
+sys.config FUNNELBASE APB:&funnelbase
+
+sys.o.resbreak off
+sys.o enreset on
+sys.o waitreset on
+if "&UseAttach"!="TRUE"
+	sys.mode prepare
+
+;wait 1s
+
+
+sys.o pwrcheck on
+sys.o resbreak off
+sys.o enreset off
+sys.o waitreset off
+sys.o DACR on
+
+;Enable address extension with spaceid when debugging Linux
+if "&LinuxDebug"=="TRUE"
+(
+	mmu.off
+	mmu.reset
+	y.reset
+	sys.o mmuspaces on
+)
+
+SYStem.Option L2CacheBase 0xA0412000
+
+
+
+
+if (("&UseAttach"!="TRUE")||(simulator()))
+(
+	if !simulator()
+	(
+		; --- determine the end of the boot phase by the CPU1 state (non-secure is expected)
+		&ns_state1=0
+		&loop=0
+		print "Waiting the end of boot (can be up to 30 seconds) ......"
+		while &ns_state1==0&&&loop<60000.
+		(
+			&ns_state1=d.l(APB:&corebase1+0x88)>>18.&1
+			&loop=&loop+1
+		)
+	)
+	sys.up
+)
+else
+	sys.mode attach
+
+
+
+ENDDO
+
+
+
+

@@ -1,0 +1,29 @@
+LR_1 0x0 NOCOMPRESS           ;
+{
+   ER_RO            +0
+   {  *		 		(Vect, +First)
+      *             (+RO)
+   }
+
+   ER_RW            +0
+   {  *             (+RW)
+   }
+
+   ER_ZI            +0
+   {  *             (+ZI)
+   }
+        
+   ER_SHARE_AHB_MEM +0x00100000 UNINIT
+   {  *             (ahb_clcd_memory)
+      * 			(ahb_dma_memory)   
+   }
+
+    ER_HEAP          +0x00100000 UNINIT
+    {  *	        (Heap)
+    }
+
+    ER_STACK	    0x08000000 UNINIT
+    {   *		  	(Stacks)
+    }
+}
+

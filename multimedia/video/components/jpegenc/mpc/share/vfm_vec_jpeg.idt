@@ -1,0 +1,81 @@
+/******************************************************************************
+ Copyright (c) 2009-2011, ST-Ericsson SA
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials
+      provided with the distribution.
+   3. Neither the name of the ST-Ericsson SA nor the names of its
+      contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
+
+#ifndef _VFM_DSP_COMMON_H_
+#define _VFM_DSP_COMMON_H_
+
+#include "t1xhv_common.idt"
+#include "vfm_common.idt"
+
+typedef struct
+{
+	t_ulong_value nStride;
+	t_ulong_value nSliceHeight;
+	t_ulong_value reserved[2];
+} ts_ddep_sec_jpeg_in_param;
+
+/* to be moved to vfm_vec_jpec.h */
+typedef struct
+{
+	ts_t1xhv_vec_frame_buf_in		s_in_frame_buffer;
+	ts_t1xhv_vec_frame_buf_out      s_out_fram_buffer;
+	ts_t1xhv_vec_internal_buf       s_internal_buffer;
+	ts_t1xhv_vec_header_buf 		s_header_buf;
+	ts_t1xhv_bitstream_buf_pos      s_in_out_bitstream_buffer; 
+	ts_t1xhv_bitstream_buf_pos      s_out_bitstream_buffer;
+	ts_t1xhv_vec_jpeg_param_in     	s_in_parameters;       
+	ts_t1xhv_vec_jpeg_param_out    	s_out_parameters;      
+	ts_t1xhv_vec_jpeg_param_inout  	s_in_out_frame_parameters; 
+	ts_t1xhv_vec_jpeg_param_inout  	s_out_frame_parameters;
+	ts_ddep_sec_jpeg_in_param		s_ddep_in_param;
+	//t_uint16			header_buffer[512];
+	t_uint16			header_buffer[33280];
+	ts_ddep_perf_param_out				s_out_perf_parameters; //new added for performance
+} ts_ddep_sec_jpeg_param_desc_;
+
+typedef ts_ddep_sec_jpeg_param_desc_ *tps_ddep_sec_jpeg_param_desc_;
+
+typedef struct
+{
+	ts_ddep_sec_jpeg_param_desc_ mpc_param_set; /*keep this at first place*/
+	ts_ddep_sec_jpeg_param_desc_ host_param_set;
+	ts_ddep_sec_jpeg_param_desc_ tmp_param_set;
+	t_uint16 host_param_set_atomic_entry;
+	t_uint16 host_param_set_atomic_exit;
+	t_uint16 reserved[6];
+} ts_ddep_sec_jpeg_param_desc_dh;
+
+typedef ts_ddep_sec_jpeg_param_desc_dh *tps_ddep_sec_jpeg_param_desc_dh;
+
+#endif // _VFM_DSP_COMMON_H_
+

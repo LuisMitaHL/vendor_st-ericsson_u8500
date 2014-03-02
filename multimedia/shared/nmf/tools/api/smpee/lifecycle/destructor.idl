@@ -1,0 +1,30 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+/*!
+ * \brief C/C++ component destructor interface
+ *
+ * The lifecycle.destructor interface must be implement
+ * by a component in order to provide a destructor that will be called by
+ * the component manager when the component will be destroyed.
+ *
+ * Such code in your primitive ADL component must be used to provide destructor:
+ * \code
+ * primitive your.component.name {
+ *     ...
+ *     provides lifecycle.destructor as destructor
+ *     ...
+ * }
+ * \endcode
+ */
+interface lifecycle.destructor {
+    /*!
+     * \brief Destructor interface method.
+     */
+    void destroy(void);
+
+}

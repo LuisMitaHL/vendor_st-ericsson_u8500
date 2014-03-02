@@ -1,0 +1,2755 @@
+add 
+menu 
+( 
+  popup "&OMX_IMG_inits" 
+  ( 
+	menuitem "init_sensor_primary.ite" 
+	(
+		do cmd "do $(IMG_SCRIPT)/init_sensor_primary.ite "
+	)
+	menuitem "init_sensor_secondary.ite" 
+	(
+		do cmd "do $(IMG_SCRIPT)/init_sensor_secondary.ite "
+	)
+	separator
+	menuitem "Init T32 : swordfish V1 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_swordfish_v1_linux.ite "
+	)
+	menuitem "Init T32 : 558 V1 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_558_v1_linux.ite "
+	)
+	menuitem "Init T32 : kanna V1 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_kanna_v1_linux.ite "
+	)
+	menuitem "Init T32 : lada V1 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_lada_v1_linux.ite "
+	)
+	separator
+	menuitem "Init T32 : swordfish V2 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_swordfish_v2_linux.ite "
+	)
+	menuitem "Init T32 : 558 V2 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_558_v2_linux.ite "
+	)
+	menuitem "Init T32 : acme_mini_tosh V2 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_acme_mini_tosh_v2_linux.ite "
+	)
+	menuitem "Init T32 : kanna V2 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_kanna_v2_linux.ite "
+	)
+	menuitem "Init T32 : lada V2 linux" 
+	(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/init_lada_v2_linux.ite "
+	)
+	separator
+	menuitem "Init T32 : swordfish V1 symbian" 
+	(
+		do cmd "do z:/mmte/img/init_swordfish_v1_symbian.ite "
+	)
+	menuitem "Init T32 : 558 V1 symbian with swordfish" 
+	(
+		do cmd "do z:/mmte/img/init_558_v1_symbian_with_swordfish.ite "
+	)
+	menuitem "Init T32 : 558 V1 symbian with lada" 
+	(
+		do cmd "do z:/mmte/img/init_558_v1_symbian_with_lada.ite "
+	)
+	menuitem "Init T32 : lada V1 symbian" 
+	(
+		do cmd "do z:/mmte/img/init_lada_v1_symbian.ite "
+	)
+	separator	
+	menuitem "Init T32 : swordfish V2 symbian" 
+	(
+		do cmd "do z:/mmte/img/init_swordfish_v2_symbian.ite "
+	)
+	menuitem "Init T32 : 558 V2 symbian with swordfish" 
+	(
+		do cmd "do z:/mmte/img/init_558_v2_symbian_with_swordfish.ite "
+	)
+	menuitem "Init T32 : 558 V2 symbian with lada" 
+	(
+		do cmd "do z:/mmte/img/init_558_v2_symbian_with_lada.ite "
+	)
+	menuitem "Init T32 : acme_mini_tosh V2 symbian with lada" 
+	(
+		do cmd "do z:/mmte/img/init_acme_mini_tosh_v2_symbian_with_lada.ite "
+	)
+	menuitem "Init T32 : lada V2 symbian" 
+	(
+		do cmd "do z:/mmte/img/init_lada_v2_symbian.ite "
+	)
+	separator	
+	popup "&TEST ENV CONFIG" 
+	( 
+		menuitem "init_path_saved_images : on board" 
+		(
+			do cmd "do $(IMG_SCRIPT)/init_path_saved_images.ite ON_BOARD no_needed_path" 
+		)
+		menuitem "init_path_saved_images : on sdcard" 
+		(
+			do cmd "do $(IMG_SCRIPT)/init_path_saved_images.ite ON_SDCARD no_needed_path" 
+		)
+		menuitem "init_path_saved_testreport : on board" 
+		(
+			do cmd "do $(IMG_SCRIPT)/init_path_saved_testreport.ite ON_BOARD no_needed_path" 
+		)
+		menuitem "init_path_saved_testreport : on sdcard" 
+		(
+			do cmd "do $(IMG_SCRIPT)/init_path_saved_testreport.ite ON_SDCARD no_needed_path" 
+		)
+		menuitem "init_sdcard_use_scripts_on_card_linux" 
+		(
+			do cmd "do /sdcard/ite_omx_use_cases/imaging_scripts/init_sdcard_use_scripts_on_card_linux.ite " 
+		)
+		menuitem "init_sdcard_use_scripts_on_card_symbian" 
+		(
+			do cmd "do f:/ite_omx_use_cases/imaging_scripts/init_sdcard_use_scripts_on_card_symbian.ite " 
+		)
+	)
+	separator
+	popup "&Trace" 
+	( 
+			popup "&TRACE OST" 
+			(
+				menuitem "export dbgt_imgcommon_level=0xFF" 
+				(
+					do cmd "export dbgt_imgcommon_level=0xFF "
+				)
+				menuitem "export dbgt_ifm_level=0xFF" 
+				(
+					do cmd "export dbgt_ifm_level=0xFF "
+				)
+			)
+			separator
+			popup "&Set Camera trace" 
+			(
+				menuitem "Set Camera Trace To Console" 
+				(
+					do ../../../imaging/ite/lauterbach/set_camera_trace_console.cmm
+				)
+				menuitem "Set Camera Trace To Buffer" 
+				(
+					do ../../../imaging/ite/lauterbach/set_camera_trace_buffer.cmm 
+				)
+			)
+			menuitem "Dump Trace from Buffer To File" 
+			(
+				do ../../../imaging/ite/lauterbach/dump_trace_to_file.cmm C:/log_omx_trace.txt
+			)
+			separator
+			popup "&Tune Trace Filtering" 
+			(
+				menuitem "No Trace" 
+				(
+					V (__trace_mask) = 0
+				)
+				menuitem "Camera Trace only" 
+				(
+					V (__trace_mask) = 8 
+				)
+				menuitem "ENS Trace only" 
+				(
+					V (__trace_mask) = 5 
+				)
+				menuitem "Camera and ENS Traces " 
+				(
+					V (__trace_mask) = 13 
+				)
+				menuitem "Imgfilter Traces " 
+				(
+					V (__trace_mask) = 16 
+				)
+				menuitem "Imgfilter and ENS Traces " 
+				(
+					V (__trace_mask) = 21 
+				)
+				menuitem "Imgfilter and camera Traces " 
+				(
+					V (__trace_mask) = 24 
+				)
+			)
+			popup "&Tune Trace Output" 
+			(
+				menuitem "To buffer" 
+				(
+					V (_G_trace_in_buffer) = 1
+				)
+				menuitem "To console" 
+				(
+					V (_G_trace_in_buffer) = 0
+				)
+			)
+			separator
+			menuitem "OMX component status" 
+			(
+				do $(IMAGING_PATH)/ite/lauterbach/omxstatus.cmm 
+			)
+	)
+  )
+  popup "&OMX_CAMERA_Tests"
+  (
+	popup "USE CASES"
+	(
+     popup "Operating mode tests"
+     (
+		 menuitem  "omx_stillpreview_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_stillpreview_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_stillpreview_force_display_on_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_stillpreview_force_display_on_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_stillcapture_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_stillcapture_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_stillcapture_ispproc_vpb1_0_disable_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_stillcapture_ispproc_vpb1_0_disable_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_videopreview_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_videopreview_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_videorecord_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_videorecord_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_vpb2_with_boneshot_0_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_vpb2_with_boneshot_0_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_vpb2_with_boneshot_1_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_vpb2_with_boneshot_1_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_vpb2_with_boneshot_1_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_vpb2_with_boneshot_1_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_capturing_bit_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_capturing_bit_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_capturing_bit_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_capturing_bit_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_switch_sensor_uc_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_switch_sensor_uc_metric.ite " 
+	     )
+		 menuitem  "omx_preview_switch_vfstill_vf_video_omvf_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_preview_switch_vfstill_vf_video_omvf_stim.ite " 
+	     )
+		 menuitem  "omx_stillpreview_rgb565_omvfstill_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_stillpreview_rgb565_omvfstill_stim.ite " 
+	     )
+		 menuitem  "omx_save_image_all_colorformat_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_save_image_all_colorformat_stim.ite " 
+	     )
+	     menuitem  "NR : opmode" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_opmode.ite " 
+	     )
+	 )
+     popup "OMX complience tests"
+     (
+		 menuitem  "omx_omxstandard_buffer_order_omvfvideo_stim.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_buffer_order_omvfvideo_stim.ite " 
+	     )
+		 menuitem  "omx_omxstandard_buffer_order_omvideo_stim.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_buffer_order_omvideo_stim.ite " 
+	     )
+		 menuitem  "omx_omxstandard_nbuffercountactual_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_nbuffercountactual_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_nbuffercountactual_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_nbuffercountactual_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_nbuffercountactual_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_nbuffercountactual_omvfstill_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_nbuffercountactual_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_nbuffercountactual_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_nbuffercountactual_omna_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_nbuffercountactual_omna_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_framework_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_framework_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_framework_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_framework_omvideo_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_getextension" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_getextension.ite " 
+	     )
+		 menuitem  "omx_omxstandard_state_transition_omvfvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_state_transition_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_state_transition_omvfstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_state_transition_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_state_transition_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_state_transition_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_autopause_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_autopause_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_time_nudge_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_time_nudge_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_outputports_interop_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_outputports_interop_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_port_disable_vpb0_idle_exe_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_disable_vpb0_idle_exe_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_port_enable_disable_vpb0_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_enable_disable_vpb0_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_port_enable_disable_vpb1_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_enable_disable_vpb1_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_port_enable_disable_vpb0_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_enable_disable_vpb0_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_port_enable_disable_vpb2_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_enable_disable_vpb2_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_omxstandard_port_enable_disable_all_omvideo_metric " 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_enable_disable_all_omvideo_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_port_enable_disable_vpb1_0_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_enable_disable_vpb1_0_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_port_enable_disable_vpb1_1_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_enable_disable_vpb1_1_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_omxstandard_port_allocation_omna_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_omxstandard_port_allocation_omna_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-idle_vpb012-enable-executing_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-idle_vpb012-enable-executing_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-idle_vpb01-enable-executing_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-idle_vpb01-enable-executing_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-idle_vpb1-enable-executing_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-idle_vpb1-enable-executing_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb012-enable-executing_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb012-enable-executing_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb01-enable-executing_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb01-enable-executing_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb1-enable-executing_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb1-enable-executing_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb012-enable-idle_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb012-enable-idle_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb01-enable-idle_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb01-enable-idle_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb1-enable-idle_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb1-enable-idle_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-idle_vpb02-enable-executing_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-idle_vpb02-enable-executing_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-idle_vpb2-enable-executing_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-idle_vpb2-enable-executing_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb02-enable-executing_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb02-enable-executing_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_uc_vpb012-disable-loaded_vpb2-enable-executing_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_uc_vpb012-disable-loaded_vpb2-enable-executing_omvideo_metric.ite " 
+	     )
+	     menuitem  "NR : compliancy" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_compliancy.ite " 
+	     )
+	 ) 	 
+	 popup "Color format tests"
+     (
+		 menuitem  "omx_colorformat_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_colorformat_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_colorformat_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_colorformat_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_colorformat_reso_dynamic_change_state_omvfstill_metric.ite " 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_reso_dynamic_change_state_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_colorformat_reso_dynamic_change_state_omvfvideo_metric.ite " 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_reso_dynamic_change_state_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_colorformat_reso_dynamic_change_state_omvideo_metric.ite " 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_reso_dynamic_change_state_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_colorformat_reso_dynamic_change_state_omstill_metric.ite " 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_reso_dynamic_change_state_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_colorformat_noispproc_omstill_metric" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_colorformat_noispproc_omstill_metric.ite " 
+	     )
+		 menuitem  "NR : colorformat" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_colorformat.ite " 
+	     )
+		 menuitem  "omx_colorformat_vfstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_colorformat_omvfstill_stim.ite " 
+	     )
+		 menuitem  "omx_colorformat_still_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_colorformat_omstill_stim.ite " 
+	     )
+		 menuitem  "omx_colorformat_vfvideo_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_colorformat_omvfvideo_stim.ite " 
+	     )
+		 menuitem  "omx_colorformat_omvideo_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_colorformat_omvideo_stim.ite " 
+	     )
+	 )
+	 popup "FrameRate tests"
+     (
+		menuitem  "omx_darkybox_framerate_variable_omvfstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_framerate_variable_omvfstill_metric.ite " 
+		)
+		 menuitem  "omx_framerate_fixed_dynamic_change_state_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_dynamic_change_state_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_vga_stab_activated_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_vga_stab_activated_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_vga_stab_desactivated_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_vga_stab_desactivated_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_vga_stab_activated_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_vga_stab_activated_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_vga_stab_desactivated_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_vga_stab_desactivated_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_multiple_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_multiple_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_multiple_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_multiple_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_multiple_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_multiple_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_slow_motion_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_slow_motion_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_slow_motion_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_slow_motion_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_burst_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_framerate_fixed_burst_omstill_metric.ite " 
+	     )
+	     menuitem  "NR : framerate" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_framerate.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_vfstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_omvfstill_stim.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_vfvideo_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_omvfvideo_stim.ite " 
+	     )
+		 menuitem  "omx_framerate_fixed_omvideo_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_omvideo_stim.ite " 
+	     )
+		 menuitem  "omx_framerate_variable_omvfstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_variable_omvfstill_stim.ite " 
+	     )
+	 )
+	 popup "Resolution tests"
+     (
+	     menuitem  "omx_resolution_omvfstill_metric" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_resolution_omvfstill_metric.ite " 
+	     )
+	     menuitem  "omx_resolution_omstill_metric" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_resolution_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_resolution_noispproc_omstill_metric" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_resolution_noispproc_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_resolution_omvfvideo_metric" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_resolution_omvfvideo_metric.ite " 
+	     )
+	     menuitem  "omx_resolution_omvideo_metric" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_resolution_omvideo_metric.ite " 
+	     )
+	     menuitem  "NR : resolution" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_resolution.ite " 
+	     )
+	     menuitem  "omx_resolution_vfstill_stim" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_resolution_omvfstill_stim.ite " 
+	     )
+	     menuitem  "omx_resolution_omstill_stim" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_resolution_omstill_stim.ite " 
+	     )
+	     menuitem  "omx_resolution_vfvideo_stim" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_resolution_omvfvideo_stim.ite " 
+	     )
+	     menuitem  "omx_resolution_omvideo_stim" 
+	     (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_resolution_omvideo_stim.ite " 
+	     )
+	 )
+	 popup "Special effect tests"
+     (
+		 menuitem  "omx_darkybox_imagefilter_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_imagefilter_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_imagefilter_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_imagefilter_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_imagefilter_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_imagefilter_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_imagefilter_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_imagefilter_omvideo_metric.ite " 
+	     )
+	     menuitem  "NR : imagefilter" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_imagefilter.ite " 
+	     )
+	 )
+	 popup "White balance tests"
+     (
+		menuitem  "omx_darkybox_wb_preset_omvfstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_wb_preset_omvfstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_wb_preset_omvfvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_wb_preset_omvfvideo_metric.ite " 
+		)
+		menuitem  "omx_darkybox_wb_preset_omtill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_wb_preset_omstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_wb_preset_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_wb_preset_omvideo_metric.ite " 
+		)				
+		menuitem  "omx_darkybox_wb_auto_omvfvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_wb_auto_omvfvideo_metric.ite " 
+		)
+		menuitem  "omx_darkybox_wb_auto_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_wb_auto_omstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_wb_auto_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_wb_auto_omvideo_metric.ite " 
+		)
+	     menuitem  "NR : wb" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_wb.ite " 
+	     )
+		 menuitem  "omx_wb_preset_omvfvideo_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omvfvideo_stim.ite " 
+	     )
+		 menuitem  "omx_wb_preset_omvfstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omvfstill_stim.ite " 
+	     )
+		 menuitem  "omx_wb_preset_omvideo_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omvideo_stim.ite " 
+	     )
+		 menuitem  "omx_wb_preset_omstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omstill_stim.ite " 
+	     )
+	 )
+	 popup "Still burst tests"
+     (
+		 menuitem  "omx_still_burst_infinite_state_idle_omstill_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_still_burst_infinite_state_idle_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_still_burst_infinite_then_finite_omstill_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_still_burst_infinite_then_finite_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_still_burst_infinite_then_stop_omstill_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_still_burst_infinite_then_stop_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_still_burst_limited_omstill_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_still_burst_limited_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_still_burst_limited_then_still_omstill_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_still_burst_limited_then_still_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_still_burst_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_still_burst_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_still_burst_limited_omstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_still_burst_limited_omstill_stim.ite " 
+	     )
+		 menuitem  "omx_still_burst_infinite_omstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_still_burst_infinite_omstill_stim.ite " 
+	     )
+	 )
+	 popup "Zoom tests"
+     (
+	     menuitem  "omx_darkybox_zoom_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_omvfstill_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_omvfvideo_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_omvideo_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_all_resolutions_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_all_resolutions_omvfstill_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_all_resolutions_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_all_resolutions_omstill_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_all_resolutions_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_all_resolutions_omvfvideo_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_all_resolutions_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_all_resolutions_omvideo_metric.ite " 
+	     )
+	     menuitem  "omx_darkybox_zoom_subset_resolutions_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_zoom_subset_resolutions_omvideo_metric.ite " 
+	     )
+	     menuitem  "NR : zoom" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_zoom.ite " 
+	     )
+	 )
+	 popup "Brightness tests"
+     (
+		 menuitem  "omx_darkybox_brightness_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_brightness_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_brightness_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_brightness_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_brightness_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_brightness_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_brightness_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_brightness_omvideo_metric.ite " 
+	     )
+	     menuitem  "NR : brightness" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_brightness.ite " 
+	     )
+	 )
+	 popup "Contrast tests"
+     (
+		 menuitem  "omx_darkybox_contrast_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_contrast_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_contrast_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_contrast_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_contrast_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_contrast_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_contrast_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_contrast_omvideo_metric.ite " 
+	     )
+	     menuitem  "NR : contrast" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_contrast.ite " 
+	     )
+	 )
+	 popup "Saturation tests"
+     (
+		 menuitem  "omx_darkybox_saturation_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_saturation_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_saturation_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_saturation_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_saturation_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_saturation_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_saturation_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_saturation_omvideo_metric.ite " 
+	     )
+	     menuitem  "NR : saturation" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_saturation.ite " 
+	     )
+	 )
+ 	 popup "Exposure tests"
+     (
+		 menuitem  "omx_exposure_aperture_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_aperture_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_exposure_aperture_omvfvideol_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_aperture_omvfvideo_metric.ite " 
+	     )
+		menuitem  "omx_darkybox_exposurelock_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposurelock_omvideo_metric.ite " 
+		)
+		menuitem  "omx_darkybox_exposurelock_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposurelock_omstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_exposure_auto_omstill_instant_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_auto_omstill_instant_metric.ite " 
+		)
+		menuitem  "omx_darkybox_exposure_auto_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_auto_omstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_exposure_auto_omvfstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_auto_omvfstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_exposure_auto_omvfvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_auto_omvfvideo_metric.ite " 
+		)
+		menuitem  "omx_darkybox_exposure_auto_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_auto_omvideo_metric.ite " 
+		)
+		 menuitem  "omx_darkybox_exposure_evcompensation_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_evcompensation_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_evcompensation_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_evcompensation_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_preset_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_preset_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_preset_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_preset_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_preset_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_preset_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_preset_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_preset_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_sensitivity_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_sensitivity_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_exposure_sensitivity_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_sensitivity_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_shutterspeed_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_shutterspeed_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_shutterspeed_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_shutterspeed_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_shutterspeed_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_shutterspeed_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_shutterspeed_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_shutterspeed_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_exposure_precapture_warning_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_precapture_warning_omvfstill_metric.ite " 
+	     )
+	     menuitem  "NR : exposure" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_exposure.ite " 
+	     )
+	 )
+	 popup "Focus tests"
+	 (
+		 menuitem  "omx_darkybox_focus_range_omvfstill_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_range_omvfstill_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_continuous_omvfstill_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_continuous_omvfstill_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_continuous_omvfvideo_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_continuous_omvfvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_continuous_omvideo_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_darkybox_continuous_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_manual_omvfstill_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_manual_omvfstill_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_manual_omvfstill_stim" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_manual_omvfstill_stim.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_manual_omvfvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_manual_omvfvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_manual_omvideo_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_manual_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_region_omvfstill_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_region_omvfstill_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_region_omvfvideo_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_region_omvfvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_region_omvideo_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_region_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_single_shot_omvfstill_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_single_shot_omvfstill_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_single_shot_omstill_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_single_shot_omstill_metric.ite " 
+		 )
+		 menuitem  "omx_focus_continuous_explicit_lock_omvfvideo_stim" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_continuous_explicit_lock_omvfvideo_stim.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_single_shot_failure_managment_omvfstill_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_single_shot_failure_managment_omvfstill_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_focus_continuous_failure_managment_omvfvideo_metric" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_continuous_failure_managment_omvfvideo_metric.ite " 
+		 )
+		menuitem  "omx_darkybox_focus_assistant_light_omvfstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_assistant_light_omvfstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_focus_assistant_light_omvfstill_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_assistant_light_omvfstill_stim.ite " 
+		)
+		 menuitem  "NR : focus" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_focus.ite " 
+		 )
+	 )
+	 popup "Center Field Of View tests"
+	 (
+		 menuitem  "omx_darkybox_centerfieldofview_omvfvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_centerfieldofview_omvfvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_centerfieldofview_omvfvideo_stim.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_centerfieldofview_omvfvideo_stim.ite " 
+		 )
+	 )
+	 popup "Rotation tests"
+	 (
+		 menuitem  "omx_darkybox_rotation_loaded_small_reso_omvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_rotation_loaded_small_reso_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_rotation_idle_small_reso_omvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_rotation_idle_small_reso_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_rotation_executing_small_reso_omvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_rotation_executing_small_reso_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_rotation_loaded_omvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_rotation_loaded_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_rotation_idle_omvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_rotation_idle_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_darkybox_rotation_executing_omvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_rotation_executing_omvideo_metric.ite " 
+		 )
+		 menuitem  "omx_rotation_loaded_omvideo_stim.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_rotation_loaded_omvideo_stim.ite " 
+		 )
+		 menuitem  "omx_rotation_idle_omvideo_stim.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_rotation_idle_omvideo_stim.ite " 
+		 )
+		 menuitem  "omx_rotation_executing_omvideo_stim.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_rotation_executing_omvideo_stim.ite " 
+		 )
+		 menuitem  "omx_darkybox_rotation_zoom_omvideo_metric.ite" 
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_rotation_zoom_omvideo_metric.ite " 
+		 )
+	 )
+ 	 popup "Mirror tests"
+     (
+          menuitem  "omx_darkybox_mirror_omvfstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_omvfstill_metric.ite " 
+	     )
+          menuitem  "omx_darkybox_mirror_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_omstill_metric.ite " 
+	     )
+          menuitem  "omx_darkybox_mirror_omvfvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_omvfvideo_metric.ite " 
+	     )
+          menuitem  "omx_darkybox_mirror_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_omvideo_metric.ite " 
+	     )
+          menuitem  "omx_darkybox_mirror_loaded_omvfstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_loaded_omvfstill_metric.ite " 
+	     )
+          menuitem  "omx_darkybox_mirror_loaded_omstill_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_loaded_omstill_metric.ite " 
+	     )
+          menuitem  "omx_darkybox_mirror_loaded_omvfvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_loaded_omvfvideo_metric.ite " 
+	     )
+          menuitem  "omx_darkybox_mirror_loaded_omvideo_metric"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_mirror_loaded_omvideo_metric.ite " 
+	     )
+	 )
+ 	 popup "Metadata tests"
+     (
+		 menuitem  "omx_exif_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_exif_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_capture_context_omstill_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_capture_context_omstill_metric.ite " 
+	     )
+		 menuitem  "omx_capture_context_omvfstill_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_capture_context_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_capture_context_omvideo_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_capture_context_omvideo_metric.ite " 
+	     )
+		 menuitem  "omx_capture_context_omvfvideo_metric.ite" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_capture_context_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_time_stamp_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_time_stamp_omvideo_metric.ite " 
+	     )
+		menuitem  "NR : metadata" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_metadata.ite " 
+		)
+	 )
+ 	 popup "Bracketing tests"
+     (
+		 menuitem  "omx_darkybox_bracketing_exposurerelativeinev_omstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_bracketing_exposurerelativeinev_omstill_metric.ite " 
+	     )
+	 )
+ 	 popup "Flicker tests"
+     (
+		 menuitem  "omx_darkybox_antiflicker_omvfstill_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_antiflicker_omvfstill_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_antiflicker_omvfvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_antiflicker_omvfvideo_metric.ite " 
+	     )
+		 menuitem  "omx_darkybox_antiflicker_omvideo_metric" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_antiflicker_omvideo_metric.ite " 
+	     )
+	 )
+ 	 popup "Flash tests"
+     (
+		menuitem  "omx_darkybox_flash_auto_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_auto_omstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_flash_auto_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_auto_omvideo_metric.ite " 
+		)
+		menuitem  "omx_darkybox_flash_forced_burst_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_forced_burst_omstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_flash_forced_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_forced_omstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_flash_forced_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_forced_omvideo_metric.ite " 
+		)
+		menuitem  "omx_darkybox_flash_omstill_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_omstill_stim.ite " 
+		)
+		menuitem  "omx_darkybox_flash_omvideo_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_omvideo_stim.ite " 
+		)
+		menuitem  "omx_darkybox_focus_assistant_light_omvfstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_assistant_light_omvfstill_metric.ite " 
+		)
+		menuitem  "omx_darkybox_focus_assistant_light_omvfstill_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_focus_assistant_light_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_flash_omstill_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_omstill_stim.ite " 
+		)
+		menuitem  "omx_flash_omvideo_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_omvideo_stim.ite " 
+		)
+		menuitem  "omx_flash_privacy_indicator_omstill_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_privacy_indicator_omstill_stim.ite " 
+		)
+		menuitem  "omx_flash_privacy_indicator_omvideo_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_privacy_indicator_omvideo_stim.ite " 
+		)
+		menuitem  "omx_flash_usersettings_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_usersettings_omstill_metric.ite " 
+		)
+		menuitem  "omx_flash_usersettings_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_usersettings_omvideo_metric.ite " 
+		)
+		menuitem  "omx_darkybox_flash_forced_burst_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_flash_forced_burst_omstill_metric.ite " 
+		)
+	 )
+ 	 popup "Low power tests"
+     (
+		menuitem  "omx_lowpower_omstill_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_lowpower_omstill_metric.ite " 
+		)
+		menuitem  "omx_lowpower_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_lowpower_omvideo_metric.ite " 
+		)
+	 )
+ 	 popup "Multimedia tests"
+     (
+		menuitem  "omx_cam_bridge_fakesink_omvfstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_bridge_fakesink_omvfstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_bridge_fakesink_omvideo_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_bridge_fakesink_omvideo_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_bridge_ispproc_fakesink_omstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_bridge_ispproc_fakesink_omstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_armivproc_redeye_omstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_armivproc_redeye_omstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_armivproc_redeye_imagefilter_print_extradata_omstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_armivproc_redeye_imagefilter_print_extradata_omstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_redeye_omstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_redeye_omstill_uc_stim.ite " 
+		)
+		menuitem  "omx_darkybox_redeye_omstill_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_redeye_omstill_stim.ite " 
+		)
+	 )
+	)
+	separator
+	popup "Non reg suite"
+	(
+		menuitem "NR : workaround list" 
+		(
+			do cmd "do $(IMG_SCRIPT)/usecases/list_workaround.ite " 
+		)
+		menuitem "NR : nr_env_darkbox_long" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_env_darkbox_long.ite " 
+		)
+		menuitem "NR : nr_env_darkbox_short" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_env_darkbox_short.ite " 
+		)
+		menuitem "NR : nr_env_standard_long.ite" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_env_standard_long.ite " 
+		)
+		menuitem "NR : nr_env_standard_short.ite" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_env_standard_short.ite " 
+		)
+		menuitem "NR : nr_manual_check" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_manual_check.ite " 
+		)
+		menuitem "NR : nr_manual_check_human_decision" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_manual_check_human_decision.ite " 
+		)
+		menuitem "NR : nr_debug" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_debug.ite " 
+		)
+		menuitem "NR : nr_debug_darkybox " 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_debug_darkybox.ite " 
+		)
+		menuitem "NR : nr_stabi" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_stabi.ite " 
+		)
+		menuitem "NR : nr_robustness" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_robustness.ite " 
+		)
+		menuitem "NR : nr_error_managment" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_error_managment.ite " 
+		)
+		menuitem  "NR : nr_selftest " 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_selftest.ite " 
+		)
+		menuitem "NR : nr_vi" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_vi.ite " 
+		)
+		menuitem "NR : nr_perf.ite" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_perf.ite " 
+		)
+		menuitem "NR : nr_testing_the_darkbox.ite" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_testing_the_darkbox.ite " 
+		)
+		menuitem  "NR : nr_omx_brightness" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_brightness.ite " 
+		)
+		menuitem  "NR : nr_omx_colorformat" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_colorformat.ite " 
+		)
+		menuitem  "NR : nr_omx_compliancy" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_compliancy.ite " 
+		)
+		menuitem  "NR : nr_omx_contrast" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_contrast.ite " 
+		)
+		menuitem  "NR : nr_omx_exposure" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_exposure.ite " 
+		)
+		menuitem  "NR : nr_omx_focus" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_focus.ite " 
+		)
+		menuitem  "NR : nr_omx_framerate" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_framerate.ite " 
+		)
+		menuitem  "NR : imanr_omx_imagefiltergefilter" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_imagefilter.ite " 
+		)
+		menuitem  "NR : nr_omx_metadata" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_metadata.ite " 
+		)
+		menuitem  "NR : nr_omx_opmode" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_opmode.ite " 
+		)
+		menuitem  "NR : nr_omx_resolution" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_resolution.ite " 
+		)
+		menuitem  "NR : nr_omx_saturation" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_saturation.ite " 
+		)
+		menuitem  "NR : nr_omx_wb" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_wb.ite " 
+		)
+		menuitem  "NR : nr_omx_zoom" 
+		(
+			do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_zoom.ite " 
+		)	    
+	)
+	separator
+	popup "Valid Frameworks"
+	(
+		menuitem "omx_framework" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framework.ite " 
+		)
+		menuitem "omx_framework_camera_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_fakesink.ite " 
+		)
+		menuitem "omx_framework_camera_imgfilter_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_imgfilter_fakesink.ite " 
+		)
+		menuitem "omx_framework_camera_ispproc_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_ispproc_fakesink.ite " 
+		)
+		menuitem "omx_framework_camera_ispproc_imgfilter_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_ispproc_imgfilter_fakesink.ite " 
+		)
+		menuitem "omx_framework_camera_splitter_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_splitter_fakesink.ite " 
+		)
+		menuitem "omx_framework_camera_splitter_imgfilter_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_splitter_imgfilter_fakesink.ite " 
+		)
+		menuitem "omx_framework_camera_splitter_ispproc_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_splitter_ispproc_fakesink.ite " 
+		)
+		menuitem "omx_framework_camera_splitter_ispproc_imgfilter_fakesink.ite" 
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_framework_camera_splitter_ispproc_imgfilter_fakesink.ite " 
+		)
+	)
+	separator
+	popup "ROBUSTNESS TEST"
+	(
+		menuitem "omx_default_check_default_config_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_default_check_default_config_omna.ite " 
+		)
+		separator
+		menuitem "omx_error_management_omna_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_management_omna_metric.ite " 
+		)
+		menuitem "omx_error_brightness_omstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_brightness_omstill.ite " 
+		)
+		menuitem "omx_error_brightness_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_brightness_omvfstill.ite " 
+		)
+		menuitem "omx_error_brightness_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_brightness_omvfvideo.ite " 
+		)
+		menuitem "omx_error_brightness_omvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_brightness_omvideo.ite " 
+		)
+		menuitem "omx_error_contrast_omstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_contrast_omstill.ite " 
+		)
+		menuitem "omx_error_contrast_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_contrast_omvfstill.ite " 
+		)
+		menuitem "omx_error_contrast_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_contrast_omvfvideo.ite " 
+		)
+		menuitem "omx_error_contrast_omvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_contrast_omvideo.ite " 
+		)
+		menuitem "omx_error_disableport_omstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_disableport_omstill.ite " 
+		)
+		menuitem "omx_error_disableport_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_disableport_omvfstill.ite " 
+		)
+		menuitem "omx_error_disableport_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_disableport_omvfvideo.ite " 
+		)
+		menuitem "omx_error_disableport_omvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_disableport_omvideo.ite " 
+		)
+		menuitem "omx_error_exposure_preset_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_exposure_preset_omvfstill.ite " 
+		)
+		menuitem "omx_error_exposure_preset_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_exposure_preset_omvfvideo.ite " 
+		)
+		menuitem "omx_error_focus_manual_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_focus_manual_omvfstill.ite " 
+		)
+		menuitem "omx_error_focus_manual_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_focus_manual_omvfvideo.ite " 
+		)
+ 		menuitem "omx_error_colorformat_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_colorformat_omna.ite " 
+		)
+		menuitem "omx_error_flash_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_flash_omna.ite " 
+		)
+		menuitem "omx_error_focus_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_focus_omna.ite " 
+		)
+		menuitem "omx_error_rotation_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_rotation_omna.ite " 
+		)
+		menuitem "omx_error_scene_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_scene_omna.ite " 
+		)
+		menuitem "omx_error_framerate_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_framerate_omna.ite " 
+		)
+		menuitem "omx_error_imagefilter_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_imagefilter_omvfstill.ite " 
+		)
+		menuitem "omx_error_imagefilter_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_imagefilter_omvfvideo.ite " 
+		)
+		menuitem "omx_error_resolution_omna.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_resolution_omna.ite " 
+		)
+		menuitem "omx_error_saturation_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_saturation_omvfstill.ite " 
+		)
+		menuitem "omx_error_saturation_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_saturation_omvfvideo.ite " 
+		)
+		menuitem "omx_error_wb_preset_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_wb_preset_omvfstill.ite " 
+		)
+		menuitem "omx_error_wb_preset_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_wb_preset_omvfvideo.ite " 
+		)
+		menuitem "omx_error_zoom_omstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_zoom_omstill.ite " 
+		)
+		menuitem "omx_error_zoom_omvfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_zoom_omvfstill.ite " 
+		)
+		menuitem "omx_error_zoom_omvfvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_zoom_omvfvideo.ite " 
+		)
+		menuitem "omx_error_zoom_omvideo.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_error_zoom_omvideo.ite " 
+		)
+		menuitem "NR : nr_error_managment.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/non_reg/nr_error_managment.ite " 
+		)
+		separator
+		menuitem "--> alias NB_LOOP_ROBUSTNESS_TESTS 50" 
+		(
+		do cmd "alias NB_LOOP_ROBUSTNESS_TESTS 50 " 
+		)
+		menuitem "--> alias NB_LOOP_ROBUSTNESS_TESTS 100" 
+		(
+		do cmd "alias NB_LOOP_ROBUSTNESS_TESTS 100 " 
+		)
+		menuitem "--> alias NB_LOOP_ROBUSTNESS_TESTS looprob" 
+		(
+		do cmd "alias NB_LOOP_ROBUSTNESS_TESTS looprob " 
+		)
+		menuitem "omx_robustness_focus_manual_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_focus_manual_omstill_stim.ite " 
+		)
+		menuitem "omx_robustness_focus_manual_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_focus_manual_omvfvideo_stim.ite " 
+		)
+		menuitem "omx_robustness_darkybox_focus_single_shot_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_darkybox_focus_single_shot_omstill_stim.ite " 
+		)
+		menuitem "omx_robustness_darkybox_focus_single_shot_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_darkybox_focus_single_shot_omvfvideo_stim.ite " 
+		)
+		menuitem "omx_robustness_framerate_variable_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_framerate_variable_omvfstill_stim.ite " 
+		)
+		menuitem "omx_robustness_framerate_fixed_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_framerate_fixed_omvfstill_stim.ite " 
+		)
+		menuitem "omx_robustness_framerate_fixed_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_framerate_fixed_omvfvideo_stim.ite " 
+		)
+		menuitem "omx_robustness_framerate_fixed_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_framerate_fixed_omvideo_stim.ite " 
+		)
+		menuitem "omx_robustness_loaded_idle_omna_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_loaded_idle_omna_stim.ite " 
+		)
+		menuitem "omx_robustness_no_wait_stillcapture_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_no_wait_stillcapture_omstill_stim.ite " 
+		)
+		menuitem "omx_robustness_no_wait_stillpreview_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_no_wait_stillpreview_omvfstill_stim.ite " 
+		)
+		menuitem "omx_robustness_no_wait_videorecord_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_no_wait_videorecord_omvideo_stim.ite " 
+		)
+        menuitem "omx_robustness_no_wait_vr_xt_e_start_stop_i_omvideo_stim.ite" 
+        (
+        do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_no_wait_vr_xt_e_start_stop_i_omvideo_stim.ite " 
+        )
+		menuitem "omx_robustness_noispproc_loaded_idle_omna_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_noispproc_loaded_idle_omna_stim.ite " 
+		)
+		menuitem "omx_robustness_stillcapture_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_stillcapture_omstill_stim.ite " 
+		)
+		menuitem "omx_robustness_stillpreview_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_stillpreview_omvfstill_stim.ite " 
+		)
+		menuitem "omx_robustness_still_burst_limited_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_still_burst_limited_omstill_stim.ite " 
+		)
+		menuitem "omx_robustness_videorecord_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_videorecord_omvideo_stim.ite " 
+		)
+        menuitem "omx_robustness_vr_xt_l_i_e_start_stop_i_l_omvideo_stim.ite" 
+        (
+        do cmd "do $(IMG_SCRIPT)/omx_robustness_vr_xt_l_i_e_start_stop_i_l_omvideo_stim.ite " 
+        )
+        menuitem "omx_robustness_vr_xt_l_i_e_start_stop_i_l_nd_omvideo_stim.ite" 
+        (
+        do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_vr_xt_l_i_e_start_stop_i_l_nd_omvideo_stim.ite " 
+        )
+        menuitem "omx_robustness_vr_xt_e_start_stop_i_omvideo_stim.ite" 
+        (
+        do cmd "do $(IMG_SCRIPT)/robustness_usecases/omx_robustness_vr_xt_e_start_stop_i_omvideo_stim.ite " 
+        )
+		menuitem "NR : nr_robustness.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/non_reg/nr_robustness.ite " 
+		)
+	)
+	separator
+	popup "VI"
+	(
+		menuitem  "vi27635_omx_framerate.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/vi_tests/vi27635_omx_framerate.ite " 
+		)
+		menuitem  "vi27837_omx_nontunneled_stillcapture_omstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/vi_tests/vi27837_omx_nontunneled_stillcapture_omstill.ite " 
+		)
+		menuitem  "vi28056_videorecord_in_loop.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/vi_tests/vi28056_videorecord_in_loop.ite " 
+		)
+		menuitem  "vi29008_multiple_still.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/vi_tests/vi29008_multiple_still.ite " 
+		)
+		menuitem  "vi32569_autopause_enable_multiple_still.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/vi_tests/vi32569_autopause_enable_multiple_still.ite " 
+		)
+		menuitem  "vi32569_autopause_enable_multiple_still_5mega.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/vi_tests/vi32569_autopause_enable_multiple_still_5mega.ite " 
+		)
+		menuitem  "vi32569_autopause_enable_multiple_still_with_jpegencoder.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/vi_tests/vi32569_autopause_enable_multiple_still_with_jpegencoder.ite " 
+		)
+	)
+	separator
+	popup "SELF TEST"
+	(
+		menuitem  "omx_selftest_nontunneled_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_nontunneled_metric.ite " 
+		)
+		menuitem  "omx_selftest_nontunneled_af_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_nontunneled_af_metric.ite " 
+		)
+		menuitem  "omx_selftest_nontunneled_flash_metric " 
+		(
+		  do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_nontunneled_flash_metric.ite " 
+		)
+		menuitem  "omx_selftest_nontunneled_hwa_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_nontunneled_hwa_metric.ite " 
+		)
+		menuitem  "omx_selftest_nontunneled_optical_zoom_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_nontunneled_optical_zoom_metric.ite " 
+		)
+		menuitem  "omx_selftest_nontunneled_sensor_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_nontunneled_sensor_metric.ite " 
+		)
+		menuitem  "omx_selftest_tunneled_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_tunneled_metric.ite " 
+		)
+		menuitem  "omx_selftest_tunneled_af_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_tunneled_af_metric.ite " 
+		)
+		menuitem  "omx_selftest_tunneled_flash_metric " 
+		(
+		  do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_tunneled_flash_metric.ite " 
+		)
+		menuitem  "omx_selftest_tunneled_hwa_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_tunneled_hwa_metric.ite " 
+		)
+		menuitem  "omx_selftest_tunneled_optical_zoom_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_tunneled_optical_zoom_metric.ite " 
+		)
+		menuitem  "omx_selftest_tunneled_sensor_metric " 
+		(
+		do cmd "do $(IMG_SCRIPT)/selftest/omx_selftest_tunneled_sensor_metric.ite " 
+		)
+		menuitem  "NR : selftest " 
+		(
+		do cmd "do $(IMG_SCRIPT)/non_reg/nr_selftest.ite " 
+		)
+	)
+	separator
+	popup "DARKBOX"
+	(
+		menuitem "omx_darkybox_dbox_chart" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_chart.ite " 
+		)
+		menuitem "omx_darkybox_dbox_color" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_color.ite " 
+		)
+		menuitem "omx_darkybox_dbox_lux" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_lux.ite " 
+		)
+		menuitem "omx_darkybox_dbox_shuttle" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_shuttle.ite " 
+		)
+		menuitem "omx_darkybox_image_content_r_g_b_w_b_omvfvideo_metric" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/usecases/omx_darkybox_image_content_r_g_b_w_b_omvfvideo_metric.ite " 
+		)
+	)
+	separator
+	popup "DISPLAY"
+	(
+		menuitem "display_enable_disable_usage : DISABLE " 
+		(
+		do cmd "do $(IMG_SCRIPT)/display_enable_disable_usage.ite DISABLE " 
+		)
+		menuitem "display_enable_disable_usage : ENABLE " 
+		(
+		do cmd "do $(IMG_SCRIPT)/display_enable_disable_usage.ite ENABLE " 
+		)
+		menuitem "display_still_view_output_0 from ispproc " 
+		(
+		do cmd "do $(IMG_SCRIPT)/display_still_view_output_0.ite " 
+		)
+		menuitem "display_still_view_output_1 from ispproc " 
+		(
+		do cmd "do $(IMG_SCRIPT)/display_still_view_output_1.ite " 
+		)
+	)
+	separator
+	popup "STABILISATION"
+	(
+		 menuitem  "omx_stabilization_omvideo_metric.ite"
+		 (
+			do cmd "do $(IMG_SCRIPT)/usecases/omx_stabilization_omvideo_metric.ite " 
+		 )
+		separator
+		popup "vpb0 subqcif"
+		(
+			 menuitem  "omx_stab_subqcif_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_subqcif_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_subqcif_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+		separator
+		popup "vpb0 qcif"
+		(
+			 menuitem  "omx_stab_qcif_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qcif_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qcif_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+		separator
+		popup "vpb0 qvga"
+		(
+			 menuitem  "omx_stab_qvga_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qvga_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qvga_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+		separator
+		popup "vpb0 cif"
+		(
+			 menuitem  "omx_stab_cif_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_cif_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_720phdtv_omvideo_metric.ite " 
+			 )	   
+			 menuitem  "omx_stab_cif_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_cif_1080phdtv_omvideo_metric.ite " 
+			 )	   
+		)  
+		separator
+		popup "vpb0 nhd"
+		(
+			 menuitem  "omx_stab_nhd_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_nhd_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_nhd_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+		separator
+		popup "vpb0 vga"
+		(
+			 menuitem  "omx_stab_vga_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_vga_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_vga_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+		separator
+		popup "vpb0 wvga"
+		(
+			 menuitem  "omx_stab_wvga_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_wvga_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_wvga_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+		separator
+		popup "vpb0 qhd"
+		(
+			 menuitem  "omx_stab_qhd_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_qhd_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_qhd_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+		separator
+		popup "vpb0 xga"
+		(
+			 menuitem  "omx_stab_xga_subqcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_subqcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_qcif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_qcif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_qvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_qvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_cif_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_cif_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_nhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_nhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_vga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_vga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_wvga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_wvga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_qhd_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_qhd_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_xga_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_xga_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_720phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_720phdtv_omvideo_metric.ite " 
+			 )
+			 menuitem  "omx_stab_xga_1080phdtv_omvideo_metric.ite"
+			 (
+				do cmd "do $(IMG_SCRIPT)/usecases/stabi/omx_stab_xga_1080phdtv_omvideo_metric.ite " 
+			 )
+		)
+	)	
+	separator
+	popup "DEBUG"
+	(
+		 menuitem  "omx_audio_record_amr_uc_stim.ite"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_audio_record_amr_uc_stim.ite " 
+	     )
+		 menuitem  "omx_audio_video_omvfvideo_uc_stim.ite"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_audio_video_omvfvideo_uc_stim.ite " 
+	     )
+		 menuitem  "omx_audio_video_omvideo_uc_stim.ite"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_audio_video_omvideo_uc_stim.ite " 
+	     )
+		menuitem  "omx_cam_armivproc_redeye_omstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_armivproc_redeye_omstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_armivproc_redeye_imagefilter_print_extradata_omstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_armivproc_redeye_imagefilter_print_extradata_omstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_bridge_fakesink_omvfstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_bridge_fakesink_omvfstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_bridge_ispproc_fakesink_omstill_uc_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/debug/omx_cam_bridge_ispproc_fakesink_omstill_uc_stim.ite " 
+		)
+		menuitem  "omx_cam_redeye_omstill_uc_stim.ite"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_cam_redeye_omstill_uc_stim.ite " 
+	     )
+		 menuitem  "omx_facedetector_omvideostill_uc_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_darkybox_facedetector_omvideostill_uc_stim.ite " 
+	     )
+		 menuitem  "omx_ispproc_dual_omstill_uc_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_ispproc_dual_omstill_uc_stim.ite " 
+	     )
+		 menuitem  "omx_splitter_omstill_uc_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_splitter_omstill_uc_stim.ite " 
+	     )
+		 menuitem  "omx_stillcapture_vpb1_1_jpeg_encoder_omstill_uc_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_stillcapture_vpb1_1_jpeg_encoder_omstill_uc_stim.ite " 
+	     )
+		 menuitem  "omx_videorecord_vpb2_encoder_omvideo_uc_stab_off_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_videorecord_vpb2_encoder_omvideo_uc_stab_off_stim.ite " 
+	     )
+		 menuitem  "omx_videorecord_vpb2_encoder_omvideo_uc_stab_on_stim"
+		 (
+		    do cmd "do $(IMG_SCRIPT)/debug/omx_videorecord_vpb2_encoder_omvideo_uc_stab_on_stim.ite " 
+	     )
+	)	
+	separator
+	popup "INTERN USE CASES"
+	(
+		menuitem "omx_debug" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_debug.ite " 
+		)
+		menuitem "omx_extension" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_extension.ite " 
+		)
+		menuitem "omx_image_content_omvfvideo_metric" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_image_content_omvfvideo_metric.ite " 
+		)
+		menuitem "omx_darkybox_dbox_chart" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_chart.ite " 
+		)
+		menuitem "omx_darkybox_dbox_color" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_color.ite " 
+		)
+		menuitem "omx_darkybox_dbox_lux" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_lux.ite " 
+		)
+		menuitem "omx_darkybox_dbox_shuttle" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_darkybox_dbox_shuttle.ite " 
+		)
+		menuitem  "omx_still_burst_limited_omstill_stim" 
+		(
+		    do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_still_burst_limited_omstill_stim.ite " 
+	    )
+		menuitem "omx_still_burst_limited__save_image_omstill_stim" 
+		(
+		do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/intern_usecases/omx_still_burst_limited__save_image_omstill_stim.ite " 
+		)		
+		menuitem "omx_interaction_scenario" 
+		(
+		do cmd "do $(IMG_SCRIPT)/interaction/omx_interaction_scenario.ite " 
+		)
+		menuitem "omx_framework" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framework.ite " 
+		)
+		menuitem "omx_extradata_with_stab_omvideo_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_extradata_with_stab_omvideo_stim.ite " 
+		)
+		menuitem "omx_extradata_without_stab_omvideo_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_extradata_without_stab_omvideo_stim.ite " 
+		)
+		menuitem "omx_extradata_omvideo_stim" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_extradata_omvideo_stim.ite " 
+		)
+		menuitem "omx_zoom_simple_omvideo_metric" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_zoom_simple_omvideo_metric.ite " 
+		)		
+		menuitem "omx_disable_enable_port_pb_omvfvideo" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_disable_enable_port_pb_omvfvideo.ite " 
+		)		
+		menuitem "omx_stride_update" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_stride_update.ite " 
+		)
+		menuitem "omx_test_mode" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_test_mode.ite " 
+		)
+		menuitem  "omx_stillpreview_basic_omvfstill_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_stillpreview_basic_omvfstill_metric.ite " 
+		)
+		menuitem  "omx_videopreview_basic_omvfvideo_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_videopreview_basic_omvfvideo_metric.ite " 
+		)
+		menuitem  "omx_save_first_image_still_vpb1_1.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_first_image_still_vpb1_1.ite " 
+		)
+		menuitem  "omx_save_first_image_vfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_first_image_vfstill.ite " 
+		)
+		menuitem  "omx_save_first_image_vfvideo_video.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_first_image_vfvideo_video.ite " 
+		)
+		menuitem  "omx_save_image_vfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_vfstill.ite " 
+		)
+		menuitem  "omx_save_image_n_calls_vfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_n_calls_vfstill.ite " 
+		)
+		menuitem  "omx_save_image_several_vfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_several_vfstill.ite " 
+		)
+		menuitem  "omx_save_image_with_specifed_index_vfstill.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_with_specifed_index_vfstill.ite " 
+		)
+		menuitem  "omx_save_image_video.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_video.ite " 
+		)
+		menuitem  "omx_stab_save_images.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_stab_save_images.ite " 
+		)
+		menuitem  "omx_save_image_raw.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_raw.ite " 
+		)
+		menuitem  "omx_save_image_rawbayer.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_rawbayer.ite " 
+		)
+		menuitem  "omx_save_image_vfstill_darkybox_lux_on.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_vfstill_darkybox_lux_on.ite " 
+		)	
+		menuitem  "omx_save_image_still_darkybox_color_red.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_save_image_still_darkybox_color_red.ite " 
+		)	
+		menuitem  "omx_latency_estimation_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_latency_estimation_metric.ite " 
+		)
+		menuitem  "omx_framerate_fixed_short_test_omvfvideo_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_framerate_fixed_short_test_omvfvideo_metric.ite " 
+		)
+	)
+	separator
+	popup "IQ TEAM"
+	(
+		menuitem "omx_iq_basic_script_for_framework" 
+		(
+		do cmd "do $(IMG_SCRIPT)/iq_tunning/omx_iq_basic_script_for_framework.ite " 
+		)
+		menuitem "omx_iq_save_vpb0" 
+		(
+		do cmd "do $(IMG_SCRIPT)/iq_tunning/omx_iq_save_vpb0.ite " 
+		)
+		menuitem "omx_iq_save_vpb1" 
+		(
+		do cmd "do $(IMG_SCRIPT)/iq_tunning/omx_iq_save_vpb1.ite " 
+		)
+		menuitem "omx_iq_save_vpb1_burst" 
+		(
+		do cmd "do $(IMG_SCRIPT)/iq_tunning/omx_iq_save_vpb1_burst.ite " 
+		)
+		menuitem "omx_iq_save_vpb2" 
+		(
+		do cmd "do $(IMG_SCRIPT)/iq_tunning/omx_iq_save_vpb2.ite " 
+		)
+	)
+	separator
+	popup "PERF"
+	(
+		menuitem "omx_perf_framerate_max_fps_1080p_omvideo_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/perf/omx_perf_framerate_max_fps_1080p_omvideo_metric.ite " 
+		)
+		menuitem "omx_perf_framerate_max_fps_720p_omvideo_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/perf/omx_perf_framerate_max_fps_720p_omvideo_metric.ite " 
+		)
+		menuitem "omx_perf_time_focus_single_search_omvfstill_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/perf/omx_perf_time_focus_single_search_omvfstill_metric.ite " 
+		)
+		menuitem "omx_perf_time_shot_to_shot_omstill_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/perf/omx_perf_time_shot_to_shot_omstill_metric.ite " 
+		)
+		menuitem "omx_perf_time_start_vf_omvfstill_metric.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/perf/omx_perf_time_start_vf_omvfstill_metric.ite " 
+		)
+		menuitem "NR : nr_omx_perf.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/non_reg/nr_omx_perf.ite " 
+		)
+	)
+	separator
+	popup "STIMULATION TESTS FOR NON REG"
+	(
+		menuitem  "alias IMG_SAVE_IMAGE 1" 
+		(
+		do cmd "alias IMG_SAVE_IMAGE 1 " 
+		)
+		menuitem  "alias IMG_SAVE_IMAGE 0" 
+		(
+		do cmd "alias IMG_SAVE_IMAGE 0 " 
+		)
+		menuitem  "omx_save_image_all_colorformat_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_save_image_all_colorformat_stim.ite " 
+		)
+		 menuitem  "omx_bracketing_exposurerelativeinev_omstill_stim" 
+		 (
+		    do cmd "do $(IMG_SCRIPT)/usecases/omx_bracketing_exposurerelativeinev_omstill_stim.ite " 
+	     )
+		menuitem  "omx_zoom_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_zoom_omstill_stim.ite " 
+		)
+		menuitem  "omx_zoom_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_zoom_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_zoom_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_zoom_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_zoom_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_zoom_omvideo_stim.ite " 
+		)
+		menuitem  "omx_exposure_aperture_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_aperture_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_exposure_aperture_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_aperture_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_exposure_evcompensation_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_evcompensation_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_exposure_evcompensation_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_evcompensation_omstill_stim.ite " 
+		)
+		menuitem  "omx_darkybox_exposure_sensitivity_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_darkybox_exposure_sensitivity_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_exposure_sensitivity_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_sensitivity_omstill_stim.ite " 
+		)
+		menuitem  "omx_exposure_preset_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_preset_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_exposure_preset_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_preset_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_exposure_preset_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_preset_omvideo_stim.ite " 
+		)
+		menuitem  "omx_exposure_shutterspeed_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_shutterspeed_omstill_stim.ite " 
+		)
+		menuitem  "omx_exposure_shutterspeed_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_shutterspeed_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_exposure_shutterspeed_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_shutterspeed_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_exposure_shutterspeed_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_shutterspeed_omvideo_stim.ite " 
+		)
+		menuitem  "omx_contrast_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_contrast_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_contrast_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_contrast_omstill_stim.ite " 
+		)
+		menuitem  "omx_contrast_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_contrast_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_contrast_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_contrast_omvideo_stim.ite " 
+		)
+		menuitem  "omx_brightness_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_brightness_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_brightness_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_brightness_omstill_stim.ite " 
+		)
+		menuitem  "omx_brightness_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_brightness_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_brightness_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_brightness_omvideo_stim.ite " 
+		)
+		menuitem  "omx_focus_assistant_light_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/intern_usecases/omx_focus_assistant_light_omstill_stim.ite " 
+		)
+		menuitem  "omx_flash_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_omvideo_stim.ite " 
+		)
+		menuitem  "omx_flash_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_omstill_stim.ite " 
+		)
+		menuitem  "omx_flash_privacy_indicator_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_privacy_indicator_omstill_stim.ite " 
+		)
+		menuitem  "omx_flash_privacy_indicator_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_flash_privacy_indicator_omvideo_stim.ite " 
+		)
+		menuitem  "omx_exposure_preset_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_exposure_preset_omstill_stim.ite " 
+		)
+		menuitem  "omx_focus_continuous_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_continuous_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_focus_continuous_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_continuous_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_focus_continuous_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_continuous_omvideo_stim.ite " 
+		)
+		menuitem  "omx_focus_manual_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_manual_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_focus_manual_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_manual_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_focus_manual_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_manual_omvideo_stim.ite " 
+		)
+		menuitem  "omx_focus_region_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_region_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_focus_region_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_region_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_focus_region_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_region_omvideo_stim.ite " 
+		)
+		menuitem  "omx_focus_single_shot_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_focus_single_shot_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_mirror_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_mirror_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_mirror_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_mirror_omvideo_stim.ite " 
+		)
+		menuitem  "omx_mirror_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_mirror_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_mirror_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_mirror_omstill_stim.ite " 
+		)
+		menuitem  "omx_imagefilter_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_imagefilter_omstill_stim.ite " 
+		)
+		menuitem  "omx_imagefilter_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_imagefilter_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_imagefilter_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_imagefilter_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_imagefilter_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_imagefilter_omvideo_stim.ite " 
+		)
+		menuitem  "omx_saturation_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_saturation_omstill_stim.ite " 
+		)
+		menuitem  "omx_saturation_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_saturation_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_saturation_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_saturation_omvideo_stim.ite " 
+		)
+		menuitem  "omx_saturation_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_saturation_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_scene_mode_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_scene_mode_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_wb_preset_omstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omstill_stim.ite " 
+		)
+		menuitem  "omx_wb_preset_omvfstill_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omvfstill_stim.ite " 
+		)
+		menuitem  "omx_wb_preset_omvfvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omvfvideo_stim.ite " 
+		)
+		menuitem  "omx_wb_preset_omvideo_stim.ite" 
+		(
+		do cmd "do $(IMG_SCRIPT)/usecases/omx_wb_preset_omvideo_stim.ite " 
+		)
+	)
+  )
+)

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+touch $1/{a,b,c,d,e,f,g,h,i,j,k,l,m}
+./testdir $1
+if [ $? -ne 0 ]; then
+	echo "test failed..."
+	exit 1
+fi
+rm $1/{a,b,c,d,e,f,g,h,i,j,k,l,m}
+
+touch $1/{a,b,c,d,e}
+./testdir $1
+if [ $? -ne 0 ]; then
+	echo "test failed..."
+	exit 1
+fi
+rm $1/{a,b,c,d,e}
+
+touch $1/{a,b,c}
+./testdir $1
+if [ $? -ne 0 ]; then
+	echo "test failed..."
+	exit 1
+fi
+rm $1/{a,b,c}
+
+touch $1/{a,b}
+./testdir $1
+if [ $? -ne 0 ]; then
+	echo "test failed..."
+	exit 1
+fi
+rm $1/{a,b}
+
+touch $1/a
+./testdir $1
+if [ $? -ne 0 ]; then
+	echo "test failed..."
+	exit 1
+fi
+rm $1/a
+
+./testdir $1
+if [ $? -ne 0 ]; then
+	echo "test failed..."
+	exit 1
+fi

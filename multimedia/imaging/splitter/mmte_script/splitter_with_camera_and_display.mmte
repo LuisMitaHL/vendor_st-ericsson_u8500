@@ -1,0 +1,135 @@
+# OMX standalone splitter test: Camera VPB0 linked to splitter
+
+ite_omx_LOS_GetAllocatedChunk
+
+if SYMBIAN == 1
+   alias OMX_CAMERA_NAME       OMX.ST.CAMERA
+   alias OMX_SPLITTER_NAME     OMX.ST.IMAGESPLITTER
+   alias OMX_DISPLAYSINK_NAME  OMX.SYMBIAN.VIDEO.GRAPHICSINK
+   alias OMX_FAKESINK_NAME     OMX.ST.FAKESINK
+else
+   alias OMX_CAMERA_NAME       OMX.ST.HSMCamera
+   alias OMX_SPLITTER_NAME     OMX.ST.ImageSplitter
+   alias OMX_DISPLAYSINK_NAME  OMX.ST.VFM.DISPLAY.SINK
+   alias OMX_FAKESINK_NAME     OMX.ST.Fakesink
+endif
+
+alias VPB0_WIDTH  640
+alias VPB0_HEIGHT 480
+alias VPB0_COLOR_FORMAT  OMX_COLOR_Format16bitRGB565
+alias VPB0_STRIDE 1280
+alias FRAME_RATE 30
+alias PREVIEW_DURATION 5000
+
+test_logDir	$(MMTE_SCRIPT)
+test_start splitter_unit_camera splitter unitary with camera and displaysink
+
+OMX_GetHandle    camera OMX_CAMERA_NAME
+OMX_SetParameter camera OMX_IndexParamPortDefinition nPortIndex=0 format.video.pNativeRender=0 format.video.nFrameWidth=VPB0_WIDTH format.video.nFrameHeight=VPB0_HEIGHT format.video.nStride=0 format.video.nSliceHeight=0 format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=VPB0_COLOR_FORMAT format.video.pNativeWindow=0 format.video.xFramerate=FRAME_RATE
+OMX_SetParameter camera OMX_IndexParamCommonSensorMode nPortIndex=0 bOneShot=1
+
+OMX_GetHandle    splitter OMX_SPLITTER_NAME
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=VPB0_WIDTH format.video.nFrameHeight=VPB0_HEIGHT format.video.nSliceHeight=VPB0_WIDTH format.video.nStride=VPB0_STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=VPB0_COLOR_FORMAT format.video.pNativeWindow=0
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=1  format.video.pNativeRender=0 format.video.nFrameWidth=VPB0_WIDTH format.video.nFrameHeight=VPB0_HEIGHT format.video.nSliceHeight=VPB0_WIDTH format.video.nStride=VPB0_STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=VPB0_COLOR_FORMAT format.video.pNativeWindow=0
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=2  format.video.pNativeRender=0 format.video.nFrameWidth=VPB0_WIDTH format.video.nFrameHeight=VPB0_HEIGHT format.video.nSliceHeight=VPB0_WIDTH format.video.nStride=VPB0_STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=VPB0_COLOR_FORMAT format.video.pNativeWindow=0
+
+OMX_GetHandle    sink_1 OMX_DISPLAYSINK_NAME
+OMX_SetParameter sink_1 OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=VPB0_WIDTH format.video.nFrameHeight=VPB0_HEIGHT format.video.nSliceHeight=VPB0_WIDTH format.video.nStride=VPB0_STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=VPB0_COLOR_FORMAT format.video.pNativeWindow=0
+
+OMX_GetHandle    fakesink OMX_FAKESINK_NAME
+OMX_SetParameter fakesink OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=VPB0_WIDTH format.video.nFrameHeight=VPB0_HEIGHT format.video.nSliceHeight=VPB0_WIDTH format.video.nStride=VPB0_STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=VPB0_COLOR_FORMAT format.video.pNativeWindow=0
+
+if SYMBIAN == 1
+OMX_SetParameter sink_1 OMX_IndexParamPortDefinition nPortIndex=0 nBufferCountActual=4
+endif
+
+OMX_SendCommand  camera   OMX_CommandPortDisable 3
+MMTE_WaitEvent   camera   OMX_EventCmdComplete OMX_CommandPortDisable 3
+
+OMX_SendCommand  camera   OMX_CommandPortDisable 1
+MMTE_WaitEvent   camera   OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand  camera   OMX_CommandPortDisable 2
+MMTE_WaitEvent   camera   OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SendCommand  splitter OMX_CommandPortDisable 3
+MMTE_WaitEvent   splitter OMX_EventCmdComplete OMX_CommandPortDisable 3
+
+OMX_SendCommand  splitter OMX_CommandPortDisable 4
+MMTE_WaitEvent   splitter OMX_EventCmdComplete OMX_CommandPortDisable 4
+
+OMX_SetupTunnel camera 0 splitter 0
+OMX_SetupTunnel splitter 1 sink_1 0
+OMX_SetupTunnel splitter 2 fakesink 0
+
+OMX_SendCommand sink_1   OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand fakesink OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand camera   OMX_CommandStateSet OMX_StateIdle
+
+MMTE_WaitEvent  camera   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  fakesink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+if SYMBIAN == 1
+   MMTE_WaitEvent sink_1 OMX_EventPortSettingsChanged OMX_SymbianIndexParamVideoGFXSurfaceConfig
+   mmte_CreateWindow sink_1
+endif
+
+OMX_SendCommand sink_1   OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand fakesink OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand camera   OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent camera   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent fakesink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+mmte_sleep PREVIEW_DURATION
+
+test_next buffer exchange achieved
+test_result PASSED
+
+OMX_SendCommand camera   OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand sink_1   OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand fakesink OMX_CommandStateSet OMX_StateIdle
+
+MMTE_WaitEvent fakesink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent camera   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand camera   OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand sink_1   OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand fakesink OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateLoaded
+
+MMTE_WaitEvent camera   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent fakesink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+if SYMBIAN == 1
+   mmte_DestroyWindow sink_1
+endif
+
+OMX_FreeHandle sink_1
+OMX_FreeHandle fakesink
+OMX_FreeHandle splitter
+OMX_FreeHandle camera
+
+check_error
+test_next end_of_scenario achieved
+test_result PASSED
+
+ens_network_destroy
+
+mmte_sleep 5000
+
+ite_omx_LOS_GetAllocatedChunk
+ite_omx_LOS_DumpAllocatedChunk
+
+test_end

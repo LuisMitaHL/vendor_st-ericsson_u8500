@@ -1,0 +1,141 @@
+MMD Video Release note 
+ 
+
+Release number:     mpeg4enc for OSI Video W1044
+Status:             Component Delivery
+
+Organization:       MMD
+
+
+
+STEricsson Confidential.
+This document contains proprietary and confidential information of the STEricsson Group. This document is not to be copied in whole or part. 
+Information furnished is believed to be accurate and reliable. However, STEricsson assumes no responsibility for the consequences of use of such information nor for any infringement of patents or other rights of third parties, which may result from its use. No license is granted by implication or otherwise under any patent or patent rights of STEricsson. Specifications mentioned in this publication are subject to change without notice. This publication supersedes and replaces all information previously supplied. STEricsson products are not authorized for use as critical components in life support devices or systems without express written approval of STEricsson
+ Is a registered trademark of the STEricsson Group.
+? 2003 STEricsson - All Rights Reserved
+STEricsson GROUP OF COMPANIES
+Australia - Brazil - Canada - China - France - Germany - Italy - Japan - Korea - Malaysia - Malta - Morocco - The Netherlands - Singapore - Spain - Sweden - Switzerland - Taiwan - Thailand - United Kingdom - U.S.A.
+STEricsson Limited is a member of the STEricsson Group.
+
+
+
+1	GENERAL INFORMATION
+1.1	Release number
+1.2	Board configuration supported
+1.3	First level support contact
+1.4	Symbian baseport version
+1.5	Tools versioning
+2	Media component list versioning
+3	Release content
+3.1	Released Features
+3.2	New features
+3.3	Modified features
+3.4	Removed features
+3.5	Restrictions / Known issues
+4	Defect status
+4.1	Fixed defect list
+4.2	Active defect list
+5	Compilation rules
+5.1	Compilation procedure
+5.2	Compilation configurability
+6	QA check status
+6.1	Compilation warning / error
+6.2	Code Static analysis result
+6.3	Confidentiality safe
+7	documents
+
+
+
+WARNING !!!
+===========
+Only meaningful chapters for single component delivery are described herebelow.
+If chapter is not described, it means you need to refer to the associated Domain Delivery Release note
+
+
+3	RELEASE CONTENT
+3.1	Released Features :
+		- Contains software and hardware encoder components.
+
+3.2	New features:
+		* Support for ARM load computation added.
+		* Support for RME added.
+		* Support added for OST Traces.
+		* Support for H263 profile 3 in SW encoder.
+				
+3.3	Modified features:
+		* Changes done in calculation of Qp values for CBR/VBR cases.
+		* Updated the parsing done in ProcessingComponent of ExtraData sections, now it does not assume the first extra data to be stab extra data.
+		* Updated Ddep to raise EOS buffer flag event AFTER the buffers are released
+		* If a Pause command comes during encoding, the command is held until endAlgo is called for that frame.
+		* All internal and input/output buffers are now made cacheable for SW encoder.
+		
+3.4	Removed features:
+		NA
+
+3.5	Restrictions / Known issues:
+		* Cropping testcases are not working on V1 board (Fw-VI 26356)
+		* Data partitioning cases are crashing (getting fillLen morethan allocLen) (Fw-VI 26971, Osi-VI 25289)
+		* Some streams are not bit matching in CBR/VBR cases (VI 26974).
+	Resolved in this release:
+		* VI 32019 (Parameters sent to algo should take into account nFirstGOB field of OMX_VIDEO_PARAM_VIDEOFASTUPDATETYPE)
+		* VI 32167 ([ncp110]: Static parameter setting on disabled port reports error for MPEG4 OMX Encoder component)
+		* VI 32168 ([ncp110]MPEG4 encoder does not behave correctly with OMX_IndexParamVideoProfileLevelQuerySupported setting)
+		* Corrected the debug buffer size sent to mpc_trace_init in Ddep.
+		* Now correct value of eColorFormat returned when using OMX_IndexParamVideoPortFormat (ER 317856)
+		* ER 318345: Correction in allocation of mvfieldbuffer
+		refer to this path :
+		https://codex.cro.st.com/wiki/?group_id=1052&pagename=OMX+OSI+Mpeg4+Encoder+Release+Note
+	
+3.6 Sanity Report:
+		* Failing Testcases
+			- dual_mpeg4_encode_14_01, Test crashes due to issues identified in Validation Test Suite
+			- dual_mpeg4_encode_14_03, Test crashes due to issues identified in Validation Test Suite
+			- generic_mpeg4_encode_07_19, (Osi-VI 26974)
+			- generic_mpeg4_encode_07_21, (Osi-VI 26974)
+			- generic_mpeg4_encode_08_31, (Osi-VI 26974)
+			- generic_mpeg4_encode_09_12, (Fw-VI 26971, Osi-VI 25289)
+			- generic_mpeg4_encode_09_19, (Fw-VI 26971, Osi-VI 25289)
+			- mpeg4_encode_cropping_03_20 (Fw-VI 26356)
+			- mpeg4_encode_cropping_03_64 (Fw-VI 26356)
+			- mpeg4_encoder_tunnel_06_05, validation test suite is not setting timestamps and hence bitexactness is not achevied.
+			- mpeg4_encoder_tunnel_06_08, validation test suite is not setting timestamps and hence bitexactness is not achevied.
+			- mpeg4_encoder_port_test_51_06, test case hangs (to be analyzed)
+			- mpeg4_encoder_flush_54_08, test case hangs (to be analyzed)
+			- mpeg4_encoder_dynamic_55_05, (OSI_VAL-VI 27914)
+			- generic_mpeg4_encode_08_16, (Osi-VI 26974)
+			- generic_mpeg4_encode_07_42, (Osi-VI 26974) 
+			
+			
+3.7 Complete features of the component
+		Detailed list of the supported API
+		May be better to have it in Application Note
+
+
+5	COMPILATION RULES  	
+5.1	Compilation procedure
+		Only if special things to be known
+		Otherwise See Domain Delivery release note
+
+5.2	Compilation configurability		
+		List of the existing compilation flags to be known
+
+
+
+6	QA CHECK STATUS
+6.1	Compilation warning
+		NIL for RVCT and one warning for GCC
+6.2.	Coverity Tool warnings
+		NIL
+6.3	Forbidden Keywords
+		NIL   
+6.4	ST-errisson header added
+		added in all relased files.  
+
+
+7	DOCUMENTS
+		Please refer to embedded Application Note in Document folder (once available)
+
+
+8	Test Results 
+		OSI level test running.
+        

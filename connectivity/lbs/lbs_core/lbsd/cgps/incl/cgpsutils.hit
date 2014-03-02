@@ -1,0 +1,168 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSUTILS_HIT__
+#define __CGPSUTILS_HIT__
+/**
+* \file cgpsutils.hit
+* \date 21/07/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all structures used by cgps4utils.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 21.07.08 </TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+*     <TR>
+*             <TD> 21.07.08 </TD><TD> M.BELOU </TD><TD> operator rules creation & CP integration </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\struct t_CGPSOperatorRules
+*\brief structure defining the operator rules fields
+*
+*\see swAD_CGPS_p26612_V1.2_P2.doc 4.5.3    Multi-application management
+*/
+typedef struct
+{
+   uint16_t v_CgpsCpMCC;       /*!< operator MCC */
+   uint16_t v_CgpsCpMNC;       /*!< operator MNC */
+   uint16_t v_newSession;      /*!< bitfield defining the CGPS Comportement when a new CP session is asked by MMI */
+   uint16_t v_oldSession;      /*!< bitfield defining the CGPS Comportement with the current CP session  */
+   uint32_t v_OperatorRules;   /**< Operator rules */
+}t_CGPSOperatorRules;
+
+/**
+*\struct t_CGPSMsgQueue
+*\brief structure defining Queue field
+*/
+
+typedef struct t_CGPSMsgQueue * t_CGPSMsgQueuePtr;
+
+typedef struct{
+  t_ProcessIdentity  v_SrcProcess;      /*!< Source Process ID */
+  t_ProcessIdentity  v_DstProcess;      /*!< Destination Process ID */
+  t_OperationType v_Event;           /*!< Message Identity */
+  uint8_t             *p_Data;            /*!< Message Data */
+  t_CGPSMsgQueuePtr v_QNext;           /*!< Next Queue Node Pointer */
+}t_CGPSMsgQueue;
+/*+SYScs46505*/
+/**
+*\struct t_cgps_AssistTracking
+*\brief structure parameter required for Assistance Tracking
+*/
+
+typedef struct {
+  uint32_t vl_lastSUPLSessionTimestamp;      /*!<Last Time SUPL session*/
+  uint32_t vl_NumSuplSessionAttemptInCell;  /*!<Number of Assistance Request in a Cell.  */
+  uint32_t vl_NumSuplSessionFailureInCell;   /*!<Number of Assistance Request attempt failed. This could be SUPL TCP failure, PDP failure.*/
+  uint32_t vl_lastAssistTrackTimestamp;        /*!<Last Time Assist Track session*/
+} t_cgps_AssistTracking;
+
+
+/*-SYScs46505*/
+/**
+* \struct t_CGPSUserConfig
+* \brief Structure which provide the user configuration from file to LBS Subsystem
+*/
+
+
+typedef struct{
+    int8_t    v_Version[50];        /**< User Configuration file version*/
+/*16 bits are already covered,.Need to increase the Mask size to accomodate 3 more Flags i.e Enable GPS,Enable Glonass,Enable SBAS*/
+    uint32_t v_ConfigMask;            /**< This element bit in this field shall be set if the corresponding bit is set in v_ValidityBitmap
+                                                           1- Field is enabled, 0 - Field is disabled*/
+
+
+    uint16_t  v_Config2Mask;        /**< This field shall based on which all optional element are updated. */
+    uint16_t  v_SensMode;            /**< This field shall be used if corresponding bit in v_Config2Mask is set*/
+    uint16_t  v_SensTtff;            /**< This field shall be used if corresponding bit in v_Config2Mask is set*/
+    uint16_t  v_PowerPref;            /**< This field shall be used if corresponding bit in v_Config2Mask is set*/
+    uint16_t  v_ColdStart;            /**< This field shall be used if corresponding bit in v_Config2Mask is set*/
+    int8_t  v_Slp_Address[50];              /**< Pointer to SLP address to be used for SUPL Sessions*/
+    int8_t  v_Slp_Address_Type;    /**< This information shall define the type of SLP address provided in Slp_Address*/
+    int32_t v_Port_Num;            /**< Port number to be used for SUPL Sessions, 0XFFF sets the port number to default value*/
+    int32_t v_Slp_AddrLen;        /**< Length of octet used to carry SLP address*/
+    int8_t v_Apn[50];            /**< Pointer to Access Point Name string, NULL if APN has to be set to default value*/
+    int8_t v_Login[50];            /**< Pointer to the Login string, NULL if unused*/
+    int8_t v_Password[50];        /**< Pointer to the passowrd string, NULL if unused*/
+    int8_t v_ESlp_Address[2560];        /**< Pointer to the slp  NULL if unused*/ 
+
+
+}t_CGPSUserConfig;
+
+/**
+* \struct t_CGPSLoggingConfig
+* \brief Structure which provide the Logging configuration from file to LBS Subsystem
+*/
+
+typedef struct{
+    uint8_t v_Version[50];        /**< Logging Configuration file version*/
+    uint8_t v_GnGnbType;        /**< GNB Message Type - Application,File,None*/
+    uint16_t v_GnGnbMaxFilesize;        /**< GNB Maximum File size*/
+    uint8_t v_GnGnbOpt;        /**< GNB Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+    uint8_t v_GNNmeaType;        /**< NMEA Message Type - Application,File,None*/
+    uint16_t v_GnNmeaMaxFilesize;        /**< NMEA Maximum File size*/
+    uint8_t v_GnNmeaOpt;    /**< NMEA Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+    uint8_t v_GnNavType;        /**< NAV Message Type - Application,File,None*/
+    uint16_t v_GnNavMaxFilesize;        /**< NAV Maximum File size*/
+    uint8_t v_GnNavOpt;        /**< NAV Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+    uint8_t v_GnEventType;        /**< EVENT Message Type - Application,File,None*/
+    uint16_t v_GnEventMaxFilesize;        /**< EVENT Maximum File size*/
+    uint8_t v_GnEventOpt;    /**< EVENT Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+    uint8_t v_SuplType;        /**< SUPL Message Type - Application,File,None*/
+    uint16_t v_SuplMaxFilesize;        /**< SUPL Maximum File size*/
+    uint8_t v_SuplOpt;    /**< SUPL Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+    uint8_t v_CmccType;        /**< CMCC Message Type - Application,File,None*/
+    uint16_t v_CmccMaxFilesize;        /**< CMCC Maximum File size*/
+    uint8_t v_CmccOpt;    /**< CMCC Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+    uint8_t v_CgpsType;        /**< CGPS Message Type - Application,File,None*/
+    uint16_t v_CgpsMaxFilesize;        /**< CGPS Maximum File size*/
+    uint8_t v_CgpsOpt;    /**< CGPS Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+    uint8_t v_FsmType;        /**< FSM Message Type - Application,File,None*/
+    uint16_t v_FsmMaxFilesize;        /**< FSM Maximum File size*/
+    uint8_t v_FsmOpt;        /**< FSM Source Type -E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  */
+
+}t_CGPSLoggingConfig;
+
+
+/**
+* \struct t_CGPSPlatformConfig
+* \brief Structure which provide the platform configuration from Configuration file to LBS Subsystem
+*/
+
+
+typedef struct{
+    uint8_t v_Version[50];        /**<PlatformConfiguration file version*/
+    uint16_t v_Config1Mask;        /** The element bit in this field shall be set if the corresponding bit is set in ValidityBitmap
+                                    Bit 0 - PureMSA CP, Bit 1 - PureMSA UP, Bit 2 - External LNA. Refer \ref e_cgps_PlatformConfig1BitMask**/   
+    uint16_t v_Config2Mask;       /**<This field shall based on which all optional element are updated. 
+                                    Bit 0 - MSA Mandatory Mask, Bit 1 - MSB Mandatory Mask, Bit 2 - GPS Power Savings Interval.
+                                    Refer \ref e_cgps_PlatformConfig2BitMask*/
+    uint16_t v_MsaMandatoryMask;    /**<This field is a bit mask for the Mandatory Assistance data in case of MSA. This field will be checked 
+                                        only if the mask is set to Enum value K_CGPS_CONFIG2_MSA_MANDATORY_MASK.*/
+    uint16_t v_MsbMandatoryMask;    /**<This field is a bit mask for the Mandatory Assistance data in case of MSB. This field will be checked 
+                                        only if the mask is set to Enum value K_CGPS_CONFIG2_MSB_MANDATORY_MASK.*/
+    uint32_t v_SleepTimerDuration;  /**<This field is used to specify the Sleep timer duration of GPS. This field will be checked 
+                                        only if the mask is set to Enum value K_CGPS_CONFIG2_GPS_POWER_SAVING_INT.*/
+    uint32_t v_ComaTimerDuration;   /**<This field is used to specify the Coma timer duration of GPS. This field will be checked 
+                                        only if the mask is set to Enum value K_CGPS_CONFIG2_GPS_POWER_SAVING_INT.*/
+    uint32_t v_DeepComaDuration;    /**<This field is used to specify the DeepComa timer duration of GPS. This field will be checked 
+                                        only if the mask is set to Enum value K_CGPS_CONFIG2_GPS_POWER_SAVING_INT.*/   
+   
+}t_CGPSPlatformConfig;
+
+
+#endif /* __CGPSUTILS_HIT__ */

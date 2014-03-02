@@ -1,0 +1,181 @@
+#DTH script
+#Author: Guillaume Camus
+
+
+#> CG2900 ACTIVATION
+WRITE /COEX/CG2900/StartCG2900 0 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 1
+READ /COEX/CG2900/StartCG2900/Out_Error
+WAIT 5
+
+#-> RX ACTIVITY
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartBTRX
+BEGIN BT_Rx
+WRITE /COEX/Victims/BT/StartBTRX/ChannelBT 39 
+WRITE /COEX/Victims/BT/StartBTRX/AddrIdx 0 
+WRITE /COEX/Victims/BT/StartBTRX/PktType 2 
+WRITE /COEX/Victims/BT/StartBTRX 0 
+EXEC /COEX/Victims/BT/StartBTRX
+READ /COEX/Victims/BT/StartBTRX/ChannelBT  39
+READ /COEX/Victims/BT/StartBTRX/AddrIdx  0
+READ /COEX/Victims/BT/StartBTRX/PktType  2
+READ /COEX/Victims/BT/StartBTRX/RSSI
+READ /COEX/Victims/BT/StartBTRX/BER
+READ /COEX/Victims/BT/StartBTRX/Out_State 1
+READ /COEX/Victims/BT/StartBTRX/Out_Error
+
+WRITE /COEX/Victims/BT/StartBTRX/ChannelBT 39 
+WRITE /COEX/Victims/BT/StartBTRX/AddrIdx 0 
+WRITE /COEX/Victims/BT/StartBTRX/PktType 2 
+WRITE /COEX/Victims/BT/StartBTRX 1
+EXEC /COEX/Victims/BT/StartBTRX
+READ /COEX/Victims/BT/StartBTRX/Out_State 0
+READ /COEX/Victims/BT/StartBTRX/Out_Error
+END BT_Rx
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartFMRX
+BEGIN FM_Rx
+WRITE /COEX/Victims/FM/StartFMRX/ChannelFM 95000 
+WRITE /COEX/Victims/FM/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FM/StartFMRX/Emp 0 
+WRITE /COEX/Victims/FM/StartFMRX 0 
+EXEC /COEX/Victims/FM/StartFMRX
+READ /COEX/Victims/FM/StartFMRX/ChannelFM  95000
+READ /COEX/Victims/FM/StartFMRX/RSSI
+READ /COEX/Victims/FM/StartFMRX/Out_State 1
+READ /COEX/Victims/FM/StartFMRX/Out_Error
+
+WRITE /COEX/Victims/FM/StartFMRX/ChannelFM 95000 
+WRITE /COEX/Victims/FM/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FM/StartFMRX/Emp 0 
+WRITE /COEX/Victims/FM/StartFMRX 1
+READ /COEX/Victims/FM/StartFMRX/Out_State 0
+READ /COEX/Victims/FM/StartFMRX/Out_Error
+END FM_Rx
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartFMRX_All_Channels
+BEGIN FM_Rx_All_Channels
+WRITE /COEX/Victims/FMAll/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FMAll/StartFMRX/FChannelFM 80000 
+WRITE /COEX/Victims/FMAll/StartFMRX/LChannelFM 108000 
+WRITE /COEX/Victims/FMAll/StartFMRX/In_Step 100 
+WRITE /COEX/Victims/FMAll/StartFMRX/Hold 50 
+WRITE /COEX/Victims/FMAll/StartFMRX 0 
+EXEC /COEX/Victims/FMAll/StartFMRX 
+READ /COEX/Victims/FMAll/StartFMRX/FChannelFM  80000
+READ /COEX/Victims/FMAll/StartFMRX/LChannelFM  108000
+READ /COEX/Victims/FMAll/StartFMRX/In_Step  100
+READ /COEX/Victims/FMAll/StartFMRX/Hold  50
+READ /COEX/Victims/FMAll/StartFMRX/Out_State 1
+READ /COEX/Victims/FMAll/StartFMRX/Out_Error
+
+WRITE /COEX/Victims/FMAll/StartFMRX/Mode 1 
+WRITE /COEX/Victims/FMAll/StartFMRX/FChannelFM 80000 
+WRITE /COEX/Victims/FMAll/StartFMRX/LChannelFM 108000 
+WRITE /COEX/Victims/FMAll/StartFMRX/In_Step 100 
+WRITE /COEX/Victims/FMAll/StartFMRX/Hold 50 
+WRITE /COEX/Victims/FMAll/StartFMRX 1
+EXEC /COEX/Victims/FMAll/StartFMRX
+READ /COEX/Victims/FMAll/StartFMRX/Out_State 0
+READ /COEX/Victims/FMAll/StartFMRX/Out_Error
+END FM_Rx_All_Channels
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartGPS
+BEGIN GPS_Rx
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Interval 500 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Latitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Altitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/SatNum 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS 0 
+EXEC /DTH/COEX/Victims/GPS/StartGPS 
+READ /DTH/COEX/Victims/GPS/StartGPS/Interval  500
+READ /DTH/COEX/Victims/GPS/StartGPS/Longitude
+READ /DTH/COEX/Victims/GPS/StartGPS/Latitude
+READ /DTH/COEX/Victims/GPS/StartGPS/Altitude
+READ /DTH/COEX/Victims/GPS/StartGPS/SatNum
+READ /DTH/COEX/Victims/GPS/StartGPS/Sat_SNRData
+READ /DTH/COEX/Victims/GPS/StartGPS/Out_State 1
+READ /DTH/COEX/Victims/GPS/StartGPS/Out_Error
+
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Interval 500 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Latitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/Altitude 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS/SatNum 0 
+WRITE /DTH/COEX/Victims/GPS/StartGPS 1
+EXEC /DTH/COEX/Victims/GPS/StartGPS
+READ /DTH/COEX/Victims/GPS/StartGPS/Out_State 0
+READ /DTH/COEX/Victims/GPS/StartGPS/Out_Error
+END GPS_Rx
+#-------------------------------------------------------------------------------------------------------------
+
+
+
+#> CG2900 DEACTIVATION
+WRITE /COEX/CG2900/StartCG2900 1 
+EXEC /COEX/CG2900/StartCG2900 
+READ /COEX/CG2900/StartCG2900/Out_State 0
+READ /COEX/CG2900/StartCG2900/Out_Error
+WAIT 5
+
+
+#> CW12000 ACTIVATION
+WRITE /COEX/CW1200/StartCW1200 0 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 1
+READ /COEX/CW1200/StartCW1200/Out_Error
+WAIT 5
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartWLANRX
+BEGIN WLAN_Rx
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand 2 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN 6 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/Errors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PER 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX 0 
+EXEC /DTH/COEX/Victims/WLAN/StartWLANRX 
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand  2
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN  6
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Errors
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PER
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_State 1
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_Error
+
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand 2 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN 6 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/Errors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PER 0 
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX 1
+EXEC /DTH/COEX/Victims/WLAN/StartWLANRX 
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_State 0
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_Error
+END WLAN_Rx
+#-------------------------------------------------------------------------------------------------------------
+
+
+
+#> CW12000 DEACTIVATION
+WRITE /COEX/CW1200/StartCW1200 1 
+EXEC /COEX/CW1200/StartCW1200 
+READ /COEX/CW1200/StartCW1200/Out_State 0
+READ /COEX/CW1200/StartCW1200/Out_Error
+

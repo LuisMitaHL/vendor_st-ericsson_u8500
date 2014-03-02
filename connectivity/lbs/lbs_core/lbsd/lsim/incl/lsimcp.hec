@@ -1,0 +1,433 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+/*F(*************************************************************************** 
+* File name  : lsimcp.hec
+* Module     : LSIMCP
+*----------------------------------------------------------------------------* 
+*----------------------------------------------------------------------------* 
+*                             DESCRIPTION
+*  This file contains the internal structures used by the module.
+*
+* 
+*----------------------------------------------------------------------------* 
+***************************************************************************)F*/
+/* == HISTORY ===============================================================*/
+/*  Name     |    Date       |     Action                                    */
+/*---------------------------------------------------------------------------*/ 
+/*  Balaji   | 16-JUL-2008   | Creation                                      */
+/*  Balaji   | 05-AUG-2008   | Modified                                      */
+/*  Archana  | 05-AUG-2008   | Modified                                      */
+/*  Balaji  | 19-AUG-2008   | Modified - Changed indentation        */
+/*  Archana  | 17-NOV-2008   | Modified - LMSqb76552                         */
+/*---------------------------------------------------------------------------*/
+
+/**
+\file LSIMCP.hec
+*/
+
+ /*! \defgroup Variables_in_LSIMCP List of variables used in LSIMCP */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup  Type_of_Shape  */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Navigation_Model */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_STATUS */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_FIX */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Latitude_Sign */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Altitude_Direction */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_MTLR_Request */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Notification */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Location */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_LCS_Service_Id */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Data_Coding_Scheme */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_User_Response */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Location_Method */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_UNKNOWN */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_MOLR_Options */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Bitmask_for_t_lsimcp_PosInstruct */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Bitmask_for_t_lsimcp_AidRequest */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Type_of_Environmental_Characteristic */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup Altitude_Requested */
+ /*!    \ingroup Variables_in_LSIMCP
+     \defgroup  Type_of_Response_Time */
+
+
+
+
+
+#ifndef LSIMCP_HEC
+#define LSIMCP_HEC
+
+/*======================== Message constants ======================================*/
+
+/*! \addtogroup Type_of_Shape
+\brief Used in  \ref t_lsimcp_GpsPosition in field v_ShapeType */
+/*@{*/
+/*Type of SHAPE*/
+#define LSIMCP_EP                       0 
+#define LSIMCP_EP_UNC_CIRCLE            1 
+#define LSIMCP_EP_UNC_ELLIP             3 
+#define LSIMCP_EP_ALT                   8 
+#define LSIMCP_EP_ALT_UNC_ELLIP         9 
+#define LSIMCP_EP_ARC                   10
+/*@}*/
+/* -------------------------------------------------------*/
+#define LSIMCP_GLOBAL_HEALTH_SIZE   364
+/* -------------------------------------------------------*/
+
+/*! \addtogroup Bitmask_for_t_lsimcp_AidRequest */
+/* Bit Masks for aid_mask field in T_GPS_AID_REQUEST */
+/*@{*/
+#define     LSIMCP_AID_REQ_ALMANAC          0x0001
+#define     LSIMCP_AID_REQ_UTC_MODEL        0x0002
+#define     LSIMCP_AID_REQ_IONO_MODEL       0x0004
+#define     LSIMCP_AID_REQ_NAV_MODEL        0x0008
+#define     LSIMCP_AID_REQ_DGPS_CORR        0x0010
+#define     LSIMCP_AID_REQ_REF_LOC          0x0020
+#define     LSIMCP_AID_REQ_REF_TIME         0x0040
+#define     LSIMCP_AID_REQ_ACQ_ASSIST       0x0080
+#define     LSIMCP_AID_REQ_RTI              0x0100
+/*@}*/
+
+/* UE Positioning Method Type
+-------------------------------------------------------*/
+typedef enum
+{
+    LSIMCP_MS_ASSISTED,
+    LSIMCP_MS_BASED
+}
+e_Positioning_Method_Type;
+
+typedef enum
+{
+    CGPS_LSIMCP_F_MS_BASED_REQ = FIRST_LSIMCP_MSG_ENUM,
+    CGPS_LSIMCP_F_MS_ASSISTED_REQ,
+    CGPS_LSIMCP_F_ABORT_REQ,
+    CGPS_LSIMCP_F_ASSIST_DATA_B_REQ,
+    CGPS_LSIMCP_F_ASSIST_DATA_A_REQ,
+    CGPS_LSIMCP_F_ALMANAC_DATA_REQ,
+    CGPS_LSIMCP_F_TIME_REQ,
+    CGPS_LSIMCP_F_ASSIST_IONO_MODEL_REQ,
+    CGPS_LSIMCP_F_ASSIST_UTC_MODEL_REQ,
+    CGPS_LSIMCP_F_ASSIST_RTI_REQ,
+    CGPS_LSIMCP_F_ASSIST_DGPS_CORRECTION_REQ,
+    CGPS_LSIMCP_F_REF_POS_REQ,
+    CGPS_LSIMCP_F_LOC_NOTIFY_REQ,
+    CGPS_LSIMCP_F_LOC_NOTIFY_ABORT_IND,
+    CGPS_LSIMCP_F_LOC_REQU_RSP,
+    CGPS_LSIMCP_F_MOLR_ABORT_REQ,
+    CGPS_LSIMCP_F_MSR_RESULT_IND,
+    CGPS_LSIMCP_F_POS_IND,
+    CGPS_LSIMCP_F_AID_REQU_IND,
+    CGPS_LSIMCP_F_ABORT_CNF,
+    CGPS_LSIMCP_F_MS_ASSISTED_CNF,
+    CGPS_LSIMCP_F_MS_BASED_CNF,
+    CGPS_LSIMCP_F_LOC_NOTIFY_CNF,
+/*+LMSqcMOLR*/    
+    CGPS_LSIMCP_F_MOLR_START_IND,
+    CGPS_LSIMCP_F_MOLR_STOP_IND, 
+    CGPS_LSIMCP_F_MOLR_START_RSP,
+    CGPS_LSIMCP_F_POS_CAPABILITY_IND,    
+    /*-LMSqcMOLR*/    
+    CGPS_LSIMCP_F_RESET_GPS_DATA_REQ,
+    CGPS_LSIMCP_F_FTA_PULSE_REQ,
+    LSIMCP_F_ASSIST_DATA_TIMER,
+    LSIMCP_F_MODEM_INIT_TIMER    
+}
+t_lsimcp_MessageIdentifier;
+typedef enum{
+    LSIMCP_NO_CELL_TIME = 0,                     
+    LSIMCP_GSM_CELL_TIME,                          
+    LSIMCP_WCDMA_CELL_TIME                            
+} t_lsimcp_CellTimeType;
+
+/*! \enum   t_lsimcp_LocNotificationType */
+
+typedef enum
+{
+    LSIMCP_LOCATION_CURRENT                 =  00,    /*!< Bit 0: CURRENT */
+    LSIMCP_LOCATION_CURRENT_OR_LAST_KNOWN   =  01,    /*!< Bit 1: CURRENT_OR_LAST_KNOWN */
+    LSIMCP_LOCATION_INITIAL                 =  02,    /*!< Bit 2: INITIAL    */
+    LSIMCP_LOCATION_ACTIVATE_DEFERRED_LOC   =  10,    /*!< Bit 3: ACTIVATE_DEFERRED_LOC  */
+    LSIMCP_LOCATION_CANCEL_DEFERRED_LOC     =  11     /*!< Bit 4: CANCEL_DEFERRED_LOC     */
+} t_lsimcp_LocNotificationType;
+
+
+/*! \addtogroup Bitmask_for_t_lsimcp_PosInstruct */
+/* For t_Pos_Instruct Bit Masks */
+/*@{*/
+#define LSIMCP_HORIZONTAL_ACCURACY                  0x1
+#define LSIMCP_VERTICAL_ACCURACY                    0x2
+#define LSIMCP_ENVIRONMENTAL_CHARACTERIZATION       0x4
+/*@}*/ /* Bitmask_for_t_lsimcp_PosInstruct */
+
+
+/*! \addtogroup Type_of_Environmental_Characteristic */
+/*Type of Environmental Characteristic*/
+/*@{*/
+#define LSIMCP_ENV_HEAVY_MULTIPATH_AND_NLOS         0 
+#define LSIMCP_ENV_LIGHT_MULTIPATH_AND_USUAL_LOS    1 
+#define LSIMCP_ENV_MIXED_ENVIRONMENT                2 
+/*@}*/
+
+/*! \addtogroup Type_of_Navigation_Model
+    \brief Used in \ref t_lsimcp_SatEphemData in field v_SatStatus. Rest all values are reserved.
+                                            Note: This field is defined as 2 bits, but inorder to have compatibility with CN Stack, U16 is retained.*/
+/*@{*/
+/* Type of Navigation Model */
+#define LSIMCP_NEW_SV_NEW_NAV_MODEL             0 
+#define LSIMCP_EXISTING_SV_EXISTING_NAV_MODEL   1 
+#define LSIMCP_EXISTING_SV_NEW_NAV_MODEL        2 
+/*@}*/
+
+/*! \addtogroup Type_of_STATUS
+    \brief Used in - \ref CGPS_LSIMCP_MS_ASSISTED_CNF in field v_Cause
+                   - \ref CGPS_LSIMCP_MS_BASED_CNF in field v_Cause
+                   - \ref t_lsimcp_MsrRes in field v_Status*/
+/* Type of STATUS */
+/*@{*/
+#define LSIMCP_CGPS_OK      0 
+#define LSIMCP_CGPS_ERR     1 
+/*@}*/
+
+
+/*! \addtogroup Type_of_FIX
+    \brief Used in  \ref t_lsimcp_GpsPosition in field v_FixType */
+/*Type of FIX*/
+/*@{*/
+#define LSIMCP_FIX_TYPE_2D  0 
+#define LSIMCP_FIX_TYPE_3D  1 
+/*@}*/
+
+/*! \addtogroup Type_of_Latitude_Sign
+    \brief Used in  \ref t_lsimcp_GpsPosition in field v_SignOfLat */
+/*Type of LATITUDE SIGN*/
+/*@{*/
+#define LSIMCP_LAT_SIGN_NORTH   0
+#define LSIMCP_LAT_SIGN_SOUTH   1
+/*@}*/
+
+/*! \addtogroup Type_of_Altitude_Direction
+    \brief Used in  \ref t_lsimcp_GpsPosition in field v_DirectOfAlt */
+/*Type of ALTITUDE DIRECTION*/
+/*@{*/
+#define LSIMCP_ALT_DIRECT_HEIGHT        0
+#define LSIMCP_ALT_DIRECT_DEPTH         1
+/*@}*/
+
+/*! \addtogroup Type_of_MTLR_Request
+    \brief Used in  \ref t_lsimcp_LocNotification in field v_MtlrTypeVerify */
+/*Type of MTLR Request*/
+/*@{*/
+#define LSIMCP_MTLR_NOTIFY        0
+#define LSIMCP_MTLR_VERIFY        1
+/*@}*/
+
+/*! \addtogroup Type_of_Notification
+    \brief Used in  \ref t_lsimcp_LocNotification in field v_NotificationType */
+/*Type of Notification*/
+/*@{*/
+#define LSIMCP_NOTIFY_LOC_ALLOWED                0 
+#define LSIMCP_VERIFY_LOC_ALLOWED_IF_NO_RSP      1
+#define LSIMCP_VERIFY_LOC_NOT_ALLOWED_IF_NO_RSP  2
+#define LSIMCP_NOTIFY_LOC_NOT_ALLOWED            3
+/*@}*/
+
+
+/*! \addtogroup Type_of_LCS_Service_Id
+   \brief Used in \ref t_lsimcp_LocNotification in field v_LcsServiceTypeId */
+/*Type of LCS Service Type ID*/
+/*@{*/
+#define LSIMCP_EMERGENCY_SERVICES                       00
+#define LSIMCP_EMERGENCY_ALERT_SERVICES                 01
+#define LSIMCP_PERSON_TRACKING                          02
+#define LSIMCP_FLEET_MANAGEMENT                         03
+#define LSIMCP_ASSET_MANAGEMENT                         04
+#define LSIMCP_TRAFFIC_CONGESTION_REPORTING             05
+#define LSIMCP_ROAD_SIDE_ASSISTANCE                     06
+#define LSIMCP_ROUTING_TO_NEAREST_COMMERCIAL_ENTERPRISE 07
+#define LSIMCP_NAVIGATION                               0x08
+#define LSIMCP_CITY_SIGHTSEEING                         0x09
+#define LSIMCP_LOCALIZED_ADVERTISING                    10
+#define LSIMCP_MOBILE_YELLOW_PAGES                      11
+/*@}*/
+
+/* Used to indicate if the field v_TonNpi is populated */
+#define LSIMCP_TONNPI_NOT_SET     0
+#define LSIMCP_TONNPI_SET         1
+
+
+/*! \addtogroup Type_of_Data_Coding_Scheme
+   \brief Used in \ref t_lsimcp_LocNotification in fields v_ClientNameAlphabet, v_RequestorIdAlphabet, v_CodeWordAlphabet. */
+/*Type of Data Coding Scheme*/
+/*@{*/
+#define LSIMCP_DCS_7_BIT_DATA_CODED   0 
+                    /* the text string is transmitted in GSM_APPI
+                    (8 bits characters, NULL-terminated) 
+                    over the interface, but was received coded in 
+                    GSM_REC septets, or is to be sent coded 
+                    in GSM_REC septets */
+
+#define LSIMCP_DCS_8_BIT_DATA         1
+                    /* the payload of the message is in DATA_APPI
+                    format. The first two bytes indicate the 
+                    number of following data bytes. Those data 
+                    bytes have been received or will be stored as 
+                    they are, with no modification. */
+
+#define LSIMCP_DCS_UCS2               2
+                    /* the string is transmitted in UCS2_APPI. 
+                    The first byte indicates the UCS2 type 
+                    (0x80, 0x81 or 0x82), the second byte 
+                    indicates the number of UCS2 characters 
+                    in the string, and the remaining bytes 
+                    contain the header (for 0x81 and 0x82) 
+                    and the UCS2 characters */
+
+#define LSIMCP_UCS2_COMPRESSED        3
+                    /* the string is transmitted in compressed UCS2
+                    (for future use, not managed) */
+
+#define LSIMCP_DCS_8_BIT_TEXT         4
+                    /* the text string is transmitted in GSM_APPI 
+                    (8 bits characters, NULL-terminated) but was 
+                    stored in GSM_REC format or is to be stored 
+                    in GSM_REC format (not packed : one byte per
+                    character) */
+
+#define LSIMCP_DCS_GSM_DEFAULT      5
+
+#define LSIMCP_DCS_UNDEFINED        0xFF
+/*@}*/
+
+/*! \addtogroup Type_of_User_Response
+   \brief Used in \ref t_lsimcp_LocNotifyRes in field v_UserRsp */
+/*Type of User Response */
+/*@{*/
+#define LSIMCP_USER_REJECT            0
+#define LSIMCP_USER_ACCEPT            1
+#define LSIMCP_USER_NO_RSP            2
+#define LSIMCP_USER_NOTIFY_ONLY     255
+/*@}*/
+
+/*! \addtogroup Altitude_Requested
+   \brief Used in \ref t_lsimcp_LocRequest in field v_QosVertCoordRequested */
+/*Qos parameter. Indicates if altitude is requested */
+/*@{*/
+#define LSIMCP_ALT_NOT_REQUESTED     0
+#define LSIMCP_ALT_REQUESTED         1
+/*@}*/
+
+
+/*! \addtogroup Type_of_Response_Time
+   \brief Used in \ref t_lsimcp_LocRequest in field v_QosRspTimeCategory */
+/*Qos parameter. Response Time Category */
+/*@{*/
+#define LSIMCP_LOW_DELAY          0
+#define LSIMCP_DELAY_TOLERANT     1
+/*@}*/
+
+/*! \addtogroup Type_of_Location_Method
+   \brief Used in \ref t_lsimcp_GpsAidRequest in field v_LocationMethod */
+/*Location Method */
+/*@{*/
+#define LSIMCP_MS_BASED_EOTD          0
+#define LSIMCP_MS_ASSISTED_EOTD       1
+#define LSIMCP_ASSISTED_GPS           2
+#define LSIMCP_MS_BASED_OTDOA         3
+/*@}*/
+
+
+#define LSIMCP_MAX_SAT_NR       14    /**< */
+
+#define LSIMCP_MAX_ALM_SAT_NR   64    /**< */
+
+#define LSIMCP_SV_HEALTH_LENGTH 46    /**< */
+
+#define LSIMCP_MAX_PHONE_NUM_LENGTH      42
+#define LSIMCP_MAX_CLIENT_NAME_LENGTH    50
+#define LSIMCP_MAX_REQUESTOR_ID_LENGTH   65
+#define LSIMCP_MAX_CODE_WORD_LENGTH      65
+
+#define LSIMCP_MAX_POLYGON_POINTS        15
+
+/*! \addtogroup Type_of_UNKNOWN */
+/*! \brief Unknown Values for all datatypes. */
+/*Type of UNKNOWN*/
+/*@{*/
+#define LSIMCP_S8_UNKNOWN   0x7F            /**< */
+#define LSIMCP_U8_UNKNOWN   0xFF            /**< */
+#define LSIMCP_S16_UNKNOWN  0x7FFF          /**< */
+#define LSIMCP_U16_UNKNOWN  0xFFFF          /**< */
+#define LSIMCP_S32_UNKNOWN  0x7FFFFFFF      /**< */
+#define LSIMCP_U32_UNKNOWN  0xFFFFFFFF      /**< */
+/*@}*/
+
+
+/*! \addtogroup Type_of_MOLR_Options */
+/*! \brief Molr option types. */
+/*Type of MOLR Options*/
+/*@{*/
+#define K_LSIMCP_MOLR_OPT_ASSISTREQ       0x01
+#define K_LSIMCP_MOLR_OPT_QUALITYREQ       0x02
+#define K_LSIMCP_MOLR_OPT_SERVICETYPE      0x04
+#define K_LSIMCP_MOLR_OPT_THIRDPARTY       0x08
+/*@}*/
+
+/*! \addtogroup Type_of_Assistance_Source
+   \brief Used in all assistance data*/
+/*Assistance Source */
+/*@{*/
+#define LSIMCP_ASSIST_SOURCE_CP             0
+#define LSIMCP_ASSIST_SOURCE_SUPL           1
+#define LSIMCP_ASSIST_SOURCE_WIFI           2
+#define LSIMCP_ASSIST_SOURCE_APPL           3
+#define LSIMCP_ASSIST_SOURCE_UNKNOWN        4
+
+/*@}*/
+
+
+#define K_LSIMCP_GSM_FN_ROLLOVER_VALUE                  0X297000
+#define K_LSIMCP_GSM_REF_TIME_FN_ROLLOVER_VALUE         0X200000
+#define K_LSIMCP_GSM_REF_TIME_MAX_FN_VALUE              0X1FFFFF
+#define K_LSIMCP_GSM_REF_TIME_FN_MAX_TRUNCATED_VALUE    0X97000
+
+/*As Tow in Refrence time is -2 to +2 uncertain as per 3gpp specifications so 434 is the max frame number differnce between 
+when this TOW was repoted and frame number at actuall TOW 
+1 frame = 4.615ms So 2sec = 433.36944 frames*/
+
+#define K_LSIMCP_GSM_REF_TIME_FN_MAX_UNC_VALUE          1000
+#define K_LSIMCP_GSM_FRAMELENGTH_MICROSECONDS     4615
+
+#define K_LSIMCP_WCDMA_NUMBER_OF_CHIPS_IN_ONEMS 3840
+
+
+#define K_LSIMCP_WCDMA_SFN_ROLLOVER_VALUE       4096
+#define K_LSIMCP_WCDMA_SFNLENGTH_MICROSECONDS   10000
+#define K_LSIMCP_WCDMA_CELLTIME_LS_MAX_VALUE    0x100000000ull
+
+#define K_LSIMCP_PULSE_TIME_DATABASE_LENGTH               2
+#define K_LSIMCP_PULSE_REQUEST_INTERVAL_MICROSECONDS      4000000
+
+#endif /* LSIMCP_HEC */

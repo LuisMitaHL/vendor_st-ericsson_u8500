@@ -1,0 +1,65 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSXOSGPS_HIV__
+#define __HALGPSXOSGPS_HIV__
+/**
+* \file halgpsxosgps.hiv
+* \date 17/07/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all variables used by halgps6spi.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 17.07.08</TD><TD> M.COQUELIN </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __HALGPS8XOSGPS_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__HALGPS8XOSGPS_C__*/
+
+
+
+/**
+* \var vg_WriteIndex
+* \brief Current write index in the write circular buffer
+*
+* vg_HALGPS_XSpiReadTrameIndex is an index of vg_HALGPS_XSpiTxBuffer table.
+* is the index of the current write.
+*/
+GLOBAL uint32_t vg_HALGPS_XSpiWriteEndIndex;
+
+/**
+* \var vg_WriteLastFreeIndex
+* \brief last free buffer in the write circular buffer
+*
+* vg_WriteLastFreeIndex is an index of vg_HALGPS_XSpiTxBuffer table.
+* is the index of the last free buffer.
+*/
+GLOBAL uint32_t vg_HALGPS_XSpiWriteBeginIndex;
+
+
+/**
+* \var vg_HALGPS_XSpiTxBuffer
+* \brief sent circular data buffer
+*
+*/
+GLOBAL uint8_t vg_HALGPS_XSpiTxBuffer[ HALGPS_XOSGPS_MAX_BUF_WRITE_LEN];
+
+
+#undef GLOBAL
+#endif // __HALGPSXISGPS_HIV__

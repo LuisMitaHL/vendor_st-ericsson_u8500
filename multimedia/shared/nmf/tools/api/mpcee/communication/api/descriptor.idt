@@ -1,0 +1,20 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#ifndef __INC_COMMUNICATION_DESCRIPTOR_IDT
+#define __INC_COMMUNICATION_DESCRIPTOR_IDT
+
+#include <rtos/api/descriptor.idt>
+
+typedef t_uint16 __SHARED16 * t_event_params_handle;
+
+typedef struct {
+    struct TEvent event;
+    t_event_params_handle data;
+} t_remote_event;
+
+#endif

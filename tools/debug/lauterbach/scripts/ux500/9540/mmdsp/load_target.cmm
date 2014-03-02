@@ -1,0 +1,245 @@
+;------------------------------------------------------------
+; Load_target.cmm
+;------------------------------------------------------------
+; Startup file to select and setup target
+;
+; 091207 - KM Initial version
+; 110526 - KM Adaption for CPT environment
+; 120215 - CI Adapt for NMF support
+;-----------------------------------------------------------
+
+local &debug_config
+
+
+screen.off
+
+
+;Check if there are settings for this target
+if os.file(&UsrPath/T32_settings.txt)
+(
+	do readsettings.cmm
+
+	if "&TrgExist"=="FALSE"
+	(
+		dialog.ok "No default settings found for &Target target! " \
+		          "Use EMP target setup dialog to setup target"
+		run startup.cmm
+		enddo
+	)
+)
+else
+(
+	dialog.ok "No default settings found (&UsrPath/T32_settings.txt missing)! " \
+	          "Use EMP target setup dialog to setup target"
+	run startup.cmm
+	enddo
+)
+
+
+; Convert settings
+gosub ConvertSettings
+
+; Check Settings
+gosub CheckSettings
+
+;APP debugger must be up and running, otherwise it is not possible to attach
+if simulator()
+(
+	if (STR.SCAN(OS.ID(),"SVA",0)>=0)
+		sys.CPU DB8500v
+	else
+		sys.CPU DB8500i
+
+	sys.m.up
+	do load_coredump
+)
+else
+(
+	if "&AppStarted"=="True"
+	(
+		intercom.evaluate &icApp system.up()
+		if EVAL()==0
+		(
+			print "APP debugger must be started and connected to target"
+			end
+		)
+	)
+	else
+	(
+		print "APP debugger must be started and connected to target"
+		end
+	)
+
+	do tronchip_settings
+
+	if ("&chip_version"=="")
+	(
+		print "Cannot detect version, assume V1"
+		&chip_version="v1"
+	)
+
+	;Call CPT scripts
+	if (STR.SCAN(OS.ID(),"SVA",0)>=0)
+	(
+	; SVA
+	  do 9540_T32MMDSP_init.cmm &chip_version v
+	; SVA in ESRAM : do 8500_SxA_STbus_config.cmm ed v ESRAM
+	; SVA in DDR : do 8500_SxA_STbus_config.cmm ed v DDR
+	)
+	else (STR.SCAN(OS.ID(),"SIA",0)>=0)
+	(
+	; SIA
+	  do 9540_T32MMDSP_init.cmm &chip_version i
+
+	; SIA in ESRAM : do 8500_SxA_STbus_config.cmm ed i ESRAM
+	; SIA in DDR : do 8500_SxA_STbus_config.cmm ed i DDR
+	)
+	else
+	(
+		print "unknown ID = " OS.ID()
+	)
+
+	do onchip_break_setup.cmm
+
+	if "&SmpDebug"=="TRUE"  ;; &SmpDebug is used to store Synchro debugger information
+	do syncronize_targets.cmm
+
+	if "&UseAttach"=="FALSE"
+	(
+		;; not supported so far, is it needed by someone ??
+		do load_code
+	)
+	else
+	(
+		sys.m.attach
+	)
+)
+
+if system.up()
+(
+	path + &CMM_PATH_BASE/Etc/mmdsp
+
+	if "&LinuxDebug"=="TRUE"
+	(
+		do nmf_menu.cmm
+		do nmf
+	)
+	else
+	(
+		; ==========================================================================================
+		; Semihosting terminal and area messages window popup
+		; ==========================================================================================
+		do mmterm
+	)
+
+	if "&UsrCmm"!=""
+	(
+		do &UsrCmm
+	)
+)
+else
+(
+	print "ERROR : SYS.UP FAILED."
+	print ">> If all HOST_ID[x]=0x0, MMDSP is Power-Off."
+)
+
+;Print target setup information, viewable in the AREA window
+print
+print "Target       : &Target"
+print "Memory       : &ExeMem"
+print "Load Options : &LOption &LOptionVM"
+print "Load File    : &ElfFile"
+print "Source Path  : &SrcPath"
+print
+print "Target setup done, ready to debug..."
+
+
+screen.on
+
+enddo
+
+
+ConvertSettings:
+	if "&UseAttach"=="TRUE"
+		&debug_config="attach"
+	else
+		&debug_config="up+dbg_thr_reset"
+
+	if "&PRCMUDebug"=="TRUE"
+	(
+		&prcmu="+prcmu"
+		;&debug_config="&debug_config&prcmu"
+		dialog.ok "MMDSP debugging not supported when PRCMU debuggiing enabled, disable PRCMU Debug in APP debugger and reattach"
+		end
+	)
+
+return
+
+
+CheckSettings:
+	; Check if current config is still valid
+	if "&LinuxDebug"=="TRUE"  ;; Note LinuxDebug variable actually "means" NmfDebug
+	(
+		local &repo
+		local &good_repo
+		local &invalid_repo
+		local &offset1
+		local &offset2
+
+		if "&ElfFile"==""
+		(
+			dialog.message "NMf repository not set" \
+			               "Please specify at least one repository or disable NMF autoloader"
+			goto OpenMenu
+		)
+
+		&offset1=0
+		&offset2=0
+		&offset1=string.scan("&ElfFile",",",&offset2)
+		while &offset1>-1
+		(
+			&repo=string.mid("&ElfFile",&offset2,&offset1-&offset2)
+			&offset2=&offset1+1
+			&offset1=string.scan("&ElfFile",",",&offset2)
+			if os.dir("&repo")
+				&good_repo="&good_repo"+","+"&repo"
+			else
+				&invalid_repo="&invalid_repo"+","+"&repo"
+		)
+		&repo=string.mid("&ElfFile",&offset2,string.len("&ElfFile"))
+		if os.dir("&repo")
+			&good_repo="&good_repo"+","+"&repo"
+		else
+			&invalid_repo="&invalid_repo"+","+"&repo"
+
+		if "&good_repo"==""
+		(
+			dialog.message "All repositories set are invalid" \
+			               "Please update them"
+			goto OpenMenu
+		)
+		else if "&invalid_repo"!=""
+		(
+			dialog.yesno "The following NMF repositories are invalid" \
+			             "&invalid_repo" \
+			             "Do you want to update them ?"
+			entry &result
+			if &result
+				goto OpenMenu
+		)
+
+	if "&SrcPath"!=""&&!os.dir("&SrcPath")
+	(
+		dialog.yesno "Current Source Path is not valid" \
+		             "&SrcPath" \
+		             "Do you want to update it"
+		entry &result
+		if &result
+			goto OpenMenu
+	)
+)
+return
+
+OpenMenu:
+	run startup.cmm
+	enddo

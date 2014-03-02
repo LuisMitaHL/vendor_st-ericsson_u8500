@@ -1,0 +1,60 @@
+test_start PCM_SPL_32_host_018
+test_property TEST_NAME pcmsplitter_32_host_1output_nontunneled_48k_mono_16k_mono
+
+alias OUTPUT_PORT 2
+
+alias TIMEOUT 0
+
+OMX_GetHandle    pcmsplitter OMX.ST.AFM.pcmsplitter_host
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioSynchronized nPortIndex=$(OUTPUT_PORT) bIsSynchronized=OMX_TRUE
+
+#Disable all unused pcmsplitter ports
+
+OMX_SendCommand pcmsplitter OMX_CommandPortDisable 1
+MMTE_WaitEvent pcmsplitter OMX_EventCommandComplete OMX_CommandPortDisable 1
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nBitPerSample=32 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+ate_attach_io       pcmsplitter 0 MEM $(AUDIO_STREAMS)/pcm_splitter/streams/Portal32_48m.pcm 0 0 0
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=$(OUTPUT_PORT) nChannels=1 nBitPerSample=32 nSamplingRate=16000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/pcmsplitter_32_host_src_pcm_48k_mono_16k_mono.out
+ate_attach_io       pcmsplitter $(OUTPUT_PORT) MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/pcm_splitter/streams/Portal32_48k_mono_16k_mono.host.ref.out
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers pcmsplitter 0
+MMTE_AllocateAndUseBuffers pcmsplitter $(OUTPUT_PORT)
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Start
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent pcmsplitter OMX_EventBufferFlag $(OUTPUT_PORT) TIMEOUT
+
+#Stop
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers pcmsplitter 0
+MMTE_FreeBuffers pcmsplitter $(OUTPUT_PORT)
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+unalias TIMEOUT
+
+test_end

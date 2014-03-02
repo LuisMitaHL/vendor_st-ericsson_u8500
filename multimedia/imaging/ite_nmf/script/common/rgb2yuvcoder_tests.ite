@@ -1,0 +1,12 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/rgb2yuvcoder_tests.ite
+
+## This test is for verifying rgb2yuvcoder in pre-run, and post-run configuration
+
+## do startenv
+#startenv grab_vpip_display_01_01 _LRoutVGA_HRoutVGA_SENSOR0  
+setusecase default
+## test rgb2yuvcoder in pre-run configuration. i.e. rgb2yuvcoder configuration is done before giving START command to ISP FW
+do $(IMAGING_PATH)/ite_nmf/script/common/rgb2yuvcoder_pre_run_tests.ite
+setusecase default
+## test rgb2yuvcoder in post-run configuration. i.e. rgb2yuvcoder configuration is done after streaming
+do $(IMAGING_PATH)/ite_nmf/script/common/rgb2yuvcoder_post_run_tests.ite

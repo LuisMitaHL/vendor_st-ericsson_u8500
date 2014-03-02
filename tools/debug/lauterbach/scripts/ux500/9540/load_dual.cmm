@@ -1,0 +1,128 @@
+;------------------------------------------------------------
+; load_dual.cmm
+;------------------------------------------------------------
+; Startup file to select and setup target
+;
+; 061109 - KM Initial version
+; 070119 - KM Added support for Kajsa and Camilla
+; 070122 - KM improved intercom
+; 070405 - PH Adaption for new startup.cmm
+; 071017 - KM Added support for loaders.
+; 071220 - DE Copy + change to new layout (Miranda)
+; 080228 - DE Added started cpu check
+; 100917 - KM Adapted to U5500
+; 111011 - PDE Addapted to 9540
+;-----------------------------------------------------------
+; This file set up all cores
+;-----------------------------------------------------------
+
+local &masterCpu
+local &masterIc
+
+;Load master is "current" core, e.g. core where load is pressed
+&masterCpu="&targetCpu"
+
+if simulator()
+(
+	; on simulator : intercom not needed, load on each instance
+	&MmdspSiaStarted="False"
+	&MmdspSvaStarted="False"
+	&AppStarted="False"
+
+	if ("&targetCpu"=="mmdsp")
+	(
+		if (STR.SCAN(OS.ID(),"SVA",0)>=0)
+		(
+			&MmdspSvaStarted="True"
+		)
+		else if (STR.SCAN(OS.ID(),"SIA",0)>=0)
+		(
+			&MmdspSiaStarted="True"
+		)
+	)
+	else if ("&targetCpu"=="app")
+		&AppStarted="True"
+
+	; load only the current target
+	do load_target
+)
+else
+(
+gosub getIcPort &masterCpu
+entry &masterIc
+
+;Check if we are running in load master, if not do a intercom call
+if "&masterCpu"!="&targetCpu"
+(
+	intercom.execute &masterIc do load_dual.cmm
+	enddo
+)
+
+;What cores are we debugging?
+if INTERCOM.PING(&icMmdspSia)
+	&MmdspSiaStarted="True"
+if INTERCOM.PING(&icApp)
+	&AppStarted="True"
+if INTERCOM.PING(&icMmdspSva)
+	&MmdspSvaStarted="True"
+
+;Load master first
+gosub loadOne &masterCpu
+)
+
+enddo
+
+
+
+loadOne:
+	ENTRY &Cpu
+	if ("&MmdspSiaStarted"=="True")
+		intercom.executenowait &icMmdspSia print "Waiting for &Cpu to load software"
+	if ("&AppStarted"=="True")
+		intercom.executenowait &icApp print "Waiting for &Cpu to load software"
+	if ("&MmdspSvaStarted"=="True")
+		intercom.executenowait &icMmdspSva print "Waiting for &Cpu to load software"
+
+	gosub getIcPort &Cpu
+	entry &icPort
+	intercom.executenowait &icPort print "Load software"
+	intercom.execute &icPort do load_target
+
+	return
+
+waitUntilLoaded:
+	entry &cpu
+
+	;Wait until load is complete, don't wait if load cpu is running this script
+	if ("&masterCpu"!="&cpu")
+	(
+		gosub getIcPort &cpu
+		entry &icCpu
+		intercom.wait &icCpu
+	)
+	return
+
+getIcPort:
+	ENTRY &Cpu
+        &result=""
+	if ("&Cpu"=="mmdsp")
+        (
+            if (STR.SCAN(OS.ID(),"SVA",0)>=0)
+            (
+		&result="&icMmdspSva"
+            )
+            else if (STR.SCAN(OS.ID(),"SIA",0)>=0)
+            (
+		&result="&icMmdspSia"
+            )
+        )
+	else if ("&Cpu"=="app")
+		&result="&icApp"
+
+	if ("&result"=="")
+        (
+           print %error "Unknown CPU &Cpu "+OS.ID()+" in "+os.ppd()+"getIcPort()"
+        )
+
+	return &result
+

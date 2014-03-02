@@ -1,0 +1,33 @@
+#
+# LibI2C configuration
+#
+
+menuconfig LIBI2C
+	bool "LibI2C"
+	help
+
+if LIBI2C
+
+config LIBI2C_DIR
+	string
+	default ../tat/generalservices/libi2c
+
+config LIBI2C_DEPS
+	string
+	default ""
+
+config LIBI2C_STRIP_DISABLED
+	bool "Disable strip"
+	depends on LIBI2C
+	default n
+	help
+	  This will disable strip for this module
+
+config LIBI2C_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LIBI2C
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LIBI2C

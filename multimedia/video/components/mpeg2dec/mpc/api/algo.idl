@@ -1,0 +1,63 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_mpeg2.idt>
+
+interface mpeg2dec.mpc.api.algo { 
+
+/* This file specifies methods included inside provided interface named iAlgo
+          i.e. :          
+                          - controlAlgo
+                          - setDebug
+*/
+/** @addtogroup mpeg2decControlAlgoGroup controlAlgo
+ *  @ingroup mpeg2decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  param    The parameter associated to the command composed as following :
+             \n PPE[1:0] Post-processing enable (to be applied at the end of the subtask)
+             \n ...0 = no post-processing is performed
+             \n ...1 = deblocking/deringing filter parameters are computed in the deblocking parameter buffer for 
+             out-of-loop post-processing in a display task (only used if algoId is ID_VDC_H264 or ID_VDC_H263)
+             \n ...2 = H263 annex J deblocking filter in the decode loop (only used if algoId is ID_VDC_H263)
+             \n ...3 = H263 annex J deblocking filter in the decode loop and deringing filter parameters are computed 
+             in the deblocking parameter buffer for out-of-loop post-processing in a display task (only used if algoId is ID_VDC_H263)
+             \n XXX[15:2] : Reserved for future use.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref mpeg2decConfigurationGroup
+ * 
+ * \note Usage of this interface
+ * \n  
+ */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 param);
+
+/** @} */ // end of mpeg2decControlAlgoGroup
+
+/** @addtogroup mpeg2decSetDebugAlgoGroup setDebug
+ *  @ingroup mpeg2decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint32 param1, t_uint32 param2);
+
+/** @} */ // end of mpeg2decSetDebugAlgoGroup
+
+} // interface mpeg2dec.mpc.api.algo

@@ -1,0 +1,4198 @@
+ENTRY &output_file
+
+if "&output_file"==""
+(
+	; use current script and replace .cmm by .txt
+	&output_file=OS.PPF()
+	&output_file=OS.FILE.NAME(&output_file)
+	&output_file=string.cut("&output_file",-4)+".txt"
+)
+
+area.select A000
+area.open A000 &output_file
+screen.off
+
+
+print  "result of script " OS.PPF()
+print   clock.date() clock.time()
+
+local &HWI2C &sysclk_freq
+
+;&HWI2C=1.  ; I2C access with I2C
+&HWI2C=0. ; I2C access with PRCMU mailbox
+
+
+; SECR BASE + 0x010 + 4* id
+&FVR7_address=0x80155000+0x10+4.*7.
+&FVR21_address=0x80155000+0x10+4.*21.
+&FVR22_address=0x80155000+0x10+4.*22.
+
+; ITCM
+&prcmu_fw_address=0x801B00A8
+
+;
+&dmc0_base_address=0x80156000
+&dmc1_base_address=0x8015A000
+
+; public ROM CODE
+&cutid_address=0xFFFFDBF4
+
+; PCRM unit register
+&prcmu_base_add=0x80157000
+&arm_pll_address=0x80157088
+&arm_pll_enable_address=0x80157098
+&arm_chgclkreq_address=0x80157114
+&arm_pll_divps_address=0x80157118
+&ddr0_pll_address=&prcmu_base_add+0x8C
+&ddr0_pll_enable_address=&prcmu_base_add+0x9C
+&ddr1_pll_address=&prcmu_base_add+0x208C
+&ddr1_pll_enable_address=&prcmu_base_add+0x209C
+
+&armvfcg_pll_freq_address=&prcmu_base_add+0x2000
+&armvfcg_pll_ctrl_val_address=&prcmu_base_add+0x200C
+&armvfcg_pll_status_address=&prcmu_base_add+0x2018
+&armvfcg_pll_lockp_address=&prcmu_base_add+0x201C
+&armvfcg_f_div2_cnt_address=&prcmu_base_add+0x206C
+
+&prcm_sxammdsp_force_clken_address=&prcmu_base_add+0x544
+
+&soc0_pll_address=0x80157080
+&soc0_pll_enable_address=0x80157090
+&soc1_pll_address=0x80157084
+&soc1_pll_enable_address=0x80157094
+&dsi_pll_address=0x80157500
+&dsi_pll_enable_address=0x80157504
+&32k_pll_enable_address=0x8015710C
+&rng_enable_address=0x8015750C
+&clkactiv_address=0x80157538
+&mode_address=0x801570E8
+&armclkfix_mgt_address=0x80157000
+&aclk_mgt_address=0x80157004
+&svammdspclk_mgt_address=0x80157008
+&siammdspclk_mgt_address=0x8015700C
+&sgaclk_mgt_address=0x80157014
+&uartclk_mgt_address=0x80157018
+&msp02clk_mgt_address=0x8015701C
+&msp1clk_mgt_address=0x80157288
+&i2cclk_mgt_address=0x80157020
+&sdmmcclk_mgt_address=0x80157024
+&slimclk_mgt_address=0x80157028
+&per1clk_mgt_address=0x8015702C
+&per2clk_mgt_address=0x80157030
+&per3clk_mgt_address=0x80157034
+&per5clk_mgt_address=0x80157038
+&per6clk_mgt_address=0x8015703C
+&per7clk_mgt_address=0x80157040
+&lcdclk_mgt_address=0x80157044
+&bmlclk_mgt_address=0x8015704C
+&hsitxclk_mgt_address=0x80157050
+&hsirxclk_mgt_address=0x80157054
+&hdmiclk_mgt_address=0x80157058
+&apeatclk_mgt_address=0x8015705C
+&apetraceclk_mgt_address=0x80157060
+&mcdeclk_mgt_address=0x80157064
+&ipi2cclk_mgt_address=0x80157068
+&dsialtclk_mgt_address=0x8015706C
+&dmaclk_mgt_address=0x80157074
+&b2r2clk_mgt_address=0x80157078
+&tvclk_mgt_address=0x8015707C
+&sspclk_mgt_address=0x80157280
+&rngclk_mgt_address=0x80157284
+&uiccclk_mgt_address=0x8015727C
+&xp70clk_mgt_address=0x801570B0
+&xp70clk_mgt2_address=0x80157528
+&dsi_pllout_sel_address=0x80157530
+&dsi_glitchfree_en_address=0x80157534
+&g1clk_mgt_address=0x80157548
+&hvaclk_mgt_address=0x8015754C
+&dpiclk_mgt_address=0x80157550
+&ape_resetn_val_address=0x801571EC
+&gpio_resetn_val_address=0x80157210
+&4500_resetn_val_address=0x8015721C
+&periph4_resetn_val_address=0x80158048
+&swd_rst_tempo_address=0x80157238
+&rst_4500_tempo_address=0x8015723C
+&reset_status_address=0x8015803C
+&periph1_pck_address=0x8012F010
+&periph1_kck_address=0x8012F014
+&periph2_pck_address=0x8011F010
+&periph2_kck_address=0x8011F014
+&periph3_pck_address=0x8000F010
+&periph3_kck_address=0x8000F014
+&periph5_pck_address=0xA03FF010
+&periph6_pck_address=0xA03CF010
+&periph6_kck_address=0xA03CF014
+
+
+; try to read secure register
+&FVR_read=0.
+on error goto skip_FVR
+
+&FVR7_value=data.long(AZD:&FVR7_address)
+&FVR21_value=data.long(AZD:&FVR21_address)
+&FVR22_value=data.long(AZD:&FVR22_address)
+&FVR_read=1.
+
+skip_FVR:
+on error
+
+; ================= CutID Display =================
+
+&cutid_value=data.long(AD:&cutid_address)
+
+print "ASIC ID: ", %HEX &cutid_value
+
+if (((&cutid_value)&(0xFFFF00))!=0x954000)
+  print "WARNING : unexpected ASIC ID in ROM for DB9540"
+
+if &FVR_read==1.
+(
+; ================= HW FUSE =================
+&FVR7_value=data.long(AZD:&FVR7_address)
+
+print "AP9540 HW Fuse (0x",format.hex(8.,&FVR7_address),")= &FVR7_value"
+
+&VP8_disable=&FVR7_value>>27.&0x1         ; [27]
+&sysclk_freq=&FVR7_value>>21.&0x1         ; [21]
+&chip_config= 9540.+(&FVR7_value>>20.&0xF); [20-17]
+
+print "  - chip config = AP",%DECIMAL &chip_config
+if &sysclk_freq==0.
+(
+   &sysclk_freq=38.4
+)
+else
+(
+   &sysclk_freq=26.0
+)
+print "  - sysclk freq = ",%DECIMAL (&sysclk_freq),"MHz"
+print "  - VP8 disable  = &VP8_disable"
+)
+else
+(
+   &sysclk_freq=26.0
+)
+print "======================================================"
+
+; ================= PRCMU Firmware release =================
+; versionning of PRCMU fw VA.B.C:
+;  &prcmu_fw_address
+;     @+0x0 => project index
+;     @+0x1 => A
+;     @+0x2 => B
+;     @+0x3 => C
+; for ex: projetc 2 & V3.2.2  => @0x801B00A8 = 02030202
+
+&prcmu_fw_project=data.byte(AD:&prcmu_fw_address)
+&prcmu_fw_project_text=""
+
+; get from PRCMU code versionning
+if &prcmu_fw_project==5
+  &prcmu_fw_project_text="Symbian" ; to be confirmed
+else if &prcmu_fw_project==1
+  &prcmu_fw_project_text="8500v1.0"
+else if &prcmu_fw_project==2
+  &prcmu_fw_project_text="8500v2.0"
+else if &prcmu_fw_project==3
+  &prcmu_fw_project_text="8400v2.0"
+else if &prcmu_fw_project==4
+  &prcmu_fw_project_text="9500v2.0"
+else if &prcmu_fw_project==6
+  &prcmu_fw_project_text="9540v1.0"
+else
+  &prcmu_fw_project_text="unknown"
+
+
+
+print "PRCMU FW PROJECT:  ", data.byte(AD:&prcmu_fw_address)," (&prcmu_fw_project_text) "
+print "PRCMU FW VERSION: V", data.byte(AD:&prcmu_fw_address+1),".", data.byte(AD:&prcmu_fw_address+2),".", data.byte(AD:&prcmu_fw_address+3)
+
+print "======================================================"
+
+if &FVR_read==1.
+(
+; ================= AVS Fuse =================
+print "AVS Fused [31:0]  (0x",format.hex(8.,&FVR21_address),")= &FVR21_value"
+print "AVS Fused [63:32] (0x",format.hex(8.,&FVR22_address),")= &FVR22_value"
+
+print ""
+if (&FVR21_value==0&&&FVR22_value==0)
+  print "           No AVS applied. Default values used."
+else
+(
+  print "           AVS applied"
+
+&avs_t_sensor_comp_off=&FVR21_value>>0.&0x0000001F   ; [4:0]
+&avs_v_sensor_offset=&FVR21_value>>5.&0x0000000F     ; [8:5]
+&avs_v_sensor_trim=&FVR21_value>>9.&0x0000003F       ; [14:9]
+&avs_process_vbbn=&FVR21_value>>15.&0x00000007       ; [15:17]
+&avs_process_vbbp=&FVR21_value>>18.&0x00000007       ; [18:20]
+&avs_cpu_opp0_off=&FVR21_value>>21.&0x00000001F      ; [21:25]
+&avs_cpu_opp1_off=&FVR21_value>>26.&0x00000000F      ; [26:29]
+&avs_cpu_opp2_off=(&FVR21_value>>30.&0x000000001)|(&FVR22_value&0x1<<2)
+                                                     ; [32:30]
+&avs_cpu_opp3_off=&FVR22_value>>1.&0x000000007       ; [35:33]
+&avs_cpu_opp4_off=&FVR22_value>>4.&0x000000007       ; [39:36]
+&avs_cpu_opp5_off=&FVR22_value>>7.&0x000000007       ; [42:40]
+&avs_cpu_cpr_PMB=&FVR22_value>>11.&0x0000000FF       ; [50:43]
+&avs_cpu_rta=&FVR22_value>>19.&0x000000001           ; [51]
+&avs_soc_avs=&FVR22_value>>20                        ; [52:63]
+
+print "- Voltage and temperature sensor compensation :"
+print "  - Thermal sensor comp. offset = &avs_t_sensor_comp_off"
+print "  - Voltage sensor offset       = &avs_v_sensor_offset"
+print "  - Voltage sensor trim         = &avs_v_sensor_trim"
+
+print "- CPU process conpensation :"
+print "  - Vbbn                        = &avs_process_vbbn"
+print "  - Vbbp                        = &avs_process_vbbp"
+
+print "- CPU AVS :"
+print "  - Opp0 offset >1700 MHz       = &avs_cpu_opp0_off"
+print "  - Opp1 offset  1500 MHz       = &avs_cpu_opp1_off"
+print "  - Opp2 offset  1200 MHz       = &avs_cpu_opp2_off"
+print "  - Opp3 offset   800 MHz       = &avs_cpu_opp3_off"
+print "  - Opp4 offset   400 MHz       = &avs_cpu_opp4_off"
+print "  - Opp5 offset   266 MHz       = &avs_cpu_opp5_off"
+print "  - CPR PMB PB0 hardcell freq   = &avs_cpu_cpr_PMB"
+print "  - RTA                         = &avs_cpu_rta"
+
+print "- SOC AVS :"
+print "  - Soc AVS = &avs_soc_avs"
+)
+print "======================================================"
+)
+
+; ================= Thermal Sensor reading =================
+; Clock gated of thermal sensor (same as PMB) : PRCMUPRCM_XP70CLK_MGTPMBCLK_EN
+data.set A:0x801570B0 %long data.long(AD:0x801570B0)|0x40000000
+
+; Configure Thermal sensor
+data.set A:0x801573CC %long 0x7D ; CLKDIV
+data.set A:0x801573D0 %long 0x11 ; DCORRECT
+
+; Start Thermal sensor
+data.set A:0x801573C0 %long 1
+; Stop sensor
+data.set A:0x801573C0 %long 0
+; Clear thermal sensor IT
+data.set A:0x801573C8 %long 1
+; Read temperature
+&thsens_temp=data.long(AD:0x801573D4)
+
+print "Thermal sensor"
+print "Temperature read from Thermal sensor is: ", %DECIMAL &thsens_temp, " Celcius degrees"
+
+print ""
+print "======================================================"
+
+print "ABB Settings through I2C"
+&abb_bank=0x04
+
+;------------
+&abb_add=0x00
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmregu1
+print "- VarmRegu1           = &varmregu1"
+
+;------------
+&abb_add=0x01
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmregu2
+print "- VarmRegu2           = &varmregu2"
+
+;------------
+&abb_add=0x28
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmSel4567Ctrl
+print "- VarmSel4567Ctrl     = &varmSel4567Ctrl"
+
+;------------
+&abb_add=0x02
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vaperegu
+print "- VapeRegu            = &vaperegu"
+
+;------------
+&abb_add=0x2A
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vapeSel45Ctrl
+print "- VapeSel45Ctrl       = &vapeSel45Ctrl"
+
+;------------
+&abb_add=0x03
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps1regu
+print "- Vsmps1Regu          = &vsmps1regu"
+
+;------------
+&abb_add=0x04
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps2regu
+print "- Vsmps2Regu          = &vsmps2regu"
+
+;------------
+&abb_add=0x05
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps3regu
+print "- Vsmps3Regu          = &vsmps3regu"
+
+;------------
+&abb_add=0x06
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vpllvanaregu
+print "- VpllVanaRegu        = &vpllvanaregu"
+
+;------------
+&abb_add=0x07
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vrefdrr
+print "- VrefDRR             = &vrefdrr"
+
+;------------
+&abb_add=0x08
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &extsupplyregu
+print "- ExtSupplyRegu       = &extsupplyregu"
+
+;------------
+&abb_add=0x09
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vaux12regu
+print "- Vaux12Regu          = &vaux12regu"
+
+;------------
+&abb_add=0x0A
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vrf1vaux3regu
+print "- VRF1Vaux3Regu       = &vrf1vaux3regu"
+
+;================= ARM Sel ========================
+
+&varmselctrl=&varmregu1>>2.&0x3
+&currarmopp=0xFF
+if (&varmSel4567Ctrl!=0)
+(
+  ;0x1 => 4
+  ;0x2 => 5
+  ;0x3 => 6
+  ;0x4 => 7
+  &currarmopp=&varmSel4567Ctrl+0x3
+)
+else
+(
+  if &varmselctrl==0x0
+    &currarmopp=0x1
+  else if &varmselctrl==0x1
+    &currarmopp=0x2
+  else
+    &currarmopp=0x3
+)
+
+;------------
+&abb_add=0x0B
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmsel1
+
+&varmsel1_voltage=0.6+&varmsel1*0.00625
+
+if &currarmopp==0x1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Varmsel1  (0x", &varmsel1," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &varmsel1_voltage," V &is_used"
+
+;------------
+&abb_add=0x0C
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmsel2
+&varmsel2_voltage=0.6+&varmsel2*0.00625
+
+if &currarmopp==0x2
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VarmSel2  (0x", &varmsel2," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &varmsel2_voltage," V &is_used"
+
+;------------
+&abb_add=0x0D
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmsel3
+&varmsel3_voltage=0.6+&varmsel3*0.00625
+
+if &currarmopp==0x3
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VarmSel3  (0x", &varmsel3,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &varmsel3_voltage," V &is_used"
+
+;------------
+&abb_add=0x24
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmsel4
+&varmsel4_voltage=0.6+&varmsel4*0.00625
+
+if &currarmopp==0x4
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VarmSel4  (0x", &varmsel4,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &varmsel4_voltage," V &is_used"
+
+;------------
+&abb_add=0x25
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmsel5
+&varmsel5_voltage=0.6+&varmsel5*0.00625
+
+if &currarmopp==0x5
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VarmSel5  (0x", &varmsel5,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &varmsel5_voltage," V &is_used"
+
+;------------
+&abb_add=0x26
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmsel6
+&varmsel6_voltage=0.6+&varmsel6*0.00625
+
+if &currarmopp==0x6
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VarmSel6  (0x", &varmsel6,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &varmsel6_voltage," V &is_used"
+
+;------------
+&abb_add=0x27
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &varmsel7
+&varmsel7_voltage=0.6+&varmsel7*0.00625
+
+if &currarmopp==0x7
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VarmSel7  (0x", &varmsel7,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &varmsel7_voltage," V &is_used"
+
+;================= APE Sel ========================
+; WARNING : OTP_VsmpsC[1:0]=[00],[01] assumed
+; 0.7V to 1.3625 by 12mV step
+
+&vapeselctrl1=&vaperegu>>2.&0x1
+&vapeselctrl2=&vaperegu>>5.&0x1
+&currapeopp=0xFF
+if (&vapeSel45Ctrl==0x0)
+(
+  if (&vapeselctrl2==0x1)
+    &currapeopp=0x3
+  else if (&vapeselctrl1==0x0)
+    &currapeopp=0x1
+  else
+    &currapeopp=0x2
+)
+else if (&vapeSel45Ctrl==0x1)
+  &currapeopp=0x4
+else
+  &currapeopp=0x5
+
+;------------
+&abb_add=0x0E
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vapesel1
+&vapesel1_voltage=0.7+&vapesel1*0.0125
+
+if &currapeopp==0x1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VapeSel1  (0x", &vapesel1," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vapesel1_voltage," V &is_used"
+
+;------------
+&abb_add=0x0F
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vapesel2
+&vapesel2_voltage=0.7+&vapesel2*0.0125
+
+if &currapeopp==0x2
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VapeSel2  (0x", &vapesel2," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vapesel2_voltage," V &is_used"
+
+;------------
+&abb_add=0x10
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vapesel3
+&vapesel3_voltage=0.7+&vapesel3*0.0125
+
+if &currapeopp==0x3
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VapeSel3  (0x", &vapesel3," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vapesel3_voltage," V &is_used"
+
+;------------
+&abb_add=0x2B
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vapesel4
+&vapesel4_voltage=0.7+&vapesel4*0.0125
+
+if &currapeopp==0x4
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VapeSel4  (0x", &vapesel4," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vapesel4_voltage," V &is_used"
+
+;------------
+&abb_add=0x2C
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vapesel5
+&vapesel5_voltage=0.7+&vapesel5*0.0125
+
+if &currapeopp==0x5
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VapeSel5  (0x", &vapesel5," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vapesel5_voltage," V &is_used"
+
+
+;=========================================
+&abb_add=0x11
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vbbsel1
+
+print "- VBB Sel1 reg = &vbbsel1"
+&vbbpsel1=(&vbbsel1>>4.)&0xF
+&vbbnsel1=(&vbbsel1>>0.)&0xF
+
+&vbbnsel1_voltage= -0.35+(&vbbnsel1*0.050)
+
+print "  - VBBNSel1         (0x", &vbbnsel1," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL  &vbbnsel1_voltage," V"
+
+&vbbpsel1_voltage= -0.35+(&vbbpsel1*0.050)
+
+print "  - VBBPSel1         (0x", &vbbpsel1," @ 0x",&abb_bank,&abb_add,") = Varm + ( ", %DECIMAL &vbbpsel1_voltage," ) V"
+
+;=========================================
+&abb_add=0x12
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vbbsel2
+
+print "- VBB Sel2 reg = &vbbsel2"
+&vbbpsel2=(&vbbsel2>>4.)&0xF
+&vbbnsel2=(&vbbsel2>>0.)&0xF
+
+&vbbnsel2_voltage= -0.35+(&vbbnsel1*0.050)
+
+print "  - VBBNSel2         (0x", &vbbnsel2," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL  &vbbnsel1_voltage," V"
+
+&vbbpsel2_voltage= -0.35+(&vbbpsel1*0.050)
+
+print "  - VBBPSel2         (0x", &vbbpsel2," @ 0x",&abb_bank,&abb_add,") = Varm + ( ", %DECIMAL &vbbpsel2_voltage," ) V"
+
+
+;=========================================
+; WARNING : OTP_Vsmps1[1:0]=[01] assumed
+; 0.7V to 1.3625 by 12mV step
+
+;------------
+&abb_add=0x13
+&vsmps1selctrl=&vsmps1regu>>2.&0x3
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps1sel1
+&vsmps1sel1_voltage=0.7+&vsmps1sel1*0.0125
+
+if &vsmps1selctrl==0
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps1Sel1       (0x", &vsmps1sel1," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps1sel1_voltage," V &is_used"
+
+;------------
+&abb_add=0x14
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps1sel2
+&vsmps1sel2_voltage=0.7+&vsmps1sel2*0.0125
+
+if &vsmps1selctrl==1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps1Sel2       (0x", &vsmps1sel2," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps1sel2_voltage," V &is_used"
+
+
+;------------
+&abb_add=0x15
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps1sel3
+&vsmps1sel3_voltage=0.7+&vsmps1sel3*0.0125
+
+if &vsmps1selctrl>1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmsp1Sel3       (0x", &vsmps1sel3," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps1sel3_voltage," V &is_used"
+
+;------------
+&abb_add=0x17
+&vsmps2selctrl=&vsmps2regu>>2.&0x3
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps2sel1
+&vsmps2sel1_voltage=0.7+&vsmps2sel1*0.0125
+
+if &vsmps2selctrl==0
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps2Sel1       (0x", &vsmps2sel1," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps2sel1_voltage," V &is_used"
+
+;------------
+&abb_add=0x18
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps2sel2
+&vsmps2sel2_voltage=0.7+&vsmps2sel2*0.0125
+
+if &vsmps2selctrl==1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps2Sel2       (0x", &vsmps2sel2," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps2sel2_voltage," V &is_used"
+
+;------------
+&abb_add=0x19
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps2sel3
+&vsmps2sel3_voltage=0.7+&vsmps2sel3*0.0125
+
+if &vsmps2selctrl>1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps2Sel3       (0x", &vsmps2sel3," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps2sel3_voltage," V &is_used"
+
+;------------
+&abb_add=0x1B
+&vsmps3selctrl=&vsmps3regu>>2.&0x3
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps3sel1
+&vsmps3sel1_voltage=0.7+&vsmps3sel1*0.0125
+if &vsmps3selctrl==0
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps3Sel1       (0x", &vsmps3sel1," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps3sel1_voltage," V &is_used"
+
+;------------
+&abb_add=0x1C
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps3sel2
+&vsmps3sel2_voltage=0.7+&vsmps3sel2*0.0125
+if &vsmps3selctrl==1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps3Sel2       (0x", &vsmps3sel2," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps3sel2_voltage," V &is_used"
+
+;------------
+&abb_add=0x1D
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vsmps3sel3
+&vsmps3sel3_voltage=0.7+&vsmps3sel3*0.0125
+if &vsmps3selctrl>1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- Vsmps3Sel3       (0x", &vsmps3sel3," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vsmps3sel3_voltage," V &is_used"
+
+;------------
+&abb_add=0x1F
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vaux1sel
+if &vaux1sel==0.
+  &vaux1sel_voltage=1.1
+else if &vaux1sel==1.
+  &vaux1sel_voltage=1.2
+else if &vaux1sel==2.
+  &vaux1sel_voltage=1.3
+else if &vaux1sel==3.
+  &vaux1sel_voltage=1.4
+else if &vaux1sel==4.
+  &vaux1sel_voltage=1.5
+else if &vaux1sel==5.
+  &vaux1sel_voltage=1.8
+else if &vaux1sel==6.
+  &vaux1sel_voltage=1.85
+else if &vaux1sel==7.
+  &vaux1sel_voltage=1.9
+else if &vaux1sel==8.
+  &vaux1sel_voltage=2.5
+else if &vaux1sel==9.
+  &vaux1sel_voltage=2.65
+else if &vaux1sel==10.
+  &vaux1sel_voltage=2.7
+else if &vaux1sel==11.
+  &vaux1sel_voltage=2.75
+else if &vaux1sel==12.
+  &vaux1sel_voltage=2.8
+else if &vaux1sel==13.
+  &vaux1sel_voltage=2.9
+else if &vaux1sel==14.
+  &vaux1sel_voltage=3.0
+else if &vaux1sel==15.
+  &vaux1sel_voltage=3.3
+print "- Vaux1Sel         (0x", &vaux1sel," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vaux1sel_voltage," V"
+
+;------------
+&abb_add=0x20
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vaux2sel
+if &vaux2sel==0.
+  &vaux2sel_voltage=1.1
+else if &vaux2sel==1.
+  &vaux2sel_voltage=1.2
+else if &vaux2sel==2.
+  &vaux2sel_voltage=1.3
+else if &vaux2sel==3.
+  &vaux2sel_voltage=1.4
+else if &vaux2sel==4.
+  &vaux2sel_voltage=1.5
+else if &vaux2sel==5.
+  &vaux2sel_voltage=1.8
+else if &vaux2sel==6.
+  &vaux2sel_voltage=1.85
+else if &vaux2sel==7.
+  &vaux2sel_voltage=1.9
+else if &vaux2sel==8.
+  &vaux2sel_voltage=2.5
+else if &vaux2sel==9.
+  &vaux2sel_voltage=2.65
+else if &vaux2sel==10.
+  &vaux2sel_voltage=2.7
+else if &vaux2sel==11.
+  &vaux2sel_voltage=2.75
+else if &vaux2sel==12.
+  &vaux2sel_voltage=2.8
+else if &vaux2sel==13.
+  &vaux2sel_voltage=2.9
+else if &vaux2sel==14.
+  &vaux2sel_voltage=3.0
+else if &vaux2sel==15.
+  &vaux2sel_voltage=3.3
+print "- Vaux2Sel         (0x", &vaux2sel," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vaux2sel_voltage," V"
+
+;------------
+&abb_add=0x21
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &rf1vaux3sel
+&vaux3sel=&rf1vaux3sel&0xF
+&vrf1=(&rf1vaux3sel>>4.)&0x3
+if &vaux3sel==0.
+  &vaux3sel_voltage=1.2
+else if &vaux3sel==1.
+  &vaux3sel_voltage=1.5
+else if &vaux3sel==2.
+  &vaux3sel_voltage=1.8
+else if &vaux3sel==3.
+  &vaux3sel_voltage=2.1
+else if &vaux3sel==4.
+  &vaux3sel_voltage=2.5
+else if &vaux3sel==5.
+  &vaux3sel_voltage=2.75
+else if &vaux3sel==6.
+  &vaux3sel_voltage=2.79
+else if &vaux3sel==7.
+  &vaux3sel_voltage=2.91
+else if &vaux3sel>=8.
+  &vaux3sel_voltage=3.05
+print "- Vaux3Sel         (0x", &vaux3sel,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vaux3sel_voltage," V"
+
+&abb_add=0x2F
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vaux4sel
+&vaux4sel=&vaux4sel&0xF
+if &vaux4sel==0.
+  &vaux4sel_voltage=1.1
+else if &vaux4sel==1.
+  &vaux4sel_voltage=1.2
+else if &vaux4sel==2.
+  &vaux4sel_voltage=1.3
+else if &vaux4sel==3.
+  &vaux4sel_voltage=1.4
+else if &vaux4sel==4.
+  &vaux4sel_voltage=1.5
+else if &vaux4sel==5.
+  &vaux4sel_voltage=1.8
+else if &vaux4sel==6.
+  &vaux4sel_voltage=1.85
+else if &vaux4sel==7.
+  &vaux4sel_voltage=1.9
+else if &vaux4sel==8.
+  &vaux4sel_voltage=2.5
+else if &vaux4sel==9.
+  &vaux4sel_voltage=2.65
+else if &vaux4sel==10.
+  &vaux4sel_voltage=2.7
+else if &vaux4sel==11.
+  &vaux4sel_voltage=2.75
+else if &vaux4sel==12.
+  &vaux4sel_voltage=2.8
+else if &vaux4sel==13.
+  &vaux4sel_voltage=2.9
+else if &vaux4sel==14.
+  &vaux4sel_voltage=3.0
+else if &vaux4sel==15.
+  &vaux4sel_voltage=3.3
+print "- Vaux4sel         (0x", &vaux4sel,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vaux4sel_voltage," V"
+
+if &vrf1==0.
+  &vrf1_voltage=1.8
+else if &vrf1==1.
+  &vrf1_voltage=2.0
+else if &vrf1==2.
+  &vrf1_voltage=2.15
+else if &vrf1==3.
+  &vrf1_voltage=2.5
+print "- VRF1Sel          (0x", &vrf1,"  @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vrf1_voltage," V"
+
+;------------
+&abb_add=0x40
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vmodregu
+&vmodselctrl=&vmodregu>>2.&0x1
+
+;------------
+&abb_add=0x41
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vmodsel1
+if &vmodsel1>0x38
+  &vmodsel1_voltage=1.8+(&vmodsel1-0x39)*0.0125
+else
+  &vmodsel1_voltage=0.7+&vmodsel1*0.0125
+
+if &vmodselctrl==0
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VmodSel1         (0x", &vmodsel1," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vmodsel1_voltage," V &is_used"
+
+;------------
+&abb_add=0x42
+
+GOSUB abb_hwi2c_read &abb_bank &abb_add
+ENTRY &vmodsel2
+&vmodsel2_voltage=0.7+&vmodsel2*0.0125
+
+if &vmodselctrl==1
+  &is_used="(USED)"
+else
+  &is_used="(not used)"
+
+print "- VmodSel2         (0x", &vmodsel2," @ 0x",&abb_bank,&abb_add,") = ",%DECIMAL &vmodsel2_voltage," V &is_used"
+
+print "======================================================"
+
+; ================= XP70CLK MGT =================
+print "XP70CLK Management"
+&xp70clk_mgt_value=data.long(AD:&xp70clk_mgt_address)
+
+&pmbclk_div4_sel=&xp70clk_mgt_value>>1.&0x1
+if &pmbclk_div4_sel==0
+	print "- PMB_CLK_DIV2_4................: PMB_THSENS_clk_gated/2"
+else
+	print "- PMB_CLK_DIV2_4................: PMB_THSENS_clk_gated/4"
+
+&p4prcm_clk_l2_sw=&xp70clk_mgt_value>>3.&0x1
+if &p4prcm_clk_l2_sw==0
+	print "- PRCM & PERIPH4 clock..........: second level clock source"
+else
+	print "- PRCM & PERIPH4 clock..........: free running oscillator"
+
+&clk38m2clkgen_sw=&xp70clk_mgt_value>>4.&0x1
+&clk38m2clkgen_txt=""
+if &clk38m2clkgen_sw==0
+(
+	print "- MUX clk38m2clkgen.............: ULPCLK = 38.4MHz from ABB PLL"
+	&clk38m2clkgen_txt="ABB PLL"
+)
+else
+(
+	print "- MUX clk38m2clkgen.............: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+	&clk38m2clkgen_txt="DBB PLL"
+)
+
+&clk38m_ddrpll_sw=&xp70clk_mgt_value>>5.&0x7
+&clk38m_ddrpll=38.4
+if &clk38m_ddrpll_sw==0
+(
+	&clk38m_ddrpll=0.
+	print "- MUX DDR PLL...................: No clock"
+)
+else if &clk38m_ddrpll_sw==1
+(
+	&clk38m_ddrpll=&sysclk_freq
+	print "- MUX DDR PLL...................: SYSCLK"
+)
+else if &clk38m_ddrpll_sw==2
+	print "- MUX DDR PLL...................: ULPCLK = 38.4MHz from ABB PLL"
+else if &clk38m_ddrpll_sw==4
+	print "- MUX DDR PLL...................: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+
+&freeruningosc_div=&xp70clk_mgt_value>>8.&0x7F
+print "- Output divider of the free running oscillator: ", %DECIMAL &freeruningosc_div
+
+&p4subclk_clk_rtc_en=&xp70clk_mgt_value>>17.&0x1
+print "- P4SUBCLK CLK_RTC ENABLE.......: ", %DECIMAL &p4subclk_clk_rtc_en
+
+&p4subclk_pclk_scr_en=&xp70clk_mgt_value>>18.&0x1
+print "- P4SUBCLK PCLK_SCR ENABLE......: ", %DECIMAL &p4subclk_pclk_scr_en
+
+&p4subclk_pclk_rtc_en=&xp70clk_mgt_value>>19.&0x1
+print "- P4SUBCLK PCLK_RTC ENABLE......: ", %DECIMAL &p4subclk_pclk_rtc_en
+
+&evt_forcesfreerunning_clk=&xp70clk_mgt_value>>22.&0x1
+print "- EVENT FORCES FREE RUNNING CLK.: ", %DECIMAL &evt_forcesfreerunning_clk
+
+&clk38m_soc1pll_sw=&xp70clk_mgt_value>>23.&0x7
+&clk38m_soc1pll=38.4
+if &clk38m_soc1pll_sw==0
+(
+	print "- MUX SOC1 PLL..................: No clock"
+	&clk38m_soc1pll=0.
+)
+else if &clk38m_soc1pll_sw==1
+(
+	print "- MUX SOC1 PLL..................: SYSCLK"
+	&clk38m_soc1pll=&sysclk_freq
+)
+else if &clk38m_soc1pll_sw==2
+	print "- MUX SOC1 PLL..................: ULPCLK = 38.4MHz from ABB PLL"
+else if &clk38m_soc1pll_sw==4
+	print "- MUX SOC1 PLL..................: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+
+&clk38mdsi_sw=&xp70clk_mgt_value>>26.&0x1
+&clk38m2clkgen_dsi_txt=""
+if &clk38mdsi_sw==0
+(
+	print "- MUX CLK38M_TO_CLKGEN DSI......: ULPCLK = 38.4MHz from ABB PLL"
+	&clk38m2clkgen_dsi_txt="ABB PLL"
+)
+else
+(
+	print "- MUX CLK38M_TO_CLKGEN_DSI......: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+	&clk38m2clkgen_dsi_txt="DBB PLL"
+)
+
+&pclk_dbg_en=&xp70clk_mgt_value>>27.&0x1
+print "- PCLK_DBG ENABLE...............: ", %DECIMAL &pclk_dbg_en
+
+&clk38m2clkgen_en=&xp70clk_mgt_value>>28.&0x1
+print "- CLK38M2CLKGEN ENABLE..........: ", %DECIMAL &clk38m2clkgen_en
+&clk38m2clkgen=38.4
+if (&clk38m2clkgen_en==1)
+	&clk38m2clkgen_txt="&clk38m2clkgen_txt-ON"
+else
+(
+	&clk38m2clkgen_txt="&clk38m2clkgen_txt-OFF"
+	&clk38m2clkgen=0.
+)
+
+&clk38m2dsi_en=&xp70clk_mgt_value>>29.&0x1
+print "- CLK38M2DSI ENABLE.............: ", %DECIMAL &clk38m2dsi_en
+&clk38m2clkgen_dsi=38.4
+if (&clk38m2dsi_en==1)
+	&clk38m2clkgen_dsi_txt="&clk38m2clkgen_dsi_txt-ON"
+else
+(
+	&clk38m2clkgen_dsi_txt="&clk38m2clkgen_dsi_txt-OFF"
+	&clk38m2clkgen_dsi=0.
+)
+
+&pmb_thsens_clk_en=&xp70clk_mgt_value>>30.&0x1
+print "- PMB_THSENS_CLK ENABLE.........: ", %DECIMAL &pmb_thsens_clk_en
+print "======================================================"
+
+; ================= XP70CLK MGT 2 =================
+print "XP70CLK Management 2"
+&xp70clk_mgt2_value=data.long(AD:&xp70clk_mgt2_address)
+
+&pll_soc0_mx=&xp70clk_mgt2_value>>0.&0x7
+&clk38m_soc0pll=38.4
+if &pll_soc0_mx==0
+(
+	print "- MUX SOC0 PLL..................: No clock"
+	&clk38m_soc0pll=0.
+)
+else if &pll_soc0_mx==1
+(
+	print "- MUX SOC0 PLL..................: SYSCLK (&sysclk_freq MHz)"
+	&clk38m_soc0pll=&sysclk_freq
+)
+else if &pll_soc0_mx==2
+	print "- MUX SOC0 PLL..................: ULPCLK = 38.4MHz from ABB PLL"
+else if &pll_soc0_mx==4
+	print "- MUX SOC0 PLL..................: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+
+&xp70_clk_l2=&xp70clk_mgt2_value>>3.&0x7
+if &xp70_clk_l2==0
+	print "- XP70 CLK LEVEL 2..............: No clock"
+else if &xp70_clk_l2==1
+	print "- XP70 CLK LEVEL 2..............: CLK32K (32 kHz)"
+else if &xp70_clk_l2==2
+	print "- XP70 CLK LEVEL 2..............: XP70 CLK LEVEL 1 output"
+else if &xp70_clk_l2==4
+	print "- XP70 CLK LEVEL 2..............: SYSCLK (&sysclk_freq MHz)"
+
+&xp70_clk_l1=&xp70clk_mgt2_value>>6.&0x7
+if &xp70_clk_l1==0
+	print "- XP70 CLK LEVEL 1..............: No clock"
+else if &xp70_clk_l1==1
+	print "- XP70 CLK LEVEL 1..............: CLK32K"
+else if &xp70_clk_l1==2
+	print "- XP70 CLK LEVEL 1..............: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+else if &xp70_clk_l1==4
+	print "- XP70 CLK LEVEL 1..............: ULPCLK = 38.4MHz from ABB PLL"
+
+&clk38m_armpll_sw=&xp70clk_mgt2_value>>9.&0x7
+&clk38m_armpll=38.4
+if &clk38m_armpll_sw==0
+(
+	print "- MUX ARM PLL...................: No clock"
+	&clk38m_armpll=0.
+)
+else if &clk38m_armpll_sw==1
+(
+	print "- MUX ARM PLL...................: SYSCLK (&sysclk_freq MHz)"
+	&clk38m_armpll=&sysclk_freq
+)
+else if &clk38m_armpll_sw==2
+	print "- MUX ARM PLL...................: ULPCLK = 38.4MHz from ABB PLL"
+else if &clk38m_armpll_sw==4
+	print "- MUX ARM PLL...................: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+
+&clk38m_armvfcgpll_sw=&xp70clk_mgt2_value>>12.&0x7
+&clk38m_armvfcgpll=38.4
+if &clk38m_armvfcgpll_sw==0
+(
+	print "- MUX ARM VFCG PLL..............: No clock"
+	&clk38m_armvfcgpll=0.
+)
+else if &clk38m_armvfcgpll_sw==1
+(
+	print "- MUX ARM VFCG PLL..............: SYSCLK (&sysclk_freq MHz)"
+	&clk38m_armvfcgpll=&sysclk_freq
+)
+else if &clk38m_armvfcgpll_sw==2
+	print "- MUX ARM VFCG PLL..............: ULPCLK = 38.4MHz from ABB PLL"
+else if &clk38m_armvfcgpll_sw==4
+	print "- MUX ARM VFCG PLL..............: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+
+&clk38m_ddr1pll_sw=&xp70clk_mgt2_value>>16.&0x7
+&clk38m_ddr1pll=38.4
+if &clk38m_ddr1pll_sw==0
+(
+	print "- MUX ARM DDR1 PLL..............: No clock"
+	&clk38m_ddr1pll=0.
+)
+else if &clk38m_ddr1pll_sw==1
+(
+	print "- MUX ARM DDR1 PLL..............: SYSCLK (&sysclk_freq MHz)"
+	&clk38m_ddr1pll=&sysclk_freq
+)
+else if &clk38m_ddr1pll_sw==2
+	print "- MUX ARM DDR1 PLL..............: ULPCLK = 38.4MHz from ABB PLL"
+else if &clk38m_ddr1pll_sw==4
+	print "- MUX ARM DDR1 PLL..............: ULPCLK = 38.4MHz from DBB PLL (internal from 32k)"
+
+print "======================================================"
+
+; ================= ARM VFCG PLL =================
+&armvfcg_pll_freq_value=data.long(AD:&armvfcg_pll_freq_address)
+&armvfcg_pll_freq_D=&armvfcg_pll_freq_value>>0.&0x7F
+&armvfcg_pll_freq_N=&armvfcg_pll_freq_value>>7.&0x03
+&armvfcg_pll_freq_R=&armvfcg_pll_freq_value>>16.&0x07
+
+&armvfcg_pll_ctrl_val_value=data.long(AD:&armvfcg_pll_ctrl_val_address)
+&armvfcg_pll_ctrl_master_enable=&armvfcg_pll_ctrl_val_value>>0.&0x1
+&armvfcg_pll_ctrl_vfc_enable=&armvfcg_pll_ctrl_val_value>>1.&0x1
+
+&armvfcg_pll_status_value=data.long(AD:&armvfcg_pll_status_address)
+&armvfcg_pll_fullspeed=&armvfcg_pll_status_value>>3.&0x1
+
+&armvfcg_pll_lockp_value=data.long(AD:&armvfcg_pll_lockp_address)
+&armvfcg_pll_dvfs_clkgood=&armvfcg_pll_lockp_value>>2.&0x1
+&armvfcg_pll_dvfs_lockp3=&armvfcg_pll_lockp_value>>1.&0x1
+&armvfcg_pll_dvfs_lockp10=&armvfcg_pll_lockp_value>>0.&0x1
+
+&armvfcg_f_div2_cnt_value=data.long(AD:&armvfcg_f_div2_cnt_address)
+
+&pll_ldf=&armvfcg_pll_freq_D*2
+&pll_odf=&armvfcg_pll_freq_N
+&pll_idf=&armvfcg_pll_freq_R ; R>1
+
+if (&pll_odf==0.)
+   &pll_odf=1.
+
+if (&pll_idf==0.)
+   &pll_idf=1.
+
+&armvfcg_pll_frequency=&clk38m_armvfcgpll*&pll_ldf/&pll_odf/&pll_idf
+
+print "ARM VFCG PLL Frequency: ", %DECIMAL &armvfcg_pll_frequency,"MHz (input ", %DECIMAL &clk38m_armvfcgpll," MHz)"
+print "- PLL D (ldf): ", %DECIMAL &armvfcg_pll_freq_D, "(",%DECIMAL &pll_ldf ")"
+print "- PLL N (odf): ", %DECIMAL &armvfcg_pll_freq_N, "(",%DECIMAL &pll_odf ")"
+print "- PLL R (IDF): ", %DECIMAL &armvfcg_pll_freq_R, "(",%DECIMAL &pll_idf ")"
+print "- CLKGOOD : ", &armvfcg_pll_dvfs_clkgood
+print "- LOCKP3  : ", &armvfcg_pll_dvfs_lockp3
+print "- LOCKP10 : ", &armvfcg_pll_dvfs_lockp10
+
+print "- VFCENABLE : ", &armvfcg_pll_ctrl_vfc_enable
+print "- FULLSPEED : ", &armvfcg_pll_fullspeed
+print "- FULLSPEED CNT (monitoring): ", &armvfcg_f_div2_cnt_value
+
+if &armvfcg_pll_ctrl_master_enable==0x0
+	print "- ARM VFCG PLL Low Power Mode"
+else
+	print "- ARM VFCG PLL Running"
+
+; ================= ARM  PLL =================
+&arm_pll_value=data.long(AD:&arm_pll_address)
+
+&pll_value=&arm_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&arm_pll_frequency=&clk38m_armpll*&pll_ldf/&pll_odf/&pll_idf
+
+print "ARM PLL Frequency: ", %DECIMAL &arm_pll_frequency,"MHz (input ", %DECIMAL &clk38m_armpll," MHz)"
+
+if data.long(AD:&arm_pll_enable_address)==0
+	print "- ARM PLL Low Power Mode"
+else
+	print "- ARM PLL Running"
+
+; ================= DDR  PLL =================
+&ddr0_pll_value=data.long(AD:&ddr0_pll_address)
+
+&pll_value=&ddr0_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&ddr0_pll_frequency=&clk38m_ddrpll*&pll_ldf/&pll_odf/&pll_idf
+print "DDR0 PLL Frequency: ", %DECIMAL &ddr0_pll_frequency,"MHz (input ", %DECIMAL  &clk38m_ddrpll," MHz)"
+
+if data.long(AD:&ddr0_pll_enable_address)==0
+	print "- DRR0 PLL not requested by the PRCMU"
+else
+	print "- DRR0 PLL requested by the PRCMU"
+
+; ================= DDR1  PLL =================
+&ddr1_pll_value=data.long(AD:&ddr1_pll_address)
+
+&pll_value=&ddr1_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&ddr1_pll_frequency=&clk38m_ddr1pll*&pll_ldf/&pll_odf/&pll_idf
+print "DDR1  PLL Frequency: ", %DECIMAL &ddr1_pll_frequency,"MHz (input ", %DECIMAL   &clk38m_ddr1pll," MHz)"
+
+if data.long(AD:&ddr1_pll_enable_address)==0
+	print "- DRR1 PLL not requested by the PRCMU"
+else
+	print "- DRR1 PLL requested by the PRCMU"
+
+; ================= SOC0 PLL =================
+&soc0_pll_value=data.long(AD:&soc0_pll_address)
+
+&pll_value=&soc0_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&soc0_pll_frequency=&clk38m_soc0pll*&pll_ldf/&pll_odf/&pll_idf
+
+print "SOC0 PLL Frequency: ", %DECIMAL &soc0_pll_frequency,"MHz (input ", %DECIMAL  &clk38m_soc0pll," MHz)"
+
+if data.long(AD:&soc0_pll_enable_address)==0
+	print "- SOC0 PLL Low Power Mode"
+else
+	print "- SOC0 PLL Running"
+
+; ================= SOC1 PLL =================
+&soc1_pll_value=data.long(AD:&soc1_pll_address)
+
+&pll_value=&soc1_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&soc1_pll_frequency=&clk38m_soc1pll*&pll_ldf/&pll_odf/&pll_idf
+print "SOC1 PLL Frequency: ", %DECIMAL &soc1_pll_frequency,"MHz (input ", %DECIMAL  &clk38m_soc0pll," MHz)"
+
+if data.long(AD:&soc1_pll_enable_address)==0
+	print "- SOC1 PLL Low Power Mode"
+else
+	print "- SOC1 PLL Running"
+
+; ================= DSI PLL =================
+&dsi_pll_value=data.long(AD:&dsi_pll_address)
+
+&pll_value=&dsi_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&pll_div=(&pll_value>>24.&0x1)+1
+&pll_frequency=38.4*&pll_ldf/&pll_odf/&pll_idf/&pll_div
+
+&dsi_pll_frequency=&pll_frequency
+print "DSI  PLL Frequency: ", %DECIMAL &dsi_pll_frequency,"MHz"
+
+if data.long(AD:&dsi_pll_enable_address)==0
+	print "- DSI PLL Low Power Mode"
+else
+	print "- DSI PLL Running"
+print "======================================================"
+
+; ================= 32k PLL =================
+print "32k PLL"
+&32k_pll_enable_value=data.long(AD:&32k_pll_enable_address)
+
+&prcm_pll32k_enable=&32k_pll_enable_value>>0.&0x1
+&prcm_pll32k_bidir_oen=&32k_pll_enable_value>>1.&0x1
+&prcm_pll32k_gate_en=&32k_pll_enable_value>>2.&0x1
+
+if &prcm_pll32k_enable==0
+	print "- PLL Low Power Mode"
+else
+	print "- PLL Running"
+
+if &prcm_pll32k_bidir_oen==0
+	print "- Bidir pad is an input"
+else
+	print "- Bidir pad is driving"
+
+if &prcm_pll32k_gate_en==0
+	print "- PLL Output propagated to the full SOC"
+else
+	print "- PLL Ouput masked"
+print "======================================================"
+
+; ================= RNG oscillator =================
+&rng_enable_value=data.long(AD:&rng_enable_address)&0x1
+
+if &rng_enable_value==0
+  print "RNG oscillator is OFF"
+if &rng_enable_value==1
+  print "RNG oscillator is RUNNING"
+
+print "======================================================"
+
+; ================= CLK ACTIV =================
+print "CLK ACTIV"
+&clkactiv_value=data.long(AD:&clkactiv_address)
+
+&clk32_running=&clkactiv_value>>0.&0x1
+&sysclk_running=&clkactiv_value>>1.&0x1
+&vaux4sel_running=&clkactiv_value>>2.&0x1
+&pllsoc1_running=&clkactiv_value>>3.&0x1
+&pllddr_running=&clkactiv_value>>4.&0x1
+&abb_ulpclk_running=&clkactiv_value>>5.&0x1
+&db8500_ulpclk_running=&clkactiv_value>>6.&0x1
+&msp0sck_running=&clkactiv_value>>7.&0x1
+&msp2sck_running=&clkactiv_value>>8.&0x1
+&pllsoc1_div12_en=&clkactiv_value>>16.&0x1
+&pllsoc1_en=&clkactiv_value>>17.&0x1
+&pllddr_div12_en=&clkactiv_value>>18.&0x1
+&pllddr_div2_en=&clkactiv_value>>19.&0x1
+&pllsoc0_div12_en=&clkactiv_value>>20.&0x1
+&pllsoc0_div2_en=&clkactiv_value>>21.&0x1
+&pllddr1_out_en=&clkactiv_value>>22.&0x1
+&pllddr1_running=&clkactiv_value>>23.&0x1
+&c2cclk_pllsoc0_running=&clkactiv_value>>24.&0x1
+&c2cclk_pllsoc1_running=&clkactiv_value>>25.&0x1
+&c2cclk_pllddr_running=&clkactiv_value>>26.&0x1
+
+print "- CLK32    RUNNING........: ", %DECIMAL &clk32_running
+print "- SYSCLK   RUNNING........: ", %DECIMAL &sysclk_running
+print "- SOC1 PLL RUNNING........: ", %DECIMAL &pllsoc1_running
+print "- DDR  PLL RUNNING........: ", %DECIMAL &pllddr_running
+print "- ABB  ULPCLK RUNNING.....: ", %DECIMAL &abb_ulpclk_running
+print "- DBB  ULPCLK RUNNING.....: ", %DECIMAL &db8500_ulpclk_running
+print "- MSP0 SCK RUNNING........: ", %DECIMAL &msp0sck_running
+print "- MSP2 SCK RUNNING........: ", %DECIMAL &msp2sck_running
+print "- SOC1 PLL DIV12 ENABLE...: ", %DECIMAL &pllsoc1_div12_en
+print "- SOC1 PLL ENABLE.........: ", %DECIMAL &pllsoc1_en
+print "- DDR PLL DIV12  ENABLE...: ", %DECIMAL &pllddr_div12_en
+print "- DDR PLL DIV2   ENABLE...: ", %DECIMAL &pllddr_div2_en
+print "- SOC0 PLL DIV12 ENABLE...: ", %DECIMAL &pllsoc0_div12_en
+print "- SOC0 PLL DIV2  ENABLE...: ", %DECIMAL &pllsoc0_div2_en
+print "- PLL DDR1 OUT  ENABLE....: ", %DECIMAL &pllddr1_out_en
+print "- PLL DDR1 RUNNING........: ", %DECIMAL &pllddr1_running
+print "- C2C CLK PLL SOC0 RUNNING: ", %DECIMAL &c2cclk_pllsoc0_running
+print "- C2C CLK PLL SOC1 RUNNING: ", %DECIMAL &c2cclk_pllsoc1_running
+print "- C2C CLK PLL DDR RUNNING.: ", %DECIMAL &c2cclk_pllddr_running
+print "======================================================"
+
+; ================= MODE =================
+&mode_value=data.long(AD:&mode_address)&0x7
+print "Generic clock selection when not selected by yyCLK38 :"
+if &mode_value==0
+  print "Mode 000: no clock"
+if &mode_value==1
+  print "Mode 001: 32KHz"
+if &mode_value==2
+  print "Mode 010: from selected source (ULP or SYSCLK)"
+if &mode_value==4
+  print "Mode 100: PLL Value"
+print "======================================================"
+
+; ================= ARMCLKFIX MGT =================
+print "ARMCLKFIX Management"
+GOSUB yyclken_mgt data.long(AD:&armclkfix_mgt_address) "Fixed"
+ENTRY &armclkfix_mgt_frequency
+print "======================================================"
+
+; ================= ACLK MGT =================
+print "ACLK Management"
+GOSUB yyclken_mgt data.long(AD:&aclk_mgt_address) "Scalable"
+ENTRY &aclk_mgt_frequency
+print "======================================================"
+
+; ================= SVAMMDSPCLK MGT =================
+print "SVAMMDSPCLK Management"
+GOSUB yyclken_mgt data.long(AD:&svammdspclk_mgt_address) "Scalable" MMDSP
+ENTRY &svammdspclk_mgt_frequency
+print "======================================================"
+
+; ================= SIAMMDSPCLK MGT =================
+print "SIAMMDSPCLK Management"
+GOSUB yyclken_mgt data.long(AD:&siammdspclk_mgt_address) "Scalable" MMDSP
+ENTRY &siammdspclk_mgt_frequency
+print "======================================================"
+
+; ================= SGACLK MGT =================
+print "SGACLK Management"
+GOSUB yyclken_mgt data.long(AD:&sgaclk_mgt_address) "Scalable"
+ENTRY &sgaclk_mgt_frequency
+print "======================================================"
+
+; ================= G1CLK MGT =================
+print "G1CLK Management"
+GOSUB yyclken_mgt data.long(AD:&g1clk_mgt_address) "Scalable"
+ENTRY &g1clk_mgt_frequency
+print "======================================================"
+
+; ================= HVACLK MGT =================
+print "HVACLK Management"
+GOSUB yyclken_mgt data.long(AD:&hvaclk_mgt_address) "Scalable"
+ENTRY &hvaclk_mgt_frequency
+print "======================================================"
+
+; ================= UARTCLK MGT =================
+print "UARTCLK Management"
+GOSUB yyclken_mgt data.long(AD:&uartclk_mgt_address) "Fixed"
+ENTRY &uartclk_mgt_frequency
+print "======================================================"
+
+; ================= MSP02CLK MGT =================
+print "MSP02CLK Management"
+GOSUB yyclken_mgt data.long(AD:&msp02clk_mgt_address) "Fixed"
+ENTRY &msp02clk_mgt_frequency
+print "======================================================"
+
+; ================= MSP1CLK MGT =================
+print "MSP1CLK Management"
+GOSUB yyclken_mgt data.long(AD:&msp1clk_mgt_address) "Fixed"
+ENTRY &msp1clk_mgt_frequency
+print "======================================================"
+
+; ================= I2CCLK MGT =================
+print "I2CCLK Management"
+GOSUB yyclken_mgt data.long(AD:&i2cclk_mgt_address) "Fixed"
+ENTRY &i2cclk_mgt_frequency
+print "======================================================"
+
+; ================= SDMMCCLK MGT =================
+print "SDMMCCLK Management"
+GOSUB yyclken_mgt data.long(AD:&sdmmcclk_mgt_address) "Scalable"
+ENTRY &sdmmcclk_mgt_frequency
+print "======================================================"
+
+; ================= SLIMCLK MGT =================
+print "SLIMCLK Management"
+GOSUB yyclken_mgt data.long(AD:&slimclk_mgt_address) "Fixed" SLIM
+ENTRY &slimclk_mgt_frequency
+print "======================================================"
+
+; ================= PER1CLK MGT =================
+print "PER1CLK Management"
+GOSUB yyclken_mgt data.long(AD:&per1clk_mgt_address) "Scalable"
+ENTRY &per1clk_mgt_frequency
+print "======================================================"
+
+; ================= PER2CLK MGT =================
+print "PER2CLK Management"
+GOSUB yyclken_mgt data.long(AD:&per2clk_mgt_address) "Scalable"
+ENTRY &per2clk_mgt_frequency
+print "======================================================"
+
+; ================= PER3CLK MGT =================
+print "PER3CLK Management"
+GOSUB yyclken_mgt data.long(AD:&per3clk_mgt_address) "Scalable"
+ENTRY &per3clk_mgt_frequency
+print "======================================================"
+
+; ================= PER5CLK MGT =================
+print "PER5CLK Management"
+GOSUB yyclken_mgt data.long(AD:&per5clk_mgt_address) "Scalable"
+ENTRY &per5clk_mgt_frequency
+print "======================================================"
+
+; ================= PER6CLK MGT =================
+print "PER6CLK Management"
+GOSUB yyclken_mgt data.long(AD:&per6clk_mgt_address) "Scalable"
+ENTRY &per6clk_mgt_frequency
+print "======================================================"
+
+; ================= PER7CLK MGT =================
+print "PER7CLK Management"
+GOSUB yyclken_mgt data.long(AD:&per7clk_mgt_address) "Scalable"
+ENTRY &per7clk_mgt_frequency
+print "======================================================"
+
+; ================= LCDCLK MGT =================
+print "LCDCLK Management"
+GOSUB yyclken_mgt data.long(AD:&lcdclk_mgt_address) "Fixed"
+ENTRY &lcdclk_mgt_frequency
+print "======================================================"
+
+; ================= BMLCLK MGT =================
+print "BMLCLK Management"
+GOSUB yyclken_mgt data.long(AD:&bmlclk_mgt_address) "Scalable"
+ENTRY &bmlclk_mgt_frequency
+print "======================================================"
+
+; ================= HSITXCLK MGT =================
+print "HSITXCLK Management"
+GOSUB yyclken_mgt data.long(AD:&hsitxclk_mgt_address) "Scalable"
+ENTRY &hsitxclk_mgt_frequency
+print "======================================================"
+
+; ================= HSIRXCLK MGT =================
+print "HSIRXCLK Management"
+GOSUB yyclken_mgt data.long(AD:&hsirxclk_mgt_address) "Scalable"
+ENTRY &hsirxclk_mgt_frequency
+print "======================================================"
+
+; ================= HDMICLK MGT =================
+print "HDMICLK Management"
+GOSUB yyclken_mgt data.long(AD:&hdmiclk_mgt_address) "Fixed" DSI
+ENTRY &hdmiclk_mgt_frequency
+print "======================================================"
+
+; ================= APEATCLK MGT =================
+print "APEATCLK Management"
+GOSUB yyclken_mgt data.long(AD:&apeatclk_mgt_address) "Scalable"
+ENTRY &apeatclk_mgt_frequency
+print "======================================================"
+
+; ================= APETRACECLK MGT =================
+print "APETRACECLK Management"
+GOSUB yyclken_mgt data.long(AD:&apetraceclk_mgt_address) "Scalable"
+ENTRY &apetraceclk_mgt_frequency
+print "======================================================"
+
+; ================= MCDECLK MGT =================
+print "MCDECLK Management"
+GOSUB yyclken_mgt data.long(AD:&mcdeclk_mgt_address) "Scalable"
+ENTRY &mcdeclk_mgt_frequency
+print "======================================================"
+
+; ================= IPI2CCLK MGT =================
+print "IPI2CCLK Management"
+GOSUB yyclken_mgt data.long(AD:&ipi2cclk_mgt_address) "Fixed"
+ENTRY &ipi2cclk_mgt_frequency
+print "======================================================"
+
+; ================= DSIALTCLK MGT =================
+print "DSIALTCLK Management"
+GOSUB yyclken_mgt data.long(AD:&dsialtclk_mgt_address) "Fixed" DSI
+ENTRY &dsialtclk_mgt_frequency
+print "======================================================"
+
+; ================= DMACLK MGT =================
+print "DMACLK Management"
+GOSUB yyclken_mgt data.long(AD:&dmaclk_mgt_address)  "Scalable"
+ENTRY &dmaclk_mgt_frequency
+print "======================================================"
+
+; ================= DPICLK MGT =================
+; not used on AP9540
+;print "DPICLK Management"
+;GOSUB yyclken_mgt data.long(AD:&dpiclk_mgt_address)
+;ENTRY &dpiclk_mgt_frequency
+;print "======================================================"
+
+; ================= B2R2CLK MGT =================
+print "B2R2CLK Management"
+&b2r2clk_mgt=data.long(AD:&b2r2clk_mgt_address)
+GOSUB yyclken_mgt &b2r2clk_mgt "Scalable" B2R2
+ENTRY &b2r2clk_mgt_frequency
+print "======================================================"
+
+; ================= TVCLK MGT =================
+print "TVCLK Management"
+GOSUB yyclken_mgt data.long(AD:&tvclk_mgt_address) "Fixed" DSI
+ENTRY &tvclk_mgt_frequency
+print "======================================================"
+
+; ================= SSPCLK MGT =================
+print "SSPCLK Management"
+GOSUB yyclken_mgt data.long(AD:&sspclk_mgt_address) "Fixed"
+ENTRY &sspclk_mgt_frequency
+print "======================================================"
+
+; ================= RNGCLK MGT =================
+print "RNGCLK Management"
+GOSUB yyclken_mgt data.long(AD:&rngclk_mgt_address) "Fixed"
+ENTRY &rngclk_mgt_frequency
+print "======================================================"
+
+; ================= UICCCLK MGT =================
+; not used in 9540
+;print "UICCCLK Management"
+;GOSUB yyclken_mgt data.long(AD:&uiccclk_mgt_address)
+;ENTRY &uiccclk_mgt_frequency
+;print "======================================================"
+
+; ================= ARM CHGCLKREQ =================
+print "ARM CHGCLKREQ"
+&arm_chgclkreq_value=data.long(AD:&arm_chgclkreq_address)
+
+&arm_chgclkreq=&arm_chgclkreq_value>>0.&0x3
+&arm_divsel=&arm_chgclkreq_value>>16.&0x1
+
+&arm_chgclkreq_value=0.
+if &arm_chgclkreq==0.
+(
+	&arm_chgclkreq_value=&arm_pll_frequency
+	print "- Cortex A9 running on ARM PLL =",%DECIMAL &arm_chgclkreq_value," MHz"
+)
+else if &arm_chgclkreq==2.
+(
+	&arm_chgclkreq_value=&armvfcg_pll_frequency
+	print "- Cortex A9 running on VFCG PLL = ",%DECIMAL &arm_chgclkreq_value," MHz"
+)
+else
+(
+	; "extern clock" or "relay clock" (clkext2f)
+	; => ARMCLKFIX (see chapter 9.4.2 in datasheet : A9SS-VARM)
+	&arm_chgclkreq_value=&armclkfix_mgt_frequency
+	if &arm_divsel==1
+	(
+		print "- cortex A9 running on ARMCLKFIX without division = ",%DECIMAL &arm_chgclkreq_value," MHz"
+	)
+	else
+	(
+		&arm_chgclkreq_value=&arm_chgclkreq_value/2.
+		print "- cortex A9 running on ARMCLKFIX divided by 2 ",%DECIMAL &arm_chgclkreq_value," MHz"
+	)
+)
+
+print "======================================================"
+
+
+; ================= ARM PLL DIV =================
+print "ARM PLL DIV"
+&arm_pll_divps_value=data.long(AD:&arm_pll_divps_address)
+
+&arm_brm_rate_val=&arm_pll_divps_value>>0.&0x1F	;value
+&arm_brm_rate_test=&arm_pll_divps_value>>5.&0x1	;test
+&arm_brm_idlediv=&arm_pll_divps_value>>8.&0x3
+&arm_brm_idleen=&arm_pll_divps_value>>12.&0x1
+&arm_pll_obsdiv=&arm_pll_divps_value>>16.&0x3
+&arm_pll_obsen=&arm_pll_divps_value>>20.&0x1
+
+if &arm_brm_rate_test==1
+	print "- BRM rate in normal mode -> CPU Clock: BRM_Clock_Input"
+else
+	print "- BRM rate in normal mode -> CPU Clock: BRM_Clock_Input * ", %DECIMAL &arm_brm_rate_val,"/32"
+
+if &arm_brm_idlediv==0
+  &arm_pll_idlediv_txt="4"
+else if &arm_brm_idlediv==1
+  &arm_pll_idlediv_txt="8"
+else if &arm_brm_idlediv==2
+  &arm_pll_idlediv_txt="16"
+else if &arm_brm_idlediv==3
+  &arm_pll_idlediv_txt="32"
+
+&arm_pll_obsdiv_txt="?"
+if &arm_pll_obsdiv==0
+  &arm_pll_obsdiv_txt="4"
+else if &arm_pll_obsdiv==1
+  &arm_pll_obsdiv_txt="8"
+else if &arm_pll_obsdiv==2
+  &arm_pll_obsdiv_txt="16"
+else if &arm_pll_obsdiv==3
+  &arm_pll_obsdiv_txt="32"
+
+
+print "- BRM rate in idle mode    -> CPU Clock: BRM_Clock_Input/&arm_pll_idlediv_txt"
+print "- ARM_BRM_IDLEEN: ", %DECIMAL &arm_brm_idleen
+print "- ARM_Obs_Clock: ARM_PLL_Output/&arm_pll_obsdiv_txt"
+print "- ARM_PLL_OBSEN: ", %DECIMAL &arm_pll_obsen
+print "======================================================"
+
+; ================= DSI OUT PLL =================
+print "Control dividers DSI OUT PLL"
+&dsi_pllout_sel_value=data.long(AD:&dsi_pllout_sel_address)
+
+&dsi0_pllout_divsel=&dsi_pllout_sel_value>>0.&7
+if &dsi0_pllout_divsel==0
+	print "- DSI0_PLLOUT_DIVSEL.....: OFF"
+else if &dsi0_pllout_divsel==1
+	print "- DSI0_PLLOUT_DIVSEL.....: phi"
+else if &dsi0_pllout_divsel==2
+	print "- DSI0_PLLOUT_DIVSEL.....: phi/2"
+else if &dsi0_pllout_divsel==3
+	print "- DSI0_PLLOUT_DIVSEL.....: phi/4"
+else if &dsi0_pllout_divsel==4
+	print "- DSI0_PLLOUT_DIVSEL.....: alt_hsclk"
+else if &dsi0_pllout_divsel==5
+	print "- DSI0_PLLOUT_DIVSEL.....: alt_hsclk/2"
+else if (&dsi0_pllout_divsel>>1.==3)
+	print "- DSI0_PLLOUT_DIVSEL.....: alt_hsclk/4"
+
+&dsi1_pllout_divsel=&dsi_pllout_sel_value>>8.&7
+if &dsi1_pllout_divsel==0
+	print "- DSI1_PLLOUT_DIVSEL.....: OFF"
+else if &dsi1_pllout_divsel==1
+	print "- DSI1_PLLOUT_DIVSEL.....: phi"
+else if &dsi1_pllout_divsel==2
+	print "- DSI1_PLLOUT_DIVSEL.....: phi/2"
+else if &dsi1_pllout_divsel==3
+	print "- DSI1_PLLOUT_DIVSEL.....: phi/4"
+else if &dsi1_pllout_divsel==4
+	print "- DSI1_PLLOUT_DIVSEL.....: alt_hsclk/2"
+else if &dsi1_pllout_divsel==5
+	print "- DSI1_PLLOUT_DIVSEL.....: alt_hsclk/4"
+print "======================================================"
+
+; ================= DSI GLITCHFREE EN =================
+print "DSI GLITCHFREE"
+&dsi_glitchfree_en_value=data.long(AD:&dsi_glitchfree_en_address)
+
+&dsi0_bypass_byte_clk_sync=&dsi_glitchfree_en_value>>0.&0x1
+	print "- DSI0_BYPASS_BYTE_CLK_SYNC: ", %DECIMAL &dsi0_bypass_byte_clk_sync
+
+&dsi0_bypass_mcde_clk_sync=&dsi_glitchfree_en_value>>1.&0x1
+	print "- DSI0_BYPASS_MCDE_CLK_SYNC: ", %DECIMAL &dsi0_bypass_mcde_clk_sync
+
+&dsi1_bypass_byte_clk_sync=&dsi_glitchfree_en_value>>8.&0x1
+	print "- DSI1_BYPASS_BYTE_CLK_SYNC: ", %DECIMAL &dsi0_bypass_byte_clk_sync
+
+&dsi1_bypass_mcde_clk_sync=&dsi_glitchfree_en_value>>9.&0x1
+	print "- DSI1_BYPASS_MCDE_CLK_SYNC: ", %DECIMAL &dsi1_bypass_mcde_clk_sync
+
+&dsi2_bypass_byte_clk_sync=&dsi_glitchfree_en_value>>16.&0x1
+	print "- DSI2_BYPASS_BYTE_CLK_SYNC: ", %DECIMAL &dsi2_bypass_byte_clk_sync
+
+&dsi2_bypass_mcde_clk_sync=&dsi_glitchfree_en_value>>17.&0x1
+	print "- DSI0_BYPASS_MCDE_CLK_SYNC: ", %DECIMAL &dsi2_bypass_mcde_clk_sync
+print "======================================================"
+
+; ================= APE RESETN VAL =================
+print "APE RESETN VAL"
+&ape_resetn_val_value=data.long(AD:&ape_resetn_val_address)
+
+&sga_l_resetn=&ape_resetn_val_value>>0.&0x1
+&sga_m_initn=&ape_resetn_val_value>>1.&0x1
+&dss_l_resetn=&ape_resetn_val_value>>2.&0x1
+&dss_m_initn=&ape_resetn_val_value>>3.&0x1
+&sva_pipe_l_resetn=&ape_resetn_val_value>>4.&0x1
+&sva_mmdsp_l_resetn=&ape_resetn_val_value>>5.&0x1
+&sva_pipe_m_initn=&ape_resetn_val_value>>6.&0x1
+&sva_mmdsp_mret_initn=&ape_resetn_val_value>>7.&0x1
+&sia_pipe_l_resetn=&ape_resetn_val_value>>8.&0x1
+&sia_mmdsp_l_resetn=&ape_resetn_val_value>>10.&0x1
+&sia_pipe_m_initn=&ape_resetn_val_value>>11.&0x1
+&sia_mmdsp_m_initn=&ape_resetn_val_value>>12.&0x1
+&sia_mmdsp_mret_initn=&ape_resetn_val_value>>13.&0x1
+&dsipll_resetn=&ape_resetn_val_value>>14.&0x1
+&ddr1_ape_fifo_resetn=&ape_resetn_val_value>>16.&0x1
+&ddr_ape_fifo_resetn=&ape_resetn_val_value>>17.&0x1
+&ddr_mod_fifo_resetn=&ape_resetn_val_value>>18.&0x1
+&ddr_ss_l_resetn=&ape_resetn_val_value>>19.&0x1
+&ddr_ss_l_resetn_qualifier=&ape_resetn_val_value>>20.&0x1
+&ddr1_ss_l_resetn=&ape_resetn_val_value>>21.&0x1
+&sia_pipe_m_rad_resetn=&ape_resetn_val_value>>22.&0x1
+&ddr1_ss_l_resetn_qualifier=&ape_resetn_val_value>>23.&0x1
+&esram1_initn=&ape_resetn_val_value>>24.&0x1
+&esram2_initn=&ape_resetn_val_value>>25.&0x1
+&esram3_initn=&ape_resetn_val_value>>26.&0x1
+&esram4_initn=&ape_resetn_val_value>>27.&0x1
+&ape_mem_initn=&ape_resetn_val_value>>29.&0x1
+&ape_pwron_resetn=&ape_resetn_val_value>>30.&0x1
+&ape_resetn=&ape_resetn_val_value>>31.&0x1
+
+print "- SGA_L_RESETN...............: ", %DECIMAL &sga_l_resetn
+print "- SGA_M_INITN................: ", %DECIMAL &sga_m_initn
+print "- DDS_L_RESETN...............: ", %DECIMAL &dss_l_resetn
+print "- DDS_M_INITN................: ", %DECIMAL &dss_m_initn
+print "- SVA_PIPE_L_RESETN..........: ", %DECIMAL &sva_pipe_l_resetn
+print "- SVA_MMDSP_L_RESETN.........: ", %DECIMAL &sva_mmdsp_l_resetn
+print "- SVA_PIPE_M_INITN...........: ", %DECIMAL &sva_pipe_m_initn
+print "- SVA_MMDSP_MRET_INITN.......: ", %DECIMAL &sva_mmdsp_mret_initn
+print "- SIA_PIPE_L_RESETN..........: ", %DECIMAL &sia_pipe_l_resetn
+print "- SIA_MMDSP_L_RESETN.........: ", %DECIMAL &sia_mmdsp_l_resetn
+print "- SIA_PIPE_M_INITN...........: ", %DECIMAL &sia_pipe_m_initn
+print "- SIA_MMDSP_M_INITN..........: ", %DECIMAL &sia_mmdsp_m_initn
+print "- SIA_MMDSP_MRET_INITN.......: ", %DECIMAL &sia_mmdsp_mret_initn
+print "- DSIPLL_RESETN..............: ", %DECIMAL &dsipll_resetn
+print "- DDR_APE_FIFO_RESETN........: ", %DECIMAL &ddr_ape_fifo_resetn
+print "- DDR_MOD_FIFO_RESETN........: ", %DECIMAL &ddr_mod_fifo_resetn
+print "- DDR_SS_L_RESETN............: ", %DECIMAL &ddr_ss_l_resetn
+print "- DDR_SS_L_RESETN_QUALIFIER..: ", %DECIMAL &ddr_ss_l_resetn_qualifier
+print "- DDR1_APE_FIFO_RESETN.......: ", %DECIMAL &ddr1_ape_fifo_resetn
+print "- DDR1_SS_L_RESETN...........: ", %DECIMAL &ddr1_ss_l_resetn
+print "- DDR1_SS_L_RESETN_QUALIFIER.: ", %DECIMAL &ddr1_ss_l_resetn_qualifier
+print "- SIA_PIPE_M_RAD_RESETN......: ", %DECIMAL &sia_pipe_m_rad_resetn
+print "- ESRAM1_INITN...............: ", %DECIMAL &esram1_initn
+print "- ESRAM2_INITN...............: ", %DECIMAL &esram2_initn
+print "- ESRAM3_INITN...............: ", %DECIMAL &esram3_initn
+print "- ESRAM4_INITN...............: ", %DECIMAL &esram4_initn
+print "- APE_MEM_INITN..............: ", %DECIMAL &ape_mem_initn
+print "- APE_PWRON_RESETN...........: ", %DECIMAL &ape_pwron_resetn
+print "- APE_RESETN.................: ", %DECIMAL &ape_resetn
+print "======================================================"
+
+; ================= GPIO RESETN VAL =================
+print "GPIO RESETN VAL"
+&gpio_resetn_val_value=data.long(AD:&gpio_resetn_val_address)
+
+&gpio_resetn_grp0=&gpio_resetn_val_value>>0.&0x1
+&gpio_resetn_grp0_mx=&gpio_resetn_val_value>>1.&0x1
+&gpio_resetn_grp1=&gpio_resetn_val_value>>2.&0x1
+&gpio_resetn_grp1_mx=&gpio_resetn_val_value>>3.&0x1
+&gpio_resetn_grp2=&gpio_resetn_val_value>>4.&0x1
+&gpio_resetn_grp2_mx=&gpio_resetn_val_value>>5.&0x1
+&gpio_resetn_grp3=&gpio_resetn_val_value>>6.&0x1
+&gpio_resetn_grp3_mx=&gpio_resetn_val_value>>7.&0x1
+&gpio_resetn_grp4=&gpio_resetn_val_value>>8.&0x1
+&gpio_resetn_grp4_mx=&gpio_resetn_val_value>>9.&0x1
+&gpio_resetn_grp5=&gpio_resetn_val_value>>10.&0x1
+&gpio_resetn_grp5_mx=&gpio_resetn_val_value>>11.&0x1
+&gpio_resetn_grp6=&gpio_resetn_val_value>>12.&0x1
+&gpio_resetn_grp6_mx=&gpio_resetn_val_value>>13.&0x1
+&gpio_resetn_grp7=&gpio_resetn_val_value>>14.&0x1
+&gpio_resetn_grp7_mx=&gpio_resetn_val_value>>15.&0x1
+&gpio_resetn_grp8=&gpio_resetn_val_value>>16.&0x1
+&gpio_resetn_grp8_mx=&gpio_resetn_val_value>>17.&0x1
+
+print "- GPIO_RESETN_GRP0...........: ", %DECIMAL &gpio_resetn_grp0
+print "- GPIO_RESETN_GRP0_MX........: ", %DECIMAL &gpio_resetn_grp0_mx
+print "- GPIO_RESETN_GRP1...........: ", %DECIMAL &gpio_resetn_grp1
+print "- GPIO_RESETN_GRP1_MX........: ", %DECIMAL &gpio_resetn_grp1_mx
+print "- GPIO_RESETN_GRP2...........: ", %DECIMAL &gpio_resetn_grp2
+print "- GPIO_RESETN_GRP2_MX........: ", %DECIMAL &gpio_resetn_grp2_mx
+print "- GPIO_RESETN_GRP3...........: ", %DECIMAL &gpio_resetn_grp3
+print "- GPIO_RESETN_GRP3_MX........: ", %DECIMAL &gpio_resetn_grp3_mx
+print "- GPIO_RESETN_GRP4...........: ", %DECIMAL &gpio_resetn_grp4
+print "- GPIO_RESETN_GRP4_MX........: ", %DECIMAL &gpio_resetn_grp4_mx
+print "- GPIO_RESETN_GRP5...........: ", %DECIMAL &gpio_resetn_grp5
+print "- GPIO_RESETN_GRP5_MX........: ", %DECIMAL &gpio_resetn_grp5_mx
+print "- GPIO_RESETN_GRP6...........: ", %DECIMAL &gpio_resetn_grp6
+print "- GPIO_RESETN_GRP6_MX........: ", %DECIMAL &gpio_resetn_grp6_mx
+print "- GPIO_RESETN_GRP7...........: ", %DECIMAL &gpio_resetn_grp7
+print "- GPIO_RESETN_GRP7_MX........: ", %DECIMAL &gpio_resetn_grp7_mx
+print "- GPIO_RESETN_GRP8...........: ", %DECIMAL &gpio_resetn_grp8
+print "- GPIO_RESETN_GRP8_MX........: ", %DECIMAL &gpio_resetn_grp8_mx
+print "======================================================"
+
+; ================= 4500 AND PERIPH4 RESETN =================
+print "4500 AND PERIPH4 RESETN VAL"
+&4500_resetn_val_value=data.long(AD:&4500_resetn_val_address)>>0.&0x1
+print "- STN4500_RESETN.............: ", %DECIMAL &4500_resetn_val_value
+
+&periph4_resetn_val_value=data.long(AD:&periph4_resetn_val_address)
+
+&rtc_resetn=&periph4_resetn_val_value>>0.&0x1
+&rtt0_resetn=&periph4_resetn_val_value>>1.&0x1
+&rtt1_resetn=&periph4_resetn_val_value>>2.&0x1
+&backup_ram_resetn=&periph4_resetn_val_value>>3.&0x1
+&sec_reg_resetn=&periph4_resetn_val_value>>4.&0x1
+&clk_pll_conf_resetn=&periph4_resetn_val_value>>5.&0x1
+&hwi2c_resetn=&periph4_resetn_val_value>>6.&0x1
+
+print "- RTC_RESETN.................: ", %DECIMAL &4500_resetn_val_value
+print "- RTT0_RESETN................: ", %DECIMAL &rtt0_resetn
+print "- RTT1_RESETN................: ", %DECIMAL &rtt1_resetn
+print "- BACKUP_RAM_RESETN..........: ", %DECIMAL &backup_ram_resetn
+print "- SEC_REG_RESETN.............: ", %DECIMAL &sec_reg_resetn
+print "- CLK_PLL_RESETN.............: ", %DECIMAL &clk_pll_conf_resetn
+print "- HWI2C_RESETN...............: ", %DECIMAL &hwi2c_resetn
+print "======================================================"
+
+; ================= RST 4500 AND SWD RST TEMPO =================
+print "RST_4500 AND SWD_RST TEMPO"
+
+&swd_rst_tempo_value=data.long(AD:&swd_rst_tempo_address)>>0.&0x3FF
+print "- PRCM_SWD_RST_4500_TEMPO....: ", %DECIMAL &swd_rst_tempo_value
+
+&rst_4500_tempo_value=data.long(AD:&rst_4500_tempo_address)>>0.&0x3FF
+print "- PRCM_RST_4500_TEMPO........: ", %DECIMAL &rst_4500_tempo_value
+
+print "======================================================"
+
+; ================= RESET STATUS =================
+print "RESET STATUS : 0  => no event, 1 => has occured"
+&reset_status_value=data.long(AD:&reset_status_address)
+
+&a9_cpu0_watchdog_reset=&reset_status_value>>0.&0x1
+&a9_cpu1_watchdog_reset=&reset_status_value>>1.&0x1
+&ape_software_reset=&reset_status_value>>2.&0x1
+&ape_reset=&reset_status_value>>3.&0x1
+&secure_watchdog=&reset_status_value>>4.&0x1
+&power_on_reset=&reset_status_value>>5.&0x1
+&a9_restart=&reset_status_value>>6.&0x1
+&ape_restart=&reset_status_value>>7.&0x1
+&modem_software_reset=&reset_status_value>>8.&0x1
+&boot_engi=&reset_status_value>>16.&0x1
+
+print "- A9_CPU0_WATCHDOG_RESET...:", %DECIMAL &a9_cpu0_watchdog_reset
+print "- A9_CPU1_WATCHDOG_RESET...:", %DECIMAL &a9_cpu1_watchdog_reset
+print "- APE_SOFTWARE_RESET.......:", %DECIMAL &ape_software_reset
+print "- APE_RESET................:", %DECIMAL &ape_reset
+print "- SECURE_WATCHDOG..........:", %DECIMAL &secure_watchdog
+print "- POWER_ON_RESET...........:", %DECIMAL &power_on_reset
+print "- A9_RESTART...............:", %DECIMAL &a9_restart
+print "- APE_RESTART..............:", %DECIMAL &ape_restart
+print "- MODEM_SOFTWARE_RESET.....: ", %DECIMAL &modem_software_reset
+print "- BOOT_ENGI................: ", %DECIMAL &boot_engi
+print "======================================================"
+
+; ================= PERIPHERAL 1 CLOCK =================
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per1clk_mgt_address)
+ENTRY &per1clk_is_enabled
+if (&per1clk_is_enabled==1)
+(
+    print "PERIPHERAL 1 CLOCK"
+    &periph1_pck_value=data.long(AD:&periph1_pck_address)
+    &uart0_pck=&periph1_pck_value>>0.&0x1
+    &uart1_pck=&periph1_pck_value>>1.&0x1
+    &i2c1_pck=&periph1_pck_value>>2.&0x1
+    &msp0_pck=&periph1_pck_value>>3.&0x1
+    &msp1_pck=&periph1_pck_value>>4.&0x1
+    &sd_mm0_card_pck=&periph1_pck_value>>5.&0x1
+    &i2c2_pck=&periph1_pck_value>>6.&0x1
+    &spi3_pck=&periph1_pck_value>>7.&0x1
+    &slimbus0_pck=&periph1_pck_value>>8.&0x1
+    &gpioctrl_pck=&periph1_pck_value>>9.&0x1
+    &i2c4_pck=&periph1_pck_value>>10.&0x1
+    &msp3_pck=&periph1_pck_value>>11.&0x1
+
+    &periph1_kck_value=data.long(AD:&periph1_kck_address)
+    &uart0_kck=&periph1_kck_value>>0.&0x1
+    &uart1_kck=&periph1_kck_value>>1.&0x1
+    &i2c1_kck=&periph1_kck_value>>2.&0x1
+    &msp0_kck=&periph1_kck_value>>3.&0x1
+    &msp1_kck=&periph1_kck_value>>4.&0x1
+    &sd_mm0_card_kck=&periph1_kck_value>>5.&0x1
+    &i2c2_kck=&periph1_kck_value>>6.&0x1
+    &slimbus0_kck=&periph1_kck_value>>8.&0x1
+    &i2c4_kck=&periph1_kck_value>>9.&0x1
+    &msp3_kck=&periph1_kck_value>>10.&0x1
+
+    print "- UART0     BUS: ", %DECIMAL &uart0_pck," / KERNEL: " %DECIMAL &uart0_kck
+    print "- UART1     BUS: ", %DECIMAL &uart1_pck," / KERNEL: " %DECIMAL &uart1_kck
+    print "- I2C1      BUS: ", %DECIMAL &i2c1_pck," / KERNEL: " %DECIMAL &i2c1_kck
+    print "- MSP0      BUS: ", %DECIMAL &msp0_pck," / KERNEL: " %DECIMAL &msp0_kck
+    print "- MSP1      BUS: ", %DECIMAL &msp1_pck," / KERNEL: " %DECIMAL &msp1_kck
+    print "- SD/MM0    BUS: ", %DECIMAL &sd_mm0_card_pck," / KERNEL: " %DECIMAL &sd_mm0_card_kck
+    print "- I2C2      BUS: ", %DECIMAL &i2c2_pck," / KERNEL: " %DECIMAL &i2c2_kck
+    print "- SPI3      BUS: ", %DECIMAL &spi3_pck
+    print "- SLIMbus0  BUS: ", %DECIMAL &slimbus0_pck," / KERNEL: " %DECIMAL &slimbus0_kck
+    print "- GPIO CTRL BUS: ", %DECIMAL &gpioctrl_pck
+    print "- I2C4      BUS: ", %DECIMAL &i2c4_pck," / KERNEL: " %DECIMAL &i2c4_kck
+    print "- MSP3      BUS: ", %DECIMAL &msp3_pck," / KERNEL: " %DECIMAL &msp3_kck
+)
+else if (&per1clk_is_enabled==0)
+(
+    print "PERIPHERAL 1 CLOCK is OFF"
+)
+else
+(
+    print "PERIPHERAL 1 CLOCK is ON but 0MHz"
+)
+
+print "======================================================"
+
+; ================= PERIPHERAL 2 CLOCK =================
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per2clk_mgt_address)
+ENTRY &per2clk_is_enabled
+if (&per2clk_is_enabled==1)
+(
+    print "PERIPHERAL 2 CLOCK"
+    &periph2_pck_value=data.long(AD:&periph2_pck_address)
+    &i2c3_pck=&periph2_pck_value>>0.&0x1
+    &spi2_pck=&periph2_pck_value>>1.&0x1
+    &spi1_pck=&periph2_pck_value>>2.&0x1
+    &pwl_pck=&periph2_pck_value>>3.&0x1
+    &sd_mm4_card_pck=&periph2_pck_value>>4.&0x1
+    &msp2_pck=&periph2_pck_value>>5.&0x1
+    &sd_mm1_card_pck=&periph2_pck_value>>6.&0x1
+    &sd_mm3_card_pck=&periph2_pck_value>>7.&0x1
+    &spi0_pck=&periph2_pck_value>>8.&0x1
+    &ssirx_pck=&periph2_pck_value>>9.&0x1
+    &ssitx_pck=&periph2_pck_value>>10.&0x1
+    &gpioctrl_pck=&periph2_pck_value>>11.&0x1
+
+    &periph2_kck_value=data.long(AD:&periph2_kck_address)
+    &i2c3_kck=&periph2_kck_value>>0.&0x1
+    &pwl_kck=&periph2_kck_value>>1.&0x1
+    &sd_mm4_card_kck=&periph2_kck_value>>2.&0x1
+    &msp2_kck=&periph2_kck_value>>3.&0x1
+    &sd_mm1_card_kck=&periph2_kck_value>>4.&0x1
+    &sd_mm3_card_kck=&periph2_kck_value>>5.&0x1
+    &ssirx_kck=&periph2_kck_value>>6.&0x1
+    &ssitx_kck=&periph2_kck_value>>7.&0x1
+
+    print "- I2C3         BUS: ", %DECIMAL &i2c3_pck," / KERNEL: " %DECIMAL &i2c3_kck
+    print "- SPI2         BUS: ", %DECIMAL &spi2_pck
+    print "- SPI1         BUS: ", %DECIMAL &spi1_pck
+    print "- PWL          BUS: ", %DECIMAL &pwl_pck," / KERNEL: " %DECIMAL &pwl_kck
+    print "- SD/MM4       BUS: ", %DECIMAL &sd_mm4_card_pck," / KERNEL: " %DECIMAL &sd_mm4_card_kck
+    print "- MSP2         BUS: ", %DECIMAL &msp2_pck," / KERNEL: " %DECIMAL &msp2_kck
+    print "- SD/MM1       BUS: ", %DECIMAL &sd_mm1_card_pck," / KERNEL: " %DECIMAL &sd_mm1_card_kck
+    print "- SD/MM3       BUS: ", %DECIMAL &sd_mm3_card_pck," / KERNEL: " %DECIMAL &sd_mm3_card_kck
+    print "- SPI0         BUS: ", %DECIMAL &spi0_pck,
+    print "- SSI receive  BUS: ", %DECIMAL &ssirx_pck," / KERNEL: " %DECIMAL &ssirx_kck
+    print "- SSI transmit BUS: ", %DECIMAL &ssitx_pck," / KERNEL: " %DECIMAL &ssitx_kck
+    print "- GPIO CTRL    BUS: ", %DECIMAL &gpioctrl_pck
+)
+else if (&per2clk_is_enabled==0)
+(
+    print "PERIPHERAL 2 CLOCK is OFF"
+)
+else
+(
+    print "PERIPHERAL 2 CLOCK is ON but 0MHz"
+)
+
+print "======================================================"
+
+; ================= PERIPHERAL 3 CLOCK =================
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per3clk_mgt_address)
+ENTRY &per3clk_is_enabled
+if (&per3clk_is_enabled==1)
+(
+    print "PERIPHERAL 3 CLOCK"
+    &periph3_pck_value=data.long(AD:&periph3_pck_address)
+    &fsmc_pck=&periph3_pck_value>>0.&0x1
+    &ssp0_pck=&periph3_pck_value>>1.&0x1
+    &ssp1_pck=&periph3_pck_value>>2.&0x1
+    &i2c0_pck=&periph3_pck_value>>3.&0x1
+    &sd_mm2_card_pck=&periph3_pck_value>>4.&0x1
+    &ske_pck=&periph3_pck_value>>5.&0x1
+    &uart2_pck=&periph3_pck_value>>6.&0x1
+    &sd_mm5_card_pck=&periph3_pck_value>>7.&0x1
+    &gpioctrl_pck=&periph3_pck_value>>8.&0x1
+
+    &periph3_kck_value=data.long(AD:&periph3_kck_address)
+    &ssp0_kck=&periph3_kck_value>>1.&0x1
+    &ssp1_kck=&periph3_kck_value>>2.&0x1
+    &i2c0_kck=&periph3_kck_value>>3.&0x1
+    &sd_mm2_card_kck=&periph3_kck_value>>4.&0x1
+    &ske_kck=&periph3_kck_value>>5.&0x1
+    &uart2_kck=&periph3_kck_value>>6.&0x1
+    &sd_mm5_card_kck=&periph3_kck_value>>7.&0x1
+
+    print "- FSMC         BUS: ", %DECIMAL &fsmc_pck,
+    print "- SSP0         BUS: ", %DECIMAL &ssp0_pck," / KERNEL: " %DECIMAL &ssp0_kck
+    print "- SSP1         BUS: ", %DECIMAL &ssp1_pck," / KERNEL: " %DECIMAL &ssp1_kck
+    print "- I2C0         BUS: ", %DECIMAL &i2c0_pck," / KERNEL: " %DECIMAL &i2c0_kck
+    print "- SD/MM2       BUS: ", %DECIMAL &sd_mm2_card_pck," / KERNEL: " %DECIMAL &sd_mm2_card_kck
+    print "- SKE and KBD  BUS: ", %DECIMAL &ske_pck," / KERNEL: " %DECIMAL &ske_kck
+    print "- UART2        BUS: ", %DECIMAL &uart2_pck," / KERNEL: " %DECIMAL &uart2_kck
+    print "- SD/MM5       BUS: ", %DECIMAL &sd_mm5_card_pck," / KERNEL: " %DECIMAL &sd_mm5_card_kck
+    print "- GPIO CTRL    BUS: ", %DECIMAL &gpioctrl_pck
+)
+else if (&per3clk_is_enabled==0)
+(
+    print "PERIPHERAL 3 CLOCK is OFF"
+)
+else
+(
+    print "PERIPHERAL 3 CLOCK is ON but 0MHz"
+)
+
+print "======================================================"
+
+; ================= PERIPHERAL 5 CLOCK =================
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per5clk_mgt_address)
+ENTRY &per5clk_is_enabled
+if (&per5clk_is_enabled==1)
+(
+    print "PERIPHERAL 5 CLOCK"
+    &periph5_pck_value=data.long(AD:&periph5_pck_address)
+    &usb_pck=&periph5_pck_value>>0.&0x1
+    &gpioctrl_pck=&periph5_pck_value>>1.&0x1
+    print "- USB          BUS: ", %DECIMAL &usb_pck
+    print "- GPIO CTRL    BUS: ", %DECIMAL &gpioctrl_pck
+)
+else if (&per5clk_is_enabled==0)
+(
+    print "PERIPHERAL 5 CLOCK is OFF"
+)
+else
+(
+    print "PERIPHERAL 5 CLOCK is ON but 0MHz"
+)
+
+print "======================================================"
+
+; ================= PERIPHERAL 6 CLOCK =================
+print "PERIPHERAL 6 CLOCK"
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per6clk_mgt_address)
+ENTRY &per6clk_is_enabled
+if (&per6clk_is_enabled==1)
+(
+    &periph6_pck_value=data.long(AD:&periph6_pck_address)
+    &rng_pck=&periph6_pck_value>>0.&0x1
+    &cryptyo0_pck=&periph6_pck_value>>1.&0x1
+    &hash0_pck=&periph6_pck_value>>2.&0x1
+    &pka_pck=&periph6_pck_value>>3.&0x1
+    &hash1_pck=&periph6_pck_value>>4.&0x1
+    &cfgreg_pck=&periph6_pck_value>>5.&0x1
+    &mtu0_pck=&periph6_pck_value>>6.&0x1
+    &mtu1_pck=&periph6_pck_value>>7.&0x1
+
+    &periph6_kck_value=data.long(AD:&periph6_kck_address)
+    &rng_kck=&periph6_kck_value>>0.&0x1
+
+    print "- RNG          BUS: ", %DECIMAL &rng_pck," / KERNEL: " %DECIMAL &rng_kck
+    print "- Crypto0      BUS: ", %DECIMAL &cryptyo0_pck
+    print "- HASH0        BUS: ", %DECIMAL &hash0_pck
+    print "- PKA          BUS: ", %DECIMAL &pka_pck
+    print "- HASH1        BUS: ", %DECIMAL &hash1_pck
+    print "- CONFIG REG   BUS: ", %DECIMAL &cfgreg_pck
+    print "- MTU0         BUS: ", %DECIMAL &mtu0_pck
+    print "- MTU1         BUS: ", %DECIMAL &mtu1_pck
+)
+else
+if (&per6clk_is_enabled==0)
+(
+    print "PERIPHERAL 6 CLOCK is OFF"
+)
+else
+(
+    print "PERIPHERAL 6 CLOCK is ON but 0MHz"
+)
+
+print "======================================================"
+
+; ================= CLK MGT SUMMARY =================
+print "CLK MGT SUMMARY"
+print "- cortex A9.......: ", %DECIMAL &arm_chgclkreq_value,       "MHz"
+print "- ARMCLKFIX.......: ", %DECIMAL &armclkfix_mgt_frequency,   "MHz"
+print "- ACLK............: ", %DECIMAL &aclk_mgt_frequency,        "MHz"
+print "- SVAMMDSPCLK.....: ", %DECIMAL &svammdspclk_mgt_frequency, "MHz"
+print "- SIAMMDSPCLK.....: ", %DECIMAL &siammdspclk_mgt_frequency, "MHz"
+print "- SGACLK..........: ", %DECIMAL &sgaclk_mgt_frequency,      "MHz"
+print "- G1CLK...........: ", %DECIMAL &g1clk_mgt_frequency,       "MHz"
+print "- HVACLK..........: ", %DECIMAL &hvaclk_mgt_frequency,      "MHz"
+print "- UARTCLK.........: ", %DECIMAL &uartclk_mgt_frequency,     "MHz"
+print "- MSP02CLK........: ", %DECIMAL &msp02clk_mgt_frequency,    "MHz"
+print "- MSP1CLK.........: ", %DECIMAL &msp1clk_mgt_frequency,     "MHz"
+print "- I2CCLK..........: ", %DECIMAL &i2cclk_mgt_frequency,      "MHz"
+print "- SDMMCCLK........: ", %DECIMAL &sdmmcclk_mgt_frequency,    "MHz"
+print "- SLIMCLK.........: ", %DECIMAL &slimclk_mgt_frequency,     "MHz"
+print "- PER1CLK.........: ", %DECIMAL &per1clk_mgt_frequency,     "MHz"
+print "- PER2CLK.........: ", %DECIMAL &per2clk_mgt_frequency,     "MHz"
+print "- PER3CLK.........: ", %DECIMAL &per3clk_mgt_frequency,     "MHz"
+print "- PER5CLK.........: ", %DECIMAL &per5clk_mgt_frequency,     "MHz"
+print "- PER6CLK.........: ", %DECIMAL &per6clk_mgt_frequency,     "MHz"
+print "- PER7CLK.........: ", %DECIMAL &per7clk_mgt_frequency,     "MHz"
+print "- LCDCLK..........: ", %DECIMAL &lcdclk_mgt_frequency,      "MHz"
+print "- BMLCLK..........: ", %DECIMAL &bmlclk_mgt_frequency,      "MHz"
+print "- HSITXCLK........: ", %DECIMAL &hsitxclk_mgt_frequency,    "MHz"
+print "- HSIRXCLK........: ", %DECIMAL &hsirxclk_mgt_frequency,    "MHz"
+print "- HDMICLK.........: ", %DECIMAL &hdmiclk_mgt_frequency,     "MHz"
+print "- APEATCLK........: ", %DECIMAL &apeatclk_mgt_frequency,    "MHz"
+print "- APETRACECLK.....: ", %DECIMAL &apetraceclk_mgt_frequency, "MHz"
+print "- MCDECLK.........: ", %DECIMAL &mcdeclk_mgt_frequency,     "MHz"
+print "- IPI2CCLK........: ", %DECIMAL &ipi2cclk_mgt_frequency,    "MHz"
+print "- DSIALTCLK.......: ", %DECIMAL &dsialtclk_mgt_frequency,   "MHz"
+print "- DMACLK..........: ", %DECIMAL &dmaclk_mgt_frequency,      "MHz"
+print "- B2R2CLK.........: ", %DECIMAL &b2r2clk_mgt_frequency,     "MHz"
+print "- TVCLK......... .: ", %DECIMAL &tvclk_mgt_frequency,       "MHz"
+print "- SSPCLK..........: ", %DECIMAL &sspclk_mgt_frequency,      "MHz"
+print "- RNGCLK..........: ", %DECIMAL &rngclk_mgt_frequency,      "MHz"
+;not used on 9540
+;print "- DPICLK..........: ", %DECIMAL &dpiclk_mgt_frequency,      "MHz"
+;print "- UICCCLK.........: ", %DECIMAL &uiccclk_mgt_frequency,     "MHz"
+print "======================================================"
+
+; ================= END PLL =================
+
+print "PMB"
+
+&pmb_window=0x7D0 ; 52us
+
+; Sensor Selection
+; 1  - VSAFE  - Logic_LPSVT
+; 6  - VSAFE  - OD18
+; 7  - VSAFE  - Sram_LPSVT
+; 11 - VSAFE  - Custom
+; 4  - VARM   - Logic_LPSVT
+; 10 - VARM   - Sram_LPSVT
+; 14 - VARM   - Custom
+; 2  - VAPE   - Logic_LPSVT
+; 5  - VAPE   - Logic_LPLVT
+; 8  - VAPE   - Sram_LPSVT
+; 12 - VAPE   - Custom
+; 3  - VMODEM - Logic_LPSVT
+; 9  - VMODEM - Sram_LPSVT
+; 13 - VMODEM - Custom
+
+; Sensor mode
+; 0x0000 : Nmos Speed measure
+; 0x0800 : Pmos Speed measure
+; 0x1000 : Leakage measure
+; 0x1800 : All measures (not documented)
+
+; ================================ ARM ================================
+; ---------- ARM Logic ----------
+&pmb_sensor_sel=4
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel,"  VARM  Logic  Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"MHz (",%DECIMAL &result_leak,")"
+
+; ---------- ARM Sram ----------
+&pmb_sensor_sel=0xA
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0*1000.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel," VARM  Sram   Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"KHz (",%DECIMAL &result_leak,")"
+
+; ---------- ARM Custom ----------
+&pmb_sensor_sel=0xE
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel," VARM  Custom Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"MHz (",%DECIMAL &result_leak,")"
+
+; ================================ VSAFE ================================
+; ---------- VSAFE Logic ----------
+&pmb_sensor_sel=1
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel,"  VSAFE Logic  Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"MHz (",%DECIMAL &result_leak,")"
+
+; ---------- VSAFE OD18 ----------
+&pmb_sensor_sel=6
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0*1000.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel,"  VSAFE OD18   Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"KHz (",%DECIMAL &result_leak,")"
+
+; ---------- VSAFE SRAM ----------
+&pmb_sensor_sel=7
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0*1000.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel,"  VSAFE SRAM   Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"KHz (",%DECIMAL &result_leak,")"
+
+; ---------- VSAFE Custom ----------
+&pmb_sensor_sel=0xB
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel," VSAFE Custom Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"MHz (",%DECIMAL &result_leak,")"
+
+; ================================ VAPE ================================
+; ---------- VAPE LogicS ----------
+&pmb_sensor_sel=2
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel,"  VAPE  LogicS Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"MHz (",%DECIMAL &result_leak,")"
+
+; ---------- VAPE LogicL ----------
+&pmb_sensor_sel=5
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel,"  VAPE  LogicL Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"MHz (",%DECIMAL &result_leak,")"
+
+; ---------- VAPE SRAM ----------
+&pmb_sensor_sel=8
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0*1000.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel,"  VAPE  SRAM   Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"KHz (",%DECIMAL &result_leak,")"
+
+; ---------- VAPE Custom ----------
+&pmb_sensor_sel=0xC
+
+&pmb_sensor_mode=0x0000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_nmos
+
+&pmb_sensor_mode=0x0800
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_pmos
+
+&pmb_sensor_mode=0x1000
+GOSUB PMB_req1value &pmb_sensor_sel|&pmb_sensor_mode &pmb_window
+ENTRY &result_leak
+
+&result_nmos_freq=&result_nmos/2000.00*38.4*2.0
+&result_pmos_freq=&result_pmos/2000.00*38.4*2.0
+&result_leak_freq=&result_leak/2000.00*38.4*2.0
+PRINT "- ", %DECIMAL &pmb_sensor_sel," VAPE  Custom Nmos ", %DECIMAL &result_nmos_freq,"MHz (",%DECIMAL &result_nmos,") Pmos ",%DECIMAL &result_pmos_freq,"MHz (",%DECIMAL &result_pmos,") Leak ",%DECIMAL &result_leak_freq,"MHz (",%DECIMAL &result_leak,")"
+
+; ====== DMC_CTL =========================
+
+LOCAL &denali_ctl_0
+LOCAL &denali_ctl_1
+LOCAL &denali_ctl_2
+LOCAL &denali_ctl_3
+LOCAL &denali_ctl_4
+LOCAL &denali_ctl_5
+LOCAL &denali_ctl_6
+LOCAL &denali_ctl_7
+LOCAL &denali_ctl_8
+LOCAL &denali_ctl_9
+LOCAL &denali_ctl_10
+LOCAL &denali_ctl_11
+LOCAL &denali_ctl_12
+LOCAL &denali_ctl_13
+LOCAL &denali_ctl_14
+LOCAL &denali_ctl_15
+LOCAL &denali_ctl_16
+LOCAL &denali_ctl_17
+LOCAL &denali_ctl_18
+LOCAL &denali_ctl_19
+LOCAL &denali_ctl_20
+LOCAL &denali_ctl_21
+LOCAL &denali_ctl_22
+LOCAL &denali_ctl_23
+LOCAL &denali_ctl_24
+LOCAL &denali_ctl_25
+LOCAL &denali_ctl_26
+LOCAL &denali_ctl_27
+LOCAL &denali_ctl_28
+LOCAL &denali_ctl_29
+LOCAL &denali_ctl_30
+LOCAL &denali_ctl_31
+LOCAL &denali_ctl_32
+LOCAL &denali_ctl_33
+LOCAL &denali_ctl_34
+LOCAL &denali_ctl_35
+LOCAL &denali_ctl_36
+LOCAL &denali_ctl_37
+LOCAL &denali_ctl_38
+LOCAL &denali_ctl_39
+LOCAL &denali_ctl_40
+LOCAL &denali_ctl_41
+LOCAL &denali_ctl_42
+LOCAL &denali_ctl_43
+LOCAL &denali_ctl_44
+LOCAL &denali_ctl_45
+LOCAL &denali_ctl_46
+LOCAL &denali_ctl_47
+LOCAL &denali_ctl_48
+LOCAL &denali_ctl_49
+LOCAL &denali_ctl_50
+LOCAL &denali_ctl_51
+LOCAL &denali_ctl_52
+LOCAL &denali_ctl_53
+LOCAL &denali_ctl_54
+LOCAL &denali_ctl_55
+LOCAL &denali_ctl_56
+LOCAL &denali_ctl_57
+LOCAL &denali_ctl_58
+LOCAL &denali_ctl_59
+LOCAL &denali_ctl_60
+LOCAL &denali_ctl_61
+LOCAL &denali_ctl_62
+LOCAL &denali_ctl_63
+LOCAL &denali_ctl_64
+LOCAL &denali_ctl_65
+LOCAL &denali_ctl_66
+LOCAL &denali_ctl_67
+LOCAL &denali_ctl_68
+LOCAL &denali_ctl_69
+LOCAL &denali_ctl_70
+LOCAL &denali_ctl_71
+LOCAL &denali_ctl_72
+LOCAL &denali_ctl_73
+LOCAL &denali_ctl_74
+LOCAL &denali_ctl_75
+LOCAL &denali_ctl_76
+LOCAL &denali_ctl_77
+LOCAL &denali_ctl_78
+LOCAL &denali_ctl_79
+LOCAL &denali_ctl_80
+LOCAL &denali_ctl_81
+LOCAL &denali_ctl_82
+LOCAL &denali_ctl_83
+LOCAL &denali_ctl_84
+LOCAL &denali_ctl_85
+LOCAL &denali_ctl_86
+LOCAL &denali_ctl_87
+LOCAL &denali_ctl_88
+LOCAL &denali_ctl_89
+LOCAL &denali_ctl_90
+LOCAL &denali_ctl_91
+LOCAL &denali_ctl_92
+LOCAL &denali_ctl_93
+LOCAL &denali_ctl_94
+LOCAL &denali_ctl_95
+LOCAL &denali_ctl_96
+LOCAL &denali_ctl_97
+LOCAL &denali_ctl_98
+LOCAL &denali_ctl_99
+LOCAL &denali_ctl_100
+LOCAL &denali_ctl_101
+LOCAL &denali_ctl_102
+LOCAL &denali_ctl_103
+LOCAL &denali_ctl_104
+LOCAL &denali_ctl_105
+LOCAL &denali_ctl_106
+LOCAL &denali_ctl_107
+LOCAL &denali_ctl_108
+LOCAL &denali_ctl_109
+LOCAL &denali_ctl_110
+LOCAL &denali_ctl_111
+LOCAL &denali_ctl_112
+LOCAL &denali_ctl_113
+LOCAL &denali_ctl_114
+LOCAL &denali_ctl_115
+LOCAL &denali_ctl_116
+LOCAL &denali_ctl_117
+LOCAL &denali_ctl_118
+LOCAL &denali_ctl_119
+LOCAL &denali_ctl_120
+LOCAL &denali_ctl_121
+LOCAL &denali_ctl_122
+LOCAL &denali_ctl_123
+LOCAL &denali_ctl_124
+LOCAL &denali_ctl_125
+LOCAL &denali_ctl_126
+LOCAL &denali_ctl_127
+LOCAL &denali_ctl_128
+LOCAL &denali_ctl_129
+LOCAL &denali_ctl_130
+LOCAL &denali_ctl_131
+LOCAL &denali_ctl_132
+LOCAL &denali_ctl_133
+LOCAL &denali_ctl_134
+LOCAL &denali_ctl_135
+LOCAL &denali_ctl_136
+LOCAL &denali_ctl_137
+LOCAL &denali_ctl_138
+LOCAL &denali_ctl_139
+LOCAL &denali_ctl_140
+LOCAL &denali_ctl_141
+LOCAL &denali_ctl_142
+LOCAL &denali_ctl_143
+LOCAL &denali_ctl_144
+LOCAL &denali_ctl_145
+LOCAL &denali_ctl_146
+LOCAL &denali_ctl_147
+LOCAL &denali_ctl_148
+LOCAL &denali_ctl_149
+LOCAL &denali_ctl_150
+LOCAL &denali_ctl_151
+LOCAL &denali_ctl_152
+LOCAL &denali_ctl_153
+LOCAL &denali_ctl_154
+LOCAL &denali_ctl_155
+LOCAL &denali_ctl_156
+LOCAL &denali_ctl_157
+LOCAL &denali_ctl_158
+LOCAL &denali_ctl_159
+LOCAL &denali_ctl_160
+LOCAL &denali_ctl_161
+LOCAL &denali_ctl_162
+LOCAL &denali_ctl_163
+LOCAL &denali_ctl_164
+LOCAL &denali_ctl_165
+LOCAL &denali_ctl_166
+LOCAL &denali_ctl_167
+LOCAL &denali_ctl_168
+LOCAL &denali_ctl_169
+LOCAL &denali_ctl_170
+LOCAL &denali_ctl_171
+
+
+print "======================================================"
+&index=0.
+while (&index<=171.)
+(
+&index_str=string.cut("&index",-1)
+&value=data.long(AD:&dmc0_base_address+&index*4.)
+&denali_ctl_&(index_str)=&value
+print " DMC0_CTL_&(index_str) = &value"
+&index=&index+1.
+)
+print "======================================================"
+&index=0.
+while (&index<=171.)
+(
+&index_str=string.cut("&index",-1)
+&value=data.long(AD:&dmc1_base_address+&index*4.)
+print " DMC1_CTL_&(index_str) = &value"
+&index=&index+1.
+)
+print "======================================================"
+
+; ====== DMC_CTL_00
+&active_aging=&denali_ctl_0>>0.&1.
+&addr_cmp_en=&denali_ctl_0>>8.&1.
+&ap=&denali_ctl_0>>16.&1.
+&arefresh=&denali_ctl_0>>24.&1.
+
+; ====== DMC_CTL_01
+&auto_refresh_mode=&denali_ctl_1>>0.&1.
+&axi0_bdw_ovflow=&denali_ctl_1>>8.&1.
+&axi1_bdw_ovflow=&denali_ctl_1>>16.&1.
+&axi2_bdw_ovflow=&denali_ctl_1>>24.&1.
+
+; ====== DMC_CTL_02
+&axi3_bdw_ovflow=&denali_ctl_2>>0.&1.
+&bank_split_en=&denali_ctl_2>>8.&1.
+&concurrentap=&denali_ctl_2>>16.&1.
+
+; ====== DMC_CTL_03
+&enable_quick_srefresh=&denali_ctl_3>>16.&1.
+
+; ====== DMC_CTL_04
+&intrptapburst=&denali_ctl_4>>8.&1.
+&intrptreada=&denali_ctl_4>>16.&1.
+&intrptwritea=&denali_ctl_4>>24.&1.
+
+; ====== DMC_CTL_05
+&placement_en=&denali_ctl_5>>8.&1.
+&power_down=&denali_ctl_5>>16.&1.
+&priority_en=&denali_ctl_5>>24.&1.
+
+; ====== DMC_CTL_06
+&pwrup_srefresh_exit=&denali_ctl_6>>0.&1.
+&reduc=&denali_ctl_6>>16.&1.
+
+; ====== DMC_CTL_07
+&rw_same_en=&denali_ctl_7>>0.&1.
+&srefresh=&denali_ctl_7>>8.&1.
+&start=&denali_ctl_7>>16.&1.
+&swap_en=&denali_ctl_7>>24.&1.
+
+; ====== DMC_CTL_08
+&tras_lockout=&denali_ctl_8>>0.&1.
+&tref_enable=&denali_ctl_8>>8.&1.
+&writeinterp=&denali_ctl_8>>16.&1.
+&write_modereg=&denali_ctl_8>>24.&1.
+
+; ====== DMC_CTL_09
+&wrlat=&denali_ctl_9>>0.&1.
+&axi0_fifo_type_reg=&denali_ctl_9>>8.&3.
+&axi0_r_priority=&denali_ctl_9>>16.&3.
+&axi0_w_priority=&denali_ctl_9>>24.&3.
+
+; ====== DMC_CTL_10
+&axi1_fifo_type_reg=&denali_ctl_10>>0.&3.
+&axi1_r_priority=&denali_ctl_10>>8.&3.
+&axi1_w_priority=&denali_ctl_10>>16.&3.
+&axi2_fifo_type_reg=&denali_ctl_10>>24.&3.
+
+; ====== DMC_CTL_11
+&axi2_r_priority=&denali_ctl_11>>0.&3.
+&axi2_w_priority=&denali_ctl_11>>8.&3.
+&axi3_fifo_type_reg=&denali_ctl_11>>16.&3.
+&axi3_r_priority=&denali_ctl_11>>24.&3.
+
+; ====== DMC_CTL_12
+&axi3_w_priority=&denali_ctl_12>>0.&3.
+&cs_map=&denali_ctl_12>>8.&3.
+&dram_clk_disable=&denali_ctl_12>>16.&3.
+&lowpower_refresh_enable=&denali_ctl_12>>24.&3.
+
+; ====== DMC_CTL_13
+&max_cs_reg=&denali_ctl_13>>0.&3.
+&temrs=&denali_ctl_13>>8.&3.
+&wrtprct_enable=&denali_ctl_13>>16.&3.
+
+; ====== DMC_CTL_14
+&arb_cmd_q_threshold=&denali_ctl_14>>0.&7.
+&bstlen=&denali_ctl_14>>8.&7.
+&cslat=&denali_ctl_14>>16.&7.
+&cke_delay=&denali_ctl_14>>24.&7.
+
+; ====== DMC_CTL_15
+&port_data_error_type=&denali_ctl_15>>8.&7.
+&q_fullness=&denali_ctl_15>>16.&7.
+&tcke=&denali_ctl_15>>24.&7.
+
+; ====== DMC_CTL_16
+&tdfi_ctrl_delay=&denali_ctl_16>>0.&7.
+&tdfi_dram_clk_disable=&denali_ctl_16>>8.&7.
+&tdfi_dram_clk_enable=&denali_ctl_16>>16.&7.
+&trrd=&denali_ctl_16>>24.&7.
+
+; ====== DMC_CTL_17
+&twtr=&denali_ctl_17>>0.&15.
+&age_count=&denali_ctl_17>>8.&15.
+&caslat_lin=&denali_ctl_17>>24.&15.
+
+; ====== DMC_CTL_18
+&command_age_count=&denali_ctl_18>>0.&15.
+&initaref=&denali_ctl_18>>8.&15.
+&max_col_reg=&denali_ctl_18>>24.&15.
+
+; ====== DMC_CTL_19
+&max_row_reg=&denali_ctl_19>>0.&15.
+&port_cmd_error_type=&denali_ctl_19>>8.&15.
+&tdal=&denali_ctl_19>>16.&0x1F
+
+; ====== DMC_CTL_20
+&tdfi_phy_rdlat=&denali_ctl_20>>0.&15.
+&tdfi_phy_wrlat=&denali_ctl_20>>8.&15.
+&tdfi_phy_wrlat_base=&denali_ctl_20>>16.&15.
+&tdfi_phy_rddata_en=&denali_ctl_20>>24.&15.
+
+; ====== DMC_CTL_21
+&tdfi_rddata_en_base=&denali_ctl_21>>0.&0x1F
+&trp=&denali_ctl_21>>8.&0x1F
+&twr=&denali_ctl_21>>16.&0x1F
+
+; ====== DMC_CTL_22
+&lowpower_auto_enable=&denali_ctl_22>>0.&0x1F
+&lowpower_control=&denali_ctl_22>>8.&0x1F
+&out_of_range_type=&denali_ctl_22>>16.&0x1F
+&tmrd=&denali_ctl_22>>24.&0x1F
+
+; ====== DMC_CTL_23
+&trc=&denali_ctl_23>>0.&0x7F
+&axi0_bdw=&denali_ctl_23>>8.&0x7F
+&axi0_current_bdw=&denali_ctl_23>>16.&0x7F
+&axi1_bdw=&denali_ctl_23>>24.&0x7F
+
+; ====== DMC_CTL_24
+&axi1_current_bdw=&denali_ctl_24>>0.&0x7F
+&axi2_bdw=&denali_ctl_24>>8.&0x7F
+&axi2_current_bdw=&denali_ctl_24>>16.&0x7F
+&axi3_bdw=&denali_ctl_24>>24.&0x7F
+
+; ====== DMC_CTL_25
+&axi3_current_bdw=&denali_ctl_25>>0.&0x7F
+&out_of_range_length=&denali_ctl_25>>16.&0x7F
+&wrprct_error_length=&denali_ctl_25>>24.&0x7F
+
+; ====== DMC_CTL_26
+&tras_min=&denali_ctl_26>>16.&0xFF
+&trcd_int=&denali_ctl_26>>24.&0xFF
+
+; ====== DMC_CTL_27
+&trfc=&denali_ctl_27>>0.&0xFF
+&out_of_range_source_id=&denali_ctl_27>>8.&0x3FF
+
+; ====== DMC_CTL_28
+&port_cmd_error_id=&denali_ctl_28>>0.&0xFFF
+&port_data_error_id=&denali_ctl_28>>16.&0xFFF
+
+; ====== DMC_CTL_30
+&tref=&denali_ctl_30>>16.&0xFFFF
+
+; ====== DMC_CTL_32
+&axi0_en_size_lt_width_instr=&denali_ctl_32>>16.&0xFFFF
+
+; ====== DMC_CTL_33
+&axi1_en_size_lt_width_instr=&denali_ctl_33>>0.&0xFFFF
+&axi2_en_size_lt_width_instr=&denali_ctl_33>>16.&0xFFFF
+
+; ====== DMC_CTL_34
+&axi3_en_size_lt_width_instr=&denali_ctl_34>>0.&0xFFFF
+&lowpower_external_cnt=&denali_ctl_34>>16.&0xFFFF
+
+; ====== DMC_CTL_35
+&lowpower_internat_cnt=&denali_ctl_35>>0.&0xFFFF
+&lowpower_power_down_cnt=&denali_ctl_35>>16.&0xFFFF
+
+; ====== DMC_CTL_36
+&lowpower_refresh_hold=&denali_ctl_36>>0.&0xFFFF
+&lowpower_self_refresh_hold=&denali_ctl_36>>16.&0xFFFF
+
+; ====== DMC_CTL_37
+&tpdex=&denali_ctl_37>>16.&0xFFFF
+
+; ====== DMC_CTL_38
+&tras_max=&denali_ctl_38>>0.&0xFFFF
+&txsnr=&denali_ctl_38>>16.&0xFFFF
+
+; ====== DMC_CTL_39
+&txsr=&denali_ctl_39>>0.&0xFFFF
+&version=&denali_ctl_39>>16.&0xFFFF
+
+; ====== DMC_CTL_40
+&tinit=&denali_ctl_40>>0.&0xFFFFFF
+
+; ====== DMC_CTL_41
+&out_of_range_addr=&denali_ctl_41
+
+; ====== DMC_CTL_42
+&port_cmd_error_addr=&denali_ctl_42
+
+; ====== DMC_CTL_43
+&wrtprct_error_address=&denali_ctl_43
+
+; ====== DMC_CTL_44
+&wrtprct_lower_address_0=&denali_ctl_44
+
+; ====== DMC_CTL_45
+&wrtprct_lower_address_1=&denali_ctl_45
+
+; ====== DMC_CTL_46
+&wrtprct_upper_address_0=&denali_ctl_46
+
+; ====== DMC_CTL_47
+&wrtprct_upper_address_1=&denali_ctl_47
+
+; ====== DMC_CTL_59
+&phy_add=&denali_ctl_59
+
+; ====== DMC_CTL_60
+&phy_cfg=&denali_ctl_60
+
+; ====== DMC_CTL_61
+&phy_sts=&denali_ctl_61
+
+; ====== DMC_CTL_63
+&wrlat_adj=&denali_ctl_63>>0.&0x7
+&w2r_diffcs_dly=&denali_ctl_63>>8.&0x7
+&w2r_samecs_dly=&denali_ctl_63>>16.&0x7
+&dram_class=&denali_ctl_63>>24.&0xF
+
+; ====== DMC_CTL_64
+&rdlat_adj=&denali_ctl_64>>0.&0x7
+&tmod=&denali_ctl_64>>16.&0x7F
+
+; ====== DMC_CTL_73
+&ddrsys_axi0_awcobuf=&denali_ctl_73>>0.&0x1
+&ddrsys_axi1_awcobuf=&denali_ctl_73>>1.&0x1
+&ddrsys_axi2_awcobuf=&denali_ctl_73>>2.&0x1
+&ddrsys_axi3_awcobuf=&denali_ctl_73>>3.&0x1
+&cs0_srefresh_maintain=&denali_ctl_73>>4.&0x1
+&cs1_srefresh_maintain=&denali_ctl_73>>5.&0x1
+&init_min_bw=&denali_ctl_73>>6.&0x3
+&cs0_deep_pd_maintain=&denali_ctl_73>>8.&0x1
+&cs1_deep_pd_maintain=&denali_ctl_73>>9.&0x1
+&axi0_gate_enable=&denali_ctl_73>>11.&0x1
+&power_down_controller_enable=&denali_ctl_73>>10.&0x1
+&axi1_gate_enable=&denali_ctl_73>>12.&0x1
+&axi2_gate_enable=&denali_ctl_73>>13.&0x1
+&axi3_gate_enable=&denali_ctl_73>>14.&0x1
+&secr_arng_ddrhold=&denali_ctl_73>>15.&0x1
+&memory_cs_map=&denali_ctl_73>>16.&0x3
+&phy_compo_on_srefresh_exit_enable=&denali_ctl_73>>21.&0x1
+&phy_compo_on_zq_init_enable=&denali_ctl_73>>22.&0x1
+&phy_compo_on_zq_long_enable=&denali_ctl_73>>23.&0x1
+&phy_compo_on_zq_short_enable=&denali_ctl_73>>24.&0x1
+&force_phy_compensation=&denali_ctl_73>>25.&0x1
+&debug_dfi_trigger_is_write=&denali_ctl_73>>26.&0x1
+&dmc_jtag_control_enable=&denali_ctl_73>>27.&0x1
+&dmc_jtag_trstn=&denali_ctl_73>>28.&0x1
+&dmc_jtag_tck=&denali_ctl_73>>29.&0x1
+&dmc_jtag_tms=&denali_ctl_73>>30.&0x1
+&dmc_jtag_tdi=&denali_ctl_73>>31.&0x1
+
+; ====== DMC_CTL_75
+&port_busy=&denali_ctl_75>>0.&0xF
+&cs0_srefresh_locked=&denali_ctl_75>>4.&0x1
+&cs1_srefresh_locked=&denali_ctl_75>>5.&0x1
+&cs0_deep_pd_locked=&denali_ctl_75>>6.&0x1
+&cs1_deep_pd_locked=&denali_ctl_75>>7.&0x1
+&dram_initialization_complete=&denali_ctl_75>>29.&0x1
+&dfi_init_complete=&denali_ctl_75>>30.&0x1
+&dmc_jtag_tdo=&denali_ctl_75>>31.&0x1
+
+; ====== DMC_CTL_76
+&lpddr2_s4=&denali_ctl_76>>24.&0x1
+
+; ====== DMC_CTL_77
+&tdqsck_max=&denali_ctl_77>>0.&0x3
+&tdqsck_min=&denali_ctl_77>>8.&0x3
+&r2r_diffcs_dly=&denali_ctl_77>>24.&0x7
+
+; ====== DMC_CTL_78
+&r2r_samecs_dly=&denali_ctl_78>>0.&0x7
+&r2w_samecs_dly=&denali_ctl_78>>8.&0x7
+&r2w_diffcs_dly=&denali_ctl_78>>16.&0x7
+&tccd=&denali_ctl_78>>24.&0x1F
+
+; ====== DMC_CTL_79
+&trtp=&denali_ctl_79>>0.&0x7
+&w2w_diffcs_dly=&denali_ctl_79>>8.&0x7
+&w2w_samecs_dly=&denali_ctl_79>>16.&0x7
+&tmrr=&denali_ctl_79>>24.&0x1F
+
+; ====== DMC_CTL_80
+&zq_on_sref_exit=&denali_ctl_80>>8.&0x7
+&zq_req=&denali_ctl_80>>16.&0x7
+&tfaw=&denali_ctl_80>>24.&0x3F
+
+; ====== DMC_CTL_81
+&refresh_per_zq=&denali_ctl_81>>0.&0xFF
+&int_mask=&denali_ctl_81>>8.&0x3FF
+
+; ====== DMC_CTL_82
+&int_status=&denali_ctl_82>>0.&0x3FF
+&zqcl=&denali_ctl_82>>16.&0xFFF
+
+; ====== DMC_CTL_83
+&zqcs=&denali_ctl_83>>0.&0xFFF
+&zqinit=&denali_ctl_83>>16.&0xFFF
+
+; ====== DMC_CTL_84
+&zqreset=&denali_ctl_84>>0.&0xFFF
+&mr0_data_0=&denali_ctl_84>>16.&0x7FFF
+
+; ====== DMC_CTL_85
+&mr0_data_1=&denali_ctl_85>>0.&0x7FFF
+&mr16_data_0=&denali_ctl_85>>16.&0x7FFF
+
+; ====== DMC_CTL_86
+&mr16_data_1=&denali_ctl_86>>0.&0x7FFF
+&mr17_data_0=&denali_ctl_86>>16.&0x7FFF
+
+; ====== DMC_CTL_87
+&mr17_data_1=&denali_ctl_87>>0.&0x7FFF
+&mr1_data_0=&denali_ctl_87>>16.&0x7FFF
+
+; ====== DMC_CTL_88
+&mr1_data_1=&denali_ctl_88>>0.&0x7FFF
+&mr2_data_0=&denali_ctl_88>>16.&0x7FFF
+
+; ====== DMC_CTL_89
+&mr2_data_1=&denali_ctl_89>>0.&0x7FFF
+&mr3_data_0=&denali_ctl_89>>16.&0x7FFF
+
+; ====== DMC_CTL_90
+&mr3_data_1=&denali_ctl_90>>0.&0x7FFF
+&peripheral_mrr_data=&denali_ctl_90>>16.&0xFFFF
+
+; ====== DMC_CTL_91
+&read_modereg=&denali_ctl_91>>0.&0x1FFFF
+
+; ====== DMC_CTL_92
+&tinit3=&denali_ctl_92>>0.&0xFFFFFF
+
+; ====== DMC_CTL_93
+&tinit4=&denali_ctl_93>>0.&0xFFFFFF
+
+; ====== DMC_CTL_94
+&tinit5=&denali_ctl_94>>0.&0xFFFFFF
+&concurrentap_wr_only=&denali_ctl_94>>0.&0x1000000
+
+; ====== DMC_CTL_95
+&config_error=&denali_ctl_95>>0.&0x1
+&eight_bank_mode_0=&denali_ctl_95>>8.&0x1
+&eight_bank_mode_1=&denali_ctl_95>>16.&0x1
+
+; ====== DMC_CTL_96
+&zqcs_rotate=&denali_ctl_96>>8.&0x1
+&zq_in_progress=&denali_ctl_96>>16.&0x1
+&addr_pins_0=&denali_ctl_96>>24.&0x7
+
+; ====== DMC_CTL_97
+&addr_pins_1=&denali_ctl_97>>0.&0x7
+&column_size_0=&denali_ctl_97>>8.&0x7
+&column_size_1=&denali_ctl_97>>16.&0x7
+&aprebit_0=&denali_ctl_97>>24.&0xF
+
+; ====== DMC_CTL_98
+&aprebit_1=&denali_ctl_98>>0.&0xF
+&trp_ab_0=&denali_ctl_98>>8.&0x1F
+&trp_ab_1=&denali_ctl_98>>16.&0x1F
+
+; ====== DMC_CTL_99
+&int_ack=&denali_ctl_99>>0.&0xFF
+&cs_msk_0=&denali_ctl_99>>16.&0xFFFF
+
+; ====== DMC_CTL_100
+&cs_msk_1=&denali_ctl_100>>0.&0xFFFF
+&cs_val_0=&denali_ctl_100>>16.&0xFFFF
+
+; ====== DMC_CTL_101
+&cs_val_1=&denali_ctl_101>>0.&0xFFFF
+&tbst_int_internal=&denali_ctl_101>>16.&0x7
+&cksre=&denali_ctl_101>>24.&0xF
+
+; ====== DMC_CTL_102
+&cksrx=&denali_ctl_102>>0.&0xF
+&tckesr=&denali_ctl_102>>8.&0xF
+&tref_interval=&denali_ctl_102>>16.&0x3FFF
+
+; ====== DMC_CTL_105
+&trcd_int_f2=&denali_ctl_105>>0.&0xFF
+&trcd_int_f1=&denali_ctl_105>>8.&0xFF
+&trcd_int_f0=&denali_ctl_105>>16.&0xFF
+
+; ====== DMC_CTL_106
+&tras_min_f2=&denali_ctl_106>>0.&0xFF
+&tras_min_f1=&denali_ctl_106>>8.&0xFF
+&tras_min_f0=&denali_ctl_106>>16.&0xFF
+
+; ====== DMC_CTL_107
+&trfc_min_f2=&denali_ctl_107>>0.&0xFF
+&trfc_min_f1=&denali_ctl_107>>8.&0xFF
+&trfc_min_f0=&denali_ctl_107>>16.&0xFF
+&tdqsck_max_f2=&denali_ctl_107>>24.&0x3
+&tdqsck_max_f1=&denali_ctl_107>>26.&0x3
+&tdqsck_max_f0=&denali_ctl_107>>28.&0x3
+
+; ====== DMC_CTL_108
+&tref_f2=&denali_ctl_108>>0.&0xFFFF
+&tref_f1=&denali_ctl_108>>16.&0xFFFF
+
+; ====== DMC_CTL_109
+&tref_f0=&denali_ctl_109>>0.&0xFFFF
+&txsnr_f2=&denali_ctl_109>>16.&0xFFFF
+
+; ====== DMC_CTL_110
+&txsnr_f1=&denali_ctl_110>>0.&0xFFFF
+&txsnr_f0=&denali_ctl_110>>16.&0xFFFF
+
+; ====== DMC_CTL_111
+&txsr_f2=&denali_ctl_111>>0.&0xFFFF
+&txsr_f1=&denali_ctl_111>>16.&0xFFFF
+
+; ====== DMC_CTL_112
+&txsr_f0=&denali_ctl_112>>0.&0xFFFF
+&r2w_samecs_dly_f2=&denali_ctl_112>>16.&0x7
+&r2w_samecs_dly_f1=&denali_ctl_112>>19.&0x7
+&r2w_samecs_dly_f0=&denali_ctl_112>>22.&0x7
+
+; ====== DMC_CTL_113
+&wrlat_adj_f2=&denali_ctl_113>>0.&0x7
+&wrlat_adj_f1=&denali_ctl_113>>3.&0x7
+&wrlat_adj_f0=&denali_ctl_113>>6.&0x7
+&rdlat_adj_f2=&denali_ctl_113>>9.&0x1F
+&rdlat_adj_f1=&denali_ctl_113>>14.&0x1F
+&rdlat_adj_f0=&denali_ctl_113>>19.&0x1F
+
+; ====== DMC_CTL_114
+&tfaw_f2=&denali_ctl_114>>0.&0x3F
+&tfaw_f1=&denali_ctl_114>>6.&0x3F
+&tfaw_f0=&denali_ctl_114>>12.&0x3F
+&trtp_f2=&denali_ctl_114>>18.&0x7
+&trtp_f1=&denali_ctl_114>>21.&0x7
+&trtp_f0=&denali_ctl_114>>24.&0x7
+
+; ====== DMC_CTL_115
+&zqcs_f2=&denali_ctl_115>>0.&0xFFF
+&zqcs_f1=&denali_ctl_115>>12.&0xFFF
+
+; ====== DMC_CTL_116
+&zqcl_f2=&denali_ctl_116>>0.&0xFFF
+&zqcl_f1=&denali_ctl_116>>12.&0xFFF
+
+; ====== DMC_CTL_117
+&zqcs_f0=&denali_ctl_117>>0.&0xFFF
+&zqcl_f0=&denali_ctl_117>>12.&0xFFF
+
+; ====== DMC_CTL_118
+&trp_ab_0_f2=&denali_ctl_118>>0.&0x1F
+&trp_ab_0_f1=&denali_ctl_118>>5.&0x1F
+&trp_ab_0_f0=&denali_ctl_118>>10.&0x1F
+&trp_ab_1_f2=&denali_ctl_118>>15.&0x1F
+&trp_ab_1_f1=&denali_ctl_118>>20.&0x1F
+&trp_ab_1_f0=&denali_ctl_118>>25.&0x1F
+
+; ====== DMC_CTL_119
+&mr1_data_0_f2=&denali_ctl_119>>0.&0x7FFF
+&mr1_data_0_f1=&denali_ctl_119>>15.&0x7FFF
+
+; ====== DMC_CTL_120
+&mr1_data_0_f0=&denali_ctl_120>>0.&0x7FFF
+&mr1_data_1_f0=&denali_ctl_120>>15.&0x7FFF
+
+; ====== DMC_CTL_121
+&mr1_data_1_f2=&denali_ctl_121>>0.&0x7FFF
+&mr1_data_1_f1=&denali_ctl_121>>15.&0x7FFF
+
+; ====== DMC_CTL_122
+&mr2_data_0_f2=&denali_ctl_122>>0.&0x7FFF
+&mr2_data_0_f1=&denali_ctl_122>>15.&0x7FFF
+
+; ====== DMC_CTL_123
+&mr2_data_0_f0=&denali_ctl_123>>0.&0x7FFF
+&mr2_data_1_f0=&denali_ctl_123>>15.&0x7FFF
+
+; ====== DMC_CTL_124
+&mr2_data_1_f2=&denali_ctl_124>>0.&0x7FFF
+&mr2_data_1_f1=&denali_ctl_124>>15.&0x7FFF
+
+; ====== DMC_CTL_125
+&phy_dcfg_f2=&denali_ctl_125>>0.&0x7FFFFFFF
+
+; ====== DMC_CTL_126
+&phy_dcfg_f1=&denali_ctl_126>>0.&0x7FFFFFFF
+
+; ====== DMC_CTL_127
+&wrlat_f2=&denali_ctl_127>>0.&0x7
+&wrlat_f1=&denali_ctl_127>>3.&0x7
+&wrlat_f0=&denali_ctl_127>>6.&0x7
+&trrd_f2=&denali_ctl_127>>18.&0x7
+&trrd_f1=&denali_ctl_127>>21.&0x7
+&trrd_f0=&denali_ctl_127>>24.&0x7
+
+; ====== DMC_CTL_128
+&caslat_lin_f2=&denali_ctl_128>>0.&0x1F
+&caslat_lin_f1=&denali_ctl_128>>5.&0x1F
+&caslat_lin_f0=&denali_ctl_128>>10.&0x1F
+&twtr_f2=&denali_ctl_128>>15.&0xF
+&twtr_f1=&denali_ctl_128>>19.&0xF
+&twtr_f0=&denali_ctl_128>>23.&0xF
+
+; ====== DMC_CTL_129
+&tdal_f2=&denali_ctl_129>>15.&0x1F
+&tdal_f1=&denali_ctl_129>>20.&0x1F
+&tdal_f0=&denali_ctl_129>>25.&0x1F
+
+; ====== DMC_CTL_130
+&tdfi_phy_rdlat_f2=&denali_ctl_130>>0.&0x1F
+&tdfi_phy_rdlat_f1=&denali_ctl_130>>5.&0x1F
+&tdfi_phy_rdlat_f0=&denali_ctl_130>>10.&0x1F
+&twr_int_f2=&denali_ctl_130>>15.&0x1F
+&twr_int_f1=&denali_ctl_130>>20.&0x1F
+&twr_int_f0=&denali_ctl_130>>25.&0x1F
+
+; ====== DMC_CTL_131
+&trp_f2=&denali_ctl_131>>0.&0x1F
+&trp_f1=&denali_ctl_131>>5.&0x1F
+&trp_f0=&denali_ctl_131>>10.&0x1F
+&tckesr_f2=&denali_ctl_131>>15.&0x1F
+&tckesr_f1=&denali_ctl_131>>20.&0x1F
+&tckesr_f0=&denali_ctl_131>>25.&0x1F
+
+; ====== DMC_CTL_132
+&trc_f2=&denali_ctl_132>>0.&0x3F
+&trc_f1=&denali_ctl_132>>6.&0x3F
+&trc_f0=&denali_ctl_132>>12.&0x3F
+&r2w_diffcs_dly_f2=&denali_ctl_132>>18.&0x7
+&r2w_diffcs_dly_f1=&denali_ctl_132>>21.&0x7
+&r2w_diffcs_dly_f0=&denali_ctl_132>>24.&0x7
+
+; ====== DMC_CTL_140
+;&semaphore=&denali_ctl_140>>0.&0x1
+
+; ====== DMC_CTL_141
+&phy_dcfg_f0=&denali_ctl_141>>0.&0x7FFFFFFF
+
+; ====== DMC_CTL_142
+&mr3_data_0_f2=&denali_ctl_142>>0.&0x7FFF
+&mr3_data_0_f1=&denali_ctl_142>>15.&0x7FFF
+
+; ====== DMC_CTL_143
+&mr3_data_0_f0=&denali_ctl_143>>0.&0x7FFF
+&mr3_data_1_f0=&denali_ctl_143>>15.&0x7FFF
+
+; ====== DMC_CTL_144
+&mr3_data_1_f2=&denali_ctl_144>>0.&0x7FFF
+&mr3_data_1_f1=&denali_ctl_144>>15.&0x7FFF
+
+; ================================== Timings ==================================
+
+; =========================================================================================
+&p=100.0
+&ddrp=200000./&ddr0_pll_frequency
+&ddr_opp=0.
+&cur_ddrp=0.
+&cur_ddrf=0.
+if &tref==&tref_f0
+(
+   &ddr_opp=100.
+   &cur_ddrp=&ddrp*1.
+   &cur_ddrf=&ddr0_pll_frequency/2.
+)
+else
+(
+   if &tref==&tref_f1
+   (
+      &ddr_opp=50.
+      &cur_ddrp=&ddrp*2.
+     &cur_ddrf=&ddr0_pll_frequency/4.
+   )
+   else
+   (
+      if &tref==&tref_f2
+      (
+         &ddr_opp=25.
+         &cur_ddrp=&ddrp*4.
+         &cur_ddrf=&ddr0_pll_frequency/8.
+      )
+      else
+      (
+         &ddr_opp=0.
+         &cur_ddrp=0.
+      )
+   )
+)
+
+print " # Denali Databahn @",%DECIMAL &ddr0_pll_frequency,"MHz,"
+print "                   DDR clock frequency @ ", %DECIMAL &cur_ddrf ," MHz"
+print "                   period @", %DECIMAL (&ddrp/&p) ,"ns,"
+print "                   OPP ", %DECIMAL &ddr_opp ,"%"
+print " = Behavior"
+print " warning decoding not updated for 9540 : some register could be modified "
+print "   - ID"
+print "     . (DMC_CTL_39)  Version                = 0x",%HEX   &version
+print "     . (DMC_CTL_13)  Max nb of ChipSelect   = ",%DECIMAL &max_cs_reg
+print "     . (DMC_CTL_18)  Max column width       = ",%DECIMAL &max_col_reg
+print "     . (DMC_CTL_19)  Max row width          = ",%DECIMAL &max_row_reg
+
+print "   - Arbitration"
+print "     . (DMC_CTL_01)  Port0 BW Overflow      = ",%DECIMAL &axi0_bdw_ovflow
+print "     . (DMC_CTL_09)  PortO Read Priority    = ",%DECIMAL &axi0_r_priority
+print "     . (DMC_CTL_09)  Port0 Write Priority   = ",%DECIMAL &axi0_w_priority
+print "     . (DMC_CTL_23)  Port0 Max BW           = ",%DECIMAL &axi0_bdw,"%"
+print "     . (DMC_CTL_23)  Port0 Current BW       = ",%DECIMAL &axi0_current_bdw,"%"
+print "     . (DMC_CTL_32)  Port0 allow INS/bit EN = 0x",%HEX   &axi0_en_size_lt_width_instr
+print "     . (DMC_CTL_73)  Port0 coherent buf WR  = ",%DECIMAL &ddrsys_axi0_awcobuf
+
+print "     . (DMC_CTL_01)  Port1 BW Overflow      = ",%DECIMAL &axi1_bdw_ovflow
+print "     . (DMC_CTL_10)  Port1 Read Priority    = ",%DECIMAL &axi1_r_priority
+print "     . (DMC_CTL_10)  Port1 Write Priority   = ",%DECIMAL &axi1_w_priority
+print "     . (DMC_CTL_23)  Port1 Maw BW           = ",%DECIMAL &axi1_bdw,"%"
+print "     . (DMC_CTL_24)  Port1 Current BW       = ",%DECIMAL &axi1_current_bdw,"%"
+print "     . (DMC_CTL_33)  Port1 allow INS/bit EN = 0x",%HEX  &axi1_en_size_lt_width_instr
+print "     . (DMC_CTL_73)  Port1 coherent buf WR  = ",%DECIMAL &ddrsys_axi1_awcobuf
+
+print "     . (DMC_CTL_01)  Port2 BW Overflow      = ",%DECIMAL &axi2_bdw_ovflow
+print "     . (DMC_CTL_11)  Port2 Read Priority    = ",%DECIMAL &axi2_r_priority
+print "     . (DMC_CTL_11)  Port2 Write Priority   = ",%DECIMAL &axi2_w_priority
+print "     . (DMC_CTL_24)  Port2 Max BW           = ",%DECIMAL &axi2_bdw,"%"
+print "     . (DMC_CTL_24)  Port2 Current BW       = ",%DECIMAL &axi2_current_bdw,"%"
+print "     . (DMC_CTL_33)  Port2 allow INS/bit EN = 0x",%HEX   &axi2_en_size_lt_width_instr
+print "     . (DMC_CTL_73)  Port2 coherent buf WR  = ",%DECIMAL &ddrsys_axi2_awcobuf
+
+print "     . (DMC_CTL_02)  Port3 BW Overflow      = ",%DECIMAL &axi3_bdw_ovflow
+print "     . (DMC_CTL_11)  Port3 Read Priority    = ",%DECIMAL &axi3_r_priority
+print "     . (DMC_CTL_12)  Port3 Write Priority   = ",%DECIMAL &axi3_w_priority
+print "     . (DMC_CTL_24)  Port3 Max BW           = ",%DECIMAL &axi3_bdw,"%"
+print "     . (DMC_CTL_25)  Port3 Current BW       = ",%DECIMAL &axi3_current_bdw,"%"
+print "     . (DMC_CTL_34)  Port3 allow INS/bit EN = 0x",%HEX &axi3_en_size_lt_width_instr
+print "     . (DMC_CTL_73)  Port3 coherent buf WR  = ",%DECIMAL &ddrsys_axi3_awcobuf
+
+print "   - Efficiency"
+print "     . (DMC_CTL_00)  Active Aging           = ",%DECIMAL &active_aging
+print "     . (DMC_CTL_00)  Addr CMP en            = ",%DECIMAL &addr_cmp_en
+print "     . (DMC_CTL_00)  AutoPrecharge          = ",%DECIMAL &ap
+print "     . (DMC_CTL_00)  AutoRefresh            = ",%DECIMAL &arefresh
+print "     . (DMC_CTL_02)  Bank Splitting         = ",%DECIMAL &bank_split_en
+print "     . (DMC_CTL_02)  Concurrent AP          = ",%DECIMAL &concurrentap
+print "     . (DMC_CTL_03)  Quick Self-Refresh     = ",%DECIMAL &enable_quick_srefresh
+print "     . (DMC_CTL_04)  Stop AP with CMD       = ",%DECIMAL &intrptapburst
+print "     . (DMC_CTL_04)  Stop read/AP with CMD  = ",%DECIMAL &intrptreada
+print "     . (DMC_CTL_04)  Stop write/AP with CMD = ",%DECIMAL &intrptwritea
+print "     . (DMC_CTL_05)  CMD Placement          = ",%DECIMAL &placement_en
+print "     . (DMC_CTL_05)  DisClock/PwrDwn DRAM   = ",%DECIMAL &power_down
+print "     . (DMC_CTL_05)  CMD Placement/Priority = ",%DECIMAL &priority_en
+print "     . (DMC_CTL_07)  Read/write grouping    = ",%DECIMAL &rw_same_en
+print "     . (DMC_CTL_07)  CMD Swapping           = ",%DECIMAL &swap_en
+print "     . (DMC_CTL_08)  AP before tRASmin      = ",%DECIMAL &tras_lockout
+print "     . (DMC_CTL_08)  Stop WR with RD        = ",%DECIMAL &writeinterp
+print "     . (DMC_CTL_14)  Threshold for CMD over = ",%DECIMAL &arb_cmd_q_threshold
+print "     . (DMC_CTL_15)  CMD full quantity      = ",%DECIMAL &q_fullness
+print "     . (DMC_CTL_17)  CMD aging rate         = ",%DECIMAL &age_count
+print "     . (DMC_CTL_18)  CMD aging counter      = ",%DECIMAL &command_age_count
+
+print "   - LowPower"
+print "     . (DMC_CTL_06)  Half of the datapath   = ",%DECIMAL &reduc
+print "     . (DMC_CTL_22)  Auto Low Power mode    = ",%DECIMAL &lowpower_auto_enable
+print "     . (DMC_CTL_22)  Low Power mode control = ",%DECIMAL &lowpower_control
+print "     . (DMC_CTL_35)  Low Power Memory cnt   = ",%DECIMAL &lowpower_power_down_cnt, " (Low Power mode 1 & 2)"
+print "     . (DMC_CTL_36)  Low Power SREF mem cnt = ",%DECIMAL &lowpower_self_refresh_hold, " (Low Power mode 3)"
+print "     . (DMC_CTL_34)  Low Power SREFRESH cnt = ",%DECIMAL &lowpower_external_cnt, " (Low Power mode 4)"
+print "     . (DMC_CTL_35)  Low Power SREF&CTRL cnt= ",%DECIMAL &lowpower_internat_cnt, " (Low Power mode 5)"
+print "     . (DMC_CTL_36)  Low Power Sync DLL cnt = ",%DECIMAL &lowpower_refresh_hold
+print "   - Status"
+print "     . (DMC_CTL_15)  Error/Access DATA Type = ",%DECIMAL &port_data_error_type
+print "     . (DMC_CTL_28)  Port DATA error Src ID = ",%DECIMAL &port_data_error_id
+print "     . (DMC_CTL_19)  Error/Access CMD Type  = ",%DECIMAL &port_cmd_error_type
+print "     . (DMC_CTL_28)  Port CMD error Src ID  = ",%DECIMAL &port_cmd_error_id
+print "     . (DMC_CTL_42)  Port CMD error Address = 0x",%HEX   &port_cmd_error_addr
+print "     . (DMC_CTL_22)  Out of range CMD       = ",%DECIMAL &out_of_range_type
+print "     . (DMC_CTL_25)  Out of range CMD length= ",%DECIMAL &out_of_range_length
+print "     . (DMC_CTL_27)  Out of range Source ID = ",%DECIMAL &out_of_range_source_id
+print "     . (DMC_CTL_41)  Out of range address   = 0x",%HEX   &out_of_range_addr
+print "     . (DMC_CTL_25)  WR Protect Err CMD len = ",%DECIMAL &wrprct_error_length
+print "     . (DMC_CTL_43)  WR Protect Err address = 0x",%HEX   &wrtprct_error_address
+print "     . (DMC_CTL_75)  Busy port number busy  = ",%DECIMAL &port_busy
+print "     . (DMC_CTL_75)  Init DRAM complete     = ",%DECIMAL &dram_initialization_complete
+print "     . (DMC_CTL_75)  Init DFI complete      = ",%DECIMAL &dfi_init_complete
+print "     . (DMC_CTL_75)  CS0 locked in SRefresh = ",%DECIMAL &cs0_srefresh_locked
+print "     . (DMC_CTL_75)  CS0 locked in Deep PD  = ",%DECIMAL &cs0_deep_pd_locked
+print "     . (DMC_CTL_96)  CS0 free address pins  = ",%DECIMAL &addr_pins_0
+print "     . (DMC_CTL_97)  CS0 free column pins   = ",%DECIMAL &column_size_0
+print "     . (DMC_CTL_75)  CS1 locked in SRefresh = ",%DECIMAL &cs1_srefresh_locked
+print "     . (DMC_CTL_75)  CS1 locked in Deep PD  = ",%DECIMAL &cs1_deep_pd_locked
+print "     . (DMC_CTL_97)  CS1 free address pins  = ",%DECIMAL &addr_pins_1
+print "     . (DMC_CTL_97)  CS1 free column pins   = ",%DECIMAL &column_size_1
+print "     . (DMC_CTL_95)  Config Error           = ",%DECIMAL &config_error
+
+print "   - Interruption"
+print "     . (DMC_CTL_81)  IT Status Mask         = 0x",%HEX   &int_mask
+print "     . (DMC_CTL_82)  IT Status              = 0x",%HEX   &int_status
+print "     . (DMC_CTL_99)  IT Status clear mask   = 0x",%HEX   &int_ack
+
+print " = Memory registers"
+print " = Controller"
+print "   - Configuration"
+print "     . (DMC_CTL_01)  AutoRefresh mode       = ",%DECIMAL &auto_refresh_mode
+print "     . (DMC_CTL_06)  PwrUp with SREFRESH    = ",%DECIMAL &pwrup_srefresh_exit
+print "     . (DMC_CTL_07)  Put SDRAM in SREFRESH  = ",%DECIMAL &srefresh
+print "     . (DMC_CTL_07)  Start                  = ",%DECIMAL &start
+print "     . (DMC_CTL_08)  Enable AutoRefresh     = ",%DECIMAL &tref_enable
+print "     . (DMC_CTL_08)  WR Mode Register data  = ",%DECIMAL &write_modereg
+print "     . (DMC_CTL_09)  Port0 Clk relativity   = ",%DECIMAL &axi0_fifo_type_reg
+print "     . (DMC_CTL_10)  Port1 Clk relativity   = ",%DECIMAL &axi1_fifo_type_reg
+print "     . (DMC_CTL_10)  Port2 Clk relativity   = ",%DECIMAL &axi2_fifo_type_reg
+print "     . (DMC_CTL_11)  Port3 Clk relativity   = ",%DECIMAL &axi3_fifo_type_reg
+print "     . (DMC_CTL_12)  Refresh in LowPower    = ",%DECIMAL &lowpower_refresh_enable
+print "     . (DMC_CTL_12)  Active ChipSelect      = ",%DECIMAL &cs_map
+print "     . (DMC_CTL_13)  Write Protect          = ",%DECIMAL &wrtprct_enable
+print "     . (DMC_CTL_44)  Write Protect Lw addr0 = 0x",%HEX &wrtprct_lower_address_0
+print "     . (DMC_CTL_46)  Write Protect Up addr0 = 0x",%HEX &wrtprct_upper_address_0
+print "     . (DMC_CTL_45)  Write Protect Lw addr1 = 0x",%HEX &wrtprct_lower_address_1
+print "     . (DMC_CTL_47)  Write Protect Up addr1 = 0x",%HEX &wrtprct_upper_address_1
+print "     . (DMC_CTL_63)  Operation mode         = ",%DECIMAL &dram_class
+print "     . (DMC_CTL_73)  FreqDiv Selector       = ",%DECIMAL &init_min_bw
+print "     . (DMC_CTL_73)  CS0 lock in SelfRefresh= ",%DECIMAL &cs0_srefresh_maintain
+print "     . (DMC_CTL_73)  CS0 lock in Deep PD    = ",%DECIMAL &cs0_deep_pd_maintain
+print "     . (DMC_CTL_95)  CS0 bank number        = ",%DECIMAL &eight_bank_mode_0
+print "     . (DMC_CTL_97)  CS0 AP bit location    = ",%DECIMAL &aprebit_0
+print "     . (DMC_CTL_99)  CS0 address mask       = 0x",%HEX   &cs_msk_0
+print "     . (DMC_CTL_100) CS0 maximum address    = 0x",%HEX   &cs_val_0
+print "     . (DMC_CTL_73)  CS1 lock in SelfRefresh= ",%DECIMAL &cs1_srefresh_maintain
+print "     . (DMC_CTL_73)  CS1 lock in Deep PD    = ",%DECIMAL &cs1_deep_pd_maintain
+print "     . (DMC_CTL_95)  CS1 bank number        = ",%DECIMAL &eight_bank_mode_1
+print "     . (DMC_CTL_98)  CS1 AP bit location    = ",%DECIMAL &aprebit_1
+print "     . (DMC_CTL_100) CS1 address mask       = 0x",%HEX   &cs_msk_1
+print "     . (DMC_CTL_101) CS1 maximum address    = 0x",%HEX   &cs_val_1
+print "     . (DMC_CTL_76)  LpDDR2 S4              = ",%DECIMAL &lpddr2_s4
+print "     . (DMC_CTL_94)  AP Limit for tWR       = ",%DECIMAL &concurrentap_wr_only
+print "   - Mode Register"
+print "     . (DMC_CTL_84)  ModeRegister0 / Data0  = 0x",%HEX   &mr0_data_0
+print "     . (DMC_CTL_85)  ModeRegister0 / Data1  = 0x",%HEX   &mr0_data_1
+print "     . (DMC_CTL_85)  ModeRegister16/ Data0  = 0x",%HEX   &mr16_data_0
+print "     . (DMC_CTL_86)  ModeRegister16/ Data1  = 0x",%HEX   &mr16_data_1
+print "     . (DMC_CTL_86)  ModeRegister17/ Data0  = 0x",%HEX   &mr17_data_0
+print "     . (DMC_CTL_87)  ModeRegister17/ Data1  = 0x",%HEX   &mr17_data_1
+print "     . (DMC_CTL_87)  ModeRegister1 / Data0  = 0x",%HEX   &mr1_data_0
+print "     . (DMC_CTL_88)  ModeRegister1 / Data1  = 0x",%HEX   &mr1_data_1
+print "     . (DMC_CTL_88)  ModeRegister2 / Data0  = 0x",%HEX   &mr2_data_0
+print "     . (DMC_CTL_89)  ModeRegister2 / Data1  = 0x",%HEX   &mr2_data_1
+print "     . (DMC_CTL_89)  ModeRegister3 / Data0  = 0x",%HEX   &mr3_data_0
+print "     . (DMC_CTL_90)  ModeRegister3 / Data1  = 0x",%HEX   &mr3_data_1
+print "     . (DMC_CTL_90)  ModeRegister Periph/Dat= 0x",%HEX   &peripheral_mrr_data
+print "     . (DMC_CTL_91)  ModeRegister Read      = 0x",%HEX   &read_modereg
+
+print "   - JTAG"
+print "     . (DMC_CTL_73)  DMC JTAG Control Enable= ",%DECIMAL &dmc_jtag_control_enable
+print "     . (DMC_CTL_73)  DMC JTAG TRSTn         = ",%DECIMAL &dmc_jtag_trstn
+print "     . (DMC_CTL_73)  DMC JTAG TCK           = ",%DECIMAL &dmc_jtag_tck
+print "     . (DMC_CTL_73)  DMC JTAG TMS           = ",%DECIMAL &dmc_jtag_tms
+print "     . (DMC_CTL_73)  DMC JTAG TDI           = ",%DECIMAL &dmc_jtag_tdi
+print "     . (DMC_CTL_75)  DMC JTAG TDO           = ",%DECIMAL &dmc_jtag_tdo
+print "   - Timings"
+print "     * Initialization"
+print "     . (DMC_CTL_40)  tINIT                  = ",%DECIMAL &tinit               ," (",%DECIMAL (&tinit*&ddrp/&p)                 ," ns)"
+print "     . (DMC_CTL_14)  Init Burst length      = ",%DECIMAL &bstlen
+print "     . (DMC_CTL_14)  Init CAS Latency       = ",%DECIMAL &cslat
+print "     . (DMC_CTL_18)  Init Autorefresh count = ",%DECIMAL &initaref
+print "     . (DMC_CTL_92)  tINIT3                 = ",%DECIMAL &tinit3              ," (",%DECIMAL (&tinit3*&ddrp/&p)                ," ns)"
+print "     . (DMC_CTL_93)  tINIT4                 = ",%DECIMAL &tinit4              ," (",%DECIMAL (&tinit4*&ddrp/&p)                ," ns)"
+print "     . (DMC_CTL_94)  tINIT5                 = ",%DECIMAL &tinit5              ," (",%DECIMAL (&tinit5*&ddrp/&p)                ," ns)"
+
+print "     * DFI"
+print "     . (DMC_CTL_12)  DFI DRAM CLK Disable   = ",%DECIMAL &dram_clk_disable
+print "     . (DMC_CTL_16)  DFI CMD to mem CMD     = ",%DECIMAL &tdfi_ctrl_delay
+print "     . (DMC_CTL_16)  DFI ClkDis 2 mem ClkDis= ",%DECIMAL &tdfi_dram_clk_disable
+print "     . (DMC_CTL_16)  DFI ClkEn 2 mem ClkEn  = ",%DECIMAL &tdfi_dram_clk_enable
+print "     . (DMC_CTL_73)  DFI Debug Trigger      = ",%DECIMAL &debug_dfi_trigger_is_write
+print "     . (DMC_CTL_20)  TDFI PHY RD Latency    = ",%DECIMAL &tdfi_phy_rdlat
+print "     . (DMC_CTL_20)  TDFI PHY WR Latency    = ",%DECIMAL &tdfi_phy_wrlat
+print "     . (DMC_CTL_20)  TDFI PHY WR Lat Base   = ",%DECIMAL &tdfi_phy_wrlat_base
+print "     . (DMC_CTL_20)  TDFI PHY RD Data Enable= ",%DECIMAL &tdfi_phy_rddata_en
+print "     . (DMC_CTL_21)  TDFI Base 4 RD Data    = ",%DECIMAL &tdfi_rddata_en_base
+
+print "     * Current"
+print "     . (DMC_CTL_09)  WR latency             = ",%DECIMAL &wrlat               ," (",%DECIMAL (&wrlat*&cur_ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_17)  CAS latency            = ",%DECIMAL &caslat_lin          ," (",%DECIMAL (&caslat_lin*&cur_ddrp/&p)       ," ns)"
+print "     . (DMC_CTL_14)  CKE delay              = ",%DECIMAL &cke_delay           ," (",%DECIMAL (&cke_delay*&cur_ddrp/&p)        ," ns)"
+print "     . (DMC_CTL_15)  CKE pulse width        = ",%DECIMAL &tcke                ," (",%DECIMAL (&tcke*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_16)  tRRD                   = ",%DECIMAL &trrd                ," (",%DECIMAL (&trrd*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_17)  tWTR                   = ",%DECIMAL &twtr                ," (",%DECIMAL (&twtr*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_19)  tDAL                   = ",%DECIMAL &tdal                ," (",%DECIMAL (&tdal*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_21)  tRP                    = ",%DECIMAL &trp                 ," (",%DECIMAL (&trp*&cur_ddrp/&p)              ," ns)"
+print "     . (DMC_CTL_21)  tWR                    = ",%DECIMAL &twr                 ," (",%DECIMAL (&twr*&cur_ddrp/&p)              ," ns)"
+print "     . (DMC_CTL_22)  tMRD                   = ",%DECIMAL &tmrd                ," (",%DECIMAL (&tmrd*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_23)  tRC                    = ",%DECIMAL &trc                 ," (",%DECIMAL (&trc*&cur_ddrp/&p)              ," ns)"
+print "     . (DMC_CTL_26)  tRAS min               = ",%DECIMAL &tras_min            ," (",%DECIMAL (&tras_min*&cur_ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_38)  tRAS max               = ",%DECIMAL &tras_max            ," (",%DECIMAL (&tras_max*&cur_ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_26)  tRCD                   = ",%DECIMAL &trcd_int            ," (",%DECIMAL (&trcd_int*&cur_ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_27)  tRFC                   = ",%DECIMAL &trfc                ," (",%DECIMAL (&trfc*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_30)  tREF                   = ",%DECIMAL &tref                ," (",%DECIMAL (&tref*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_37)  tPDEX                  = ",%DECIMAL &tpdex               ," (",%DECIMAL (&tpdex*&cur_ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_38)  tXSNR                  = ",%DECIMAL &txsnr               ," (",%DECIMAL (&txsnr*&cur_ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_39)  tXSR                   = ",%DECIMAL &txsr                ," (",%DECIMAL (&txsr*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_64)  tMOD                   = ",%DECIMAL &tmod                ," (",%DECIMAL (&tmod*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_77)  tDQSCK max             = ",%DECIMAL &tdqsck_max          ," (",%DECIMAL (&tdqsck_max*&cur_ddrp/&p)       ," ns)"
+print "     . (DMC_CTL_77)  tDQSCK min             = ",%DECIMAL &tdqsck_min          ," (",%DECIMAL (&tdqsck_min*&cur_ddrp/&p)       ," ns)"
+print "     . (DMC_CTL_78)  tCCD                   = ",%DECIMAL &tccd                ," (",%DECIMAL (&tccd*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_79)  tRTP                   = ",%DECIMAL &trtp                ," (",%DECIMAL (&trtp*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_82)  tZQCL                  = ",%DECIMAL &zqcl                ," (",%DECIMAL (&zqcl*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_83)  tZQCS                  = ",%DECIMAL &zqcs                ," (",%DECIMAL (&zqcs*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_79)  tMRR                   = ",%DECIMAL &tmrr                ," (",%DECIMAL (&tmrr*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_80)  tFAW                   = ",%DECIMAL &tfaw                ," (",%DECIMAL (&tfaw*&cur_ddrp/&p)             ," ns)"
+print "     . (DMC_CTL_98)  tRP All Banks on CS0   = ",%DECIMAL &trp_ab_0            ," (",%DECIMAL (&trp_ab_0*&cur_ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_98)  tRP All Banks on CS1   = ",%DECIMAL &trp_ab_1            ," (",%DECIMAL (&trp_ab_1*&cur_ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_101) tBST INT Interval      = ",%DECIMAL &tbst_int_internal   ," (",%DECIMAL (&tbst_int_internal*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_101) tCKSRE                 = ",%DECIMAL &cksre               ," (",%DECIMAL (&cksre*&cur_ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_102) tCKSRX                 = ",%DECIMAL &cksrx               ," (",%DECIMAL (&cksrx*&cur_ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_102) tCKESR                 = ",%DECIMAL &tckesr              ," (",%DECIMAL (&tckesr*&cur_ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_102) tREF with different CS = ",%DECIMAL &tref_interval       ," (",%DECIMAL (&tref_interval*&cur_ddrp/&p)    ," ns)"
+
+print "     . (DMC_CTL_63)  WR & RD timing != /CS  = ",%DECIMAL &w2r_diffcs_dly      ," (",%DECIMAL (&w2r_diffcs_dly*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_63)  WR & RD timing == /CS  = ",%DECIMAL &w2r_samecs_dly      ," (",%DECIMAL (&w2r_samecs_dly*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_77)  RD & RD timing != /CS  = ",%DECIMAL &r2r_diffcs_dly      ," (",%DECIMAL (&r2r_diffcs_dly*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_78)  RD & RD timing == /CS  = ",%DECIMAL &r2r_samecs_dly      ," (",%DECIMAL (&r2r_samecs_dly*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_78)  RD & WR timing != /CS  = ",%DECIMAL &r2w_diffcs_dly      ," (",%DECIMAL (&r2w_diffcs_dly*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_78)  RD & WR timing == /CS  = ",%DECIMAL &r2w_samecs_dly      ," (",%DECIMAL (&r2w_samecs_dly*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_79)  WR & WR timing != /CS  = ",%DECIMAL &w2w_diffcs_dly      ," (",%DECIMAL (&w2w_diffcs_dly*&cur_ddrp/&p)," ns)"
+print "     . (DMC_CTL_79)  WR & WR timing == /CS  = ",%DECIMAL &w2w_samecs_dly      ," (",%DECIMAL (&w2w_samecs_dly*&cur_ddrp/&p)," ns)"
+
+print " = DMC PHY"
+print "     . (DMC_CTL_59)  PHY address            = ",%DECIMAL &phy_add
+print "     . (DMC_CTL_60)  PHY configuration      = ",%DECIMAL &phy_add
+print "     . (DMC_CTL_61)  PHY STS                = ",%DECIMAL &phy_sts
+print "     . (DMC_CTL_63)  PHY adjust WR timing   = ",%DECIMAL &wrlat_adj
+print "     . (DMC_CTL_64)  PHY adjust RD timing   = ",%DECIMAL &rdlat_adj
+print "     . (DMC_CTL_73)  PHY Force Comp         = ",%DECIMAL &force_phy_compensation
+print " = ZQ Compensation"
+print "     . (DMC_CTL_73)  Comp on SREF Exit      = ",%DECIMAL &phy_compo_on_srefresh_exit_enable
+print "     . (DMC_CTL_73)  Comp on ZQ init        = ",%DECIMAL &phy_compo_on_zq_init_enable
+print "     . (DMC_CTL_73)  Comp on ZQ long        = ",%DECIMAL &phy_compo_on_zq_long_enable
+print "     . (DMC_CTL_73)  Comp on ZQ short       = ",%DECIMAL &phy_compo_on_zq_short_enable
+print "     . (DMC_CTL_80)  ZQ on SREF Exit        = ",%DECIMAL &zq_on_sref_exit
+print "     . (DMC_CTL_80)  ZQ on request          = ",%DECIMAL &zq_req
+print "     . (DMC_CTL_81)  ZQ REF number          = ",%DECIMAL &refresh_per_zq
+print "     . (DMC_CTL_82)  ZQ ZQCL cmd            = 0x",%HEX   &zqcl
+print "     . (DMC_CTL_83)  ZQ ZQCS cmd            = 0x",%HEX   &zqcs
+print "     . (DMC_CTL_83)  ZQ ZQINIT cmd          = 0x",%HEX   &zqinit
+print "     . (DMC_CTL_84)  ZQ ZQRESET cmd         = 0x",%HEX   &zqreset
+print "     . (DMC_CTL_96)  ZQ rotate stgy         = ",%DECIMAL &zqcs_rotate
+print "     . (DMC_CTL_96)  ZQ cmd on going        = ",%DECIMAL &zq_in_progress
+
+print "     * OPP 100%: F0"
+print "     . (DMC_CTL_105) F0 tRCD                = ",%DECIMAL &trcd_int_f0         ," (",%DECIMAL (&trcd_int_f0*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_106) F0 tRAS min            = ",%DECIMAL &tras_min_f0         ," (",%DECIMAL (&tras_min_f0*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_107) F0 tRFC min            = ",%DECIMAL &trfc_min_f0         ," (",%DECIMAL (&trfc_min_f0*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_107) F0 tDQSCK max          = ",%DECIMAL &tdqsck_max_f0       ," (",%DECIMAL (&tdqsck_max_f0*&ddrp/&p)    ," ns)"
+print "     . (DMC_CTL_109) F0 tREF                = ",%DECIMAL &tref_f0             ," (",%DECIMAL (&tref_f0*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_110) F0 tXSNR               = ",%DECIMAL &txsnr_f0            ," (",%DECIMAL (&txsnr_f0*&ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_112) F0 tXSR                = ",%DECIMAL &txsr_f0             ," (",%DECIMAL (&txsr_f0*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_112) F0 RD & WR timing =/CS = ",%DECIMAL &r2w_samecs_dly_f0   ," (",%DECIMAL (&r2w_samecs_dly_f0*&ddrp/&p)," ns)"
+print "     . (DMC_CTL_132) F0 RD & WR timing!=/CS = ",%DECIMAL &r2w_diffcs_dly_f0   ," (",%DECIMAL (&r2w_diffcs_dly_f0*&ddrp/&p)," ns)"
+print "     . (DMC_CTL_113) F0 WR latency Adj      = ",%DECIMAL &wrlat_adj_f0        ," (",%DECIMAL (&wrlat_adj_f0*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_113) F0 RD latency Adj      = ",%DECIMAL &rdlat_adj_f0        ," (",%DECIMAL (&rdlat_adj_f0*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_114) F0 tFAW                = ",%DECIMAL &tfaw_f0             ," (",%DECIMAL (&tfaw_f0*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_114) F0 tRTP                = ",%DECIMAL &trtp_f0             ," (",%DECIMAL (&trtp_f0*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_117) F0 tZQCS               = ",%DECIMAL &zqcs_f0             ," (",%DECIMAL (&zqcs_f0*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_117) F0 tZQCL               = ",%DECIMAL &zqcl_f0             ," (",%DECIMAL (&zqcl_f0*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_118) F0 tRP All Banks on CS0= ",%DECIMAL &trp_ab_0_f0         ," (",%DECIMAL (&trp_ab_0_f0*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_118) F0 tRP All Banks on CS1= ",%DECIMAL &trp_ab_1_f0         ," (",%DECIMAL (&trp_ab_1_f0*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_120) F0 ModeRegister1 DATA0 = 0x",%HEX   &mr1_data_0_f0
+print "     . (DMC_CTL_120) F0 ModeRegister1 DATA1 = 0x",%HEX   &mr1_data_1_f0
+print "     . (DMC_CTL_123) F0 ModeRegister2 DATA0 = 0x",%HEX   &mr2_data_0_f0
+print "     . (DMC_CTL_123) F0 ModeRegister2 DATA1 = 0x",%HEX   &mr2_data_1_f0
+print "     . (DMC_CTL_143) F0 ModeRegister3 DATA0 = 0x",%HEX   &mr3_data_0_f0
+print "     . (DMC_CTL_143) F0 ModeRegister3 DATA1 = 0x",%HEX   &mr3_data_1_f0
+print "     . (DMC_CTL_141) F0 PHY DCFG            = 0x",%HEX   &phy_dcfg_f0
+print "     . (DMC_CTL_127) F0 WR Latency          = ",%DECIMAL &wrlat_f0           ," (",%DECIMAL (&wrlat_f0*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_127) F0 tRRD                = ",%DECIMAL &trrd_f0            ," (",%DECIMAL (&trrd_f0*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_128) F0 CAS Latency Lin     = ",%DECIMAL &caslat_lin_f0      ," (",%DECIMAL (&caslat_lin_f0*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_128) F0 tWTR                = ",%DECIMAL &twtr_f0            ," (",%DECIMAL (&twtr_f0*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_129) F0 tDAL                = ",%DECIMAL &tdal_f0            ," (",%DECIMAL (&tdal_f0*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_130) F0 TDFI PHY RD Latency = ",%DECIMAL &tdfi_phy_rdlat_f0  ," (",%DECIMAL (&tdfi_phy_rdlat_f0*&ddrp/&p) ," ns)"
+print "     . (DMC_CTL_130) F0 tWR INT             = ",%DECIMAL &twr_int_f0         ," (",%DECIMAL (&twr_int_f0*&ddrp/&p)        ," ns)"
+print "     . (DMC_CTL_131) F0 tRP                 = ",%DECIMAL &trp_f0             ," (",%DECIMAL (&trp_f0*&ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_131) F0 tCKESR              = ",%DECIMAL &tckesr_f0          ," (",%DECIMAL (&tckesr_f0*&ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_132) F0 tRC                 = ",%DECIMAL &trc_f0             ," (",%DECIMAL (&trc_f0*&ddrp/&p)            ," ns)"
+
+print "     * OPP  50%: F1"
+print "     . (DMC_CTL_105) F1 tRCD                = ",%DECIMAL &trcd_int_f1        ," (",%DECIMAL (&trcd_int_f1*2.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_106) F1 tRAS min            = ",%DECIMAL &tras_min_f1        ," (",%DECIMAL (&tras_min_f1*2.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_107) F1 tRFC min            = ",%DECIMAL &trfc_min_f1        ," (",%DECIMAL (&trfc_min_f1*2.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_107) F1 tDQSCK max          = ",%DECIMAL &tdqsck_max_f1      ," (",%DECIMAL (&tdqsck_max_f1*2.*&ddrp/&p)    ," ns)"
+print "     . (DMC_CTL_108) F1 tREF                = ",%DECIMAL &tref_f1            ," (",%DECIMAL (&tref_f1*2.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_110) F1 tXSNR               = ",%DECIMAL &txsnr_f1           ," (",%DECIMAL (&txsnr_f1*2.*&ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_111) F1 tXSR                = ",%DECIMAL &txsr_f1            ," (",%DECIMAL (&txsr_f1*2.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_112) F1 RD & WR timing =/CS = ",%DECIMAL &r2w_samecs_dly_f1  ," (",%DECIMAL (&r2w_samecs_dly_f1*2.*&ddrp/&p)," ns)"
+print "     . (DMC_CTL_132) F1 RD & WR timing!=/CS = ",%DECIMAL &r2w_diffcs_dly_f1  ," (",%DECIMAL (&r2w_diffcs_dly_f1*2.*&ddrp/&p)," ns)"
+print "     . (DMC_CTL_113) F1 WR latency Adj      = ",%DECIMAL &wrlat_adj_f1       ," (",%DECIMAL (&wrlat_adj_f1*2.*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_113) F1 RD latency Adj      = ",%DECIMAL &rdlat_adj_f1       ," (",%DECIMAL (&rdlat_adj_f1*2.*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_114) F1 tFAW                = ",%DECIMAL &tfaw_f1            ," (",%DECIMAL (&tfaw_f1*2.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_114) F1 tRTP                = ",%DECIMAL &trtp_f1            ," (",%DECIMAL (&trtp_f1*2.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_115) F1 tZQCS               = ",%DECIMAL &zqcs_f1            ," (",%DECIMAL (&zqcs_f1*2.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_116) F1 tZQCL               = ",%DECIMAL &zqcl_f1            ," (",%DECIMAL (&zqcl_f1*2.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_118) F1 tRP All Banks on CS0= ",%DECIMAL &trp_ab_0_f1        ," (",%DECIMAL (&trp_ab_0_f1*2.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_118) F1 tRP All Banks on CS1= ",%DECIMAL &trp_ab_1_f1        ," (",%DECIMAL (&trp_ab_1_f1*2.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_119) F1 ModeRegister1 DATA0 = 0x",%HEX   &mr1_data_0_f1
+print "     . (DMC_CTL_121) F1 ModeRegister1 DATA1 = 0x",%HEX   &mr1_data_1_f1
+print "     . (DMC_CTL_122) F1 ModeRegister2 DATA0 = 0x",%HEX   &mr2_data_0_f1
+print "     . (DMC_CTL_124) F1 ModeRegister2 DATA1 = 0x",%HEX   &mr2_data_1_f1
+print "     . (DMC_CTL_142) F1 ModeRegister3 DATA0 = 0x",%HEX   &mr3_data_0_f1
+print "     . (DMC_CTL_144) F1 ModeRegister3 DATA1 = 0x",%HEX   &mr3_data_1_f1
+print "     . (DMC_CTL_126) F1 PHY DCFG            = 0x",%HEX   &phy_dcfg_f1
+print "     . (DMC_CTL_127) F1 WR Latency          = ",%DECIMAL &wrlat_f1           " (",%DECIMAL (&wrlat_f1*2.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_127) F1 tRRD                = ",%DECIMAL &trrd_f1            " (",%DECIMAL (&trrd_f1*2.*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_128) F1 CAS Latency Lin     = ",%DECIMAL &caslat_lin_f1      " (",%DECIMAL (&caslat_lin_f1*2.*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_128) F1 tWTR                = ",%DECIMAL &twtr_f1            " (",%DECIMAL (&twtr_f1*2.*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_129) F1 tDAL                = ",%DECIMAL &tdal_f1            " (",%DECIMAL (&tdal_f1*2.*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_130) F1 TDFI PHY RD Latency = ",%DECIMAL &tdfi_phy_rdlat_f1  " (",%DECIMAL (&tdfi_phy_rdlat_f1*2.*&ddrp/&p) ," ns)"
+print "     . (DMC_CTL_130) F1 tWR INT             = ",%DECIMAL &twr_int_f1         " (",%DECIMAL (&twr_int_f1*2.*&ddrp/&p)        ," ns)"
+print "     . (DMC_CTL_131) F1 tRP                 = ",%DECIMAL &trp_f1             " (",%DECIMAL (&trp_f1*2.*&ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_131) F1 tCKESR              = ",%DECIMAL &tckesr_f1          " (",%DECIMAL (&tckesr_f1*2.*&ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_132) F1 tRC                 = ",%DECIMAL &trc_f1             " (",%DECIMAL (&trc_f1*2.*&ddrp/&p)            ," ns)"
+
+print "     * OPP  25%: F2"
+print "     . (DMC_CTL_105) F2 tRCD                = ",%DECIMAL &trcd_int_f2        ," (",%DECIMAL (&trcd_int_f2*4.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_106) F2 tRAS min            = ",%DECIMAL &tras_min_f2        ," (",%DECIMAL (&tras_min_f2*4.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_107) F2 tRFC min            = ",%DECIMAL &trfc_min_f2        ," (",%DECIMAL (&trfc_min_f2*4.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_107) F2 tDQSCK max          = ",%DECIMAL &tdqsck_max_f2      ," (",%DECIMAL (&tdqsck_max_f2*4.*&ddrp/&p)    ," ns)"
+print "     . (DMC_CTL_108) F2 tREF                = ",%DECIMAL &tref_f2            ," (",%DECIMAL (&tref_f2*4.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_109) F2 tXSNR               = ",%DECIMAL &txsnr_f2           ," (",%DECIMAL (&txsnr_f2*4.*&ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_111) F2 tXSR                = ",%DECIMAL &txsr_f2            ," (",%DECIMAL (&txsr_f2*4.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_112) F2 RD & WR timing =/CS = ",%DECIMAL &r2w_samecs_dly_f2  ," (",%DECIMAL (&r2w_samecs_dly_f2*4.*&ddrp/&p)," ns)"
+print "     . (DMC_CTL_132) F2 RD & WR timing!=/CS = ",%DECIMAL &r2w_diffcs_dly_f2  ," (",%DECIMAL (&r2w_diffcs_dly_f2*4.*&ddrp/&p)," ns)"
+print "     . (DMC_CTL_113) F2 WR latency Adj      = ",%DECIMAL &wrlat_adj_f2       ," (",%DECIMAL (&wrlat_adj_f2*4.*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_113) F2 RD latency Adj      = ",%DECIMAL &rdlat_adj_f2       ," (",%DECIMAL (&rdlat_adj_f2*4.*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_114) F2 tFAW                = ",%DECIMAL &tfaw_f2            ," (",%DECIMAL (&tfaw_f2*4.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_114) F2 tRTP                = ",%DECIMAL &trtp_f2            ," (",%DECIMAL (&trtp_f2*4.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_115) F2 tZQCS                = ",%DECIMAL &zqcs_f2           ," (",%DECIMAL (&zqcs_f2*4.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_116) F2 tZQCL                = ",%DECIMAL &zqcl_f2           ," (",%DECIMAL (&zqcl_f2*4.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_118) F2 tRP All Banks on CS0= ",%DECIMAL &trp_ab_0_f2        ," (",%DECIMAL (&trp_ab_0_f2*4.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_118) F2 tRP All Banks on CS1= ",%DECIMAL &trp_ab_1_f2        ," (",%DECIMAL (&trp_ab_1_f2*4.*&ddrp/&p)      ," ns)"
+print "     . (DMC_CTL_119) F2 ModeRegister1 DATA0 = 0x",%HEX   &mr1_data_0_f2
+print "     . (DMC_CTL_121) F2 ModeRegister1 DATA1 = 0x",%HEX   &mr1_data_1_f2
+print "     . (DMC_CTL_122) F2 ModeRegister2 DATA0 = 0x",%HEX   &mr2_data_0_f2
+print "     . (DMC_CTL_124) F2 ModeRegister2 DATA1 = 0x",%HEX   &mr2_data_1_f2
+print "     . (DMC_CTL_142) F2 ModeRegister3 DATA0 = 0x",%HEX   &mr3_data_0_f2
+print "     . (DMC_CTL_144) F2 ModeRegister3 DATA1 = 0x",%HEX   &mr3_data_1_f2
+print "     . (DMC_CTL_125) F2 PHY DCFG            = 0x",%HEX   &phy_dcfg_f2
+print "     . (DMC_CTL_127) F2 WR Latency          = ",%DECIMAL &wrlat_f2           " (",%DECIMAL (&wrlat_f2*4.*&ddrp/&p)          ," ns)"
+print "     . (DMC_CTL_127) F2 tRRD                = ",%DECIMAL &trrd_f2            " (",%DECIMAL (&trrd_f2*4.*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_128) F2 CAS Latency Lin     = ",%DECIMAL &caslat_lin_f2      " (",%DECIMAL (&caslat_lin_f2*4.*&ddrp/&p)     ," ns)"
+print "     . (DMC_CTL_128) F2 tWTR                = ",%DECIMAL &twtr_f2            " (",%DECIMAL (&twtr_f2*4.*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_129) F2 tDAL                = ",%DECIMAL &tdal_f2            " (",%DECIMAL (&tdal_f2*4.*&ddrp/&p)           ," ns)"
+print "     . (DMC_CTL_130) F2 TDFI PHY RD Latency = ",%DECIMAL &tdfi_phy_rdlat_f2  " (",%DECIMAL (&tdfi_phy_rdlat_f2*4.*&ddrp/&p) ," ns)"
+print "     . (DMC_CTL_130) F2 tWR INT             = ",%DECIMAL &twr_int_f2         " (",%DECIMAL (&twr_int_f2*4.*&ddrp/&p)        ," ns)"
+print "     . (DMC_CTL_131) F2 tRP                 = ",%DECIMAL &trp_f2             " (",%DECIMAL (&trp_f2*4.*&ddrp/&p)            ," ns)"
+print "     . (DMC_CTL_131) F2 tCKESR              = ",%DECIMAL &tckesr_f2          " (",%DECIMAL (&tckesr_f2*4.*&ddrp/&p)         ," ns)"
+print "     . (DMC_CTL_132) F2 tRC                 = ",%DECIMAL &trc_f2             " (",%DECIMAL (&trc_f2*4.*&ddrp/&p)            ," ns)"
+print "======================================================"
+print "SUMMARY"
+print "======================================================"
+print "o Initialization"
+print "  * tINIT0             = ",%DECIMAL (&tinit*&ddrp/&p), " ns"
+print "  * tINIT1             = "
+print "  * tINIT2             = "
+print "  * tINIT3             = ",%DECIMAL (&tinit3*&ddrp/&p), " ns"
+print "  * tINIT4             = ",%DECIMAL (&tinit4*&ddrp/&p), " ns"
+print "  * tINIT5             = ",%DECIMAL (&tinit5*&ddrp/&p), " ns"
+print "o ZQ Calibration parameters"
+print "  * tZQINIT             = ",%DECIMAL (&zqinit*&ddrp/&p), " ns"
+print "  * tZQCL               = ",%DECIMAL (&zqcl*&ddrp/&p), " ns"
+print "  * tZQCS               = ",%DECIMAL (&zqcs*&ddrp/&p), " ns"
+print "  * tZQRESET            = ",%DECIMAL (&zqreset*&ddrp/&p), " ns"
+print "o Read parameters"
+print "  * tDQSCK min          = ",%DECIMAL (&tdqsck_min*&ddrp/&p), " ns"
+print "  * tDQSCK max (f)      = ",%DECIMAL (&tdqsck_max*&ddrp/&p), " ns"
+print "  * tDQSCK max (f0)     = ",%DECIMAL ((&tdqsck_max_f0*&ddrp*1.)/&p), " ns"
+print "  * tDQSCK max (f1)     = ",%DECIMAL ((&tdqsck_max_f1*&ddrp*2.)/&p), " ns"
+print "  * tDQSCK max (f2)     = ",%DECIMAL ((&tdqsck_max_f2*&ddrp*4.)/&p), " ns"
+print "o CKE Input parameters"
+print "  * tCKE                = ",%DECIMAL (&tcke*&ddrp/&p), " ns"
+print "o Mode Register parameters"
+print "  * tMRR                = ",%DECIMAL (&tmrr*&ddrp/&p), " ns"
+print "  * tMRW (tMRD)         = ",%DECIMAL (&tmrd*&ddrp/&p), " ns"
+print "o REFRESH parameters"
+print "  * tREF                = ",%DECIMAL (&tref*&ddrp/&p), " ns"
+print "  * tREF (f0)           = ",%DECIMAL ((&tref_f0*&ddrp*1.)/&p), " ns"
+print "  * tREF (f1)           = ",%DECIMAL ((&tref_f1*&ddrp*2.)/&p), " ns"
+print "  * tREF (f2)           = ",%DECIMAL ((&tref_f2*&ddrp*4.)/&p), " ns"
+print "  * tRFC                = ",%DECIMAL (&trfc*&ddrp/&p), " ns"
+print "o Core parameters"
+print "  * RL (f)              = ",%DECIMAL (&rdlat_adj*&ddrp/&p), " ns"
+print "  * RL (f0)             = ",%DECIMAL ((&rdlat_adj_f0*&ddrp*1.)/&p), " ns"
+print "  * RL (f1)             = ",%DECIMAL ((&rdlat_adj_f1*&ddrp*2.)/&p), " ns"
+print "  * RL (f2)             = ",%DECIMAL ((&rdlat_adj_f2*&ddrp*4.)/&p), " ns"
+print "  * WL (f)              = ",%DECIMAL (&wrlat_adj*&ddrp/&p), " ns"
+print "  * WL (f0)             = ",%DECIMAL ((&wrlat_adj_f0*&ddrp*1.)/&p), " ns"
+print "  * WL (f1)             = ",%DECIMAL ((&wrlat_adj_f1*&ddrp*2.)/&p), " ns"
+print "  * WL (f2)             = ",%DECIMAL ((&wrlat_adj_f2*&ddrp*4.)/&p), " ns"
+print "  * tRC (f)             = ",%DECIMAL (&trc*&ddrp/&p), " ns"
+print "  * tRC (f0)            = ",%DECIMAL ((&trc_f0*&ddrp*1.)/&p), " ns"
+print "  * tRC (f1)            = ",%DECIMAL ((&trc_f1*&ddrp*2.)/&p), " ns"
+print "  * tRC (f2)            = ",%DECIMAL ((&trc_f2*&ddrp*4.)/&p), " ns"
+print "  * tCKESR (f)          = ",%DECIMAL (&tckesr*&ddrp/&p), " ns"
+print "  * tCKESR (f0)         = ",%DECIMAL ((&tckesr_f0*&ddrp*1.)/&p), " ns"
+print "  * tCKESR (f1)         = ",%DECIMAL ((&tckesr_f1*&ddrp*2.)/&p), " ns"
+print "  * tCKESR (f2)         = ",%DECIMAL ((&tckesr_f2*&ddrp*4.)/&p), " ns"
+print "  * tXSR (f)            = ",%DECIMAL (&txsr*&ddrp/&p), " ns"
+print "  * tXSR (f0)           = ",%DECIMAL ((&txsr_f0*&ddrp*1.)/&p), " ns"
+print "  * tXSR (f1)           = ",%DECIMAL ((&txsr_f1*&ddrp*2.)/&p), " ns"
+print "  * tXSR (f2)           = ",%DECIMAL ((&txsr_f2*&ddrp*4.)/&p), " ns"
+print "  * tCCD                = ",%DECIMAL (&tccd*&ddrp/&p), " ns"
+print "  * tRTP (f)            = ",%DECIMAL (&trtp*&ddrp/&p), " ns"
+print "  * tRTP (f0)           = ",%DECIMAL ((&trtp_f0*&ddrp*1.)/&p), " ns"
+print "  * tRTP (f1)           = ",%DECIMAL ((&trtp_f1*&ddrp*2.)/&p), " ns"
+print "  * tRTP (f2)           = ",%DECIMAL ((&trtp_f2*&ddrp*4.)/&p), " ns"
+print "  * tRCD (f)            = ",%DECIMAL (&trcd_int*&ddrp/&p), " ns"
+print "  * tRCD (f0)           = ",%DECIMAL ((&trcd_int_f0*&ddrp*1.)/&p), " ns"
+print "  * tRCD (f1)           = ",%DECIMAL ((&trcd_int_f1*&ddrp*2.)/&p), " ns"
+print "  * tRCD (f2)           = ",%DECIMAL ((&trcd_int_f2*&ddrp*4.)/&p), " ns"
+print "  * tRP (f)             = ",%DECIMAL (&trp*&ddrp/&p), " ns"
+print "  * tRP (f0)            = ",%DECIMAL ((&trp_f0*&ddrp*1.)/&p), " ns"
+print "  * tRP (f1)            = ",%DECIMAL ((&trp_f1*&ddrp*2.)/&p), " ns"
+print "  * tRP (f2)            = ",%DECIMAL ((&trp_f2*&ddrp*4.)/&p), " ns"
+print "  * tRPab_0 (f)         = ",%DECIMAL (&trp_ab_0*&ddrp/&p), " ns"
+print "  * tRPab_0 (f0)        = ",%DECIMAL ((&trp_ab_0_f0*&ddrp*1.)/&p), " ns"
+print "  * tRPab_0 (f1)        = ",%DECIMAL ((&trp_ab_0_f1*&ddrp*2.)/&p), " ns"
+print "  * tRPab_0 (f2)        = ",%DECIMAL ((&trp_ab_0_f2*&ddrp*4.)/&p), " ns"
+print "  * tRPab_1 (f)         = ",%DECIMAL (&trp_ab_1*&ddrp/&p), " ns"
+print "  * tRPab_1 (f0)        = ",%DECIMAL ((&trp_ab_1_f0*&ddrp*1.)/&p), " ns"
+print "  * tRPab_1 (f1)        = ",%DECIMAL ((&trp_ab_1_f1*&ddrp*2.)/&p), " ns"
+print "  * tRPab_1 (f2)        = ",%DECIMAL ((&trp_ab_1_f2*&ddrp*4.)/&p), " ns"
+print "  * tRAS max            = ",%DECIMAL (&tras_max*&ddrp/&p), " ns to ",%DECIMAL (&tras_max*&ddrp*4./&p), " ns"
+print "  * tRAS_min (f)        = ",%DECIMAL (&tras_min*&ddrp/&p), " ns"
+print "  * tRAS_min (f0)       = ",%DECIMAL ((&tras_min_f0*&ddrp*1.)/&p), " ns"
+print "  * tRAS_min (f1)       = ",%DECIMAL ((&tras_min_f1*&ddrp*2.)/&p), " ns"
+print "  * tRAS_min (f2)       = ",%DECIMAL ((&tras_min_f2*&ddrp*4.)/&p), " ns"
+print "  * tWR (f)             = ",%DECIMAL (&twr*&ddrp/&p), " ns"
+print "  * tWR (f0)            = ",%DECIMAL ((&twr_int_f0*&ddrp*1.)/&p), " ns"
+print "  * tWR (f1)            = ",%DECIMAL ((&twr_int_f1*&ddrp*2.)/&p), " ns"
+print "  * tWR (f2)            = ",%DECIMAL ((&twr_int_f2*&ddrp*4.)/&p), " ns"
+print "  * tWTR (f)            = ",%DECIMAL (&twtr*&ddrp/&p), " ns"
+print "  * tWTR (f0)           = ",%DECIMAL ((&twtr_f0*&ddrp*1.)/&p), " ns"
+print "  * tWTR (f1)           = ",%DECIMAL ((&twtr_f1*&ddrp*2.)/&p), " ns"
+print "  * tWTR (f2)           = ",%DECIMAL ((&twtr_f2*&ddrp*4.)/&p), " ns"
+print "  * tRRD (f)            = ",%DECIMAL (&trrd*&ddrp/&p), " ns"
+print "  * tRRD (f0)           = ",%DECIMAL ((&trrd_f0*&ddrp*1.)/&p), " ns"
+print "  * tRRD (f1)           = ",%DECIMAL ((&trrd_f1*&ddrp*2.)/&p), " ns"
+print "  * tRRD (f2)           = ",%DECIMAL ((&trrd_f2*&ddrp*4.)/&p), " ns"
+print "  * tFAW (f)            = ",%DECIMAL (&tfaw*&ddrp/&p), " ns"
+print "  * tFAW (f0)           = ",%DECIMAL ((&tfaw_f0*&ddrp*1.)/&p), " ns"
+print "  * tFAW (f1)           = ",%DECIMAL ((&tfaw_f1*&ddrp*2.)/&p), " ns"
+print "  * tFAW (f2)           = ",%DECIMAL ((&tfaw_f2*&ddrp*4.)/&p), " ns"
+print "======================================================"
+
+; PHY_CFG
+&phy_cfg_ptr_rst_b=(&denali_ctl_72&0x00000001)>>0.
+&phy_cfg_oloop_cmd=(&denali_ctl_72&0x000003FE)>>1.
+&phy_cfg_proga=(&denali_ctl_72&0x00000400)>>10.
+&phy_cfg_progb=(&denali_ctl_72&0x00000800)>>11.
+&phy_cfg_op=(&denali_ctl_72&0x00007000)>>12.
+&phy_cfg_rdlat=(&denali_ctl_72&0x00078000)>>15.
+&phy_cfg_rpre=(&denali_ctl_72&0x00380000)>>19.
+&phy_cfg_rpst=(&denali_ctl_72&0x01C00000)>>22.
+&phy_cfg_autogate=(&denali_ctl_72&0x02000000)>>25.
+print " - PHY DCFG"
+print "   . phy_cfg_ptr_rst_b       = 0x", %HEX &phy_cfg_ptr_rst_b
+print "   . phy_cfg_oloop_cmd       = 0x", %HEX &phy_cfg_oloop_cmd
+print "   . phy_cfg_proga           = 0x", %HEX &phy_cfg_proga
+print "   . phy_cfg_progb           = 0x", %HEX &phy_cfg_progb
+print "   . phy_cfg_op              = 0x", %HEX &phy_cfg_op
+if &phy_cfg_op==0x1
+  print "           => PHY Impedance  = 34.0 ohms"
+if &phy_cfg_op==0x2
+  print "           => PHY Impedance  = 40.0 ohms"
+if &phy_cfg_op==0x3
+  print "           => PHY Impedance  = 48.0 ohms"
+if &phy_cfg_op==0x4
+  print "           => PHY Impedance  = 60.0 ohms"
+if &phy_cfg_op==0x5
+  print "           => PHY Impedance  = 68.6 ohms"
+if &phy_cfg_op==0x6
+  print "           => PHY Impedance  = 80.0 ohms"
+print "   . phy_cfg_rdlat           = 0x", %HEX &phy_cfg_rdlat
+print "   . phy_cfg_rpre            = 0x", %HEX &phy_cfg_rpre
+print "   . phy_cfg_rpst            = 0x", %HEX &phy_cfg_rpst
+print "   . phy_cfg_autogate        = 0x", %HEX &phy_cfg_autogate
+
+; PHY_MGT
+data.set AD:0x801560EC %l 0xA0000001
+data.set AD:0x801560EC %l 0x20000001
+&phy_mgt=data.long(AD:0x801560F4)
+&phy_mgt_comzcn_core=(&phy_mgt&0x003F)>>0.
+&phy_mgt_comzp_core=(&phy_mgt&0x0FC0)>>6.
+&phy_mgt_comzcrdy=(&phy_mgt&0x1000)>>12.
+print " - PHY MGT"
+print "   . comzcn_core             = 0x", %HEX &phy_mgt_comzcn_core
+print "   . comzp_core              = 0x", %HEX &phy_mgt_comzp_core
+print "   . comzcrdy_core           = 0x", %HEX &phy_mgt_comzcrdy
+
+; PHY_CMD_LANE
+data.set AD:0x801560EC %l 0x90000002
+data.set AD:0x801560EC %l 0x10000002
+&phy_cmd_lane=data.long(AD:0x801560F4)
+&phy_cmd_lane_mdll_cmd_bin=(&phy_cmd_lane&0x01FF)>>0.
+&phy_cmd_lane_mdll_locked=(&phy_cmd_lane&0x40000)>>18.
+&phy_cmd_lane_mdll_upndown=(&phy_cmd_lane&0x80000)>>19.
+print " - PHY CMD LANE"
+print "   . cmd_lane_mdll_cmd_bin   = 0x", %HEX &phy_cmd_lane_mdll_cmd_bin
+print "   . cmd_lane_mdll_locked    = 0x", %HEX &phy_cmd_lane_mdll_locked
+print "   . cmd_lane_mdll_upndown   = 0x", %HEX &phy_cmd_lane_mdll_upndown
+
+; PHY_BYTE_LANE0
+data.set AD:0x801560EC %l 0x88000002
+data.set AD:0x801560EC %l 0x08000002
+&phy_byte_lane0=data.long(AD:0x801560F4)
+&phy_byte_lane0_mdll_cmd_bin=(&phy_byte_lane0&0x01FF)>>0.
+&phy_byte_lane0_sdll_cmd_bin=(&phy_byte_lane0&0x3FE00)>>9.
+&phy_byte_lane0_mdll_locked=(&phy_byte_lane0&0x40000)>>18.
+&phy_byte_lane0_mdll_upndown=(&phy_byte_lane0&0x80000)>>19.
+print " - PHY BYTE LANE0"
+print "   . byte_lane0_mdll_cmd_bin = 0x", %HEX &phy_byte_lane0_mdll_cmd_bin
+print "   . byte_lane0_sdll_cmd_bin = 0x", %HEX &phy_byte_lane0_sdll_cmd_bin
+print "   . byte_lane0_mdll_locked  = 0x", %HEX &phy_byte_lane0_mdll_locked
+print "   . byte_lane0_mdll_upndown = 0x", %HEX &phy_byte_lane0_mdll_upndown
+
+; PHY_BYTE_LANE1
+data.set AD:0x801560EC %l 0x84000002
+data.set AD:0x801560EC %l 0x04000002
+&phy_byte_lane1=data.long(AD:0x801560F4)
+&phy_byte_lane1_mdll_cmd_bin=(&phy_byte_lane1&0x01FF)>>0.
+&phy_byte_lane1_sdll_cmd_bin=(&phy_byte_lane1&0x3FE00)>>9.
+&phy_byte_lane1_mdll_locked=(&phy_byte_lane1&0x40000)>>18.
+&phy_byte_lane1_mdll_upndown=(&phy_byte_lane1&0x80000)>>19.
+print " - PHY BYTE LANE1"
+print "   . byte_lane1_mdll_cmd_bin = 0x", %HEX &phy_byte_lane1_mdll_cmd_bin
+print "   . byte_lane1_sdll_cmd_bin = 0x", %HEX &phy_byte_lane1_sdll_cmd_bin
+print "   . byte_lane1_mdll_locked  = 0x", %HEX &phy_byte_lane1_mdll_locked
+print "   . byte_lane1_mdll_upndown = 0x", %HEX &phy_byte_lane1_mdll_upndown
+
+; PHY_BYTE_LANE2
+data.set AD:0x801560EC %l 0x82000002
+data.set AD:0x801560EC %l 0x02000002
+&phy_byte_lane2=data.long(AD:0x801560F4)
+&phy_byte_lane2_mdll_cmd_bin=(&phy_byte_lane2&0x01FF)>>0.
+&phy_byte_lane2_sdll_cmd_bin=(&phy_byte_lane2&0x3FE00)>>9.
+&phy_byte_lane2_mdll_locked=(&phy_byte_lane2&0x40000)>>18.
+&phy_byte_lane2_mdll_upndown=(&phy_byte_lane2&0x80000)>>19.
+print " - PHY BYTE LANE2"
+print "   . byte_lane2_mdll_cmd_bin = 0x", %HEX &phy_byte_lane2_mdll_cmd_bin
+print "   . byte_lane2_sdll_cmd_bin = 0x", %HEX &phy_byte_lane2_sdll_cmd_bin
+print "   . byte_lane2_mdll_locked  = 0x", %HEX &phy_byte_lane2_mdll_locked
+print "   . byte_lane2_mdll_upndown = 0x", %HEX &phy_byte_lane2_mdll_upndown
+
+; PHY_BYTE_LANE3
+data.set AD:0x801560EC %l 0x81000002
+data.set AD:0x801560EC %l 0x01000002
+&phy_byte_lane3=data.long(AD:0x801560F4)
+&phy_byte_lane3_mdll_cmd_bin=(&phy_byte_lane3&0x01FF)>>0.
+&phy_byte_lane3_sdll_cmd_bin=(&phy_byte_lane3&0x3FE00)>>9.
+&phy_byte_lane3_mdll_locked=(&phy_byte_lane3&0x40000)>>18.
+&phy_byte_lane3_mdll_upndown=(&phy_byte_lane3&0x80000)>>19.
+print " - PHY BYTE LANE3"
+print "   . byte_lane3_mdll_cmd_bin = 0x", %HEX &phy_byte_lane3_mdll_cmd_bin
+print "   . byte_lane3_sdll_cmd_bin = 0x", %HEX &phy_byte_lane3_sdll_cmd_bin
+print "   . byte_lane3_mdll_locked  = 0x", %HEX &phy_byte_lane3_mdll_locked
+print "   . byte_lane3_mdll_upndown = 0x", %HEX &phy_byte_lane3_mdll_upndown
+print "======================================================"
+
+&cs0_column_nb=&max_col_reg-&column_size_0
+&cs0_row_nb=&max_row_reg-&addr_pins_0
+&cs0_bank_nb=(&eight_bank_mode_0*4.)+4.
+
+&cs1_column_nb=&max_col_reg-&column_size_1
+&cs1_row_nb=&max_row_reg-&addr_pins_1
+&cs1_bank_nb=(&eight_bank_mode_1*4.)+4.
+
+&cs0_pagesize=(1<<&cs0_column_nb)*4.
+&cs0_page_nb=1<<&cs0_row_nb
+&cs0_size_Mbyte=((&cs0_pagesize*&cs0_page_nb*&cs0_bank_nb))>>20.
+&cs0_size_Gbit=&cs0_size_Mbyte>>7.
+
+&cs1_pagesize=(1<<&cs1_column_nb)*4.
+&cs1_page_nb=1<<&cs1_row_nb
+&cs1_size_Mbyte=((&cs1_pagesize*&cs1_page_nb*&cs1_bank_nb))>>20.
+&cs1_size_Gbit=&cs1_size_Mbyte>>7.
+
+&total_size_Gbit=&cs0_size_Gbit+&cs1_size_Gbit
+&total_size_Mbyte=&cs0_size_Mbyte+&cs1_size_Mbyte
+
+&cs0_start_add=&cs_val_0<<16.
+&cs0_end_add=(&cs_msk_0<<16.)+0xFFFF+&cs0_start_add
+&cs1_start_add=&cs_val_1<<16.
+&cs1_end_add=(&cs_msk_1<<16.)+0xFFFF+&cs1_start_add
+
+print "DDR Memory topology"
+print " - CS0"
+print "   . Start Address : 0x", %HEX &cs0_start_add
+print "   . End   Address : 0x", %HEX &cs0_end_add
+print "   . Page Size     : ", %DECIMAL &cs0_pagesize " Bytes"
+print "   . Page Number   : ", %DECIMAL &cs0_page_nb
+print "   . Bank Number   : ", %DECIMAL &cs0_bank_nb
+print "   . Size          : ", %DECIMAL &cs0_size_Gbit " Gbits / ", %DECIMAL &cs0_size_Mbyte " MBytes"
+print " - CS1"
+print "   . Start Address : 0x", %HEX &cs1_start_add
+print "   . End   Address : 0x", %HEX &cs1_end_add
+print "   . Page Size     : ", %DECIMAL &cs1_pagesize, " Bytes"
+print "   . Page Number   : ", %DECIMAL &cs1_page_nb
+print "   . Bank Number   : ", %DECIMAL &cs1_bank_nb
+print "   . Size          : ", %DECIMAL &cs1_size_Gbit, " Gbits / ", %DECIMAL &cs1_size_Mbyte " MBytes"
+print " - TOTAL"
+print "   . Start Address : 0x", %HEX &cs0_start_add
+print "   . End   Address : 0x", %HEX &cs1_end_add
+print "   . Size          : ", %DECIMAL &total_size_Gbit " Gbits / ", %DECIMAL &total_size_Mbyte " MBytes"
+print "======================================================"
+
+SCREEN.ON
+area.close A000
+print "&output_file file saved !"
+enddo
+
+;================================================
+PMB_req1value:
+;-------------
+    ; local variable definition
+    LOCAL &tmp &read_val &timeout &PRCM_PMB_REF_COUNTER &PRCM_PMB_SENS_CTRL &PRCM_PMB_SENSOR_STATUS
+    ; get arguments of function
+    ENTRY &PMBsensor_sel &meas_window
+
+    ; variable initialization
+    &PRCM_PMB_REF_COUNTER=0x80157348
+    &PRCM_PMB_SENS_CTRL=0x80157344
+    &PRCM_PMB_SENSOR_STATUS=0x8015734C
+
+    ; PRCM_VSAFE_LS_CLAMP_CLR remove the clamp on VMOD, VAPE, VARM
+    data.set A:0x80157430 %LONG 0x70000
+    ; PRCMUPRCM_XP70CLK_MGTPMBCLK_EN enable PMB clock
+    data.set A:0x801570B0 %long data.long(AD:0x801570B0)|0x40000000
+
+
+    ; initialize PMB window
+    data.set AD:&PRCM_PMB_REF_COUNTER %LONG &meas_window
+
+    ; initialize the PMB control
+    ; [15]=1   : sensor is ON
+    ; [10]=1   : sensor is running
+    ; [9:8]=01 : DIV_LEAK
+    ; [7:6]=01 : DIV_SPEED
+    &tmp=&PMBsensor_sel|0x8540
+    data.set AD:&PRCM_PMB_SENS_CTRL %LONG &tmp
+
+    &timeout=0xFFF
+    while &timeout>0&&((data.long(AD:&PRCM_PMB_SENS_CTRL)&0x400)==0x400)
+    (
+        &tmp=data.long(AD:&PRCM_PMB_SENS_CTRL)
+        PRINT "TimeOUT &timeout PRCM_PMB_SENS_CTRL &tmp"
+        &timeout=&timeout-1
+    )
+
+    ; waiting end of measure
+    if &timeout==0
+    (
+        PRINT "??  MEASURE TIMEOUT !!!"
+        read_val = 0;
+    )
+    else
+    (
+        ; [15]=1 : sensor is ON
+        data.set AD:&PRCM_PMB_SENS_CTRL %LONG 0x8000
+
+        ; initialize the PMB control
+        ; [15]=1   : sensor is ON
+        ; [10]=0   : sensor is running
+        ; [9:8]=00 : DIV_LEAK
+        ; [7:6]=00 : DIV_SPEED
+        &tmp=&PMBsensor_sel|0x8000
+        data.set AD:&PRCM_PMB_SENS_CTRL %LONG &tmp
+
+        ; add small delay
+        &timeout=0xFFF
+        while &timeout>0
+        (
+            &timeout=&timeout-1
+        )
+        &read_val=data.long(AD:&PRCM_PMB_SENSOR_STATUS)
+    )
+
+    data.set AD:&PRCM_PMB_SENS_CTRL %LONG 0
+    data.set AD:&PRCM_PMB_REF_COUNTER %LONG 0
+
+    RETURN &read_val
+
+;================================================
+yyclken_mgt_clock_is_enabled:
+;----------------------------
+ENTRY &mgt_value
+LOCAL &clken
+LOCAL &clkpllsw
+
+&clken=&mgt_value>>8.&0x1
+
+&clkpllsw=&mgt_value>>5.&0x7
+if &mode_value==4
+(
+	if &clkpllsw==0
+	(
+		; => No clock selected 0MHz: as disable
+		&clken=2
+	)
+)
+RETURN &clken
+
+;================================================
+yyclken_mgt:
+;-----------
+LOCAL &clkplldiv
+LOCAL &clkpllsw
+LOCAL &clken
+LOCAL &clk38
+LOCAL &clk38src
+LOCAL &clk38div
+LOCAL &clk_frequency
+
+LOCAL &clklowfreq
+LOCAL &clkphyen
+LOCAL &prcm_sxammdsp_force_clken
+
+ENTRY &mgt_value &mgt_type &pll_type
+
+if ("&pll_type"=="MMDSP")
+(
+	; specific register bitfield for the 2 MMSDSP (SIA and SVA)
+	&clkplldiv=&mgt_value>>0.&0x1F
+	&clkpllsw=&mgt_value>>5.&0x7
+	&clken=&mgt_value>>8.&0x1
+	&clk38=&mgt_value>>9.&0x1
+	&clk38src=&mgt_value>>10.&0x1
+	&clklowfreq=&mgt_value>>11.&0x1
+	&clkphyen=&mgt_value>>12.&0x1
+	&clk38div=&mgt_value>>13.&0x1
+	&clk_frequency=1
+
+	&prcm_sxammdsp_force_clken=data.long(AD:&prcm_sxammdsp_force_clken_address)&0x3
+)
+else
+(
+	&clkplldiv=&mgt_value>>0.&0x1F
+	&clkpllsw=&mgt_value>>5.&0x7
+	&clken=&mgt_value>>8.&0x1
+	&clk38=&mgt_value>>9.&0x1
+	&clk38src=&mgt_value>>10.&0x1
+	&clk38div=&mgt_value>>11.&0x1
+	&clk_frequency=1
+)
+
+if ((&mgt_type!="Fixed")&&(&mgt_type!="Scalable"))
+(
+	print "yyclken_mgt : unexpected type &mgt_type"
+	RETURN &clk_frequency
+)
+else
+(
+	print "- Type : &mgt_type &pll_type"
+)
+
+if ("&pll_type"=="SLIM")
+(
+	&clk_msp=(&mgt_value>>12.&0x07)
+	&clk_msp_txt="UNKOWN"
+	if &clk_msp==0.
+	(
+		&clk_msp_txt="Off"
+		&clk_frequency=0.
+	)
+	else if &clk_msp==1.
+		&clk_msp_txt="PLL"
+	else if &clk_msp==2.
+	(
+		&clk_msp_txt="MSP0SCK"
+		&clk_frequency=&msp02clk_mgt_frequency
+	)
+	else if &clk_msp==4.
+	(
+		&clk_msp_txt="MSP2SCK"
+		&clk_frequency=&msp02clk_mgt_frequency
+	)
+
+	print "- CLKMSP = ",%DECIMAL &clk_msp, " > output = &clk_msp_txt"
+
+	if &clk_frequency!=1
+		goto yyclken_mmdsp_mgt_result
+)
+
+if ("&pll_type"=="B2R2")
+(
+	&b2r2clkdiv_by_2_5_en=(&b2r2clk_mgt>>12.&0x07)
+	if &b2r2clkdiv_by_2_5_en==1.
+	(
+		&clkplldiv=2.5
+	)
+	if ((&clk38==0x1)||(&mode_value!=0x4))
+	(
+		&clk_frequency=0.
+		goto yyclken_mmdsp_mgt_result
+	)
+)
+if ("&pll_type"=="DSI")
+(
+	if &clk38==1
+	(
+		if &clk38src==0
+		(
+			print "- clk38 : SYSCLK = &sysclk_freq MHz"
+			&clk_frequency=0.
+		)
+		else
+		(
+			print "- clk38 : ULP selected (clk38m_to_clkgen_dsi=&clk38m2clkgen_dsi_txt) = &clk38m2clkgen_dsi MHz"
+			&clk_frequency=&clk38m2clkgen_dsi
+		)
+	)
+	else
+	(
+		if &mode_value==0
+		(
+			print "- Mode 000: Clock gated"
+			clk_frequency=0.
+		)
+		else if &mode_value==1
+		(
+			print "- Mode 001: Clock gated (DSI specific)"
+			&clk_frequency=0.
+		)
+		else if &mode_value==2
+		(
+			print "- Mode 010: ULP selected (clk38m_to_clkgen_dsi=&clk38m2clkgen_dsi_txt) = &clk38m2clkgen_dsi MHz"
+			&clk_frequency=&clk38m2clkgen_dsi
+		)
+	)
+	if &clk_frequency!=1
+		goto yyclken_mmdsp_mgt_result
+)
+
+if &clk38==1
+(
+	if &clk38src==0
+	(
+		print "- clk38 : SYSCLK = &sysclk_freq MHz"
+		&clk_frequency=&sysclk_freq/(&clk38div+1)
+	)
+	else
+	(
+		print "- clk38 : ULP selected (clk38m_to_clkgen=&clk38m2clkgen_txt) = &clk38m2clkgen MHz"
+		&clk_frequency=&clk38m2clkgen/(&clk38div+1)
+	)
+)
+else
+(
+	if &mode_value==0
+	(
+		print "- Mode 000: Clock gated"
+        &clk_frequency=0
+	)
+	else if &mode_value==1
+	(
+		print "- Mode 001: CLK32K (32 kHz)"
+		&clk_frequency=0.032
+	)
+	else if &mode_value==2
+	(
+		print "- Mode 010: ULP selected (clk38m_to_clkgen=&clk38m2clkgen_txt) = &clk38m2clkgen MHz"
+		&clk_frequency=&clk38m2clkgen/(&clk38div+1)
+	)
+	else if &mode_value==4
+	(
+		print "- Mode 100: PLL"
+		if &clkplldiv==0
+			&clkplldiv=1
+		if &clkpllsw==0
+		(
+			print "- No clock selected"
+			&clk_frequency=0
+		)
+		else if &clkpllsw==1
+		(
+			print "- Selected SOC0 PLL (", %DECIMAL &soc0_pll_frequency,"MHz)"
+			&clk_frequency=&soc0_pll_frequency/&clkplldiv
+			if (&mgt_type=="Fixed")
+			(
+				; Fixed/2 On DDR/SOC0 PLLL
+				&clk_frequency=&clk_frequency/2
+			)
+		)
+		else if &clkpllsw==2
+		(
+			print "- Selected SOC1 PLL (", %DECIMAL &soc1_pll_frequency,"MHz)"
+			&clk_frequency=&soc1_pll_frequency/&clkplldiv
+		)
+		else if &clkpllsw==4
+		(
+			print "- Selected DDR  PLL (", %DECIMAL &ddr0_pll_frequency,"MHz)"
+			&clk_frequency=&ddr0_pll_frequency/&clkplldiv
+			if (&mgt_type=="Fixed")
+			(
+				; Fixed/2 On DDR/SOC0 PLLL
+				&clk_frequency=&clk_frequency/2
+			)
+		)
+	)
+)
+yyclken_mmdsp_mgt_result:
+;-----------------------
+print "- Targeted frequency ", %DECIMAL &clk_frequency,"MHz"
+if &clken==1
+	print "- Clock: ON"
+else
+(
+	print "- Clock: OFF"
+	if ("&pll_type"=="MMDSP")
+	(
+		if &prcm_sxammdsp_force_clken>0.
+			print "  but perhaps force with PRCM_SXAMMDSP_FORCE_CLKEN=&prcm_sxammdsp_force_clken"
+	)
+)
+
+if ("&pll_type"=="MMDSP")
+(
+	print "- PHY enable = ", %DECIMAL &clkphyen
+	print "- LOW frequency = ", %DECIMAL &clklowfreq
+)
+
+&clk_frequency=&clk_frequency*&clken
+RETURN &clk_frequency
+
+
+;================================================
+abb_hwi2c_read:
+;--------------
+entry &abb_bank &abb_address
+
+global &ValueToRead
+if "&HWI2C"=="1."
+(
+	global &dataRead
+	do hwi2c.cmm &abb_bank &abb_address 0x0 1.
+	; reformat data depending to abxxxx hwi2c protocol
+	&ValueToRead=(&dataRead>>24.)&0xFF
+)
+else
+(
+	LOCAL &reg_add
+	&reg_add=(&abb_bank<<8.)+(&abb_address)
+	do abb_i2c_read &reg_add
+)
+return &ValueToRead
+

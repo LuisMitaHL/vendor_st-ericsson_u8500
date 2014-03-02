@@ -1,0 +1,24 @@
+
+menu.REPROGRAM ..\..\imaging\ite\lauterbach\nmf_script_v1-linux.men
+
+MENU.AddTool "Select tests" "NR" "do ..\..\imaging\ite\lauterbach\nonreg"
+MENU.AddTool "Event Log file" "EL" "do ..\..\imaging\ite\lauterbach\eventlog"
+
+do ..\..\imaging\ite\lauterbach\config_terminal.cmm
+
+y.spath.setrecursedir ..\..\..\ite_nmf_8500
+;y.spath.setrecursedir ..\..\..\ite
+y.spath.setrecursedir ..\..\..\..\shared\nmf\linux\src
+
+
+; for XP70 dbg
+; data.set SR:0x80155000 %long d.l(SR:0x80155000)|(0x1<<12.) ; SECR_CR.SIADBGEN='1'
+if ("&platform"=="href_v1-linux")
+(
+    cd ..\..\..\..\linux\lauterbach\util
+)
+
+;term.out "ite_nmf_8500" 
+;term.out %BYTE 0xD
+
+;do app_debug ite_nmf_8500

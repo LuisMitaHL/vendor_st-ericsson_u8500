@@ -1,0 +1,84 @@
+test_start    CODEC_0006
+test_property TEST_NAME   transition
+
+alias TIMEOUT  0
+alias ITER_CPT 0
+
+
+OMX_GetHandle    renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+ate_attach_io    renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 1 
+MMTE_DispatchState OMX_StateIdle renderer
+
+
+#CAPTURER OMX_GetHandle    capturer OMX.ST.AFM.MULTI_MIC
+#CAPTURER OMX_SetParameter capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+#CAPTURER 
+
+MMTE_NMF_ListComponent
+
+
+# Start loop
+loop 1000
+
+#CAPTURER ate_attach_io    capturer 0 MEM $(OUTPUT_DIR)/transition_$(ITER_CPT).pcm 2000000 0 0
+#CAPTURER MMTE_DispatchState OMX_StateIdle capturer
+#CAPTURER MMTE_DispatchState OMX_StatePause capturer
+
+
+# Starts playback and performs transition to mode burst/normal
+MMTE_DispatchState OMX_StateExecuting renderer
+mmte_sleep 1000
+#RENDERER OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+mmte_sleep 1000
+#RENDERER OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+mmte_sleep 1000
+#RENDERER OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+mmte_sleep 1000
+#RENDERER OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+#Start/stop record
+#CAPTURER MMTE_DispatchState OMX_StateExecuting capturer
+mmte_sleep 1000
+#CAPTURER MMTE_DispatchState OMX_StatePause     capturer
+mmte_sleep 1000
+#CAPTURER MMTE_DispatchState OMX_StateExecuting capturer
+mmte_sleep 1000
+#CAPTURER MMTE_DispatchState OMX_StatePause     capturer
+mmte_sleep 1000
+#CAPTURER MMTE_DispatchState OMX_StateExecuting capturer
+mmte_sleep 1000
+
+# Stop everything
+#CAPTURER MMTE_DispatchState OMX_StateIdle  capturer
+#RENDERER MMTE_DispatchState OMX_StatePause renderer
+mmte_sleep 1000
+MMTE_DispatchState OMX_StateIdle  renderer
+MMTE_DispatchState OMX_StateLoaded  renderer
+MMTE_DispatchState OMX_StateIdle  renderer
+#CAPTURER MMTE_DispatchState OMX_StateLoaded  capturer
+mmte_sleep 1000
+
+#MMTE_detach_io capturer 0
+#CAPTURER check_recorded_file $(OUTPUT_DIR)/transition_$(ITER_CPT).pcm
+
+
+arithmeticalias ITER_CPT+ 1
+
+#end loop
+endloop
+
+
+
+
+# Deinstantiate renderer and capturer
+MMTE_DispatchState OMX_StateLoaded renderer capturer
+ens_network_destroy
+
+unalias TIMEOUT
+
+
+test_end

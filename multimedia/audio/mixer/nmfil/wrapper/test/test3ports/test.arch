@@ -1,0 +1,119 @@
+contains rtos.synchronous.nofpu                         as rtos
+contains sleep.null                                     as sleep
+contains rtos.trace.null                                as null
+
+contains fsm.generic                                    as genericfsm
+contains fsm.component                                  as compfsm
+contains osttrace.mmdsp                                 as osttrace
+contains misc.synchronisation                           as libsync
+contains pcmdump                                        as pcmdump
+
+//Can not include libeffects.mpc.libeffects because it is including too much librairies :
+//Indeed linker is failling when including libeffects singleton because some functions are 
+//called in relative in the main and there are too far from the main in the final elf
+contains libeffects.mpc.libvector                       as libvector
+contains libeffects.mpc.libdBconv                       as libdBconv
+contains libeffects.mpc.libmalloc                       as libmalloc
+contains libeffects.mpc.libeffectsregister              as libeffectsregister
+contains libeffects.mpc.libupdownmix                    as libupdownmix
+contains libeffects.mpc.libvolctrlapi                   as libvolctrlapi
+contains libeffects.mpc.libresamplingapi                as libresamplingapi
+contains libeffects.libmixer                            as libmixer
+contains libeffects.libvolctrl                          as libvolctrl 
+contains libeffects.libresampling                       as libresampling
+
+contains mixer.nmfil.wrapper                            as mixer
+contains mixer.nmfil.wrapper.test.main(0x1F0, 14)       as main
+contains mixer.nmfil.wrapper.test.tester                as tester
+
+binds rtos.ulp                      to sleep.ulp
+binds sleep.scheduler               to rtos.sched
+
+//Libeffects binds
+binds libupdownmix.malloc                       to libmalloc.libmalloc
+binds libvolctrlapi.malloc                      to libmalloc.libmalloc
+binds libresamplingapi.malloc                   to libmalloc.libmalloc
+
+binds libupdownmix.libeffectsregister           to libeffectsregister.libeffectsregister
+binds libresamplingapi.libeffectsregister       to libeffectsregister.libeffectsregister
+binds libvolctrlapi.libeffectsregister          to libeffectsregister.libeffectsregister
+
+binds libmalloc.osttrace                        to osttrace.osttrace
+binds libupdownmix.osttrace                     to osttrace.osttrace
+binds libvolctrlapi.osttrace                    to osttrace.osttrace
+binds libresamplingapi.osttrace                 to osttrace.osttrace
+
+binds libresampling.libvector                   to libvector.libvector
+binds libresamplingapi.libresampling            to libresampling.libresampling
+
+binds libvolctrl.libdBconv                      to libdBconv.libdBconv
+binds libvolctrlapi.libvolctrl                  to libvolctrl.libvolctrl
+
+//FSM
+binds mixer.genericfsm              to genericfsm.genericfsm
+binds tester.genericfsm             to genericfsm.genericfsm
+binds mixer.componentfsm            to compfsm.componentfsm
+binds tester.componentfsm           to compfsm.componentfsm
+binds compfsm.genericfsm            to genericfsm.genericfsm
+binds compfsm.osttrace              to osttrace.osttrace
+binds main.genericfsm               to genericfsm.genericfsm
+
+binds main.tester_config            to tester.configure         asynchronous fifo=4
+binds main.mixer_config             to mixer.configure          asynchronous fifo=10
+
+binds main.mixer_samplesplayed      to mixer.samplesplayed      asynchronous fifo=1
+
+//Proxy side
+binds mixer.proxy                   to main.mixer_eventhandler  asynchronous fifo=4
+binds tester.proxy                  to main.tester_eventhandler asynchronous fifo=4
+binds mixer.me                      to mixer.postevent          asynchronous fifo=4 
+binds tester.me                     to tester.postevent         asynchronous fifo=4
+
+binds main.tester_command           to tester.sendcommand       asynchronous fifo=4
+binds main.mixer_command            to mixer.sendcommand        asynchronous fifo=4
+
+binds main.tester_fsminit           to tester.fsminit           asynchronous fifo=1
+binds main.mixer_fsminit            to mixer.fsminit            asynchronous fifo=1
+
+binds pcmdump.osttrace              to osttrace.osttrace
+binds mixer.osttrace                to osttrace.osttrace
+
+binds mixer.setConfigApplied        to main.mixer_setConfigApplied asynchronous fifo=10
+
+// library
+binds mixer.malloc                  to libmalloc.libmalloc
+binds mixer.libmixer                to libmixer.libmixer
+binds mixer.libeffectsregister      to libeffectsregister.libeffectsregister
+
+binds mixer.synchronisation         to libsync.synchronisation
+
+binds mixer.pcmdump                 to pcmdump.probe
+binds mixer.complete                to main.mixer_pcmdumpcomplete 
+
+//Input Mixer port (1) 
+binds tester.outputport[0]          to mixer.emptythisbuffer[0]
+binds tester.outputsettings[0]      to mixer.pcmsettings[0]
+binds mixer.inputport[0]            to tester.fillthisbuffer[0]
+
+//Input Mixer port (2)
+binds tester.outputport[1]          to mixer.emptythisbuffer[1]
+binds tester.outputsettings[1]      to mixer.pcmsettings[1]
+binds mixer.inputport[1]            to tester.fillthisbuffer[1]
+
+//Input Mixer port (3)
+binds tester.outputport[2]          to mixer.emptythisbuffer[2]
+binds tester.outputsettings[2]      to mixer.pcmsettings[2]
+binds mixer.inputport[2]            to tester.fillthisbuffer[2]
+
+//Output mixer port
+binds mixer.outputport              to tester.emptythisbuffer
+binds mixer.outputsettings          to tester.pcmsettings
+binds tester.inputport              to mixer.fillthisbuffer
+
+binds main.libSRC                   to libresampling.libresampling
+binds main.libmalloc                to libmalloc.libmalloc
+
+binds tester.libmalloc              to libmalloc.libmalloc
+
+option CPPFLAGS "-DEXTMEM_ALLOC -DMMDSP_ARCHI -DY_ALLOC -DESRAM_ALLOC -D__ext_mem__ -D__esram__ -D_NMF_MPC_ -D_SIMU_"
+

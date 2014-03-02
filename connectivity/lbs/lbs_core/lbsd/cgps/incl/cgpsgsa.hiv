@@ -1,0 +1,87 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSGSA_HIV__
+#define __CGPSGSA_HIV__
+/**
+* \file cgpsgsa.hiv
+* \date 23/07/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all variables used by cgps8gsa.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 22.07.08 </TD><TD> Anshuman Pandey </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __CGPS8GSA_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif   /* __CGPS8GSA_C__ */
+
+
+GLOBAL uint32_t vg_ClockCalibTimeout
+#ifdef __CGPS8GSA_C__
+= 0
+#endif
+;
+
+GLOBAL uint32_t vg_PeridicCheckTimeout
+#ifdef __CGPS8GSA_C__
+= 0
+#endif
+;
+
+#ifndef __RTK_E__
+
+/**
+* \var vg_CGPS_FreqErrorAtStart
+* \brief Frequency Error at start of FA
+*
+* Frequency Error at start of FA
+*/
+GLOBAL uint32_t vg_CGPS_FreqErrorAtStart;
+
+
+/**
+* \var vg_CGPS_CCState
+* \brief State of CGPS Clock calibration.
+*
+* CGPS CC can be deactive, active / active pending
+*/
+GLOBAL uint32_t vg_CGPS_CCState
+#ifdef __CGPS8GSA_C__
+= K_CGPS_CC_DEACTIVATED
+#endif
+;
+
+
+/**
+* \var vg_CGPS_CCFreq
+* \brief State of CGPS Clock calibration.
+*
+* Gives the frequency of the pulse.
+*/
+GLOBAL uint32_t vg_CGPS_CCFreq
+#ifdef __CGPS8GSA_C__
+= K_CGPS_GSA_FREQ
+#endif
+;
+
+#endif /* !__RTK_E__ */
+#undef GLOBAL
+#endif /* __CGPSGSA_HIV__ */
+

@@ -1,0 +1,37 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \brief   Contains the source for the development of vpp video component
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vpp.idt>
+
+interface vpp.mpc.api.end_algo {
+
+/** @addtogroup vppendAlgoGroup endAlgo
+ *  @ingroup vppRequiredInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Report the end of a NMF ALGO component.
+ \param[in]  status		      Status of the process done.
+ \param[in]  info           Information on process completion.
+                            \n It'll characterize the good job completion (STATUS_JOB_COMPLETE) : VPP_ERT_NONE.
+                            \n or it'll indicate possible error sources if status is STATUS_JOB_ABORTED.
+ \param[in]  durationInTicks  Duration (in SVA's timer ticks unit, i.e. 90kHz) of the algo process that have been done 
+                            (i.e. between a CMD_START of the algo and its completion).
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vppConfigurationGroup
+ * 
+ */
+
+void endAlgo(t_t1xhv_status status, t_t1xhv_vpp_info info, t_uint32 durationInTicks);
+
+/** @} */ // end of vppendAlgoGroup
+}

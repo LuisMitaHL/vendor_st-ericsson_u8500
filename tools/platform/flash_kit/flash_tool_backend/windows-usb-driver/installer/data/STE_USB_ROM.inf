@@ -1,0 +1,188 @@
+; STE_USB_ROM.inf
+; Copyright (c) 2010 libusb-win32 (GNU LGPL)
+[Strings]
+; Driver version in format YYYYMMDD (Y = Year, M = Month, D = Day)
+DriverVersion         = "20120126"
+
+DeviceName_U5500      = "U5500 USB ROM"
+DeviceName_U8500      = "U8500 USB ROM"
+DeviceName_T5008      = "T5008 USB ROM"
+DeviceName_M7400      = "M7400 USB ROM"
+DeviceName_U8520      = "U8520 USB ROM"
+DeviceName_L9540      = "L9540 USB ROM"
+DeviceName_MEITP      = "ME ITP by ST Ericsson"
+DeviceName_Dumping    = "Dumping Device"
+
+VendorName            = "ST-Ericsson"
+SourceName            = "STE USB ROM Install Disk"
+
+DeviceID_U5500        = "VID_04CC&PID_5500"
+DeviceID_U8500        = "VID_0483&PID_8500"
+DeviceID_U8500_V2     = "VID_04CC&PID_8500"
+DeviceID_U8500_NOKIA2 = "VID_0106&PID_0218"
+DeviceID_T5008        = "VID_04CC&PID_5008"
+DeviceID_T5008_NOKIA  = "VID_0421&PID_5008"
+DeviceID_T5008_NOKIA2 = "VID_0106&PID_0028"
+DeviceID_M7400        = "VID_04CC&PID_7400"
+DeviceID_U8520        = "VID_04CC&PID_8520"
+DeviceID_L9540        = "VID_04CC&PID_9540"
+DeviceID_M7400_V2     = "VID_04CC&PID_0500"
+DeviceID_MEITP        = "VID_04CC&PID_2327"
+DeviceID_Dumping      = "VID_04CC&PID_231B"
+
+DeviceGUID            = "{B512B509-304C-4DBC-A2E8-2B23C11A407A}"
+
+[Version]
+Signature   = "$Windows NT$"
+Class       = "libusb-win32 devices"
+ClassGuid   = {EB781AAF-9C70-4523-A5DF-642A87ECA567}
+Provider    = "libusb-win32"
+; CatalogFile = STE_USB_ROM.cat
+DriverVer   = 07/23/2011, 1.2.5.0
+
+[ClassInstall32]
+Addreg = libusb_class_install_add_reg
+
+[libusb_class_install_add_reg]
+HKR,,,0,"libusb-win32 devices"
+HKR,,Icon,,-20
+
+[Manufacturer]
+%VendorName% = Devices, NT, NTAMD64
+
+;--------------------------------------------------------------------------
+; libusb-win32 files
+;--------------------------------------------------------------------------
+
+[SourceDisksNames]
+1 = %SourceName%
+
+[SourceDisksFiles]
+libusb0.sys     = 1,x86
+libusb0.dll     = 1,x86
+libusb0_x64.sys = 1,amd64
+libusb0_x64.dll = 1,amd64
+
+[DestinationDirs]
+libusb_files_sys       = 10,system32\drivers
+libusb_files_sys_x64   = 10,system32\drivers
+libusb_files_dll       = 10,system32
+libusb_files_dll_wow64 = 10,syswow64
+libusb_files_dll_x64   = 10,system32
+
+[libusb_files_sys]
+libusb0.sys
+
+[libusb_files_sys_x64]
+libusb0.sys,libusb0_x64.sys
+
+[libusb_files_dll]
+libusb0.dll
+
+[libusb_files_dll_wow64]
+libusb0.dll
+
+[libusb_files_dll_x64]
+libusb0.dll,libusb0_x64.dll
+
+;--------------------------------------------------------------------------
+; libusb-win32 device driver
+;--------------------------------------------------------------------------
+
+[LIBUSB_WIN32_DEV.NT]
+CopyFiles = libusb_files_sys, libusb_files_dll
+
+[LIBUSB_WIN32_DEV.NTAMD64]
+CopyFiles = libusb_files_sys_x64, libusb_files_dll_wow64, libusb_files_dll_x64
+
+[LIBUSB_WIN32_DEV.NT.HW]
+DelReg = libusb_del_reg_hw
+AddReg = libusb_add_reg_hw
+
+[LIBUSB_WIN32_DEV.NTAMD64.HW]
+DelReg = libusb_del_reg_hw
+AddReg = libusb_add_reg_hw
+
+[LIBUSB_WIN32_DEV.NT.Services]
+AddService = libusb0, 0x00000002, libusb_add_service
+
+[LIBUSB_WIN32_DEV.NTAMD64.Services]
+AddService = libusb0, 0x00000002, libusb_add_service
+
+; Older versions of this .inf file installed filter drivers. They are not
+; needed any more and must be removed
+[libusb_del_reg_hw]
+HKR,,LowerFilters
+HKR,,UpperFilters
+
+; libusb-win32 device properties
+[libusb_add_reg_hw]
+HKR,,SurpriseRemovalOK,0x00010001,1
+
+; (Optional) the usb configuration value to select when this device
+; is started.  If this key does not exist the first config is selected.
+;HKR,,InitialConfigValue,0x00010001,<your config value>
+
+;--------------------------------------------------------------------------
+; libusb-win32 service
+;--------------------------------------------------------------------------
+
+[libusb_add_service]
+DisplayName   = "libusb-win32 - Kernel Driver 07/23/2011 1.2.5.0"
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 0
+ServiceBinary = %12%\libusb0.sys
+
+;--------------------------------------------------------------------------
+; libusb-win32 devices
+;--------------------------------------------------------------------------
+
+; Hardware IDs in a 'Devices' section can be installed by libusb-win32
+; using usb_install_driver_np(), usb_install_driver_np_rundll(), or the
+; inf-wizard utility.
+;
+[Devices]
+%DeviceName_U5500% = LIBUSB_WIN32_DEV, USB\%DeviceID_U5500%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV, USB\%DeviceID_U8500%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV, USB\%DeviceID_U8500_V2%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV, USB\%DeviceID_U8500_NOKIA2%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV, USB\%DeviceID_T5008%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV, USB\%DeviceID_T5008_NOKIA%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV, USB\%DeviceID_T5008_NOKIA2%
+%DeviceName_M7400% = LIBUSB_WIN32_DEV, USB\%DeviceID_M7400%
+%DeviceName_U8520% = LIBUSB_WIN32_DEV, USB\%DeviceID_U8520%
+%DeviceName_L9540% = LIBUSB_WIN32_DEV, USB\%DeviceID_L9540%
+%DeviceName_M7400% = LIBUSB_WIN32_DEV, USB\%DeviceID_M7400_V2%
+%DeviceName_MEITP% = LIBUSB_WIN32_DEV, USB\%DeviceID_MEITP%
+%DeviceName_Dumping% = LIBUSB_WIN32_DEV, USB\%DeviceID_Dumping%
+
+[Devices.NT]
+%DeviceName_U5500% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_U5500%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_U8500%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_U8500_V2%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_U8500_NOKIA2%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_T5008%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_T5008_NOKIA%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_T5008_NOKIA2%
+%DeviceName_M7400% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_M7400%
+%DeviceName_U8520% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_U8520%
+%DeviceName_L9540% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_L9540%
+%DeviceName_M7400% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_M7400_V2%
+%DeviceName_MEITP% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_MEITP%
+%DeviceName_Dumping% = LIBUSB_WIN32_DEV.NT, USB\%DeviceID_Dumping%
+
+[Devices.NTAMD64]
+%DeviceName_U5500% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_U5500%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_U8500%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_U8500_V2%
+%DeviceName_U8500% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_U8500_NOKIA2%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_T5008%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_T5008_NOKIA%
+%DeviceName_T5008% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_T5008_NOKIA2%
+%DeviceName_M7400% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_M7400%
+%DeviceName_U8520% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_U8520%
+%DeviceName_L9540% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_L9540%
+%DeviceName_M7400% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_M7400_V2%
+%DeviceName_MEITP% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_MEITP%
+%DeviceName_Dumping% = LIBUSB_WIN32_DEV.NTAMD64, USB\%DeviceID_Dumping%

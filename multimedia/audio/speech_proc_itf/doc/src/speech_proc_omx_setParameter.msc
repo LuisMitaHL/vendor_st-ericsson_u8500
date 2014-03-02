@@ -1,0 +1,16 @@
+msc {
+		width=1200;
+		Application,SpeechProcComponent,SpeechProcLibrary,SpeechProcNmf_ProcessincComp,speech_proc_library;
+    |||;
+		Application rbox speech_proc_library [label="OMX_SetParameter call"];
+		|||;
+		Application => SpeechProcComponent [label ="OMX_SetParameter(..,index, ptr)"];
+
+		SpeechProcComponent => SpeechProcLibrary [label="checkParameter(index,ptr)"];
+	  SpeechProcLibrary >> SpeechProcComponent [label="OK,ERROR,NOT_SUPPORTED"];
+		SpeechProcComponent >> Application [label="if OK or ERROR"];
+		SpeechProcComponent => SpeechProcComponent [label="process it internally\nor by above layer(ENS,AFM)", linecolor="white"];
+		|||;
+
+		SpeechProcComponent >> Application;
+}

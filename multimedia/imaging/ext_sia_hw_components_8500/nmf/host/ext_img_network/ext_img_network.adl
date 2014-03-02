@@ -1,0 +1,140 @@
+ /*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file
+* \brief   This file describes the ext_img_network ARM+DSP NMF composite (only way
+*          to get ARM+DSP NMF composites to communicate with each other)
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+composite ext_img_network {
+	contains ext_imgcontroller as ext_imgcontroller
+	contains ext_stab as ext_stab
+	contains nmf.host.shared_bufout as host_shared_bufout0
+	contains nmf.host.shared_bufout as host_shared_bufout1
+    contains nmf.host.shared_bufout as host_shared_bufout2
+	contains nmf.mpc.shared_bufout as mpc_shared_bufout0 domain
+	contains nmf.mpc.shared_bufout as mpc_shared_bufout1 domain
+	contains nmf.mpc.shared_bufout as mpc_shared_bufout2 domain
+	contains ext_grabctl as ext_grabctl domain
+	contains ext_grab as ext_grab domain
+	contains fsm.generic as genericfsm domain
+	contains fsm.component as componentfsm domain
+    //contains mmtrace as mmtrace domain
+	contains osttrace.mmdsp as mmdsp_osttrace domain
+
+	
+	/* ext_imgcontroller interfaces */
+	provides sendcommand                 as      sendcommand
+    provides fsminit                     as      fsminit
+	requires eventhandler                as      proxy
+
+    /* grabctl interfaces */
+    requires ext_grabctl.api.acknowledges           as      grabctl_acknowledges
+    requires ext_grabctl.api.error                  as      grabctl_error
+
+	/* ext_stab interfaces */
+	provides armnmf_fillthisbuffer              as      fillthisbuffer[3]
+	requires armnmf_emptythisbuffer	            as      fillbufferdone[3]
+    
+    provides ext_stab.api.configure                 as      stab_configure
+    /* grabctl interfaces */
+	provides ext_grabctl.api.configure              as      grabctl_configure
+
+	/* grab interfaces */
+	provides ext_grab.api.cmd			as	grab_command
+	requires ext_grab.api.alert 		as	grab_alert	
+	
+    /* ext_imgcontroller-top bindings */
+	binds this.sendcommand                      to      ext_imgcontroller.sendcommand
+    binds this.fsminit                          to      ext_imgcontroller.fsminit
+	binds ext_imgcontroller.proxy                   to      this.proxy
+    
+	/* ext_stab-top bindings */
+	binds this.fillthisbuffer[0]                to      ext_stab.fillthisbuffer[0]
+	binds ext_stab.fillbufferdone[0]                to      this.fillbufferdone[0]
+	binds this.fillthisbuffer[1]                to      ext_stab.fillthisbuffer[1]
+	binds ext_stab.fillbufferdone[1]                to      this.fillbufferdone[1]
+	binds this.fillthisbuffer[2]                to      ext_stab.fillthisbuffer[2]
+	binds ext_stab.fillbufferdone[2]                to      this.fillbufferdone[2]
+    binds this.stab_configure                   to      ext_stab.configure
+
+	/* ext_stab-imgctl bindings */
+	binds ext_imgcontroller.stab                    to      ext_stab.sendcommand asynchronous fifo=4
+    binds ext_imgcontroller.stab_fsminit            to      ext_stab.fsminit asynchronous fifo=1
+	binds ext_stab.proxy                            to      ext_imgcontroller.stab_handler asynchronous fifo=4
+	
+	/* grabctl-top bindings */
+	binds this.grabctl_configure                to      ext_grabctl.configure 
+
+    /* grabctl-top bindings */
+    binds ext_grabctl.acknowledges                  to      this.grabctl_acknowledges 
+    binds ext_grabctl.alert_error                   to      this.grabctl_error 
+	
+	/* grab-top bindings */
+	binds this.grab_command			to      ext_grab.iCommand 
+	binds ext_grab.iAlert[3]			to	this.grab_alert 
+		
+	/* grabctl-imgctl bindings */
+	binds ext_imgcontroller.grabctl                 to      ext_grabctl.sendcommand asynchronous fifo=2
+    binds ext_imgcontroller.grabctl_fsminit         to      ext_grabctl.fsminit asynchronous fifo=2
+	binds ext_grabctl.proxy                         to      ext_imgcontroller.grabctl_handler asynchronous fifo=4
+
+	/* grabctl-mpc_shared_bufout bindings */
+	binds ext_grabctl.fillbufferdone[0] to mpc_shared_bufout0.emptythisbuffer
+	binds ext_grabctl.fillbufferdone[1] to mpc_shared_bufout1.emptythisbuffer
+	binds ext_grabctl.fillbufferdone[2] to mpc_shared_bufout2.emptythisbuffer
+	binds mpc_shared_bufout0.mpc to ext_grabctl.fillthisbuffer[0]
+	binds mpc_shared_bufout1.mpc to ext_grabctl.fillthisbuffer[1]
+	binds mpc_shared_bufout2.mpc to ext_grabctl.fillthisbuffer[2]
+
+	/* mpc_shared_bufout-host_shared_bufout bindings */
+	binds mpc_shared_bufout0.host to host_shared_bufout0.emptythisbuffer asynchronous fifo=4
+	binds mpc_shared_bufout1.host to host_shared_bufout1.emptythisbuffer asynchronous fifo=4
+	binds mpc_shared_bufout2.host to host_shared_bufout2.emptythisbuffer asynchronous fifo=4
+	binds host_shared_bufout0.mpc to mpc_shared_bufout0.fillthisbuffer asynchronous fifo=4
+	binds host_shared_bufout1.mpc to mpc_shared_bufout1.fillthisbuffer asynchronous fifo=4
+	binds host_shared_bufout2.mpc to mpc_shared_bufout2.fillthisbuffer asynchronous fifo=4
+
+	/* host_shared_bufout-ext_stab bindings */
+	binds host_shared_bufout0.host to ext_stab.emptythisbuffer[0]
+	binds host_shared_bufout1.host to ext_stab.emptythisbuffer[1]
+	binds host_shared_bufout2.host to ext_stab.emptythisbuffer[2]
+	binds ext_stab.emptybufferdone[0] to host_shared_bufout0.fillthisbuffer
+	binds ext_stab.emptybufferdone[1] to host_shared_bufout1.fillthisbuffer
+	binds ext_stab.emptybufferdone[2] to host_shared_bufout2.fillthisbuffer
+	
+	/* grabctl-ext_stab bindings */
+	binds ext_grabctl.reportcurves to ext_stab.reportcurves asynchronous fifo=4
+
+	/* grab-grabctl bindings */
+	binds ext_grabctl.grab_interface to ext_grab.iCommand
+	binds ext_grab.iAlert[0] to ext_grabctl.iGRABAlert
+
+	/* grabctl-fsm bindings */
+	binds ext_grabctl.genericfsm to genericfsm.genericfsm
+	binds ext_grabctl.componentfsm to componentfsm.componentfsm
+	binds componentfsm.genericfsm to genericfsm.genericfsm
+    
+    /* fsm-mmtrace bindings */
+    //binds componentfsm.mmtrace to mmtrace.mmtrace
+
+    /* fsm-mmtrace bindings */
+    binds componentfsm.osttrace to mmdsp_osttrace.osttrace
+    
+	
+	
+	/* loopback bind on postevent */
+	binds ext_stab.me to ext_stab.postevent asynchronous fifo=2
+
+	/* loopback bind on grabctl postevent */
+	binds ext_grabctl.me to ext_grabctl.postevent asynchronous fifo=2
+	
+    /* loopback bind on grabctl returnbuffer */
+    binds ext_grabctl.meReturn to ext_grabctl.returnbuffer asynchronous fifo=4
+
+	option CFLAGS "-g"
+}

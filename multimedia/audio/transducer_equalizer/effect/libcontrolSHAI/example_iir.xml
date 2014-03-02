@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<TrEQ>
+
+<ctrlIIR  id="complex_example">
+  <!-- IIR API setting -->
+  <set sBandIndex                      = "4" 
+       eFilterType                     = "OMX_AUDIO_Lowshelf"
+       nFilterGain_mB                  = "300"
+       nFilterBandwidth_Hz             = "50"
+       nFilterCenterCutoffFrequency_Hz = "400"/>
+  <set sBandIndex                      = "5" 
+       eFilterType                     = "OMX_AUDIO_Highshelf"
+       nFilterGain_mB                  = "300"
+       nFilterBandwidth_Hz             = "50"
+       nFilterCenterCutoffFrequency_Hz = "3200"/>
+  <set sBandIndex                      = "3" 
+       eFilterType                     = "OMX_AUDIO_Peaking"
+       nFilterGain_mB                  = "580"
+       nFilterBandwidth_Hz             = "500"
+       nFilterCenterCutoffFrequency_Hz = "1320"/>
+  <set sBandIndex                      = "2" 
+       eFilterType                     = "OMX_AUDIO_Peaking"
+       nFilterGain_mB                  = "1200"
+       nFilterBandwidth_Hz             = "800"
+       nFilterCenterCutoffFrequency_Hz = "2356"/>
+  <set sBandIndex                      = "1" 
+       eFilterType                     = "OMX_AUDIO_Peaking"
+       nFilterGain_mB                  = "-800"
+       nFilterBandwidth_Hz             = "400"
+       nFilterCenterCutoffFrequency_Hz = "800"/>
+  <set sBandIndex                      = "6" 
+       eFilterType                     = "OMX_AUDIO_Lowpass"
+       nFilterGain_mB                  = "0"
+       nFilterBandwidth_Hz             = "100"
+       nFilterCenterCutoffFrequency_Hz = "2000"/>
+  <set sBandIndex                      = "7" 
+       eFilterType                     = "OMX_AUDIO_Highpass"
+       nFilterGain_mB                  = "0"
+       nFilterBandwidth_Hz             = "1000"
+       nFilterCenterCutoffFrequency_Hz = "600"/>
+
+  <!-- IIR Coefficient Processing -->
+  <commit nSamplingRate_Hz="48000" sName="complex_example#up#48000"
+          bSort="up_sort" bScaleBiQuads="true" />
+
+  <commit nSamplingRate_Hz="16000" sName="complex_example#up#16000"
+          bSort="up_sort" bScaleBiQuads="true" />
+
+  <commit nSamplingRate_Hz="48000" sName="complex_example#down#48000"
+          bSort="down_sort" bScaleBiQuads="true" />
+
+  <commit nSamplingRate_Hz="16000" sName="complex_example#down#16000"
+          bSort="down_sort" bScaleBiQuads="true" />
+
+</ctrlIIR>
+
+</TrEQ>

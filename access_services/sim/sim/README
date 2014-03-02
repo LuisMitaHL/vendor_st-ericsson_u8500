@@ -1,0 +1,58 @@
+/*                               -*- Mode: C -*- 
+ * Copyright (C) 2010, ST-Ericsson
+ * 
+ * File name       : README.txt
+ * Description     : Readme file describing directory structure for sim and sim_msl systems
+ * 
+ * Author          : Mats Bergstrom <mats.m.bergstrom@stericsson.com>
+ * 
+ */
+
+
+
+CNX 901 1345 STELP SIM
+
+stelp/access_services/sim.git
+
+
+Directory structure.
+	N.B.  This git depends on other git directories being present with the
+	same parent directory as this directory.
+
+
+sim/		This directory
+ +- Makefile	b STELP level Makefile
+ +- Android.mk	* Android Makefile
+ +- include/	Exported interface files
+ +- sim/	b Sim card daemon, EXE=simd
+ +- cat/	b CAT part of simd (aka SIM/SAT), LIB=libcatd.a
+ +- uiccd/	* UICC part of simd (general SIM handling), LIB
+ +- libsimcom/	D General utility library, shared between cat and uicc, LIB
+ +- libsim/	D CAT and UICC access library, LIB
+ +- libapdu/	APDU library, LIB
+ +- tcat/	D Test program for cat, EXE
+ +- tapdu/	D Test program for apdu, EXE
+ +- tuicc/	* Test program for uicc, EXE
+
+sim_msl/	Modem Simulation Library
+ +- Makefile	STELP level Makefile
+ +- Android.mk	* Android Makefile
+ +- libmsl/	D MSL Code, LIB
+
+sim_mal/	U8500 Modem Library (tbd)
+
+sim_mfl/	U5500 Modem Library (tbd)
+
+
+Status above
+* to move
+b builds, needs refactoring
+D DONE
+
+
+FIXME: Rename uiccd/ to uicc/
+
+FIXME: Makefiles should use CFLAGS, CPPFLAGS, LDFLAGS, LDLIBS(see simd/Makefile)
+FIXME: Rename functions to new names (when all have moved to new gits)
+FIXME: Move catd_reader functionality from simd to cat
+FIXME: Have catd register event streams with simd.

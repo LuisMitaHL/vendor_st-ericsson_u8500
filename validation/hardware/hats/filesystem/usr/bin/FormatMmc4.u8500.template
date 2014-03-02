@@ -1,0 +1,77 @@
+#!/bin/sh
+#
+# Copyright (c) ST-Ericsson, 2010
+# Author: Gerald Lejeune <gerald.lejeune@stericsson.com>
+#
+MMC1=/sys/block/mmcblk1/device/type
+BOARD_TYPE=$([ -e "$MMC1" ] && [ "$(cat $MMC1)" == "MMC" ] && echo "8500" || echo "8520")
+if [ "$BOARD_TYPE" == "8500" ]
+then
+	echo "Board type : 8500"
+else
+	echo "Board type : 8520"
+fi
+
+#must find which partition as UserFS2 will be formatted
+PARTITION=$(grep UserFS2 /etc/fstab |cut -f1)
+
+answer="n"
+case "$1" in
+	"-f" | "--force")
+	answer="y"
+	;;
+	"")
+	if [ "$BOARD_TYPE" == "8500" ]
+	then
+		#board 8500 : need to create 2 partitions in second eMMC
+		fdiskOutput=`fdisk -l /dev/mmcblk1 2>&1`
+		fdisk -l /dev/mmcblk1
+		if [ -z "`echo $fdiskOutput | grep "^fdisk:"`" ]
+		then
+			echo -e "\nAssuming that /dev/mmcblk1 is MC4."
+			echo "All data on /dev/mmcblk1 will be lost, do you want to continue? (y/[n])"
+			read -s -n 1 answer
+		fi
+	else
+		#board 8520 : no need to create partitions
+		echo "All data on $PARTITION will be lost, do you want to continue? (y/[n])"
+		read -s -n 1 answer
+	fi
+	;;
+	*)
+	echo "Usage:" >&2
+	echo -e "\t$0" >&2
+	echo -e "\t$0 -f" >&2
+	echo -e "\t$0 --force" >&2
+	;;
+esac
+
+	if [ "$answer" == "y" ]
+	then
+		if [ "$BOARD_TYPE" == "8500" ]
+		then
+			#board 8500 : need to create 2 partitions in second eMMC
+			echo -e "d\n1\nd\n2\nd\n3\nd\nx\nh\n255\ns\n63\nr\nn\np\n1\n\n+4096M\nn\np\n2\n\n+4095M\nt\n2\nb\nw\n" > /tmp/fdisk.in
+			fdisk /dev/mmcblk1 < /tmp/fdisk.in 2>&1 > /dev/null
+			rm /tmp/fdisk.in
+			fdisk -l /dev/mmcblk1
+			mke2fs -vm0 -L "UserFS1" /dev/mmcblk1p1
+			mkdosfs -F 32 -n "UserFS2" /dev/mmcblk1p2
+			mount /mnt/UserFS1
+			mount /mnt/UserFS2
+			echo "Remove this file to reformat partitions" > /mnt/UserFS1/.ufs1
+			echo "Remove this file to reformat partitions" > /mnt/UserFS2/.ufs2
+			umount /mnt/UserFS1
+			umount /mnt/UserFS2
+		else
+			#board 8520 : format vfat partition
+			mkdosfs -F 32 -n "UserFS2" $PARTITION
+			mount /mnt/UserFS2
+			echo "Remove this file to reformat partitions" > /mnt/UserFS2/.ufs2
+			umount /mnt/UserFS2
+		fi
+		echo "done"
+	else
+		echo "aborted"
+	fi
+exit

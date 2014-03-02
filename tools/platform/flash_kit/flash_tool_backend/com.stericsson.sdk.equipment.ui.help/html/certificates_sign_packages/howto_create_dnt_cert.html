@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>How to create a U5500/U8500/M7400/L9540 Debug & Test Certificate</title>
+		<style>
+			h1 {
+			  font-family: sans-serif, verdana;
+			  font-size: 16pt;
+			  font-weight: normal;
+			}
+
+			h2 {
+			  font-family: sans-serif, verdana;
+			  font-size: 12pt;
+			  font-weight: bold;
+			}
+
+			h3 {
+			  font-family: sans-serif, verdana;
+			  font-size: 10pt;
+			  font-weight: bold;
+			}
+
+			p {
+			  font-family: sans-serif, verdnana;
+			  font-size: 10pt;
+			}
+
+			li {
+			  font-family: sans-serif, verdnana;
+			  font-size: 10pt;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>How to create a U5500/U8500/M7400/L9540 Debug & Test Certificate</h1>
+		<p>
+			The Debug & Test (D&T) certificates are certificates with the purpose of enabling debug on protected devices. 
+			Each D&T certificate is issued for a particular device or a batch of devices. This is done by including the public device unique identifier, or the batch id from the OTP. 
+			The D&T certificate contains information on whether to allow trace and debug of the platform. Trace and debug is controlled separately for APE side in secure world, APE side in normal world, and the ACC side. 
+			The D&T certificate is optional and is normally not present in flash, if present, it is a separate item in the TOC. If present the ISSW is responsible for verifying the D&T certificate and enable debug based on its settings.
+
+			Additionally, the D&T certificate can be used to replace keys in the ISSW key list with new keys which are available to a developer, which simplifies the debug and testing. 
+			Only keys are replaced, the mapping of a key to which software that is protected cannot be changed.
+
+		</p>
+		<h2>Pre-requisites</h2>
+		<p>
+			Please make sure that you have access to a U5500/U8500/M7400/L9540 root sign package or a signed ISSW file.
+		</p>
+		<h2>Instructions</h2>
+		<p>
+			Open the U5500 Debug & Test Certificate Wizard by completing the following steps:
+		</p>
+		<ul>
+			<li>In the Eclipse menu, select File -&gt; New &gt; Other... (or press Ctrl+N)</li>
+			<li>Expand the Flash Kit category to make the Certificates category visible</li>
+			<li>Expand the Certificates category to see the Debug & Test Certificate</li>
+			<li>Select the Debug & Test Certificate and press Next</li>
+		</ul>
+		<p>
+			The following dialog will pop-up and user must provide valid values to generate new Debug & Test Certificate.
+		</p>
+		<h2>Page 1</h2>
+		<img src="../../images/dnt_wizard_1a.png"/>
+		<p>
+			Required Fields: 
+		</p>
+		<ul>
+			<li>Serial number (Hex): The serial number is a unique number for each D&T certificate which can be used to distinguish and keep track of issued certificates.</li>
+			<li>Type: A data element indicating what type of device the certificate is valid for.</li>
+			<li>New format D&T: Check box indicating new or old format D&T certificate.</li>
+			<li>Level: Flag to disable or enable hiding of certain sensitive data.</li>
+			<li>Secure world debug: Enable or disable secure world debug.</li>
+			<li>APE debug: Enable or disable APE debug.</li>
+			<li>Modem debug: Enable or disable modem debug.</li>
+			<li>PRCMU debug: Enable or disable PRCMU debug.</li>
+			<li>Enable Flags: This is used for easy manipulation of the Flags field (see below for more details)
+			<ul>
+				<li>flag 1 - Permanent Authentication</li>
+				<li>flag 2 - Permanent Authentication if Magic Word Hash is correct</li>
+				<li>flag 3 - Add keys instead of replacement</li>
+				<li>flag 4 - Enable Development RPMB Authentication Key</li>
+
+			</ul>
+			<li>Flags: The flags are enabled only if New format D&T is checked. Note that type 3 and type 4 variant of the D&T certificate can only be created in new format therefore when chosen, the New Format D&T is automatically selected. The least significant bit of the word (flag 1) is used to indicate that the platform should be switched to the permanent authentication state. I.e., if such a certificate is available, COPS will not require authentication.</li>
+			<li>Reserved: This is used only for type 3 variant of the D&T certificate.</li>
+			<li>Reference: Contains the one or several chipset ids, or one or several batch ids.</li>
+		</ul>
+		<h2>Page 2</h2>
+		<img src="../../images/dnt_wizard_2a.png"/>
+		<p>
+			Required Fields: 
+		</p>
+		<ul>
+			<li>Source ISSW: This can either be a signed ISSW file or an ISSW certificate stored in sign package.</li>
+			<li>Replacement keys: To replace a key, check the corresponding checkbox in the Replace column and select the key file by pressing the Browse button.</li>
+			<li>Revocation hash types: To revoke hash algorithm, check the checkbox in the corresponding hash type column (HASH_1, HASH_256, HASH_384, HASH_512, HMAC_1, HMAC_256, HMAC_384, HMAC_512) which should be revoked.</li>
+			<li>Output file: The path to where to write the unsigned D&T certificate.</li>
+		</ul>
+		<p>
+			If the wizard is not finished early, the last optional page includes Software Signing. 
+			This is convenient if you want to create a certificate and then sign it at once. For details see 
+			<a href="../signed_software/how_to_sign_software.html">How to create U5500/U8500/M7400/L9540 signed software</a>  
+		</p>
+	</body>
+</html>

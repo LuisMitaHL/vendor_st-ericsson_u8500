@@ -1,0 +1,116 @@
+#!/bin/sh
+# Author: Guillaume Camus
+echo "*****************************************************************************"
+echo "**************************** AV8100 TVout Display ***************************"
+echo "*****************************************************************************"
+VideoTests -m=0 -d=4 -dinit
+VideoTests -m=0 -d=4 -dpwr=1
+
+# Test CVBS init:
+echo "*** Step1: CVBS init ***"
+Pwm=$(VideoTests -m=0 -d=4 -dpwr=1)
+if [ "$Pwm" == "Set Power Mode Done" ]
+then
+CVBSint="*** PASSED ***"
+else
+CVBSint="!!! FAILED !!!"
+fi
+echo "CVBS init test done"
+
+
+# Test CVBS detection:
+echo "*** Step2: CVBS cable detection ***"
+Flag1=false
+while [ "$Flag1" != "true" ]
+do
+	echo "Unplug TVout cable.  TVout cable is unplugged (y/n) ?"
+	read Resp1
+	if [ "$Resp1" == "y" ]; then
+		Flag1=true
+	else
+		echo "sorry, TVout cable is not unplugged or your enter is incorrect"
+	fi
+done
+Detect=$(VideoTests -m=0 -d=3 -dplug)
+if [ "$Detect" == "Display plug status 0 => Display is not plugged" ]; then
+	CVBSuplg=passed
+else
+	CVBSuplg=failed
+fi
+echo $CVBSuplg
+Flag1=false
+while [ "$Flag1" != "true" ]
+do
+	echo "plug TVout cable.  TVout cable is plugged (y/n) ?"
+	read Resp2
+	if [ "$Resp2" == "y" ]; then
+		Flag1=true
+	else
+		echo "sorry, TVout cable is not plugged or your enter is incorrect"
+	fi
+done
+Detect=$(VideoTests -m=0 -d=3 -dplug)
+if [ "$Detect" == "Display plug status 1 => Display is plugged" ]; then
+	CVBSplg=passed
+else
+	CVBSplg=failed
+fi
+echo $CVBSplg
+if [ "$CVBSuplg" == "passed" ]; then
+	if [ "$CVBSplg" == "passed" ]; then
+		CVBSdetect="*** PASSED ***"
+	else
+		CVBSdetect="!!! FAILED !!!"
+	fi
+else
+	CVBSdetect="!!! FAILED !!!"
+fi
+echo "CVBS detection test done"
+
+
+# test Display a picture on a TV-Out with AV8100 in PAL (720x576 50 interlaced)
+echo "*** Step3: Display a picture on a TV-Out with AV8100 in PAL (720x576 50 interlaced) ***"
+VideoTests -m=0 -d=3 -dprop=720x576x50xI
+VideoTests -m=0 -d=3 -dpict="//usr/share/multimediaservices/videoservices/st-ericsson_720x576.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed corectly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed TVout PAL test done" ; PAL="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed TVout PAL test done" ; PAL="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+
+
+# test Display a picture on a TV-Out with AV8100 in NTSC (720x480 60 interlaced)
+echo "*** Step4: Display a picture on a TV-Out with AV8100 in NTSC (720x480 60 interlaced) ***"
+VideoTests -m=0 -d=3 -dprop=720x480x60xI
+VideoTests -m=0 -d=3 -dpict="//usr/share/multimediaservices/videoservices/st-ericsson_720x480.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed corectly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed TVout NTSC test done" ; NTSC="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed TVout NTSC test done" ; NTSC="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+
+
+# Verdict result
+echo " "
+echo "************************************RESULT***********************************"
+echo "CVBS init:.................................................... $CVBSint"
+echo "CVBS detection:............................................... $CVBSdetect"
+echo "TV-Out with AV8100 in PAL (720x576 50 interlaced):............ $PAL"
+echo "TV-Out with AV8100 in NTSC (720x480 60 interlaced):........... $NTSC"
+echo "***********************************TEST END**********************************"

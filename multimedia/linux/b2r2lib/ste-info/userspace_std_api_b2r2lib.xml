@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book id="userspace_std_api_bltlib"> 
+  <bookinfo>
+    <title>bltlib
+     </title>
+
+  <copyright>
+   <year>2010</year>
+   <holder>ST-Ericsson AB</holder>
+  </copyright>
+  
+  </bookinfo>
+  
+  <toc></toc>
+  
+  <chapter id="intro">
+    <title>Introduction</title>
+    <!-- Do NOT change the chapter id or title! -->
+    <para>
+      bltlib is a library and API towards the device driver for the B2R2 graphics hardware.
+      <!-- Do NOT change the chapter id or title!
+
+            For numbered lists, outside of the para tag,
+            use the tags 
+             (orderedlist)
+              (listitem)(para) ... (/para)(/listitem)
+              ...
+              (listitem)(para) ... (/para)(/listitem)
+             (orderedlist)
+             
+            For a bulleted list, outside of the para tag,
+            use the tags 
+             (itemizedlist)
+              (listitem)(para) ... (/para)(/listitem)
+              ...
+              (listitem)(para) ... (/para)(/listitem)
+             (itemizedlist)
+
+            For a table, outside of the para tag,
+            use the tags
+            (table)
+              (title) ... (title)
+              (tgroup cols="number_of_columns")(tbody)
+                (row)(entry) ... (/entry) (entry) ... (/entry) (/row)
+                (row)(entry) ... (/entry) (entry) ... (/entry) (/row)
+              (/tbody)(/tgroup)
+            (/table)
+
+            To omit the title for the table, use (informaltable)
+            instead of (table).
+            
+            For hyper-links, use (ulink) tag.
+            
+            Avoid duplicating information into this chapter 
+            that is better located in the UML model. -->
+    </para>
+  </chapter>
+
+  <chapter id="conformance-description">
+    <title>Conformance Description</title>
+     <!-- Do NOT change the chapter id or title! -->
+     <section id="conformance-description-intro">
+       <title>Introduction</title>
+
+       <para>This chapter describes conformance and implementation-defined
+        behaviour of the module.</para>
+     </section>
+
+     <section id="conformance-description-references">
+       <title>References</title>
+       <!-- Do NOT change the section id or title! -->
+
+          <para>
+            <informaltable>
+                <tgroup cols="2">
+                  <thead>
+                    <row>
+                      <entry>Title</entry>
+                      <entry>Web Link</entry>
+                    </row>
+                  </thead>
+                  <tbody>
+                  <!--  EXAMPLE:
+                    <row>
+                      <entry>OpenGL ES 1.1 - April 4, 2007 </entry>
+        
+                      <entry><ulink
+                      url="http://www.khronos.org/registry/gles/specs/1.1/es_full_spec.1.1.10.pdf">http://www.khronos.org/registry/gles/specs/1.1/es_full_spec.1.1.10.pdf
+                      </ulink></entry>
+                    </row>
+                    -->
+        
+                    <row>
+                      <entry>OpenMAX AL 1.0.1</entry>
+        
+                      <entry><ulink                      
+                        url="http://www.khronos.org/registry/omxal/">Khronos registry (OpenMAX AL)
+                      </ulink></entry>
+                    </row> -->
+        
+                  </tbody>
+                </tgroup>
+            </informaltable>            
+          </para>
+        </section>
+        <section id="conformance-description-function-conformance">
+            <title>Function Conformance</title>
+            <!-- Do NOT change the section id or title! -->
+            <para>            
+                TODO: For each function or set of functions,
+                      supply one row indicating functions,
+                      the header file defining the function
+                      and the level of implementation support
+                      provided by the platform.
+                     
+                      A conformance description describes which features,
+                      interfaces of the standard that are supported or not
+                      supported. 
+                      
+                      While the UML model may reference features,                      
+                      or featuresets or functionality, in the broad sence,
+                      this table must explicitly list all functions or other
+                      means of controlling the API, so that a developer
+                      knows for each and every function if the function is
+                      implemented or not.
+                      
+                      All header files that defines functions 
+                      must be listed and linked using (ulink), and also
+                      referenced in the toc-locations.xml file.
+                      
+		              What is stated about functions, is also valid if the module
+		              implements an API in another way, such as using methods,
+		              operations or signals.               
+              
+            </para>
+            <informaltable>
+                <tgroup cols="3">
+                  <thead>
+                    <row>
+                      <entry>Functions</entry>
+                      <entry>Header File</entry>
+                      <entry>Description/Conformance</entry>
+                    </row>
+                  </thead>
+                  <tbody>
+                    <row>
+                      <entry>All functions</entry>
+                      <entry><ulink url="includes/blt_api.h">blt_api.h</ulink></entry>
+                      <entry>Functions/Functionality are fully implemented</entry>
+                    </row>
+                  </tbody>
+                </tgroup>
+            </informaltable>
+            <para>
+            See Implementation Description for implementation-defined behaviour.
+            </para>
+        </section>
+  </chapter>
+
+  <chapter id="implementation-description">
+    <title>Implementation Description</title>
+    <!-- Do NOT change the chapter id or title! -->
+
+    <section id="implementation-description-details">
+      <title>Implementation details</title>
+      <!-- Do NOT change the section id or title! -->
+      
+      <para>
+        The client fills in a blt_req struct with all of the information required for the
+        blitting job.
+
+        The request method then submits the job to the blitting driver and hardware.
+        The driver analyzes the job and splits it into the required nodes.
+        If the job is run in synchronous mode, the request method returns only when the
+        job has been completed (or has failed). If the job is run in asynchronous mode,
+        the request method returns immediately. The client can use the synch method to
+        wait for completion.
+
+        When a client sends a request to bltlib, the job is sorted into a prioritized queue.
+        When the job can acquire the resources it needs, it is dispatched to the blitting hardware.
+
+<!--        TODO: Description of which features, interfaces of the standard
+              that are supported or vice versa.
+              Describe the behavior of the implementation for
+              implementation-specific features.
+              
+              An implementation description describes the behavior of the
+              implementation of implementation-specific features.
+              An implementation-specific feature is a feature that the
+              standard does not fully specify or is specifically left up to
+              the implementer. All implementation-specific behavior must be
+              documented to make the interface usable.
+              The implementation description also needs to include sizes
+              or values that are specific to the implementation.
+
+              Other implementation-specific information that may need to be
+              included is limitations that are brought on by platform
+              hardware or software constraints. These constraints change the
+              standard behavior of the specified functionality and may impact
+              the software accessing the functionality.
+              
+              Not every standard interface is exposed to the customer's
+              domains. Some interfaces are interfaces between platform
+              components and only documented in platform internal reference
+              manuals.
+              
+              What to disclose in the documentation about an implementation
+              is generally quite limited. Only information that the user needs
+              to know about the implementation is to be described.
+              Restrict the documentation to phenomena that are externally
+              visible. Once information is exposed, other elements may rely
+              on it, and changes to the internal implementation will have a
+              more widespread effect. Avoid documenting more than is necessary.
+
+			  While the UML model may reference features,                      
+              or featuresets or functionality, in the broad sence,
+              this table must explicitly list all functions or other
+              means of controlling the API that has been modified, extended or added,
+              so that a developer knows for each and every function
+              that the function does not execute in the same way as it
+              would do if implemented by another vendor than ST-Ericsson.
+              
+              For functions added to the standard, ensure they are
+              documented in the relevant header file, using the documentation
+              format used by the standard, or doxygen, if the standard's
+              header files does not include any documentation.
+              
+              Ensure that any header files added by ST-Ericsson is linked
+              to using (ulink), and that they are referenced in the
+              toc-locations.xml file.
+              
+              What is stated about functions, is also valid if the module
+              implements an API in another way, such as using methods,
+              operations or signals.               
+              
+              Use an (informaltable) to specify details on function-by
+              function-level. -->
+      </para>        
+      
+<!--      <para>EXAMPLE: ST-Ericsson provides the ARM reference implementation.</para>
+           
+      <informaltable>
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry>Functions</entry>
+              <entry>Header File</entry>
+              <entry>Description/Conformance</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry></entry>
+              <entry></entry>
+              <entry><emphasis>TODO Modify example below</emphasis></entry>
+            </row>
+            <row>
+              <entry>g_function()</entry>
+              <entry><ulink url="includes/another_include_file.h">another_include_file.h</ulink></entry>
+              <entry>The function returns ... .
+                     Restriction: The function can only be used ... .
+              </entry>
+            </row>
+            <row>
+              <entry>h_ste_function()</entry>
+              <entry><ulink url="includes/another_include_file.h">another_include_file.h</ulink></entry>
+              <entry>This function is an STE-extension to the standard.
+              </entry>
+            </row>
+            <row>
+              <entry>All functions</entry>
+              <entry><ulink url="includes/ste_extensions.h">ste_extensions.h</ulink></entry>
+              <entry>All functions in this file are STE-extensions to the standard.
+              </entry>
+            </row>
+	        <row>
+	          <entry>TODO: List functions</entry>      
+	          <entry><ulink
+	          url="includes/an_include_file.h">
+	            Provide a link using the ulink tag to the header file, 
+	            Ensure the url matches what is specified in
+	            the toc_location.xml file using the 
+	            (includefile) or (includedirectory) elementsd in that
+	            file.
+	          </ulink></entry>
+	          <entry>TODO: Describe extensions, restrictions, additions and
+	          implementation-specific details.</entry>
+	        </row>
+          </tbody>
+         </tgroup>           
+       </informaltable> -->
+    </section>
+
+    <section id="implementation-description-supported-versions">
+      <title>Supported versions</title>
+      <!-- Do NOT change the section id or title! -->
+
+      <para>This section specifies the supported versions of the module. </para>
+
+      <para>
+        bltlib supports only a subset of the bitmap formats defined by OpenMAX,
+        due to limitations in the blitting hardware.
+
+<!--        TODO: Specify the supported versions
+      
+              The conformance description can also
+              describe the conformance degree (or level)
+              according to a definition given by the reference manual
+              or by the standard.
+              
+              Standard interfaces can be implemented in more than one
+              place in the architecture. In those cases, the behavior
+              of the implementations can differ. Several coexisting
+              implementations affect the documentation.
+              
+              If suitable, different implementations are documented by
+              the same category. The documentation shall clearly describe
+              that there are different implementations and the differences
+              between them. The differences between implementations are
+              expected to be small. -->
+      </para>
+      <para></para>
+    </section>
+  </chapter>
+
+  <chapter id="specifications">
+    <title>Specifications</title>
+    <!-- Do NOT change the chapter id or title! -->
+    <para>
+      bltlib does not implement a standard specification but defines its own API.
+      Still, it borrows from some of the data types used in OpenMAX.
+    </para>
+
+                    <row>
+                      <entry>OpenMAX AL 1.0.1</entry>
+        
+                      <entry></entry>
+                    </row> -->
+
+    <itemizedlist>
+      <listitem>
+        <para>
+            <ulink
+                url="http://www.khronos.org/registry/omxal/">Khronos registry (OpenMAX AL)
+            </ulink>
+        </para>        
+      </listitem>
+    </itemizedlist>
+
+  </chapter>
+
+</book>

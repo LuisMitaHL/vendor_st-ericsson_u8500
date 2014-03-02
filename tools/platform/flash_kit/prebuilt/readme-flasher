@@ -1,0 +1,828 @@
+flasher - a script to do all flashkit operations from one cmd line
+
+Note: Linux and Windows versions use slightly different command line
+syntax. Samples are given for both environments.
+
+
+1. Setup
+2. Operation
+2.1. List targets
+2.2. List areas
+2.3. Basic flashing
+2.4. Replacing a specific image
+2.5. Customize default config
+2.6. Command details
+2.6.1. -h --help
+2.6.2. -v --verbose
+2.6.3. -V --version
+2.6.4. -t --target-hw
+2.6.5. -l --list-targets
+2.6.6. -i --list-images
+2.6.7. -o --list-on-target-images
+2.6.8. -C --sign-for-commercial
+2.6.9. -p --signpackage
+2.6.10. -L --sign-local
+2.6.11. -N --no-signing-archive
+2.6.12. -B --boot-itp
+2.6.13. -e --erase
+2.6.14. -w --write
+2.6.15. -I --create-flasharchive
+2.6.16. -c --write-complete
+2.6.17. -F --create-complete-flasharchive
+2.6.18. -x --write-existing
+2.6.19. -d --dump-data
+2.6.20. -g --dump-gd
+2.6.21. -u --write-gd-unit
+2.6.22. -U --write_gd_file
+2.6.23. -s --write-sec-par
+2.6.24. -P --permanent-authentication
+2.6.25. -f --format-gd
+2.6.26. -G --write-gd-image
+2.6.27. -a --init-arb-table
+2.6.28. -b --set-bootmode
+2.6.29. -X --xlaunch
+2.6.30. -T --create-complete-flasharchive-cspsa
+2.6.31. -m --write-complete-cspsa
+2.6.32. --trigger-uart-port
+2.6.33. --debug
+2.6.34. --set-enhanced-area
+2.6.35. --dnt
+2.6.36. --write-otp
+2.6.37. --read-otp
+2.6.38. --sw_type_map
+2.6.39. -E --erase_no_emmc
+2.6.40. --write-rpmb
+2.6.41. -R --sign-remote
+2.6.42. --set-hardware-reset
+2.6.43. --set-unenhanced-force
+
+Appendix A. CSPSA Notes
+Appendix B. Update signed header with specified software version
+
+1. Setup
+
+Flasher consists of the following files:
+
+  File                          Content
+  ----                          -------
+  flasher                       Linux and Mac OS X version
+  flasher.bat                   Windows version
+  readme-flasher                This readme
+
+The default configuration to be flashed is made up of input from the
+following sources:
+
+  File                          Content
+  ----                          -------
+  config.list                   boot and modem configuration
+  _filelist_complete.txt        common images
+  flashlayout.txt               Physical layout
+  sw_type_map_no_signing.txt    Map of signing type for each image
+                                when not using commercial signing
+  sw_type_map.txt               Map of signing type for each image
+                                when using commercial signing
+  flasharchive.xml              Metadata about each image to flash
+
+When using local signing the following folders are used:
+  File                                  Content
+  ----                                  -------
+  signing/signpackages/<HW_TYPE_DIR>    Folder for local signpackages
+  /signing/signkeys/<HW_TYPE_DIR>       Folder for the corresponding keys
+
+Note: Under normal circumstances there is no need to modify these files.
+      They are maintained by the build system.
+      If there is a need to replace/change what images that are written
+      using "write complete" it should be done in
+      "_filelist_complete.txt"
+
+Prerequisites for Flasher on Mac OS X:
+  XCode installed.
+  The getopt and findutils MacPorts installed.
+    First install MacPorts (http://www.macports.org/install.php) then install the specific ports:
+    sudo port install getopt
+    sudo port install findutils
+
+2. Operation
+
+Multiple operations can (and shall) be executed in one go, meaning you only
+need to connect the ME once. Commands are executed in the order they appear
+on cmd line.The first command when interacting with an ME must always be -t<target>.
+
+If you use any of the sign option operations they MUST appear on commandline
+before any operations interacting with ME or operations for creating archives.
+These options set the conditions for signing loader and software:
+    -C --sign-for-commercial
+    -p --signpackage
+    -L --sign-local
+Samples:
+    ./flasher -t<HW> -e -C -c // Will fail! Commercial signing will not be
+                              // used for erase operation, as -C appears
+                              // after -e!
+    ./flasher -t<HW> -C -e -c // Correct order
+
+Parameters set on the command line are NOT persistent, meaning that you always
+have to give things like HW, sign package etc to the script.
+
+Run -h for a complete list of commands.
+
+Linux:
+$ ./flasher -h
+
+Windows:
+>flasher.bat -h
+
+
+Chapter 2.3. lists samples for the most common operations.
+
+Note that there is no backend console for Linux, only the backend icon in
+the status bar. In Windows there still is a backend console.
+
+
+2.1. List targets
+
+List all available HW, defined by config.list.One of the targets must be supplied
+on command line for any command interacting with ME.
+
+Sample cmd line and output:
+Linux:
+$ ./flasher -l
+
+Available target HW are defined in <TARGET_BUILD_DIR>/config.list.
+
+Windows:
+>flasher.bat -l
+
+Available target HW are defined in C:\<TARGET_IMAGE_DIR>\\config.list.
+
+
+2.2. List areas
+To list what areas are defined for your build, use command -i. This will list
+all images defined by flashlayout.txt. flashlayout.txt is maintained by SI.
+
+Sample cmd line and output:
+Linux:
+$ ./flasher -i
+
+Available images are defined in <TARGET_BUILD_DIR>/flashlayout.txt
+
+Windows:
+>flasher.bat -i
+
+Available images are defined in C:\<TARGET_IMAGE_DIR>\\flashlayout.txt.
+
+
+2.3. Basic flashing
+
+Sample basic operations. For full details, see each specific command.
+
+
+2.3.1. Linux
+
+  * Flash default configuration:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -c
+
+  * Erase ME and flash default configuration:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -e -c
+
+  * Erase ME and CSPSA, flash default configuration (CSPSA is not erased by -e):
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -e -e/flash0/TOC/CSPSA0 -c
+
+  * Erase ME and CSPSA, flash default configuration and populate CSPSA:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -e -e/flash0/TOC/CSPSA0 -c -Uu8500_default_cspsa.gdf
+
+  * Flash an already existing archive:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -xpath_to_archive/flasharchive.zip
+
+  * Set and bind security data. Any or all properties can be given.
+    Security parameters can be written on same command line as other operations.
+    (Not shown here for clarity)
+    IMEI            IMEI number, 15 characters"
+    SIMLOCK-CODES   SIM-lock codes. 16 chars per key.
+                     All keys must be given, separeted by ':'. In order as below.l
+                    <Network Lock Key>:<Network Subset Lock Key>:<Service Provider Lock Key>:<Corporate Lock Key>:<Flexible ESL Lock Key>"
+    COPS-DATA-FILE  File containing COPS data"
+
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -sSIMLOCK-CODES=11111111:22222222:33333333:44444444:55555555,IMEI=12345678901234,COPS-DATA-FILE=/home/user/dummy
+
+
+2.3.1. Windows
+
+  * Flash default configuration:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -c
+
+  * Erase ME and flash default configuration:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -e -c
+
+  * Erase ME and CSPSA, flash default configuration (CSPSA is not erased by -e):
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -e -e /flash0/TOC/CSPSA0 -c
+
+  * Erase ME and CSPSA, flash default configuration and populate CSPSA:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -e -e /flash0/TOC/CSPSA0 -c -U u8500_default_cspsa.gdf
+
+  * Flash an already existing archive:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -x path_to_archive/flasharchive.zip
+
+  * Set and bind security data. Any or all properties can be given.
+    Security parameters can be written on same command line as other operations.
+    (Not shown here for clarity)
+    IMEI            IMEI number, 15 characters"
+    SIMLOCK-CODES   SIM-lock codes. 16 chars per key.
+                     All keys must be given, separeted by ':'. In order as below.l
+                    <Network Lock Key>:<Network Subset Lock Key>:<Service Provider Lock Key>:<Corporate Lock Key>:<Flexible ESL Lock Key>"
+    COPS-DATA-FILE  File containing COPS data"
+
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -s SIMLOCK-CODES=11111111:22222222:33333333:44444444:55555555,IMEI=12345678901234,COPS-DATA-FILE=c:\images\copsdata\dummy
+
+
+2.4. Replacing a specific image
+
+Any image can be written independently, as long as it fits into the current
+flashlayout.
+
+  * To replace e.g. kernel when KERNEL area exists (U-BOOT config), run
+    Linux:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -w/flash0/TOC/KERNEL=./my_new_kernel/kernel.bin
+    Windows:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -w /flash0/TOC/KERNEL=c:\images\my_new_kernel\kernel.bin
+
+  * To replace e.g. kernel when boot area exists (LK config)
+    Linux:
+    2 possible options, whether using fastboot (simplest way) or creating boot image from kernel and ramdisk images and flash boot image.
+    Fastboot way:
+    Boot target in fastboot mode (see vendor/st-ericsson/boot/lk/doc/readme-fastboot for details)
+    On fastboot host linux PC run following fastboot command in images/ste_u9540_android_u8500_defconfig/ directory:
+    fastboot -b 0 flash:raw boot zImage ramdisk.img
+
+    Creating boot.img way:
+    On host linux PC run following command to create new boot image in images/ste_u9540_android_u8500_defconfig/ directory:
+    mkbootimg --base 0 --kernel zImage --ramdisk ramdisk.img -o new_boot.img
+    $ ./flasher -t ap9540_v10_db9540a0_e2 -w /flash0/TOC/SUBTOC/boot=./new_boot.img
+    Windows:
+    >flasher.bat -t ap9540_v10_db9540a0_e2 -w /flash0/TOC/SUBTOC/boot=c:\images\my_new_boot_img\boot.img
+
+  * Multiple images can be given, comma separated (depending on available areas, see chapter 2.2):
+    Linux:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -w/flash0/TOC/KERNEL=./my_new_kernel/kernel.bin,/flash0/TOC/NORMAL=./my_new_uboot/uboot.bin
+    $ ./flasher -t ap9540_v10_db9540a0_e2 -w /flash0/TOC/SUBTOC/boot=./new_boot.img,/flash0/TOC/NORMAL=./my_new_lk/lk.bin
+
+    Windows:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -w /flash0/TOC/KERNEL=c:\images\my_new_kernel\kernel.bin,/flash0/TOC/NORMAL=c:\my_new_uboot\uboot.bin
+    >flasher.bat -t ap9540_v10_db9540a0_e2 -w /flash0/TOC/SUBTOC/boot=c:\images\my_new_boot_img\boot.img,/flash0/TOC/NORMAL=c:\my_new_lk\lk.bin
+
+
+2.5. Customize default config
+
+Feel free to modify _filelist_complete.txt at any time to suit your needs.
+
+
+2.6. Command details
+
+  Note that no parameters are persistent. All parameters must be set on the
+  current commandline, i.e. target, sign package etc are NOT stored from
+  one execution to the next.
+
+
+2.6.1. -h --help
+  Display help screen
+
+
+2.6.2. -v --verbose
+  Verbose operation, detailed printout during operation.
+
+
+2.6.3. -V --version
+  Echo script version
+
+
+2.6.4. -t --target-hw
+  Set target HW to flash. Must always be first command.
+  Parameters: <HW>      HW as listed by -l
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst <other commands...>
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst <other commands...>
+
+
+2.6.5. -l --list-targets
+  List available HW configurations
+  Parameters: None
+
+  Sample:
+  See 2.1.
+
+
+2.6.6. -i --list-images
+  List images currently in flashlayout for target
+  Parameters: None
+
+  Sample:
+  See 2.2.
+
+
+2.6.7. -o --list-on-target-images
+  List devices on ME
+  Parameters: None
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -o
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -o
+
+
+2.6.8. -C --sign-for-commercial
+  Sign for commercial device. Default is RnD
+  Parameters: None
+
+  Sample:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -C <other commands...>
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -C <other commands...>
+
+
+2.6.9. -p --signpackage
+  Set Signpackage. Default is U8500_STE_R1E
+  Parameters: <SIGN_PACKAGE_NAME>
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -pU8500_CUST1 <other commands...>
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -p U8500_CUST1 <other commands...>
+
+
+2.6.10. -L --sign-local
+  Use local signing. Default is local signing.
+  Parameters: None
+
+  Sample:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -L <other commands...>
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -L <other commands...>
+
+2.6.11. -N --no-signing-archive
+  Do not sign flash archive. Default is that it is signed.
+  Note: To be able to flash an unsigned archive, loader support
+  is also required. As of today there is no such support in generic
+  U8500.
+  Parameters: None
+
+  Sample:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -N <other commands...>
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -N <other commands...>
+
+
+2.6.12. -B --boot-itp
+  Set BOOT_ITP flag in CSPSA ON or OFF.
+  Parameters: <[ON | OFF]> Set boot from ITP ON or OFF
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -BON
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -BON
+
+
+2.6.13. -e --erase
+  Erase flash
+  Parameters: <AREA>[,AREA2][...,AREAn].
+              Can be any valid flash area as listed by -i.
+              Any number of areas can be given.
+              If no area is given the entire flash (except CSPSA!) will be erased.
+              To erase CSPSA it must be given as a separate parameter.
+              To erase all including CSPSA in one go, run erase like so:
+              ./flasher -e -e/flash0/TOC/CSPSA0
+
+  Sample:
+  Erase all except CSPSA
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -e
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -e
+
+  Erase all including CSPSA
+  Linux:
+  ./flasher -threfp_v20_v6x_db8500b0_secst -e -e/flash0/TOC/CSPSA0
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -e -e /flash0/TOC/CSPSA0
+
+  Any area can be erased individually in this manner. To find out
+  which images are available, run 2.6.6. -i --list-images
+
+
+2.6.14. -w --write
+  Write <IMAGE> to ME according to flashlayout.
+  Supported images listed by -i.
+  Parameters: <IMAGE>     Image to write
+              <FILENAME>  File to use as <IMAGE>
+
+  See sample in chapter 2.4
+
+
+2.6.15. -I --create-flasharchive
+  Create flasharchive for ME according to flashlayout with supplied images
+  without writing it to ME.
+  Supported images listed by -i.
+  Parameters: <IMAGE>     Image to write
+              <FILENAME>  File to use as <IMAGE>
+
+  Sample:
+  * To create an archive for e.g. kernel, run
+  Linux:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -I/flash0/TOC/SUBTOC/KERNEL=./my_new_kernel/kernel.bin
+    Windows:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -I /flash0/TOC/SUBTOC/KERNEL=path_to_kernel\kernel.bin
+
+  * Multiple images can be given, comma separated:
+    Linux:
+    $ ./flasher -threfp_v20_v6x_db8500b0_secst -I/flash0/TOC/SUBTOC/KERNEL=./my_new_kernel/kernel.bin,/flash0/TOC/NORMAL=./my_new_uboot/uboot.bin
+    Windows:
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -I /flash0/TOC/SUBTOC/KERNEL=path_to_kernel\kernel.bin,/flash0/TOC/NORMAL=path_to_uboot\uboot.bin
+    >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -I /flash0/TOC/NORMAL="path_to_uboot_with_space\uboot.bin"
+
+
+2.6.16. -c --write-complete
+  Write complete image to ME. Default configuration is described
+  in 1. Setup.
+  Parameters: None
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -c
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -c
+
+
+2.6.17. -F --create-complete-flasharchive
+  Create a complete flasharchive without flashing it. Default configuration
+  is described in 1.
+  Parameters: None
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -F
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -F
+
+
+2.6.18. -x --write-existing
+  Write an existing archive to ME
+  Parameters: <ARCHIVE>   Flash archive to flash including optional path
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -x./path_to_archive/flasharchive.zip
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -x path_to_archive/flasharchive.zip
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -x "path_to_archive_with_space/flasharchive.zip"
+
+
+2.6.19. -d --dump-data
+  Dump memory region.
+  Parameters: <START>     Start address, hex
+              <LENGTH>    Amount of data, hex
+              [<OUTFILE>] Optional, out file name. Default is dump.bin
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -d0x00000000,0x00020000,firstblock.bin
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -d 0x00000000,0x00020000,firstblock.bin
+
+
+2.6.20. -g --dump-gd
+  Dump GD area to ASCII file
+  Parameters: [<OUTFILE>] Optional, out file name. Default is dump.gdf
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -gme_gd_dump.gdf
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -g me_gd_dump.gdf
+
+
+2.6.21. -u --write-gd-unit
+  Write GD parameter
+  Parameters: <UNIT>      GD unit, hex
+              <DATA>      GD data, hex
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -u0x100,0x11223344
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -u 0x100,0x11223344
+
+
+2.6.22. -U --write_gd_file
+  Write multiple gd data from ASCII <FILE>
+  Parameters: <FILE>      GD ASCII data file
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -Uu8500_default_cspsa.gdf
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -U u8500_default_cspsa.gdf
+
+
+2.6.23. -s --write-sec-par
+  Write security parameters and bind properties.
+  Parameters: <IMEI>            IMEI number, 15 characters
+              <SIMLOCK-CODES>   SIM-lock codes. 16 chars per key
+                                <Network Lock Key>:<Network Subset Lock Key>:<Service Provider Lock Key>:<Corporate Lock Key>:<Flexible ESL Lock Key>
+              <COPS-DATA-FILE>  File containing COPS data
+
+  At least one property is required. Any combination of one, two or all properties is valid,
+  in any order.
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -sSIMLOCK-CODES=11111111:22222222:33333333:44444444:55555555,IMEI=12345678901234,COPS-DATA-FILE=/home/user/dummy
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -sIMEI=12345678901234,COPS-DATA-FILE=/home/user/dummy
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -sSIMLOCK-CODES=11111111:22222222:33333333:44444444:55555555,COPS-DATA-FILE=/home/user/dummy
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -s SIMLOCK-CODES=11111111:22222222:33333333:44444444:55555555,IMEI=12345678901234,COPS-DATA-FILE=c:\images\copsdata\dummy
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -s IMEI=12345678901234,COPS-DATA-FILE=c:\images\copsdata\dummy
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -s SIMLOCK-CODES=11111111:22222222:33333333:44444444:55555555,COPS-DATA-FILE=c:\images\copsdata\dummy
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -s SIMLOCK-CODES=11111111:22222222:33333333:44444444:55555555,COPS-DATA-FILE="c:\<path with space>\images\copsdata\dummy"
+
+
+2.6.24. -P --permanent-authentication
+  Use permanent authentication.
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -P <other commands...>
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -P <other commands...>
+
+
+2.6.25. -f --format-gd
+  Format GD area
+  Parameters: None
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -f
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -f
+
+
+2.6.26. -G --write-gd-image
+  Write binary image to gd area
+  Parameters: <FILE>      binary image to write
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -Gu8500_default_cspsa.bin
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -G u8500_default_cspsa.bin
+
+
+2.6.27. -a --init-arb-table
+  Initilize anti-roll back table
+
+  Parameters: <data>
+  Id of a mobile device, can be entered in decimal or hex format,
+  if it is in hex format then it has to begin with 0x
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -a0xAABB
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -a 0xAABB
+
+
+2.6.28. -b --set-bootmode
+  Wait for next connected ME and send indication to start in special mode
+  Available modes: adl, production and normal_debug
+  Parameters: <bootmode>      bootmode to set
+
+  Note: for this there is no need to specify a hw type
+
+  Sample:
+  Linux:
+  $ ./flasher -badl
+  Windows:
+  >flasher.bat -b adl
+
+
+2.6.29. -X --xlaunch
+  Download bootimages plus file specified on command line to ram on next connected ME
+  Parameters: <DEBUGENABLED>    0 or 1
+              <FILE>            File to run as "normal"
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -X0,normal.bin
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -X 0,normal.bin
+
+2.6.30. -T --create-complete-flasharchive-cspsa
+  Create a complete flasharchive with default cspsa data without flashing it.
+  Parameters: None
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -T
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -T
+
+2.6.31. -m --write-complete-cspsa
+  Write complete image plus default cspsa data to ME. Default configuration is described
+  in 1. Setup.
+  Parameters: None
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -m
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -m
+
+2.6.32. --trigger-uart-port
+  Set name of UART port to be triggered. Must be specified after target.
+  Parameters: <PORT-NAME>      UART port name
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --trigger-uart-port=/dev/ttyS0 <other commands...>
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --trigger-uart-port COM1 <other commands...>
+
+2.6.33. --debug
+  Enable additional backend debug print
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --debug <other commands...>
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --debug <other commands...>
+
+2.6.34. --set-enhanced-area
+  Set enhanced area region in eMMC-MLC
+  Start address and lenght of enhanced area must be
+  write protected group aligned.
+  Enhanced area can be set only once in eMMC life time!
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --set-enhanced-area /flash0, 0x0, 0x200
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --set-enhanced-area /flash0, 0x0, 0x200
+
+2.6.35. --dnt
+  Write debug and test certificate to ME.
+  Parameters: <FILE>      Path to certificate file
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --dnt <FILE> <other commands...>
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --dnt <FILE> <other commands...>
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --dnt "<path with space><FILE>" <other commands...>
+
+2.6.36. --write-otp
+  Write OTP data to ME from input file.
+  Parameters: <FILE>      Path to and name of input file
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --write-otp=<FILE>
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --write-otp <FILE>
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --write-otp "<path with space><FILE>"
+
+2.6.37. --read-otp
+  Read OTP data from ME.
+  Parameters: <FILE>      Path to and name of output file
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --read-otp=<FILE>
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --read-otp <FILE>
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --read-otp "<path with space><FILE>"
+
+2.6.38. --sw_type_map
+  Set path to security profile definition.
+  Parameters: <FILE>      Path to security definition file
+
+  Sample:
+  Linux:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --sw_type_map=<FILE>
+
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --sw_type_map <FILE>
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --sw_type_map "<path with space><FILE>"
+
+2.6.39. -E --erase_no_emmc
+  Erase flash except the storage emmc partition
+  This will erase from 0x0 to 0xafffffff
+  On 9540 this prevents erasing a partition used as user storage.
+
+  Sample:
+  Linux:
+  $ ./flasher -tap9540_v10_db9540a0_e2 -E
+
+  Windows:
+  >flasher.bat -t ap9540_v10_db9540a0_e2 -E
+
+2.6.40. --write-rpmb
+  Write RPMB key
+  Invokes programming of RPMB authentication key in eMMC.
+  Note that the key can be programmed only once in eMMC lifetime.
+
+  Sample:
+  Linux:
+  $ ./flasher -tap9540_v10_db9540a0_e2 --write-rpmb
+
+  Windows:
+  >flasher.bat -t ap9540_v10_db9540a0_e2 --write-rpmb
+
+
+2.6.41. -R --sign-remote
+  Use remote signing. Default is local signing.
+  Parameters: None
+
+  Sample:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -R <other commands...>
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -R <other commands...>
+
+
+2.6.42. --set-hardware-reset
+  Set HW reset flag in eMMC.
+  Parameters: <[ON | OFF]> Set HW reset pin ON or OFF
+
+  Sample:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --set-hardware-reset=ON
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --set-hardware-reset=ON
+
+
+2.6.43. --set-unenhanced-force
+  Set forced flashing of enhanced images to unenhanced storage.
+  Parameters: <[ON | OFF]> Set ON or OFF
+  Dependencies: command --set-unenhanced-force should be executed
+  in same command sequence with command -x.
+  (Use flasharchive which contains enhanced image)
+
+  Sample:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst --set-unenhanced-force=ON -x./path_to_archive/flashimage.zip
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --set-unenhanced-force=ON -x path_to_archive/flashimage.zip
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst --set-unenhanced-force=ON -x "path_to_archive_with_space/flashimage.zip"
+
+
+Appendix A. CSPSA Notes
+
+A1. CSPSA Usage
+
+CSPSA area is used for storing ME specific data like radio calibration,
+SIMLOCK-codes, IMEI etc. For this reason it needs special treatment to
+avoid accidental destruction.
+
+Erase command (-e) erases everything BUT the CSPSA area and CSPSA TOC-entry.
+To erase CSPSA area, issue command -e /flash0/TOC/CSPSA0. This command will
+erase both CSPSA data area and TOC-entry.
+
+Trying to execute -f, format gd, when there is no CSPSA TOC entry will fail!
+
+Flashing ME with -c will create a TOC entry for CSPSA and create an uninitialized
+data area.
+Flashing with option -m will create TOC entry AND populate the area with
+content from binary image. (Default is u8500_default_cspsa.bin)
+
+
+A2. Binary vs ASCII data
+
+CSPSA data comes in two flavors:
+u8500_default_cspsa.bin : Raw binary representation of CSPSA data area.
+                          When writing binary image to ME the entire content
+                          of CSPSA on ME is replaced.
+u8500_default_cspsa.gdf : ASCII file with unit and unit data entries.
+                          When writing gdf image to ME the content of the
+                          file is merged with the content on ME
+
+
+Appendix B. Update signed header with specified software version
+
+Software version is taken from the third column in the sw_type_map.txt.
+The default version is 0, if no version is provided.
+To use sw_type_map.txt, use command line option -C --sign-for-commercial.
+Otherwise, by default,  sw_type_map_no_signing.txt is used.
+
+  Sample:
+  $ ./flasher -threfp_v20_v6x_db8500b0_secst -C <other commands...>
+  Windows:
+  >flasher.bat -t hrefp_v20_v6x_db8500b0_secst -C <other commands...>

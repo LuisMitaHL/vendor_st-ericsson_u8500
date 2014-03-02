@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# according to the board this script:
+# set the right fstab
+# modify some tat libraries
+
+case $1 in
+	start)
+		echo "Starting $0..."
+		rm -f /etc/fstab
+		rm -f /var/local/tat/tatlab/AB.xml
+		#8500 uses AB8500 while 8520 uses AB8505: this allow us to detect the board
+		if [ -d /sys/devices/platform/ab8500-i2c.0 ]
+		then # board 8500
+			ln -sf /etc/fstab.u8500 /etc/fstab
+			ln -sf AB8500.xml /var/local/tat/tatlab/AB.xml
+		else # board 8520
+			ln -sf /etc/fstab.u8520 /etc/fstab
+			ln -sf AB9540.xml /var/local/tat/tatlab/AB.xml
+		fi
+		;;
+	stop)
+		;;
+esac
+
+exit 0

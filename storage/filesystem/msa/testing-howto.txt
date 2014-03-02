@@ -1,0 +1,149 @@
+This document describes how to test MSA on a Ubuntu machine.
+
+Requirement: make sure that you have the libfuse-dev package installed.
+
+Build both the MSA daemon and the MSA FUSE test-client by simply executing
+make in the source directory. You should now have a ./msa binary as well
+as a ./msa_fuse binary.
+
+Execute ./msa --help and ./msa_fuse --help to try to familiarise yourself
+with the options. You might need to add more/change some compared to this
+brief introduction.
+
+Next step is to start three terminals (or use GNU screen if you like), in the
+first you execute the following command:
+
+mkdir srcdir
+echo hello > srcdir/world.txt
+./msa -t -d -l stderr -r srcdir/
+
+the options start msa in test mode, generate debug information in the form
+of request/reponse pairs, which end up on standard error and the final
+option configures msa to use srcdir as its root directory instead of the
+default /modemfs. MSA is now in a state where it has created a socket and
+is awaiting the emulated modem to connect over the socket and send file
+system requests to the daemon.
+
+In the second terminal you execute the following command:
+
+mkdir mnt
+./msa_fuse mnt/
+
+Now the FUSE-based MSA client emulating the modem software has connected to
+the socket created by the MSA daemon and is just about to send requests to
+MSA. If you look in the first terminal you might now see requests like
+these appearing:
+
+[MSA] Info Entering main MSA serving loop.
+[MSA] Request FSA_PROC_NULL no params
+[MSA] Response FSA_PROC_NULL no params
+[MSA] Request FSA_PROC_ROOT no params
+[MSA] Response FSA_PROC_ROOT status=0 (FSA_OK) handle=1 size=4096 mode=0700 ctime=1295051504,0 type=2
+[MSA] Request FSA_PROC_LOOKUP dir=1 name='autorun.inf'
+[MSA] FAILED realpath(path='/msa/srcdir/autorun.inf', resolved='/msa/srcdir/autorun.inf') ret=(nil) errno=2 (No such file or directory)
+[MSA] Response FSA_PROC_LOOKUP status=2 (ERR_NOENT)
+[MSA] Request FSA_PROC_LOOKUP dir=1 name='.Trash'
+[MSA] FAILED realpath(path='/msa/srcdir/.Trash', resolved='/msa/srcdir/.Trash') ret=(nil) errno=2 (No such file or directory)
+[MSA] Response FSA_PROC_LOOKUP status=2 (ERR_NOENT)
+[MSA] Request FSA_PROC_LOOKUP dir=1 name='.Trash-4293'
+[MSA] FAILED realpath(path='/msa/srcdir/.Trash-4293', resolved='/msa/srcdir/.Trash-4293') ret=(nil) errno=2 (No such file or directory)
+[MSA] Response FSA_PROC_LOOKUP status=2 (ERR_NOENT)
+
+These are harmless and only indicate that Ubuntu has through its Evolution
+software attempted to "auto-run" (in the Windows sense) the newly appearing
+file system volume and to locate a trashcan folder, none of which exist.
+
+In the third terminal you may now execute some commands e.g.:
+
+ls -l mnt
+
+This should give you a list of the files in the mnt directory (which are
+fetched through MSA from the srcdir directory):
+
+total 0
+-rw------- 0 root root 6 2011-01-15 01:31 world.txt
+
+It should also generate something like this in the first terminal:
+
+[MSA] Request FSA_PROC_GETATTR handle=1
+[MSA] Path FSA_PROC_GETATTR handle=1 -> path='/msa/srcdir'
+[MSA] Response FSA_PROC_GETATTR status=0 (FSA_OK) size=4096 mode=0700 ctime=1295052830,0 type=2
+[MSA] Request FSA_PROC_READDIR handle=1 cookie=0 count=48
+[MSA] Path FSA_PROC_READDIR handle=1 -> path='/msa/srcdir'
+[MSA] Response FSA_PROC_READDIR status=0 (FSA_OK) <dirent info not listed>
+[MSA] Request FSA_PROC_READDIR handle=1 cookie=2 count=48
+[MSA] Path FSA_PROC_READDIR handle=1 -> path='/msa/srcdir'
+[MSA] Response FSA_PROC_READDIR status=0 (FSA_OK) <dirent info not listed>
+[MSA] Request FSA_PROC_LOOKUP dir=1 name='world.txt'
+[MSA] Path FSA_PROC_LOOKUP dir=1 + name='world.txt' -> absPath='/msa/srcdir/world.txt'
+[MSA] Response FSA_PROC_LOOKUP status=0 (FSA_OK) handle=3 size=7, mode=0600 ctime=1295051504,0 type=1
+[MSA] Request FSA_PROC_GETATTR handle=3
+[MSA] Path FSA_PROC_GETATTR handle=3 -> path='/msa/srcdir/world.txt'
+[MSA] Response FSA_PROC_GETATTR status=0 (FSA_OK) size=7 mode=0600 ctime=1295051504,0 type=1
+
+This log indicates that msa_fuse tried to get the meta data of the
+directory, read all the entries and then looked up the handle for the file
+world.txt for which it retrieved the file system meta data. All of these
+requests were serviced by MSA using the srcdir/-directory.
+
+The handling of readdir() has been the cause of some bugs and
+therefore a thorough testsuite has been implemented. First make
+sure that your mnt directory is empty:
+
+rm mnt/world.txt
+ls -l mnt
+
+Now it is recommended that you run the testsuite execising readdir(),
+which may take some time:
+
+./testscript mnt/
+
+The test ought to exit upon any error, so unless there is an error at
+the end it can likely be assumed that all went well. To understand what
+the test does it is suggested that you familiarize yourself with testdir.c
+and testscript
+
+At this point you can try more commands like reading and writing files
+inside the mnt/-directory. This should cause more logs to be written to the
+first terminal and your jobs is to spot any errors. At some point someone
+might write a testsuite for MSA and then this would be excellent to run at
+this point.
+
+It may also be worth noting that in the second terminal a lot of logs will
+whizz by printed by the MSA FUSE-client. These inform you about how your
+commands and in the mnt/-directory are translated from requests sent by the
+Linux kernel to the MSA FUSE-client to the MSA daemon. If there is a
+problem somewhere you may need to parse these logs too. Oh, and do note
+that is it possible to enable more debug information both from the MSA
+daemon and MSA FUSE-client. Normally these are not necessary though.
+Be sure to keep the list of commands that you execute in the mnt/-directory
+(e.g. inside a script) so that it is easy to reproduce them if you see any
+problem.
+
+Once you are satisfied with the testing you can in the third terminal write:
+
+fusermount -u mnt
+
+which in the first terminal should cause a log along the lines of
+
+[MSA] Request FSA_PROC_POWERCTRL restart=1
+[MSA] Response FSA_PROC_POWERCTRL no params
+[MSA] ERROR MSA RPC-device was closed.
+[MSA] FATAL! Can not receive FSA request.
+[MSA] DBG1 Closing MSA RPC device.
+[MSA] DBG1 Cleaning up before ending MSA server.
+[MSA] FATAL! MSA server terminated.
+
+and in the second terminal:
+
+[MSA] DBG1 Dump: PROC_POWERCTRL response has no body.
+[MSA] Info Successfully disconnected.
+[MSA] FATAL! Ending MSA FUSE client. ret=0
+
+This indicates that you have asked the MSA FUSE-client to unmount itself
+from the mnt/-directory, thereby passing a PROC_POWERCTRL signal to the MSA
+daemon and then the MSA FUSE-client terminates itself. This closes the
+control socket and this in turn causes a read error in MSA daemon which
+terminates itself as well. This behaviour is perfectly normal and expected.
+
+Ok, that's it. Thanks for making it this far. Good luck with the testing!

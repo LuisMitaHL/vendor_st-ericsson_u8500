@@ -1,0 +1,22 @@
+startenv grab_vpip_display_01_01 _BACKUPFW_LRoutQVGA_HRoutVGA_CCP0_MOP500ED
+setusecase LR QVGA RGB565
+preview video prepare
+display LR
+preview video start
+wait 20
+preview video stop
+video prepare
+video start
+# LCD buffer is used when B2R2 is required
+initlcdbuf VGA RGB565
+display HR
+wait 10
+video stop
+display LR
+preview video start
+wait 20
+preview video stop
+preview video free
+video free
+stopenv
+

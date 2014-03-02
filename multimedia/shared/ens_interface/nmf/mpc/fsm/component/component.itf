@@ -1,0 +1,40 @@
+#include <fsm/component/include/Component.h>
+#include <fsm/component/include/Port.h>
+
+interface fsm.component.component unmanaged {
+
+    void          Component_init(Component * this, int portCount, Port * ports, const void *nmfitf);
+    OMX_STATETYPE Component_getState(const Component * this);
+    bool          Component_allPortsDisabled(const Component * this);
+    bool          Component_allPortsEnabled(const Component * this);
+    bool          Component_isOnePortFlushing(const Component * this);
+    void          Component_eventHandler(
+        Component * this, OMX_EVENTTYPE event, unsigned long data1, unsigned long data2);
+
+    void Port_init(Port * this, Direction dir,
+        bool bufferSupplier, bool isHWport,
+        Port * sharingPort, void *fifo,
+        int bufferCount, const void *nmfitf,
+        int portIdx, bool isDisabled,
+        bool isTunneled,
+        Component * compTHIS);
+
+    OMX_STATETYPE Port_getState(const Port * this);
+    void          Port_setTunnelStatus(Port * this, bool isTunneled);
+    void          Port_setBufferResetReqStatus(Port * this, bool flag);
+    Buffer_p      Port_getBuffer(const Port * this, int n);
+    bool          Port_isEnabled(const Port * this);
+    bool          Port_isFlushing(const Port * this);
+    int           Port_bufferCount(const Port * this);
+    int           Port_queuedBufferCount(const Port * this);
+    int           Port_dequeuedBufferCount(const Port * this);
+    bool          Port_postProcessCheck(const Port * this);
+
+    void     Port_returnBuffer(Port * this, Buffer_p buf);
+    void     Port_returnUnprocessedBuffer(Port * this, Buffer_p buf);
+    void     Port_queueBuffer(Port * this, Buffer_p buf);
+    Buffer_p Port_dequeueBuffer(Port * this);
+    void     Port_requeueBuffer(Port * this, Buffer_p buf);
+    void     Port_flushBuffers(Port * this);
+    void     Port_dequeueAndReturnBuffer(Port * this);
+}

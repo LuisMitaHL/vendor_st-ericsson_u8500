@@ -1,0 +1,84 @@
+//
+//       Configuration file for      algo (H264 encoder)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive h264enc.mpc.algo_hdtv singleton
+{
+
+provides lifecycle.constructor								as constructor
+//
+// Provided interfaces to a h264_encoder_ddep component
+provides h264enc.mpc.api.algo								as iAlgo
+//
+// Provided interfaces to a resource_manager component
+provides resource_manager.api.signal                        as iSignal referenced
+
+// Debug printf interface
+requires debug.mpc.api.printf								as oPrintf optional
+
+
+// Required interfaces to a resource_manager component
+requires resource_manager.api.buffer						as iBuffer
+requires resource_manager.api.mtf							as iMtf
+requires resource_manager.api.interrupt						as iInterrupt
+requires resource_manager.api.tcm_mem_alloc                 as iTcmAlloc
+
+//      --------------
+//      - Source files
+
+#ifdef __ndk8500_a0__
+#if 0 // VISIO
+	sources src/SVA_SUBSYSTEM/fhe_encode_macroblock.c
+	sources src/SVA_SUBSYSTEM/fhe_encode_slice.c
+	sources src/SVA_SUBSYSTEM/fhe_ime.c
+	sources src/SVA_SUBSYSTEM/fhe_header.c
+	sources src/SVA_SUBSYSTEM/fhe_algo.c
+#else // HDTV
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_encode_macroblock.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_encode_slice.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_ime.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_header.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_algo.c
+#endif
+	sources src/SVA_SUBSYSTEM/fhe_imc.c
+	sources src/SVA_SUBSYSTEM/fhe_h264e.c
+	sources src/SVA_SUBSYSTEM/fhe_newvbr.c
+	sources src/SVA_SUBSYSTEM/fhe_fle.c
+	sources src/SVA_SUBSYSTEM/fhe_cbr.c
+	sources src/algo.c
+	sources src/SVA_SUBSYSTEM/dma_api.c
+	sources src/SVA_SUBSYSTEM/bpu_api.c
+#endif
+
+	sources src/SVA_SUBSYSTEM/mtf_api.c
+
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+option CPPFLAGS "	-ICONF_ROOT/inc/SVA_SUBSYSTEM		\
+					-ICONF_ROOT/inc						\
+					-DMMDSP								\
+					-D__T1XHV_NMF_ENV=1					\
+					-D__LITTLE_ENDIAN_BITFIELD 			\
+					-D_MMDSP -DNOMADIK_VERSION 			\
+					-DFINAL_IMPLEMENTATION 				\
+					-D_FW_IMPLEMENTATION_ 				\
+					-DT1XHV_TASK_DECODE 				\
+					-DSTANDALONE_VERSION 				\
+					-DT1XHV_IDN_FW=COMPONENT_VERSION 	\
+					-DT1XHV_IDN_HW=HW_VERSION           \
+					-DOPTIM_HDTV						\
+					-DDEBUG_TRACES"
+
+//option CFLAGS "-O3 -g -mode16 -forceesramfn"
+option CFLAGS "-O3 -g -mode16 "
+//option CFLAGS "-g -mode16 "
+
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+
+}

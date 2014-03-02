@@ -1,0 +1,104 @@
+//
+//       Configuration file for      mpeg4enc
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite mpeg4enc singleton
+{
+//singleton
+
+// Sub components
+contains mpeg4enc.mpc.algo								as  cAlgo
+
+// Provided interfaces
+provides mpeg4enc.mpc.api.algo							as iAlgo
+provides mpeg4enc.mpc.api.update_algo							as iUpdateAlgo
+
+//
+//--requires debug.mpc.api.printf							as oPrintf optional
+
+// Required interfaces
+requires resource_manager.api.buffer					as iBuffer
+requires resource_manager.api.mtf						as iMtf
+requires resource_manager.api.interrupt				as iInterrupt
+
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo										to cAlgo.iAlgo
+binds this.iUpdateAlgo										to cAlgo.iUpdateAlgo
+
+//--binds cAlgo.oPrintf										to this.oPrintf
+
+binds cAlgo.iBuffer										to this.iBuffer
+binds cAlgo.iMtf										to this.iMtf
+binds cAlgo.iInterrupt								to this.iInterrupt
+
+
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+option stack = 512
+
+}
+
+
+
+
+#ifdef COMMENT
+//
+//       Configuration file for      mpeg4enc
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite mpeg4enc.mpc.MODULE //singleton
+
+// Sub components
+contains mpeg4enc.mpc.algo								as  cAlgo
+
+// Provided interfaces
+provides mpeg4enc.mpc.api.algo							as iAlgo
+provides mpeg4enc.mpc.api.update_algo					as iUpdateAlgo 
+
+//
+// Required interfaces
+requires resource_manager.api.buffer					as iBuffer
+requires resource_manager.api.mtf						as iMtf
+//requires resource_manager.api.interrupt				as iInterrupt
+
+requires mpeg4enc.mpc.api.end_algo                     as iResultMpeg4Encoder0
+requires mpeg4enc.mpc.api.end_algo                     as iResultMpeg4Encoder1
+
+binds cAlgo.iResultMpeg4Encoder0 to this.iResultMpeg4Encoder0
+binds cAlgo.iResultMpeg4Encoder1 to this.iResultMpeg4Encoder1
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo										to cAlgo.iAlgo
+binds this.iUpdateAlgo								    to cAlgo.iUpdateAlgo 
+binds cAlgo.iBuffer										to this.iBuffer
+binds cAlgo.iMtf										to this.iMtf
+//binds cAlgo.iInterrupt								to this.iInterrupt
+
+
+// 
+// Additionnal informations : 
+//      -----------------
+//      - Version numbers :
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+//    ----------------------------------------
+option stack = 512
+
+#endif

@@ -1,0 +1,349 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: CTI.cmm                         #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for Trace32 debug tool validation on STn8500.
+; This script checks the ECT components validity and eases the ECT access.
+; usage:
+; do cti <action> <cti_number> <parameter1> <parameter2> 
+; "action" can be:
+;	CS	check the ECT Coresight defined registers validity
+;	R	reset the ECT registers
+;	ENA	Enable the ECT
+;	DIS	Disable the ECT
+;	TC	configure the trigger to channel enabling
+;	CT	configure the channel to trigger enabling
+;	ACK	Acknowledge the CTITRIGOUT output.
+;	GATE	configure the CTIGATE register
+;	S	show all readable registers values
+;	APP	configure CTIAPPSET/CTIAPPCLEAR/CTIAPPPULSE
+; "cti_number" can be:
+;	0	ARMSS-CTI0	
+;	1	ARMSS-CTI1
+; Created by HED/CSP/CPT/ACT on 2008-12-22
+; Contact Jingyi-xiaoyan.lu@st.com
+
+ENTRY &action &cti &param1 &param2
+
+local &i
+
+// ======================= parameter control
+if "&cti"==""
+(
+	Print "CTI number missed."
+	enddo
+)
+
+// ======================= Declare base address and offset
+; base addresses
+if "&CTI0_base"==""
+(
+//A9SS
+&CTI0_base=0x801BC000
+&CTI1_base=0x801BD000
+&CTI2_base=0x80180000
+&nb_cti="3"
+)
+
+; CS registers offset
+&DEVICE_ID_offset=0xFC8
+&Dev_Type_Id_offset=0xFCC
+&Periph_ID0_offset=0xFE0
+&Periph_ID1_offset=0xFE4
+&Periph_ID2_offset=0xFE8
+&Periph_ID4_offset=0xFD0
+&Comp_ID0_offset=0xFF0
+&Comp_ID1_offset=0xFF4
+&Comp_ID2_offset=0xFF8
+&Comp_ID3_offset=0xFFC
+
+; control register offset
+&CTICONTROL_offset=0
+
+; Status registers offset
+&CTITRIGINSTATUS_offset=0x130
+&CTITRIGOUTSTATUS_offset=0x134
+&CTICHINSTATUS_offset=0x138
+&CTICHOUTSTATUS_offset=0x13C
+
+; Tigger <-> Channel registers offset
+&CTIINEN0_offset=0x20
+&CTIINEN1_offset=0x24
+&CTIINEN2_offset=0x28
+&CTIINEN3_offset=0x2C
+&CTIINEN4_offset=0x30
+&CTIINEN5_offset=0x34
+&CTIINEN6_offset=0x38
+&CTIINEN7_offset=0x3C
+&CTIOUTEN0_offset=0xA0
+&CTIOUTEN1_offset=0xA4
+&CTIOUTEN2_offset=0xA8
+&CTIOUTEN3_offset=0xAC
+&CTIOUTEN4_offset=0xB0
+&CTIOUTEN5_offset=0xB4
+&CTIOUTEN6_offset=0xB8
+&CTIOUTEN7_offset=0xBC
+
+; Application trigger registers offset
+&CTIAPPSET_offset=0x14
+&CTIAPPCLEAR_offset=0x18
+&CTIAPPPULSE_offset=0x1C
+
+; CTIGATE register offset
+&CTIGATE_offset=0x140
+
+; ACK register offset
+&CTIINTACK_offset=0x10
+
+// ====================== perform the action
+&i=0
+// perform the action for the given CTIs
+&cti_num=string.mid("&cti",&i,1)
+while "&cti_num"!=""
+(
+	if "&cti_num">="&nb_cti"
+	(
+		print "Unknown CTI number: &cti_num !"
+		enddo
+	)
+
+	&&cti_base="&CTI&(cti_num)_base"
+	
+// cti TC <cti_num> <CTIINENx> <val>
+if string.upr("&action")=="TC" ; Tigger To Chennel. configure the CTIINEN.
+(
+	if "&cti_call_verbose"=="yes"
+	(
+		print ""
+		print "***** Trigger to Channel enabling *****"
+	)
+	&&ctiinen_offset=&CTIINEN&(param1)_offset
+	data.set EAPB:&cti_base+&ctiinen_offset %long &param2
+	if "&cti_call_verbose"=="yes"
+		print "CTI&cti_num CTIINEN[&param1] = 0x", data.long(EAPB:&cti_base+&ctiinen_offset)&0xF
+)
+else if string.upr("&action")=="CT" ; Chennel To Trigger. configure the CTIOUTEN. 
+(
+	// cti CT <cti_num> <CTIINENx> <val>
+	if "&cti_call_verbose"=="yes"
+	(
+		print ""
+		print "***** Channel to Trigger enabling *****"
+	)
+	&&ctiouten_offset=&CTIOUTEN&(param1)_offset
+	data.set EAPB:&cti_base+&ctiouten_offset %long &param2
+	if "&cti_call_verbose"=="yes"
+		print "CTI&cti_num CTIOUTEN[&param1] = 0x", data.long(EAPB:&cti_base+&ctiouten_offset)&0xF
+)
+else if string.upr("&action")=="S" ; show status registers
+(
+	print ""
+	print "***** Show Status registers *****"
+	print "CTI&cti_num:"
+	print "CTICONTROL = 0x", data.long(EAPB:&cti_base+&CTICONTROL_offset)
+	print "CTITRIGINSTATUS = 0x", data.long(EAPB:&cti_base+&CTITRIGINSTATUS_offset)&0xFF
+	print "CTITRIGOUTSTATUS = 0x", data.long(EAPB:&cti_base+&CTITRIGOUTSTATUS_offset)&0xFF
+	print "CTICHINSTATUS = 0x", data.long(EAPB:&cti_base+&CTICHINSTATUS_offset)&0xF
+	print "CTICHOUTSTATUS = 0x", data.long(EAPB:&cti_base+&CTICHOUTSTATUS_offset)&0xF
+	print "CTIINEN0 = 0x", data.long(EAPB:&cti_base+&CTIINEN0_offset)&0xF
+	print "CTIINEN1 = 0x", data.long(EAPB:&cti_base+&CTIINEN1_offset)&0xF
+	print "CTIINEN2 = 0x", data.long(EAPB:&cti_base+&CTIINEN2_offset)&0xF
+	print "CTIINEN3 = 0x", data.long(EAPB:&cti_base+&CTIINEN3_offset)&0xF
+	print "CTIINEN4 = 0x", data.long(EAPB:&cti_base+&CTIINEN4_offset)&0xF
+	print "CTIINEN5 = 0x", data.long(EAPB:&cti_base+&CTIINEN5_offset)&0xF
+	print "CTIINEN6 = 0x", data.long(EAPB:&cti_base+&CTIINEN6_offset)&0xF
+	print "CTIINEN7 = 0x", data.long(EAPB:&cti_base+&CTIINEN7_offset)&0xF
+	print "CTIOUTEN0 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN0_offset)&0xF
+	print "CTIOUTEN1 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN1_offset)&0xF
+	print "CTIOUTEN2 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN2_offset)&0xF
+	print "CTIOUTEN3 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN3_offset)&0xF
+	print "CTIOUTEN4 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN4_offset)&0xF
+	print "CTIOUTEN5 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN5_offset)&0xF
+	print "CTIOUTEN6 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN6_offset)&0xF
+	print "CTIOUTEN7 = 0x", data.long(EAPB:&cti_base+&CTIOUTEN7_offset)&0xF
+	print "CTIGATE = 0x", data.long(EAPB:&cti_base+&CTIGATE_offset)&0xF
+	print "CTIAPPSET = 0x", data.long(EAPB:&cti_base+&CTIAPPSET_offset)&0xF
+	print "CTIAPPCLEAR = 0x", data.long(EAPB:&cti_base+&CTIAPPCLEAR_offset)&0xF
+	print "CTIAPPPULSE = 0x", data.long(EAPB:&cti_base+&CTIAPPPULSE_offset)&0xF
+)
+else if string.upr("&action")=="APP"
+(
+	if "&cti_call_verbose"=="yes"
+	(
+		print ""
+		print "***** configure the CTIAPPxxx *****"
+	&offset=0
+	)
+	if string.upr("&param1")=="S" ;CTIAPPSET
+	(
+		&offset=&CTIAPPSET_offset
+		if "&cti_call_verbose"=="yes"
+			print "CTI&cti_num: CTIAPPSET ="
+	)	
+	else if string.upr("&param1")=="C" ;CTIAPPCLEAR
+	(
+		&offset=&CTIAPPCLEAR_offset
+		if "&cti_call_verbose"=="yes"
+			print "CTI&cti_num: CTIAPPCLEAR ="
+	)	
+	else if string.upr("&param1")=="P"
+		(
+		&offset=&CTIAPPPULSE_offset
+		if "&cti_call_verbose"=="yes"
+			print "CTI&cti_num: CTIAPPPULSE ="
+	)	
+	else
+	(
+		print "Unknown CTIAPPxxx register ! Expected value: s, c, or p"
+		enddo
+	)
+	data.set EAPB:&cti_base+&offset %long &param2
+	if "&cti_call_verbose"=="yes"
+		print "0x", data.long(EAPB:&cti_base+&offset)&0xF, " DONE."
+)
+else if string.upr("&action")=="CS"
+(
+	print ""
+	print "***** Check ECT CoreSight defined registers *****"
+
+	// 1. read the DEVICE_ID, it should be 0x40800  !!!! in the MODEMSS, it's 0x204006 !!!!
+	if (data.long(EAPB:&cti_base+&DEVICE_ID_offset)&0xFFFFFFE0)!=0x40800
+	(
+		print "ARMSS-CTI0: Read DEVICE_ID FAILED. 0x", &DEVICE_ID_offset, " = 0x", data.long(EAPB:&cti_base+&DEVICE_ID_offset)
+		enddo
+	)
+	
+	// 2. read Device Type Identifier, should be 0x14
+	if data.long(EAPB:&cti_base+&Dev_Type_Id_offset)!=0x14
+	(
+		print "ARMSS-CTI0: Read Dev_Type_ID FAILED. 0x", &Dev_Type_Id_offset, " = 0x", data.long(EAPB:&cti_base+&Dev_Type_Id_offset)
+		enddo
+	)
+	
+	// 3. read PeriphID0, PeriphID1, PeriphID2, PeriphID4
+	if (data.long(EAPB:&cti_base+&Periph_ID0_offset)&0xFF)!=0x06
+	(
+		print "ARMSS-CTI0: Read PeriphID0 FAILED. 0x", &Periph_ID0_offset, " = 0x", data.long(EAPB:&cti_base+&Periph_ID0_offset)
+		enddo
+	)
+	
+	if (data.long(EAPB:&cti_base+&Periph_ID1_offset)&0xFF)!=0xB9
+	(
+		print "ARMSS-CTI0: Read PeriphID1 FAILED. 0x", &Periph_ID1_offset, " = 0x", data.long(EAPB:&cti_base+&Periph_ID1_offset)
+		enddo
+	)
+	if (data.long(EAPB:&cti_base+&Periph_ID2_offset)&0xF)!=0xB
+	(
+		print "ARMSS-CTI0: Read PeriphID2 FAILED. 0x", &Periph_ID2_offset, " = 0x", data.long(EAPB:&cti_base+&Periph_ID2_offset)
+		enddo
+	)
+	if (data.long(EAPB:&cti_base+&Periph_ID4_offset)&0xF)!=0x4
+	(
+		print "ARMSS-CTI0: Read PeriphID4 FAILED. 0x", &Periph_ID4_offset, " = 0x", data.long(EAPB:&cti_base+&Periph_ID4_offset)
+		enddo
+	)
+	
+	// 4. read ComponentID0-4
+	if (data.long(EAPB:&cti_base+&Comp_ID0_offset)&0xFF)!=0xD
+	(
+		print "ARMSS-CTI0: Read ComponentID0 FAILED. 0x", &Comp_ID0_offset, " = 0x", data.long(EAPB:&cti_base+&Comp_ID0_offset)
+		enddo
+	)
+	if (data.long(EAPB:&cti_base+&Comp_ID1_offset)&0xFF)!=0x90
+	(
+		print "ARMSS-CTI0: Read ComponentID1 FAILED. 0x", &Comp_ID1_offset, " = 0x", data.long(EAPB:&cti_base+&Comp_ID1_offset)
+		enddo
+	)
+	if (data.long(EAPB:&cti_base+&Comp_ID2_offset)&0xFF)!=0x5
+	(
+		print "ARMSS-CTI0: Read ComponentID2 FAILED. 0x", &Comp_ID2_offset, " = 0x", data.long(EAPB:&cti_base+&Comp_ID2_offset)
+		enddo
+	)
+	if (data.long(EAPB:&cti_base+&Comp_ID3_offset)&0xFF)!=0xB1
+	(
+		print "ARMSS-CTI0: Read ComponentID3 FAILED. 0x", &Comp_ID3_offset, " = 0x", data.long(EAPB:&cti_base+&Comp_ID3_offset)
+		enddo
+	)
+	print "CTI&cti_num: PASSED."
+)
+else if string.upr("&action")=="ENA"
+(
+	if "&cti_call_verbose"=="yes"
+	(
+		print ""
+		print "***** Enable the ECT *****"
+	)
+	// 1. enable the ECT
+	data.set EAPB:&cti_base+&CTICONTROL_offset %long 0x1
+	if data.long(EAPB:&cti_base+&CTICONTROL_offset)!=0x1
+	(
+		print "Enable the ARMSS-CTI0 FAILED."
+		enddo
+	)
+	if "&cti_call_verbose"=="yes"
+		print "CTI&cti_num: DONE"
+)
+else if string.upr("&action")=="GATE" ; CTIGATE configuration
+(
+	if "&cti_call_verbose"=="yes"
+	(
+		print ""
+		print "***** CTIGATE configuration *****"
+	)
+	data.set EAPB:&cti_base+&CTIGATE_offset %long &param1 ; disable CTICHOUT[3-0]
+	if "&cti_call_verbose"=="yes"
+		print "CTI&cti_num CTIGATE = 0x", data.long(EAPB:&cti_base+&CTIGATE_offset)&0xF
+)
+else if string.upr("&action")=="R" ; reset the ECT
+(
+	if "&cti_call_verbose"=="yes"
+	(
+		print ""
+		print "***** Reset ECT *****"
+	)
+	data.set EAPB:&cti_base+&CTIINEN0_offset %long 0
+	data.set EAPB:&cti_base+&CTIINEN1_offset %long 0
+	data.set EAPB:&cti_base+&CTIINEN2_offset %long 0
+	data.set EAPB:&cti_base+&CTIINEN3_offset %long 0
+	data.set EAPB:&cti_base+&CTIINEN4_offset %long 0
+	data.set EAPB:&cti_base+&CTIINEN5_offset %long 0
+	data.set EAPB:&cti_base+&CTIINEN6_offset %long 0
+	data.set EAPB:&cti_base+&CTIINEN7_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN0_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN1_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN2_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN3_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN4_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN5_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN6_offset %long 0
+	data.set EAPB:&cti_base+&CTIOUTEN7_offset %long 0
+	data.set EAPB:&cti_base+&CTIGATE_offset %long 0xF
+	data.set EAPB:&cti_base+&CTIAPPSET_offset %long 0
+	data.set EAPB:&cti_base+&CTIAPPCLEAR_offset %long 0
+	data.set EAPB:&cti_base+&CTIAPPPULSE_offset %long 0
+	data.set EAPB:&cti_base+&CTICONTROL_offset %long 0 ; disable the CTI
+	if "&cti_call_verbose"=="yes"
+		print "CTI&cti_num: DONE."
+)
+else if string.upr("&action")=="ACK"
+(
+	if "&cti_call_verbose"=="yes"
+	(
+		print ""
+		print "***** CTITRIGOUT ACK *****"
+	)
+	data.set EAPB:&cti_base+&CTIINTACK_offset %long &param1
+	if "&cti_call_verbose"=="yes"
+		print "CTI&cti_num: writing &param1 DONE (w/o readback)."
+)
+else
+(
+	print "Unknown ECT action: &action !"
+	enddo
+)
+
+	&i=&i+1
+	&cti_num=string.mid("&cti",&i,1)
+)
+
+enddo

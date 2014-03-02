@@ -1,0 +1,588 @@
+//============================================================================
+// Lauterbach T32 Emulator script: backup_ram_debug.cmm
+//
+// Comments: Extract a subset of backupRAM parameters from DDR CoreDump
+//
+//
+// Written by: qriceve
+//
+// Creation date: 07/26/2012
+// Last Change: 09/13/2012 - Fix review comments
+//
+//============================================================================
+
+&prcmu_reg_debug="prcmu_reg_debug.log"
+
+area.create PRCMU_DBG 75. 180.
+area.select PRCMU_DBG
+area.clear PRCMU_DBG
+area.open PRCMU_DBG &prcmu_reg_debug
+area.view PRCMU_DBG
+
+&db8500_dump_data=v.value(db8500_dump)
+&prcmu_non_sec_1=0
+&prcmu_non_sec_2=0
+&prcmu_pmb=0
+&prcmu_thermal=0
+&prcmu_icn_pmu=0
+
+&max_idx=v.value(sizeof(db8500_dump)/sizeof(struct dbx500_dump_info))
+print "max_idx: &max_idx"
+
+&ENTRY="((struct dbx500_dump_info*)&db8500_dump_data)"
+&idx=0
+
+while (&idx<&max_idx)
+(
+	&name_p=v.value(&ENTRY[&idx]->name)
+	&text=data.string(d:&name_p)
+
+	print "name: &text"
+	if (data.string(d:&name_p)=="prcmu_non_sec_1")
+	(
+		&prcmu_non_sec_1=v.value(&ENTRY[&idx]->data)
+		print "Found it! prcmu_non_sec_1: &prcmu_non_sec_1 "
+	)
+	if (data.string(d:&name_p)=="prcmu_non_sec_2")
+	(
+		&prcmu_non_sec_2=v.value(&ENTRY[&idx]->data)
+		print "Found it! prcmu_non_sec_2: &prcmu_non_sec_2 "
+	)
+	if (data.string(d:&name_p)=="prcmu_pmb")
+	(
+		&prcmu_pmb=v.value(&ENTRY[&idx]->data)
+		print "Found it! prcmu_pmb: &prcmu_pmb "
+	)
+	if (data.string(d:&name_p)=="prcmu_thermal")
+	(
+		&prcmu_thermal=v.value(&ENTRY[&idx]->data)
+		print "Found it! prcmu_thermal: &prcmu_thermal "
+	)
+	if (data.string(d:&name_p)=="prcmu_icn_pmu")
+	(
+		&prcmu_icn_pmu=v.value(&ENTRY[&idx]->data)
+		print "Found it! prcmu_icn_pmu: &prcmu_icn_pmu "
+	)
+
+	&idx=&idx+1
+)
+
+print " "
+print "Extracted info from dump:"
+print "========================="
+print " "
+print "PLLs"
+print "======================================================"
+; ================= ARM  PLL =================
+&arm_pll_address=&prcmu_non_sec_1+0x88
+&arm_pll_value=data.long(D:&arm_pll_address)
+
+&pll_value=&arm_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&pll_frequency=384.*&pll_ldf/&pll_odf/&pll_idf/10.
+
+&arm_pll_frequency=&pll_frequency
+print "ARM  PLL Frequency: ", %DECIMAL &arm_pll_frequency,"MHz"
+
+&arm_pll_enable_address=&prcmu_non_sec_1+0x98
+if data.long(AD:&arm_pll_enable_address)==0
+	print "- ARM PLL Low Power Mode"
+else
+	print "- ARM PLL Running"
+
+; ================= DDR  PLL =================
+&ddr_pll_address=&prcmu_non_sec_1+0x8c
+
+&ddr_pll_value=data.long(D:&ddr_pll_address)
+
+&pll_value=&ddr_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&pll_frequency=384.*&pll_ldf/&pll_odf/&pll_idf/10.
+
+&ddr_pll_frequency=&pll_frequency
+print "DDR  PLL Frequency: ", %DECIMAL &ddr_pll_frequency,"MHz"
+
+&ddr_pll_enable_address=&prcmu_non_sec_1+0x9C
+if data.long(D:&ddr_pll_enable_address)==0
+	print "- DRR PLL not requested by the PRCMU"
+else
+	print "- DRR PLL requested by the PRCMU"
+
+; ================= SOC0 PLL =================
+&soc0_pll_address=&prcmu_non_sec_1+0x80
+&soc0_pll_value=data.long(D:&soc0_pll_address)
+
+&pll_value=&soc0_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&pll_frequency=384.*&pll_ldf/&pll_odf/&pll_idf/10.
+
+&soc0_pll_frequency=&pll_frequency
+print "SOC0 PLL Frequency: ", %DECIMAL &soc0_pll_frequency,"MHz"
+
+&soc0_pll_enable_address=&prcmu_non_sec_1+0x90
+if data.long(D:&soc0_pll_enable_address)==0
+	print "- SOC0 PLL Low Power Mode"
+else
+	print "- SOC0 PLL Running"
+
+; ================= SOC1 PLL =================
+&soc1_pll_address=&prcmu_non_sec_1+0x84
+&soc1_pll_value=data.long(D:&soc1_pll_address)
+
+&pll_value=&soc1_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&pll_frequency=384.*&pll_ldf/&pll_odf/&pll_idf/10.
+
+&soc1_pll_frequency=&pll_frequency
+print "SOC1 PLL Frequency: ", %DECIMAL &soc1_pll_frequency,"MHz"
+
+&soc1_pll_enable_address=&prcmu_non_sec_1+0x94
+if data.long(D:&soc1_pll_enable_address)==0
+	print "- SOC1 PLL Low Power Mode"
+else
+	print "- SOC1 PLL Running"
+
+; ================= DSI PLL =================
+&dsi_pll_address=&prcmu_non_sec_2+0xFC
+&dsi_pll_value=data.long(D:&dsi_pll_address)
+
+&pll_value=&dsi_pll_value
+&pll_ldf=&pll_value>>0.&0x7F
+&pll_odf=&pll_value>>8.&0xF
+&pll_idf=&pll_value>>16.&0xF
+&pll_div=(&pll_value>>24.&0x1)+1
+&pll_frequency=384.*&pll_ldf/&pll_odf/&pll_idf/10./&pll_div
+
+&dsi_pll_frequency=&pll_frequency
+print "DSI  PLL Frequency: ", %DECIMAL &dsi_pll_frequency,"MHz"
+
+&dsi_pll_enable_address=&prcmu_non_sec_2+0x100
+if data.long(D:&dsi_pll_enable_address)==0
+	print "- DSI PLL Low Power Mode"
+else
+	print "- DSI PLL Running"
+
+print "======================================================"
+
+; ================= 32k PLL =================
+print "32k PLL"
+&32k_pll_enable_address=&prcmu_non_sec_1+0x10C
+&32k_pll_enable_value=data.long(D:&32k_pll_enable_address)
+
+&prcm_pll32k_enable=&32k_pll_enable_value>>0.&0x1
+&prcm_pll32k_bidir_oen=&32k_pll_enable_value>>1.&0x1
+&prcm_pll32k_gate_en=&32k_pll_enable_value>>2.&0x1
+
+if &prcm_pll32k_enable==0
+	print "- PLL Low Power Mode"
+else
+	print "- PLL Running"
+
+if &prcm_pll32k_bidir_oen==0
+	print "- Bidir pad is an input"
+else
+	print "- Bidir pad is driving"
+
+if &prcm_pll32k_gate_en==0
+	print "- PLL Output propagated to the full SOC"
+else
+	print "- PLL Ouput masked"
+print "======================================================"
+; ================= RNG oscillator =================
+&rng_enable_address=&prcmu_non_sec_2+0x108
+&rng_enable_value=data.long(D:&rng_enable_address)&0x1
+
+if &rng_enable_value==0
+  print "RNG oscillator is OFF"
+if &rng_enable_value==1
+  print "RNG oscillator is RUNNING"
+
+print "======================================================"
+; ================= CLK ACTIV =================
+print "CLK ACTIV"
+
+&clkactiv_address=&prcmu_non_sec_2+0x538-0x404
+&clkactiv_value=data.long(D:&clkactiv_address)
+
+&clk32_running=&clkactiv_value>>0.&0x1
+&sysclk_running=&clkactiv_value>>1.&0x1
+&pllsoc0_running=&clkactiv_value>>2.&0x1
+&pllsoc1_running=&clkactiv_value>>3.&0x1
+&pllddr_running=&clkactiv_value>>4.&0x1
+&stw4500_ulpclk_running=&clkactiv_value>>5.&0x1
+&db8500_ulpclk_running=&clkactiv_value>>6.&0x1
+&msp0sck_running=&clkactiv_value>>7.&0x1
+&msp2sck_running=&clkactiv_value>>8.&0x1
+&pllsoc0_en=&clkactiv_value>>16.&0x1
+&pllsoc1_en=&clkactiv_value>>17.&0x1
+&pllddr_div12_en=&clkactiv_value>>18.&0x1
+&pllddr_div2_en=&clkactiv_value>>19.&0x1
+&pllsoc0_div12_en=&clkactiv_value>>20.&0x1
+&pllsoc0_div2_en=&clkactiv_value>>21.&0x1
+
+print "- CLK32    RUNNING........: ", %DECIMAL &clk32_running
+print "- SYSCLK   RUNNING........: ", %DECIMAL &sysclk_running
+print "- SOC0 PLL RUNNING........: ", %DECIMAL &pllsoc0_running
+print "- SOC1 PLL RUNNING........: ", %DECIMAL &pllsoc1_running
+print "- DDR  PLL RUNNING........: ", %DECIMAL &pllddr_running
+print "- STW4500 ULPCLK RUNNING..: ", %DECIMAL &stw4500_ulpclk_running
+print "- DB8500  ULPCLK RUNNING..: ", %DECIMAL &db8500_ulpclk_running
+print "- MSP0 SCK RUNNING........: ", %DECIMAL &msp0sck_running
+print "- MSP1 SCK RUNNING........: ", %DECIMAL &msp2sck_running
+print "- SOC0 PLL ENABLE.........: ", %DECIMAL &pllsoc0_en
+print "- SOC1 PLL ENABLE.........: ", %DECIMAL &pllsoc1_en
+print "- DDR PLL DIV12  ENABLE...: ", %DECIMAL &pllddr_div12_en
+print "- DDR PLL DIV2   ENABLE...: ", %DECIMAL &pllddr_div2_en
+print "- SOC0 PLL DIV12 ENABLE...: ", %DECIMAL &pllsoc0_div12_en
+print "- SOC0 PLL DIV2  ENABLE...: ", %DECIMAL &pllsoc0_div2_en
+print "======================================================"
+
+print " "
+print "PRCMU clock/PLL/reset register description"
+print "======================================================"
+
+&data=data.long(D:&prcmu_non_sec_1+0x80)
+print "PRCM_PLLSOC0_FREQ = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x90)
+print "PRCM_PLLSOC0_ENABLE = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xA0)
+print "PRCM_PLLSOC0_LOCKP = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x84)
+print "PRCM_PLLSOC1_FREQ = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x94)
+print "PRCM_PLLSOC1_ENABLE = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xA4)
+print "PRCM_PLLSOC1_LOCKP = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x10C)
+print "PRCM_PLL32K_ENABLE = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x110)
+print "PRCM_PLL32K_LOCKP = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x88)
+print "PRCM_PLLARM_FREQ = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x98)
+print "PRCM_PLLARM_ENABLE = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xA8)
+print "PRCM_PLLARM_LOCKP = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x114)
+print "PRCM_ARM_CHGCLKREQ = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x118)
+print "PRCM_ARM_PLLDIVPS = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x8c)
+print "PRCM_PLLDDR_FREQ = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x9C)
+print "PRCM_PLLDDR_ENABLE = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xAC)
+print "PRCM_PLLDDR_LOCKP = &data"
+
+// prcmu_base + 0x50C
+&data=data.long(D:&prcmu_non_sec_2+0x108)
+print "PRCM_RNG_ENABLE = &data"
+
+// prcmu_base + 0x500
+&data=data.long(D:&prcmu_non_sec_2+0xFC)
+print "PRCM_PLLDSI_FREQ = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x100)
+print "PRCM_PLLDSI_ENABLE = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x104)
+print "PRCM_PLLDSI_LOCKP = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xE8)
+print "PRCM_MODECLK = &data"
+
+&data=data.long(D:&prcmu_non_sec_1)
+print "PRCM_ARMCLKFIX_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x4)
+print "PRCM_ACLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x8)
+print "PRCM_SVAMMDSPCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xc)
+print "PRCM_SIAMMDSPCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x14)
+print "PRCM_SGACLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x18)
+print "PRCM_UARTCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1c)
+print "PRCM_MSP02CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x288)
+print "PRCM_MSP1CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x20)
+print "PRCM_I2CCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x24)
+print "PRCM_SDMMCCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x28)
+print "PRCM_SLIMCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x2c)
+print "PRCM_PER1CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x30)
+print "PRCM_PER2CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x34)
+print "PRCM_PER3CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x38)
+print "PRCM_PER5CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x3c)
+print "PRCM_PER6CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x40)
+print "PRCM_PER7CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x44)
+print "PRCM_LCDCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x48)
+print "PRCM_SPARE1CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x4c)
+print "PRCM_BMLCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x50)
+print "PRCM_HSITXCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x54)
+print "PRCM_HSIRXCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x58)
+print "PRCM_HDMICLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x5c)
+print "PRCM_APEATCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x60)
+print "PRCM_APETRACECLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x64)
+print "PRCM_MCDECLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x68)
+print "PRCM_IPI2CCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x6c)
+print "PRCM_DSIALTCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x70)
+print "PRCM_SPARE2CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x74)
+print "PRCM_DMACLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x78)
+print "PRCM_B2R2CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x7c)
+print "PRCM_TVCLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xB0)
+print "PRCM_XP70CLK_MGT = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x52C-0x404)
+print "PRCM_DSITVCLK_DIV = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x530-0x404)
+print "PRCM_DSI_PLLOUT_SEL = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x534-0x404)
+print "PRCM_DSI_GLITCHFREE_EN = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x534-0x404)
+print "PRCM_DSI_GLITCHFREE_EN = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1E4)
+print "PRCM_APE_RESETN_SET = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1E8)
+print "PRCM_APE_RESETN_CLR = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1EC)
+print "PRCM_APE_RESETN_VAL = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1F0)
+print "PRCM_A9_RESETN_SET = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1F4)
+print "PRCM_A9_RESETN_CLR = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1F8)
+print "PRCM_A9_RESETN_VAL = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x1FC)
+print "PRCM_MOD_RESETN_VAL = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x200)
+print "PRCM_MOD_RESETN_CLR = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x204)
+print "PRCM_MOD_RESETN_VAL = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x208)
+print "PRCM_GPIO_RESETN_SET = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x20C)
+print "PRCM_GPIO_RESETN_CLR = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x210)
+print "PRCM_GPIO_RESETN_VAL = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x214)
+print "PRCM_4500_RESETN_SET = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x218)
+print "PRCM_4500_RESETN_CLR = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x21C)
+print "PRCM_4500_RESETN_VAL = &data"
+
+//0x1040 PRCM_PERIPH4_RESETN_SET
+//0x1044 PRCM_PERIPH4_RESETN_CLR
+//0x1048 PRCM_PERIPH4_RESETN_VAL
+
+&data=data.long(D:&prcmu_non_sec_1+0x2A0)
+print "PRCM_DAP_RESETN_SET = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x2A4)
+print "PRCM_DAP_RESETN_CLR = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x2A8)
+print "PRCM_DAP_RESETN_VAL = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x238)
+print "PRCM_SWD_RST_TEMPO = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x23C)
+print "PRCM_RST_4500_TEMPO = &data"
+
+//0x103C PRCM_RESET_STATUS
+
+print " "
+print "Timer registers"
+print "======================================================"
+
+&data=data.long(D:&prcmu_non_sec_1+0xB4)
+print "PRCM_TIMER_0_REF = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xB8)
+print "PRCM_TIMER_0_DOWNCOUNT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xBC)
+print "PRCM_TIMER_0_MODE = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xC0)
+print "PRCM_TIMER_1_REF = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xC4)
+print "PRCM_TIMER_1_DOWNCOUNT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xC8)
+print "PRCM_TIMER_1_MODE = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xCC)
+print "PRCM_TIMER_2_REF = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xD0)
+print "PRCM_TIMER_2_DOWNCOUNT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0xD4)
+print "PRCM_TIMER_2_MODE = &data"
+
+//&data=data.long(D:&prcmu_non_sec_1+0xD8)
+//print "??? = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x338)
+print "PRCM_TIMER_3_REF = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x33C)
+print "PRCM_TIMER_3_DOWNCOUNT = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x340)
+print "PRCM_TIMER_3_MODE = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x450-0x404)
+print "PRCM_TIMER_4_REF = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x454-0x404)
+print "PRCM_TIMER_4_DOWNCOUNT = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x458-0x404)
+print "PRCM_TIMER_4_MODE = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x45C-0x404)
+print "PRCM_TIMER_5_REF = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x460-0x404)
+print "PRCM_TIMER_5_DOWNCOUNT = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x464-0x404)
+print "PRCM_TIMER_5_MODE = &data"
+
+print " "
+print "ePODs"
+print "======================================================"
+&data=data.long(D:&prcmu_non_sec_2)
+print "PRCM_APE_EPOD_CFG = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x408-0x404)
+print "PRCM_DDR_EPOD_CFG = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x418-0x404)
+print "PRCM_EPOD_C_VAL = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x410-0x404)
+print "PRCM_EPOD_C_SET = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x414-0x404)
+print "PRCM_EPOD_C_CLR = &data"
+
+&data=data.long(D:&prcmu_non_sec_2+0x41C-0x404)
+print "PRCM_EPOD_VOK = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x300)
+print "PRCM_SRAM_DEDCSTOV = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x304)
+print "PRCM_SRAM_LS_SLEEP = &data"
+
+&data=data.long(D:&prcmu_non_sec_1+0x308)
+print "PRCM_SRAM_A9 = &data"
+print "======================================================"
+
+
+area.close PRCMU_DBG
+area.select A000

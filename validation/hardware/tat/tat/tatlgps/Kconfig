@@ -1,0 +1,35 @@
+#
+# Tatlgps configuration
+#
+
+menuconfig TATLGPS
+	bool "Tatlgps"
+	depends on DTHSRVHELPER && TATTOOLS && ISI_COMMON_LIB && TATLMODEMSRV
+	help
+	  depends on DTHSRVHELPER, TATTOOLS, ISI_COMMON_LIB and TATLMODEMSRV
+
+if TATLGPS
+
+config TATLGPS_DIR
+	string
+	default ../tat/tat/tatlgps
+
+config TATLGPS_DEPS
+	string
+	default "DTHSRVHELPER TATTOOLS ISI_COMMON_LIB TATLMODEMSRV"
+
+config TATLGPS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLGPS
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLGPS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLGPS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLGPS

@@ -1,0 +1,46 @@
+test_start    CODEC_0005
+test_property TEST_NAME simple_transition
+
+alias TIMEOUT  0
+alias ITER_CPT 0
+
+
+OMX_GetHandle    renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand  renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent   renderer OMX_EventCmdComplete OMX_CommandPortDisable 1 TIMEOUT
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+MMTE_attach_io    renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 1 
+
+MMTE_DispatchState OMX_StateIdle renderer
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=60
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+
+MMTE_NMF_ListComponent
+
+# Start loop
+loop 5
+mmte_sleep 2000
+
+MMTE_DispatchState OMX_StateExecuting renderer
+mmte_sleep 1000
+MMTE_DispatchState OMX_StateIdle  renderer
+MMTE_DispatchState OMX_StateLoaded  renderer
+MMTE_detach_io  renderer 0 
+MMTE_attach_io    renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 1 
+MMTE_DispatchState OMX_StateIdle  renderer
+mmte_sleep 1000
+
+arithmeticalias ITER_CPT+ 1
+endloop
+
+
+# Deinstantiate renderer
+MMTE_DispatchState OMX_StateLoaded renderer 
+ens_network_destroy
+
+unalias TIMEOUT
+
+MMTE_CheckMemoryStatus
+test_end

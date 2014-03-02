@@ -1,0 +1,31 @@
+test_start GSMHR_004 
+test_property  TEST_NAME  gsmhrhostenc_enable_disable_port_omxall
+
+# instantiate and configure GSMHR encoder
+#do $(NOMADIK)/gsmhr/mmte_script/encoder/$(NOMADIK)/gsmhr/mmte_script/encoder/gsmhr_enc_short_reformatted_payload_host.ate gsmhr input_reference output_reference
+#
+OMX_GetHandle       gsmhr OMX.ST.AFM.encoder.gsmhr_host
+OMX_SetParameter    gsmhr OMX_IndexParamAudioGsm_HR nPortIndex=1 bDTX=OMX_FALSE
+OMX_SetParameter    gsmhr OMX_IndexParamAudioPcm nPortIndex=0 eEndian=OMX_EndianLittle
+MMTE_CheckParameter gsmhr OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eChannelMapping[0]=OMX_AUDIO_ChannelCF eEndian=OMX_EndianLittle
+OMX_SetParameter    gsmhr OMX_IndexParamPortDefinition nPortIndex=0 format.audio.bFlagErrorConcealment=OMX_FALSE
+
+alias INPUT_FILE    $(AUDIO_STREAMS)/gsmhr/streams/short/short.inp
+ate_attach_io       gsmhr 0 MEM $(INPUT_FILE) 0 0 0
+test_property       input_file $(AUDIO_STREAMS)/gsmhr/streams/short/short.inp
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/gsmhr_enc_nodtx_host.out
+alias OUTPUT_SIZE   4800
+ate_attach_io       gsmhr 1 MEM $(OUTPUT_FILE) $(OUTPUT_SIZE) 0 0
+test_property       output_file $(OUTPUT_DIR)/gsmhr_enc_nodtx_host.out
+alias REF_FILE      $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec
+test_property       ref_file $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec
+alias REF_DIGEST    $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec_digest.hash
+test_property       ref_digest $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec_digest.hash
+
+# test OMX state machine 
+do $(NOMADIK)/afm/mmte_script/enable_disable_port_omxall.ate gsmhr
+
+unalias REF_FILE
+unalias OUTPUT_FILE
+test_end

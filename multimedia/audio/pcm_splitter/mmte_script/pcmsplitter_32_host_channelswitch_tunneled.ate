@@ -1,0 +1,72 @@
+test_start PCM_SPL_32_host_022
+test_property TEST_NAME pcmsplitter_32_host_channelswitch_tunneled
+
+OMX_GetHandle p1 OMX.ST.AFM.pcmsplitter_host
+OMX_GetHandle p2 OMX.ST.AFM.pcmsplitter_host
+
+OMX_SetParameter    p1 OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+OMX_SetParameter    p2 OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+OMX_SetParameter p1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nBitPerSample=32 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+OMX_SetParameter p1 OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nBitPerSample=32 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+OMX_SetParameter p2 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nBitPerSample=32 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF   
+OMX_SetParameter p2 OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nBitPerSample=32 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SetupTunnel p1 1 p2 0
+
+OMX_SetConfig   p1 OMX_IndexConfigAudioChannelSwitchBoard nPortIndex=1 nOutputChannel[0]=0 nOutputChannel[1]=1
+OMX_SetConfig   p2 OMX_IndexConfigAudioChannelSwitchBoard nPortIndex=1 nOutputChannel[0]=0 
+
+OMX_SendCommand p1 OMX_CommandPortDisable 2
+MMTE_WaitEvent  p1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SendCommand p2 OMX_CommandPortDisable 2
+MMTE_WaitEvent  p2 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+alias OUTPUT_FILE $(OUTPUT_DIR)/pcmsplitter_32_host_pcm_44k_mono.out
+MMTE_attach_io p1 0 MEM $(AUDIO_STREAMS)/pcm_splitter/streams/sin32_440.pcm 0 0 0
+MMTE_attach_io p2 1 MEM $(OUTPUT_FILE) 5000000 0 0
+alias REF_FILE $(AUDIO_STREAMS)/pcm_splitter/streams/pcm_32_44k_mono_host.ref.out
+
+OMX_SendCommand p1 OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand p2 OMX_CommandStateSet OMX_StateIdle
+
+MMTE_AllocateBuffers p1 0
+MMTE_AllocateBuffers p2 1
+
+MMTE_WaitEvent p1  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent p2  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand p1 OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand p2 OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent p1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent p2 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent p2 OMX_EventBufferFlag 1 0
+#mmte_sleep 2000
+
+OMX_SendCommand p1 OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand p2 OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent p1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent p2 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand p1 OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand p2 OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers p1 0
+MMTE_FreeBuffers p2 1
+MMTE_WaitEvent p1  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent p2  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+OMX_FreeHandle p1
+OMX_FreeHandle p2
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+test_end
+

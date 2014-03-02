@@ -1,0 +1,108 @@
+//
+//       Configuration file for      jpegdec
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite jpegdec.mpc.jpegdec 
+{
+//singleton
+
+// Sub components
+contains jpegdec.mpc.algo								as  cAlgo
+
+// Provided interfaces
+provides jpegdec.mpc.api.algo							as iAlgo
+provides jpegdec.mpc.api.configure_algo	  as iConfigureAlgo
+provides jpegdec.mpc.api.update_algo	  as iUpdateAlgo
+
+
+//
+//--requires debug.mpc.api.printf							as oPrintf optional
+
+// Required interfaces
+requires resource_manager.api.buffer					as iBuffer
+requires resource_manager.api.mtf						as iMtf
+//requires resource_manager.api.interrupt				as iInterrupt
+
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo			to cAlgo.iAlgo
+binds this.iConfigureAlgo		to cAlgo.iConfigureAlgo
+binds this.iUpdateAlgo			to cAlgo.iUpdateAlgo
+
+
+
+//--binds cAlgo.oPrintf										to this.oPrintf
+
+binds cAlgo.iBuffer										to this.iBuffer
+binds cAlgo.iMtf										to this.iMtf
+//binds cAlgo.iInterrupt								to this.iInterrupt
+
+
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+option stack = 512
+
+}
+
+
+
+
+#ifdef COMMENT
+//
+//       Configuration file for      jpegdec
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite jpegdec.mpc.jpegdec //singleton
+
+// Sub components
+contains jpegdec.mpc.algo								as  cAlgo
+
+// Provided interfaces
+provides jpegdec.mpc.api.algo							as iAlgo
+
+//
+// Required interfaces
+requires resource_manager.api.buffer					as iBuffer
+requires resource_manager.api.mtf						as iMtf
+//requires resource_manager.api.interrupt				as iInterrupt
+
+requires jpegdec.mpc.api.end_algo                     as iResultJpegDecoder0
+requires jpegdec.mpc.api.end_algo                     as iResultJpegDecoder1
+
+binds cAlgo.iResultJpegDecoder0 to this.iResultJpegDecoder0
+binds cAlgo.iResultJpegDecoder1 to this.iResultJpegDecoder1
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo										to cAlgo.iAlgo
+
+binds cAlgo.iBuffer										to this.iBuffer
+binds cAlgo.iMtf										to this.iMtf
+//binds cAlgo.iInterrupt								to this.iInterrupt
+
+
+// 
+// Additionnal informations : 
+//      -----------------
+//      - Version numbers :
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+//    ----------------------------------------
+option stack = 512
+
+#endif

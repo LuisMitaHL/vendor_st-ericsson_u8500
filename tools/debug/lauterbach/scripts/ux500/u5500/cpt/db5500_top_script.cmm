@@ -1,0 +1,60 @@
+
+local &cur_dir
+&cur_dir=os.ppd()
+
+
+;;#################################################################################################################################################
+;;
+;;									PRCMU SETTINGS
+;;
+;;#################################################################################################################################################
+
+;;Script that defines Global variables used to communicate with PRCMU FW
+CD.DO "&cur_dir/../../software/common/prcmu_fw/prcmu_mailbox_setup.cmm"
+
+
+
+;;#################################################################################################################################################
+;;
+;;									BOOT SETTINGS
+;;							(To be used if ROM Code boot skipped)
+;;
+;;#################################################################################################################################################
+
+;;Script that does basic SoC configuration and loads PRCMU FW
+;PRCMU Fw is needed to be able to configure LpDDR2, AB5500 and to fix the SWDOG Work-Around
+CD.DO "&cur_dir/db5500_boot_emulation.cmm"
+
+
+
+;;#################################################################################################################################################
+;;
+;;								SOC SETTINGS SELECTION
+;;
+;;	Note that SWDOG Work-Around is fixed anyway (whatever Option is selected); until PRCMU reaches the APExecute State
+;;
+;;							DEFAULT configuration is OPTION 3a (DDR running at 200MHz)
+;;
+;;#################################################################################################################################################
+
+
+;; If you DON'T WANT DDR to be configured, neither AB5500 (Petra) Voltages to be reprogrammed
+;;Option 1:
+;CD.DO "&cur_dir/db5500_soc_settings_noddr.cmm"
+
+
+;; If you WANT DDR to be configured BUT AB5500 (Petra) Voltages NOT to be reprogrammed
+;;=> Need to select at which frequency you want DDR to run by commenting/uncommenting the relevant line
+;;Option 2a:
+;CD.DO "&cur_dir/db5500_soc_settings_200mhz_noabb.cmm"
+;;Option 2b:
+;CD.DO "&cur_dir/db5500_soc_settings_266mhz_noabb.cmm"
+
+
+;; If you WANT DDR  to be configured AND AB5500 (Petra) to be reprogrammed
+;;=> Need to select at which frequency you want DDR to run by commenting/uncommenting the relevant line
+;;Option 3a:
+;CD.DO "&cur_dir/db5500_soc_settings_200mhz.cmm"
+;;Option 3b:
+CD.DO "&cur_dir/db5500_soc_settings_266mhz.cmm"
+

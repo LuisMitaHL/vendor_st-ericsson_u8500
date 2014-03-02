@@ -1,0 +1,268 @@
+;------------------------------------------------------------
+; gpio_muxing.cmm
+;------------------------------------------------------------
+; Print the gpio muxing on DB8500 in human readable form.
+; The script saves the output in gpio_muxing.txt.
+;
+; 20101119 - EMAGFLA Inital version
+; 20111128 - QRICEVE 2nd version
+; 20120910 - QRICEVE Now enables needed clocks to read out
+; 	     GPIO muxing
+;-----------------------------------------------------------
+
+if run()
+(
+	dialog.yesno "Stop the execution to dump GPIO Muxing?"
+	entry &yn
+	if &yn
+		break
+	else
+		enddo
+)
+
+area.select A000
+
+print "Print GPIO Muxing"
+
+area.create GPIO_MUX
+area.select GPIO_MUX
+area.clear GPIO_MUX
+area.open GPIO_MUX gpio_muxing.txt
+
+print clock.time() ": DB8500 GPIO muxing"
+print
+
+; Check that peripheral clocks are enabled
+&per1clk_mgt_address=0x8015702C
+&per2clk_mgt_address=0x80157030
+&per3clk_mgt_address=0x80157034
+&per5clk_mgt_address=0x80157038
+
+; todo: make this a bit cleaner
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per1clk_mgt_address)
+ENTRY &per1clk_is_enabled
+if (&per1clk_is_enabled==0)
+(
+	data.set A:(&per1clk_mgt_address) %LONG (0x18C)
+	print "Specially enabled per1clk!!!"
+)
+
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per2clk_mgt_address)
+ENTRY &per2clk_is_enabled
+if (&per2clk_is_enabled==0)
+(
+	data.set A:(&per2clk_mgt_address) %LONG (0x18C)
+	print "Specially enabled per2clk!!!"
+)
+
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per3clk_mgt_address)
+ENTRY &per3clk_is_enabled
+if (&per3clk_is_enabled==0)
+(
+	data.set A:(&per3clk_mgt_address) %LONG (0x18C)
+	print "Specially enabled per3clk!!!"
+)
+
+GOSUB yyclken_mgt_clock_is_enabled data.long(AD:&per5clk_mgt_address)
+ENTRY &per5clk_is_enabled
+if (&per5clk_is_enabled==0)
+(
+	data.set A:(&per5clk_mgt_address) %LONG (0x18C)
+	print "Specially enabled per5clk!!!"
+)
+
+&Periph1Clk_Rst=0x8012F000
+&Periph2Clk_Rst=0x8011f000
+&Periph3Clk_Rst=0x8000f000
+&Periph5Clk_Rst=0xA03FF000
+
+; Check gpioctrl clk and set it if needed.
+; Use return value to revert the default value
+GOSUB check_and_set_gpioctrl 0x8012F000 9
+ENTRY &p1_prcc_pcksr
+
+GOSUB check_and_set_gpioctrl 0x8011f000 11
+ENTRY &p2_prcc_pcksr
+
+GOSUB check_and_set_gpioctrl 0x8000f000 8
+ENTRY &p3_prcc_pcksr
+
+GOSUB check_and_set_gpioctrl 0xA03FF000 1
+ENTRY &p5_prcc_pcksr
+
+; GPIO00..31
+gosub gpio_walk 0x00 0x1F 0x8012E000
+
+; GPIO32..36
+gosub gpio_walk 0x20 0x24 0x8012E080
+
+; GPIO64..95
+gosub gpio_walk 0x40 0x5F 0x8000E000
+
+; GPIO96..97
+gosub gpio_walk 0x60 0x61 0x8000E080
+
+; GPIO128..159
+gosub gpio_walk 0x80 0x9F 0x8000E100
+
+; GPIO160..171
+gosub gpio_walk 0xA0 0xAB 0x8000E180
+
+; GPIO192..223
+gosub gpio_walk 0xC0 0xDF 0x8011E000
+
+; GPIO224..230
+gosub gpio_walk 0xE0 0xE6 0x8011E080
+
+; GPIO256..267
+gosub gpio_walk 0x100 0x10B 0xA03FE000
+
+area.close GPIO_MUX
+area.select A000
+
+print "Revert back prcc settings"
+
+; Revert back prcc settings
+GOSUB set_default_gpioctrl 0x8012f000 &p1_prcc_pcksr 9
+GOSUB set_default_gpioctrl 0x8011f000 &p2_prcc_pcksr 11
+GOSUB set_default_gpioctrl 0x8000f000 &p3_prcc_pcksr 8
+GOSUB set_default_gpioctrl 0xA03ff000 &p5_prcc_pcksr 1
+
+if (&per1clk_is_enabled==0)
+(
+	data.set A:(&per1clk_mgt_address) %LONG (0xC)
+	print "Disabled per1clk!!!"
+)
+
+if (&per2clk_is_enabled==0)
+(
+	data.set A:(&per2clk_mgt_address) %LONG (0xC)
+	print "Disabled per2clk!!!"
+)
+
+if (&per3clk_is_enabled==0)
+(
+	data.set A:(&per3clk_mgt_address) %LONG (0xC)
+	print "Disabled per3clk!!!"
+)
+
+if (&per5clk_is_enabled==0)
+(
+	data.set A:(&per5clk_mgt_address) %LONG (0xC)
+	print "Disabled per5clk!!!"
+)
+
+; open the file
+pedit gpio_muxing.txt
+
+enddo
+
+gpio_walk:
+	entry &gpio_start &gpio_end &gpio_base
+
+	&gpio=&gpio_start
+	&bit=0
+
+	while &gpio<&gpio_end+1
+	(
+		gosub gpio_print &gpio &gpio_base &bit
+		&gpio=&gpio+1
+		&bit=&bit+1
+	)
+	return
+
+gpio_print:
+	entry &gpio &gpio_base &bit
+
+	print %decimal "GPIO" &gpio
+
+	; get the alternate function
+	&afsla=(data.long(A:&gpio_base+0x20)&(1<<&bit))>>&bit
+	&afslb=(data.long(A:&gpio_base+0x24)&(1<<&bit))>>&bit
+	gosub gpio_get_alt_func &afsla &afslb
+	entry &alt_mode
+
+	print "  MODE: " &alt_mode
+
+	; check direction (GPIO1B_DIR)
+	if ((data.long(A:&gpio_base+0x10)&(1<<&bit))>>&bit==0)
+	(
+		print "  DIR : INPUT"
+
+		; check pull disable (GPIO1B_PDIS)
+		if ((data.long(A:&gpio_base+0x0C)&(1<<&bit))>>&bit==0)
+		(
+			print "  PDIS: PULL-UP/DOWN ENABLED"
+
+			; check pull resistor polarity (GPIO1B_DAT)
+			if ((data.long(A:&gpio_base)&(1<<&bit))>>&bit==0)
+			(
+				print "  DAT : PULL-DOWN"
+			)
+			else
+			(
+				print "  DAT : PULL-UP"
+			)
+		)
+		else
+		(
+			print "  PDIS: PULL-UP/DOWN DISABLED"
+		)
+	)
+	else
+	(
+		print "  DIR : OUTPUT"
+	)
+
+	print
+
+	return
+
+gpio_get_alt_func:
+	entry &afsla &afslb
+
+	IF ((&afsla==0)&&(&afslb==0))
+		return "GPIO"
+	else IF ((&afsla==0)&&(&afslb==1))
+		return "ALTERNATE FUNCTION B"
+	else IF ((&afsla==1)&&(&afslb==0))
+		return "ALTERNATE FUNCTION A"
+	else IF ((&afsla==1)&&(&afslb==1))
+		return "ALTERNATE FUNCTION C"
+
+yyclken_mgt_clock_is_enabled:
+    ENTRY &mgt_value
+    LOCAL &clken
+
+    &clken=&mgt_value>>8.&0x1
+
+    RETURN &clken
+
+check_and_set_gpioctrl:
+    entry &periphclk_rst &bit
+
+    &address=&periphclk_rst
+
+    ; GpioCtrl Periph1
+    &prcc_pcksr=data.long(A:(&address+0x10))
+
+    if ((((&prcc_pcksr)>>(&bit))&0x1)==0)
+    (
+	; gpioctrl is disabled, let's enable it
+	data.set A:(&address+0x00) %LONG (&prcc_pcksr+(0x1<<&bit))
+    )
+    return &prcc_pcksr
+
+set_default_gpioctrl:
+    entry &address &value &bit
+    print "address: " &address
+    print "value: " &value
+    print "bit: " &bit
+
+     ; check if gpioctrl was enabled
+     if ((((&value)>>(&bit))&0x1)==0)
+     (
+	; gpioctrl was disabled, let's disable it again
+	data.set A:(&address+0x04) %LONG (0x1<<&bit)
+     )
+    return

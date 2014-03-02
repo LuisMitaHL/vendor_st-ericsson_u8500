@@ -1,0 +1,125 @@
+area.create OMXSTATUS 50 200
+area.open OMXSTATUS "omxstatus.txt"
+area.clear OMXSTATUS
+area.view OMXSTATUS
+area.select OMXSTATUS
+
+  print "Retrieving OMX Status according to MMTE Component list"
+  print ""
+  &start=v.value(&ENS_ComponentList)
+  &mmte_component=v.value(ENS_ComponentList.list.next)
+
+  WHILE &mmte_component!=&start
+  (
+    &omx_component=v.value(((t_mmte_omx_component *)&mmte_component)->Handle)
+    &ens_wrapper=v.value(((OMX_COMPONENTTYPE *)&omx_component)->pComponentPrivate)
+    &ens_component=v.value(((ENS_Wrapper *)&ens_wrapper)->ensComponent)
+    &component_name=v.string(((t_mmte_omx_component *)&mmte_component)->ComponentID)
+    &component_type=v.string(((ENS_Component_p)&ens_component)->mName.mData)
+    &fsm=v.value(((ENS_Component*)&ens_component)->mCompFsm)
+    &state=v.string(((ENS_Component_Fsm*)&fsm)->ENS_Fsm::mState)
+
+
+
+    &pos=string.scan("&component_name","""",0);
+	  if (&pos!=-1) 
+	  (
+	 	  &component_name=string.cut("&component_name",&pos)
+	  )
+
+    &pos=string.scan("&state","ENS_Component_Fsm::",0);
+	  if (&pos!=-1) 
+	  (
+	 	 &state=string.cut("&state",&pos)
+	  )
+    &portCount=v.string(((ENS_Component*)&ens_component)->mPortCount)
+
+    print "########## &component_type (&component_name) ##########"
+
+    print  ""
+    print  "State    : &state"
+    print  "Nb Ports : &portCount"
+    &idx=0
+    while &idx<&portCount
+    (
+        &port=v.value(((ENS_Component*)&ens_component)->mPorts[&idx])
+        &direction=v.string(((ENS_Port*)&port)->mParamPortDefinition.eDir)
+        &enabled=v.string(((ENS_Port*)&port)->mParamPortDefinition.bEnabled)
+        if (string.scan("&enabled","OMX_TRUE",0)!=-1) 
+        (
+	        &portFsm=v.value(((ENS_Port*)&port)->mPortFsm)
+          &portState=v.string(((ENS_Port_Fsm*)&portFsm)->ENS_Fsm::mState)
+          &bufHdrTablePtr=v.value(((ENS_Port*)&port)->mBufHdrTablePtr)
+          &bufCountCurrent=v.value(((ENS_Port*)&port)->mBufferCountCurrent)
+	        &bufSize=v.string(((ENS_Port*)&port)->mParamPortDefinition.nBufferSize)
+	        &domain=v.string(((ENS_Port*)&port)->mParamPortDefinition.eDomain)
+
+
+          &pos=string.scan("&portState","ENS_Port_Fsm::",0);
+	        if (&pos!=-1) 
+	        (
+		        &portState=string.cut("&portState",&pos)
+	        )
+
+
+          print  "        Port[&idx]  (&direction)"
+          print  "           - State : &portState"
+          print  "           - Buffer count : &bufCountCurrent"
+          print  "           - Buffer size : &bufSize"
+
+	        &bufidx=0
+	        while &bufidx<&bufCountCurrent
+          (
+            &bufStatus=v.value(((ENS_BUFFERHEADER_TABLETYPE)(((ENS_Port*)&port)->mBufHdrTablePtr[&bufidx])).mBufHdrStatus)
+            &buf=v.value(((ENS_BUFFERHEADER_TABLETYPE)(((ENS_Port*)&port)->mBufHdrTablePtr[&bufidx])).mBufHdrPtr)
+            &payload=v.value(((OMX_BUFFERHEADERTYPE*)&buf)->pBuffer)
+
+
+            print  "               - Buffer[&bufidx] (0x&buf)"
+            print  "                    - Payload-> 0x&payload"
+            &bufStatus_string=""
+            if &bufStatus==9 
+            (
+                 &bufStatus_string="At neighbour"
+            )
+            if &bufStatus==5 
+            (
+                 &bufStatus_string="At Processing Component"
+            )
+            if &bufStatus==3 
+            (
+                 &bufStatus_string="At home"
+            )
+            print "                    - Status : &bufStatus_string"
+	          IF string.scan("&domain","OMX_PortDomainVideo",0)!=-1
+            (
+		            &width=v.string(((ENS_Port*)&port)->mParamPortDefinition.format.video.nFrameWidth)
+		            &height=v.string(((ENS_Port*)&port)->mParamPortDefinition.format.video.nFrameHeight)
+                &format=v.string(((ENS_Port*)&port)->mParamPortDefinition.format.video.eColorFormat)
+		            IF string.scan("&format","OMX_COLOR_Format16bitRGB565",0)!=-1 
+                (
+	                 print "                    To View : data.image &payload &width. &height. /RGB565LE"
+		            )
+            )
+	          &bufidx=&bufidx+1
+           )
+        )
+        else
+        (
+            print  "        Port[&idx]  (&direction, DISABLED)"
+
+        )
+        &idx=&idx+1          
+    )
+    &mmte_component=v.value(((t_mmte_omx_component *)&mmte_component)->list.next)
+
+    print ""
+
+
+  )
+
+print  "DONE !"
+area.close OMXSTATUS
+AREA.select A000
+
+

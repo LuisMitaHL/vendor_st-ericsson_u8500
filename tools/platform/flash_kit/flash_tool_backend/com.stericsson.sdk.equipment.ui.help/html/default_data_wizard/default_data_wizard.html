@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Default Data Wizard</title>
+<style>
+h1 {
+	font-family: sans-serif, verdana;
+	font-size: 16pt;
+	font-weight: normal;
+}
+
+h2 {
+	font-family: sans-serif, verdana;
+	font-size: 12pt;
+	font-weight: bold;
+}
+
+h3 {
+	font-family: sans-serif, verdana;
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+p {
+	font-family: sans-serif, verdnana;
+	font-size: 10pt;
+}
+
+li {
+	font-family: sans-serif, verdnana;
+	font-size: 10pt;
+}
+</style>
+</head>
+<body>
+<h1>Default Data Wizard</h1>
+<p>Default Data is a wizard for reading, writing, consistency
+checking, and merging 19062, GDF, and GDVAR files used in the production
+process.</p>
+<h2>Pre-requisites</h2>
+<p>Please make sure that you have an 19062 Excel Input File.</p>
+<h2>Instructions</h2>
+<p>Open the Default Data Sheet Tool Wizard by completing the
+following steps:</p>
+<ul>
+	<li>In the Eclipse menu, select File -&gt; New &gt; Other... (or
+	press Ctrl+N)</li>
+	<li>Expand the Flash Kit category</li>
+	<li>Select the Default Data and press Next</li>
+</ul>
+<p>The following wizard will pop-up.</p>
+<img src="../../images/default_data_wizard.png" />
+<p>Required Fields:</p>
+<ul>
+	<li>File: A valid 19062 input file.</li>
+	<li>Platform: Have to select one/all platform/s.</li>
+</ul>
+
+<p>
+<h3>Platform</h3>
+</p>
+<ul>
+	<p>It is possible to work with a particular platform or to include
+	all platforms that are specified by the 19062 file. The drop-down list
+	box contains all platforms specified in the selected 19062 file. When
+	the tool is first started, the drop-down list box is empty until a
+	19062 file has been selected. To perform action(s) on all platforms
+	specified in the 19062, select All. Note: When selecting all platforms,
+	output files are placed in a sub-directory for each platform.
+	Sub-directories are created (if necessary) and named by the platform.
+	The Detailed report option is not available when selecting all
+	platforms.</p>
+</ul>
+
+<p>
+<h3>Consistency Check</h3>
+</p>
+<ul>
+	<p>This action checks the consistency of the default data for the
+	selected platform(s). The consistency check involves checking that the
+	default data is valid and that it confirms to the ranges given in the
+	19062 file specified in the 19062 Excel file field.</p>
+</ul>
+
+<p>
+<h2>Create Output Files</h2>
+</p>
+<p>One or many output files can be created in one action. Simply
+choose which files to create and then click Finish.</p>
+<img src="../../images/default_data_wizard2.png" />
+<p>
+
+<p>
+<h3>Create GDVAR File</h3>
+</p>
+<ul>
+	<p>Check this box to create a GDVAR file, using the path specified
+	in the adjacent field. Use the "Browse" button to browse for another path or
+	filename than the suggested.</p>
+</ul>
+
+<p>
+<h3>Create GDF File</h3>
+</p>
+<ul>
+	<p>Check this box to create a GDF file, using the path specified in
+	the adjacent field. Use the "Browse" button to browse for another path or
+	filename than the suggested.</p>
+</ul>
+
+<p>
+<h3>Merge GDF with Input GDF File</h3>
+</p>
+<ul>
+	<p>Check this box to merge the contents of an existing GDF file
+	when creating a new GDF file. This alternative is only available if
+	Create GDF file is already selected. The adjacent field is used to
+	specify the input GDF file to use for the merge. Use the "Browse" button to
+	browse for the input file. If the same ID number is found in the 19062
+	file and the input GDF file, the 19062 data has precedence.</p>
+</ul>
+
+<p>
+<h3>Create EE File</h3>
+</p>
+<ul>
+	<p>Check this box to create an Early Configuration (EE) file, using
+	the path specified in the adjacent field. Use the "Browse" button to browse
+	for another path or filename than the suggested one.</p>
+</ul>
+
+<p>
+<h3>Create EEVAR File</h3>
+</p>
+<ul>
+	<p>Check this box to create an Early Configuration h (EEVAR) file,
+	using the path specified in the adjacent field. Use the "Browse" button to
+	browse for another path or filename than the suggested one. Create
+	Product 19062 Excel File Check this box to create a customized version
+	of the 19062 input file, using the path specified in the adjacent
+	field. Use the "Browse" button to browse for another path or filename than
+	the suggested. The differences between the input file and the
+	customized version are the following:
+	<ul>
+		<li>The Module MKRR column is renamed N/A and does not contain
+		any data.</li>
+		<li>Only the Document Data and Default Data sheets are copied.</li>
+		<li>Only the selected platform appears in the new document.</li>
+		<li>Only rows with a Y in the Customize or Calibrate columns are
+		copied.</li>
+	</ul>
+	</p>
+</ul>
+
+<p>
+<h3>Finish</h3>
+</p>
+<ul>
+	<p>This action creates the output files in accordance to the
+	selections above. Before any output file is produced, a consistency
+	check is performed to ensure that the 19062 file, specified in the
+	19062 Excel file field, is valid. If one of the output files to be
+	produced already exists, it has to be decided whether or not to replace
+	the existing file; if "No", the specific file is not created, but the
+	rest of the action continues. If generation of GDF file(s) is selected,
+	it has to be decided if calibration data is to be included in the
+	generated GDF file. When processing of all platforms is selected, this
+	question is only asked once and the answer is then applied to all
+	platforms. The generated file uses Windows-style line ending. This
+	means that the line ending consists of CR (Carriage Return, 0x0D)
+	followed by LF (Line Feed, 0x0A).</p>
+</ul>
+
+<p>
+<h3>Show Detailed Report when Finished</h3>
+</p>
+<ul>
+	<p>Check this box to have eclipse to open a report containing
+	information on the results of the actions. Note: This option is not
+	available when processing all platforms at once.</p>
+</ul>
+</body>
+</html>

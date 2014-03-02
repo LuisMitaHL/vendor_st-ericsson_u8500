@@ -1,0 +1,40 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_resource_manager.idt>
+
+interface resource_manager.api.sleepstatus { 
+
+/* This file specifies methods included inside provided interface named iSleepSatus
+          i.e. :          - goneToSleep
+*/
+
+
+/** @addtogroup rmSleepGroup goneToSleep
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface for internal use of RM.
+ 
+ Note : 	This interface is called by "sleep" sub-component internally by RM.
+ Used to optimize hw-re-init. in case sleep was not entered it does not reset hwInit flag FALSE.
+ called in response to iIntSleep.statusInternalSleep() to notify if sleep was entered. allocator
+ resets its hwInit flag to FALSE.
+ */
+
+void goneToSleep();
+
+/** @} */ // end of rmSleepGroup
+
+} // interface resource_manager.api.sleepstatus

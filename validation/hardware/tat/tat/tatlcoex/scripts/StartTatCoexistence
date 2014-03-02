@@ -1,0 +1,28 @@
+#!/bin/sh
+case $1 in
+start)
+	echo "Starting StartTatCoexistence"
+	[ -e /dev/mmcblk2p1 ] || mknod /dev/mmcblk2p1 b 179 17
+	[ -e /usr/local/bin/tat/tatlcoex/mc0 ] || mkdir /usr/local/bin/tat/tatlcoex/mc0
+	[ -e /dev/mmcblk0p2 ] || mknod /dev/mmcblk2p1 b 179 2
+	[ -e /usr/local/bin/tat/tatlcoex/mc2 ] || mkdir /usr/local/bin/tat/tatlcoex/mc2
+	[ -e /dev/mmcblk1p1 ] || mknod /dev/mmcblk1p1 b 179 9
+	[ -e /usr/local/bin/tat/tatlcoex/mc4 ] || mkdir /usr/local/bin/tat/tatlcoex/mc4
+	[ -e /dev/i2c-0 ] || mknod /dev/i2c-0 c 89 0
+	[ -e /dev/i2c-1 ] || mknod /dev/i2c-1 c 89 1
+	[ -e /dev/i2c-2 ] || mknod /dev/i2c-2 c 89 2
+	[ -e /dev/i2c-3 ] || mknod /dev/i2c-3 c 89 3
+;;
+stop)
+	echo "Stopping StartTatCoexistence..."
+	[ -e /usr/local/bin/tat/tatlcoex/mc0 ] || rm /usr/local/bin/tat/tatlcoex/mc0
+	[ -e /usr/local/bin/tat/tatlcoex/mc2 ] || rm /usr/local/bin/tat/tatlcoex/mc2
+	[ -e /usr/local/bin/tat/tatlcoex/mc4 ] || rm /usr/local/bin/tat/tatlcoex/mc4
+	[ -e /dev/i2c-0 ] || rm /dev/i2c-0
+	[ -e /dev/i2c-1 ] || rm /dev/i2c-1
+	[ -e /dev/i2c-2 ] || rm /dev/i2c-2
+	[ -e /dev/i2c-3 ] || rm /dev/i2c-3
+;;
+esac
+
+exit

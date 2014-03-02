@@ -1,0 +1,85 @@
+#!/bin/sh
+#
+# Copyright (c) ST-Ericsson, 2010
+# Author: Gerald Lejeune <gerald.lejeune@stericsson.com>
+#
+case $1 in
+	start)
+	mmcBlocks=`ls /sys/block | grep mmcblk`
+	echo Please choose a block device index among the following ones:
+	echo -e "index\tdevice\tname\ttype\tsize in MB"
+	n=0
+	for mmcBlock in $mmcBlocks
+		do
+		sizeInBlocks=`cat /sys/block/$mmcBlock/size`
+		sectorSize=`cat /sys/block/$mmcBlock/queue/hw_sector_size`
+		sizeInBytes=`expr $sizeInBlocks \* $sectorSize`
+		sizeInKBytes=`expr $sizeInBytes / 1024`
+		sizeInMBytes=`expr $sizeInKBytes / 1024`
+		if [ -f /sys/block/$mmcBlock/device/name ]
+			then
+			echo -e "$n\t$mmcBlock\t`cat /sys/block/$mmcBlock/device/name`\t`cat /sys/block/$mmcBlock/device/type`\t$sizeInMBytes"
+			n=`expr $n + 1`
+		fi
+	done
+	echo -n "( "
+	index=0
+	while [ $index -ne $n ]
+		do
+		echo -n "$index "
+		index=`expr $index + 1`
+	done
+	echo -n ")? "
+	read -s -n 1 key
+	echo $key
+	if [ -e "/sys/block/mmcblk$key" ]
+		then
+		/etc/init.d/UsbCableConnectionHandler stop >& /dev/null
+		/etc/init.d/StartSl3d stop >& /dev/null
+		/etc/init.d/StartTatBridge stop >& /dev/null
+		/etc/init.d/StartTtyGs stop >& /dev/null
+		mmcBlocksPartitions=`ls /sys/block/mmcblk${key}/* | grep mmcblk${key}/mmcblk${key}p`
+		if [ -z "$mmcBlocksPartitions" ]
+		then
+			devfile="/dev/mmcblk${key}"
+		else
+			m=1
+			for mmcBlockPart in $mmcBlocksPartitions
+			do
+				echo -e "$m\t$mmcBlockPart "
+				m=`expr $m + 1`
+			done
+			echo -n "Partition  ( "
+			index=1
+			while [ $index -ne $m ]
+			do
+				echo -n "$index "
+				index=`expr $index + 1`
+			done
+			echo -n ")? "
+			read -s -n 1 partition
+			echo $partition
+			devfile="/dev/mmcblk${key}p${partition}"
+		fi
+		if [ -e "$devfile" ]
+		then
+			echo -e "starting Mass Storage on $devfile"
+#			echo $devfile > /sys/devices/platform/usb_mass_storage/lun0/file
+			echo $devfile > /sys/devices/soc0/musb-ux500.0/musb-hdrc/gadget/lun0/file
+		else
+			echo -e "Volume not available"
+		fi
+	fi
+	;;
+    stop)
+    echo -e "stop Mass Storage"
+#    echo > /sys/devices/platform/usb_mass_storage/lun0/file
+	echo > /sys/devices/soc0/musb-ux500.0/musb-hdrc/gadget/lun0/file
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

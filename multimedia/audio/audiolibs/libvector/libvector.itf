@@ -1,0 +1,24 @@
+#include <audiolibs/common/include/vector.h>
+
+interface audiolibs.libvector.libvector unmanaged {
+    void vector_stereo_interleave_pan(Float *p, Float *q, int len, int nb_chan);
+    void vector_set_value(Float *p,int len,Float value,int incr);
+    void vector_window(Float *p,Float WINDOW_MEM *win,int len, int incr1,int incr2);
+    void vector_window_copy(Float *p, Float *q, Float WINDOW_MEM *win, int len, int incr1, int incr2, int incr3);
+    void vector_window_add(Float *p, Float *q, Float WINDOW_MEM *win, int len, int incr1, int incr2, int incr3);
+    void vector_window_sub(Float *p, Float *q, Float WINDOW_MEM *win, int len, int incr1, int incr2, int incr3);
+    void vector_copy(Float *p,Float *q,int len,int incr1,int incr2);
+    void vector_copy_2y(Float YMEM *p,Float *q,int len,int incr1,int incr2);
+    void vector_add(Float *p,Float *q,int len,int incr1, int incr2);
+    void vector_sub(Float *p, Float *q, int len, int incr1, int incr2);
+    void vector_add_copy(Float *res,Float *p,Float *q,int len,int incr);
+    void vector_ms(Float *m,Float *s,int len);
+    void vector_ms_scale(Float *m,Float *s,Float scale, int len);
+    void vector_scale(Float *src,Float *dest,Float scale,int len);
+    void vector_scale_in_place(Float *p, Float scale, int len, int incr);
+    void vector_abs(Float *p,Float *q,int len,int incr1);
+    void buffer_reset(char *p, char val, int size);
+    void buffer_copy(char *p, char *q, int size);
+    
+}
+

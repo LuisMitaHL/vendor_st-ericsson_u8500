@@ -1,0 +1,307 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+Author:         Jean-Philippe Fassino & NMF Team
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.5.0 "La Divine"
+Date:           March 22th, 2010
+
+*** Warning ***
+Think has been deprecated and will be replace by Linux for OSI development.
+It will been supported on 8500 V1 board till end of March'2010.
+Please switch to this new environment as soon as possible.
+
+
+1.2 Board configuration:
+
+    Successfully tested configuration:
+        - STn8500 SVA & SIA
+            * PEPS 8500
+                PEPS SIA with an ED mapping + MMDSP V1
+            * MOP500-ED & HREF-ED V1.0
+                Only flash board without normal application in flash image
+                    (use -Normal_Appli 0 on command line flasher)
+                Flash with NPT referenced in nmf/workstation.txt
+            * MOP500 V1 & HREF V1
+                Only flash board without normal application in flash image
+                    (use -Normal_Appli 0 on command line flasher)
+                Flash with NPT referenced in nmf/workstation.txt
+
+    Not 100% successfully tested configuration:
+        - STn8500 SVA & SIA
+            * SVP 3.2.0
+                Issue in MMDSP simulator where code execution in ESRAM failed
+
+    Not (or no more) supported configuration:
+        - STn8820 SAA & SVA & SIA
+            * Cut A0
+        - STn8500 SVA & SIA
+            * SVP 2.0 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                STM IP trace not available
+            * SVP 2.2 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                Argc/Argv not supported
+            * SVP 2.3 (No more tested)
+            * SVP 2.4 (No more tested)
+            * MOP500-ED & HREF-ED V1.0 (No more tested)
+                Board not flash or flash with normal application in flash image
+
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version:
+        - RVCT 2.2-sp1-593 for 8815 & 8820
+        - RVCT 4.0_build529 for 8500
+
+    MMDSP compiler version
+        - MMDSP Toolset 4.3.0
+
+    - Lauterbach trace32 ref_patch_p20090717
+
+    - Java SE Runtime Environment
+        http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - RODOS
+        http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+    - Week delivery
+        Ready to use components.txt for Linux & Think environments (com.stericsson.nmf/components.txt)
+            # RODOS components.txt
+            include rod+package://com.stericsson.nmf:{year MMD delivery}.{week MMD delivery}.{patch}/component.txt
+
+
+3   RELEASE CONTENT
+
+    See tools/doc/file_hierarchies.txt about file tree organization !
+
+    - Toolbox
+
+    - Component Manager
+
+    - Execution Engine
+
+    - Think
+
+    - LOS
+
+
+3.1 Component Manager
+    
+    - Add OSAL_Panic API.
+    
+    - Remove SAA_CORE_ID from API.
+        -> Be careful to use MACRO instead of value.
+        
+    - Changed t_cm_domain_id from 32bit to 8bit 
+
+    - VI#27258 - allow 64kb alignment in CM_ENGINE_AllocMpcMemory()
+    
+    
+3.2 MPC Execution Engine
+
+    - Remove sub priority
+    
+    - Remove malloc helper
+    
+
+3.3 Host Execution Engine
+
+    - Add sub priority implementation inside scheduler
+        Sub-priority can be set like that:
+            In ADL
+                binds ... to ... asynchronous fifo=... subpriority=x 
+                Where x = {0..3}
+            In Composite API
+                bindFromUser(..., x);       // x == 0 if not setted
+                binAsycnhronous(..., x);    // x == 0 if not setted
+
+    - Add Composite::getMPCComponentHandle("name") in order to get a CM component handle
+      deploy on MPC through a ARM composite component.
+        This method allow you to get a component instance of a component instantiate automatically by
+        this composite. This reference could be used to create sub-binding (like tunneling) with other MPC
+        components (either obtain by this method on other composite or directly instantiate using
+        Component Manager.
+        Note: Potential created sub-binding must be unbound before destroying the composite!
+        
+    - Ability to set dynamically component priority through:
+        * In ADL:
+            contains A as a priority=mypriority
+        * In C++:
+             MyComposite* C = createMyComposite();
+             C->mypriority = <INTEGER_PRIORITY>;
+       FIX 26751 Need possibility to set the priority level of one component when component is created
+
+    - Take into account primitive component extending type
+       FIX 24428 auto-generated wrapper component does not consider extended components
+           
+    - Add io priority for component that want to do blocking call (like FS read). To use it, add:
+        * In ADL:
+            contains A as a priority=io
+        * This feature must be used with care:
+            + Only 4 thread started to handle component execution
+            + Priority is not ordering with other component priority and depend on OS integration    
+    
+    - Error recovery
+        Clearly destroy objects that has been created during construct either if this one failed.
+        
+    - Add getProperty on Composite interface.
+        t_nmf_error getProperty(
+            const char              *name,
+            char                    *value,
+            t_uint32                valuelen
+            );
+    
+    *** Deprecated; will be removed in next version ***
+        - ADL syntax has been enhance for supporting dynamic priority setting:
+            * Removed:
+                contains A as a <INTEGER_PRIORITY>
+            * Replaced by:
+                contains A as a priority=<INTEGER_PRIORITY>
+
+
+3.4 OS integration guidelines
+
+    - Add OSAL_Panic() API which should trigger a kernel-panic.
+    
+    - For hostee. When os failed to create a worker thread then os integrator no longer need
+      to kill already created thread. These threads will exit gracefully. For that os
+      integrator has to do following modification :
+       - notifyStart() os implementation now return a t_sint32
+       - in case of success, there is no change. Return number of worker thread created (so not
+         take into account distribution thread created)
+       - in case of error return a negative number that indicate number of thread already
+         created before error. This time this number MUST include distribution thread.
+       - in your implementation you MUST create distribution thread first and then worker thread.
+
+    - Component dynamic loading optimization
+        - Add OSAL_CleanDCache(startAddr, endAddr) to clean data cache range (invalidate not required)    
+        - MMDSP DDR Code segment could be declared as WB memory
+        
+    - For HostEE another priority has been added (io, which is level 6).
+        - Either if HostEE priority is greater, OS thread priority has to be decided according OS and 
+            don't need to be greater nor ordered.
+        - By default, launch 4 threads, could be reconfigure later according user requirement.  
+
+	- CM_ENGINE_CreateMemoryDomain() takes one more parameter:
+		- First arg is  't_nmf_client_id' (unsigned int). It must be used to identify
+		a user client.
+		- 0 is an invalid client ID
+		- For domains not belonging to a user client, you can use NMF_CORE_CLIENT.
+
+	- CM_ENGINE_FlushComponent() is removed and replaced by CM_ENGINE_FlushComponents()
+	   and CM_ENGINE_FlushMemoryDomains():
+	   The OS integrator can call them to destroy all components and domains that belongs
+	   to a client.
+
+
+3.5 Tools
+      
+
+3.6 Programming model
+
+    - Singleton instance template was no more shared between several instantiation.
+        This allow NMF to check that a singleton in correctly configured inside each instantiation
+        and that your code don't fall in work thank to another scenario that configure it for you.
+        -> CHECK YOUR CODE if "NOT BINDED" error appear for singleton during regression
+
+
+3.7 Think
+    
+    - correct unaligned access when using atoi(), strtoul() and other same family functions (vi 27557)
+
+3.8 Linux & Symbian
+
+3.9 Examples
+
+3.10 Packaging
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    26751   Need possibility to set the priority level of one component when component is created
+    24428   auto-generated wrapper component does not consider extended components
+    25810   GetComponentPropertyNumber on HostEE
+    27258   allow 64kb alignement in CM_ENGINE_AllocMpcMemory()
+    27557   atoi(), strtoul() and other string manipulation libc function abort on an unaligned access
+    
+4.2 Active defect list
+
+    23121   setConfig argument passing by pointer instead of structure
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+
+    For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+    - Component manager
+        All warnings and errors removed.
+
+
+6.2 Code Static analysis result
+
+    - Component manager
+        Coverity done (each remaining issue could be explained).
+
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Done.
+
+6.4 Confidentiality safe
+
+    Done.
+
+7   DOCUMENTS
+
+    Test report available at:
+        http://gnx2487:9000/

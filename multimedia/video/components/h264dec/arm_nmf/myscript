@@ -1,0 +1,12 @@
+echo $MMROOT/video/components/h264dec/arm_nmf/refcode/bin/h264dec $1 -digests $4 
+$MMROOT/video/components/h264dec/arm_nmf/refcode/bin/h264dec $1 -digests $4 >> /dev/null
+cmp out_yuv.digest $2 || echo FAILED TEST $3 dut_yuv.digest
+echo "Ref image count "
+wc -l $2 
+echo "Diff image count "
+\rm -rf toto
+diff out_yuv.digest $2 > toto
+grep ">" toto  | wc -l
+\rm -rf toto
+
+

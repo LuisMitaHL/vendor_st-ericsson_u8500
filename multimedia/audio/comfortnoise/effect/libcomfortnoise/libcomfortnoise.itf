@@ -1,0 +1,11 @@
+#include <comfortnoise/effect/include/comfortnoise.h>
+
+interface comfortnoise.effect.libcomfortnoise.libcomfortnoise unmanaged
+{
+    t_comfort_noise_handle* comfort_noise_create(void);
+    bool_t comfort_noise_allocate(t_comfort_noise_handle **handle, const t_comfort_noise_allocation_params* allocate_params);
+    void comfort_noise_reset(t_comfort_noise_handle *handle);
+    bool_t comfort_noise_setconfigure(t_comfort_noise_handle *handle, const t_comfort_noise_configuration_params* set_params);
+    void comfort_noise_process(t_comfort_noise_handle *handle, signed short *in_buffer, signed short *out_buffer, signed int size);
+}
+

@@ -1,0 +1,19 @@
+#ifndef SPECIFIC_FRAMEINFO_IDT
+#define SPECIFIC_FRAMEINFO_IDT
+
+typedef struct
+{
+  t_uint16 n3dFormat;             // OMX_3DFORMATTYPE
+  t_uint16 eLoopFilterMode;       // OMX_VIDEO_AVCLOOPFILTERTYPE
+  t_uint16 nParallelDeblocking;   // =1 for sequential deblocking, =3 for parallel deblocking
+  t_uint8 *pErrorMap;             // pointer to the error map structure of real type Common_Error_Map
+  t_uint32 xFramerate;            // frame rate, in frame per second, in Q16 format
+  t_uint16 bThumbnailGeneration;  // optimized memory footprint for thumbnail use case
+  t_uint16 bImmediateRelease;     // immediate release I frame
+  t_uint16 restrictMaxLevel;	  // Restrict level
+} t_specific_frameinfo;
+
+
+
+#endif
+

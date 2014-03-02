@@ -1,0 +1,100 @@
+#####################################
+## State machine test              ##
+##    param 1 is handle of decoder ##
+##    must be defined:             ##
+##        OUTPUT_FILE              ##
+##        REF_DIGEST               ##
+##        OUTPUT_SIZE              ##
+##        REF_FILE                 ##
+#####################################
+
+# Basic OMX checks
+
+MMTE_CheckParameter $1 OMX_IndexParamAudioInit nPorts=2 nStartPortNumber=0
+MMTE_CheckParameter $1 OMX_IndexParamVideoInit nPorts=0
+MMTE_CheckParameter $1 OMX_IndexParamImageInit nPorts=0
+MMTE_CheckParameter $1 OMX_IndexParamOtherInit nPorts=0
+
+# Go to Idle
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers $1 0
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers $1 0
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# Go to Idle
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers $1 0
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Executing
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# Go to Pause
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent $1 OMX_EventBufferFlag 1 0
+
+# Go to Idle
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers $1 0
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+hash_comp OUTPUT_FILE REF_DIGEST
+
+ate_attach_io       $1 0 MEM INPUT_FILE 0 0 0
+ate_attach_io       $1 1 MEM $(OUTPUT_FILE).2 OUTPUT_SIZE 0 0
+
+# Go to Idle
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers $1 0
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Pause
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+mmte_sleep 500
+
+# Go to Pause
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Idle
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers $1 0
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle $1
+
+file_comp $(OUTPUT_FILE).2 REF_FILE
+
+#MMTE_CheckMemoryStatus
+

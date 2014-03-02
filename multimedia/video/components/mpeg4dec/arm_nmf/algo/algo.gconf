@@ -1,0 +1,55 @@
+//primitive mpeg4dec.arm_nmf.algo
+//{
+
+provides lifecycle.constructor                              as constructor
+//provides lifecycle.destructor                              as destructor
+//
+
+provides mpeg4dec.arm_nmf.api.algo                        as iAlgo
+requires mpeg4dec.arm_nmf.api.end_algo                    as oEndAlgo
+
+//- Source files
+
+sources src/algo.cpp
+//sources src/videocodecGmc.c
+//sources src/videocodecAicModeDec.c
+//sources src/videocodecConceal.c
+//sources src/videocodecDeblockingFilter.c
+//sources src/videocodecDecode.c
+//sources src/videocodecDecodeCoeff.c
+//sources src/videocodecDecodeDCI.c
+//sources src/videocodecDecoderApi.c
+//sources src/videocodecIdctInt.c
+//sources src/videocodecInstreamBuffer.c
+//sources src/videocodecMemHandle.c
+//sources src/videocodecMotionCompensation.c
+//sources src/videocodecMotionCompensationQpel.c
+//sources src/videocodecMpeg4IntraDec.c
+//sources src/videocodecNewYUVImage.c
+//sources src/videocodecParseMpeg4.c
+//sources src/videocodecPostFilter.c
+//sources src/videocodecReconstruct.c
+//sources src/videocodecSMP.c
+//sources src/videocodecSymbolDecH263.c
+//sources src/videocodecSymbolDecMpeg4.c
+//sources src/videocodecSymbolDecSorenson.c
+//sources src/videocodecDecodePict.c
+
+//sources src/NEON/videocodecGmc_ARM_NEON.c
+//sources src/NEON/videocodecIDCT_ARM_NEON.c
+//sources src/NEON/videocodecMotionCompensation_ARM_NEON.c
+//sources src/NEON/videocodecMotionCompensationQpel_ARM_NEON.c
+
+
+//sources  ../test/nmf_fw_test/platforms/ca9/benchmark.s
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+//original - option CPPFLAGS "-DCA9 --vectorize --asm -Otime -O3 -D__NMF -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/algo/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc/ndk8500_ed -I../../../common/inc"  
+//option CPPFLAGS "-DCA9 -D__NMF -D_CB_CR_INTERLEAVE_ -DENABLE_SORENSON -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/algo/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc"  
+//option CPPFLAGS "-DCA9 -D__NMF -DENABLE_SORENSON -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/algo/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc"
+option CPPFLAGS "-DERC_SUPPORT -DMV_ERC -DIQ_ERC -DCA9 -D__NMF -DENABLE_SORENSON -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/algo/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc"
+//TRACE_ENABLE define this to enable the printf statements
+//-D_ALGO_DEBUG for debug print
+ 
+//}

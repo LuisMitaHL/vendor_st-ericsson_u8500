@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# Copyright (c) ST-Ericsson, 2010
+# Author: Gerald Lejeune <gerald.lejeune@stericsson.com>
+#
+if [ $# -gt 0 ]
+    then
+    echo "Usage:" >&2
+    echo -e "\t$0" >&2
+    exit 1
+fi
+UsbMassStorage stop
+userFS2WasMounted="`mount | grep UserFS2`"
+if [ -z "$userFS2WasMounted" ]
+    then
+    mount /mnt/UserFS2
+fi
+filesPath="/mnt/UserFS2"
+hashFile="$filesPath/hashes"
+if [ ! -e $hashFile ]
+    then
+    echo "$hashFile is missing"
+    echo test is FAILED
+    [ "$userFS2WasMounted" ] || umount /mnt/UserFS2
+    exit
+fi
+expectedFiles=`cat $hashFile | awk '{print $2}'`
+for expectedFile in $expectedFiles
+  do
+  if [ ! -e $expectedFile ]
+      then
+      echo "$expectedFile is missing"
+      echo test is FAILED
+      [ "$userFS2WasMounted" ] || umount /mnt/UserFS2
+      exit
+  fi
+done	
+files=`find $filesPath -type f | grep -v -e "$hashFile$"`
+for file in $files
+  do
+  fileName=`echo $file | sed 's/^$filesPath\///'`
+  preCalculatedHash=`grep -e "$fileName$" $hashFile | awk '{print $1}'`
+  if [ "$preCalculatedHash" ]
+      then
+      if [ "$preCalculatedHash" = "`sha1sum $file | awk '{print $1}'`" ]
+	  then
+	  echo $file is OK
+      else
+	  echo "$file (or $hashFile) is corrupted"
+	  echo test is FAILED
+	  [ "$userFS2WasMounted" ] || umount /mnt/UserFS2
+	  exit
+      fi
+  fi
+done
+[ "$userFS2WasMounted" ] || umount /mnt/UserFS2
+echo test is PASSED

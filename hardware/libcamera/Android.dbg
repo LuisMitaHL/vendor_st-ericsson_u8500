@@ -1,0 +1,146 @@
+##
+# Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+# This code is ST-Ericsson proprietary and confidential.
+# Any use of the code for whatever purpose is subject to
+# specific written permission of ST-Ericsson SA.
+##
+
+# Debug build options
+ifeq ($(TARGET_BUILD_TYPE),debug)
+LOCAL_CFLAGS += -DCAM_DEBUG=1
+endif
+
+LOCAL_CFLAGS += -DCAM_DEBUG=1 -DLOG_NDEBUG=0 -D__DEBUG -DDBGT_CONFIG_DEBUG -DDBGT_CONFIG_AUTOVAR -DDBGT_TAG=\"CameraHal\"
+
+# Uncomment below line to dump thread id with traces
+#LOCAL_CFLAGS += -DDUMP_THREAD_ID=1
+
+# Uncomment below line to define tag value.
+#
+# Trace level can be defined dynmically by using following command
+#
+#      setprop debug.libcamera.trace 0x<2><1><0>
+#
+#      - 3 layers for debug granularity:
+#      - level 0: STECamera, Module, DeviceBase
+#      - level 1: Settings, Flicker, Focus, IvProc, RotHandler, Thumbnail
+#      - level 2: omx/, memorybase/, framedumpreplay/, hwconversion/, framerate/
+#      - CAM_API: PTRACE (setprop debug.libcamera.trace 0x1)
+#      - MSGx: PDEBUG (setprop debug.libcamera.trace 0x4)
+#      - IN/OUT: PROLOG/EPILOG (setprop debug.libcamera.trace 0x2)
+#      - CAM_CANT_HAPPENx: ASSERT
+#      - CAM_ERR_LOG: PINFO (when informative message, else CRITICAL)
+#
+# For possible log levels, pls see android\system\core\include\android\log.h
+LOCAL_CFLAGS += -DTRACE_LOGGER_VALUE=0
+LOCAL_CFLAGS += -DTRACE_LOGGER_KEY=\"ste.cam.trace\"
+
+# Uncomment below line to trace various APIs and their corresponding arguments in CAM even in case of release.
+#
+# This is not required in "debug" mode because API traces are always dumped in "debug".
+LOCAL_CFLAGS += -DCAM_PRINT_API_PARAM=1
+
+# Uncomment below line to print error traces even in case of release
+#
+# This is not required in "debug" mode because error traces are always dumped in "debug".
+LOCAL_CFLAGS += -DCAM_FORCE_ERR_DETAILS=1
+
+# Comment below line to disable dumping perf traces
+#
+# If enabled, trace can also be enabled/disabled dynmically by following command
+#
+#      setprop ste.cam.perf <value>
+#
+# Any value more then 0, implies traces dumped. By default traces not dumped.
+# Uncommment PERF_LOGGER_VALUE to set initial value
+LOCAL_CFLAGS += -DDUMP_PERF_TRACES=1
+#LOCAL_CFLAGS += -DPERF_LOGGER_VALUE=1
+LOCAL_CFLAGS += -DPERF_LOGGER_KEY=\"ste.cam.perf\"
+
+# Uncomment below line(s) to enable dumping frame buffers from recording & preview paths at default location
+#
+# If disabled, dump can also be enabled/disabled or path can be changed dynmically by following command
+#
+#      setprop ste.libcamera.preview.dump <value>
+#      setprop ste.libcamera.record.dump <value>
+#
+# Vaule "0" -> frame dump disabled
+# Value "1" -> frames will be dumped at default locations(directories will be created)
+#   default locations are:
+#       preview -> /sdcard/STECamera/preview/preview_randomNumber_width_height_format.<ext>
+#       record ->  /sdcard/STECamera/recording/record_randomNumber_width_height_format.<ext>
+# Value "any other string" -> will be taken as absolute path with filename(path should exist).
+#   _width_height_format.<ext> will be appended.
+#
+# Comment CAM_DUMP_REPLAY_FRAME_BUFFERS to disable dump & replay functions
+LOCAL_CFLAGS += -DCAM_DUMP_REPLAY_FRAME_BUFFERS
+#LOCAL_CFLAGS += -DDUMP_PREVIEW_FRAMES_VALUE=1
+#LOCAL_CFLAGS += -DDUMP_RECORD_FRAMES_VALUE=1
+LOCAL_CFLAGS += -DPREVIEW_DUMP_KEY=\"ste.libcamera.preview.dump\"
+LOCAL_CFLAGS += -DRECORDING_DUMP_KEY=\"ste.libcamera.record.dump\"
+
+# Uncomment below line(s) to enable replay of frame buffers for recording & preview from default location
+#
+# If disabled, replay can also be enabled/disabled & path can be changed dynmically by following command
+#
+#      setprop ste.libcamera.preview.push <value>
+#      setprop ste.libcamera.record.push <value>
+#
+# Vaule "0" -> frame replay disabled.
+# Value "1" -> frames will be replayed from default locations.
+#   default locations are:
+#       preview -> /sdcard/STECamera/preview.yuv
+#       record ->  /sdcard/STECamera/record.yuv
+# Value "any other string" -> will be taken as absolute path with filename.
+#
+# Comment CAM_DUMP_REPLAY_FRAME_BUFFERS to disable dump & replay functions
+LOCAL_CFLAGS += -DCAM_DUMP_REPLAY_FRAME_BUFFERS
+#LOCAL_CFLAGS += -DREPLAY_PREVIEW_FRAMES_VALUE=1
+#LOCAL_CFLAGS += -DREPLAY_RECORD_FRAMES_VALUE=1
+LOCAL_CFLAGS += -DPREVIEW_REPLAY_KEY=\"ste.libcamera.preview.push\"
+LOCAL_CFLAGS += -DRECORDING_REPLAY_KEY=\"ste.libcamera.record.push\"
+
+# Comment below line(s) to disable calculating different frame rates.
+#
+# If enabled, FPS also be enabled/disabled dynmically by following command.
+# Value change will be effective from next start command onwards.
+#
+# DUMP_FPS_FOR_VF : FPS of viewfinder
+# setprop ste.cam.fps.vf <value>
+#
+# DUMP_FPS_FOR_VIDEO : FPS for video
+# setprop ste.cam.fps.video <value>
+#
+# DUMP_FPS_FOR_OVERLAY : FPS for overlay
+# setprop ste.cam.fps.overlay <value>
+#
+# Frame rate will be dumped everytime after number of frames specified as value.
+# By default fps not dumped, uncomment *LOGGER_VALUE to set initial value
+LOCAL_CFLAGS += -DDUMP_FPS_FOR_VF=1
+LOCAL_CFLAGS += -DDUMP_FPS_FOR_VIDEO=1
+LOCAL_CFLAGS += -DDUMP_FPS_FOR_OVERLAY=1
+#LOCAL_CFLAGS += -DVF_FPS_LOGGER_VALUE=30
+#LOCAL_CFLAGS += -DVIDEO_FPS_LOGGER_VALUE=30
+#LOCAL_CFLAGS += -DOVERLAY_FPS_LOGGER_VALUE=30
+LOCAL_CFLAGS += -DVF_FPS_LOGGER_KEY=\"ste.cam.fps.vf\"
+LOCAL_CFLAGS += -DVIDEO_FPS_LOGGER_KEY=\"ste.cam.fps.video\"
+LOCAL_CFLAGS += -DOVERLAY_FPS_LOGGER_KEY=\"ste.cam.fps.overlay\"
+
+# Comment below line to disable dumping XP70 traces
+#
+# If enabled, XP70 traces will be dumped on console.
+# Value change will b effective on re-configuration(OMX_SetParameter)
+#
+# ste.xp70.logenable <0,1>
+# ste.xp70.loglevel <0..31> [Bit fields, expected in format 0xYYYYYYYY]
+# ste.xp70.logmechanism <0,1,2>
+#     0 = IFM_FirmwareTraceMechanism_None
+#     1 = IFM_FirmwareTraceMechanism_XTI
+#     2 = IFM_FirmwareTraceMechanism_SharedMemory
+LOCAL_CFLAGS += -DDUMP_XP70_TRACES=1
+#LOCAL_CFLAGS += -DXP70_LOGENABLE_VALUE=1
+#LOCAL_CFLAGS += -DXP70_LOGLEVEL_VALUE=0xFFFF
+#LOCAL_CFLAGS += -DXP70_LOGMECHANISM_VALUE=2
+LOCAL_CFLAGS += -DXP70_LOGENABLE_KEY=\"ste.xp70.logenable\"
+LOCAL_CFLAGS += -DXP70_LOGLEVEL_KEY=\"ste.xp70.loglevels\"
+LOCAL_CFLAGS += -DXP70_LOGMECHANISM_KEY=\"ste.xp70.logmechanism\"

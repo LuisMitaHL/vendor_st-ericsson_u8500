@@ -1,0 +1,236 @@
+//============================================================================
+// Lauterbach T32 Emulator script: stm/trace_stm.cmm
+//
+// Comments: STM/STP trace management
+//
+//
+// Written by: Philippe Langlais, Serge Barandao
+//
+// Creation date: 17/02/2011
+// Last Change: Thu Mar 03 09:00 2011 CET
+//
+//============================================================================
+
+// STM MasterID
+// 0 : A9@0
+// 1 : A9@1
+// 2 : reserved
+// 3 : SIA
+// 4 : SIA XP70
+// 5 : PRCMU
+// 9 : MCSBAG
+//
+
+local &filename &start
+local &A9 &SIA &SIA_XP70 &PRCMU &MCSBAG
+local &masters &channels &payload
+local &os_linux
+
+&os_linux=0==1 //FALSE
+IF (OS.VERSION(0)>=0x10)
+(
+	&os_linux=0==0//TRUE
+)
+
+if (("&EtmPortSize"=="24.")||("&EtmPortSize"=="32."))&&("&EtmApp"=="True"||"&EtmMmdspSia"=="True")
+(
+	PRINT "ERROR : STM trace is not compatible with &EtmPortSize bits ETM trace"
+	PRINT "        trace reduced to 16 bits"
+	&EtmPortSize=16.
+)
+
+
+dialog
+(
+	header "STM Trace Activation"
+	pos 1. 0. 20.
+	BUTTON "RESET TRACE FLAGS"
+	(
+		dialog.set A9 "OFF"
+		&A9=0
+		dialog.set SIA "OFF"
+		&SIA=0
+		dialog.set SIA_XP70 "OFF"
+		&SIA_XP70=0
+		dialog.set PRCMU "OFF"
+		&PRCMU=0
+		dialog.set MCSBAG "OFF"
+		&MCSBAG=0
+	)
+	A9: CHECKBOX "Cortex-A9s" ""
+	SIA: CHECKBOX "SIA" ""
+	SIA_XP70: CHECKBOX "SIA XP70" ""
+	PRCMU: CHECKBOX "PRCMU" ""
+	MCSBAG: CHECKBOX "MCSBAG" ""
+	PAYLOAD: CHECKBOX "Payload Only" ""
+	PIPE: CHECKBOX "Use output pipe STMpipe too" ""
+
+	POS 1. 9. 13.
+	TEXT "Trace File:"
+	POS 14. 9. 10.
+FILE: EDIT "trace.bin" ""
+
+	POS 1. 10. 13.
+	TEXT "Channels range:"
+	POS 14. 10. 10.
+CHANNELS: EDIT "0.--255." ""
+
+	POS 1. 12. 6.
+START:	DEFBUTTON "START"
+	(
+		&start=1
+		continue
+	)
+	POS 8. 12. 6.
+STOP:	BUTTON "STOP"
+	(
+		&start=""
+		continue
+	)
+	POS 15. 12. 6.
+
+CLOSE:	BUTTON "CLOSE" "JUMPTO winclose"
+        CLOSE "JUMPTO winclose"
+)
+
+// Init default
+	dialog.set A9 "ON"
+	dialog.set SIA_XP70 "ON"
+	dialog.set SIA "ON"
+	dialog.set PRCMU "ON"
+	dialog.set MCSBAG "ON"
+	dialog.set PAYLOAD "OFF"
+	dialog.set PIPE "OFF"
+
+	if !&os_linux
+	(
+		; pipe only suported on Linux target for the moment
+		dialog.disable	PIPE
+	)
+
+TreatDialog:
+	stop
+
+	if dialog.boolean(A9)
+		&A9="1"
+	else
+		&A9="0"
+	if dialog.boolean(SIA)
+		&SIA="1"
+	else
+		&SIA="0"
+	if dialog.boolean(SIA_XP70)
+		&SIA_XP70="1"
+	else
+		&SIA_XP70="0"
+	if dialog.boolean(PRCMU)
+		&PRCMU="1"
+	else
+		&PRCMU="0"
+	if dialog.boolean(MCSBAG)
+		&MCSBAG="1"
+	else
+		&MCSBAG="0"
+	if dialog.boolean(PAYLOAD)
+		&payload="/Payload"
+	else
+		&Payload=""
+
+	&masters="0y&(MCSBAG)000&(PRCMU)&(SIA_XP70)&(SIA)0&(A9)&(A9)"
+	&channels=dialog.string(CHANNELS)
+	&filename=dialog.string(FILE)
+
+	if "&start"!=""
+	(
+		// area
+		; Configure Combiprobe for STM capture
+		if run()
+			break
+		; APE trace on MIPI34 => GPIO86,GPIO161-164 on CCU8540
+		; PRCMU_GPIOCR GPIO muxing control register
+		; 0=prcm_gpiocr3[9]  => MOD_PRCMU_DEBUG: AltC1
+		; 1=prcm_gpiocr2[18] => STMAPE: AltC2
+		; 0=prcm_gpiocr1[4]  => TPIU: AltC3
+		; 0=prcm_gpiocr1[11] => STMMOD: AltC4
+
+		data.set A:0x80157138 %LE %LONG (d.l.le(A:80157138)&~0x00000810)
+		data.set A:0x80157574 %LE %LONG (d.l.le(A:80157574)&~0x00000000)|0x00040000
+		data.set A:0x801572BC %LE %LONG (d.l.le(A:801572BC)&~0x00000200)
+
+		// Enable Master (STM_TER)
+		data.set ad:0x8010F010 %long &masters
+
+		go
+		print "Init STP acquisition"
+		ca.init
+		; Choose STP as decoding mode
+		ca.dm stp
+		; Change this threshold to VREF_TRACE/2 if needed
+		; This is for 1.8V signals
+		ca.th 0.9
+		ca.mode pipe
+		if dialog.boolean(PIPE)
+		(
+			; start application which creates a named pipe and will read the
+			; trace information from this pipe
+			OS.screen perl -S &CMM_PATH_BASE/stm/stm_decoder.pl -p"STMpipe" &filename &
+			print "stm/stm_decoder.pl started"
+			WAIT 1000.ms
+			; specify named pipe a trace sink
+			if &os_linux
+			(
+				print "ca.PipeWRITE /tmp/STMpipe"
+				ca.PipeWRITE /tmp/STMpipe
+			)
+			else
+			(
+				print %error "FIXME change the name on windows to \\.\PIPE\STMpipe"
+				goto winclose:
+			)
+			print "pipe started"
+		)
+		else
+		(
+			print "ca.write &filename /ChannelID &channels &payload"
+			ca.write &filename /ChannelID &channels &payload
+		)
+		;Start acquisition
+		dialog.disable START
+		dialog.enable STOP
+
+		print "Start STP acquisition"
+		ca.arm
+	)
+	else
+	(
+		gosub StopSTM
+		dialog.enable START
+		dialog.disable STOP
+	)
+
+	gosub TreatDialog
+
+winclose:
+gosub StopSTM
+
+
+DIALOG.END
+ENDDO
+
+;----------------------------------------------------------
+StopSTM:
+
+print "Stop STP acquisition"
+ca.off
+ca.pproto
+ca.write
+ca.PipeWRITE
+
+if &os_linux
+(
+	os.hidden  ps -ef | grep stm_decoder.pl  | cut -c 10-14 | xargs kill
+	os.hidden rm /tmp/STMpipe
+)
+
+return
+

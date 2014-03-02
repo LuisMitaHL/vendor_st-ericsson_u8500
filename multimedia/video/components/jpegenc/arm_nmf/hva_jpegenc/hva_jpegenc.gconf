@@ -1,0 +1,57 @@
+composite jpegenc.arm_nmf.hva_jpegenc
+{
+	  contains jpegenc.arm_nmf.parser       as jpegencParser urgent
+	  contains jpegenc.arm_nmf.hva_wrapper  as hva_wrapper
+	  //contains jpegenc.arm_nmf.hva          as cHva  
+	  contains  hva_drv.arm_nmf.hva_drv   as cHva
+	  
+	  
+	  
+	  provides jpegenc.arm_nmf.api.setParam	as setParam
+       	  binds this.setParam              to jpegencParser.setParam
+       	  
+       	  provides jpegenc.arm_nmf.api.setMemoryParam	as setMemoryParam
+       	  binds this.setMemoryParam        to hva_wrapper.setMemoryParam
+		  
+		  requires jpegenc.arm_nmf.api.portSettings	    as iChangePortSettingsSignal
+       	  binds jpegencParser.iChangePortSettingsSignal to this.iChangePortSettingsSignal
+		  requires jpegenc.arm_nmf.api.cmd_ack	    as iCommandAck
+       	  binds jpegencParser.iCommandAck to this.iCommandAck
+	  //interfaces for input port
+	  provides     armnmf_emptythisbuffer      as      emptythisbuffer
+	  requires     armnmf_fillthisbuffer       as      inputport
+
+	  //interfaces for output port
+	  provides     armnmf_fillthisbuffer       as      fillthisbuffer
+	  requires     armnmf_emptythisbuffer      as      outputport
+		  
+	  // exposed component interfaces
+	  provides    sendcommand           as      sendcommand
+	  provides    fsminit               as      fsminit
+	  requires    eventhandler          as      proxy		   	
+
+	  //bindings from composite shell to primitive component
+	  binds        this.emptythisbuffer        to    jpegencParser.emptythisbuffer
+	  binds        jpegencParser.inputport     to    this.inputport
+
+	  binds        this.fillthisbuffer         to    jpegencParser.fillthisbuffer
+	  binds        jpegencParser.outputport    to    this.outputport
+
+	  binds       this.sendcommand             to    jpegencParser.sendcommand
+	  binds       this.fsminit                 to    jpegencParser.fsminit
+		  
+	  binds       jpegencParser.proxy          to    this.proxy		   
+  
+	  /* loopback bind on postEvent */
+	  binds       jpegencParser.me             to    jpegencParser.postevent asynchronous fifo=1
+	  
+	  binds	      jpegencParser.iAlgo          to    hva_wrapper.iAlgo
+          binds       hva_wrapper.oEndAlgo         to    jpegencParser.iEndAlgo
+          
+	  binds hva_wrapper.iStartCodec              to cHva.iStartCodec   asynchronous fifo=4
+	  binds cHva.iEndCodec                       to hva_wrapper.iEndCodec  asynchronous fifo=4          
+          //binds       hva_wrapper.iStartCodec      to    cHva.iStartCodec       asynchronous fifo=4
+	  //binds       cHva.iEndCodec               to    hva_wrapper.iEndCodec  asynchronous fifo=4
+          
+	  binds jpegencParser.iSendLogEvent to jpegencParser.iGetLogEvent asynchronous fifo=4
+}

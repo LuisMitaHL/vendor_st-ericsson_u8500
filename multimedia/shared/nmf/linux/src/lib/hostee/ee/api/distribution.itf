@@ -1,0 +1,15 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/priority.idt>
+
+interface ee.api.distribution {
+    // Return 1 in case of success else 0
+    t_uint32 notifyStart(t_uint32 priority);
+    void notifyStop(t_uint32 priority);
+    t_uint32 getDistributionChannel(t_uint32 priority);
+}

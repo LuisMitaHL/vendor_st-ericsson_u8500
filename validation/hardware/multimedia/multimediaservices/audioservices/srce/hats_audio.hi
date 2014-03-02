@@ -1,0 +1,524 @@
+/*
+ * =====================================================================================
+ * 
+ * 	Filename: hats_audio.hi
+ * 
+ *     	Description:  internal declarations
+ * 
+ *      © Copyright ST-Ericsson, 2009. All Rights Reserved
+ * 
+ * =====================================================================================
+*/
+/*!
+	\file hats_audio.hi
+
+*/
+
+/*! \defgroup internal_audio_services Access to Audio services 
+	\par	
+		This part describes the C internal declarations 
+*/
+
+#include <fcntl.h>			/* O_RDWR */
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+
+typedef unsigned char u8;
+typedef unsigned char bool;
+#include <video/av8100.h>
+
+/*
+ * U8520 SPECIFIC
+ *
+ * */
+
+#define MAX_LGTH_COMMAND  400
+#define ARECORD_FOR_DIGITAL_LOOPBACK "arecord -Dhw:0,2 -fS16 -r48000"
+#define APLAY_FOR_DIGITAL_LOOPBACK "aplay -Dhw:0,1 -r48000"
+typedef char hats_audio_string[MAX_LGTH_COMMAND];
+/*!     \ingroup internal_audio_services for 8520
+    \typedef hats_audio_int_output_t
+    \brief  structure used for output declaration used for amixer
+*/
+ typedef struct{
+  e_HatsAudioOutput_t output;  /**< output ID*/
+  char script[MAX_LGTH_COMMAND]; /**< config script name*/
+  } hats_audio8520_int_output_t;
+
+/*!	\ingroup internal_audio_services
+	\typedef hats_audio_int_input_t
+	\brief  structure used for input declaration used for amixer
+*/
+typedef struct{
+  e_HatsAudioInput_t input;  /**< input ID*/
+  char script[MAX_LGTH_COMMAND]; /**< config script name*/
+  } hats_audio8520_int_input_t;
+/* Constant array used to retreive config script from input selection*/
+/* WARNING: this definition depends on e_HatsAudioInput_t enum */
+/* TO DO : use the first field iso the order defined in e_HatsAudioInput_t enum */
+const hats_audio8520_int_input_t hats_audio8520_input[CODEC_NB_OF_SRC]
+#ifdef HATS_AUDIO_C
+ = {
+	{CODEC_SRC_LINEIN,    "/usr/local/bin/audio/linein.sh"}
+	,{CODEC_SRC_MICROPHONE_1A,  "/usr/local/bin/audio/mic1a.sh"}
+	,{CODEC_SRC_MICROPHONE_1B,  "/usr/local/bin/audio/mic1b.sh"}
+	,{CODEC_SRC_MICROPHONE_2,	"/usr/local/bin/audio/mic2.sh"}
+	,{CODEC_SRC_D_MICROPHONE_12,	"/usr/local/bin/audio/dmic12.sh"}
+	,{CODEC_SRC_D_MICROPHONE_34,	"/usr/local/bin/audio/dmic34.sh"}
+	,{CODEC_SRC_D_MICROPHONE_56,   	"/usr/local/bin/audio/dmic56.sh"}
+	,{CODEC_SRC_FM_RX,	"/usr/local/bin/audio/fmrx.sh"}
+}
+
+#endif
+;
+
+/* Constant array used to retreive config script from output selection*/
+/* WARNING: this definition depends on e_HatsAudioOutput_t enum */
+/* TO DO : use the first field iso the order defined in e_HatsAudioOutput_t enum */
+const hats_audio8520_int_output_t hats_audio8520_output[CODEC_NB_OF_DEST]
+#ifdef HATS_AUDIO_C
+ = {
+	{CODEC_DEST_HEADSET,	"/usr/local/bin/audio/headset.sh"}
+	,{CODEC_DEST_EARPIECE,	"/usr/local/bin/audio/earpiece.sh"}
+	,{CODEC_DEST_HANDSFREE,	"/usr/local/bin/audio/handsfree.sh"}
+	,{CODEC_DEST_VIBRATOR1,	"/usr/local/bin/audio/vib1.sh"}
+	,{CODEC_DEST_VIBRATOR2,	"/usr/local/bin/audio/vib2.sh"}
+	,{CODEC_DEST_FM_TX,  "/usr/local/bin/audio/fmtx.sh"}
+}
+
+#endif
+;
+
+const hats_audio_string  Dloop_configs[CODEC_NB_OF_DEST][CODEC_NB_OF_SRC]
+#ifdef HATS_AUDIO_C
+ =
+{
+  /* HEADSET */
+  {
+    "/usr/local/bin/audio/linlrheadset.sh"
+	,""	/* MIC1A */
+    ,"/usr/local/bin/audio/mic1bheadset.sh"
+    ,"/usr/local/bin/audio/mic2headset.sh"
+    ,"/usr/local/bin/audio/dmic12headset.sh"
+    ,"/usr/local/bin/audio/dmic34headset.sh"
+    ,"/usr/local/bin/audio/dmic56headset.sh"
+	,""	/* FM RX */
+  }
+  /* HANDSET*/
+  ,{
+    "" /* LINLR */
+    ,"/usr/local/bin/audio/mic1aearpiece.sh"
+    ,"/usr/local/bin/audio/mic1bearpiece.sh"
+    ,"" 	/* MIC2 */
+    ,"" 	/* DMIC12*/
+    ,"" 	/* DMIC34*/
+    ,"" 	/* DMIC56*/
+	,""	/* FM RX */
+  }
+  /* HANDSFREE*/
+  ,{
+   "" /* LINLR */
+   ,"/usr/local/bin/audio/mic1ahandsfree.sh"
+   ,"/usr/local/bin/audio/mic1bhandsfree.sh"
+   ,"" 	/* MIC2 */
+   ,"" 	/* DMIC12*/
+   ,"" 	/* DMIC34*/
+   ,"" 	/* DMIC56*/
+	,""	/* FM RX */
+   }
+}
+#endif
+;
+
+/**********************************************
+* Constantes declarations
+**********************************************/
+#define DIGITAL_LOOPBACK_DB_COMMAND  "arecord -Dhw:0,2 -f S16 -r 48000 -c2 | aplay -Dhw:0,1 -c2&"
+			
+/*! 	\ingroup internal_audio_services
+	\def PCM_PLAYER
+	\brief player used 
+*/
+#define PCM_PLAYER  "aplay -qS -r48000"    
+
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_AUDIO_NB_PB_MODE
+	\brief number of playback mode see \ref e_HatsAudioMode_t
+*/
+#define HATS_AUDIO_MMTE_SCRIPT_PATH  "/bin/"
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_AUDIO_CONTEXT_INIT
+	\brief  context initialisation
+*/
+#define HATS_AUDIO_CONTEXT_INIT  {\
+    HATS_AUDIO_UNDEFINED_MODE, /* PlaybackMode*/ \
+    HATS_AUDIO_UNDEFINED_MODE, /* CaptureMode*/ \
+   	BURST_MODE_DISABLE, /*  burst mode */ \
+    }
+ 
+    
+/*! 	\ingroup internal_audio_services
+	\def HATS_AUDIO_NB_PB_MODE
+	\brief number of playback mode see \ref e_HatsAudioMode_t
+*/
+#define HATS_AUDIO_NB_PB_MODE  ((uint32_t) 5 )
+
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_AUDIO_NB_CP_MODE
+	\brief number of capture mode see \ref e_HatsAudioMode_t
+*/
+#define HATS_AUDIO_NB_CP_MODE  ((uint32_t) 3 )
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_AUDIO_UNDEFINED_MODE
+	\brief constant to specify that mode as not been defined
+*/
+#define HATS_AUDIO_UNDEFINED_MODE ((uint32_t) 0xFFFFFFFF )
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_AUDIO_UNDEFINED_MODE
+	\brief constant to specify that mode as not been defined
+*/
+#define HATS_AUDIO_NO_DEVICE ((uint32_t) 0xFFFFFFFF )
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_AUDIO_HDMI_AUDIOCFG_SYSFS
+	\brief constant to specify the HDMI audioconfig system file name
+*/
+#define HATS_AUDIO_HDMI_AUDIOCFG_SYSFS  "/sys/class/misc/hdmi/audiocfg" 
+
+/*! 	\ingroup internal_audio_services
+	\def hats_audio_subdevice_e
+	\brief constant to specify the 4500 audioloop mode
+*/
+
+typedef enum{
+  HATS_STW4500_LOOP_OFF
+  ,HATS_STW4500_ANALOGLOOP
+  ,HATS_STW4500_DIGITALLOOP
+  ,NB_STW4500_LOOP
+  } hats_audio_4500_loop;
+
+
+/*! 	\ingroup internal_audio_services
+	\def hats_audio_mixer_Ctrl_e
+	\brief constant to specify that the MIXER ctrl
+*/
+typedef enum{
+  HATS_AUDIO_PCM_CAPTURE_MODE
+  ,HATS_AUDIO_PCM_RENDERING_MODE
+  ,HATS_AUDIO_PCM_SRCE
+  ,HATS_AUDIO_PCM_SINK
+  ,HATS_AUDIO_CAPTURE_VOL
+  ,HATS_AUDIO_PLAYBACK_VOL
+  ,HATS_AUDIO_CAPTURE_MUTE
+  ,HATS_AUDIO_PLAYBACK_MUTE
+  ,HATS_AUDIO_ANALOG_LOOPBACK
+  ,HATS_AUDIO_DIGITAL_LOOPBACK
+  ,HATS_AUDIO_MULTI_CHANNEL_MODE
+  ,HATS_AUDIO_PLAYBACK_POWER
+  ,HATS_AUDIO_CAPTURE_POWER
+  ,HATS_AUDIO_MASTER_VOL
+  ,HATS_AUDIO_MASTER_MUTE
+  ,NB_MIXER_CTRL
+  } hats_audio_mixer_Ctrl_t;
+
+/*! 	\ingroup internal_audio_services
+	\def hats_audio_subdevice_e
+	\brief constant to specify the alsa subdevices
+*/
+typedef enum{
+  HATS_AUDIO_PCM_PLAYBACK_SUBD
+  ,HATS_AUDIO_PCM_CAPTURE_SUBD
+  ,HATS_AUDIO_PCM_BLUETOOTH_SUBD
+  ,HATS_AUDIO_PCM_HDMI_SUBD
+  ,NB_MIXER_SUBD
+  } hats_audio_subdevice_e;
+
+/*! 	\ingroup internal_audio_services
+	\def hats_audio_AlsaPB_Mode_e
+	\brief constant to specify the alsa subdevices
+*/
+typedef enum{
+  HATS_ALSA_PB_FIFO_MODE
+  ,HATS_ALSA_PB_FM_PB_MODE
+  ,HATS_ALSA_PB_FM_TX_MODE
+  ,NB_ALSA_PB_MODE
+  } hats_alsa_pb_mode_e;
+
+/*! 	\ingroup internal_audio_services
+	\def hats_audio_AlsaPB_Mode_e
+	\brief constant to specify the alsa subdevices
+*/
+typedef enum{
+  HATS_ALSA_CP_FM_MODE
+  ,NB_ALSA_CP_MODE
+  } hats_alsa_cp_mode_e;
+
+/*CAP_1596_001 */
+typedef enum{
+  AB8500_VER_ED,
+  AB8500_VER_V1,
+  AB8500_VER_V2,
+  AB8500_NB_VERSION,
+  AB8500_VER_UNDEFINED= 0xFF
+}AB8500_version;
+/* end CAP_1596_001 */
+
+/*! 	\ingroup internal_audio_services
+	\def hats_hdmi_audio_state
+	\brief constant to audio state for HDMI
+*/
+typedef enum{
+  HATS_HDMI_AUDIO_OFF
+  ,HATS_HDMI_AUDIO_ON
+  ,NB_HDMI_AUDIO_STATE
+  } hats_hdmi_audio_state;
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_HEADSET_CONF_FILE
+	\brief constant to specify the headset configuration file name
+*/
+#define HATS_HEADSET_CONF_FILE  "hdsetout.sh" 
+
+/*! 	\ingroup internal_audio_services
+	\def HATS_EARPIECE_CONF_FILE
+	\brief constant to specify the earpiece configuration file name
+*/
+#define HATS_EARPIECE_CONF_FILE  "earpiece.sh"
+
+/**********************************************
+* typedef declarations
+**********************************************/
+
+/*! 	\ingroup internal_audio_services
+	\typedef hats_audio_Device_t
+	\brief  structure associated to the sound card devices
+*/
+typedef struct{
+  uint32_t device;
+  uint32_t subdevice;
+  char		name[MAX_LGTH_COMMAND];
+  } hats_alsa_Device_t;
+  
+/*! 	\ingroup internal_audio_services
+	\typedef hats_alsa_Mode_t
+	\brief  structure associated to the playback modes for amixer command
+*/
+typedef struct{
+  uint8_t name[30]; /**< ctrl Name*/
+  uint32_t state;  /**< ctrl state */
+  } hats_alsa_Mode_t;
+  
+/*! 	\ingroup internal_audio_services
+	\typedef hats_audio_PB_Mode_t
+	\brief  structure associated to the playback or capture modes for amixer command
+*/
+typedef struct{
+  e_HatsAudioMode_t ID;  /**< mode ID*/
+  uint8_t name[30]; /**< mode Name*/
+  int32_t alsa_mode[NB_ALSA_PB_MODE];
+  uint32_t Status;  /**< mode status : HATS_AUDIO_NO_ERROR if mode supported, else HATS_AUDIO_NOT_AVAILABLE */
+  } hats_audio_PB_Mode_t;
+
+/*! 	\ingroup internal_audio_services
+	\typedef hats_audio_PB_Mode_t
+	\brief  structure associated to the playback or capture modes for amixer command
+*/
+typedef struct{
+  e_HatsAudioMode_t ID;  /**< mode ID*/
+  uint8_t name[30]; /**< mode Name*/
+  int32_t alsa_mode[NB_ALSA_CP_MODE];
+  uint32_t Status;  /**< mode status : HATS_AUDIO_NO_ERROR if mode supported, else HATS_AUDIO_NOT_AVAILABLE */
+  } hats_audio_CP_Mode_t;
+	
+/*! 	\ingroup internal_audio_services
+	\typedef hats_audio_context_t
+	\brief  structure to store context
+
+*/
+typedef struct{
+  e_HatsAudioMode_t PlaybackMode;/**< curent playback mode :HATS_AUDIO_UNDEFINED_MODE if no playback running*/
+  e_HatsAudioMode_t CaptureMode; /**< curent playback mode :HATS_AUDIO_UNDEFINED_MODE if no capture running*/
+  e_HatsAudioBurstMode_t BurstMode; /**< curent burst mode */
+  } hats_audio_context_t;
+ 
+  
+/*! 	\ingroup internal_audio_services
+	\typedef hats_audio_int_output_t
+	\brief  structure used for output declaration used for amixer
+*/
+ typedef struct{
+  e_HatsAudioOutput_t output;  /**< output ID*/
+  char name[30];  /**< output name*/
+  } hats_audio_int_output_t;
+
+/*! 	\ingroup internal_audio_services
+	\typedef hats_audio_int_input_t
+	\brief  structure used for input declaration used for amixer
+*/
+typedef struct{
+  e_HatsAudioInput_t input;  /**< input ID*/
+  char name[30]; /**< input name*/
+  } hats_audio_int_input_t;
+
+
+/**********************************************
+* variable declarations
+**********************************************/
+  
+ /* Constant array used to translate a device ID to device name  */
+hats_audio_context_t hats_audio_contex[NB_OF_AUDIO_DEVICE]
+#ifdef HATS_AUDIO_C
+ = {HATS_AUDIO_CONTEXT_INIT,HATS_AUDIO_CONTEXT_INIT,HATS_AUDIO_CONTEXT_INIT}
+#endif
+ ; 
+
+/* Constant array used to translate a device ID to device name  */
+ hats_audio_PB_Mode_t hats_audio_PB_mode[HATS_AUDIO_NB_PB_MODE]
+#ifdef HATS_AUDIO_C
+ = {
+   {NORMAL_PLAYBACK_MODE,"NORMAL_PLAYBACK_MODE",{0,0,0},HATS_AUDIO_NO_ERROR}
+	,{FM_PLAYBACK_MODE,           "FM_PLAYBACK_MODE",{0,1,0}, HATS_AUDIO_NO_ERROR}
+	,{FM_TX_MODE,                       "FM_TX_MODE",{0,0,1}, HATS_AUDIO_NO_ERROR}
+	,{DIGITAL_LOOPBACK_MODE,  "DIGITAL_LOOPBACK_MODE",{0,0,0}, HATS_AUDIO_NO_ERROR}
+#ifdef CR_CAP_73_001_STW4500_AUDIOLOOP
+	,{AB_DIGITAL_LOOPBACK_MODE,  "DIGITAL_LOOPBACK_MODE",{0,0,0}, HATS_AUDIO_NO_ERROR}
+#endif /* CR_CAP_73_001_STW4500_AUDIOLOOP */
+}
+#endif
+ ; 
+
+/* Constant array used to translate a PB rendering mode ID to parameter name  */
+ const char hats_alsa_PB_mode_name[NB_ALSA_PB_MODE][30]
+#ifdef HATS_AUDIO_C
+ = {
+  	"\'FIFO_MODE\'"
+	 ,"\'FM_PLAYBACK_MODE\'"
+	 ,"\'FM_TX_MODE\'"
+}
+#endif
+ ; 
+
+/* Constant array used to translate a capture mode ID to name  */
+hats_audio_CP_Mode_t hats_audio_CP_mode[HATS_AUDIO_NB_CP_MODE]
+#ifdef HATS_AUDIO_C
+ = {
+  	{NORMAL_CAPTURE_MODE,    "\'NORMAL_CAPTURE_MODE\'",{0}, HATS_AUDIO_NO_ERROR}
+	,{FM_CAPTURE_MODE,                           "\'FM_CAPTURE_MODE\'",{1}, HATS_AUDIO_NO_ERROR}
+	,{ANALOG_LOOPBACK_MODE,                       "\'ANALOG_LOOPBACK_MODE\'",{0}, HATS_AUDIO_NO_ERROR}
+}
+#endif
+; 
+
+/* Constant array used to translate a PB rendering mode ID to parameter name  */
+ const char hats_alsa_CP_mode_name[NB_ALSA_CP_MODE][30]
+#ifdef HATS_AUDIO_C
+ = {
+  	"\'FM_CAPTURE_MODE\'"
+}
+#endif
+ ; 
+
+/* Constant array used to translate a playback mode ID to  name  */
+const hats_audio_int_output_t hats_audio_output[CODEC_NB_OF_DEST]
+#ifdef HATS_AUDIO_C
+ = {
+	{CODEC_DEST_HEADSET,	"\'CODEC_DEST_HEADSET\'"}
+	,{CODEC_DEST_EARPIECE,	"\'CODEC_DEST_EARPIECE\'"}
+	,{CODEC_DEST_HANDSFREE,	"\'CODEC_DEST_HANDSFREE\'"}
+	,{CODEC_DEST_VIBRATOR1,	"\'CODEC_DEST_VIBRATOR1\'"}
+	,{CODEC_DEST_VIBRATOR2,	"\'CODEC_DEST_VIBRATOR2\'"}
+	,{CODEC_DEST_FM_TX,  "\'CODEC_DEST_FM_TX\'"}
+}
+#endif
+; 
+
+/* Constant array used to translate a input ID to name  */
+const hats_audio_int_input_t hats_audio_input[CODEC_NB_OF_SRC]
+#ifdef HATS_AUDIO_C
+ = {
+  	{CODEC_SRC_LINEIN,    "\'CODEC_SRC_LINEIN\'"}
+	,{CODEC_SRC_MICROPHONE_1A,  "\'CODEC_SRC_MICROPHONE_1A\'"}
+	,{CODEC_SRC_MICROPHONE_1B,  "\'CODEC_SRC_MICROPHONE_1B\'"}
+	,{CODEC_SRC_MICROPHONE_2,                           "\'CODEC_SRC_MICROPHONE_2\'"}
+	,{CODEC_SRC_D_MICROPHONE_12,           "\'CODEC_SRC_D_MICROPHONE_12\'"}
+	,{CODEC_SRC_D_MICROPHONE_34,                       "\'CODEC_SRC_D_MICROPHONE_34\'"}
+	,{CODEC_SRC_D_MICROPHONE_56,                       "\'CODEC_SRC_D_MICROPHONE_56\'"}
+	,{CODEC_SRC_FM_RX,                       "\'CODEC_SRC_FM_RX\'"}
+}
+#endif
+; 
+
+/* Constant array used to translate a output ID to name  */
+const char *hats_audio_mixer_ctrl [NB_MIXER_CTRL]
+#ifdef HATS_AUDIO_C
+ = {
+  "PCM Capture Mode"
+  ,"PCM Rendering Mode"
+  ,"PCM Capture Source"
+  ,"PCM Playback Sink"
+  ,"PCM Capture Volume"
+  ,"PCM Playback Volume"
+  ,"PCM Capture Mute"
+  ,"PCM Playback Mute"
+  ,"Analog Loopback"
+  ,"Digital Loopback"
+  ,"TDM 8 Channel Mode"
+  ,"PCM Playback Power"
+  ,"PCM Capture Power"
+  ,"Master Volume"
+  ,"Master Switch"
+}
+#endif
+; 
+
+/* Constant array used to store the Cscall capabilities in term of codec  */
+const HatsAudioScCallCodec_t ScCallCapabilities
+#ifdef HATS_AUDIO_C
+ = {
+  AUDIO_CODEC_SUPPORTED /* UMTS_AMR */
+  ,AUDIO_CODEC_SUPPORTED/* UMTS_AMR2 */
+  ,AUDIO_CODEC_SUPPORTED/* UMTS_AMRWB */
+  ,AUDIO_CODEC_SUPPORTED/* HR_AMR */
+  ,AUDIO_CODEC_SUPPORTED/* FR_AMR */
+  ,AUDIO_CODEC_SUPPORTED/* FR_AMRWB */
+  ,AUDIO_CODEC_SUPPORTED/* GSM_HR */
+  ,AUDIO_CODEC_SUPPORTED/* GSM_FR */
+  ,AUDIO_CODEC_SUPPORTED/* GSM_EFR */
+  ,AUDIO_CODEC_SUPPORTED/* padding1 */
+  ,AUDIO_CODEC_SUPPORTED/* padding2 */
+}
+#endif
+; 
+/**********************************************
+* function declarations
+**********************************************/
+uint32_t checkstatus(const char* FileName);
+uint32_t GetPID(const char* Command, uint32_t* PID);
+uint32_t StartPCMPlayback(e_HatsAudioDevice_t Device,e_HatsAudioMode_t Mode,char * FilePath);
+uint32_t StartPCMCapture(e_HatsAudioDevice_t Device,e_HatsAudioMode_t Mode,char * FilePath);
+uint32_t KillPID(const char* Command);
+uint32_t SetMixerCtrl(hats_alsa_Device_t* pDevice, hats_audio_mixer_Ctrl_t Ctrl, const char* p_param);
+uint32_t GetMixerCtrl(hats_alsa_Device_t* pDevice, hats_audio_mixer_Ctrl_t Ctrl,  uint32_t* p_param);
+int32_t PowerHDMIaudioInput(hats_hdmi_audio_state state);
+void GetAlsaDevice(e_HatsAudioDevice_t Device, e_HatsAudioCodecType_t Type, hats_alsa_Device_t* pAlsaDevice);
+int stw400audioloop(hats_audio_4500_loop action);
+int stw400audioloop_setSource(e_HatsAudioInput_t In_Organ);
+int stw400audioloop_setSink(e_HatsAudioOutput_t Out_Organ);
+AB8500_version Get_AB8500_Version(void);
+int Generatedata(FILE *p_InFILE,FILE *p_OutFILE);
+int GenerateHeader(FILE *p_InFILE,FILE *p_OutFILE);
+uint32_t StartCommand(char* pcommand);
+
+/**********************************************
+* Macro declarations
+**********************************************/
+struct stat s;
+#define MC_COND_DBG  stat("/usr/local/bin/audio/trace", &s)==0
+#define MC_TRACE_DBG(C) if (MC_COND_DBG) {printf("%s %d .... ",__func__,__LINE__);C;}
+
+

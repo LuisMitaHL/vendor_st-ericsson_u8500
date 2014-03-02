@@ -1,0 +1,28 @@
+## do $(IMAGING_PATH)/ite_nmf/script/stress/camera_switching_stress.ite
+## Camera switching if both are RAW BAYER ##
+
+alias LOOP_TESTS $1
+
+loop LOOP_TESTS
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+LR prepare
+LR start
+LR stop
+LR free
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite
+
+# Switch Camera
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_secondary.ite
+
+LR prepare
+LR start
+LR stop
+LR free
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite
+
+endloop

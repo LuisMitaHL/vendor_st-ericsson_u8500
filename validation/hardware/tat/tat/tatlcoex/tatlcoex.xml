@@ -1,0 +1,1548 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlcoex">
+  	<argument path="/DTH/COEX/config/menus/menu_11coex.xml" type="FILE" user_data="ACT_COEX_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlcoex/config/menus\nFilename=menu_11coex.xml</info> 
+	  </argument>
+	  <argument path="/DTH/COEX/config/panels/coex_agressors.xml" type="FILE" user_data="ACT_COEX_AGRESSORS_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlcoex/config/panels\nFilename=coex_agressors.xml</info> 
+	  </argument>
+	  <argument path="/DTH/COEX/config/panels/coex_victims.xml" type="FILE" user_data="ACT_COEX_VICTIMS_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlcoex/config/panels\nFilename=coex_victims.xml</info> 
+	  </argument>
+	  
+    <action path="/DTH/COEX/CG2900/StartCG2900" type="U8" user_data="ACT_CG2900" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:CG2900 service\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/CG2900/StartCG2900/Out_State" type="U8" user_data="ACT_CG2900_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/CG2900/StartCG2900/Out_Error" type="STRING" user_data="ACT_CG2900_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <!--<action path="/DTH/COEX/CG2900Version/GetCG2900Version" type="U8" user_data="ACT_CG2900VERSION" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <info>Label Action:Get CG2900 Version\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/CG2900Version/GetCG2900Version/Out_Error" type="STRING" user_data="ACT_CG2900VERSION_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/Minor" type="U8" user_data="ACT_CG2900VERSION_MIN" get="DthCoex_Conn_Get">
+        <info>Label Box:Minor Ver</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/Major" type="U8" user_data="ACT_CG2900VERSION_MAJ" get="DthCoex_Conn_Get">
+        <info>Label Box:Major Ver</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/Radio" type="U8" user_data="ACT_CG2900VERSION_RAD" get="DthCoex_Conn_Get">
+        <info>Label Box:Radio Ver</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/PatchID" type="STRING" user_data="ACT_CG2900VERSION_PATCHID" get="DthCoex_Conn_Get">
+        <info>Label Box:Patch ID</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/PatchDate" type="STRING" user_data="ACT_CG2900VERSION_PATCHDATE" get="DthCoex_Conn_Get">
+        <info>Label Box:SW/Patch Build Date</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/Vendor" type="U8" user_data="ACT_CG2900VERSION_VENDOR" get="DthCoex_Conn_Get">
+        <info>Label Box:Vendor ID</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/HCI" type="U8" user_data="ACT_CG2900VERSION_HCI" get="DthCoex_Conn_Get">
+        <info>Label Box:HCI Ver</info>
+      </argument>
+<argument path="/DTH/COEX/CG2900Version/GetCG2900Version/LMP" type="U8" user_data="ACT_CG2900VERSION_LMP" get="DthCoex_Conn_Get">
+        <info>Label Box:LMP Ver</info>
+      </argument>	
+    </action>-->
+    <action path="/DTH/COEX/CW1200/StartCW1200" type="U8" user_data="ACT_CW1200" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:CW1200 service\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/CW1200/StartCW1200/Out_State" type="U8" user_data="ACT_CW1200_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/CW1200/StartCW1200/Out_Error" type="STRING" user_data="ACT_CW1200_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+
+    <action path="/DTH/COEX/BTIP/StartBTIP" type="U8" user_data="ACT_BTIP" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:BTIP service\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/BTIP/StartBTIP/Out_State" type="U8" user_data="ACT_BTIP_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/BTIP/StartBTIP/Out_Error" type="STRING" user_data="ACT_BTIP_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/FMIP/StartFMIP" type="U8" user_data="ACT_FMIP" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:FMIP service\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/FMIP/StartFMIP/Out_State" type="U8" user_data="ACT_FMIP_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/FMIP/StartFMIP/Out_Error" type="STRING" user_data="ACT_FMIP_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <!--<action path="/DTH/COEX/GPSIP/StartGPSIP" type="U8" user_data="ACT_GPSIP" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+        <enum_item value="2">STANDBY</enum_item>
+      </enum>
+      <info>Label Action:GPSIP service\n9ptimeout:20000</info>
+<argument path="/DTH/COEX/GPSIP/StartGPSIP/Interval" type="U32" user_data="ACT_GPSIP_INT" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="500" max="4294967294"/>
+        <info>Label Box:Interval</info>
+      </argument>
+      <argument path="/DTH/COEX/GPSIP/StartGPSIP/Out_State" type="U8" user_data="ACT_GPSIP_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/GPSIP/StartGPSIP/Out_Error" type="STRING" user_data="ACT_GPSIP_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>-->
+    <action path="/DTH/COEX/Agressors/BT/StartBTTX" type="U32" user_data="ACT_BTTX" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:BT Tx\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/Agressors/BT/StartBTTX/ChannelBT" type="U16" user_data="ACT_COEX_BTTX_CHAN" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="0" max="78"/>
+        <info>Label Box:Channel</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/BT/StartBTTX/TXLevel" type="S16" user_data="ACT_COEX_BTTX_TXLEV" set="DthCoex_Conn_Set">
+	<range min="-128" max="127"/>
+        <info>Label Box:TX_level</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/BT/StartBTTX/AddrIdx" type="S16" user_data="ACT_COEX_BTTX_ADDRIDX" set="DthCoex_Conn_Set">
+	<range min="0" max="256"/>
+        <info>Label Box:Addr_Idx</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/BT/StartBTTX/PktType" type="U8" user_data="ACT_COEX_BTTX_PKTT" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<enum>
+          <enum_item value="0">DH1</enum_item>
+          <enum_item value="1">DH3</enum_item>
+	  <enum_item value="2">DH5</enum_item>
+          <enum_item value="3">2DH1</enum_item>
+	  <enum_item value="4">2DH3</enum_item>
+          <enum_item value="5">2DH5</enum_item>
+          <enum_item value="6">3DH1</enum_item>
+          <enum_item value="7">3DH3</enum_item>
+          <enum_item value="8">3DH5</enum_item>
+        </enum>
+        <info>Label Box:Pkt_Type</info>
+      </argument>
+     <argument path="/DTH/COEX/Agressors/BT/StartBTTX/Out_State" type="U8" user_data="ACT_BTTX_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/BT/StartBTTX/Out_Error" type="STRING" user_data="ACT_BTTX_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+   <action path="/DTH/COEX/Agressors/FM/StartFMTX" type="U32" user_data="ACT_FMTX" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:FM Tx\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/Agressors/FM/StartFMTX/Freq" type="U32" user_data="ACT_COEX_FMTX_FREQ" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="70000" max="108000"/>
+        <info>Label Box:Frequency</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/FM/StartFMTX/Power" type="U16" user_data="ACT_COEX_FMTX_PWR" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="88" max="123"/>
+        <info>Label Box:Power</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/FM/StartFMTX/Mode" type="U8" user_data="ACT_COEX_FMTX_MODE" set="DthCoex_Conn_Set">
+	<enum>
+          <enum_item value="0">Mono</enum_item>
+          <enum_item value="1">Stereo</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/FM/StartFMTX/Source" type="U8" user_data="ACT_COEX_FMTX_SRC" set="DthCoex_Conn_Set">
+	<enum>
+          <enum_item value="0">Tone</enum_item>
+          <enum_item value="1">I2S</enum_item>
+        </enum>
+        <info>Label Box:Source</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/FM/StartFMTX/Volume" type="U16" user_data="ACT_COEX_FMTX_VOL" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="0" max="20"/>
+        <info>Label Box:Volume</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/FM/StartFMTX/Emphasis" type="U8" user_data="ACT_COEX_FMTX_EMP" set="DthCoex_Conn_Set">
+	<enum>
+          <enum_item value="0">50 uS</enum_item>
+          <enum_item value="1">75 uS</enum_item>
+        </enum>
+        <info>Label Box:Emphasis</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/FM/StartFMTX/ToneFreq" type="U32" user_data="ACT_COEX_FMTX_TONEFREQ" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="0" max="18000"/>
+        <info>Label Box:Tone Frequency</info>
+      </argument>
+     <argument path="/DTH/COEX/Agressors/FM/StartFMTX/Out_State" type="U8" user_data="ACT_FMTX_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/FM/StartFMTX/Out_Error" type="STRING" user_data="ACT_FMTX_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+   <action path="/DTH/COEX/Agressors/Buses/I2C0/StartI2C0" type="U8" user_data="ACT_I2C0" set="DthCoex_I2C_Set" exec="DthCoex_I2C_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:I2C0</info>
+      <argument path="/DTH/COEX/Agressors/Buses/I2C0/StartI2C0/Out_State" type="U8" user_data="ACT_I2C0_STATE" get="DthCoex_I2C_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/I2C0/StartI2C0/Out_Error" type="STRING" user_data="ACT_I2C0_ERROR" get="DthCoex_I2C_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/I2C2/StartI2C2" type="U8" user_data="ACT_I2C2" set="DthCoex_I2C_Set" exec="DthCoex_I2C_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:I2C2</info>
+      <argument path="/DTH/COEX/Agressors/Buses/I2C2/StartI2C2/Out_State" type="U8" user_data="ACT_I2C2_STATE" get="DthCoex_I2C_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/I2C2/StartI2C2/Out_Error" type="STRING" user_data="ACT_I2C2_ERROR" get="DthCoex_I2C_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/I2C3/StartI2C3" type="U8" user_data="ACT_I2C3" set="DthCoex_I2C_Set" exec="DthCoex_I2C_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:I2C3</info>
+      <argument path="/DTH/COEX/Agressors/Buses/I2C3/StartI2C3/Out_State" type="U8" user_data="ACT_I2C3_STATE" get="DthCoex_I2C_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/I2C3/StartI2C3/Out_Error" type="STRING" user_data="ACT_I2C3_ERROR" get="DthCoex_I2C_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/DSI0/StartDSI0" type="U8" user_data="ACT_DSI0" set="DthCoex_Display_Set" exec="DthCoex_Display_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:DSI0</info>
+      <argument path="/DTH/COEX/Agressors/Buses/DSI0/StartDSI0/Out_State" type="U8" user_data="ACT_DSI0_STATE" get="DthCoex_Display_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/DSI0/StartDSI0/Out_Error" type="STRING" user_data="ACT_DSI0_ERROR" get="DthCoex_Display_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/DSI2/StartDSI2" type="U8" user_data="ACT_DSI2" set="DthCoex_Display_Set" exec="DthCoex_Display_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:DSI2</info>
+      <argument path="/DTH/COEX/Agressors/Buses/DSI2/StartDSI2/Out_State" type="U8" user_data="ACT_DSI2_STATE" get="DthCoex_Display_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/DSI2/StartDSI2/Out_Error" type="STRING" user_data="ACT_DSI2_ERROR" get="DthCoex_Display_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/PWM1/StartPWM1" type="U8" user_data="ACT_PWM1" set="DthCoex_Pwm_Set" exec="DthCoex_Pwm_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:PWM1</info>
+      <argument path="/DTH/COEX/Agressors/Buses/PWM1/StartPWM1/Out_State" type="U8" user_data="ACT_PWM1_STATE" get="DthCoex_Pwm_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/PWM1/StartPWM1/Out_Error" type="STRING" user_data="ACT_PWM1_ERROR" get="DthCoex_Pwm_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/CSI0/StartCSI0" type="U8" user_data="ACT_CSI0" set="DthCoex_Sensor_Set" exec="DthCoex_Sensor_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:CSI0</info>
+      <argument path="/DTH/COEX/Agressors/Buses/CSI0/StartCSI0/Out_State" type="U8" user_data="ACT_CSI0_STATE" get="DthCoex_Sensor_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/CSI0/StartCSI0/Out_Error" type="STRING" user_data="ACT_CSI0_ERROR" get="DthCoex_Sensor_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/CSI1/StartCSI1" type="U8" user_data="ACT_CSI1" set="DthCoex_Sensor_Set" exec="DthCoex_Sensor_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:CSI1</info>
+      <argument path="/DTH/COEX/Agressors/Buses/CSI1/StartCSI1/Out_State" type="U8" user_data="ACT_CSI1_STATE" get="DthCoex_Sensor_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/CSI1/StartCSI1/Out_Error" type="STRING" user_data="ACT_CSI1_ERROR" get="DthCoex_Sensor_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MSP1/StartMSP1" type="U8" user_data="ACT_MSP1" set="DthCoex_Audio_Set" exec="DthCoex_Audio_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MSP1</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MSP1/StartMSP1/Out_State" type="U8" user_data="ACT_MSP1_STATE" get="DthCoex_Audio_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MSP1/StartMSP1/Out_Error" type="STRING" user_data="ACT_MSP1_ERROR" get="DthCoex_Audio_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MSP2/StartMSP2" type="U8" user_data="ACT_MSP2" set="DthCoex_Audio_Set" exec="DthCoex_Audio_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MSP2</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MSP2/StartMSP2/Out_State" type="U8" user_data="ACT_MSP2_STATE" get="DthCoex_Audio_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MSP2/StartMSP2/Out_Error" type="STRING" user_data="ACT_MSP2_ERROR" get="DthCoex_Audio_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/VIB/StartVIB" type="U8" user_data="ACT_VIB" set="DthCoex_Audio_Set" exec="DthCoex_Audio_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:VIB</info>
+      <argument path="/DTH/COEX/Agressors/Buses/VIB/StartVIB/Out_State" type="U8" user_data="ACT_VIB_STATE" get="DthCoex_Audio_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/VIB/StartVIB/Out_Error" type="STRING" user_data="ACT_VIB_ERROR" get="DthCoex_Audio_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/DMIC/StartDMIC" type="U8" user_data="ACT_DMIC" set="DthCoex_Audio_Set" exec="DthCoex_Audio_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:DMIC</info>
+      <argument path="/DTH/COEX/Agressors/Buses/DMIC/StartDMIC/Out_State" type="U8" user_data="ACT_DMIC_STATE" get="DthCoex_Audio_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/DMIC/StartDMIC/Out_Error" type="STRING" user_data="ACT_DMIC_ERROR" get="DthCoex_Audio_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MC0/StartMC0" type="U8" user_data="ACT_MC0" set="DthCoex_Memory_Set" exec="DthCoex_Memory_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MC0</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MC0/StartMC0/Out_State" type="U8" user_data="ACT_MC0_STATE" get="DthCoex_Memory_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MC0/StartMC0/Out_Error" type="STRING" user_data="ACT_MC0_ERROR" get="DthCoex_Memory_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MC2/StartMC2" type="U8" user_data="ACT_MC2" set="DthCoex_Memory_Set" exec="DthCoex_Memory_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MC2</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MC2/StartMC2/Out_State" type="U8" user_data="ACT_MC2_STATE" get="DthCoex_Memory_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MC2/StartMC2/Out_Error" type="STRING" user_data="ACT_MC2_ERROR" get="DthCoex_Memory_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MC4/StartMC4" type="U8" user_data="ACT_MC4" set="DthCoex_Memory_Set" exec="DthCoex_Memory_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MC4</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MC4/StartMC4/Out_State" type="U8" user_data="ACT_MC4_STATE" get="DthCoex_Memory_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MC4/StartMC4/Out_Error" type="STRING" user_data="ACT_MC4_ERROR" get="DthCoex_Memory_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MODI2C/StartModI2C" type="U8" user_data="ACT_MODI2C" set="DthCoex_ModI2C_Set" exec="DthCoex_ModI2C_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MODI2C</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MODI2C/StartModI2C/Out_State" type="U8" user_data="ACT_MODI2C_STATE" get="DthCoex_ModI2C_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MODI2C/StartModI2C/Out_Error" type="STRING" user_data="ACT_MODI2C_ERROR" get="DthCoex_ModI2C_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/APEI2C/StartApeI2C" type="U8" user_data="ACT_APEI2C" set="DthCoex_ApeI2C_Set" exec="DthCoex_ApeI2C_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:APEI2C</info>
+      <argument path="/DTH/COEX/Agressors/Buses/APEI2C/StartApeI2C/Out_State" type="U8" user_data="ACT_APEI2C_STATE" get="DthCoex_ApeI2C_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/APEI2C/StartApeI2C/Out_Error" type="STRING" user_data="ACT_APEI2C_ERROR" get="DthCoex_ApeI2C_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+	<action path="/DTH/COEX/Agressors/Buses/CG2900/StartCG2900" type="U8" user_data="ACT_CG2900" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:CG2900 service\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/Agressors/Buses/CG2900/StartCG2900/Out_State" type="U8" user_data="ACT_CG2900_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/CG2900/StartCG2900/Out_Error" type="STRING" user_data="ACT_CG2900_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/UART0/StartUART0" type="U8" user_data="ACT_UART0" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:UART0</info>
+      <argument path="/DTH/COEX/Agressors/Buses/UART0/StartUART0/Out_State" type="U8" user_data="ACT_UART0_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/UART0/StartUART0/Out_Error" type="STRING" user_data="ACT_UART0_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/I2S/StartI2S" type="U8" user_data="ACT_I2S" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:I2S\n9ptimeout:10000</info>
+      <argument path="/DTH/COEX/Agressors/Buses/I2S/StartI2S/Out_State" type="U8" user_data="ACT_I2S_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/I2S/StartI2S/Out_Error" type="STRING" user_data="ACT_I2S_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MSP0/StartMSP0" type="U8" user_data="ACT_MSP0" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MSP0\n9ptimeout:40000</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MSP0/StartMSP0/Out_State" type="U8" user_data="ACT_MSP0_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MSP0/StartMSP0/Out_Error" type="STRING" user_data="ACT_MSP0_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Agressors/Buses/MC1/StartMC1" type="U8" user_data="ACT_MC1" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:MC1\n9ptimeout:50000</info>
+      <argument path="/DTH/COEX/Agressors/Buses/MC1/StartMC1/Out_State" type="U8" user_data="ACT_MC1_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/Buses/MC1/StartMC1/Out_Error" type="STRING" user_data="ACT_MC1_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Victims/STOP/STOPActivity" type="U8" user_data="ACT_COEX_STOP" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">STOP</enum_item>
+      </enum>
+      <info>Label Action:STOP Activity</info>
+    </action>
+    <action path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One" type="U8" user_data="ACT_COEX_RX2G5_ONE" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+	<enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:2G RX one channel\n Horizontal:7</info>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_FreqBand" type="U32" user_data="ACT_COEX_RX2G5_ONE_FREQBAND" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">NO BAND</enum_item>
+          <enum_item value="1">GSM850</enum_item>
+          <enum_item value="2">GSM900</enum_item>
+          <enum_item value="3">DCS1800</enum_item>
+          <enum_item value="4">PCS1900</enum_item>
+        </enum>
+        <info>Label Box:Frequency Band</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_RxChannel" type="U16" user_data="ACT_COEX_RX2G5_ONE_CHANNEL" set="DthCoex_Victim_Set">
+        <range min="0" max="1023"/>
+        <info>Label Box:Channel</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_RxMonChannel" type="U16" user_data="ACT_COEX_RX2G5_ONE_MONITOR" set="DthCoex_Victim_Set">
+        <range min="0" max="1023"/>
+        <info>Label Box:Monitoring channel</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_RxOperationMode" type="U8" user_data="ACT_COEX_RX2G5_ONE_OPMODE" set="DthCoex_Victim_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:Operation Mode</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_AfcTabSelect" type="U8" user_data="ACT_COEX_RX2G5_ONE_AFCTAB" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">AFC_TUNED</enum_item>
+          <enum_item value="1">AFC_FREQ_ABS_MANUAL</enum_item>
+          <enum_item value="2">AFC_FREQ_PPM_MANUAL</enum_item>
+        </enum>
+        <info>Label Box:AFC Tab Selection</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_AfcValue" type="U32" user_data="ACT_COEX_RX2G5_ONE_AFCVAL" set="DthCoex_Victim_Set">
+        <range min="0" max="16777215"/>
+        <info>Label Box:Given AFC Value</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_RxAgcMode" type="U8" user_data="ACT_COEX_RX2G5_ONE_AGCMODE" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">MANUAL</enum_item>
+          <enum_item value="1">AUTOMATIC</enum_item>
+        </enum>
+        <info>Label Box:RX AGC Mode</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/In_ExpectedPower" type="S16" user_data="ACT_COEX_RX2G5_ONE_EXPECTPW" set="DthCoex_Victim_Set">
+        <range min="-120" max="0"/>
+        <info>Label Box:Expected Power</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/Out_State" type="U8" user_data="ACT_COEX_RX2G5_ONE_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5One/StartRx2G5One/Out_Error" type="STRING" user_data="ACT_COEX_RX2G5_ONE_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All" type="U8" user_data="ACT_COEX_RX2G5_ALL" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:2G RX all channel\n Horizontal:9</info>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_1stARFCN" type="U16" user_data="ACT_COEX_RX2G5_ALL_FIRST_ARFCN" set="DthCoex_Victim_Set">
+        <range min="0" max="1023"/>
+        <info>Label Box:first ARFCN</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_LastARFCN" type="U16" user_data="ACT_COEX_RX2G5_ALL_LAST_ARFCN" set="DthCoex_Victim_Set">
+        <range min="0" max="1023"/>
+        <info>Label Box:last ARFCN</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_Step" type="U8" user_data="ACT_COEX_RX2G5_ALL_STEP" set="DthCoex_Victim_Set">
+        <range min="0" max="100"/>
+        <info>Label Box:step</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_FreqBand" type="U32" user_data="ACT_COEX_RX2G5_ALL_FREQBAND" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">NO BAND</enum_item>
+          <enum_item value="1">GSM850</enum_item>
+          <enum_item value="2">GSM900</enum_item>
+          <enum_item value="3">DCS1800</enum_item>
+          <enum_item value="4">PCS1900</enum_item>
+        </enum>
+        <info>Label Box:Frequency Band</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_RxOperationMode" type="U8" user_data="ACT_COEX_RX2G5_ALL_OPMODE" set="DthCoex_Victim_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:Operation Mode</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_AfcTabSelect" type="U8" user_data="ACT_COEX_RX2G5_ALL_AFCTAB" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">AFC_TUNED</enum_item>
+          <enum_item value="1">AFC_FREQ_ABS_MANUAL</enum_item>
+          <enum_item value="2">AFC_FREQ_PPM_MANUAL</enum_item>
+        </enum>
+        <info>Label Box:AFC Tab Selection</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_AfcValue" type="U32" user_data="ACT_COEX_RX2G5_ALL_AFCVAL" set="DthCoex_Victim_Set">
+        <range min="0" max="16777215"/>
+        <info>Label Box:Given AFC Value</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_RxAgcMode" type="U8" user_data="ACT_COEX_RX2G5_ALL_AGCMODE" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">MANUAL</enum_item>
+          <enum_item value="1">AUTOMATIC</enum_item>
+        </enum>
+        <info>Label Box:RX AGC Mode</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/In_ExpectedPower" type="S16" user_data="ACT_COEX_RX2G5_ALL_EXPECTPW" set="DthCoex_Victim_Set">
+        <range min="-120" max="0"/>
+        <info>Label Box:Expected Power</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/Out_State" type="U8" user_data="ACT_COEX_RX2G5_ALL_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx2G5All/StartRx2G5All/Out_Error" type="STRING" user_data="ACT_COEX_RX2G5_ALL_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne" type="U32" user_data="ACT_COEX_RX3G_ONE" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:3G RX one channel\n Horizontal:6</info>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne/In_FreqBand" type="U32" user_data="ACT_COEX_RX3G_ONE_FREQBAND" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">No_BAND</enum_item>
+          <enum_item value="1">BAND1</enum_item>
+          <enum_item value="2">BAND2</enum_item>
+          <enum_item value="3">BAND3</enum_item>
+          <enum_item value="4">BAND4</enum_item>
+          <enum_item value="5">BAND5</enum_item>
+          <enum_item value="6">BAND6</enum_item>
+          <enum_item value="7">BAND7</enum_item>
+          <enum_item value="8">BAND8</enum_item>
+          <enum_item value="9">BAND9</enum_item>
+        </enum>
+        <info>Label Box:Frequency Band</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne/In_RxUarfcnChannel" type="U16" user_data="ACT_COEX_RX3G_ONE_UARFCN" set="DthCoex_Victim_Set">
+        <range min="0" max="65535"/>
+        <info>Label Box:Channel</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne/In_AfcTabSelect" type="U8" user_data="ACT_COEX_RX3G_ONE_AFC_TABLE" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">AFC_TUNED</enum_item>
+          <enum_item value="1">AFC_FREQ_ABS_MANUAL</enum_item>
+          <enum_item value="2">AFC_FREQ_PPM_MANUAL</enum_item>
+        </enum>
+        <info>Label Box:AFC Tab Selection</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne/In_AfcValue" type="U32" user_data="ACT_COEX_RX3G_ONE_MANUAL_AFC" set="DthCoex_Victim_Set">
+        <range min="0" max="16777215"/>
+        <info>Label Box:Given AFC Value</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOnel/In_AgcMode" type="U8" user_data="ACT_COEX_RX3G_ONE_AGCMODE" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">MANUAL</enum_item>
+          <enum_item value="1">AUTOMATIC</enum_item>
+        </enum>
+        <info>Label Box:RX AGC Mode</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne/In_ExpectedPower" type="S16" user_data="ACT_COEX_RX3G_ONE_RX_LEVEL" set="DthCoex_Victim_Set">
+        <range min="-120" max="0"/>
+        <info>Label Box:Expected Power</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne/Out_State" type="U8" user_data="ACT_COEX_RX3G_ONE_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GOne/StartRx3GOne/Out_Error" type="STRING" user_data="ACT_COEX_RX3G_ONE_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll" type="U32" user_data="ACT_COEX_RX3G_ALL" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:3G RX all channel\n Horizontal:8</info>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_1stARFCN" type="U16" user_data="ACT_COEX_RX3G_ALL_FIRST_ARFCN" set="DthCoex_Victim_Set">
+        <range min="0" max="65535"/>
+        <info>Label Box:first ARFCN</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_LastARFCN" type="U16" user_data="ACT_COEX_RX3G_ALL_LAST_ARFCN" set="DthCoex_Victim_Set">
+        <range min="0" max="65535"/>
+        <info>Label Box:last ARFCN</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_Step" type="U8" user_data="ACT_COEX_RX3G_ALL_STEP" set="DthCoex_Victim_Set">
+        <range min="0" max="100"/>
+        <info>Label Box:step</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_FreqBand" type="U32" user_data="ACT_COEX_RX3G_ALL_FREQBAND" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">No_BAND</enum_item>
+          <enum_item value="1">BAND1</enum_item>
+          <enum_item value="2">BAND2</enum_item>
+          <enum_item value="3">BAND3</enum_item>
+          <enum_item value="4">BAND4</enum_item>
+          <enum_item value="5">BAND5</enum_item>
+          <enum_item value="6">BAND6</enum_item>
+          <enum_item value="7">BAND7</enum_item>
+          <enum_item value="8">BAND8</enum_item>
+          <enum_item value="9">BAND9</enum_item>
+        </enum>
+        <info>Label Box:Frequency Band</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_AfcTabSelect" type="U8" user_data="ACT_COEX_RX3G_ALL_AFC_TABLE" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">AFC_TUNED</enum_item>
+          <enum_item value="1">AFC_FREQ_ABS_MANUAL</enum_item>
+          <enum_item value="2">AFC_FREQ_PPM_MANUAL</enum_item>
+        </enum>
+        <info>Label Box:AFC Tab Selection</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_AfcValue" type="U32" user_data="ACT_COEX_RX3G_ALL_MANUAL_AFC" set="DthCoex_Victim_Set">
+        <range min="0" max="16777215"/>
+        <info>Label Box:Given AFC Value</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_AgcMode" type="U8" user_data="ACT_COEX_RX3G_ALL_AGCMODE" set="DthCoex_Victim_Set">
+        <enum>
+          <enum_item value="0">MANUAL</enum_item>
+          <enum_item value="1">AUTOMATIC</enum_item>
+        </enum>
+        <info>Label Box:RX AGC Mode</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/In_ExpectedPower" type="S16" user_data="ACT_COEX_RX3G_ALL_RX_LEVEL" set="DthCoex_Victim_Set">
+        <range min="-120" max="0"/>
+        <info>Label Box:Expected Power</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/Out_State" type="U8" user_data="ACT_COEX_RX3G_ALL_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/Radio/Rx3GAll/StartRx3GAll/Out_Error" type="STRING" user_data="ACT_COEX_RX3G_ALL_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+    <action path="/DTH/COEX/Victims/Radio/RSSI/StartRSSI" type="U32" user_data="ACT_COEX_RADIO_RSSI" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:RF RSSI\n Cyclic:1</info>
+      <argument path="/DTH/COEX/Victims/Radio/RSSI/StartRSSI/Out_RSSI" type="FLOAT" user_data="ACT_COEX_RADIO_RSSI_VALUE" get="DthCoex_Victim_Get">
+        <range min="-120" max="0"/>
+        <info>Label Box:Measured Gsm Rssi</info>
+      </argument>
+    </action>
+   <action path="/DTH/COEX/Victims/BT/StartBTRX" type="U32" user_data="ACT_COEX_BTRX_ONE" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:BT Rx one channel\n9ptimeout:10000</info>
+      <argument path="/DTH/COEX/Victims/BT/StartBTRX/ChannelBT" type="U16" user_data="ACT_COEX_BTRX_ONE_CHAN" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="78"/>
+        <info>Label Box:Channel</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/BT/StartBTRX/AddrIdx" type="S16" user_data="ACT_COEX_BTRX_ONE_ADDRIDX" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="256"/>
+        <info>Label Box:Addr_Idx</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/BT/StartBTRX/PktType" type="U8" user_data="ACT_COEX_BTRX_ONE_PKTT" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<enum>
+          <enum_item value="0">DH1</enum_item>
+          <enum_item value="1">DH3</enum_item>
+	  <enum_item value="2">DH5</enum_item>
+          <enum_item value="3">2DH1</enum_item>
+	  <enum_item value="4">2DH3</enum_item>
+          <enum_item value="5">2DH5</enum_item>
+          <enum_item value="6">3DH1</enum_item>
+          <enum_item value="7">3DH3</enum_item>
+          <enum_item value="8">3DH5</enum_item>
+        </enum>
+        <info>Label Box:Pkt_Type</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/BT/StartBTRX/RSSI" type="S16" user_data="ACT_COEX_BTRX_ONE_RSSI" get="DthCoex_Victim_Get">
+	<range min="-128" max="127"/>
+        <info>Label Box:RSSI</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/BT/StartBTRX/BER" type="FLOAT" user_data="ACT_COEX_BTRX_ONE_BER"  get="DthCoex_Victim_Get">
+	<range min="0" max="1000000"/>
+        <info>Label Box:BER</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/BT/StartBTRX/Out_State" type="U8" user_data="ACT_COEX_BTRX_ONE_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/BT/StartBTRX/Out_Error" type="STRING" user_data="ACT_COEX_BTRX_ONE_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+<action path="/DTH/COEX/Victims/FM/StartFMRX" type="U32" user_data="ACT_COEX_FMRX_ONE" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:FM Rx one channel</info>
+      <argument path="/DTH/COEX/Victims/FM/StartFMRX/ChannelFM" type="U32" user_data="ACT_COEX_FMRX_ONE_CHAN" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="70000" max="108000"/>
+        <info>Label Box:Channel</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FM/StartFMRX/Mode" type="U8" user_data="ACT_COEX_FMRX_ONE_MODE" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">Mono</enum_item>
+          <enum_item value="1">Stereo</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FM/StartFMRX/Emp" type="U8" user_data="ACT_COEX_FMRX_ONE_EMP" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">50 uS</enum_item>
+          <enum_item value="1">75 uS</enum_item>
+        </enum>
+        <info>Label Box:Emphasis</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FM/StartFMRX/RSSI" type="U16" user_data="ACT_COEX_FMRX_ONE_RSSI" get="DthCoex_Victim_Get">
+	<range min="0" max="65535"/>
+        <info>Label Box:RSSI\nPrefered format:hexa</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/FM/StartFMRX/Out_State" type="U8" user_data="ACT_COEX_FMRX_ONE_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FM/StartFMRX/Out_Error" type="STRING" user_data="ACT_COEX_FMRX_ONE_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+<action path="/DTH/COEX/Victims/FMAll/StartFMRX" type="U32" user_data="ACT_COEX_FMRX_ALL" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+	<enum_item value="2">GET RESULT</enum_item>
+      </enum>
+      <info>Label Action:FM Rx all channels</info>
+      <argument path="/DTH/COEX/Victims/FMAll/StartFMRX/Mode" type="U8" user_data="ACT_COEX_FMRX_ALL_MODE" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">Mono</enum_item>
+          <enum_item value="1">Stereo</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FMAll/StartFMRX/FChannelFM" type="U32" user_data="ACT_COEX_FMRX_ALL_FCHAN" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="70000" max="108000"/>
+        <info>Label Box:First channel</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FMAll/StartFMRX/LChannelFM" type="U32" user_data="ACT_COEX_FMRX_ALL_LCHAN" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get"> 
+	<range min="70000" max="108000"/>
+        <info>Label Box:Last channel</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FMAll/StartFMRX/In_Step" type="U16" user_data="ACT_COEX_FMRX_ALL_STEP" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+        <range min="0" max="28000"/>
+        <info>Label Box:Step</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FMAll/StartFMRX/Hold" type="U32" user_data="ACT_COEX_FMRX_ALL_HOLD" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+        <range min="1" max="4294967295"/>
+        <info>Label Box:Hold</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/FMAll/StartFMRX/Out_State" type="U8" user_data="ACT_COEX_FMRX_ALL_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FMAll/StartFMRX/Out_Error" type="STRING" user_data="ACT_COEX_FMRX_ALL_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+  </action>
+   <action path="/DTH/COEX/Victims/GPS/StartGPS" type="U8" user_data="ACT_COEX_GPS" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:GPS\n9ptimeout:20000</info>
+        <argument path="/DTH/COEX/Victims/GPS/StartGPS/Interval" type="U32" user_data="ACT_COEX_GPS_INT" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+        <range min="500" max="4294967295"/>
+        <info>Label Box:Interval</info>
+      </argument>
+        <argument path="/DTH/COEX/Victims/GPS/StartGPS/Longitude" type="FLOAT" user_data="ACT_COEX_GPS_LONG" get="DthCoex_Victim_Get">
+        <info>Label Box:Longitude</info>
+      </argument>
+        <argument path="/DTH/COEX/Victims/GPS/StartGPS/Latitude" type="FLOAT" user_data="ACT_COEX_GPS_LAT" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+        <info>Label Box:Latitude</info>
+      </argument>
+        <argument path="/DTH/COEX/Victims/GPS/StartGPS/Altitude" type="U16" user_data="ACT_COEX_GPS_ALT" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+        <info>Label Box:Altitude</info>
+      </argument>
+        <argument path="/DTH/COEX/Victims/GPS/StartGPS/SatNum" type="U8" user_data="ACT_COEX_GPS_SNUM" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="16"/>
+        <info>Label Box:Sat Number</info>
+      </argument>
+        <argument path="/DTH/COEX/Victims/GPS/StartGPS/Sat_SNRData" type="U8" user_data="ACT_COEX_GPS_SNRDATA" get="DthCoex_Victim_Get">
+        <range min="0" max="255"/>
+	<array rows="1" cols="16"/>
+        <info>Label Box:SNR\nElementPerLine:8\nCellText:any:Sat{celln}\n</info>
+      </argument>
+     <argument path="/DTH/COEX/Victims/GPS/StartGPS/Out_State" type="U8" user_data="ACT_COEX_GPS_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/GPS/StartGPS/Out_Error" type="STRING" user_data="ACT_COEX_GPS_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+    </action>
+	<action path="/DTH/CONN//BT/BTDUT/StartBTDUT" type="U32" user_data="ACT_CONN_BTDUT" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+           <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:BT DUT Mode service\n9ptimeout:30000</info>
+      <argument path="/DTH/CONN//BT/BTDUT/StartBTDUT/Out_State" type="U8" user_data="ACT_CONN_BTDUT_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/CONN//BT/BTDUT/StartBTDUT/Out_Error" type="STRING" user_data="ACT_CONN_BTDUT_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+	<!--<action path="/DTH/CONN//BT/BLEDUT/StartBLEDUT" type="U32" user_data="ACT_CONN_BLEDUT" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+           <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:BLE DUT Mode service\n9ptimeout:30000</info>
+	<argument path="/DTH/CONN//BT/BLEDUT/StartBLEDUT/Mode" type="U8" user_data="ACT_CONN_BLEDUT_MODE" set="DthCoex_Conn_Set">
+        <enum>
+          <enum_item value="0">Tx</enum_item>
+          <enum_item value="1">Rx</enum_item>
+	</enum>
+        <info>Label Box:Mode</info>
+      </argument>
+<argument path="/DTH/CONN//BT/BLEDUT/StartBLEDUT/Frequency" type="U8" user_data="ACT_CONN_BLEDUT_FREQ" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="0" max="39"/>
+        <info>Label Box:Frequency</info>
+      </argument>
+<argument path="/DTH/CONN//BT/BLEDUT/StartBLEDUT/Length" type="U8" user_data="ACT_CONN_BLEDUT_LEN" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="0" max="37"/>
+        <info>Label Box:Length</info>
+      </argument>
+<argument path="/DTH/CONN//BT/BLEDUT/StartBLEDUT/Payload" type="U8" user_data="ACT_CONN_BLEDUT_PLD" set="DthCoex_Conn_Set">
+        <enum>
+          <enum_item value="0">PRBS 9</enum_item>
+          <enum_item value="1">11110000</enum_item>
+	  <enum_item value="2">10101010</enum_item>
+          <enum_item value="3">PRBS 15</enum_item>
+          <enum_item value="4">11111111</enum_item>
+	  <enum_item value="5">00000000</enum_item>
+          <enum_item value="6">00001111</enum_item>
+          <enum_item value="7">01010101</enum_item>
+	</enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+<argument path="/DTH/CONN//BT/BLEDUT/StartBLEDUT/Rsvdpkts" type="U16" user_data="ACT_CONN_BLEDUT_RCVDPKTS" get="DthCoex_Conn_Get">
+        <info>Label Box:Rcvd Pkts</info>
+      </argument>
+      <argument path="/DTH/CONN//BT/BLEDUT/StartBLEDUT/Out_State" type="U8" user_data="ACT_CONN_BLEDUT_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated Tx</enum_item>
+	  <enum_item value="2">Activated Rx</enum_item>
+	</enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/CONN//BT/BLEDUT/StartBLEDUT/Out_Error" type="STRING" user_data="ACT_CONN_BLEDUT_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+   <action path="/DTH/CONN/BT/BTRX/StartBTRX" type="U32" user_data="ACT_CONN_BTRX" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:BT Rx</info>
+      <argument path="/DTH/CONN/BT/BTRX/StartBTRX/ChannelBT" type="U16" user_data="ACT_CONN_BTRX_CHAN" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="0" max="78"/>
+        <info>Label Box:Channel</info>
+      </argument>
+      <argument path="/DTH/CONN/BT/BTRX/StartBTRX/AddrIdx" type="S16" user_data="ACT_CONN_BTRX_ADDRIDX" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="0" max="256"/>
+        <info>Label Box:Addr_Idx</info>
+      </argument>
+      <argument path="/DTH/CONN/BT/BTRX/StartBTRX/PktType" type="U8" user_data="ACT_CONN_BTRX_PKTT" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<enum>
+          <enum_item value="0">DH1</enum_item>
+          <enum_item value="1">DH3</enum_item>
+	  <enum_item value="2">DH5</enum_item>
+          <enum_item value="3">2DH1</enum_item>
+	  <enum_item value="4">2DH3</enum_item>
+          <enum_item value="5">2DH5</enum_item>
+          <enum_item value="6">3DH1</enum_item>
+          <enum_item value="7">3DH3</enum_item>
+          <enum_item value="8">3DH5</enum_item>
+        </enum>
+        <info>Label Box:Pkt_Type</info>
+</argument>
+	<argument path="/DTH/CONN/BT/BTRX/StartBTRX/NUMP" type="U16" user_data="ACT_CONN_BTRX_NUMP" get="DthCoex_Conn_Get">
+        <info>Label Box:Num pkts</info>
+      </argument>
+	<argument path="/DTH/CONN/BT/BTRX/StartBTRX/WRTYPE" type="U16" user_data="ACT_CONN_BTRX_WRTYPE" get="DthCoex_Conn_Get">
+        <info>Label Box:Wrong type</info>
+      </argument>
+	<argument path="/DTH/CONN/BT/BTRX/StartBTRX/WRLEN" type="U16" user_data="ACT_CONN_BTRX_WRLEN" get="DthCoex_Conn_Get">
+        <info>Label Box:Wrong len</info>
+      </argument>
+	<argument path="/DTH/CONN/BT/BTRX/StartBTRX/ERR" type="U16" user_data="ACT_CONN_BTRX_ERR" get="DthCoex_Conn_Get">
+        <info>Label Box:Erroneous</info>
+      </argument>
+	<argument path="/DTH/CONN/BT/BTRX/StartBTRX/RSSI" type="S16" user_data="ACT_CONN_BTRX_RSSI" get="DthCoex_Conn_Get">
+        <info>Label Box:RSSI</info>
+      </argument>
+	<argument path="/DTH/CONN/BT/BTRX/StartBTRX/BER" type="FLOAT" user_data="ACT_CONN_BTRX_BER"  get="DthCoex_Conn_Get">
+        <info>Label Box:BER</info>
+      </argument>
+<argument path="/DTH/CONN/BT/BTRX/StartBTRX/BitErrors" type="FLOAT" user_data="ACT_CONN_BTRX_BERRORS"  get="DthCoex_Conn_Get">
+        <info>Label Box:Bit errors</info>
+      </argument>
+	<argument path="/DTH/CONN/BT/BTRX/StartBTRX/Out_State" type="U8" user_data="ACT_CONN_BTRX_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/CONN/BT/BTRX/StartBTRX/Out_Error" type="STRING" user_data="ACT_CONN_BTRX_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+<action path="/DTH/CONN/FM/FMRX/StartFMRX" type="U32" user_data="ACT_CONN_FMRX" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+        <enum_item value="2">Get RSSI</enum_item>
+      </enum>
+      <info>Label Action:FM Rx</info>
+      <argument path="/DTH/CONN/FM/FMRX/StartFMRX/ChannelFM" type="U32" user_data="ACT_CONN_FMRX_CHAN" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="70000" max="108000"/>
+        <info>Label Box:Frequency</info>
+      </argument>
+      <argument path="/DTH/CONN/FM/FMRX/StartFMRX/Mode" type="U8" user_data="ACT_CONN_FMRX_MODE" set="DthCoex_Conn_Set">
+	<enum>
+          <enum_item value="0">Mono</enum_item>
+          <enum_item value="1">Stereo</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+<argument path="/DTH/CONN/FM/FMRX/StartFMRX/Emphasis" type="U8" user_data="ACT_CONN_FMRX_EMP" set="DthCoex_Conn_Set">
+	<enum>
+          <enum_item value="0">50 uS</enum_item>
+          <enum_item value="1">75 uS</enum_item>
+        </enum>
+        <info>Label Box:Emphasis</info>
+      </argument>
+      <argument path="/DTH/CONN/FM/FMRX/StartFMRX/RSSI" type="U16" user_data="ACT_CONN_FMRX_RSSI" get="DthCoex_Conn_Get">
+        <info>Label Box:RSSI\nPrefered format:hexa</info>
+      </argument>
+	<argument path="/DTH/CONN/FM/FMRX/StartFMRX/Out_State" type="U8" user_data="ACT_CONN_FMRX_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/CONN/FM/FMRX/StartFMRX/Out_Error" type="STRING" user_data="ACT_CONN_FMRX_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+   <action path="/DTH/CONN/GPS/GetGPSInfo" type="U8" user_data="ACT_CONN_GPS" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <info>Label Action:GPS Information\n9ptimeout:20000</info>
+        <argument path="/DTH/CONN/GPS/GetGPSInfo/TTFF" type="U32" user_data="ACT_CONN_GPS_TTFF" get="DthCoex_Conn_Get">
+        <info>Label Box:TTFF</info>
+      </argument>
+        <argument path="/DTH/CONN/GPS/GetGPSInfo/Longitude" type="FLOAT" user_data="ACT_CONN_GPS_LONG" get="DthCoex_Conn_Get">
+        <info>Label Box:Longitude</info>
+      </argument>
+        <argument path="/DTH/CONN/GPS/GetGPSInfo/Latitude" type="FLOAT" user_data="ACT_CONN_GPS_LAT" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+        <info>Label Box:Latitude</info>
+      </argument>
+        <argument path="/DTH/CONN/GPS/GetGPSInfo/Altitude" type="U16" user_data="ACT_CONN_GPS_ALT" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+        <info>Label Box:Altitude</info>
+      </argument>
+        <argument path="/DTH/CONN/GPS/GetGPSInfo/SatNum" type="U8" user_data="ACT_CONN_GPS_SNUM" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+        <info>Label Box:Sat Number</info>
+      </argument>
+        <argument path="/DTH/CONN/GPS/GetGPSInfo/Sat_SNRData" type="U8" user_data="ACT_CONN_GPS_SNRDATA" get="DthCoex_Conn_Get">
+        <range min="0" max="255"/>
+	<array rows="1" cols="16"/>
+        <info>Label Box:SNR\nElementPerLine:8\nCellText:any:Sat{celln}\n</info>
+      </argument>
+	</action>-->
+<argument path="/DTH/COEX/Files/FMALL" type="FILE" user_data="ARG_FILES_FMALL">
+      <info>Automatic Procedure\nFilepath=/var/local/connectivityservices/connservices\nFilename=FM_results.txt</info>
+    </argument>								
+    <action path="/DTH/COEX/Agressors/WLAN/StartWLANTX" type="U32" user_data="ACT_WLANTX" set="DthCoex_Conn_Set" exec="DthCoex_Conn_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:WLAN Tx\n9ptimeout:20000</info>
+<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/Mode" type="U8" user_data="ACT_COEX_WLANTX_MODE" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<enum>
+          <enum_item value="0">Short</enum_item>
+          <enum_item value="1">Long</enum_item>
+	  <enum_item value="2">OFDM</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+	<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/ChannelWLAN" type="U16" user_data="ACT_COEX_WLANTX_CHAN" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="1" max="196"/>
+        <info>Label Box:Channel</info>
+      </argument>
+	<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/Band" type="U8" user_data="ACT_COEX_WLANTX_BAND" set="DthCoex_Conn_Set">
+	<enum>
+          <enum_item value="0">2.4 GHz</enum_item>
+          <enum_item value="1">5 GHz</enum_item>
+        </enum>
+        <info>Label Box:Band</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/Rate" type="U16" user_data="ACT_COEX_WLANTX_RATE" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<enum>
+          <enum_item value="0">1 Mbps</enum_item>
+          <enum_item value="1">2 Mbps</enum_item>
+          <enum_item value="2">5.5 Mbps</enum_item>
+          <enum_item value="3">11 Mbps</enum_item>
+          <enum_item value="4">6 Mbps</enum_item>
+          <enum_item value="5">9 Mbps</enum_item>
+          <enum_item value="6">12 Mbps</enum_item>
+          <enum_item value="7">18 Mbps</enum_item>
+          <enum_item value="8">24 Mbps</enum_item>
+          <enum_item value="9">36 Mbps</enum_item>
+          <enum_item value="10">48 Mbps</enum_item>
+          <enum_item value="11">54 Mbps</enum_item>
+          <enum_item value="12">6.5 Mbps</enum_item>
+          <enum_item value="13">13 Mbps</enum_item>
+          <enum_item value="14">19.5 Mbps</enum_item>
+          <enum_item value="15">26 Mbps</enum_item>
+          <enum_item value="16">39 Mbps</enum_item>
+          <enum_item value="17">52 Mbps</enum_item>
+          <enum_item value="18">58.5 Mbps</enum_item>
+          <enum_item value="19">65 Mbps</enum_item>
+        </enum>
+        <info>Label Box:Rate</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/PwrIdx" type="FLOAT" user_data="ACT_COEX_WLANTX_PWRIDX" set="DthCoex_Conn_Set" get="DthCoex_Conn_Get">
+	<range min="-100.0" max="30.0"/>
+        <info>Label Box:Power Idx</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/IFD" type="U32" user_data="ACT_COEX_WLANTX_IFD" set="DthCoex_Conn_Set">
+        <info>Label Box:Inter Frame Delay</info>
+      </argument>
+	<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/Ack" type="U8" user_data="ACT_COEX_WLANTX_ACK" set="DthCoex_Conn_Set">
+	<enum>
+          <enum_item value="0">False</enum_item>
+          <enum_item value="1">True</enum_item>
+        </enum>
+        <info>Label Box:Ack</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/PktSent" type="U32" user_data="ACT_COEX_WLANTX_PKTSNT" get="DthCoex_Conn_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:Pkt Sent</info>
+      </argument>
+<argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/PktAck" type="U32" user_data="ACT_COEX_WLANTX_PKTACK" get="DthCoex_Conn_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:Pkt Ack</info>
+      </argument>
+     <argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/Out_State" type="U8" user_data="ACT_WLANTX_STATE" get="DthCoex_Conn_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Agressors/WLAN/StartWLANTX/Out_Error" type="STRING" user_data="ACT_WLANTX_ERROR" get="DthCoex_Conn_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+<action path="/DTH/COEX/Victims/WLAN/StartWLANRX" type="U32" user_data="ACT_WLANRX" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:WLAN Rx\n9ptimeout:20000</info>
+<argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand" type="U8" user_data="ACT_COEX_WLANRX_MODEBAND" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<enum>
+          <enum_item value="0">OFDM @ 2.4 GHz</enum_item>
+          <enum_item value="1">DSSS @ 2.4 GHz</enum_item>
+	  <enum_item value="2">OFDM+DSSS @ 2.4 GHz</enum_item>
+	  <enum_item value="3">OFDM @ 5 GHz</enum_item>
+        </enum>
+        <info>Label Box:Mode/Band</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN" type="U16" user_data="ACT_COEX_WLANRX_CHAN" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="1" max="196"/>
+        <info>Label Box:Channel</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/PktExp" type="U32" user_data="ACT_COEX_WLANRX_PKTEXP" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:Pkt Expected</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/PktRx" type="U32" user_data="ACT_COEX_WLANRX_PKTRX" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:Pkt Rxt</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/Errors" type="U32" user_data="ACT_COEX_WLANRX_ERRORS" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:Errors</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors" type="U32" user_data="ACT_COEX_WLANRX_CRCERRORS" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:CRC Errors</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/PER" type="FLOAT" user_data="ACT_COEX_WLANRX_PER" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="100"/>
+        <info>Label Box:PER</info>
+      </argument>
+    <argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/Out_State" type="U8" user_data="ACT_COEX_WLANRX_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/WLAN/StartWLANRX/Out_Error" type="STRING" user_data="ACT_COEX_WLANRX_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+   <action path="/DTH/COEX/Victims/WLANTX/StartWLANTX" type="U32" user_data="ACT_VIC_WLANTX" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:WLAN Tx\n9ptimeout:20000</info>
+<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/Mode" type="U8" user_data="ACT_COEX_VIC_WLANTX_MODE" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<enum>
+          <enum_item value="0">Short</enum_item>
+          <enum_item value="1">Long</enum_item>
+	  <enum_item value="2">OFDM</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/ChannelWLAN" type="U16" user_data="ACT_COEX_VIC_WLANTX_CHAN" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="1" max="196"/>
+        <info>Label Box:Channel</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/Band" type="U8" user_data="ACT_COEX_VIC_WLANTX_BAND" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">2.4 GHz</enum_item>
+          <enum_item value="1">5 GHz</enum_item>
+        </enum>
+        <info>Label Box:Band</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/Rate" type="U16" user_data="ACT_COEX_VIC_WLANTX_RATE" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<enum>
+          <enum_item value="0">1 Mbps</enum_item>
+          <enum_item value="1">2 Mbps</enum_item>
+          <enum_item value="2">5.5 Mbps</enum_item>
+          <enum_item value="3">11 Mbps</enum_item>
+          <enum_item value="4">6 Mbps</enum_item>
+          <enum_item value="5">9 Mbps</enum_item>
+          <enum_item value="6">12 Mbps</enum_item>
+          <enum_item value="7">18 Mbps</enum_item>
+          <enum_item value="8">24 Mbps</enum_item>
+          <enum_item value="9">36 Mbps</enum_item>
+          <enum_item value="10">48 Mbps</enum_item>
+          <enum_item value="11">54 Mbps</enum_item>
+          <enum_item value="12">6.5 Mbps</enum_item>
+          <enum_item value="13">13 Mbps</enum_item>
+          <enum_item value="14">19.5 Mbps</enum_item>
+          <enum_item value="15">26 Mbps</enum_item>
+          <enum_item value="16">39 Mbps</enum_item>
+          <enum_item value="17">52 Mbps</enum_item>
+          <enum_item value="18">58.5 Mbps</enum_item>
+          <enum_item value="19">65 Mbps</enum_item>
+        </enum>
+        <info>Label Box:Rate</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/PwrIdx" type="FLOAT" user_data="ACT_COEX_VIC_WLANTX_PWRIDX" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="-100.0" max="30.0"/>
+        <info>Label Box:Power Idx</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/IFD" type="U32" user_data="ACT_COEX_VIC_WLANTX_IFD" set="DthCoex_Victim_Set">
+        <info>Label Box:Inter Frame Delay</info>
+      </argument>
+	<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/Ack" type="U8" user_data="ACT_COEX_VIC_WLANTX_ACK" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">False</enum_item>
+          <enum_item value="1">True</enum_item>
+        </enum>
+        <info>Label Box:Ack</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/PktSent" type="U32" user_data="ACT_COEX_VIC_WLANTX_PKTSNT" get="DthCoex_Victim_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:Pkt Sent</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/PktAck" type="U32" user_data="ACT_COEX_VIC_WLANTX_PKTACK" get="DthCoex_Victim_Get">
+	<range min="0" max="4294967295"/>
+        <info>Label Box:Pkt Ack</info>
+      </argument>
+     <argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/Out_State" type="U8" user_data="ACT_COEX_VIC_WLANTX_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/WLANTX/StartWLANTX/Out_Error" type="STRING" user_data="ACT_COEX_VIC_WLANTX_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+    <action path="/DTH/COEX/Victims/BTTX/StartBTTX" type="U32" user_data="ACT_VIC_BTTX" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:BT Tx\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/Victims/BTTX/StartBTTX/ChannelBT" type="U16" user_data="ACT_COEX_VIC_BTTX_CHAN" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="78"/>
+        <info>Label Box:Channel</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/BTTX/StartBTTX/TXLevel" type="S16" user_data="ACT_COEX_VIC_BTTX_TXLEV" set="DthCoex_Victim_Set">
+	<range min="-128" max="127"/>
+        <info>Label Box:TX_level</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/BTTX/StartBTTX/AddrIdx" type="S16" user_data="ACT_COEX_VIC_BTTX_ADDRIDX" set="DthCoex_Victim_Set">
+	<range min="0" max="256"/>
+        <info>Label Box:Addr_Idx</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/BTTX/StartBTTX/PktType" type="U8" user_data="ACT_COEX_VIC_BTTX_PKTT" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<enum>
+          <enum_item value="0">DH1</enum_item>
+          <enum_item value="1">DH3</enum_item>
+	  <enum_item value="2">DH5</enum_item>
+          <enum_item value="3">2DH1</enum_item>
+	  <enum_item value="4">2DH3</enum_item>
+          <enum_item value="5">2DH5</enum_item>
+          <enum_item value="6">3DH1</enum_item>
+          <enum_item value="7">3DH3</enum_item>
+          <enum_item value="8">3DH5</enum_item>
+        </enum>
+        <info>Label Box:Pkt_Type</info>
+      </argument>
+     <argument path="/DTH/COEX/Victims/BTTX/StartBTTX/Out_State" type="U8" user_data="ACT_COEX_VIC_BTTX_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/BTTX/StartBTTX/Out_Error" type="STRING" user_data="ACT_COEX_VIC_BTTX_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+   <action path="/DTH/COEX/Victims/FMTX/StartFMTX" type="U32" user_data="ACT_VIC_FMTX" set="DthCoex_Victim_Set" exec="DthCoex_Victim_Exec">
+      <enum>
+        <enum_item value="0">START</enum_item>
+        <enum_item value="1">STOP</enum_item>
+      </enum>
+      <info>Label Action:FM Tx\n9ptimeout:20000</info>
+      <argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Freq" type="U32" user_data="ACT_COEX_VIC_FMTX_FREQ" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="70000" max="108000"/>
+        <info>Label Box:Frequency</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Power" type="U16" user_data="ACT_COEX_VIC_FMTX_PWR" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="88" max="123"/>
+        <info>Label Box:Power</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Mode" type="U8" user_data="ACT_COEX_VIC_FMTX_MODE" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">Mono</enum_item>
+          <enum_item value="1">Stereo</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Source" type="U8" user_data="ACT_COEX_VIC_FMTX_SRC" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">Tone</enum_item>
+          <enum_item value="1">I2S</enum_item>
+        </enum>
+        <info>Label Box:Source</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Volume" type="U16" user_data="ACT_COEX_VIC_FMTX_VOL" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="20"/>
+        <info>Label Box:Volume</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Emphasis" type="U8" user_data="ACT_COEX_VIC_FMTX_EMP" set="DthCoex_Victim_Set">
+	<enum>
+          <enum_item value="0">50 uS</enum_item>
+          <enum_item value="1">75 uS</enum_item>
+        </enum>
+        <info>Label Box:Emphasis</info>
+      </argument>
+<argument path="/DTH/COEX/Victims/FMTX/StartFMTX/ToneFreq" type="U32" user_data="ACT_COEX_VIC_FMTX_TONEFREQ" set="DthCoex_Victim_Set" get="DthCoex_Victim_Get">
+	<range min="0" max="18000"/>
+        <info>Label Box:Tone Frequency</info>
+      </argument>
+     <argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Out_State" type="U8" user_data="ACT_COEX_VIC_FMTX_STATE" get="DthCoex_Victim_Get">
+        <enum>
+          <enum_item value="0">Deactivated</enum_item>
+          <enum_item value="1">Activated</enum_item>
+        </enum>
+        <info>Label Box:Out_State</info>
+      </argument>
+      <argument path="/DTH/COEX/Victims/FMTX/StartFMTX/Out_Error" type="STRING" user_data="ACT_COEX_VIC_FMTX_ERROR" get="DthCoex_Victim_Get">
+        <info>Label Box:Out_Error</info>
+      </argument>
+   </action>
+  </module>
+</dthapi>

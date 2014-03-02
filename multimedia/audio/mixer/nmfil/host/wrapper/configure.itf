@@ -1,0 +1,52 @@
+#include <bool.idt>
+#include <samplefreq.idt>
+#include <common/channeltype.idt>
+
+#define NB_INPUT    8
+
+typedef struct {
+    // Params
+    t_sample_freq       nSamplingRate;
+    t_uint16            nChannels;
+    t_uint16            nBlockSize; 
+    t_uint16            nSrcMode;
+
+    // Configs
+    BOOL                bPaused;
+    BOOL                bMute;
+    t_sint16            nBalance;
+    t_sint16            nVolume;
+    t_uint16            nRampChannels;
+    t_sint16            nRampEndVolume;
+    t_uint32            nRampDuration;
+    BOOL                bRampTerminate;
+    t_channel_type      channel_type[MAXCHANNELS_SUPPORT];
+} HostInputPortParam_t;
+
+typedef struct {
+    t_uint16            nBlockSize; 
+    t_sample_freq       nSamplingRate;
+    t_uint16            nChannels;
+    t_uint16            nBitsPerSample;
+    t_channel_type      channel_type[MAXCHANNELS_SUPPORT];
+} HostOutputPortParam_t;
+
+
+typedef struct {
+    HostInputPortParam_t    inputPortParam[NB_INPUT];
+    HostOutputPortParam_t   outputPortParam;
+    t_uint32            traceAddr;
+} HostMixerParam_t;
+
+
+void setParameter(HostMixerParam_t mixerParam);
+void setInputPortParameter(t_uint16 idx, HostInputPortParam_t inputPortParam);
+void setOutputPortParameter(HostOutputPortParam_t outputPortParam);
+
+// configs
+void setPausedInputPort(t_uint16 portIdx, BOOL bIsPaused);
+void setMuteInputPort(t_uint16 portIdx, BOOL bIsPaused);
+void setBalanceInputPort(t_uint16 portIdx, t_sint16 nBalance);
+void setVolumeInputPort(t_uint16 portIdx, t_sint16 nVolume);
+void setVolumeRampInputPort(t_uint16 portIdx, t_sint16 nStartVolume, t_sint16 nEndVolume, t_uint16 nChannels, t_uint24 nDuration, BOOL bTerminate);
+

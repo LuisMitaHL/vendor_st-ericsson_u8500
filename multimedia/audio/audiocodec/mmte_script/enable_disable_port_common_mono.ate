@@ -1,0 +1,171 @@
+alias TIMEOUT 0  
+#cut means "Component Under Test"
+alias cut $1
+      
+
+# disable / enable PCM port in loaded state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand cut OMX_CommandPortDisable 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SetParameter    cut OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+
+OMX_SendCommand cut  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SetConfig cut OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50 
+OMX_SetConfig cut OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+# disable / enable PCM port in idle state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand cut OMX_CommandPortDisable 0
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+#Start
+OMX_SendCommand cut OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+ate_attach_io       cut 0 MEM $(OUTPUT_DIR)/record_48k_port.pcm.out 6000000 0 0
+mmte_sleep 2000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+mmte_sleep 2000
+
+# disable / enable PCM port in executing state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+mmte_sleep 2000
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+mmte_sleep 1000
+
+# disable / enable PCM port in executing state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+mmte_sleep 1000
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+# Go to Pause with ports disabled
+OMX_SendCommand cut  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent cut  OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+mmte_sleep 1000
+# disable / enable PCM port in pause state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+mmte_sleep 1000
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+mmte_sleep 1000
+# disable / enable PCM port in executing state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+mmte_sleep 1000
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+mmte_sleep 1000
+
+# disable / enable PCM port in executing state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+mmte_sleep 1000
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+mmte_sleep 1000
+
+# disable / enable PCM port in executing state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+mmte_sleep 1000
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+mmte_sleep 1000
+
+# disable / enable PCM port in executing state
+OMX_SendCommand cut OMX_CommandPortDisable 0
+mmte_sleep 1000
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortDisable 0
+mmte_sleep 1000
+
+OMX_SendCommand cut OMX_CommandPortEnable  0
+MMTE_AllocateBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+
+################
+#RECORD ONGOING#
+################
+
+mmte_sleep 5000
+#Stop
+
+#Stop
+OMX_SendCommand cut OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand cut OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers cut 0
+MMTE_WaitEvent cut OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+
+unalias TIMEOUT
+unalias cut
+
+#check_test

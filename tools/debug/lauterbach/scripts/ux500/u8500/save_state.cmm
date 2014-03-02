@@ -1,0 +1,275 @@
+;------------------------------------------------------------
+; Save_state.cmm
+;------------------------------------------------------------
+; Save state let you dump your target and trace and creates a
+; a script that could be used for debuging in simulator
+;
+; 090922 - KM Initial version
+;-----------------------------------------------------------
+
+local &modelf
+local &APhysical
+local &BPhysical
+local &CPhysical
+;Turn of CTS
+cts.off
+
+; Highest speed
+; Later we need to add OP-point handling here.
+d.s 0xE0043008 %LONG 0x401F9B  
+
+DIALOG.OK "Create save folder before you click OK!"
+
+;; Force the user to select a directory to save in:
+print "Select a directory to save data in."
+cd *
+
+OPEN #1 restore_&CurConfig.cmm /Create
+
+WRITE #1 "reset"
+WRITE #1 "sys.cpu ARM1176jzf"
+WRITE #1 "sys.u"
+WRITE #1 "y.reset"
+
+if "&LoadModPath"!=""
+(
+	if os.file(&LoadModPath)
+	(
+		open #2 &LoadModPath /read
+		repeat
+		(
+			&modelf=""
+			read #2 %line &modelf
+		
+			if "&modelf"!=""
+			(
+				if os.file(&modelf)
+				(
+					WRITE #1 "data.load.elf " "&modelf" " /noclear /nocode /noreg"
+				)
+			)
+		
+		)
+		while "&modelf"!=""
+		close #2
+	
+	)
+)
+
+; Load kernel awaraness
+if "&LinuxDebug"=="TRUE"
+(
+	WRITE #1 "if os.file(~~\demo\arm\kernel\linux\linux.t32)"
+	WRITE #1 "task.config ~~\demo\arm\kernel\linux\linux.t32"
+	
+	WRITE #1 "if os.file(~~\demo\arm\kernel\linux\linux.men)"
+	WRITE #1 "menu.reprogram ~~\demo\arm\kernel\linux\linux.men"
+)
+else
+(
+	WRITE #1 "if os.file(~~\demo\arm\kernel\osedelta\osed.t32)"
+	WRITE #1 "task.config ~~\demo\arm\kernel\osedelta\osed.t32"
+	
+	WRITE #1 "if os.file(~~\demo\arm\kernel\osedelta\osed.men)"
+	WRITE #1 "menu.reprogram ~~\demo\arm\kernel\osedelta\osed.men"
+)
+
+;; Save registers
+WRITE #1 "r.s R0 " register(R0)
+WRITE #1 "r.s R1 " register(R1)
+WRITE #1 "r.s R2 " register(R2)
+WRITE #1 "r.s R3 " register(R3)
+WRITE #1 "r.s R4 " register(R4)
+WRITE #1 "r.s R5 " register(R5)
+WRITE #1 "r.s R6 " register(R6)
+WRITE #1 "r.s R7 " register(R7)
+WRITE #1 "r.s R8 " register(R8)
+WRITE #1 "r.s R9 " register(R9)
+WRITE #1 "r.s R10 " register(R10)
+WRITE #1 "r.s R11 " register(R11)
+WRITE #1 "r.s R12 " register(R12)
+WRITE #1 "r.s R13 " register(R13)
+WRITE #1 "r.s R14 " register(R14)
+WRITE #1 "r.s SPSR " register(SPSR)
+WRITE #1 "r.s CPSR " register(CPSR)
+WRITE #1 "r.s PC " register(PC)
+
+WRITE #1 "r.s R13_ABT " register(R13_ABT)
+WRITE #1 "r.s R14_ABT " register(R14_ABT)
+WRITE #1 "r.s SPSR_ABT " register(SPSR_ABT)
+
+WRITE #1 "r.s R13_IRQ " register(R13_IRQ)
+WRITE #1 "r.s R14_IRQ " register(R14_IRQ)
+WRITE #1 "r.s SPSR_IRQ " register(SPSR_IRQ)
+
+WRITE #1 "r.s R13_SVC " register(R13_SVC)
+WRITE #1 "r.s R14_SVC " register(R14_SVC)
+WRITE #1 "r.s SPSR_SVC " register(SPSR_SVC)
+
+WRITE #1 "r.s R13_UND " register(R13_UND)
+WRITE #1 "r.s R14_UND " register(R14_UND)
+WRITE #1 "r.s SPSR_UND " register(SPSR_UND)
+
+WRITE #1 "r.s R8_FIQ " register(R8_FIQ)
+WRITE #1 "r.s R9_FIQ " register(R9_FIQ)
+WRITE #1 "r.s R10_FIQ " register(R10_FIQ)
+WRITE #1 "r.s R11_FIQ " register(R11_FIQ)
+WRITE #1 "r.s R12_FIQ " register(R12_FIQ)
+WRITE #1 "r.s R13_FIQ " register(R13_FIQ)
+WRITE #1 "r.s R14_FIQ " register(R14_FIQ)
+WRITE #1 "r.s SPSR_FIQ " register(SPSR_FIQ)
+
+WRITE #1 "r.s R8_USR " register(R8_USR)
+WRITE #1 "r.s R9_USR " register(R9_USR)
+WRITE #1 "r.s R10_USR " register(R10_USR)
+WRITE #1 "r.s R11_USR " register(R11_USR)
+WRITE #1 "r.s R12_USR " register(R12_USR)
+WRITE #1 "r.s R13_USR " register(R13_USR)
+WRITE #1 "r.s R14_USR " register(R14_USR)
+
+; CP15, important registers.
+WRITE #1 "d.s C15:0x1 %LONG " Data.Long(C15:0x1)
+WRITE #1 "d.s C15:0x2 %LONG " Data.Long(C15:0x2)
+WRITE #1 "d.s C15:0x19 %LONG " Data.Long(C15:0x19)
+WRITE #1 "d.s C15:0x119 %LONG " Data.Long(C15:0x119)
+
+
+;
+;; Update ErrorHandler data structures
+;We must enable tablewalk to be able to use mmu.physical()
+MMU.ON
+MMU.TABLEWALK ON
+
+&APhysical=address.offset(mmu.physical(EHCP15_CrashInfo))
+&BPhysical=address.offset(mmu.physical(EHCP15_CrashInfoSize))
+&CPhysical=address.offset(mmu.physical(ErrorInfo))
+
+v ErrorInfo.CP15DumpAddress=&APhysical
+v ErrorInfo.CP15DumpSizeAddress=&BPhysical
+v EHCP15_CrashInfoSize = 24
+
+if Register(PC)==address.offset(ErrorHandler)
+(
+ v ErrorInfo.UserCalled = user_called
+ v ErrorInfo.ErrorCode = error_code
+ v ErrorInfo.Extra = extra
+)
+
+data.set address.offset(EHCP15_CrashInfo)+0x00 %LONG data.long(C15:0x000)
+data.set address.offset(EHCP15_CrashInfo)+0x04 %LONG data.long(C15:0x100)
+data.set address.offset(EHCP15_CrashInfo)+0x08 %LONG data.long(C15:0x200)
+data.set address.offset(EHCP15_CrashInfo)+0x0C %LONG data.long(C15:0x001)
+data.set address.offset(EHCP15_CrashInfo)+0x10 %LONG data.long(C15:0x221)
+data.set address.offset(EHCP15_CrashInfo)+0x14 %LONG data.long(C15:0x002)
+data.set address.offset(EHCP15_CrashInfo)+0x18 %LONG data.long(C15:0x102)
+data.set address.offset(EHCP15_CrashInfo)+0x1C %LONG data.long(C15:0x202)
+data.set address.offset(EHCP15_CrashInfo)+0x20 %LONG data.long(C15:0x003)
+data.set address.offset(EHCP15_CrashInfo)+0x24 %LONG data.long(C15:0x005)
+data.set address.offset(EHCP15_CrashInfo)+0x28 %LONG data.long(C15:0x105)
+data.set address.offset(EHCP15_CrashInfo)+0x2C %LONG data.long(C15:0x006)
+data.set address.offset(EHCP15_CrashInfo)+0x30 %LONG data.long(C15:0x206)
+data.set address.offset(EHCP15_CrashInfo)+0x34 %LONG data.long(C15:0x009)
+data.set address.offset(EHCP15_CrashInfo)+0x38 %LONG data.long(C15:0x109)
+data.set address.offset(EHCP15_CrashInfo)+0x3C %LONG data.long(C15:0x019)
+data.set address.offset(EHCP15_CrashInfo)+0x40 %LONG data.long(C15:0x119)
+data.set address.offset(EHCP15_CrashInfo)+0x44 %LONG data.long(C15:0x10D)
+data.set address.offset(EHCP15_CrashInfo)+0x48 %LONG data.long(C15:0x20D)
+data.set address.offset(EHCP15_CrashInfo)+0x4C %LONG data.long(C15:0x30D)
+data.set address.offset(EHCP15_CrashInfo)+0x50 %LONG data.long(C15:0x40D)
+data.set address.offset(EHCP15_CrashInfo)+0x54 %LONG data.long(C15:0x42F)
+data.set address.offset(EHCP15_CrashInfo)+0x58 %LONG data.long(C15:0x0AF)
+data.set address.offset(EHCP15_CrashInfo)+0x5C %LONG data.long(C15:0x1AF)
+
+if "&targetCpu"=="APP"
+(
+  ; Must match value of platform enum PD_MISCCON_HOST_APP_CPU
+  v ErrorInfo.CrashingCPU = 0
+  
+	data.set 0xFFFEF000 %LONG &CPhysical
+)
+else if "&targetCpu"=="ACC"
+(
+  ; Must match value of platform enum PD_MISCCON_HOST_ACC_CPU
+  v ErrorInfo.CrashingCPU = 2
+
+	data.set 0xFFFEF004 %LONG &CPhysical
+)
+MMU.TABLEWALK OFF
+MMU.OFF
+
+; End of error handler section
+
+a.save trace_&CurConfig.ad
+WRITE #1 "a.load trace_&CurConfig.ad"
+
+
+
+;Flush caches
+
+Loop:
+Data.Set C15:00E7 0x0           ; MCR CP15, 0, R0, C7, C14, 0  ; Clean and invalidate data cache
+IF (Data.Long(C15:06E7)&1)==1   ; MRC CP15, 0, R1, C7, C14, 6  ; Check, if cleaned
+  GOTO Loop
+    
+Data.Set C15:0057 0x0           ; MCR p15, 0, <Rd>, c7, c5, 0  ; Invalidate inst cache
+  
+
+
+wait 1s
+
+;Clean L2 cache
+;L2 base 0xef001000 on Miranda
+;Clean by way, offset 0x7bc
+data.set 0xef0017bc %long 0x000000FF
+wait 1s
+;Cache synch, drain write buffer
+data.set 0xef001730 %long 0x00000000
+wait 1s
+
+
+;; Turn of MMU (to allow us to save memory without data abort)
+&new_cr=((Data.Long(C15:0x1))&0xFFFFFFFE)
+d.s C15:0x1 %LONG &new_cr
+
+
+;Change ranges for SDRAM to fit target
+print "saving sdram data"
+;data.save.s3 sdram_&CurConfig.s3 0xA0000000++7ffffff	;128MB
+data.save.s3 sdram_&CurConfig.s3 0xA0000000++1ffffff	;32MB
+WRITE #1 "d.load.s3 sdram_&CurConfig.s3 /noclear /noreg"
+
+wait 1s
+
+data.save.s3 itcm_&CurConfig.s3 0x00000000--0x00001fff
+WRITE #1 "d.load.s3 itcm_&CurConfig.s3 /noclear /noreg"
+
+wait 1s
+
+data.save.s3 dtcm_&CurConfig.s3 0x00010000++0x1fff
+WRITE #1 "d.load.s3 dtcm_&CurConfig.s3 /noclear /noreg"
+
+data.save.s3 sysram_&CurConfig.s3 0xFFFE0000++0xFFFF
+WRITE #1 "d.load.s3 sysram_&CurConfig.s3 /noclear /noreg"
+
+;Enable MMU in simulator
+WRITE #1 "MMU.ON"
+WRITE #1 "MMU.TABLEWALK ON"
+
+; mCore ELF file
+WRITE #1 "data.load.elf " "&ElfFile /noclear /noreg /nocode"
+
+;Open some windows
+WRITE #1 "  a.l"
+WRITE #1 "d.l"
+WRITE #1 "Register /SpotLight"
+
+CLOSE #1
+
+enddo
+
+
+
+
+
+
+

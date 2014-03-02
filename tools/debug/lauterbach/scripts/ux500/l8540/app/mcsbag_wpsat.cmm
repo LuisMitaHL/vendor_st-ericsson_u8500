@@ -1,0 +1,134 @@
+; Script from MCSBAG Programming and Usage
+; Application Note AP9540 Specific V1.0
+; https://codexstn.cro.st.com/plugins/docman/?group_id=952&id=460118
+; Appendix C: CMM Scripts (WPSAT)
+; ./file: ap9540_mcsbag_wpsat.cmm
+; This cmm script is used for initializing MCSBAG-WPSAT.
+;
+; updates :
+; - ARM access type change D: => ad: to avoid MMU problem
+
+
+
+; asicMCSBAG address
+&asicMCSBAGBA_ENABLE=0xa0390000
+&asicMCSBAGBA_MODE=0xa0390004
+&asicMCSBAGBA_STATUS=0xa039000c
+&asicMCSBAGWPSAT_ENABLE=0xa0390020
+&asicMCSBAGWPSAT_PROG_MODE=0xa0390024
+&asicMCSBAGWPSAT_PROG_STATUS=0xa0390028
+&asicMCSBAGWPSAT_PROG_CLEAR=0xa039002c
+&asicMCSBAGWPSAT0_REG1=0xa0390200
+&asicMCSBAGWPSAT0_REG2=0xa0390204
+&asicMCSBAGWPSAT0_REG3=0xa0390208
+&asicMCSBAGWPSAT0_REG4=0xa039020c
+&asicMCSBAGWPSAT0_REQ_NOT_RSP=0xa0390210
+&asicMCSBAGWPSAT1_REG1=0xa0390214
+&asicMCSBAGWPSAT1_REG2=0xa0390218
+&asicMCSBAGWPSAT1_REG3=0xa039021c
+&asicMCSBAGWPSAT1_REG4=0xa0390220
+&asicMCSBAGWPSAT1_REQ_NOT_RSP=0xa0390224
+&asicMCSBAGWPSAT2_REG1=0xa0390228
+&asicMCSBAGWPSAT2_REG2=0xa039022c
+&asicMCSBAGWPSAT2_REG3=0xa0390230
+&asicMCSBAGWPSAT2_REG4=0xa0390234
+&asicMCSBAGWPSAT2_REQ_NOT_RSP=0xa0390238
+&asicMCSBAGWPSAT3_REG1=0xa039023c
+&asicMCSBAGWPSAT3_REG2=0xa0390240
+&asicMCSBAGWPSAT3_REG3=0xa0390244
+&asicMCSBAGWPSAT3_REG4=0xa0390248
+&asicMCSBAGWPSAT3_REQ_NOT_RSP=0xa039024c
+&asicMCSBAGWPSAT4_REG1=0xa0390250
+&asicMCSBAGWPSAT4_REG2=0xa0390254
+&asicMCSBAGWPSAT4_REG3=0xa0390258
+&asicMCSBAGWPSAT4_REG4=0xa039025c
+&asicMCSBAGWPSAT4_REQ_NOT_RSP=0xa0390260
+&asicMCSBAGMSG_REF_PACE=0xa0390400
+&asicMCSBAGMSG_REF_TRACE_CONTROL=0xa0390410
+&asicMCSBAGMSG_WP_ENABLE=0xa0390418
+&asicMCSBAGMSG_WP_TRACE_CTRL=0xa039041c
+
+; Disable the MCSBAG
+data.set ad:&asicMCSBAGBA_ENABLE %long 0x0
+
+; Set trace mode ; MCSBAG_TRACE_MODE=1;
+data.set ad:&asicMCSBAGBA_MODE %long 0x1
+
+; Enable Message reference trace control
+data.set ad:&asicMCSBAGMSG_REF_TRACE_CONTROL %long 0x80000000
+
+; Disable All WP, MSG Ports
+data.set ad:&asicMCSBAGWPSAT_ENABLE %long ~0x1F
+data.set ad:&asicMCSBAGMSG_WP_ENABLE %long ~0x1F
+
+; Config WPSAT trace control
+data.set ad:&asicMCSBAGMSG_WP_TRACE_CTRL %long 0x01000003
+
+; Enable All WP, MSG Ports
+data.set ad:&asicMCSBAGWPSAT_ENABLE %long 0x1F
+data.set ad:&asicMCSBAGMSG_WP_ENABLE %long 0x1F
+
+; MCSBAG Configuration for all the ports
+; Enable WPSAT Programming mode for all the ports
+data.set ad:&asicMCSBAGWPSAT_PROG_MODE %long 0x1F
+
+; WPSATi_REG1(Port)
+; [31:WPSATI_LSB_ADD]: START_ADD (lower address for range comparison)
+; WPSATI_LSB_ADD = 3 for 64 bit bus
+; [0]: ADD_OUT (comparison in or out the add range. if=0 means "in")
+
+; WPSATi_REG2(Port)
+; [31:?WPSATi_LSB_add]: start_end (higher address for range comparison)
+
+; WPSATi_REG3(port)
+; VAL_REF: when WPSATi Programming mode is active, writes value for:
+; [7:0]:opcode reference (shared for request and response)
+; [17:8]: source reference
+; [25:18]:ropcode reference
+
+; WPSATi_REG4(port)
+; VAL_MSK: when WPSATi Programming mode is active, writes value for:
+; OPC_MSK[7:0]: opcode mask (shared for request and response)
+; SRC_MSK[17:8]: source mask
+; ROPC_MSK[25:18]: ropcode mask
+; REQ_ENB[26]: wpsat request enable
+; RES_ENB[27]: wpsat response enable
+; RESERVED[28]: not used
+; OPC_OUT[29]: opcode out =1 ==> opc~=(opc_ref | opc_msk)
+; SRC_OUT[30]: source out=1 ==> src~=(src_ref | src_msk)
+; ROPC_OUT[31]: ropcode out=1 ==> ropc~=(ropc_ref | ropc_msk)
+
+;; These values needs to be changed as per user?s need
+data.set ad:&asicMCSBAGWPSAT0_REG1 %long 0x00000000
+data.set ad:&asicMCSBAGWPSAT0_REG2 %long 0x400A0000
+data.set ad:&asicMCSBAGWPSAT0_REG3 %long 0x0
+data.set ad:&asicMCSBAGWPSAT0_REG4 %long 0xEC000000
+
+data.set ad:&asicMCSBAGWPSAT1_REG1 %long 0x00000000
+data.set ad:&asicMCSBAGWPSAT1_REG2 %long 0x400A0000
+data.set ad:&asicMCSBAGWPSAT1_REG3 %long 0x0
+data.set ad:&asicMCSBAGWPSAT1_REG4 %long 0xEC000000
+
+data.set ad:&asicMCSBAGWPSAT2_REG1 %long 0x00000000
+data.set ad:&asicMCSBAGWPSAT2_REG2 %long 0x400A0000
+data.set ad:&asicMCSBAGWPSAT2_REG3 %long 0x0
+data.set ad:&asicMCSBAGWPSAT2_REG4 %long 0xEC000000
+
+data.set ad:&asicMCSBAGWPSAT3_REG1 %long 0x00000000
+data.set ad:&asicMCSBAGWPSAT3_REG2 %long 0x400A0000
+data.set ad:&asicMCSBAGWPSAT3_REG3 %long 0x0
+data.set ad:&asicMCSBAGWPSAT3_REG4 %long 0xEC000000
+
+data.set ad:&asicMCSBAGWPSAT4_REG1 %long 0x00000000
+data.set ad:&asicMCSBAGWPSAT4_REG2 %long 0x400A0000
+data.set ad:&asicMCSBAGWPSAT4_REG3 %long 0x0
+data.set ad:&asicMCSBAGWPSAT4_REG4 %long 0xEC000000
+
+; Disable WPSAT Programming mode
+data.set ad:&asicMCSBAGWPSAT_PROG_CLEAR %long 0x1
+
+; MCSBAG Enable
+data.set ad:&asicMCSBAGBA_ENABLE %long 0x1
+
+print "MCSBAG WPSAT Initialization done!"
+

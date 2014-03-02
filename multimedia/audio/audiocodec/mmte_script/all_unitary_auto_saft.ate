@@ -1,0 +1,55 @@
+# reduced test list based on all_unitary_auto.ate for SAFT non-regression, target is: execution time < 10 minutes
+
+do $(NOMADIK)/audiocodec/mmte_script/common/play_rec.ate
+do $(NOMADIK)/audiocodec/mmte_script/common/rec_play.ate
+do $(NOMADIK)/audiocodec/mmte_script/common/rec_tunnel_play.ate
+#---------------------------------------------------------
+do $(NOMADIK)/audiocodec/mmte_script/common/simple_transition.ate
+#---------------------------------------------------------
+do $(NOMADIK)/audiocodec/mmte_script/common/fmtx.ate
+do $(NOMADIK)/audiocodec/mmte_script/common/fmrx.ate
+do $(NOMADIK)/audiocodec/mmte_script/common/feedback_enabled_in_exec.ate
+
+
+# SOURCES_0XX => MULTIMIC
+do $(NOMADIK)/audiocodec/mmte_script/multimic/record_le.ate
+do $(NOMADIK)/audiocodec/mmte_script/multimic/record_pause.ate
+do $(NOMADIK)/audiocodec/mmte_script/multimic/test_port.ate
+
+# SOURCES_1XX => AVSOURCE
+do $(NOMADIK)/audiocodec/mmte_script/avsource/record_le.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsource/test_port.ate
+
+
+# SINKS_0XX  => EARPIECE
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/test_port.ate
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/test_state_machine.ate
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/playback.ate
+
+#SINKS_1XX => AVSINK
+do $(NOMADIK)/audiocodec/mmte_script/avsink/test_port.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/test_state_machine.ate
+
+do $(NOMADIK)/audiocodec/mmte_script/avsink/play_nonlinear.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback.ate
+
+
+#SINKS_2XX => IHF
+do $(NOMADIK)/audiocodec/mmte_script/ihf/test_port.ate
+do $(NOMADIK)/audiocodec/mmte_script/ihf/test_state_machine.ate
+do $(NOMADIK)/audiocodec/mmte_script/ihf/playback.ate
+do $(NOMADIK)/audiocodec/mmte_script/ihf/playback_pause.ate
+
+
+#SINKS_3XX => Vibra 1
+do $(NOMADIK)/audiocodec/mmte_script/vibral/playback.ate
+
+#SINKS_4XX => Vibra 2
+do $(NOMADIK)/audiocodec/mmte_script/vibrar/playback.ate
+
+#SINKS_5XX => Multi Sinks
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_headset_ihf.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_hs_ihf.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_ihf_earpiece_vibra.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/vibra_lr.ate
+

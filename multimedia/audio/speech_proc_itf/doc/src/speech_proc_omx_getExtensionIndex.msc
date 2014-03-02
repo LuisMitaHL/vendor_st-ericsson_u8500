@@ -1,0 +1,16 @@
+msc {
+		width=1200;
+		Application,SpeechProcComponent,SpeechProcLibrary,SpeechProcNmf_ProcessincComp,speech_proc_library;
+    |||;
+		Application rbox speech_proc_library [label="OMX_GetExtensionIndex call"];
+		|||;
+		Application => SpeechProcComponent [label ="OMX_GetExtensionIndex(string, &index)"];
+
+		SpeechProcComponent => SpeechProcLibrary [label="getExtensionIndex(string,&index)"];
+	  SpeechProcLibrary >> SpeechProcComponent [label="OK,NOT_SUPPORTED"];
+		SpeechProcComponent >> Application [label="if OK"];
+		SpeechProcComponent => SpeechProcComponent [label="process it internally\nor by above layer(ENS,AFM)", linecolor="white"];
+		|||;
+
+		SpeechProcComponent >> Application;
+}

@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_video/components/vc1dec=bin
+NO_STD_BUILD_video/components/vc1dec=1
+BUILD_MMDSP_NMF_video/components/vc1dec=bin
+BUILD_ARM_PROC_video/components/vc1dec=bin
+BUILD_ARM_CODE_video/components/vc1dec=src
+BUILD_ARM_NMF_video/components/vc1dec=src
+BUILD_XP70_SIA_CODE_video/components/vc1dec=false

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE usecase SYSTEM "http://opa/lib/usecase.dtd">
+<usecase description="PS Connection Control"
+         name="">
+
+  <actors>
+    <actor name=":client" />
+    <actor name=":libmpl_cli" />
+    <actor name=":libstecom_cli" />
+    <boundary />
+    <actor name=":kernel"/>
+    <boundary />
+    <actor name=":libstecom_srv" />
+    <actor name=":libmpl_srv" />
+    <actor name=":psccd" />
+  </actors>
+
+  <alternative name = "psccd initialisation">
+  <note text= "initialize message library" source=":psccd"/>
+  <message name="mpl_msg_init(user_data,log_func,pscc_msg_set_descr)" source=":psccd" destination=":libmpl_srv" type="call_return" />
+  <note text= "create request channel to handle request" source=":psccd"/>
+  <message name="stec_opensrv(local_ctrl_addr)" source=":psccd" destination=":libstecom_srv" type="call" />
+  <message name="ctrl_sock=socket()" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="bind(ctrl_sock,local_ctrl_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return(ctrl)" source=":libstecom_srv" destination=":psccd" type="return" />
+  <note text= "create event channel to send events on" source=":psccd"/>
+  <message name="stec_opensrv(local_event_addr)" source=":psccd" destination=":libstecom_srv" type="call" />
+  <message name="event_sock=socket()" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="bind(event_sock,local_event_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return(event_ctrl)" source=":libstecom_srv" destination=":psccd" type="return" />
+  <note text= "psccd calls select() and waits for incoming commands" source=":psccd"/>
+  </alternative>
+
+  <alternative name = "client initialisation">
+  <note text= "initialize message library" source=":client"/>
+  <message name="mpl_msg_init(user_data,log_func,pscc_msg_set_descr)" source=":client" destination=":libmpl_cli" type="call_return" />
+  <note text= "create request channel" source=":client"/>
+  <message name="stec_open(addr=STE_PSCCD_CTRL_ADDR)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="sock=socket()" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="bind(sock,local_ctrl_addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="connect(sock,local_ctrl_addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="return(ctrl)" source=":libstecom_cli" destination=":client" type="return" />
+  <note text= "create and subscribe to event channel" source=":client"/>
+  <message name="stec_open(addr=STE_PSCCD_EVENT_ADDR)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="event_sock=socket()" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="bind(event_sock,local_event_addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="connect(sock,local_ctrl_addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="return(event_ctrl)" source=":libstecom_cli" destination=":client" type="return" />
+  <message name="stec_subscribe(event_ctrl)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="send(event_sock,'subscribe',addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="recv(sock)" source=":libstecom_cli" destination=":kernel" type="call" />
+  <note text= "select() returns and psccd calls stecom internal handler" source=":psccd"/>
+  <message name="stec_process_recv(event_ctrl,cmd)" source=":psccd" destination=":libstecom_srv" type="call" />
+  <message name="recvfrom(event_sock)" source=":libstecom_srv" destination=":kernel" type="call" />
+  <message name="return('subscribe',event_addr)" source=":kernel" destination=":libstecom_srv" type="return" />
+  <note text= "store client address" source=":libstecom_srv"/>
+  <message name="sendto(event_sock,'ok',event_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return()" source=":libstecom_srv" destination=":psccd" type="return" />
+  <note text= "psccd calls select() and waits for incoming commands" source=":psccd"/>
+  <message name="return('ok',srv_addr)" source=":kernel" destination=":libstecom_cli" type="return" />
+  <message name="return()" source=":libstecom_cli" destination=":client" type="return" />
+  </alternative>
+
+  <alternative name = "create a PS connection object">
+  <message name="mpl_req_msg_alloc(param_set_id=PSCC_PARAM_SET_ID)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(req_msg)" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_param_element_create(paramid_connid,connid=0)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(connid_param)" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_list_add(req_msg,connid_param)" source=":client" destination=":libmpl_cli" type="call_return" />
+  <message name="mpl_msg_pack(req_msg={message=create})" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(packed_req_msg)" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_msg_free(req_msg)" source=":client" destination=":libmpl_cli" type="call_return" />
+  <message name="stec_sendsync(ctrl,packed_req_msg)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="send(sock,packed_req_msg,addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="recv(sock)" source=":libstecom_cli" destination=":kernel" type="call" />
+  <note text= "select() returns and psccd calls receive" source=":psccd"/>
+  <message name="stec_recv(ctrl)" source=":psccd" destination=":libstecom_srv" type="call" />
+  <message name="recvfrom(sock)" source=":libstecom_srv" destination=":kernel" type="call" />
+  <message name="return(packed_req_msg,cli_addr)" source=":kernel" destination=":libstecom_srv" type="return" />
+  <message name="return(packed_req_msg)" source=":libstecom_srv" destination=":psccd" type="return" />
+  <message name="mpl_msg_alloc(param_set_id=PSCC_PARAM_SET_ID)" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(msg)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_msg_unpack(packed_req_msg)" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(msg={type=request,message=create})" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_param_list_find(msg,paramid_connid)" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(connid_param,connid=0)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <note text= "psccd processes request, i.e., a PS connection object is created, and send response" source=":psccd"/>
+  <message name="mpl_msg_free(msg)" source=":psccd" destination=":libmpl_srv" type="call_return" />
+  <message name="mpl_resp_msg_alloc(param_set_id=PSCC_PARAM_SET_ID)" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(resp_msg)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_param_element_create(paramid_connid,connid=0)" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(connid_param)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_list_add(req_msg,connid_param)" source=":psccd" destination=":libmpl_srv" type="call_return" />
+  <message name="mpl_msg_pack(resp_msg={message=create,result=ok})" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(packed_resp_msg)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_msg_free(req_msg)" source=":psccd" destination=":libmpl_srv" type="call_return" />
+  <message name="stec_send(ctrl,packed_resp_msg)" source=":psccd" destination=":libstecom_srv" type="call" />
+  <message name="sendto(sock,packed_resp_msg,cli_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return()" source=":libstecom_srv" destination=":psccd" type="return" />
+  <note text= "psccd calls select() and waits for incoming commands" source=":psccd"/>
+  <message name="return(packed_resp_msg,srv_addr)" source=":kernel" destination=":libstecom_cli" type="return" />
+  <message name="return(packed_resp_msg)" source=":libstecom_cli" destination=":client" type="return" /> 
+  <message name="mpl_msg_alloc(param_set_id=PSCC_PARAM_SET_ID)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(msg)" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_msg_unpack(packed_resp_msg)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(msg={type=response,message=create,result=ok})" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_param_list_find(msg,paramid_connid)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(connid_param,connid=0)" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_msg_free(msg)" source=":client" destination=":libmpl_cli" type="call_return" />
+ </alternative>
+
+  <alternative name = "psccd sends an event">
+  <note text= "client calls select() and wait for incoming events" source=":client"/>
+  <message name="mpl_event_msg_alloc(param_set_id=PSCC_PARAM_SET_ID)" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(event_msg)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_param_element_create(paramid_connid,connid=0)" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(connid_param)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_list_add(event_msg,connid_param)" source=":psccd" destination=":libmpl_srv" type="call_return" />
+  <message name="mpl_msg_pack(event_msg={message=event_connected})" source=":psccd" destination=":libmpl_srv" type="call" />
+  <message name="return(packed_event_msg)" source=":libmpl_srv" destination=":psccd" type="return" />
+  <message name="mpl_msg_free(event_msg)" source=":psccd" destination=":libmpl_srv" type="call_return" />
+  <message name="stec_sendevent(event_ctrl,packed_event_msg)" source=":psccd" destination=":libstecom_srv" type="call" />
+  <note text= "evnts are broadcast to all registered clients" source=":libstecom_srv"/>
+  <message name="sendto(sock,packed_event_msg,event_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return()" source=":libstecom_srv" destination=":psccd" type="return" />
+  <note text= "select() returns and client read incoming event" source=":client"/>
+  <message name="stec_recv(event_ctrl)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="recv(event_sock)" source=":libstecom_cli" destination=":kernel" type="call" />
+  <message name="return(packed_event_msg)" source=":kernel" destination=":libstecom_cli" type="return" />
+  <message name="return(packed_event_msg)" source=":libstecom_cli" destination=":client" type="return" />
+  <message name="mpl_msg_alloc(param_set_id=PSCC_PARAM_SET_ID)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(msg)" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_msg_unpack(packed_event_msg)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(msg={type=event,message=event_connected})" source=":libmpl_cli" destination=":client" type="return" />
+  <message name="mpl_param_list_find(msg,paramid_connid)" source=":client" destination=":libmpl_cli" type="call" />
+  <message name="return(connid_param,connid=0)" source=":libmpl_cli" destination=":client" type="return" />
+  <note text= "client handles the event and calls select()" source=":client"/>
+  <message name="mpl_msg_free(msg)" source=":client" destination=":libmpl_cli" type="call_return" />
+  </alternative>
+</usecase>

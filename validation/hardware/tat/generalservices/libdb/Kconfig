@@ -1,0 +1,33 @@
+#
+# LibDB configuration
+#
+
+menuconfig LIBDB
+	bool "LibDB"
+	help
+
+if LIBDB
+
+config LIBDB_DIR
+	string
+	default ../tat/generalservices/libdb
+
+config LIBDB_DEPS
+	string
+	default ""
+
+config LIBDB_STRIP_DISABLED
+	bool "Disable strip"
+	depends on LIBDB
+	default n
+	help
+	  This will disable strip for this module
+
+config LIBDB_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LIBDB
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LIBDB

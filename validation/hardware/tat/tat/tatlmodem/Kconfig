@@ -1,0 +1,35 @@
+#
+# TatlModem configuration
+#
+
+menuconfig TATLMODEM
+	bool "TatlModem"
+	depends on DTHSRVHELPER && TATLMODEMSRV && TATTOOLS && POWERSERVICES
+	help
+	  depends on DTHSRVHELPER, TATLMODEMSRV, POWERSERVICES and TATTOOLS
+
+if TATLMODEM
+
+config TATLMODEM_DIR
+	string
+	default ../tat/tat/tatlmodem
+
+config TATLMODEM_DEPS
+	string
+	default "DTHSRVHELPER TATLMODEMSRV TATTOOLS POWERSERVICES"
+
+config TATLMODEM_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLMODEM
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLMODEM_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLMODEM
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLMODEM

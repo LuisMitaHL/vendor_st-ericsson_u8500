@@ -1,0 +1,153 @@
+;*****************************************************************************
+;*  ST-Ericsson                                                              *
+;*  Reproduction and Communication of this document is strictly prohibited   *
+;*  unless specifically authorized in writing by ST-Ericsson.                *
+;*---------------------------------------------------------------------------*/
+
+;**********************************************************************************************
+;* Author        : Emmanuel EDDI
+;* Description   : This Code/Script is for Folllowing Board Configuration:
+;*
+;*                 Boards		:	EVB (Maja Electrical Validation Board),
+;*						B5500 (Maja Platform Big Board),
+;'						S5500 (Maja Platform Small Board).
+;*                 SoC			:	DB5500V1 (Maja)
+;*                 Code/Script for	:	Lauterbach / Trace32
+;*                 Version		:	V1.0
+;*
+;*
+;* File Name     : DB5500_Petra_defines.cmm
+;*--------------------------------------------------------------------------------------------*/
+
+;*--------------------------------------------------------------------------------------------*/
+;
+;			GLOBAL Variables Definition
+;
+;*--------------------------------------------------------------------------------------------*/
+GLOBAL &Vio18MAX &Vio18NOM &Vio18MIN
+GLOBAL &Vio12MAX &Vio12NOM &Vio12MIN
+GLOBAL &VanaMAX &VanaNOM &VanaMIN
+GLOBAL &VapeMAX &VapeNOM &VapeMIN &VapeMIN_FAST &VapeMIN_SLOW
+GLOBAL &VpllMAX &VpllNOM &VpllMIN
+GLOBAL &VsafeMAX &VsafeNOM &VsafeMIN &VsafeMIN_FAST &VsafeMIN_SLOW
+GLOBAL &VarmMAX &VarmNOM &VarmMIN &VarmMIN_FAST &VarmMIN_SLOW
+;;--------------
+GLOBAL &byte_1 &byte_2 &byte_3 &byte_4
+GLOBAL &IDSlave_vdenc &IDSlave_sim &IDSlave_led &IDSlave_adc &IDSlave_rtc
+GLOBAL &IDSlave_voltage &IDSlave_dbieci &IDSlave_chg &IDSlave_atcom &IDSlave_usb
+GLOBAL &IDSlave_it &IDSlave_digio &IDSlave_intio &IDSlave_vibra &IDSlave_audio
+GLOBAL &LDO_D_st &LDO_N_st &LDO_M_st &LDO_C_st &LDO_A_st
+GLOBAL &LDO_S_st &LDO_L_st &LDO_G_st &LDO_H_st &LDO_K_st
+GLOBAL &Buck1_st &Buck2_st &Buck3_st &Buck4_st &Buck5_st
+GLOBAL &LDO_D_Vsel &LDO_M_Vsel &LDO_F_st &LDO_B_st &Full_Pwr
+GLOBAL &Buck1_Vsel &Buck2_Vsel &Buck3_Vsel &Buck4_Vsel &Buck5_Vsel
+
+
+;;--------------
+;&Vio18MAX=??? 		;1.9V	==> 1.78V (0x03) < BUCK3vsel < 1.88V (0x0D) !!!!
+;;;&Vio18MAX=???		;1.98V	==> 1.78V < BUCK3vsel < 1.88V !!!!
+&Vio18NOM=0x05		;1.8V
+;&Vio18MIN=??? 		;1.7V	==> 1.78V < BUCK3vsel < 1.88V !!!!
+;;;&Vio18MIN=???		;1.62V	==> 1.78V < BUCK3vsel < 1.88V !!!!
+;;--------------
+&Vio12MAX=0x41		;1.3V
+&Vio12NOM=0x37		;1.2V
+&Vio12MIN=0x2D		;1.1V
+;&Vio12MIN=0x31		;1.14V
+;;--------------
+;&VanaMAX=???		;1.3V	==> LDO_S_Static Can't be configured at 1.3V !!
+;;;&VanaMAX=???		;1.26V	==> LDO_S_Static Can't be configured at 1.26V !!
+&VanaNOM=0x00		;1.2V
+&VanaMIN=0x02		;1.1V
+;;;&VanaMIN=???		;1.14V	==> LDO_S_Static Can't be configured at 1.14V !!
+;;--------------
+&VapeMAX=0x3D		;1.26V
+&VapeNOM=0x38		;1.21V
+;;;&VapeNOM=0x32		;1.15V
+;&VapeNOM=0x26		;1.025V (1.03V)
+;&VapeNOM=0x2D		;1.1V
+&VapeMIN=0x32		;1.15V
+;&VapeMIN=0x26		;1.025V (1.03V)
+&VapeMIN_FAST=0x1E	;0.95V
+;;;&VapeMIN_SLOW=0x2D	;1.1V
+&VapeMIN_SLOW=0x32	;1.15V
+;;--------------
+;&VpllMAX=???		;1.9V	==> LDO_F_Static Can't be configured at 1.9V !!
+;&VpllMAX=???		;1.95V	==> LDO_F_Static Can't be configured at 1.95V !!
+&VpllNOM=0x00		;1.8V
+;&VpllMIN=???		;1.7V	==> LDO_F_Static Can't be configured at 1.7V !!
+;&VpllMIN=???		;1.65V	==> LDO_F_Static Can't be configured at 1.65V !!
+;;--------------
+&VsafeMAX=0x33		;1.26V
+&VsafeNOM=0x2E		;1.21V
+;;;&VsafeNOM=0x28		;1.15V
+;&VsafeNOM=0x1E		;1.05V
+;;;&VsafeMIN=0x1E		;1.05V
+&VsafeMIN=0x28		;1.15V
+&VsafeMIN_FAST=0x1E	;1.05V
+&VsafeMIN_SLOW=0x28	;1.15V
+;;;&VsafeMIN_SLOW=0x23	;1.1V
+;;--------------
+;;;;&VarmMAX=???		;1.4V	==> BUCK4 Can only go till 1.3V !!
+&VarmMAX=0x3D		;1.26V
+;&VarmNOM=0x40		;1.29V
+&VarmNOM=0x28		;1.05V
+;&VarmNOM=0x23		;1.0V
+;&VarmMIN=0x40		;1.29V
+&VarmMIN=0x23		;1.0V
+&VarmMIN_FAST=0x1E	;0.95V
+&VarmMIN_SLOW=0x28	;1.05V
+
+;;--------------
+;;--------------
+&byte_1=0x01
+&byte_2=0x02
+&byte_3=0x03
+&byte_4=0x04                                    
+
+;;--------------
+;;--------------
+&IDSlave_vdenc=0x06
+&IDSlave_sim=0x04
+&IDSlave_led=0x10
+&IDSlave_adc=0x0A
+&IDSlave_rtc=0x0F  
+&IDSlave_voltage=0x03
+&IDSlave_dbieci=0x07
+&IDSlave_chg=0x0B
+&IDSlave_atcom=0x0C
+&IDSlave_usb=0x05
+&IDSlave_it=0x0E
+&IDSlave_digio=0x4B
+&IDSlave_intio=0x4A
+&IDSlave_vibra=0x02
+&IDSlave_audio=0x0D
+
+;;--------------
+;;--------------
+&LDO_D_st=0x72
+;&LDO_D_Vsel ==> ???
+&LDO_N_st=0x88
+&LDO_M_st=0x84
+&LDO_M_Vsel=0x85
+&LDO_F_st=0x75
+&LDO_C_st=0x6F
+&LDO_A_st=0x69
+&LDO_B_st=0x6C
+&LDO_S_st=0x66
+&LDO_L_st=0x81
+&LDO_G_st=0x78
+&LDO_H_st=0x7B
+&LDO_K_st=0x7E
+&Buck1_st=0x8C
+&Buck1_Vsel=0x8F
+&Buck2_st=0xAA
+&Buck2_Vsel=0xAD
+&Buck3_st=0xB7
+&Buck3_Vsel=0xB8
+&Buck4_st=0xBB
+&Buck4_Vsel=0xBE
+&Buck5_st=0xC7
+&Buck5_Vsel=0xC8
+
+&Full_Pwr=0x30

@@ -1,0 +1,59 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   resource_manager data structure and/or definition
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#ifndef _t1xhv_resource_manager_idt
+#define _t1xhv_resource_manager_idt
+
+
+
+
+/* ********************************************************** */
+/* ************** RESOURCE MANAGEMENT elements ************** */
+/* ********************************************************** */
+/** @ingroup rmApiGroup
+ *  @{ 
+ */
+
+/** \brief status of signal::signalBuffer. */
+typedef enum {
+  BUFFER_BOW,   /**<\brief (Not yet implemented) Begin of buffer link list reached. */
+  BUFFER_EOW    /**<\brief End of buffer link list reached. */
+ 
+} t_t1xhv_buffer_status;
+
+/** \brief This structure define codec type (encoder or decoder) for buffers loading. */
+typedef enum {
+ 	ID_DECODER,
+ 	ID_ENCODER
+ } t_codec_type;
+
+typedef enum {
+  RESOURCE_MMDSP,         /**<\brief MMDSP resource (used for all codecs). */
+  RESOURCE_MTF,           /**<\brief MTF engine resource. */
+  RESOURCE_VPP,           /**<\brief VPP hardware resource. */
+  RESOURCE_CABAC,         /**<\brief HED preprocessor h264dec hardware resource. */
+  /* ...Please insert a resource above this line */
+  RESOURCE_MAX
+} t_t1xhv_resource;
+
+
+typedef enum {
+  STA_RESOURCE_FREE,      /**<\brief A previously allocated resource is now free, so ready to be used.*/
+  STA_PARAM_ERROR,        /**<\brief Input parameter error so that allocation can't be done. */
+  STA_ERROR_ALLOC_FULL,   /**<\brief Internal allocation FIFO full. Please allocate later. */
+  STA_RESOURCE_LOST       /**<\brief Timeout on the specified resource */
+} t_t1xhv_resource_status;
+
+/** @} */ // end of rmApiGroup
+ 
+
+#endif /* _t1xhv_resource_manager_idt */

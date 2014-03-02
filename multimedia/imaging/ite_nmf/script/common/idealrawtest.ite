@@ -1,0 +1,85 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/idealrawtest.ite
+#########################################################################
+#           THIS TESTS CHECKS FOR VARIOUS ISP ALGORITHMS
+#           WE SET AND DISABLE THE VALUES IN THIS TEST
+########################################################################
+setusecase default
+LogPE disable
+
+##### PASS 1 #####
+##### Sensor in STOP state; Configure ISP Blocks now #####
+#LogPE enable
+
+TestIspBlock RSO            1   test
+TestIspBlock SDL            1   test
+TestIspBlock ChannelGains   0   test
+TestIspBlock Scorpio        0   test
+TestIspBlock BinningRepair  0   test
+TestIspBlock Babylon        0   test
+TestIspBlock ColourMatrix   0   test
+
+##### Configure and toggle coin (to check for Glace Event) #####
+ConfigureIspBlocks toggle nowait
+#LogPE disable
+
+##### Setup BMS Env #####
+setusecase LR VGA YUV422RI
+setusecase HR VGA YUV420MB_D
+setusecase BMS MODE0 RAW12
+usagemode still
+bmsmode STILL
+bmsout BAYERSTORE2
+
+##### Start BMS #####
+bms prepare
+getusecase
+manualfps 22 NIL
+bms start
+
+##### Check for Glace Notification #####
+VerifyGlaceEvent
+
+##### Sensor in RUN (BMS) state; Verify whether Parameters applied #####
+#LogPE enable
+VerifyParamsApplied bms_datapath wait
+#LogPE disable
+
+sensormode SOLIDBAR_YELLOW
+buffercheck BMS YELLOW
+
+##### Quit BMS Env #####
+bms stop
+bms free
+
+##### PASS 2 #####
+##### Sensor in STOP state; Re-configure ISP Blocks now #####
+#LogPE enable
+
+TestIspBlock RSO            0  test
+TestIspBlock SDL            0  test
+TestIspBlock ChannelGains   1  test
+TestIspBlock Scorpio        1  test
+TestIspBlock BinningRepair  1  test
+TestIspBlock Babylon        1  test
+TestIspBlock ColourMatrix   1  test
+
+##### Configure and toggle coin (to check for Glace Event) #####
+ConfigureIspBlocks toggle nowait
+LogPE disable
+
+##### Start BML #####
+bmlin BAYERLOAD1
+getusecase
+bml prepare
+bml start
+wait 2
+
+##### Sensor in RUN (BML) state; Verify whether Parameters applied #####
+#LogPE enable
+VerifyParamsApplied bml_datapath nowait
+LogPE disable
+
+##### Free and Stop Env #####
+bml stop
+bml free
+

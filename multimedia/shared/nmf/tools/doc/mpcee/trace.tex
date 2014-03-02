@@ -1,0 +1,37 @@
+\chapter{Trace}
+\section{Stm trace}
+Stm hardware ip will be use to output various information. Channel number 100
+will be use to output MPCEE traces.
+\subsection{Activity trace}
+Generated code will output components activity trace using:
+\begin{itemize}
+  \item nmfTraceActivity() : Will output trace of post into scheduler, start and
+  end of reaction scheduling.
+  \item nmfTraceCommunication() : Will output trace of reveive command from
+  others core and send command to others core.
+  \item nmfTracePanic() : Will output trace when a panic occur.
+\end{itemize}
+These trace can be deactivated to reduce MMDSP load using traceActive attribute.
+CM driver will be responsible for that according to user request.
+
+\subsection{User trace}
+User can also embedded its own trace using the traceUser() api. That can help
+debug in a non intrusive way. traceUser() take a single t\_uint32 parameter.
+
+User trace can also be deactivate throught traceActive attribute.
+
+\subsection{Profiling trace}
+MPCEE implement \_\_mmdsp\_profile\_func\_enter() and
+\_\_mmdsp\_profile\_func\_exit(). That allow instrumented code by the MMDSP
+compiler to be output on stm bor debugging or performance analysis.
+
+\section{Printf}
+MPCEE also provide user with NmfPrint0(), NmfPrint1() and NmfPrint2() for
+debugging purpose.
+
+User output will then be redirected using interrupt 1 to the
+CM driver which will provide a ring buffer readable by user code. This allow
+MMDSP printf message to appear in rich OS logs.
+
+These methods are highly intrusive since they wait for a CM driver acknoledge
+before going further.

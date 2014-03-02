@@ -1,0 +1,288 @@
+redeye_corrector
+_____________________________________________________________________________________________
+Release  11.0.4
+Date: 2011-August 30
+- Change include dir 'stdlib' to 'stdapi' for symbian
+- Revert to previous OUTR format
+_____________________________________________________________________________________________
+Release  11.0.3
+Date: 2011-June 29
+- Init properly IFM_CONFIG_RED_THRESHOLD config_FILTER struct
+- Xti new system trace
+_____________________________________________________________________________________________
+Release  11.0.2
+Date: 2011-June 08
+
+- Fix some coverity warnings
+_____________________________________________________________________________________________
+Release  11.0.1
+Date: 2011-April
+
+Changes:
+- call on buffer flag only for EOS
+- Add gethandle OMX.STE.CONTROLLED.VISUALPROCESSOR.RER
+- CR 333244 remove winscw target
+
+General description:
+
+Reason for commits: 
+- OMX_COLOR_FormatYUV420PackedPlanar instead of (or in addition to) OMX_COLOR_FormatYUV420Planar
+- New code under UC_STRIDE_PATCH compilation flag (not defined by default) to patch current misalignment 
+in stride definition (for validation of UC)
+
+Input: YUV420 image (original resolution)
+Output: YUV420 image (same resolution as Input), in /multimedia/imaging/aiq_component_tests/redeye_corrector/output/*_OUT.yuv
+
+Modified files:
+
+/multimedia/imaging/redeye_corrector/src/redeye_corrector_process.cpp
+/multimedia/imaging/redeye_corrector/Makefile
+
+Compilation flags: AIQ_PERFTRACE_ENABLE, RER_METADATA_TRACE (to print RER metadata), UC_STRIDE_PATCH
+
+[Default definitions today:
+#CPPFLAGS += -DAIQ_PERFTRACE_ENABLE
+#CPPFLAGS += -DRER_METADATA_TRACE
+#CPPFLAGS += -DUC_STRIDE_PATCH]
+
+Limitations: 
+
+- Only YUV420 input/output format supported
+- No tuning/ set config management
+- Support of the stride mode (stride different from width), note that the 
+image tests have a stride equal to the width
+- No stripe mode support.
+
+Acceptance criteria:
+Scripts run to completion (files also modified for this release):
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_19052009371.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_arn_010.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_MV_054.mmte
+If redeye_detector compiled with DRER_EXTRADATA_SUPPORT compilation flag defined:
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_19052009371_extradata.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_arn_010_extradata.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_MV_054_extradata.mmte
+
+File comparisons may fail on target different from linux due to float/double.
+_____________________________________________________________________________________________
+Release  11.0.0
+Date: 2011-February, 24
+
+Changes:
+- Remove bellagio file from symbian.
+- Remove generation of EOS for input port
+_____________________________________________________________________________________________
+Release  10.48.3
+Date: 2011-February, 10
+
+Bug Fix:
+- Fix rpm modifs
+_____________________________________________________________________________________________
+Release  10.48.2 clone of 10.44.5
+Date: 2011-February, 2
+
+Bug Fix:
+- Fix compilation pb after rpm modifs
+_____________________________________________________________________________________________
+Release  10.44.5
+Date: 2011-January, 6
+
+Bug Fix:
+- Fix init of output buffer for BufferSharing
+_____________________________________________________________________________________________
+Release  10.44.4
+Date: 2010-December, 7
+
+Changes:
+- Change buffer supplier property for Port input  (Buffer sharing)
+- Fix component dependencies for symbian (component.xml)
+_____________________________________________________________________________________________
+Date: 2010-11-23
+
+General description:
+
+Reason for commits: 
+- - solving of coverity issues
+
+Input: YUV420 image (original resolution)
+Output: YUV420 image (same resolution as Input), in /multimedia/imaging/aiq_component_tests/redeye_corrector/output/*_OUT.yuv
+
+Modified files:
+
+/multimedia/imaging/redeye_corrector/src/redeye_corrector_process.cpp
+
+Compilation flags: AIQ_MEMTRACE_ENABLE, AIQ_PERFTRACE_ENABLE, RER_METADATA_TRACE (to print RER metadata)
+
+Limitations: 
+
+- Only YUV420 input/output format supported
+- No tuning/ set config management
+- No use of extra data (Face detection and / or zoom crop) and so no 
+FAST/SNAP mode support (the full frame is processed) => REC still ON
+- Support of the stride mode (stride different from width), note that the 
+image tests have a stride related to the width
+- No stripe mode support.
+- Problems outcome on memory management (number of allocations, size, etc…) not 
+handled for this delivery.
+
+Acceptance criteria:
+Scripts run to completion (files also modified for this release):
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_19052009371.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_arn_010.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_MV_054.mmte
+
+File comparisons may fail on target different from linux due to float/double.
+
+____________________________________________________________________________________________
+Date: 2010-11-15
+
+General description:
+
+Reason for commits: 
+- support of buffer sharing (activated by default in REC_Api.h)
+
+Input: YUV420 image (original resolution)
+Output: YUV420 image (same resolution as Input), in /multimedia/imaging/aiq_component_tests/redeye_corrector/output/*_OUT.yuv
+
+Modified files:
+
+/multimedia/imaging/redeye_corrector/src/redeye_corrector_process.cpp
+/multimedia/imaging/redeye_corrector/src/REC_Api.h
+
+Compilation flags: AIQ_MEMTRACE_ENABLE, AIQ_PERFTRACE_ENABLE, RER_METADATA_TRACE (to print RER metadata)
+
+Limitations: 
+
+- Only YUV420 input/output format supported
+- No tuning/ set config management
+- No use of extra data (Face detection and / or zoom crop) and so no 
+FAST/SNAP mode support (the full frame is processed) => REC still ON
+- Support of the stride mode (stride different from width), note that the 
+image tests have a stride related to the width
+- No stripe mode support.
+- Problems outcome on memory management (number of allocations, size, etc…) not 
+handled for this delivery.
+
+Acceptance criteria:
+Scripts run to completion (files also modified for this release):
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_19052009371.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_arn_010.mmte
+- /multimedia/imaging/aiq_component_tests/redeye_corrector/redeye_MV_054.mmte
+
+File comparisons may fail on target different from linux due to float/double.
+
+____________________________________________________________________________________________
+
+Some intermediate versions not documented
+_____________________________________________________________________________________________
+
+Date: 2010-06-17
+
+General description:
+
+Reason for commits: 
+- changes in RER metadata structure (changed in /multimedia/imaging/wrapper_openmax/proxy/wrapper_openmax_tools.h),
+- correction code changed to be portable (WIN32 = ARM).
+
+Input: YUV420 image (original resolution)
+Output: YUV420 image (same resolution as Input), in /multimedia/imaging/redeye_corrector/mmte_script/output/*_OUT.yuv
+
+Modified files:
+
+/multimedia/imaging/redeye_corrector/src/RedEyes.cpp
+/multimedia/imaging/redeye_corrector/src/redeye_corrector_process.cpp
+
+/multimedia/imaging/redeye_corrector/src/morphological.h
+/multimedia/imaging/redeye_corrector/src/REC_Api.h
+
+/multimedia/imaging/redeye_corrector/mmte_script/ref/19052009371_3264x2448_REF.yuv
+/multimedia/imaging/redeye_corrector/mmte_script/ref/arn_010_1200x1600_REF.yuv
+/multimedia/imaging/redeye_corrector/mmte_script/ref/MV_054_1600x1200_REF.yuv
+
+Compilation flags: AIQ_MEMTRACE_ENABLE, RER_METADATA_TRACE (to print RER metadata)
+
+Limitations: 
+
+- Only YUV420 input/output format supported
+- No tuning/ set config management
+- No use of extra data (Face detection and / or zoom crop) and so no 
+FAST/SNAP mode support (the full frame is processed) => REC still ON
+- No buffer sharing
+- Support of the stride mode (stride different from width), note that the 
+image tests have a stride related to the width
+- No stripe mode support.
+- Problems outcome on memory management (number of allocations, size, etc…) not 
+handled for this delivery.
+
+Acceptance criteria:
+Scripts run to completion:
+- redeye_19052009371.mmte
+- redeye_arn_010.mmte
+- redeye_MV_054.mmte
+
+File comparisons may fail on target different from linux due to float/double.
+_____________________________________________________________________________________________
+Date: 2010-05-25
+
+General description:
+Input: YUV420 image (original resolution)
+Output: YUV420 image (same resolution as Input), in /multimedia/imaging/redeye_corrector/mmte_script/output/*_OUT.yuv
+
+Added files:
+
+/multimedia/imaging/redeye_corrector/src/interpolation.cpp
+/multimedia/imaging/redeye_corrector/src/RedEyes.cpp
+
+/multimedia/imaging/redeye_corrector/src/interpolation.h
+/multimedia/imaging/redeye_corrector/src/morphological.h
+/multimedia/imaging/redeye_corrector/src/REC_Api.h
+/multimedia/imaging/redeye_corrector/src/RedEyes.h
+
+/multimedia/imaging/redeye_corrector/mmte_script/redeye_19052009371.mmte
+/multimedia/imaging/redeye_corrector/mmte_script/redeye_arn_010.mmte
+/multimedia/imaging/redeye_corrector/mmte_script/redeye_MV_054.mmte
+
+/multimedia/imaging/redeye_corrector/mmte_script/input/19052009371_1024x768.rgb
+/multimedia/imaging/redeye_corrector/mmte_script/input/19052009371_3264x2448.yuv
+/multimedia/imaging/redeye_corrector/mmte_script/input/arn_010_768x1024.rgb
+/multimedia/imaging/redeye_corrector/mmte_script/input/arn_010_1200x1600.yuv
+/multimedia/imaging/redeye_corrector/mmte_script/input/MV_054_1024x768.rgb
+/multimedia/imaging/redeye_corrector/mmte_script/input/MV_054_1600x1200.yuv
+
+/multimedia/imaging/redeye_corrector/mmte_script/ref/19052009371_3264x2448_REF.yuv
+/multimedia/imaging/redeye_corrector/mmte_script/ref/arn_010_1200x1600_REF.yuv
+/multimedia/imaging/redeye_corrector/mmte_script/ref/MV_054_1600x1200_REF.yuv
+
+Modified files:
+
+/multimedia/imaging/redeye_corrector/Makefile
+/multimedia/imaging/redeye_corrector/src/redeye_corrector_process.cpp
+/multimedia/imaging/redeye_corrector/src/redeye_corrector_process.h
+
+Deleted files (not deleted in fact. Not part of the delivery. Left on CM for the moment):
+
+/multimedia/imaging/redeye_corrector/mmte_script/input/frame00.gam
+/multimedia/imaging/redeye_corrector/mmte_script/redeye.mmte
+
+Compilation flags: AIQ_MEMTRACE_ENABLE, RER_METADATA_TRACE (to print RER metadata)
+
+Limitations: 
+
+- Only YUV420 input/output format supported
+- No tuning/ set config management
+- No use of extra data (Face detection and / or zoom crop) and so no 
+FAST/SNAP mode support (the full frame is processed) => REC still ON
+- No buffer sharing
+- Support of the stride mode (stride different from width), note that the 
+image tests have a stride related to the width
+- No stripe mode support.
+- Problems outcome on memory management (number of allocations, size, 
+remaining memory leaks, etc…) not handled for this delivery.
+
+Acceptance criteria:
+Scripts run to completion:
+- redeye_19052009371.mmte
+- redeye_arn_010.mmte
+- redeye_MV_054.mmte
+
+File comparisons may fail on target different from linux due to float/double.

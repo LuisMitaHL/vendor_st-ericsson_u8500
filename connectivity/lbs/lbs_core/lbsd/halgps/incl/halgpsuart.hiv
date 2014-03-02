@@ -1,0 +1,313 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSUART_HIV__
+#define __HALGPSUART_HIV__
+/**
+* \file halgpsuart.hiv
+* \date 25/01/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all variables used by halgps2Uart.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.01.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __HALGPS2UART_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__HALGPS2UART_C__*/
+
+#ifdef AGPS_PID0001_FTR
+
+GLOBAL uint8_t gn_ToggleRts = FALSE;
+
+#endif
+
+#ifdef __RTK_E__
+
+
+#ifdef __HALGPS2UART_C__
+/**
+*\var vg_HALGPS_UARTInitData
+*\brief UART driver initialisation
+* This varaible is used to parameters the UART driver.
+* All UART register can be configure : Interrupt enable, Fifo control, Line control, Modem control, Timed IRQ/DMA, UART speed.
+*/
+const t_UARTInitData vg_HALGPS_UARTInitData = 
+{ /* UART[0]  normal (DMA) mode -------------------------------------------------------------*/
+  /* Interrupt enable reg.     */ 
+   (                                           0
+     | KID0_SetValue(UART,ier,rdaIntEn,        UART_RECEIVE_DATA_AVAILABLE_INTERRUPT_DISABLED )
+     | KID0_SetValue(UART,ier,threIntEn,       UART_TRANSMITTER_EMPTY_INTERRUPT_DISABLED )
+     | KID0_SetValue(UART,ier,rlsIntEn,        UART_RECEIVE_LINE_STATUS_INTERRUPT_DISABLED    )
+     | KID0_SetValue(UART,ier,modemIntEn,      UART_MODEM_INTERRUPT_DISABLED                  )
+   ),
+  /* FIFO Control reg.         */ 
+   (                                           0
+     | KID0_SetValue(UART,fcr,fifoEn,          UART_FIFO_DISABLED                              )
+     | KID0_SetValue(UART,fcr,rxFifoRst,       UART_RESET_RX_FIFO                             )
+     | KID0_SetValue(UART,fcr,txFifoRst,       UART_RESET_TX_FIFO                             )
+     | KID0_SetValue(UART,fcr,rxTrig,          UART_RX_INTERRUPT_TRIGGER_LEVEL_1_BYTE          )
+   ),
+  /* Line Control reg.         */ 
+   (                                           0 
+     |                                         UART_LINE_MODE_8N1                             
+     | KID0_SetValue(UART,lcr,break,           UART_BREAK_TRANSMISSION_DISABLED               )
+   ),
+  /* Modem Control reg.        */ 
+   (                                           0
+     | KID0_SetValue(UART,mcr,dtr,             UART_DTR_OUTPUT_INACTIVE                       )
+     | KID0_SetValue(UART,mcr,rts,             UART_RTS_OUTPUT_INACTIVE                       )
+     | KID0_SetValue(UART,mcr,loop,            UART_MODEM_LOOP_BACK_DISABLED                  )
+     | KID0_SetValue(UART,mcr,auto,            UART_RTS_CTS_NORMAL_MODE              )
+   ),
+  /* Timed IRQ/DMA counter val */              
+                                               0,// set to 50 ms
+  /* Timed IRQ/DMA control     */ 
+   (                                           0
+     | KID0_SetValue(UART,timerCtrl,mode,      UART_DMA_TIMEOUT_MODE                      )
+     | KID0_SetValue(UART,timerCtrl,pIrqEn,    UART_DATA_STATUS_INTERRUPT_ENABLED             )
+     | KID0_SetValue(UART,timerCtrl,tIrqEn,    UART_TIMED_INTERRUPT_DISABLED                 )
+   ),
+  /* ctrl IrDA sig.gen.        */ 
+   ( 0
+     | KID0_SetValue(UART,irda,irdaEn,         UART_IRDA_DISABLED                             )
+     | KID0_SetValue(UART,irda,width,          UART_IRDA_TX_PULSE_WIDTH_FIX_1d6MuS          )
+     | KID0_SetValue(UART,irda,invert,         UART_IRDA_RX_DATA_NOT_INVERTED                 )
+     | KID0_SetValue(UART,irda,clkDiv,         UART_IRDA_CLOCK_DIVIDER_FOR_UCLK_1d8432MHZ     )
+   ),  
+   /* Divisor Latch MSB reg.    */              
+//                                               UART_SPEED_460800 / 256 ,            
+                                               UART_SPEED_115200 / 256 ,            
+  /* Divisor Latch LSB reg.    */              
+//                                               UART_SPEED_460800 % 256 ,
+                                               UART_SPEED_115200 % 256 ,
+  /* Fractional divider M val  */              
+                                               0 ,
+  /* Fractional divider N val  */              
+                                               0 ,
+  /* Fractional divider ctrl   */ 
+   (                                           0
+     | KID0_SetValue(UART,fdivCtrl,clkSel,     UART_FRACTIONAL_DIVIDER_CLOCK_SELECT_H26M      )
+     | KID0_SetValue(UART,fdivCtrl,fdivEn,     UART_FRACTIONAL_DIVIDER_DISABLED               )
+   )
+};
+#endif
+
+/**
+*\var pg_HALGPS_UARTCurrentReadData
+*\brief pointer to the current read data in the circular buffer
+*
+* pg_HALGPS_UARTCurrentReadData is used on each read access of the gps lib, to acces on data in the circular data buffer
+* to calculate how many byte remain? or the next trame offset? see vg_HALGPS_UARTReadTrameIndex, vg_HALGPS_UARTTrameInfo
+*/
+GLOBAL uint8_t * pg_HALGPS_UARTCurrentReadData;
+
+/**
+* \var vg_HALGPS_UARTReadTrameIndex
+* \brief current read trame index
+*
+* vg_HALGPS_UARTReadTrameIndex is an index of vg_HALGPS_UARTTrameInfo table.
+* is the index of the current read trame.
+*/
+GLOBAL uint32_t vg_HALGPS_UARTReadTrameIndex;
+
+/**
+* \var vg_HALGPS_UARTWriteTrameIndex
+* \brief current write trame index
+*
+* vg_HALGPS_UARTWriteTrameIndex is an index of vg_HALGPS_UARTTrameInfo table.
+* is the index of the current write trame.
+*/
+/*this is the current index of the write process*/
+GLOBAL uint32_t vg_HALGPS_UARTWriteTrameIndex;
+
+
+/**
+* \var vg_WriteIndex
+* \brief Current write index in the write circular buffer
+*
+* vg_HALGPS_UARTReadTrameIndex is an index of vg_HALGPS_UARTTxBuffer table.
+* is the index of the current write.
+*/
+GLOBAL uint32_t vg_WriteIndex;
+
+/**
+* \var vg_WriteLastFreeIndex
+* \brief last free buffer in the write circular buffer
+*
+* vg_WriteLastFreeIndex is an index of vg_HALGPS_UARTTxBuffer table.
+* is the index of the last free buffer.
+*/
+GLOBAL uint32_t vg_WriteLastFreeIndex;
+
+
+#ifdef __HALGPS2UART_C__
+/* declare buffers in NON CACHE memory area */
+/* see map.cmd file in psmaster module for section declaration */
+#ifdef __arm
+#pragma arm section zidata = "halgpsbuffers"
+#endif
+#endif
+/**
+* \var vg_HALGPS_UARTRxBuffer
+* \brief received circular data buffer
+*
+* vg_HALGPS_UARTRxBufferr is in NON CACHE memory area
+* vg_HALGPS_UARTRxBuffer is composed by several block, each block has a size alternavly of HALGPS_RX_BUFFER_MAX_SIZE (name : "timeout buffer block")
+* or HALGPS_RX_BUFFER_IT_SIZE ("IT buffer block").
+* Each block is linked with an IORB ( vg_HALGPS_UARTRxIorb ).
+* vg_HALGPS_UARTRxBuffer containing trame, each trame is composed of two blocks, a trame always start with an IT buffer block.
+*
+*/
+/*
+*           __________________________________________________________________________________________________________________________..................____________
+*          |       |                                |       |                               |       |                             |   ..................            |
+*          |   IT  |       TIMEOUT BUFFER           |  IT   |        TIMEOUT BUFFER         |  IT   |       TIMEOUT  BUFFER       |   ..................            |
+*           --------------------------------------------------------------------------------------------------------------------------..................------------ 
+*          Ž       Ž                                Ž       Ž              Ž                Ž       Ž               Ž             Ž
+*          <------->                                                       |                                        |
+*        IT buffer block                                                Timeout                                  Timeout
+*                   <-------------------------------> 
+*                          timeout buffer block
+*          <---------------------------------------><--------------------->                  <--------------------->                           ..........--------->
+*                      first Trame                        second Trame                              Third trame                                  last Trame
+*/
+GLOBAL uint8_t vg_HALGPS_UARTRxBuffer[HALGPS_MAX_RX_BUFFER_NUMBER*(HALGPS_RX_BUFFER_MAX_SIZE+HALGPS_RX_BUFFER_IT_SIZE)];
+
+/**
+* \var vg_HALGPS_UARTTxBuffer
+* \brief sent circular data buffer
+*
+* vg_HALGPS_UARTTxBuffer is in NON CACHE memory area
+* vg_HALGPS_UARTTxBuffer is composed of trame of two blocks the fisrt is the header (t_kidIORB) and the second the data
+*
+* \see vg_HALGPS_UARTTransmitOk
+*/
+/*
+*           _________________________________________________________________________________________............_____________________________________________
+*          |                   |                     |                    |                          ............ |                     |                     |
+*          |                   |                     |                    |                          ............ |                     |                     |
+*           -----------------------------------------------------------------------------------------............--------------------------------------------- 
+*          Ž                   Ž                     Ž                    Ž                      Ž                Ž                     Ž                     Ž
+*          <------------------->                      <------------------->                                        <------------------->                      
+*            first IORB header                          second IORB header                                          last IORB header
+*                              <-------------------->                      <-------------------->                                        <-------------------->  
+*                                first sending data                         second sending data                                            last sending data
+*/
+GLOBAL uint8_t vg_HALGPS_UARTTxBuffer[HALGPS_TX_BUFFER_MAX_SIZE*HALGPS_MAX_TX_BUFFER_NUMBER];
+
+
+/**
+* \var vg_HALGPS_UARTRxIorb
+* \brief IORB received header list
+*
+* for ech block in vg_HALGPS_UARTRxBuffer a IORB must be used for the UART driver
+* The IORB of each block containing some information about the data buffer, the size, the next block, the timout value (if it exist) ....
+* All this block are chained, the UART driver is initialized with this chain, and put data in this chain.
+*
+*\see vg_HALGPS_UARTRxBuffer
+*/
+/*
+*                         vg_HALGPS_UARTRxIorb
+*                          ____________________
+*                     ___ |       IORB 1       |----------------------------> data pointer to vg_HALGPS_UARTRxBuffer IT buffer block 1
+*                --->|    |                    |
+*               |    |     --------------------
+*               |     --->|       IORB 2       |----------------------------> data pointer to vg_HALGPS_UARTRxBuffer timeout buffer block 1
+*               |     ----|                    |
+*               |    |     --------------------
+*               |     --->|       IORB 3       |----------------------------> data pointer to vg_HALGPS_UARTRxBuffer IT buffer block 2
+*               |     ----|                    |
+*               |    |     --------------------
+*               |     --->|       IORB 4       |----------------------------> data pointer to vg_HALGPS_UARTRxBuffer timeout buffer block 2
+*               |     ----|                    |
+*               |    |     --------------------
+*               .    .     ..........................................................................................................
+*               .    .     ..........................................................................................................
+*               .    .     ..........................................................................................................
+*               |    |      ___________________
+*               |     --->|      LAST IORB     |---------------------------> data pointer to vg_HALGPS_UARTRxBuffer last timeout buffer block
+*                -------- |                    |
+*                          --------------------
+*/
+GLOBAL t_kidIORB vg_HALGPS_UARTRxIorb[HALGPS_MAX_RX_BUFFER_NUMBER+HALGPS_MAX_RX_BUFFER_NUMBER];
+
+/**
+* \var vg_HALGPS_UARTTrameInfo
+* \brief Containing information about receive trame
+*
+* This table is used to store and read information about received trame
+* For each received trame we store the data trame lenght and the offset (index of vg_HALGPS_UARTRxBuffer) of the next trame
+* There are two varibale used to managed read and write index ( vg_HALGPS_UARTReadTrameIndex and vg_HALGPS_UARTWriteTrameIndex)
+*\see vg_HALGPS_UARTReadTrameIndex
+*\see vg_HALGPS_UARTWriteTrameIndex
+*/
+GLOBAL t_HALGPSTrame vg_HALGPS_UARTTrameInfo[HALGPS_MAX_RX_BUFFER_NUMBER];
+
+#ifdef __HALGPS2UART_C__
+#ifdef __arm
+#pragma arm section zidata
+#endif
+#endif
+
+#endif
+
+#ifdef ENABLE_ARM_FPGA_STANDALONE
+
+/**
+* \var vg_HALGPS_Arm2GpsMesg
+* \brief A2G_startup_5_clk6_delay.bin to initialize the ME
+*/
+unsigned char const vg_HALGPS_Arm2GpsMesg[] = {
+0xc8,0xc5,0x00,0x8d,0x00,0x02,0x01,0x00,0x90,0xc2,0xc8,0xc5,0x00,0x81,0x00,0x01,
+0x05,0x87,0xc2,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,
+0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,
+0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,0x23,0x0d,0x0a,0x23,0x23,0x23,
+0x23,0x0d,0x0a,0x23,0x55,0x55,0x55,0x55,0x20,0x36,0x20,0x33,0x46,0x46,0x20,0x26,
+0x41,0x39,0x0d,0x0a
+};
+
+#endif /* ENABLE_ARM_FPGA_STANDALONE */
+
+#undef GLOBAL
+#endif /* __HALGPSUART_HIV__ */

@@ -1,0 +1,25 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+#
+
+MODULE_NAME = h264enc
+OST_COMPILER = 1
+OST_COMPONENT_NAME = H264ENC
+OST_COMPONENT_INC = $(COMPONENT_TOP_DIR)/inc
+#OST_DICO_NAME = $(OST_COMPONENT_NAME)
+MY_OST_COMPILER_OPTION = "--tgdf=$(COMPONENT_TOP_DIR)/fixed_id.txt"
+#TRACECOMPILERDIR = $(MMROOT)/shared/osttools/osttc
+
+# from multimedia\video\uid\inc\st_video_uid.hrh
+# Module ID: #define KStUidVideoH264Enc      KStUidVideoDefine005
+# Dicos  ID: #define KStUidVideoSpare045     KStUidVideoDefine045
+# from src\soc\core\hal\nomadikuid.hrh
+# Module ID: #define KStUidVideoDefine005  0x20020C21 = 537005089 
+# Dicos  ID: #define KStUidVideoDefine045  0x20024DA0 = 537021856
+
+OST_MODULE_ID = 537005089
+
+OST_TOP_DICO_LIST = $(OST_COMPONENT_NAME)::$(OST_MODULE_ID)  
+OST_COMPONENT_ID_HOST    = 537021856 
+OST_COMPONENT_ID_NMF_ARM = 537021857 
+OST_COMPONENT_ID_NMF_DSP = 537021858

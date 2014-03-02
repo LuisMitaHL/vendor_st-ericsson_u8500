@@ -1,0 +1,50 @@
+
+if analyzer()
+(
+	ON ERROR cont
+	sys.memaccess DAP		;Necessary to configure etm without stopping the core
+	etm.off
+	t.method analyzer
+	if "&EtmPortSize"!=""
+		etm.portsize &EtmPortSize
+	else
+		etm.portsize 8.
+
+	if ID.PREPRO()==70			;LA-7991
+	(
+		etm.portmode WRAPPED
+	)
+	else ID.PREPRO()==71			;LA-7992
+	(
+		etm.portmode CONTINUOUS
+	)
+	etm.traceid 4.
+	etm.tracepriority 1.
+
+	etm.on	;Must be on to be able to select datatrace mode
+
+if (STR.SCAN(OS.ID(),"SIA",0)>=0)
+(
+	if "&MmdspSiaDataTrace"==""
+		etm.datatrace off
+	else
+		etm.datatrace &MmdspSiaDataTrace
+
+
+	if "&EtmMmdspSia"=="False"
+		etm.off
+	else
+		etm.on
+)
+else
+(
+	print "unknown ID = " OS.ID()
+)
+	if "&UseAttach"=="TRUE"
+		t.arm
+
+	ON ERROR NOTHING
+	sys.memaccess denied
+)
+
+enddo

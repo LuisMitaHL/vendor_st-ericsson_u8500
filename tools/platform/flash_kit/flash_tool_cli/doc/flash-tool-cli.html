@@ -1,0 +1,2261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.5.2" />
+<title>Flash Tool CLI(1)</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revnumber, span#revdate, span#revremark {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #dddddd;
+  color: #777777;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toc {
+  margin-bottom: 2.5em;
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes();}
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+}
+
+}
+/*]]>*/
+</script>
+</head>
+<body>
+<div id="header">
+<h1>Flash Tool CLI(1)</h1>
+</div>
+<div id="content">
+<h2 id="_name">NAME</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Flash Tool CLI - interface for communication with Backend.</p></div>
+</div>
+<h2 id="_synopsis">SYNOPSIS</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><strong>flash-tool</strong> [command] [-options]</p></div>
+</div>
+<h2 id="_description">DESCRIPTION</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Backend clients is the common name for the applications that use the remote message protocol to communicate with the Backend. The purpose of the client is to provide the user with a simple interface to manipulate the mobile platform.</p></div>
+<div class="paragraph"><p>Flash Tool CLI is a simple command line interface that communicates with Backend by sending and receiving requests (commands) supported by remote message protocol. The backend remote protocol accepts requests from flash-tool.</p></div>
+</div>
+<h2 id="_commands_and_options">COMMANDS AND OPTIONS</h2>
+<div class="sectionbody">
+<h3 id="_commands_index">COMMANDS INDEX</h3><div style="clear:left"></div>
+<div class="paragraph"><p><a href="#help">-help</a><br /></p></div>
+<div class="paragraph"><p><strong>BACKEND</strong></p></div>
+<div class="paragraph"><p><a href="#disable_auto_initialize">disable_auto_initialize</a><br />
+<a href="#disable_auto_sense">disable_auto_sense</a><br />
+<a href="#enable_auto_initialize">enable_auto_initialize</a><br />
+<a href="#enable_auto_sense">enable_auto_sense</a><br />
+<a href="#get_active_profile">get_active_profile</a><br />
+<a href="#get_auto_initialize_status">get_auto_initialize_status</a><br />
+<a href="#get_auto_sense_status">get_auto_sense_status</a><br />
+<a href="#get_available_profiles">get_available_profiles</a><br />
+<a href="#get_available_security_properties">get_available_security_properties</a><br />
+<a href="#get_connected_equipments">get_connected_equipments</a><br />
+<a href="#get_core_dump_location">get_core_dump_location</a><br />
+<a href="#get_equipment_profile">get_equipment_profile</a><br />
+<a href="#get_next_connected_equipment">get_next_connected_equipment</a><br />
+<a href="#reload_configuration">reload_configuration</a><br />
+<a href="#set_active_profile">set_active_profile</a><br />
+<a href="#set_core_dump_location">set_core_dump_location</a><br />
+<a href="#set_equipment_profile">set_equipment_profile</a><br />
+<a href="#set_local_signing">set_local_signing</a><br />
+<a href="#shutdown_backend">shutdown_backend</a><br />
+<a href="#trigger_uart_port">trigger_uart_port</a><br /></p></div>
+<div class="paragraph"><p><strong>CORE DUMP</strong></p></div>
+<div class="paragraph"><p><a href="#delete_dump">delete_dump</a><br />
+<a href="#download_dump">download_dump</a><br />
+<a href="#get_auto_delete_status">get_auto_delete_status</a><br />
+<a href="#get_auto_download">get_auto_download</a><br />
+<a href="#get_subscription">get_subscription</a><br />
+<a href="#set_auto_delete">set_auto_delete</a><br />
+<a href="#set_auto_download">set_auto_download</a><br />
+<a href="#set_subscription">set_subscription</a><br /></p></div>
+<div class="paragraph"><p><strong>EQUIPMENT STORAGE</strong></p></div>
+<div class="paragraph"><p><a href="#erase_global_data_set">erase_global_data_set</a><br />
+<a href="#read_global_data_set">read_global_data_set</a><br />
+<a href="#read_global_data_unit">read_global_data_unit</a><br />
+<a href="#write_global_data_set">write_global_data_set</a><br />
+<a href="#write_global_data_unit">write_global_data_unit</a><br /></p></div>
+<div class="paragraph"><p><strong>FILE SYSTEM</strong></p></div>
+<div class="paragraph"><p><a href="#change_access">change_access</a><br />
+<a href="#console">console</a><br />
+<a href="#copy_file">copy_file</a><br />
+<a href="#create_directory">create_directory</a><br />
+<a href="#delete_file">delete_file</a><br />
+<a href="#format_volume">format_volume</a><br />
+<a href="#list_directory">list_directory</a><br />
+<a href="#move_file">move_file</a><br />
+<a href="#properties">properties</a><br />
+<a href="#volume_properties">volume_properties</a><br />
+<a href="#check_compatibility">check_compatibility</a><br />
+<a href="#list_modules">list_modules</a><br /></p></div>
+<div class="paragraph"><p><strong>FLASH</strong></p></div>
+<div class="paragraph"><p><a href="#dump_area">dump_area</a><br />
+<a href="#erase_area">erase_area</a><br />
+<a href="#set_enhanced_area">set_enhanced_area</a><br />
+<a href="#list_devices">list_devices</a><br />
+<a href="#process_file">process_file</a><br /></p></div>
+<div class="paragraph"><p><strong>OTP</strong></p></div>
+<div class="paragraph"><p><a href="#burn_otp">burn_otp</a><br />
+<a href="#read_otp">read_otp</a><br /></p></div>
+<div class="paragraph"><p><strong>SECURITY</strong></p></div>
+<div class="paragraph"><p><a href="#get_domain">get_domain</a><br />
+<a href="#get_equipment_properties">get_equipment_properties</a><br />
+<a href="#get_equipment_property">get_equipment_property</a><br />
+<a href="#set_domain">set_domain</a><br />
+<a href="#set_equipment_property">set_equipment_property</a><br />
+<a href="#bind_properties">bind_properties</a><br />
+<a href="#write_rpmb_key">write_rpmb_key</a><br /></p></div>
+<div class="paragraph"><p><strong>SYSTEM</strong></p></div>
+<div class="paragraph"><p><a href="#authenticate_certificate">authenticate_certificate</a><br />
+<a href="#authenticate_control_keys">authenticate_control_keys</a><br />
+<a href="#collect_data">collect_data</a><br />
+<a href="#deauthenticate">deauthenticate</a><br />
+<a href="#execute_software">execute_software</a><br />
+<a href="#get_authentication_state">get_authentication_state</a><br />
+<a href="#initialize_equipment">initialize_equipment</a><br />
+<a href="#permanent_authentication">permanent_authentication</a><br />
+<a href="#reboot_equipment">reboot_equipment</a><br />
+<a href="#send_raw_data">send_raw_data</a><br />
+<a href="#shutdown_equipment">shutdown_equipment</a><br />
+<a href="#init_arb_table">init_arb_table</a><br />
+<a href="#get_device_info">get_device_info</a><br /></p></div>
+<h3 id="_commands_description">COMMANDS DESCRIPTION</h3><div style="clear:left"></div>
+<div class="dlist" id="help"><dl>
+<dt class="hdlist1">
+<strong>-help</strong>
+</dt>
+<dd>
+<p>
+    Shows the help message.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool -help</tt></pre>
+</div></div>
+<div class="dlist" id="authenticate_certificate"><dl>
+<dt class="hdlist1">
+<strong>authenticate_certificate -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-sign_package_name</strong> <em>&lt;sign_package_name&gt;</em> <strong>-permanent</strong> <em>permanent</em>
+</dt>
+<dd>
+<p>
+    This command is used to authenticate the user to elevate the rights to perform certain operations on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;sign_package_name&gt;     - Name of sign package to use for authentication.
+&lt;permanent&gt;             - Optional flag which is used for Fairbanks and Thorium platform's permanent authentication, accepts true/false.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool authenticate_certificate -equipment_id USB0 -sign_package_name SIGN_PACKAGE</tt></pre>
+</div></div>
+<div class="dlist" id="authenticate_control_keys"><dl>
+<dt class="hdlist1">
+<strong>authenticate_control_keys -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-key_set</strong> <em>&lt;key_set&gt;</em> <strong>-permanent</strong> <em>permanent</em>
+</dt>
+<dd>
+<p>
+    This command is used to authenticate the user to elevate the rights to perform certain operations on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;key_set&gt;               - A set of control keys to use for authentication.
+&lt;permanent&gt;             - Optional flag which is used for Fairbanks and Thorium platform's permanent authentication, accepts true/false.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool.bat authenticate_control_keys -equipment_id USB0 -key_set "{Network Lock Key=5530592768011169,Network Subset Lock Key=1113474185369446,Service Provider Lock Key=0920954133604256,Corporate Lock Key=1330296042918872,Flexible ESL Lock Key=5979950341706796}"</tt></pre>
+</div></div>
+<div class="dlist" id="bind_properties"><dl>
+<dt class="hdlist1">
+<strong>bind_properties -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to bind the properties previously set with the <strong>set_equipment_property</strong> command.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool bind_properties -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="write_rpmb_key"><dl>
+<dt class="hdlist1">
+<strong>write_rpmb_key -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to store authentication key in RPMB.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool write_rpmb_key -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="burn_otp"><dl>
+<dt class="hdlist1">
+<strong>burn_otp</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-path</strong> <em>&lt;path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to burn OTP data provided in the specified file to the specified ME.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;path&gt;         - Host path to the file from which data will be read.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool burn_otp -equipment_id USB0 -path /home/data.otp</tt></pre>
+</div></div>
+<div class="dlist" id="change_access"><dl>
+<dt class="hdlist1">
+<strong>change_access</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-target_path</strong> <em>&lt;target_path&gt;</em> <strong>-access</strong> <em>&lt;access&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to change access permissions of specified path on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;target_path&gt;           - Target file or directory path in the file system.
+&lt;access&gt;                - Access permissions as an integer value where lowest nine bits represent the read, write and execute permissions (rwx) for owner, group and others, respectively.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="tableblock">
+<table rules="all"
+width="50%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<thead>
+<tr>
+<th align="left" valign="top">Bit 8</th>
+<th align="left" valign="top">Bit 7</th>
+<th align="left" valign="top">Bit 6</th>
+<th align="left" valign="top">Bit 5</th>
+<th align="left" valign="top">Bit 4</th>
+<th align="left" valign="top">Bit 3</th>
+<th align="left" valign="top">Bit 2</th>
+<th align="left" valign="top">Bit 1</th>
+<th align="left" valign="top">Bit 0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">R – owner</p></td>
+<td align="left" valign="top"><p class="table">W – owner</p></td>
+<td align="left" valign="top"><p class="table">X – owner</p></td>
+<td align="left" valign="top"><p class="table">R – group</p></td>
+<td align="left" valign="top"><p class="table">W – group</p></td>
+<td align="left" valign="top"><p class="table">X – group</p></td>
+<td align="left" valign="top"><p class="table">R – others</p></td>
+<td align="left" valign="top"><p class="table">W – others</p></td>
+<td align="left" valign="top"><p class="table">X – others</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="paragraph"><p>Example (access permissions bits are 110100100 = 420):</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool change_access -equipment_id USB0 -target_path /device/volume:/directory/file -access 420</tt></pre>
+</div></div>
+<div class="dlist" id="collect_data"><dl>
+<dt class="hdlist1">
+<strong>collect_data -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-type</strong> <em>&lt;type&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to read out detailed flashing status information from the loader.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;type&gt;                  - Type of flashing status report:
+                            0: if the debug print channel is redirected to internal RAM memory, then the command
+                               returns printout data that is extracted from internal buffers.
+                            1: the command returns measurement data.
+                            2: the command returns detailed flashing information from the last flashing.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool collect_data -equipment_id USB0 -type 2</tt></pre>
+</div></div>
+<div class="dlist" id="console"><dl>
+<dt class="hdlist1">
+<strong>console</strong>
+</dt>
+<dd>
+<p>
+    Starts Flash Tool Console. For mobile device access is used path format <em>&lt;EQUIPMENT-ID&gt;-&lt;/SOME/PATH/IN/ME&gt;</em>.
+                For absolute path please specify Equipment ID. For your computer PC should be specifyed instead.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Available commands:</p></div>
+<div class="tableblock">
+<table rules="all"
+width="50%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<col width="42%" />
+<col width="14%" />
+<col width="42%" />
+<thead>
+<tr>
+<th align="left" valign="top">Command</th>
+<th align="left" valign="top">Function</th>
+<th align="left" valign="top">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">CD <em>&lt;TARGET_DIRECTORY&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Change current directory</p></td>
+<td align="left" valign="top"><p class="table">cd COM1-/flash0/cabs0:/afs</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">LS <em>&lt;TARGET_DIRECTORY&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">List directory</p></td>
+<td align="left" valign="top"><p class="table">ls ./settings</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">DEV</p></td>
+<td align="left" valign="top"><p class="table">Print available devices</p></td>
+<td align="left" valign="top"><p class="table">dev</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">MV <em>&lt;SOURCE&gt;</em> <em>&lt;TARGET&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Move file</p></td>
+<td align="left" valign="top"><p class="table">mv COM1-/flash0/cabs0:/afs/test.txt COM1-/flash0/cabs0:/afs/test/test.txt</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">RM <em>&lt;TARGET&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Remove file</p></td>
+<td align="left" valign="top"><p class="table">rm COM1-/flash0/cabs0:/afs/test.txt</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">CP <em>&lt;TARGET&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Copy file</p></td>
+<td align="left" valign="top"><p class="table">mv COM1-/flash0/cabs0:/afs/test.txt COM1-/flash0/cabs0:/afs/test/test.txt</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">MKDIR <em>&lt;TARGET_DIRECTORY&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Create directory</p></td>
+<td align="left" valign="top"><p class="table">mkdir COM1-/flash0/cabs0:/afs/test</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">PROPERTIES <em>&lt;TARGET_FILE&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Print properties of file</p></td>
+<td align="left" valign="top"><p class="table">properties COM1-/flash0/cabs0:/afs/test.txt</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">VOLUME <em>&lt;TARGET_VOLUME&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Print volume information</p></td>
+<td align="left" valign="top"><p class="table">volume COM1-/flash0/cabs0:/afs</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">FORMAT <em>&lt;TARGET_VOLUME&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Format volume</p></td>
+<td align="left" valign="top"><p class="table">format COM1-/flash0/cabs0:/afs</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">CHMOD <em>&lt;TARGET&gt;</em> <em>&lt;ACCESS_LEVEL&gt;</em></p></td>
+<td align="left" valign="top"><p class="table">Change user access permissions</p></td>
+<td align="left" valign="top"><p class="table">chmod COM1-/flash0/cabs0:/afs/test.txt 420</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">EXIT</p></td>
+<td align="left" valign="top"><p class="table">Exit console</p></td>
+<td align="left" valign="top"><p class="table">exit</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="dlist" id="copy_file"><dl>
+<dt class="hdlist1">
+<strong>copy_file</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-source_path</strong> <em>&lt;source_path&gt;</em> <strong>-destination_path</strong> <em>&lt;destination_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to copy file from the source path to the destination path on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;source_path&gt;           - Source file path in the file system.
+&lt;destination_path&gt;      - Destination directory path in the file system.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>There are three possible scenarios:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Copy file from PC to ME
+</p>
+</li>
+<li>
+<p>
+Copy file from ME to PC
+</p>
+</li>
+<li>
+<p>
+Copy file between two directories or file systems on ME
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Prefix is used to distinguish between PC and ME file system paths:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+If the source or destination path represents path on the PC, it has prefix <strong>PC:</strong>
+</p>
+</li>
+<li>
+<p>
+If the source or destination path represents path on the ME, it hasn&#8217;t any prefix
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>If source file resides on a PC and is a load module (elf file) and destination ME directory is defined to hold
+load modules (precompiled set of directories) and the tool is beeing run on windows, then automatic compatibility
+check is performed. The compatibility check failure is not considered to be critical, that is the file gets copied to
+the destination directory even if the compatibility check has failed. The compatibilty failure is reported as a
+warning on the console.</p></div>
+</div></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>Copy file from PC to ME: flash-tool copy_file -equipment_id USB0 -source_path PC:/volume/directory/file -destination_path /device/volume:/directory
+Copy file from ME to PC: flash-tool copy_file -equipment_id USB0 -source_path /device/volume:/directory/file -destination_path PC:/volume/directory
+Copy file from ME to ME: flash-tool copy_file -equipment_id USB0 -source_path /device/volume:/directory/file -destination_path /device/volume:/directory_2</tt></pre>
+</div></div>
+<div class="dlist" id="create_directory"><dl>
+<dt class="hdlist1">
+<strong>create_directory</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-target_path</strong> <em>&lt;target_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to create directory in specified path on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;target_path&gt;           - Target directory path in the file system.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool create_directory -equipment_id USB0 -target_path /device/volume:/new_directory</tt></pre>
+</div></div>
+<div class="dlist" id="check_compatibility"><dl>
+<dt class="hdlist1">
+<strong>check_compatibility</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-path</strong> <em>&lt;source_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to check compatibility between installed load modules on specified equipment and elf file in specified path.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;source_path&gt;           - Source file path of elf file in the file system.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool check_compatibility -equipment_id USB0 -path C:\path\to\file.elf</tt></pre>
+</div></div>
+<div class="dlist" id="list_modules"><dl>
+<dt class="hdlist1">
+<strong>list_modules</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to list installed load modules in specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool list_modules -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="deauthenticate"><dl>
+<dt class="hdlist1">
+<strong>deauthenticate</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+This command is used for deauthentication on thorium/fairbanks platforms.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool deauthenticate</tt></pre>
+</div></div>
+<div class="dlist" id="delete_dump"><dl>
+<dt class="hdlist1">
+<strong>delete_dump -dump_file_name</strong> <em>&lt;dump_file_name&gt;</em> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to delete dump files on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;dump_file_name&gt;          - The file name of the dump file to delete.
+&lt;equipment_id&gt;            - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool delete_dump -dump_file_name coredump1</tt></pre>
+</div></div>
+<div class="dlist" id="delete_file"><dl>
+<dt class="hdlist1">
+<strong>delete_file</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-target_path</strong> <em>&lt;target_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to delete file or empty directory in specified path on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;target_path&gt;           - Target file or directory path in the file system.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool delete_file -equipment_id USB0 -target_path /device/volume:/directory/file</tt></pre>
+</div></div>
+<div class="dlist" id="disable_auto_initialize"><dl>
+<dt class="hdlist1">
+<strong><em>(not implemented)</em> disable_auto_initialize</strong>
+</dt>
+<dd>
+<p>
+    This command is used to signal the backend not to initialize any mobile equipment that can be in an uninitialized state.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>disable_auto_sense</strong>
+</dt>
+<dd>
+<p>
+    This command is used to signal the backend not to initialize any mobile equipment that can be in an uninitialized state.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph" id="disable_auto_sense"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool disable_auto_sense</tt></pre>
+</div></div>
+<div class="dlist" id="download_dump"><dl>
+<dt class="hdlist1">
+<strong>download_dump -dump_file_name</strong> <em>&lt;dump_file_name&gt;</em> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to download dump files from specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;dump_file_name&gt;          - The file name of the dump file to download.
+&lt;equipment_id&gt;            - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool download_dump -dump_file_name coredump1</tt></pre>
+</div></div>
+<div class="dlist" id="dump_area"><dl>
+<dt class="hdlist1">
+<strong>dump_area -area_path</strong> <em>&lt;area_path&gt;</em> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-length</strong> <em>&lt;length&gt;</em> <strong>-offset</strong> <em>&lt;offset&gt;</em> <strong>-path</strong> <em>&lt;path&gt;</em> <strong>-skip_redundant_area</strong> <em>&lt;skip_redundant_area&gt;</em> <strong>-include_bad_blocks</strong> <em>&lt;include_bad_blocks&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to dump an area of the flash from the specified equipment to specified path.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;   - The identifier string for connected equipment.
+&lt;area_path&gt;      - Absolute path of flash area.
+&lt;offset&gt;         - An offset inside the flash area to be dumped.
+&lt;length&gt;         - Number of bytes to be dumped or "ALL" to specify the maximal number.
+&lt;path&gt;           - Host path to file where the dumped data is to be stored.
+&lt;skip_redundant_area&gt; - Optional parameter which determines if redundant area should be skipped or not (true/false)
+&lt;include_bad_blocks&gt;  - Optional parameter which determines if bad blocks should be included or not(true/false)</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool dump_area -area_path /flash0 -equipment_id USB0 -length 0x400000 -offset 0 -path c:\temp\dump.bin -skip_redundant_area true</tt></pre>
+</div></div>
+<div class="dlist" id="enable_auto_initialize"><dl>
+<dt class="hdlist1">
+<strong><em>(not implemented)</em> enable_auto_initialize</strong>
+</dt>
+<dd>
+<p>
+    This command is used to signal the backend to auto-initialize any mobile equipment that can be in an uninitialized state.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>enable_auto_sense</strong>
+</dt>
+<dd>
+<p>
+    This command is used to signal the server backend to start looking for new equipment connected to the host.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph" id="enable_auto_sense"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool enable_auto_sense</tt></pre>
+</div></div>
+<div class="dlist" id="erase_area"><dl>
+<dt class="hdlist1">
+<strong>erase_area -area_path</strong> <em>&lt;area_path&gt;</em> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-length</strong> <em>&lt;length&gt;</em> <strong>-offset</strong> <em>&lt;offset&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to erase an area (or part of area) on the flash on the specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;area_path&gt;    - Absolute path of flash area.
+&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;offset&gt;       - An offset inside the flash area to be erased.
+&lt;length&gt;       - Number of bytes to be erased or "ALL" to specify the maximal number.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool erase_area -area_path /flash0/cabs1 -equipment_id USB0 -length 1024 -offset 0</tt></pre>
+</div></div>
+<div class="dlist" id="set_enhanced_area"><dl>
+<dt class="hdlist1">
+<strong>set_enhanced_area -area_path</strong> <em>&lt;area_path&gt;</em> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-length</strong> <em>&lt;length&gt;</em> <strong>-offset</strong> <em>&lt;offset&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to create the enhanced area on the specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;area_path&gt;    - Absolute path of flash area.
+&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;offset&gt;       - Start address in bytes, must be Write Protected Group size aligned.
+&lt;length&gt;       - Size of enhanced area in bytes, must be Write Protected Group size aligned. (512kb,8mb)</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_enhanced_area -area_path /flash0 -equipment_id USB0 -offset 0 -length 524288</tt></pre>
+</div></div>
+<div class="dlist" id="erase_global_data_set"><dl>
+<dt class="hdlist1">
+<strong>erase_global_data_set -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-storage_id</strong> <em>&lt;storage_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to erase a set of global data storage on connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;storage_id&gt;            - Storage identifier.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool erase_global_data_set -equipment_id USB0 -storage_id /flash0</tt></pre>
+</div></div>
+<div class="dlist" id="execute_software"><dl>
+<dt class="hdlist1">
+<strong>execute_software -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-path</strong> <em>&lt;path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to download and execute specified software on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;path&gt;                  - Host path or equipment path to executable software file.</tt></pre>
+</div></div>
+</dd>
+<dt class="hdlist1">
+<strong>format_volume</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-device_path</strong> <em>&lt;device_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to format specified file system volume on specified equipment.
+</p>
+<div class="literalblock" id="format_volume">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;device_path&gt;           - Device path of the file system volume.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool format_volume -equipment_id USB0 -device_path /device/volume</tt></pre>
+</div></div>
+<div class="dlist" id="get_active_profile"><dl>
+<dt class="hdlist1">
+<strong>get_active_profile</strong>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve the current active profile on the server backend.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_active_profile</tt></pre>
+</div></div>
+<div class="dlist" id="get_auto_delete_status"><dl>
+<dt class="hdlist1">
+<strong>get_auto_delete_status</strong>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve the status of the "auto delete dump file" feature.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>get_authentication_state</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+This command is used for getting authentication status (permanent/regular authentication) from the device.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph" id="get_authentication_state"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_authentication_state</tt></pre>
+</div></div>
+<div class="dlist" id="get_auto_download"><dl>
+<dt class="hdlist1">
+<strong>get_auto_download</strong>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve the status of the "auto download dump file" feature.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_auto_download</tt></pre>
+</div></div>
+<div class="dlist" id="get_auto_initialize_status"><dl>
+<dt class="hdlist1">
+<strong><em>(not implemented)</em> get_auto_initialize_status</strong>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve the current status of the "auto-initialize" feature.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>get_auto_sense_status</strong>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve the current status for the "auto sense" (if the backend is to accept connections from mobile equipments or not).
+</p>
+</dd>
+</dl></div>
+<div class="paragraph" id="get_auto_sense_status"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_auto_sense_status</tt></pre>
+</div></div>
+<div class="dlist" id="get_available_profiles"><dl>
+<dt class="hdlist1">
+<strong>get_available_profiles -wait</strong> <em>&lt;wait&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve a list of available profiles known to the server backend.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;wait&gt; - Wait for backend if all profiles are not loaded yet.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_available_profiles -wait y</tt></pre>
+</div></div>
+<div class="dlist" id="get_available_security_properties"><dl>
+<dt class="hdlist1">
+<strong>get_available_security_properties</strong>
+</dt>
+<dd>
+<p>
+    This command retrieves security properties defined in active profile.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_available_security_properties</tt></pre>
+</div></div>
+<div class="dlist" id="get_connected_equipments"><dl>
+<dt class="hdlist1">
+<strong>get_connected_equipments</strong>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve a list of currently connected equipment.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_connected_equipments</tt></pre>
+</div></div>
+<div class="dlist" id="get_core_dump_location"><dl>
+<dt class="hdlist1">
+<strong>get_core_dump_location</strong>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve the location where the backend server stores any core dump data.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>get_domain -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve the security domain for connected equipment.
+</p>
+<div class="literalblock" id="get_domain">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_domain -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="get_equipment_profile"><dl>
+<dt class="hdlist1">
+<strong>get_equipment_profile -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to get the active profile for a connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_equipment_profile -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="get_equipment_properties"><dl>
+<dt class="hdlist1">
+<strong>get_equipment_properties -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve a list of properties of specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_equipment_properties -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="get_equipment_property"><dl>
+<dt class="hdlist1">
+<strong>get_equipment_property</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-equipment_property</strong> <em>&lt;equipment_property&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve property of given ID or name of specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;equipment_property&gt; - The ID or name of property.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>Via name: flash-tool get_equipment_property -equipment_id USB0 -equipment_property IMEI
+
+Via ID:   flash-tool get_equipment_property -equipment_id USB0 -equipment_property 0x01</tt></pre>
+</div></div>
+<div class="dlist" id="get_next_connected_equipment"><dl>
+<dt class="hdlist1">
+<strong>get_next_connected_equipment</strong>
+</dt>
+<dd>
+<p>
+    This command is used to trigger the backend to notify the client when new equipment is connected.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_next_connected_equipment</tt></pre>
+</div></div>
+<div class="dlist" id="get_subscription"><dl>
+<dt class="hdlist1">
+<strong>get_subscription -subscriber_ip</strong> <em>&lt;subscriber_ip&gt;</em> <strong>-subscriber_port</strong> <em>&lt;subscriber_port&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to list the subscription for the provided IP and port.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_subscription -subscriber_ip localhost -subscriber_port 6667</tt></pre>
+</div></div>
+<div class="dlist" id="initialize_equipment"><dl>
+<dt class="hdlist1">
+<strong><em>(not implemented)</em> initialize_equipment -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to initialize any mobile equipment that can be in an uninitialized state.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+<dt class="hdlist1">
+<strong>list_devices -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to let the loader retrieve detected block devices in the ME
+</p>
+<div class="literalblock" id="list_devices">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool list_devices -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="list_directory"><dl>
+<dt class="hdlist1">
+<strong>list_directory</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-target_path</strong> <em>&lt;target_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to list files and directories in specified path on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;target_path&gt;           - Target directory path in the file system.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool list_directory -equipment_id USB0 -target_path /device/volume:/directory</tt></pre>
+</div></div>
+<div class="dlist" id="move_file"><dl>
+<dt class="hdlist1">
+<strong>move_file</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-source_path</strong> <em>&lt;source_path&gt;</em> <strong>-destination_path</strong> <em>&lt;destination_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to move or rename file from the source path to the destination path on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;source_path&gt;           - Source file path in the file system.
+&lt;destination_path&gt;      - Destination file or directory path in the file system.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool move_file -equipment_id USB0 -source_path /device/volume:/directory/file -destination_path /device/volume:/directory_2</tt></pre>
+</div></div>
+<div class="dlist" id="permanent_authentication"><dl>
+<dt class="hdlist1">
+<strong>permanent_authentication</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+This command is used for permanent authentication on Mont Blanc platform.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool permanent_authentication</tt></pre>
+</div></div>
+<div class="dlist" id="process_file"><dl>
+<dt class="hdlist1">
+<strong>process_file -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-path</strong> <em>&lt;path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to let the loader executing on the equipment process a specified file. In most cases it is to perform a flash operation.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;path&gt;         - Host path or equipment path to file to process (flash).</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool process_file -equipment_id USB0 -path /home/Apps/soft_file.zip</tt></pre>
+</div></div>
+<div class="dlist" id="properties"><dl>
+<dt class="hdlist1">
+<strong>properties</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-target_path</strong> <em>&lt;target_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve properties of file or directory in specified path on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;target_path&gt;           - Target file or directory path in the file system.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool properties -equipment_id USB0 -target_path /device/volume:/directory/file</tt></pre>
+</div></div>
+<div class="dlist" id="read_global_data_set"><dl>
+<dt class="hdlist1">
+<strong>read_global_data_set -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-storage_id</strong> <em>&lt;storage_id&gt;</em> <strong>-path</strong> <em>&lt;path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to read a set of global data storage on connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;storage_id&gt;            - Storage identifier.
+&lt;path&gt;                  - Host path to file containing global data to read.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool read_global_data_set -equipment_id USB0 -storage_id /flash0 -path /flash0/gdfsRead.gdf</tt></pre>
+</div></div>
+<div class="dlist" id="read_global_data_unit"><dl>
+<dt class="hdlist1">
+<strong>read_global_data_unit -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-storage_id</strong> <em>&lt;storage_id&gt;</em> <strong>-unit_id</strong> <em>&lt;unit_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to read a single unit of parameter storage data from specified storage on connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;storage_id&gt;   - Storage identifier.
+&lt;unit_id&gt;      - Unit identifier.
+&lt;unit_data&gt;    - Data (bytes) read from global data unit (for example 0123456789ABCDEF).</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool read_global_data_unit -equipment_id USB0 -storage_id /flash0 -unit_id 1</tt></pre>
+</div></div>
+<div class="dlist" id="read_otp"><dl>
+<dt class="hdlist1">
+<strong>read_otp</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-path</strong> <em>&lt;path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to read OTP data from the specified ME and write it to the specified file.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;path&gt;         - Host path to the file where data will be written.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool read_otp -equipment_id USB0 -path /home/data.otp</tt></pre>
+</div></div>
+<div class="dlist" id="reboot_equipment"><dl>
+<dt class="hdlist1">
+<strong>reboot_equipment -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-mode</strong> <em>&lt;mode&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to send a reboot command to specified equipment in order for it to reboot in specified mode.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;mode&gt;                  - Mode of reboot operation:
+                            0: indicates normal restart
+                            1: indicates restart in service mode
+                            2: indicates restart with JTAG debugging enabled
+                            3: indicates restart in service mode and with JTAG debugging enabled</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool reboot_equipment -equipment_id USB0 -mode 0</tt></pre>
+</div></div>
+<div class="dlist" id="reload_configuration"><dl>
+<dt class="hdlist1">
+<strong>reload_configuration</strong>
+</dt>
+<dd>
+<p>
+    This command is used to signal the server backend to reload its configuration.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool reload_configuration</tt></pre>
+</div></div>
+<div class="dlist" id="send_raw_data"><dl>
+<dt class="hdlist1">
+<strong>send_raw_data -data</strong> <em>&lt;data&gt;</em> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to send raw data to connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;data&gt;         - Raw data.
+&lt;equipment_id&gt; - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool send_raw_data -data AABCEEEE010409240000005E0000006008000302070000002F666C6173683001005002F434F4D4D -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="set_active_profile"><dl>
+<dt class="hdlist1">
+<strong>set_active_profile -profile_name</strong> <em>&lt;profile_name&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to change the current active profile on the server backend.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;profile_name&gt; - The name of the profile to set as active profile for the server backend.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_active_profile -profile_name STE_DB8500</tt></pre>
+</div></div>
+<div class="dlist" id="set_auto_delete"><dl>
+<dt class="hdlist1">
+<strong>set_auto_delete -set_status</strong> <em>&lt;set_status&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to set the status of the "auto download dump file" feature. When set to "enable", a dump file which is downloaded will automatically be deleted from target.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;set_status&gt;    - Status identifier enable/disable</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_auto_delete -set_status enable</tt></pre>
+</div></div>
+<div class="dlist" id="set_auto_download"><dl>
+<dt class="hdlist1">
+<strong>set_auto_download -set_status</strong> <em>&lt;set_status&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to set the status of the "auto download dump file" feature. When set to "enable", a generated dump file will automatically be downloaded.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;set_status&gt;     - Status identifier enable/disable</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_auto_download -set_status enable</tt></pre>
+</div></div>
+<div class="dlist" id="set_core_dump_location"><dl>
+<dt class="hdlist1">
+<strong>set_core_dump_location -path</strong> <em>&lt;path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to configure the location where the server backend will put core dump data.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;path&gt;                  - Host path specifying the new location of core dump files.</tt></pre>
+</div></div>
+</dd>
+<dt class="hdlist1">
+<strong>set_domain -domain</strong> <em>&lt;domain&gt;</em> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to update the security domain for connected equipment.
+</p>
+<div class="literalblock" id="set_domain">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;domain&gt;                - Domain identifier:
+    0: service
+    1: product
+    2: R&amp;D
+    3: factory</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_domain -equipment_id USB0 -domain 0</tt></pre>
+</div></div>
+<div class="dlist" id="set_equipment_profile"><dl>
+<dt class="hdlist1">
+<strong>set_equipment_profile -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-profile_name</strong> <em>&lt;profile_name&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to set the active profile for a connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.
+&lt;profile_name&gt; - The name of the profile to set as active profile for the connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_equipment_profile -equipment_id USB0 -profile_name STE_DB8500</tt></pre>
+</div></div>
+<div class="dlist" id="set_equipment_property"><dl>
+<dt class="hdlist1">
+<strong>set_equipment_property -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-equipment_properties</strong> <em>&lt;equipment_properties&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to set one or more properties of specified equipment. After <strong>set_equipment_property</strong> command you have to send <strong>bind_properies</strong> command to apply your changes.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;         - The identifier string for connected equipment.
+&lt;equipment_property&gt;   - A structure describing one or more properties of the equipment (for example key1=value1,key2=value2).</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="sidebar-title">Examples of property identities specified for U8500 and U5500 are the following:</div>
+<div class="paragraph"><p>Property identity for IMEI is 0x01</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+0x01=&lt;imei&gt;
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The IMEI number has 14 digits.</p></div>
+<div class="paragraph"><p>Property identity for SIMLock control keys is 0x10</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+0x10="{Network Lock Key=&lt;network_lock_key&gt;,Network Subset Lock Key=&lt;network_subset_lock_key&gt;,Service Provider Lock Key=&lt;service_provider_lock_key&gt;,Corporate Lock Key=&lt;corporate_lock_key&gt;,Flexible ESL Lock Key=&lt;flexible_esl_lock_key&gt;}"
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The keys specified should have 16 digits.</p></div>
+<div class="paragraph"><p>Property identity for default data is 0x100</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+0x100=&lt;default_data_with_path&gt;
+</p>
+</li>
+</ul></div>
+</div></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_equipment_property -equipment_id USB0 -equipment_property 0x10="{Network Lock Key=5530592768011169,Network Subset Lock Key=1113474185369446,Service Provider Lock Key=0920954133604256,Corporate Lock Key=1330296042918872,Flexible ESL Lock Key=5979950341706796}"</tt></pre>
+</div></div>
+<div class="dlist" id="set_local_signing"><dl>
+<dt class="hdlist1">
+<strong>set_local_signing -local_signing</strong> <em>&lt;value&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to set up local signing feature. When set to "true" Flash Tool Backend will not use Sign Server, but use sign packages and keys stored localy instead.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;value&gt;   - Possible values are: true, false.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_local_signing -local_signing true</tt></pre>
+</div></div>
+<div class="dlist" id="shutdown_backend"><dl>
+<dt class="hdlist1">
+<strong>shutdown_backend</strong>
+</dt>
+<dd>
+<p>
+    This command is used to remotely shut the Flash Tool Backend down.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool shutdown_backend</tt></pre>
+</div></div>
+<div class="dlist" id="set_subscription"><dl>
+<dt class="hdlist1">
+<strong>set_subscription subscriber_ip</strong> <em>&lt;subscriber_ip&gt;</em> <strong>-subscriber_port</strong> &lt;subscriber_port&gt; <strong>-subscription_type</strong> <em>&lt;subscription_type&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to add a subscription for receiving dump notifications of the specified type on the provided ip and port.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;subscriber_ip&gt;      - The IP address of the subscriber that will be listening for dump notifications.
+&lt;subscriber_port&gt;    - The port on which the subscriber will be listening for dump notifications.
+&lt;subscription_type&gt;  - The type of subscription. Possible types are: 0 (detect dumping ME) and 1 (detect automatically downloaded dump).</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool set_subscription -subscriber_ip 11.222.33 -subscriber_port 6667 -subscription_type 0</tt></pre>
+</div></div>
+<div class="dlist" id="shutdown_equipment"><dl>
+<dt class="hdlist1">
+<strong>shutdown_equipment -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    Shutdown command to specified equipment in order for it to power down.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool shutdown_equipment -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="init_arb_table"><dl>
+<dt class="hdlist1">
+<strong>init_arb_table -arb_data</strong> <em>&lt;data&gt;</em>
+</dt>
+<dd>
+<p>
+    Initializing and calculating initial integrity of SW version table.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;data&gt; - Anti-rollback data.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool init_arb_table -arb_data 0xAABB</tt></pre>
+</div></div>
+<div class="dlist" id="get_device_info"><dl>
+<dt class="hdlist1">
+<strong>get_device_info -equipment_id</strong> <em>&lt;equipment_id&gt;</em>
+</dt>
+<dd>
+<p>
+    Get basic information about connected device.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt; - The identifier string for connected equipment.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool get_device_info -equipment_id USB0</tt></pre>
+</div></div>
+<div class="dlist" id="trigger_uart_port"><dl>
+<dt class="hdlist1">
+<strong>trigger_uart_port -port_name</strong> <em>&lt;port_name&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to trigger UART port specified by its name.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;port_name&gt; - UART port name.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool trigger_uart_port -port_name COM1</tt></pre>
+</div></div>
+<div class="dlist" id="volume_properties"><dl>
+<dt class="hdlist1">
+<strong>volume_properties</strong> <strong>-equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-device_path</strong> <em>&lt;device_path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to retrieve properties of the specified file system volume on specified equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;device_path&gt;           - Device path of the file system volume.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool volume_properties -equipment_id USB0 -device_path /device/volume</tt></pre>
+</div></div>
+<div class="dlist" id="write_global_data_set"><dl>
+<dt class="hdlist1">
+<strong>write_global_data_set -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-storage_id</strong> <em>&lt;storage_id&gt;</em> <strong>-path</strong> <em>&lt;path&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to write a set of global data storage on connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;storage_id&gt;            - Storage identifier.
+&lt;path&gt;                  - Host path to file containing global data to write.</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool write_global_data_set -equipment_id USB0 -storage_id /flash0 -path /flash0/gdfsWrite.gdf</tt></pre>
+</div></div>
+<div class="dlist" id="write_global_data_unit"><dl>
+<dt class="hdlist1">
+<strong>write_global_data_unit -equipment_id</strong> <em>&lt;equipment_id&gt;</em> <strong>-storage_id</strong> <em>&lt;storage_id&gt;</em> <strong>-unit_data</strong> <em>&lt;unit_data&gt;</em> <strong>-unit_id</strong> <em>&lt;unit_id&gt;</em>
+</dt>
+<dd>
+<p>
+    This command is used to write a single unit of parameter storage data to the specified storage on connected equipment.
+</p>
+<div class="literalblock">
+<div class="content">
+<pre><tt>&lt;equipment_id&gt;          - The identifier string for connected equipment.
+&lt;storage_id&gt;            - Storage identifier.
+&lt;unit_id&gt;               - Unit identifier.
+&lt;unit_data&gt;             - Data (bytes) read from global data unit (for example 0123456789ABCDEF).</tt></pre>
+</div></div>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool write_global_data_unit -equipment_id USB0 -storage_id /flash0/TOC/CSPSA0 -unit_id 1 -unit_data "abcd"</tt></pre>
+</div></div>
+</div>
+<h2 id="_optional_options">OPTIONAL OPTIONS</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Each command has its own optional options.</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<strong>-help</strong>
+</dt>
+<dd>
+<p>
+    Help for specified command.
+</p>
+</dd>
+</dl></div>
+<div class="paragraph"><p>Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>flash-tool shutdown_equipment -help</tt></pre>
+</div></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<strong>-host</strong>
+</dt>
+<dd>
+<p>
+    Host with running Backend, <em>localhost</em> is used as default.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-port</strong>
+</dt>
+<dd>
+<p>
+    Port where Backend is listening, <em>8088</em> is used as default.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-v</strong>
+</dt>
+<dd>
+<p>
+    To enable verbose output to stdout.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-b</strong>
+</dt>
+<dd>
+<p>
+    To enable bare output, the data portion of results will be unformatted.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-t</strong> <em>&lt;timeout in seconds&gt;</em>
+</dt>
+<dd>
+<p>
+    To reconnect repeatedly to Flash Tool Backend until timeout occures.
+</p>
+</dd>
+</dl></div>
+</div>
+<h2 id="_exit_status">EXIT STATUS</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>flash-tool returns a zero exit status if it succeeds.
+A non zero is returned in case of failure.</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<strong>0</strong>
+</dt>
+<dd>
+<p>
+    Success
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>1</strong>
+</dt>
+<dd>
+<p>
+    Unknown error
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>2</strong>
+</dt>
+<dd>
+<p>
+    Could not connect to backend
+</p>
+</dd>
+</dl></div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2012-04-25 16:39:31 W. Europe Daylight Time
+</div>
+</div>
+</body>
+</html>

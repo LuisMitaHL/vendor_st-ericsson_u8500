@@ -1,0 +1,37 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/adsoc_tests.ite
+setusecase default
+LogPE disable
+
+# Initialisation
+#startenv grab_vpip_display_01_01 _LRoutVGA_HRoutVGA_SENSOR0  
+
+
+# Adsoc peaking test
+usagemode video
+LRHR prepare
+LRHR start
+wait 2
+ConfigureAdsoc 0
+glacehistoexp req
+wait 2
+VerifyAdsoc 0
+ConfigureAdsoc 1
+glacehistoexp req
+wait 2
+VerifyAdsoc 1
+
+# Adsoc radial peaking test
+
+ConfigureAdsocRP 0
+glacehistoexp req
+wait 2
+VerifyAdsocRP 0
+ConfigureAdsocRP 1
+glacehistoexp req
+wait 2
+VerifyAdsocRP 1
+
+LRHR stop
+LRHR free
+
+

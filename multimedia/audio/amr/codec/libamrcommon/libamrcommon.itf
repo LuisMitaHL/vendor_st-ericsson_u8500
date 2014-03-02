@@ -1,0 +1,247 @@
+#include <amr_typedef.h>
+#include <cnst.h>
+#include <dtx.h>
+#include <count.h>
+#include <basic_op.h>
+#include <inv_sqrt.h>
+#include <amr_memory_preset.h>
+#include <fwmalloc.h> 
+#include <amr.h>
+#include <oper_32b.h>
+#include <sig_proc.h>
+#include <log2.h>
+#include <copy.h>
+#include <lsp_az.h> 
+#include <lsp_lsf.h>
+#include <pow2.h>
+#include <pred_lt.h>
+#include <reorder.h>
+#include <residu.h>
+#include <set_sign.h>
+#include <set_zero.h>
+#include <sqrt_l.h>
+#include <syn_filt.h>
+#include <weight_a.h>
+#include <agc.h>
+#include <gc_pred.h>
+#include <bitno_tab.h>
+
+
+interface amr.codec.libamrcommon.libamrcommon unmanaged {
+    Word16 amr_pseudonoise (Word32 *shift_reg, Word16 no_bits);
+    void amr_build_CN_code (Word32 *seed, Word16 *cod);
+    void amr_build_CN_param (Word16 *seed,
+                             const Word16 n_param,
+                             const Word16 *param_size_table,
+                             Word16 *parm);
+    int amr_agc (agcState *st, Word16 *sig_in, Word16 *sig_out, Word16 agc_fac, Word16 l_trm);
+    void amr_agc2 (Word16 *sig_in, Word16 *sig_out, Word16 l_trm);
+    void amr_agc_exit (agcState **state);
+    int amr_agc_init (agcState **state, Word16 memory_preset_id, CODEC_INTERFACE_T *itf);
+    int amr_agc_reset (agcState *state);
+    int amr_check_mem_preset(int memory_preset, Word16 * p_memPresetWarning);
+    Word16 amr_div_s (Word16 var1, Word16 var2);
+    void amr_comp_corr (Word16 *scal_sig, Word16 L_frame,
+    			        Word16 lag_max, Word16 lag_min,
+    			        Word16 YMEM *y_ptr, Word32 *corr);
+    void amr_Convolve (Word16 *x,        	
+    				   Word16 *h,        	
+    				   Word16 YMEM *y_ptr, 
+    				   Word16 *y,        	
+    				   Word16 L);
+    void amr_Copy (const Word16 *x,   
+    		       Word16 *y,         
+    		       Word16 L);
+    void amr_cor_h (Word16 *h,         
+    		        Word16 *sign,      
+    		        Word16 YMEM *y_ptr,
+    		        Word16 *rr[L_CODE]);
+	void amr_cor_h_x2 (Word16 *h,    
+    				   Word16 *x,    
+    				   Word16 *dn,   
+    				   Word16 YMEM *y_ptr, 
+    				   Word16 sf,     
+    				   Word16 nb_track,
+    				   Word16 step);
+	void amr_gc_pred_exit (gc_predState **state);
+	int amr_gc_pred_init (gc_predState **state, Word16 memory_preset_id, CODEC_INTERFACE_T *itf);
+	int amr_gc_pred_reset (gc_predState *state);
+	void amr_gc_pred_copy(gc_predState *st_src, gc_predState *st_dest);
+	Word16 amr_gmed_n (Word16 *ind, Word16 n);
+    void amr_Int_lpc_1and3_2 (Word16 *lsp_old,  
+    						  Word16 *lsp_mid,  
+    						  Word16 *lsp_new,  
+    						  Word16 *Az);
+	void amr_Int_lpc_1to3_2 (Word16 *lsp_old, 
+     		                 Word16 *lsp_new,  
+     		                 Word16 *Az);
+	Word32 amr_Inv_sqrt(Word32 L_x );
+	void amr_Log2_norm (Word32 L_x, Word16 exp,         
+    		            Word16 *exponent, Word16 *fraction);
+	void amr_Log2 (Word32 L_x, Word16 *exponent,   
+    		       Word16 *fraction);
+    void amr_Lsp_Az (Word16 *lsp, Word16 *a);
+	void amr_Lsf_lsp (Word16 *lsf, Word16 *lsp,
+    		          Word16 m);
+    
+    Word32 amr_Div_32 (Word32 L_num, Word16 denom_hi, Word16 denom_lo);
+  	Word32 amr_Pow2 (Word16 exponent,
+    		         Word16 fraction);
+    void amr_Pred_lt_3or6 (
+    		Word16 *exc,     
+    		Word16 T0,       
+    		Word16 frac,     
+    		Word16 L_subfr,
+    		Word16 flag3);
+    void amr_r_fft (Word16 * farray_ptr);		
+    void amr_Reorder_lsf (
+    		Word16 *lsf,        
+    		Word16 min_dist,    
+    		Word16 n);
+    void amr_Residu (
+    		Word16 *a, 	
+    		Word16 *x, 	
+    		Word16 *y, 	
+    		Word16 YMEM *y_ptr, 
+    		Word16 lg);
+    void amr_set_sign (Word16 *dn,   
+              Word16 *sign, 
+              Word16 *dn2,  
+              Word16 n);
+	void amr_set_sign12k2 (Word16 *dn,
+			Word16 *cn,
+			Word16 *sign,
+			Word16 *pos_max,
+			Word16 nb_track,
+			Word16 *ipos,
+			Word16 step);
+	void amr_Set_zero (
+   			Word16 *x,
+    		int L);		
+    Word32 amr_sqrt_l_exp ( 
+    		Word32 L_x, 
+    		Word16 *exp);
+    void amr_Syn_filt (
+    		Word16 *a,     
+    		Word16 *x,     
+    		Word16 *y,    
+    		Word16 lg,      
+    		Word16 YMEM *yy,
+    		Word16 *mem,   
+    		Word16 update);
+	void amr_Weight_Ai (
+    		Word16 *a,         
+    		const GAMMA_MEM Word16 *fac, 
+    		Word16 *a_exp); 
+	void amr_Lsp_lsf (
+    		Word16 *lsp,       
+    		Word16 *lsf,       
+    		Word16 m); 
+	void amr_gc_pred(
+    		gc_predState *st,   
+    		enum Mode mode,     
+    		Word16 *code,                           
+    		Word16 *exp_gcode0, 
+    		Word16 *frac_gcode0,
+    		Word16 *exp_en,     
+    		Word16 *frac_en);
+
+	void amr_gc_pred_update (
+    		gc_predState *st,      
+    		Word16 qua_ener_MR122,                          
+    		Word16 qua_ener);
+	void amr_gc_pred_average_limited (
+    		gc_predState *st,       
+    		Word16 *ener_avg_MR122,                     
+    		Word16 *ener_avg );
+
+	MEMORY_TYPE_T * fn_amr_decoder_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_dec_frame_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_dec_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_d_plsf_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_ec_gain_pitch_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_ec_gain_code_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_cb_gain_avg_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_lsp_avg_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_bgn_scd_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_ph_disp_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_dtx_dec_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_preemphasis_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_post_proc_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_post_filt_state_struct_malloc(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_0(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_1(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_2(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_3(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_4(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_5(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_6(void);
+	BIT_REORDER_MEM Word16 * fn_amr_bit_reorder_7(void);
+	BIT_REORDER_MEM Word16 ** fn_amr_bit_reorder_tab(void);
+	BITNO_MEM Word16 * fn_amr_prmno(void);
+	BITNO_MEM Word16 * fn_amr_prmnofsf(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR475(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR515(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR59(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR67(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR74(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR795(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR102(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MR122(void);
+	BITNO_MEM Word16 * fn_amr_bitno_MRDTX(void);
+	BITNO_MEM Word16 ** fn_amr_bitno(void);
+	BITNO_MEM16 Word16 * fn_amr_nb_of_bits(void);
+	BITNO_MEM16 Word16 * fn_amr_if2_packed_size(void);
+	BITNO_MEM16 Word16 * fn_amr_mb_modem_packed_size(void);
+	BITNO_MEM16 Word16 * fn_amr_packed_size(void);
+    	BITNO_MEM16 Word16 * fn_amr_unpacked_size(void);
+    	BITNO_MEM16 Word16 * fn_amr_unused_size(void);
+    	BITNO_MEM16 UWord8 * fn_amr_toc_byte(void);
+	STARTPOS_MEM Word16 * fn_amr_startPos(void);
+	STARTPOS_MEM Word16 * fn_amr_startPos1(void);
+	STARTPOS_MEM Word16 * fn_amr_startPos2(void);
+	GRAY_MEM Word16 * fn_amr_dgray(void);
+	GRAY_MEM Word16 * fn_amr_gray(void);
+	GAINS_MEM Word16 * fn_amr_qua_gain_pitch(void);
+	GAINS_MEM Word16 * fn_amr_qua_gain_code(void);
+	QGAIN_MEM Word16 * fn_amr_table_gain_MR475(void);
+	QGAIN_MEM Word16 * fn_amr_table_gain_highrates(void);
+	QGAIN_MEM Word16 * fn_amr_table_gain_lowrates(void);
+	AMR_WINDOW_MEM Word16 * fn_amr_window_200_40(void);	
+	AMR_WINDOW_MEM Word16 * fn_amr_window_160_80(void);
+	AMR_WINDOW_MEM Word16 * fn_amr_window_232_8(void);	 		
+	Word16 Q_LSF_MEM * fn_amr_mean_lsf_q5(void);
+	DICO_MEM Word16 * fn_amr_dico1_lsf_q5(void);
+	DICO_MEM Word16 * fn_amr_dico2_lsf_q5(void);
+	DICO_MEM Word16 * fn_amr_dico3_lsf_q5(void);
+	DICO_MEM Word16 * fn_amr_dico4_lsf_q5(void);
+	DICO_MEM Word16 * fn_amr_dico5_lsf_q5(void);
+	Word16 Q_LSF_MEM * fn_amr_past_rq_init_q3(void);
+	Word16 Q_LSF_MEM * fn_amr_mean_lsf_q3(void);
+	Word16 Q_LSF_MEM * fn_amr_pred_fac_q3(void);
+	DICO_MEM Word16 * fn_amr_dico1_lsf_q3(void);
+	DICO_MEM Word16 * fn_amr_dico2_lsf_q3(void);
+	DICO_MEM Word16 * fn_amr_dico3_lsf_q3(void);
+	DICO_MEM Word16 * fn_amr_mr515_3_lsf_q3(void);
+	DICO_MEM Word16 * fn_amr_mr795_1_lsf_q3(void);
+	LSP_MEM Word16 * fn_amr_lsp_init_data(void);
+	MEMORY_TYPE_T * fn_amr_encoder_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_enc_frame_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_pre_proc_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_cod_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_cl_ltp_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_pitch_fr_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_lsp_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_gain_quant_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_gain_adapt_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_q_plsf_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_p_ol_wght_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_ton_stab_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_vad1_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_vad2_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_dtx_enc_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_lpc_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_levinson_state_struct_malloc(void);
+	MEMORY_TYPE_T * fn_amr_sid_sync_state_struct_malloc(void);
+
+}

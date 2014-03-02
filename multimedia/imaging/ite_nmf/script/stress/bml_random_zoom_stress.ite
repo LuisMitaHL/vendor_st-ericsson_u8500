@@ -1,0 +1,28 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/bml_random_zoom_stress.ite
+
+##  BML with random zoom ##
+
+alias LOOP_TESTS $1
+do $(IMAGING_PATH)/ite_nmf/script/stress/stress_test_config.ite
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+loop LOOP_TESTS
+
+    bms prepare
+    bms start
+    bms stop
+
+    bml prepare
+    bml start
+
+    gen_random_val float ZOOM_LOWER_LIMIT ZOOM_UPPER_LIMIT
+    zoomset RANDOM_GENERATED_VALUE notoggle
+
+    bml stop
+    bml free
+    LR free
+
+endloop
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite

@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#ifndef _VFM_DSP_COMMON_H_
+#define _VFM_DSP_COMMON_H_
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc.idt>
+#include <t1xhv_vdc_jpeg.idt>
+#include <vfm_common.idt>
+#include <../../arm_nmf/share/jpeg_dynamic.idt>
+
+/* to be moved to vfm_vdc_jpeg.h */
+#define VFM_HEADER_FIFO_COUNT 4
+
+typedef struct
+{       
+        ts_t1xhv_vdc_jpeg_param_in     	s_in_parameters;
+        t_ulong_value  buffer_p;
+	t_ulong_value  bitOffset;
+	t_ulong_value  encodedDataSize;
+        t_ulong_value  physicalAddressParamIn;         
+	t_ulong_value  headerBufferMpcAddress;
+	t_uint16  isFakeHeader;
+	t_uint16  lastHeader;
+	t_uint16 reserved[12];  
+        //t_ulong_value  physicalAddressCoeffBuffer;
+	//t_ulong_value  physicalAddressLineBuffer;
+               
+}ts_ddep_sdc_jpeg_scan_desc;
+
+typedef ts_ddep_sdc_jpeg_scan_desc *tps_ddep_sdc_jpeg_scan_desc;
+
+
+typedef struct
+{
+	ts_t1xhv_vdc_frame_buf_in	s_in_frame_buffer;
+	ts_t1xhv_vdc_frame_buf_out      s_out_frame_buffer;
+	ts_t1xhv_vdc_internal_buf       s_internal_buffer;
+        ts_t1xhv_bitstream_buf_pos      s_in_out_bitstream_buffer; 
+	ts_t1xhv_bitstream_buf_pos      s_out_bitstream_buffer;
+	ts_t1xhv_vdc_jpeg_param_in     	s_in_parameters;       
+	ts_t1xhv_vdc_jpeg_param_out    	s_out_parameters;      
+	ts_t1xhv_vdc_jpeg_param_inout  	s_in_out_frame_parameters; 
+	ts_t1xhv_vdc_jpeg_param_inout  	s_out_frame_parameters;
+	//ts_ddep_sdc_jpeg_scan_desc      s_ddep_sdc_jpeg_scan_desc;
+	ts_ddep_perf_param_out          s_out_perf_parameters;
+	t_ulong_value reserved1;
+	t_ulong_value reserved2;
+} ts_ddep_sdc_jpeg_param_desc;
+
+typedef ts_ddep_sdc_jpeg_param_desc *tps_ddep_sdc_jpeg_param_desc;
+
+typedef struct 
+{
+	ts_ddep_sdc_jpeg_dynamic_params mpc_param_set; /*keep this at first place*/
+	ts_ddep_sdc_jpeg_dynamic_params host_param_set;
+	ts_ddep_sdc_jpeg_dynamic_params tmp_param_set;
+	t_uint16 host_param_set_atomic_entry;
+	t_uint16 host_param_set_atomic_exit;
+	t_uint16 reserved[7];
+} ts_ddep_sdc_jpeg_dynamic_configuration;
+typedef ts_ddep_sdc_jpeg_dynamic_configuration *tps_ddep_sdc_jpeg_dynamic_configuration;
+
+
+
+#endif // _VFM_COMMON_IDT_
+

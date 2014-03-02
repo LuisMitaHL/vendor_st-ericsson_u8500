@@ -1,0 +1,19 @@
+entry &BlockName &FileName
+
+if "&BlockName"==""
+(
+	&BlockName="PRCMU"
+)
+
+if "&FileName"==""
+(
+	; use current script and replace .cmm by .txt
+	&FileName=OS.PPF()
+	&FileName=OS.FILE.NAME(&FileName)
+	&FileName=string.cut("&FileName",-4)+"&BlockName.txt"
+)
+
+do chip_version
+printer.file &FileName
+wp.per.view db8540_&chip_version.per "&BlockName"
+printer.file

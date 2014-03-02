@@ -1,0 +1,69 @@
+alias S_GENERATE_REPORT OMX_FALSE
+if WORK_WITH_NETWORK != YES
+	alias SHARED_PATH /usr/share/mm-valid/shared
+else
+# you need to have defined following alias : SHARED_PATH
+endif
+alias S_REPORT_PATH $(SHARED_PATH)/mmte/mmte_script/out
+
+alias S_SOURCE_LOOP_ON_INPUT_FILE				OMX_TRUE
+alias S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE	0
+# value 0 means all frames from the file otherwise it specify a number of frames
+
+# setting for frame rate (coded in Q16), 0 means "as quick as possible"
+alias S_FRAME_RATE 0x40000
+
+alias S_NBUFFERCOUNT 1
+
+alias FAKESOURCE_PATH_PREFIXE_EXTRADATA extradat_path_detection:
+
+if colorformat == rgb565
+	alias S_WIDTH_IN_0  320
+	alias S_HEIGHT_IN_0 240
+	alias S_COLOR_FORMAT_IN_0  OMX_COLOR_Format16bitRGB565
+	alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/frame_3_rgb_reso_320_x_240_format_rgb565.gam
+else
+	if colorformat == raw8
+		alias S_WIDTH_IN_0  320
+		alias S_HEIGHT_IN_0 240
+		alias S_COLOR_FORMAT_IN_0  OMX_COLOR_FormatRawBayer8bit
+		alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/frame_3_rgb_reso_320_x_240_format_RawBayer8bit.gam
+	else
+		if colorformat == cbycry
+			alias S_WIDTH_IN_0  320
+			alias S_HEIGHT_IN_0 240
+			alias S_COLOR_FORMAT_IN_0  OMX_COLOR_FormatCbYCrY
+			alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/frame_3_rgb_reso_320_x_240_format_cbycry.gam
+		else
+			alias S_WIDTH_IN_0  320
+			alias S_HEIGHT_IN_0 240
+			alias S_COLOR_FORMAT_IN_0  OMX_SYMBIAN_COLOR_FormatYUV420MBPackedSemiPlanar
+			alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/frame_3_rgb_reso_320_x_240_format_yuv420mb.gam
+		endif
+	endif
+endif
+
+#alias FILE_NAME_INPUT_EXTRADATA	$(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_IFM_BMS_CAPTURE_CONTEXT_TYPE.xml
+#alias FILE_NAME_INPUT_EXTRADATA	$(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_OMX_SYMBIAN_ExtraDataVideoStabilization.xml
+#alias FILE_NAME_INPUT_EXTRADATA	$(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_OMX_SYMBIAN_CameraExtraDataCaptureParameters.xml
+#alias FILE_NAME_INPUT_EXTRADATA	$(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_OMX_SYMBIAN_CameraExtraDataFrameDescription.xml
+alias FILE_NAME_INPUT_EXTRADATA	$(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_OMX_SYMBIAN_ExtraDataVideoStabilization.xml
+#alias FILE_NAME_INPUT_EXTRADATA	$(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_frame_by_frame.xml
+#alias FILE_NAME_INPUT_EXTRADATA	$(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_several_types.xml
+
+
+# if you want to try with an other format, type (before launching this script):
+#alias colorformat rgb565
+# or
+#alias colorformat raw8
+# or
+#alias colorformat cbycry
+# or
+#alias colorformat yuv420mb
+
+mmte_sleep 3000
+
+alias S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY OMX_TRUE
+
+alias BUFFER_SUPPLY_WAY output
+

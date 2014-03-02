@@ -1,0 +1,29 @@
+//
+//       Configuration file for h264 decoder Adapter
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+
+primitive h264dec.mpc.adapter
+{
+
+// H264 Decoder adapter
+requires h264dec.mpc.ddep.api.start_codec					as iStartCodec16bits
+provides h264dec.mpc.ddep.api.start_codec					as iStartCodec24bits
+
+requires h264dec.mpc.ddep.api.end_codec						as iEndCodec24bits
+provides h264dec.mpc.ddep.api.end_codec						as iEndCodec16bits
+
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+option CPPFLAGS "-ICONF_ROOT/inc -D__T1XHV_NMF_ENV=1 -DMMDSP=1"
+// adapter MUST work in mode 24
+option CFLAGS "-O3 -g"
+option stack= 512
+}

@@ -1,0 +1,142 @@
+#ifndef _VIRTUAL_SURROUND_NMFIL_HOST_EFFECT_CONFIG_H_
+#define _VIRTUAL_SURROUND_NMFIL_HOST_EFFECT_CONFIG_H_
+
+/*!
+ *\IDL specification Virtual Surround Effect Configuration
+ */
+#include <samplefreq.idt>
+
+
+
+/*!
+ * Virtual Surround Rendering Mode.
+ * Rendering mode is the selection if the Virtual Surround effect should process the multichannel audio to produce either stereo audio signal
+ * or a binaural audio signal. The choice of rendenring mode will affect the user experience and the computational load.
+ *
+ * param STANDARD_DOWN_MIX             Matrix Downmix without left and right surround mixing
+ * param SURROUND_DOWN_MIX             Matrix Downmix with left and right surround mixing
+ * param SURROUND_VIRTUALIZATION       5.1 channel virtualization
+ *  
+ */
+
+typedef enum
+{
+    STANDARD_DOWN_MIX = 1,
+    SURROUND_DOWN_MIX,
+    SURROUND_VIRTUALIZATION
+} t_virtual_surround_mode;
+
+
+/*!
+ * Virtual Surround Room Simulation Mode.
+ * Control witch channels that are used to perform the room simulation.
+ *  
+ * param ROOM_SIMULATION_MIXED = 1       Room Simulation is based on non-processed front/surround audio signals.
+ *                                       In this mode the unprocessed front and surround channels are inputs to the reverberation processing.
+ * param ROOM_SIMULATION_VIRTUALIZED     Room Simulation is based on virtualized front/surround audio signals.
+ *                                       In this mode the processed front and surround channels are inputs to the reverberation processing.
+ */
+
+typedef enum
+{
+    ROOM_SIMULATION_MIXED = 1,
+    ROOM_SIMULATION_VIRTUALIZED
+} t_room_simulation_mode;
+
+
+/*!
+ * Virtual Surround Room Simulation Room Type.
+ * The room type will completely configure the reverberation processing part of the virtual surround component.
+ *
+ * param ROOM_TYPE_DEFAULT
+ * param ROOM_TYPE_ROOM
+ * param ROOM_TYPE_LIVING_ROOM
+ * param ROOM_TYPE_AUDITORIUM
+ * param ROOM_TYPE_CONCERT_HALL
+ * param ROOM_TYPE_ARENA
+ * param ROOM_TYPE_SMALL_ROOM
+ * param ROOM_TYPE_MEDIUM_ROOM
+ * param ROOM_TYPE_LARGE_ROOM
+ * param ROOM_TYPE_MEDIUM_HALL
+ * param ROOM_TYPE_LARGE_HALL
+ */
+
+typedef enum
+{
+    ROOM_TYPE_DEFAULT = 0,
+    ROOM_TYPE_ROOM,
+    ROOM_TYPE_LIVING_ROOM,
+    ROOM_TYPE_AUDITORIUM,
+    ROOM_TYPE_CONCERT_HALL,
+    ROOM_TYPE_ARENA,
+    ROOM_TYPE_SMALL_ROOM,
+    ROOM_TYPE_MEDIUM_ROOM,
+    ROOM_TYPE_LARGE_ROOM,
+    ROOM_TYPE_MEDIUM_HALL,
+    ROOM_TYPE_LARGE_HALL
+} t_room_simulation_room_type;
+
+
+/*!
+ * Virtual Surround Mix Gains struct.
+ * The mixing gain of each channel (after processing) can be adjusted before final mixing into left and right channel.
+ * A milliBell value is translated to a linear input value on the Mix Gain using 10^(mB / (100*20)).
+ *
+ * param left_front_gain                   Left front gain. Gain in mB (1 milliBell = 0.01dB) ranging from [-7800..1200] 
+ *                                         where -7800 correspond to mute. Linear value expressed in Q2.13.
+ * param right_front_gain                  Right front gain. Gain in mB ranging from [-7800..1200] where -7800 correspond
+ *                                         to mute. Linear value expressed in Q2.13.
+ * param center_front_gain                 Center front gain. Gain in mB ranging from [-7800..1200] where -7800 correspond
+ *                                         to mute. Linear value expressed in Q2.13.
+ * param left_surround_gain                Left surround gain. Gain in mB ranging from [-7800..1200] where -7800 correspond
+ *                                         to mute. Linear value expressed in Q2.13.
+ * param right_surround_gain               Right surround gain. Gain in mB ranging from [-7800..1200] where -7800 correspond
+ *                                         to mute. Linear value expressed in Q2.13.
+ * param low_frequency_effects_gain        Low frequency effect gain. Gain in mB ranging from [-7800..1200] where -7800 correspond
+ *                                         to mute. Linear value expressed in Q2.13.
+ * param front_room_simulation_gain        Front room simulation gain. Gain in mB ranging from [-7800..1200] where -7800 correspond
+ *                                         to mute. Linear value expressed in Q2.13.
+ * param surround_room_simulation_gain     Surround room simulation gain. Gain in mB ranging from [-7800..1200] where -7800 correspond
+ *                                         to mute. Linear value expressed in Q2.13.
+ */
+
+typedef struct
+{
+  t_sint16 left_front_gain;
+  t_sint16 right_front_gain;
+  t_sint16 center_front_gain;
+  t_sint16 left_surround_gain;
+  t_sint16 right_surround_gain;
+  t_sint16 low_frequency_effects_gain;
+  t_sint16 front_room_simulation_gain;
+  t_sint16 surround_room_simulation_gain;
+} t_mix_gain;
+
+
+
+/*!
+ * Effect Configuration struct for the Virtual Surround.
+ * 
+ * param enable                        Enable Virtual Surround algorithm. Otherwise, forward input to output.
+ * param virtual_surround_mode         Virtual Surround  algorithm type.
+ * param room_simulation_front         Enable/disable room simulation processing for the Front speaker pair (LF and RF).
+ * param room_simulation_surround      Enable/disable room simulation processing for the Surround speaker pair (LS and RS).
+ * param room_simulation_mode          Select the room simulation mode.
+ * param room_type                     Select the room type where audio is virtualized.
+ * param gains                         Gain values for every channel in the virtual surround (5.1 channels) and gains when room simulation is enabled.
+ */
+
+typedef struct 
+{
+  t_bool                          enable;
+  t_bool                          room_simulation_front;
+  t_bool                          room_simulation_surround;
+  t_virtual_surround_mode         virtual_surround_mode;
+  t_room_simulation_mode          room_simulation_mode;
+  t_room_simulation_room_type     room_type;
+  t_mix_gain                      gains;
+} t_virtual_surround_config;
+
+
+#endif
+

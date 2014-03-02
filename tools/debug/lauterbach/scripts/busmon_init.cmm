@@ -1,0 +1,40 @@
+;------------------------------------------------------------
+; busmon_init.cmm
+;------------------------------------------------------------
+; Init busmon settings, is called at startup and 
+; when change active configuration
+;
+; 071217 - DE Initial version
+;-----------------------------------------------------------
+
+
+; What platform do we send to perl script
+global &BUSMON_PLATFORM
+
+; Where to place busmon_tracedata.txt and HTML result
+global &BUSMON_TRACEDATA_DIR
+
+; What perl to use
+global &PERL
+
+; where is the proto dll
+global &BUSMON_PROTO_DLL
+
+; What parse perl script to use
+global &BUSMON_PARSE_SCRIPT
+; Include dir to perl e.g. where is the *.pm files
+global &BUSMON_PERL_INCLUDE
+
+; This are set in <target>_busmon_setup.cmm
+global &BUSMON_IFID
+global &BUSMON_OWERFLOW
+global &BUSMON_DATA
+
+; setup initial data
+&BUSMON_TRACEDATA_DIR="" 
+&PERL="sde_perl.exe"
+&BUSMON_PROTO_DLL="&CMM_PATH_BASE\Etc\proto_busmon.dll"
+&BUSMON_PARSE_SCRIPT="&CMM_PATH_BASE\Etc\busmon_parse.pl"
+&BUSMON_PERL_INCLUDE="&CMM_PATH_BASE\Etc\"
+
+ENDDO

@@ -1,0 +1,231 @@
+Flash Tool Backend(1)
+=====================
+
+NAME
+----
+Flash Tool Backend - provides the user with a defined, common protocol for communication with all supported ME platforms. 
+
+
+SYNOPSIS
+--------
+*flash-tool-backend*
+
+
+DESCRIPTION
+-----------
+
+The Flash Tool Backend provides the user with a defined, common protocol for communication with all supported ME platforms so that the client is not restricted to a certain ME platform. The Flash Tool Backend handles the basic protocols so that the user does not need specific information regarding the platform to develop specific clients or test tools.
+Communication with Backend is providet by Flash tool commandline (or Flash Tool CLI). The purpose of the client is to provide the user with a simple interface to manipulate the mobile platform.
+The Backend is using Accept Clients mode, which allows any client to connect to the backend and perform operations. The client execute locally or on any other computer that has access to the computer running the Flash Tool Backend.
+To enable or disable the that the Flash Tool Backend accepts incoming client connections, right-click on the system tray icon and select 'accept clients'.
+
+BACKEND REMOTE PROTOCOL
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The backend remote protocol accepts requests from its clients. A valid request results in an 'ACK' response, while an invalid request results in a 'NAK'.
+The 'ACK' response to a valid request means that the backend has accepted the request and is processing it. Once the request has been successfully processed, the result is sent back to the client as a 'SUCCESS'. If the request fails, an 'ERROR' response with a message is sent from the backend.
+To requests that are considered 'long running commands', the backend can also respond with a 'PROGRESS' after the 'ACK' response to indicate the progress of the request. These 'long running commands' can also be canceled by sending a 'CANCEL' request. The 'CANCEL' request results in an 'ERROR' response with the 'CANCEL' message.
+
+RUNNING THE FLASH TOOL BACKEND
+------------------------------
+
+First a Java version needs to be installed, recommended is Java 1.6.
+
+Running Flash Tool Backend in Linux
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To start the Flash Tool Backend, execute the shell script.
+
+
+This instruction starts the Flash Tool Backend in the current console window:
+----
+'flash-tool-backend'
+----
+
+To see the information about additional startup parameters, use 'flash-tool-backend --help'
+
+Once the backend is started, a system tray icon with a right-click menu is to appear.
+
+NOTE:
+^^^^^
+The user who executes the flash tool commands needs to have sufficient access to 
+USB device files. Access rights can be granted by membership in necessary groups 
+(i.e. root in /etc/group) or by super-user access right (executing commands 
+prefixed by sudo).
+
+This is especially important when running the flash tool on a workstation in a 
+networked environment, meaning that the Linux environment is administrated 
+centrally and access rights for ordinary users might be restricted in various ways.
+To set up group access:
+
+  1)Create a file in /etc/udev/rules.d. For example, the file can be called 99-android-attr.rules.
+  2)You have to be root to edit in /etc/udev/rules.d
+  3)Add the following 2 lines to the file:
+    SUBSYSTEM=="usb", ATTR{idVendor}=="04cc", MODE="0666"
+    SUBSYSTEM=="usb", ATTR{idVendor}=="0483", MODE="0666"
+  4)Save and close the file
+  5)Run: sudo chmod a+rx /etc/udev/rules.d/99-android-attr.rules
+  6)Run: sudo /etc/init.d/udev restart
+
+Please contact your systems administrator and check that you have sufficient USB 
+access rights if you encounter problems executing the back-end.
+
+
+
+
+Running Flash Tool Backend in Windows
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To start the Flash Tool Backend, execute the batch script.
+
+
+This instruction starts the Flash Tool Backend in the current command line window:
+----
+'flash-tool-backend'
+----
+
+To see the information about additional startup parameters, use 'flash-tool-backend /?'
+
+Once the backend is started, a system tray icon with a right-click menu is to appear.
+
+
+CONFIGURATION AND PROFILES
+--------------------------
+
+
+*MESP* +
+Flash Tool Backend is managed by configurations. All configurations have to be specified in the backend.mesp file. +
+Configuration files have to comply with the Mobile Equipment System Properties (MESP) syntax.
+
+.Configuration entries
+[width="60%",frame="topbot",options="header", cols="1*<3, 1*<7, 1*<5"]
+|===================
+|Name			|Attributes		|Description
+|Profile		|
+[black]*alias:* The profile name. +
+[black]*path:* The path to the profile file.				
+|Adds a profile to the list of available profiles.
+|ActiveProfile	|
+[black]*alias:* The profile name. 			
+|Sets the active profile when starting the backend.
+|USB	|
+[black]*enabled:* "true" to enable USB, else "false".
+|Enables or disables the use of USB.
+|UART	|
+[black]*enabled:* "true" to enable the UART port, else "false". +
+[black]*alias:* The UART port ID, e.g. "COM1". +
+[black]*baudrate:* The baudrate for the specified UART port. +
+[black]*databits:* The databits for the specified UART port. +
+[black]*parity:* The parity for the specified UART port. +
+[black]*stopbit:* The stopbit for the specified UART port. +
+[black]*default:* Volatile argument if it is set after start backend this UART port is triggered automatically. value is changed when uart is manualy triggered and for next start backend is triggered port which was triggered last. Value is uart port id e.g. "COM1". +
+|Enables or disables the use of a specific UART port.
+|Monitor	|
+[black]*AcceptClients:* "true" to accept remote client connections, else "false". +
+[black]*AcceptEquipments:* "true" to accept Mobile Equipment connections, else "false".
+|Sets the backend connection monitoring states.
+|SignTool	|
+[black]*UseLocalSigning:* "true" to use local signing, else "false".
+|Sets local signing feature. When set to "true" Flash Tool Backend will not use Sign Server, but use sign packages and keys stored localy instead.
+|==================
+
+[NOTE]
+The backend will listen for socket connections on port 8088 by default. For more info, please see the environment variables section.
+
+*Example:*
+Configuration file:
+----
+Profile alias="STE_DB8500" path="configuration/profile-default.mesp"
+
+ActiveProfile alias="STE_DB8500"
+
+USB enabled="true"
+
+UART enabled="false" alias="COM1" baudrate="115200" databits="8" parity="0" stopbit="1"
+
+Monitor AcceptClients="true" AcceptEquipments="true"
+
+SignTool UseLocalSigning="true" 
+----
+
+
+*PROFILES* +
+There are settings specific for an ME. These setting are stored in profiles and are used by the Flash Tool Backend to locate correct flash and customization loader and to configure other ME hardware platform specific settings.
+
+.Profile entries
+[width="60%",frame="topbot",options="header", cols="1*<3, 1*<7, 1*<5"]
+|===================
+|Name			|Attributes		|Description
+|Profile		|
+[black]*Name:* The profile name. 		
+|Sets the name of the profile.
+|Platform	|
+[black]*Filter:* The ldap filter to be used by the backend. 			
+|Sets the platform properties for the specific profile.
+|Software	|
+[black]*Type:* The software type of the specified entry. +
+[black]*Path:* The path to the software file.
+|Adds a profile specific software, e.g. a loader.
+|==================
+
+.Profile properties (specified in the profile as _Property Name="Value"_)
+[width="60%",frame="topbot",options="header", cols="1*<3, 1*<7, 1*<5"]
+|===================
+|Name						|Possible values	|Description
+|UsesLoaderCommunication	|
+yes +
+no		
+|Indicates wether an ME that is using this profile should use the Loader Communication Protocol
+|BootIndication	|
+ADL +
+ALT +
+Normal +
+Production +
+Programming +
+0xXXXXXXXX
+|Set the boot indication for the associated ME
+|UARTbaudrate |
+921600 or some another uart baundrate
+|this UART speed is set to UART after sending normal in boot procedure and must be supported by UART port and loader.ldr
+|==================
+
+
+
+*Example:*
+Profile file:
+----
+Profile Name="STE_DB8500"
+
+Platform Filter="(platform=U8500)"
+
+Software Type="Loader" Path="@loaders/loader.ldr"
+
+Property UsesLoaderCommunication="Yes"
+
+Property BootIndication="Programming"
+----
+
+
+*Boot process description* +
+
+When the peripheral boot sequence starts, the ME sends an asic id to the connected PC tool. The PC tool then answers with a boot indication.
+If normal, ADL or production is sent as boot indication; this means that the x-loader will start the binary software stored at the corresponding location in the boot image (based on the location stated by the TOC). If programming is used as boot indication, the PC will send a completely new set of boot code to the ME. This is used when a loader is downloaded during service mode startup via the Flash Tool Backend.
+When the normal boot indication is sent, Flash Tool backend sends no more data and the ME is booted with the binary software stored in the place where the normal software is stored according to the TOC. 
+--
+The ADL boot scenario works like this:
+--
+.	Flash Tool Backend receives asic id 
+. Boot indication ADL is sent 
+. Flash tool backend starts LCD and LCM and waits for a loader startup message.
+--
+The loader is stored at the ADL location of the boot image (this is supported by the assemble tool).
+--
+
+*ENVIRONMENT VARIABLES* +
+
+.Environment variables supported by the Flash Tool Backend
+[width="60%",frame="topbot",options="header", cols="1*<3, 1*<7"]
+|===================
+|Name							|Description
+|backend.remote.brp.server.port	|The port to use for client connections using the Backend Remote Protocol.
+|==================

@@ -1,0 +1,49 @@
+// Constructor
+
+primitive h264dec.arm_nmf.decoder
+{
+provides lifecycle.constructor      as constructor
+provides lifecycle.destructor       as destructor
+
+// start / stop mandatory to be able to destroy correctly the component
+provides lifecycle.starter as starter
+provides lifecycle.stopper as stopper
+
+provides h264dec.arm_nmf.api.decoder_trace_init as decoder_trace_init
+
+// ost event
+//requires debug.api.ost_event     as ost_event
+
+// Input data
+provides h264dec.arm_nmf.api.nal as input
+provides h264dec.arm_nmf.api.output_buffer as output_buffer
+provides h264dec.arm_nmf.api.set_decoder_parameter as set_decoder_parameter
+provides h264dec.arm_nmf.api.error_recovery as error_recovery
+
+//Control NAL data flow
+requires h264dec.arm_nmf.api.nal_handshake                as nal_ctl
+
+// Result
+requires h264dec.arm_nmf.api.picture as output
+
+// Command acknowledgement
+requires h264dec.arm_nmf.api.pendingCommandAck          as pendingCommandAck
+
+
+#ifdef __ndk5500_a0__
+//requires hva_drv.arm_nmf.hva      as cHva
+requires hva_drv.arm_nmf.api.start_codec                               as iStartCodec
+provides hva_drv.arm_nmf.api.end_codec                                 as iEndCodec 
+#else
+requires h264dec.mpc.ddep.api.start_codec                as iStartCodec
+provides h264dec.mpc.ddep.api.end_codec                    as iEndCodec
+#endif
+
+requires h264dec.mpc.api.trace_init					as iTraceInitOut
+provides h264dec.mpc.api.trace_init					as iTraceInitIn
+
+option CFLAGS "-O3 -Otime"
+
+option CPPFLAGS "-g -I../inc  -I../../../common/inc/ndk20 -I../../../common/inc"
+}
+

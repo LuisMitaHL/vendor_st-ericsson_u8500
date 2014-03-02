@@ -1,0 +1,101 @@
+#DTH script
+#> Author: GBE
+#> Script NonRegADC_P2.txt Version : 1.0
+
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#> Used a Real Battery
+#> Set the Switch 4 to OFF and the Switch 1 to ON
+#> Plugged the MAIN CHARGER
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PAUSE
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE Imaincharge
+BEGIN /ADC/Action/Action_Imaincharge/Imaincharge
+EXEC /ADC/Action/Action_Imaincharge/Imaincharge
+READ /ADC/Action/Action_Imaincharge/Imaincharge/Out_val
+# 400mV < Imaincharge > 700mV
+READ /ADC/Action/Action_Imaincharge/Imaincharge/Out_valconv_mA 400-700
+END /ADC/Action/Action_Imaincharge/Imaincharge
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE VMainCharge
+BEGIN /ADC/Action/Action_VMainCharge/VMainCharge
+EXEC /ADC/Action/Action_VMainCharge/VMainCharge
+READ /ADC/Action/Action_VMainCharge/VMainCharge/Out_val
+# 5600mV < VMainCharge > 6000mV
+READ /ADC/Action/Action_VMainCharge/VMainCharge/Out_valconv_mV 5600-6000
+END /ADC/Action/Action_VMainCharge/VMainCharge
+#-------------------------------------------------------------------------------------------------------------
+
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#> Unplugged MAIN CHARGE
+#> Plugged the USB CHARGER
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PAUSE
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE IUSBcharger
+EXEC /ADC/Action/Action_IUSBcharger/IUSBcharger
+BEGIN /ADC/Action/Action_IUSBcharger/IUSBcharger
+READ /ADC/Action/Action_IUSBcharger/IUSBcharger/Out_val
+# 400mV < IUSBcharger > 1000mV
+READ /ADC/Action/Action_IUSBcharger/IUSBcharger/Out_valconv_mA 400-1000
+END /ADC/Action/Action_IUSBcharger/IUSBcharger
+#-------------------------------------------------------------------------------------------------------------
+
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#> Unlugged the USB CHARGER
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PAUSE
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE RAccdetect1
+BEGIN /ADC/Action/Action_RAccdetect1/RAccdetect1
+EXEC /ADC/Action/Action_RAccdetect1/RAccdetect1
+READ /ADC/Action/Action_RAccdetect1/RAccdetect1/Out_val
+# 0mV < RAccdetect1 > 10mV
+READ /ADC/Action/Action_RAccdetect1/RAccdetect1/Out_valconv_mV 0-10
+
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#> Plugged the HEADSET
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PAUSE
+
+EXEC /ADC/Action/Action_RAccdetect1/RAccdetect1
+READ /ADC/Action/Action_RAccdetect1/RAccdetect1/Out_val
+# 1200mV < RAccdetect1 > 1500mV
+READ /ADC/Action/Action_RAccdetect1/RAccdetect1/Out_valconv_mV 1200-1500
+END /ADC/Action/Action_RAccdetect1/RAccdetect1
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE RAccdetect2
+BEGIN /ADC/Action/Action_RAccdetect2/RAccdetect2
+EXEC /ADC/Action/Action_RAccdetect2/RAccdetect2
+READ /ADC/Action/Action_RAccdetect2/RAccdetect2/Out_val
+# 1800mV < RAccdetect2 > 2200mV
+READ /ADC/Action/Action_RAccdetect2/RAccdetect2/Out_valconv_mV 1700-2200
+
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#> Press MUTE button on HEADSET
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#>!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+PAUSE
+
+EXEC /ADC/Action/Action_RAccdetect2/RAccdetect2
+READ /ADC/Action/Action_RAccdetect2/RAccdetect2/Out_val
+# 0mV < RAccdetect2 > 10mV
+READ /ADC/Action/Action_RAccdetect2/RAccdetect2/Out_valconv_mV 0-10
+END /ADC/Action/Action_RAccdetect2/RAccdetect2
+#-------------------------------------------------------------------------------------------------------------

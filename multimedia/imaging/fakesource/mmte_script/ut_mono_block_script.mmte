@@ -1,0 +1,200 @@
+
+alias S_CURRENT_PATH $(IMAGING_PATH)/fakesource/mmte_script
+alias S_SOURCE_LOOP_ON_INPUT_FILE    OMX_TRUE
+alias S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE 0
+# value 0 means all frames from the file otherwise it specify a number of frames
+# setting for frame rate (coded in Q16), 0 means "as quick as possible"
+alias S_FRAME_RATE 0x10000
+
+alias FAKESOURCE_PATH_PREFIXE_EXTRADATA extradat_path_detection:
+
+alias S_WIDTH_IN_0  320
+alias S_HEIGHT_IN_0 240
+alias S_COLOR_FORMAT_IN_0  OMX_COLOR_Format16bitRGB565
+alias FILE_NAME_INPUT $(S_CURRENT_PATH)/input/frame_3_rgb_reso_320_x_240_format_rgb565.gam
+
+
+alias FILE_NAME_INPUT_EXTRADATA $(FAKESOURCE_PATH_PREFIXE_EXTRADATA)/$(S_CURRENT_PATH)/input/my_extradata_frame_by_frame.xml
+
+OMX_GetHandle    tested_component OMX.ST.Fakesource
+
+alias CURRENT_STRIDE S_WIDTH_IN_0
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_Format16bitRGB565
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_Format16bitARGB4444
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_Format16bitARGB1555
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_Format24bitRGB888
+	arithmeticalias CURRENT_STRIDE* 3
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_Format32bitARGB8888
+	arithmeticalias CURRENT_STRIDE* 4
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_FormatYUV420Planar
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_SYMBIAN_COLOR_FormatYUV420MBPackedSemiPlanar
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_FormatYUV420PackedPlanar
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_FormatCbYCrY
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_COLOR_FormatRawBayer8bit
+	arithmeticalias CURRENT_STRIDE* 1
+endif
+if S_COLOR_FORMAT_IN_0 == OMX_SYMBIAN_COLOR_FormatRawBayer12bit
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif
+
+OMX_SetParameter tested_component OMX_IndexParamPortDefinition nPortIndex=0  format.video.nFrameWidth=S_WIDTH_IN_0 format.video.nFrameHeight=S_HEIGHT_IN_0 format.video.nSliceHeight=S_WIDTH_IN_0 format.video.nStride=CURRENT_STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=S_COLOR_FORMAT_IN_0 format.video.pNativeWindow=0 eDomain=OMX_PortDomainVideo
+
+OMX_SetParameter tested_component OMX_IndexParamContentURI contentURI=FILE_NAME_INPUT
+
+OMX_SetParameter tested_component OMX_IndexParamContentURI contentURI=FILE_NAME_INPUT_EXTRADATA
+
+# bContinuous indicates mode loop or not
+# bFrameLimited indicates if nb frame is limited or not
+# OMX_FALSE means that the whole file will be red once (frame by frame)
+# OMX_TRUE means that only nFrameLimit frames will be red
+# nFrameLimit indicates nb frames 
+if S_SOURCE_LOOP_ON_INPUT_FILE == OMX_TRUE
+	OMX_SetConfig tested_component OMX_IndexConfigCaptureMode bContinuous=OMX_TRUE bFrameLimited=OMX_FALSE nFrameLimit=0
+else
+	echo S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE
+	if S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE == 0
+		OMX_SetConfig tested_component OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE bFrameLimited=OMX_FALSE nFrameLimit=0
+	else
+		OMX_SetConfig tested_component OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE bFrameLimited=OMX_TRUE nFrameLimit=S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE
+	endif
+endif
+OMX_SetConfig  tested_component OMX_IndexConfigVideoFramerate xEncodeFramerate=S_FRAME_RATE
+
+
+if IMG_PLATFORME == x86
+	OMX_GetHandle    my_sink_1 OMX.ST.FakesinkGeneric
+else
+	OMX_GetHandle    my_sink_1 OMX.ST.Fakesink
+endif
+
+MMTE_PropagateSettings tested_component 0 my_sink_1 0 OMX_IndexParamPortDefinition
+
+OMX_SetupTunnel tested_component 0 my_sink_1 0 
+
+
+OMX_SendCommand my_sink_1   OMX_CommandStateSet  OMX_StateIdle
+OMX_SendCommand tested_component OMX_CommandStateSet  OMX_StateIdle
+MMTE_WaitEvent tested_component OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent my_sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# ask sink to trace icoming extradata
+OMX_SetConfig my_sink_1 OMX_IndexParamActiveStream nU32=3
+
+# configure fakesource in mode frame by frame
+OMX_SetConfig tested_component OMX_IndexAutoPauseAfterCapture bEnabled=OMX_TRUE
+mmte_sleep 1000
+
+OMX_SendCommand my_sink_1   OMX_CommandStateSet  OMX_StateExecuting
+OMX_SendCommand tested_component OMX_CommandStateSet  OMX_StateExecuting
+MMTE_WaitEvent tested_component OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent my_sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+alias SENT_FRAME_NUMBER 0
+arithmeticalias SENT_FRAME_NUMBER+ 1
+echo SENT_FRAME_NUMBER
+OMX_SetConfig tested_component OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+OMX_SetConfig tested_component OMX_IndexConfigCapturing bEnabled=OMX_FALSE
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+arithmeticalias SENT_FRAME_NUMBER+ 1
+echo SENT_FRAME_NUMBER
+OMX_SetConfig tested_component OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+arithmeticalias SENT_FRAME_NUMBER+ 1
+echo SENT_FRAME_NUMBER
+OMX_SetConfig tested_component OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+arithmeticalias SENT_FRAME_NUMBER+ 1
+echo SENT_FRAME_NUMBER
+OMX_SetConfig tested_component OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+arithmeticalias SENT_FRAME_NUMBER+ 1
+echo SENT_FRAME_NUMBER
+OMX_SetConfig tested_component OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+mmte_sleep 250
+
+OMX_SendCommand tested_component OMX_CommandStateSet  OMX_StateIdle
+OMX_SendCommand my_sink_1   OMX_CommandStateSet  OMX_StateIdle
+MMTE_WaitEvent my_sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent tested_component OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand tested_component OMX_CommandStateSet  OMX_StateLoaded
+OMX_SendCommand my_sink_1   OMX_CommandStateSet  OMX_StateLoaded
+MMTE_WaitEvent my_sink_1   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent tested_component OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle tested_component
+OMX_FreeHandle my_sink_1
+
+ens_network_destroy

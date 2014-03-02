@@ -1,0 +1,35 @@
+#include <e_homing.h>
+#include <sid_sync.h>
+#include <amr_typedef.h>
+#include <basic_op.h>
+#include <amr_memory_preset.h>
+#include <fwmalloc.h>
+#include <sp_enc.h>
+#include <spreproc.h>
+#include <mode.h>
+#include <common_interface.h>
+#include <audiolibs_common.h>    
+
+interface amr.codec.libamrenc.libamrenc unmanaged {
+        
+    Word16 amr_encoder_homing_frame_test (Word16 *input_frame);
+
+    int amr_sid_sync_init (sid_syncState **state, Word16 memory_preset_id,CODEC_INTERFACE_T *itf);
+    int amr_sid_sync_reset (sid_syncState *st);
+    void amr_sid_sync_exit (sid_syncState **state);
+    int amr_sid_sync_set_handover_debt (sid_syncState *st,Word16 debtFrames);
+    void amr_sid_sync (sid_syncState *st, enum Mode mode,enum TXFrameType *tx_frame_type);
+    
+    void amr_Speech_Encode_Frame_exit (Speech_Encode_FrameState **state);
+    int amr_Speech_Encode_Frame_init (Speech_Encode_FrameState **state,Flag dtx,char *id,Word16 memory_preset_id,CODEC_INTERFACE_T *itf);
+    int amr_Speech_Encode_Frame_reset (Speech_Encode_FrameState *state);           
+    int amr_Speech_Encode_Frame (Speech_Encode_FrameState *st, enum Mode mode,               
+    							Word16 allow_dtx, Word16 *new_speech,Word16 *serial, enum Mode *usedMode);
+                   
+}    
+
+
+
+
+
+

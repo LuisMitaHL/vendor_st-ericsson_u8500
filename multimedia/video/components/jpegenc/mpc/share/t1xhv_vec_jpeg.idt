@@ -1,0 +1,228 @@
+/******************************************************************************
+ Copyright (c) 2009-2011, ST-Ericsson SA
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials
+      provided with the distribution.
+   3. Neither the name of the ST-Ericsson SA nor the names of its
+      contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
+
+
+/** @addtogroup secJpegGroup JPEG Encoder NMF Component
+ *  \brief This part shows a JPEG Encoder NMF Component description (in term
+ *  of configuration and interfaces)
+ *  @{
+ *   
+ * \image html algo-overview.jpg
+ *  with <algo_name> = jpeg_encoder \n
+ *  and  <algo> = JpegEncoder
+ *
+ *
+ * \section data_flow_sec Jpeg encoder dataflow description
+ * \n
+ * \n
+ * \image html jpeg_encoder_global_dataflow.jpg
+ * \n
+ * \section memory_desc_sec Memory needs description
+ * \n
+ * \n The following diagram shows the different needed buffers, their respective location and the way their
+ * address is given as parameter to the algo component.
+ * \image html jpeg_encoder_dataflow.jpg
+ */
+
+/** @addtogroup secJpegConfigurationGroup NMF Configuration file
+ *  \brief Source code of the configuration file of the component \ref secJpegGroup 
+ *  @{
+ *  \include jpeg_encoder_algo.conf
+ */ 
+/** @} */ // end of secJpegConfigurationGroup
+
+
+/** @addtogroup secJpegProvidedInterfaceGroup Provided interface(s)
+ *  \brief Description of all provided interfaces of NMF component \ref secJpegGroup 
+ *  @{
+ */ 
+
+/** @} */ // end of secJpegProvidedInterfaceGroup
+
+/** @addtogroup secJpegRequiredInterfaceGroup Required interface(s)
+ *  \brief Description of all required interfaces of NMF component \ref secJpegGroup  
+ *  @{
+ */ 
+
+/** @} */ // end of secJpegRequiredInterfaceGroup
+
+#ifndef	_t1xhv_vec_jpeg_idt
+#define _t1xhv_vec_jpeg_idt
+
+#include <t1xhv_vec.idt>
+#include <t1xhv_retarget.idt>
+
+
+/** \brief This structure defines a JPEG Encode input parameter buffers. */
+typedef struct {
+
+    t_ushort_value frame_width;                /**<\brief Source frame width (i.e. width of the source frame of the encode task. 
+                                                    It is equal to the number of luminance pixels contained in the horizontal dimension 
+                                                    of the frame).
+                                                    \n Contraints : [16,4080] and Multiple of 16 */
+    t_ushort_value frame_height;               /**<\brief Source frame height (i.e. height of the source frame of the encode task. 
+                                                    It is equal to the number of luminance pixels contained in the vertical dimension 
+                                                    of the frame).
+                                                    \n Contraints : [16,4080] and Multiple of 16 */
+    t_ushort_value window_width;               /**<\brief Source window width (i.e. width of the source window of the encode task. 
+                                                    It is equal to the number of luminance pixels contained in the horizontal dimension 
+                                                    of the window).
+                                                    \n Contraints : [16,frame_width] and Multiple of 16 in 4:2:0/4:2:2 formats, and Multiple of 8 in Y only/4:4:4 format */
+    t_ushort_value window_height;              /**<\brief Source window height (i.e. height of the source window of the encode task. 
+                                                    It is equal to the number of luminance pixels contained in the vertical dimension 
+                                                    of the window).
+                                                    \n Contraints : [16,frame_height] and Multiple of 16 in 4:2:0 format, and a Multiple of 8 in Y only/4:2:2/4:4:4 format */
+    t_ushort_value window_horizontal_offset;   /**<\brief Source window horizontal offset (i.e. horizontal offset of the source window of 
+                                                    the encode task within the source frame).
+                                                    \n Contraints : [0,frame_width[ and [0,frame_width-window_width] and Multiple of 8 pixels */
+    t_ushort_value window_vertical_offset;     /**<\brief Source window vertical offset (i.e. vertical offset of the source window of 
+                                                    the encode task within the source frame).
+                                                    \n Contraints : [0,frame_height[ and [0,frame_height-window_height] and Multiple of 8 pixels */
+    t_ushort_value sampling_mode;              /**<\brief Sampling mode (i.e. source frame format)
+                                                    \n 0: Y only (macroblock format).
+                                                    \n 1: YCbCr 4:2:0 separate component macroblock format.
+                                                    \n 2: YCbCr 4:2:2 separate component macroblock format.
+                                                    \n 3: YCbCr 4:4:4 separate component macroblock format.
+                                                    \n others: YCbCr 4:2:0 macroblock format (same format as video).*/
+    t_ushort_value restart_interval;           /**<\brief Restart Interval (i.e. number of MCUs (minimum coded units) between two restart
+                                                    markers for a JPEG encode subtask).
+                                                    \n 0: restart markers are disabled.
+                                                    \n 1: restart markers are enabled.*/
+    t_ushort_value quant_luma[64];             /**<\brief Quantization table for luminance (i.e. 64 default quantization values in “column scan order” 
+                                                    (i.e. from top to bottom, then left to right) for the luminance component).
+                                                    \n Contraints : ]0,255] */
+    t_ushort_value quant_chroma[64];           /**<\brief Quantization table for chrominance (i.e. 64 default quantization values in “column scan order” 
+                                                    (i.e. from top to bottom, then left to right) for the chrominance components).
+                                                    \n Contraints : ]0,255] */
+    t_ushort_value last_slice;                 /**<\brief Last slice flag (i.e. specifies whether the current JPEG encode process includes the end of the
+                                                    picture or not (one picture can be encoded in several times corresponding to several slices). It disables 
+                                                    the insertion of a restart marker at the end of the slice, and enables the insertion of an EOI code. 
+                                                    It must be set to 1 if enable_optimized_quant=1 or enable_optimized_huffman=1).
+                                                    \n 0: the encode does not include the last slice.
+                                                    \n 1: the encode includes the last slice (insertion of an EOI code at the end of the slice).*/
+    t_ushort_value enable_optimized_quant;     /**<\brief Optimized quantization table enable flag (i.e. parameter allows to compute an optimized quantization 
+                                                    table, with respect to a target size specified by the target_bpp parameter, instead of the input table for 
+                                                    a JPEG encode subtask. When it is set to 1, the encode subtask writes the complete bitstream including the 
+                                                    header (the header buffer is not copied into the bistream buffer).
+                                                    \n 0: input quantization table.
+                                                    \n 1: optimized quantization table.
+                                                    \n Contraints : [x,y] */
+    t_ushort_value target_bpp;                 /**<\brief Target bits per pixel (i.e. target number of bits per pixel for a JPEG encode process. It is
+                                                    used only if enable_optimized_quant=1).
+                                                    \n Remark: The unit is 1/256 bpp (i.e. BPP=(number of bits per pixel)*256).*/
+    t_ushort_value enable_optimized_huffman;   /**<\brief Optimized Huffman table enable flag (i.e. allows to compute an optimized Huffman table instead of 
+                                                    the input table, for a JPEG encode. When it is set to 1, the encode subtask writes the complete bitstream
+                                                    including the header (the header buffer is not copied into the bistream buffer)).
+                                                    \n 0: input Huffman table.
+                                                    \n 1: optimized Huffman table. */
+    t_ushort_value rotation;                   /**<\brief on-the fly JPEG rotation by +/- 90 (i.e. specifies whether the current JPEG encode process will perform 
+                                                    on-the fly rotation by +/- 90 degrees. On the fly rotation is performed in the frequency domain by the encoder 
+                                                    while the input image has a normal (non-rotated) orientation). 
+                                                    \n remarks: When this flag is activated, the client generating the JPEG stream needs to comply with the following rules:
+                                                    \n • invert image width and height in the JPEG header 
+                                                    \n • transpose the quantization tables in the JPEG header (note that the tables passed to the firmware must NOT be transposed)
+                                                    \n • take into account the width/height inversion in the restart_interval settings (both in the header and in the Firmware input parameters)
+                                                    \n 0: no rotation (normal encoding)
+                                                    \n 1: rotate 90 degrees
+                                                    \n 2: rotate -90 degrees 
+                                                    \n Contraints : This feature is available only for mb-tiled 420 input (with or without thumbnail) */
+    t_ushort_value reserved_1;                 /**<\brief reserved 32              */
+    t_ulong_value  reserved_2;                 /**<\brief reserved 32              */
+
+} ts_t1xhv_vec_jpeg_param_in;
+
+typedef ts_t1xhv_vec_jpeg_param_in *tps_t1xhv_vec_jpeg_param_in;
+
+/** \brief This structure defines a JPEG Encode input/output parameter buffers. */
+typedef struct {
+
+    t_ushort_value restart_mcu_count;          /**<\brief Restart MCU count (i.e. defines the number of MCUs that precede the next restart marker)
+                                                    \n remarks: 
+                                                    \n As an input, this parameter defines the number of MCUs (minimum coded units) that precede
+                                                    the next restart marker. It must be set to the same value as restart_interval at the beginning of a scan.
+                                                    \n As an output, this parameter returns the number of MCUs (minimum coded units) that precede
+                                                    the next restart marker, for the next JPEG encode subtask.
+                                                    \n Contraints : n/a */
+    t_ushort_value dc_predictor_y;             /**<\brief Luma DC predictor (i.e. defines the DC predictor of the luminance component of the first MCU to
+                                                    be encoded).
+                                                    \n remarks:
+                                                    \n As an input, this parameter defines the DC predictor of the luminance component of the first
+                                                    MCU to be encoded. It must be set to 0 at the beginning of a scan.
+                                                    \n As an output, this parameter returns the DC predictor of the luminance component of the first
+                                                    MCU to be encoded in the next JPEG encode.
+                                                    \n Contraints : n/a*/
+    t_ushort_value dc_predictor_cb;            /**<\brief Cb Chroma DC predictor (i.e. defines the DC predictor of the Cb chrominance component of the first
+                                                    MCU to be encoded).
+                                                    \n remarks:     
+                                                    \n As an input, this parameter defines the DC predictor of the Cb chrominance component of the
+                                                    first MCU to be encoded. It must be set to 0 at the beginning of a scan.
+                                                    \n As an output, this parameter returns the DC predictor of the Cb chrominance component of
+                                                    the first MCU to be encoded in the next JPEG encode.
+                                                    \n Contraints : n/a*/
+    t_ushort_value dc_predictor_cr;            /**<\brief Cr Chroma DC predictor (i.e. defines the DC predictor of the Cr chrominance component of the first
+                                                    MCU to be encoded).
+                                                    \n remarks:
+                                                    \n As an input, this parameter defines the DC predictor of the Cr chrominance component of the
+                                                    first MCU to be encoded. It must be set to 0 at the beginning of a scan.
+                                                    \n As an output, this parameter returns the DC predictor of the Cr chrominance component of the
+                                                    first MCU to be encoded in the next JPEG encode.
+                                                    \n Contraints : n/a*/
+    t_ushort_value restart_marker_id;         /**<\brief TBD (i.e. TBD).
+                                                    \n remarks: TBD.
+                                                    \n Contraints : TBD */
+    t_ushort_value reserved_1;                /**<\brief To align struct on 128b*/
+    t_ulong_value  reserved_2;                /**<\brief To align struct on 128b */
+
+} ts_t1xhv_vec_jpeg_param_inout;
+
+typedef ts_t1xhv_vec_jpeg_param_inout *tps_t1xhv_vec_jpeg_param_inout;
+
+/** \brief This structure defines a JPEG Encode output parameter buffers. */
+typedef struct {
+
+    t_ushort_value error_type;                /**<\brief Return bitstream error type (see t_t1xhv_encoder_info for details in \ref secJpegendAlgoGroup) */
+    t_ushort_value reserved;                  /**<\brief To align next field  on 32b boundary */
+    t_ulong_value  bitstream_size;            /**<\brief Encoded Bitstream size (i.e. returns the size in bits of the bitstream that has been written by
+                                                      the current encode, including the header but not the stuffing bits).
+                                                      \n Remarks: It is valid for all values of brc_type.
+                                                      \n Contraints: n/a*/
+    t_ulong_value  reserved_1;                /**<\brief To align struct size on 128b           */
+    t_ulong_value  reserved_2;                /**<\brief To align struct size on 128b           */
+
+} ts_t1xhv_vec_jpeg_param_out;
+
+typedef ts_t1xhv_vec_jpeg_param_out *tps_t1xhv_vec_jpeg_param_out;
+
+/** @} */ // end of secJpegGroup
+
+#endif /* _t1xhv_vec_jpeg_idt */

@@ -1,0 +1,40 @@
+#do $(IMAGING_PATH)/ite_nmf/script/debug/gnd_set_exposure_pre_run.ite
+# This script can be used for setting exposure before issuing RUN command to ISP FW.
+# It was created for testing purpose.
+
+LogPE disable
+
+setusecase HR VGA YUV420MB_D
+manualfps 30
+getfps R
+
+setExposureTime 5000
+HR prepare
+HR start
+getExposureTime
+HR stop
+
+setExposureTime 10000
+HR start
+getExposureTime
+HR stop
+
+setExposureTime 15000
+HR start
+getExposureTime
+HR stop
+
+setExposureTime 20000
+HR start
+getExposureTime
+HR stop
+
+setExposureTime 25000
+HR start
+getExposureTime
+HR stop
+
+setExposureTime 30000
+HR start
+getExposureTime
+HR stop

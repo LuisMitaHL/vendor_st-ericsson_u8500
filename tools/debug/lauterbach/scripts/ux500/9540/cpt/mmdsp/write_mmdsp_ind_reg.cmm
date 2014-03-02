@@ -1,0 +1,145 @@
+; #####################################################################
+; # DB8500 debug & Trace script file: write_mmdsp_ind_reg.cmm         #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2009-03-05
+; Contact jingyi-xiaoyan.lu@st.com
+
+;--------------------------------------------------------------------
+; This command, available in Trace32-ARM, writes a indirect MMDSP+ 
+; host register for Nomadik systems (STn8810, STn8815 and STn8820).
+;--------------------------------------------------------------------
+
+&Usage="Usage: do write_mmdsp_ind_reg <8810a|8810v|8815a|8815v|8820a|8820v|8820i|8500v|8500i> <ind_reg_addr> <reg_val>"
+
+ENTRY &nomadik_ver &ind_host_addr &ind_host_val
+if (string.mid(cpu(),0,7)!="ARM1176")&&(string.mid(cpu(),0,6)!="ARM926")&&(cpu()!="STN8820")&&(string.lwr(string.mid(cpu(),0,6))!="cortex")&&(string.lwr(string.mid(cpu(),0,6))!="db8500")&&(string.lwr(string.mid(cpu(),0,5))!="t5008")&&(string.lwr(string.mid(cpu(),0,6))!="db9540")&&(string.lwr(string.mid(cpu(),0,6))!="db8540")
+(
+	print ""
+	print "This command is only executable by ARM9/11/Cortex. Nothing to do!"
+	enddo NOT_ARM_9_11_Cortex
+)
+else
+(
+	;print "write_mmdsp_ind_reg - @=&ind_host_addr val=&ind_host_val"
+	
+	&uaddrl=0x0
+	&uaddrm=0x0
+	&uaddrh=0x0
+	&udata0=0x0
+	&udata1=0x0
+	&udata2=0x0
+	&udata3=0x0
+	&udata4=0x0
+	&udata5=0x0
+	&udata6=0x0
+	&udata7=0x0
+	&ucmd=0x0
+	&W_cmd=0x0
+
+	if "&nomadik_ver"=="8815a"||"&nomadik_ver"=="8810a"||"&nomadik_ver"=="8500i"
+	(
+	 &uaddrl=0xA0260050
+	 &uaddrm=0xA0260052
+	 &uaddrh=0xA026006C
+	 &udata0=0xA0260040
+	 &udata1=0xA0260042
+	 &udata2=0xA0260044
+	 &udata3=0xA0260046
+	 &udata4=0xA0260048
+	 &udata5=0xA026004A
+	 &udata6=0xA026004C
+	 &udata7=0xA026004E
+	 &ucmd=0xA0260054
+	 &W_cmd=0x10
+	)
+	else if "&nomadik_ver"=="8815v"||"&nomadik_ver"=="8810v"||"&nomadik_ver"=="8500v"
+	(
+	 &uaddrl=0xA0160050 
+	 &uaddrm=0xA0160052 
+	 &uaddrh=0xA016006C 
+	 &udata0=0xA0160040 
+	 &udata1=0xA0160042 
+	 &udata2=0xA0160044 
+	 &udata3=0xA0160046 
+	 &udata4=0xA0160048 
+	 &udata5=0xA016004A 
+	 &udata6=0xA016004C
+	 &udata7=0xA016004E
+	 &ucmd=0xA0160054
+	 &W_cmd=0x10
+	)
+	else if "&nomadik_ver"=="8820a"
+	(
+	 &uaddrl=0x90060050
+	 &uaddrm=0x90060052
+	 &uaddrh=0x9006006C
+	 &udata0=0x90060040
+	 &udata1=0x90060042
+	 &udata2=0x90060044
+	 &udata3=0x90060046
+	 &udata4=0x90060048
+	 &udata5=0x9006004A
+	 &udata6=0x9006004C
+	 &udata7=0x9006004E
+	 &ucmd=0x90060054
+	 &W_cmd=0x10
+	)
+	else if "&nomadik_ver"=="8820v"
+	(
+	 &uaddrl=0x90160050
+	 &uaddrm=0x90160052
+	 &uaddrh=0x9016006C
+	 &udata0=0x90160040
+	 &udata1=0x90160042
+	 &udata2=0x90160044
+	 &udata3=0x90160046
+	 &udata4=0x90160048
+	 &udata5=0x9016004A
+	 &udata6=0x9016004C
+	 &udata7=0x9016004E
+	 &ucmd=0x90160054
+	 &W_cmd=0x10
+	)
+	else if "&nomadik_ver"=="8820i"
+	(
+	 &uaddrl=0x90260050
+	 &uaddrm=0x90260052
+	 &uaddrh=0x9026006C
+	 &udata0=0x90260040
+	 &udata1=0x90260042
+	 &udata2=0x90260044
+	 &udata3=0x90260046
+	 &udata4=0x90260048
+	 &udata5=0x9026004A
+	 &udata6=0x9026004C
+	 &udata7=0x9026004E
+	 &ucmd=0x90260054
+	 &W_cmd=0x10
+	)
+	else 
+	(
+	  print ""
+	  print "&Usage"
+	  enddo UNKNOWN_NOMADIK_VER
+	)
+
+	;planning an access of the indirect host reg &ind_host_addr
+	data.set &uaddrl %word &ind_host_addr&0xFF
+	data.set &uaddrm %word (&ind_host_addr>>8)&0xFF
+	data.set &uaddrh %word (&ind_host_addr>>16.)&0xFF
+	
+	;with the value &ind_host_va
+	data.set &udata0 %word &ind_host_val&0xFF
+	data.set &udata1 %word (&ind_host_val>>8)&0xFF
+	data.set &udata2 %word (&ind_host_val>>16.)&0xFF
+	data.set &udata3 %word (&ind_host_val>>24.)&0xFF
+	data.set &udata4 %word (&ind_host_val>>32.)&0xFF
+	data.set &udata5 %word (&ind_host_val>>40.)&0xFF
+	data.set &udata6 %word (&ind_host_val>>48.)&0xFF
+	data.set &udata7 %word (&ind_host_val>>56.)&0xFF
+
+	;write access
+	data.set &ucmd %word &W_cmd
+)
+enddo DONE

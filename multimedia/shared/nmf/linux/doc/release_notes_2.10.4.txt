@@ -1,0 +1,56 @@
+***********************************************
+* Linux Environment (version 2.10.4) "Pietra" *
+***********************************************
+
+The release comprises one .tgz file holding the following features:
+    - The needed files to develop NMF applications under Linux:
+      (libraries and header)
+    - The binaries to run NMF applications on the target.
+
+    http://codexstn.cro.st.com/svnroot/nmf/nmf_linux/tags/generic-v2.10.4
+
+Supported target:
+    - STn8500 (HREF-V1, U8500_V2, U5500)
+    
+Changes:
+--------
+[CM]
+     * For general changes (such as CM API update, etc), see the NMF release notes
+       in component com.stericsson.nmf.tools
+     * Add this line in your components.txt to use NMF in a Linux environment:
+       include rod+package://com.stericsson.nmf.linux:2.10.2/components.txt
+
+[NMF Linux]
+     * Integrate NMF 2.10.4
+     * Dispatch service message type NMF_SERVICE_SHUTDOWN when a DSP is shutdown
+     * Manage the power of MMDSP and ESRAM
+     * Update installation and packaging for MeeGo
+
+Bug fixes:
+---------
+[NMF Linux]
+     * Fix LOS_SemaphoreDestroy() on Android: a bug in sem_destroy() on Android
+       causes it to wrongly fails => that prevents the semaphore to be released
+       in LOS_SemaphoreDestroy()
+       => fix it by ignoring this error
+
+Notes
+-----
+Tested with linux_kernel 6.34.19 and later
+  * on hrefp_v1.1 with prcmu A1_V12_09_02
+  * on hrefp_v2.0 with prcmu B0_V1.2.1
+  
+
+Known Issues:
+-------------
+     * None
+
+Pre-requires:
+-------------
+    - mmenv and makefiles rodos packages
+    - linux_kernel 9.0.0 or later
+    - linux_ramdisk 1.3.0 or later
+    - com.stericsson.montblanc.linux.trace 0.2.0 or later
+    - GCC ARM compiler 4.2.3 from STLinux 2.3 distribution
+    - The NMF tools are provided in a separate package:
+      nmf_tools package is required to develop NMF applications.

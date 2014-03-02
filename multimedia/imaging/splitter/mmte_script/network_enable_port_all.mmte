@@ -1,0 +1,20 @@
+OMX_SendCommand	my_sink_1			OMX_CommandPortEnable	OMX_ALL
+OMX_SendCommand	my_sink_2			OMX_CommandPortEnable	OMX_ALL
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+OMX_SendCommand	my_sink_3			OMX_CommandPortEnable	OMX_ALL
+OMX_SendCommand	my_sink_4			OMX_CommandPortEnable	OMX_ALL
+endif
+OMX_SendCommand	tested_component	OMX_CommandPortEnable	OMX_ALL
+OMX_SendCommand	my_source_1			OMX_CommandPortEnable	OMX_ALL
+MMTE_WaitEvent	my_source_1			OMX_EventCmdComplete	OMX_CommandPortEnable	0
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandPortEnable	0
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandPortEnable	1
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandPortEnable	2
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandPortEnable	3
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandPortEnable	4
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+MMTE_WaitEvent	my_sink_4			OMX_EventCmdComplete	OMX_CommandPortEnable	0
+MMTE_WaitEvent	my_sink_3			OMX_EventCmdComplete	OMX_CommandPortEnable	0
+endif
+MMTE_WaitEvent	my_sink_2			OMX_EventCmdComplete	OMX_CommandPortEnable	0
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandPortEnable	0

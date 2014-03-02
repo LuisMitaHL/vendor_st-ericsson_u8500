@@ -1,0 +1,69 @@
+//
+//       Configuration file for      algo (MPEG4 encoder)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive mpeg4enc.mpc.algo
+{
+
+provides lifecycle.constructor								as constructor
+//
+// Provided interfaces to a mpeg4_encoder_ddep component
+provides mpeg4enc.mpc.api.algo								as iAlgo
+provides mpeg4enc.mpc.api.update_algo						as iUpdateAlgo
+
+//
+// Provided interfaces to a resource_manager component
+provides resource_manager.api.signal                        as iSignal referenced
+
+// Debug printf interface
+//--requires debug.mpc.api.printf								as oPrintf optional
+
+// Required interfaces to a resource_manager component
+requires resource_manager.api.buffer						as iBuffer
+requires resource_manager.api.mtf							as iMtf
+requires resource_manager.api.interrupt						as iInterrupt
+requires ee.api.debug 					                    as _debug
+//      --------------
+//      - Source files
+	sources src/SVA_SUBSYSTEM/m4e_air_cir.c
+	sources src/SVA_SUBSYSTEM/m4e_constant_rate_control.c
+	sources src/SVA_SUBSYSTEM/m4e_dc_prediction.c
+	sources src/SVA_SUBSYSTEM/m4e_encode_picture.c
+	sources src/SVA_SUBSYSTEM/m4e_generate_mv.c
+	sources src/SVA_SUBSYSTEM/m4e_header.c
+	sources src/SVA_SUBSYSTEM/m4e_mb_fifo.c
+	sources src/SVA_SUBSYSTEM/m4e_mecc_control.c
+	sources src/SVA_SUBSYSTEM/m4e_noratecontrol.c
+	sources src/SVA_SUBSYSTEM/m4e_rate_control.c
+	sources src/SVA_SUBSYSTEM/m4e_variable_rate_control.c
+	sources src/SVA_SUBSYSTEM/m4e_vbv.c
+	sources src/SVA_SUBSYSTEM/m4e_vlc.c
+	sources src/SVA_SUBSYSTEM/t1xhv_m4e.c
+	sources src/SVA_SUBSYSTEM/bpu_api.c
+	sources src/SVA_SUBSYSTEM/dma_api.c
+	sources src/SVA_SUBSYSTEM/m4e_segmented.c
+	sources src/algo.c
+//	sources src/t1xhv_h264d_main.c
+//	sources src/sm_h264d.c
+//	sources src/sm_common.c
+//	sources src/t1xhv_interrupt.c
+#ifdef __ndk8500a__
+
+
+#endif
+	sources src/SVA_SUBSYSTEM/mtf_api.c
+
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+//option CPPFLAGS "/inc"
+option CFLAGS "-O3 +k -DSTATIC_CONF_5=1 -DNEW_VP -D__T1XHV_NMF_ENV=1 -DMMDSP=1 -DFINAL_IMPLEMENTATION=1 -DTARGET=dsp16 -mode16"
+// -D__DEBUG_TRACE_ENABLE=1"
+//option incdir "./inc;./inc_enc -D__DEBUG_TRACE_ENABLE=1 -DOLDVBR=1"
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+
+

@@ -1,0 +1,14 @@
+#include <stereowidener/effect/include/stereoenhancer.h>
+
+interface stereowidener.effect.libstereoenhancer.libstereoenhancer unmanaged {
+
+	void bypass(STEREOENHANCER_LOCAL_STRUCT_T * stereoenhancer);
+	void downmix(STEREOENHANCER_LOCAL_STRUCT_T * stereoenhancer);
+	void upmix(STEREOENHANCER_LOCAL_STRUCT_T * stereoenhancer);
+	void stereo_reset(STEREOENHANCER_LOCAL_STRUCT_T *stereoenhancer);
+	void m2s_reset(STEREOENHANCER_LOCAL_STRUCT_T *stereoenhancer, STEREOWIDENER_DUMMY_INTERFACE_T *itf);
+	CODEC_INIT_T m2s_init(STEREOENHANCER_LOCAL_STRUCT_T *stereoenhancer, STEREOWIDENER_DUMMY_INTERFACE_T *itf);
+	void m2s_expansion(STEREOENHANCER_LOCAL_STRUCT_T * stereoenhancer);
+	void stereo_enhancement(STEREOENHANCER_LOCAL_STRUCT_T * stereoenhancer);
+	void applyEffectConfig(StereoenhancerAlgoConfig_t *pConfig,STEREOENHANCER_LOCAL_STRUCT_T *stereoenhancer); 
+}

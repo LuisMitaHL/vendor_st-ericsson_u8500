@@ -1,0 +1,433 @@
+; Test configurations, with invalid values etc
+
+;MDRC1
+INSERT INTO Device VALUES ('PHF_MDRC1_IN', '', 'mdrc_chain', 'PHF_IN_Source', '', 'None', 0, 'IN');
+INSERT INTO Device VALUES ('HH_MDRC1_IN', '', 'mdrc_chain', 'HH_IN_Source', '', 'None', 0, 'IN');
+
+;MDRC2
+INSERT INTO Device VALUES ('PHF_MDRC2_IN', 'mdrc_chain', '', 'PHF_IN_Source', '', 'None', 0, 'IN');
+INSERT INTO Device VALUES ('HH_MDRC2_IN', 'mdrc_chain', '', 'HH_IN_Source', '', 'None', 0, 'IN');
+
+;MDRC3
+INSERT INTO Device VALUES ('PHF_MDRC3_IN', 'mdrc_chain', 'mdrc_chain', 'PHF_IN_Source', '', 'None', 0, 'IN');
+INSERT INTO Device VALUES ('PHF_MDRC3_IN_V2', 'mdrc_chain2', 'mdrc_chain2', 'PHF_IN_Source', '', 'None', 0, 'IN');
+INSERT INTO Device VALUES ('HH_MDRC3_IN', 'mdrc_chain', 'mdrc_chain', 'HH_IN_Source', '', 'None', 0, 'IN');
+
+;MDRC4
+INSERT INTO Device VALUES ('PHF_MDRC4_IN', 'trips_mdrc_chain', 'trips_mdrc_chain', 'PHF_IN_Source', '', 'None', 0, 'IN');
+INSERT INTO Device VALUES ('HH_MDRC4_IN', 'trips_mdrc_chain', 'trips_mdrc_chain', 'HH_IN_Source', '', 'None', 0, 'IN');
+
+;MDRC5
+INSERT INTO Device VALUES ('IHF_MDRC5_OUT', 'mdrc_chain', '', 'IHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('PHF_MDRC5_OUT', 'mdrc_chain', '', 'PHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('HH_MDRC5_OUT', 'mdrc_chain', '', 'HH_OUT_Sink', '', 'None', 0, 'OUT');
+
+;MDRC6
+INSERT INTO Device VALUES ('IHF_MDRC6_OUT', '', 'mdrc_chain', 'IHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('PHF_MDRC6_OUT', '', 'mdrc_chain', 'PHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('HH_MDRC6_OUT', '', 'mdrc_chain', 'HH_OUT_Sink', '', 'None', 0, 'OUT');
+
+;MDRC7
+INSERT INTO Device VALUES ('IHF_MDRC7_OUT', 'mdrc_chain', 'mdrc_chain', 'IHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('PHF_MDRC7_OUT', 'mdrc_chain', 'mdrc_chain', 'PHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('HH_MDRC7_OUT',  'mdrc_chain', 'mdrc_chain', 'HH_OUT_Sink', '', 'None', 0, 'OUT');
+
+;MDRC8
+INSERT INTO Device VALUES ('IHF_MDRC8_OUT', 'trips_mdrc_chain', 'trips_mdrc_chain', 'IHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('PHF_MDRC8_OUT', 'trips_mdrc_chain', 'trips_mdrc_chain', 'PHF_OUT_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('HH_MDRC8_OUT',  'trips_mdrc_chain', 'trips_mdrc_chain', 'HH_OUT_Sink', '', 'None', 0, 'OUT');
+
+;Test devices
+;INSERT INTO Device VALUES ('IHF_OUT', 'IHF_OUT_AC', 'IHF_OUT_CC', 'IHF_OUT_Sink', '', 'None', 0, 'OUT');
+;INSERT INTO Device VALUES ('PHF_OUT', 'PHF_OUT_AC', 'PHF_OUT_CC', 'PHF_OUT_Sink', '', 'None', 0, 'OUT');
+;INSERT INTO Device VALUES ('HH_OUT', 'HH_OUT_AC', 'HH_OUT_CC', 'HH_OUT_Sink', '', 'None', 0, 'OUT');
+
+;INSERT INTO Device VALUES ('PHF_IN', 'PHF_IN_AC', 'PHF_IN_CC', 'PHF_IN_Source', '', 'None', 0, 'IN');
+;INSERT INTO Device VALUES ('HH_IN', 'HH_IN_AC', 'HH_IN_CC', 'HH_IN_Source', '', 'None', 0, 'IN');
+
+
+;INSERT INTO "SpeechConfig" VALUES('PHF_MDRC3_IN','PHF_MDRC7_OUT',8000,'vc_mic_hset_8_in','vc_mic_hset_8_out','vc_hset_hset_8_speech_proc','VC_HEADSET_OUT_HEADSET_IN', NULL);
+;INSERT INTO "SpeechConfig" VALUES('PHF_MDRC3_IN_V2','PHF_MDRC7_OUT_V2',8000,'vc_mic_hset_8_in_v2','vc_mic_hset_8_out_v2','vc_hset_hset_8_speech_proc_v2','VC_HEADSET_OUT_HEADSET_IN', NULL);
+
+INSERT INTO Template_OMXName VALUES('IHF_OUT_Sink', 'OMX.ST.AFM.IHF');
+INSERT INTO Template_Config VALUES ('IHF_OUT_Sink', 'Param',  '#67108866', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('IHF_OUT_Sink', 'Config', '#67108898', 'VOLUMETYPE', 'port0_vol100mB');
+INSERT INTO Template_Config VALUES ('IHF_OUT_Sink', 'Config', '#67108901', 'MUTETYPE', 'port0_mute_off');
+
+INSERT INTO Template_OMXName VALUES ('PHF_OUT_Sink', 'OMX.ST.AFM.NOKIA_AV_SINK');
+INSERT INTO Template_Config VALUES ('PHF_OUT_Sink', 'Param',  '#67108866', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('PHF_OUT_Sink', 'Config', '#67108898', 'VOLUMETYPE', 'port0_vol100mB');
+INSERT INTO Template_Config VALUES ('PHF_OUT_Sink', 'Config', '#67108901', 'MUTETYPE', 'port0_mute_off');
+
+INSERT INTO Template_OMXName VALUES ('HH_OUT_Sink', 'OMX.ST.AFM.EARPIECE');
+INSERT INTO Template_Config VALUES ('HH_OUT_Sink', 'Param',  '#67108866', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('HH_OUT_Sink', 'Config', '#67108898', 'VOLUMETYPE', 'port0_vol100mB');
+INSERT INTO Template_Config VALUES ('HH_OUT_Sink', 'Config', '#67108901', 'MUTETYPE', 'port0_mute_off');
+
+INSERT INTO Template_OMXName VALUES ('PHF_IN_Source', 'OMX.ST.AFM.NOKIA_AV_SOURCE');
+INSERT INTO Template_Config VALUES ('PHF_IN_Source', 'Param',  '#67108866', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('PHF_IN_Source', 'Config', '#67108898', 'VOLUMETYPE', 'port0_vol30mB');
+INSERT INTO Template_Config VALUES ('PHF_IN_Source', 'Config', '#67108901', 'MUTETYPE', 'port0_mute_off');
+
+INSERT INTO Template_OMXName VALUES ('HH_IN_Source', 'OMX.ST.AFM.MULTI_MIC');
+INSERT INTO Template_Config VALUES ('HH_IN_Source', 'Param',  '#67108866', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('HH_IN_Source', 'Config', '#67108898', 'VOLUMETYPE', 'port0_vol30mB');
+INSERT INTO Template_Config VALUES ('HH_IN_Source', 'Config', '#67108901', 'MUTETYPE', 'port0_mute_off');
+
+INSERT INTO Template_OMXName VALUES ('std_MDRC1', 'OMX.ST.AFM.pcmprocessing.mdrc');
+INSERT INTO Template_Config VALUES ('std_MDRC1', 'Param',  '#67108866', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('std_MDRC1', 'Param',  '#67108866', 'PCMMODETYPE', 'port1_48s');
+
+INSERT INTO Template_Config VALUES ('std_MDRC1', 'Config',  'OMX_IndexConfigAudioMdrc', 'MDRCTYPE', 'port1_mdrc_b0');
+INSERT INTO Template_Config VALUES ('std_MDRC1', 'Config',  'OMX_IndexConfigAudioMdrc', 'MDRCTYPE', 'port1_mdrc_b1');
+INSERT INTO Template_Config VALUES ('std_MDRC1', 'Config',  'OMX_IndexConfigAudioMdrc', 'MDRCTYPE', 'port1_mdrc_b2');
+INSERT INTO Template_Config VALUES ('std_MDRC1', 'Config',  'OMX_IndexConfigAudioMdrc', 'MDRCTYPE', 'port1_mdrc_b3');
+INSERT INTO Template_Config VALUES ('std_MDRC1', 'Config',  'OMX_IndexConfigAudioMdrc', 'MDRCTYPE', 'port1_mdrc_b4');
+
+
+INSERT INTO EffectChainDef VALUES ('mdrc_chain', 'std_MDRC1', 1);
+INSERT INTO EffectChainDef VALUES ('double_mdrc_chain', 'std_MDRC1', 1);
+INSERT INTO EffectChainDef VALUES ('double_mdrc_chain', 'std_MDRC1', 2);
+INSERT INTO EffectChainDef VALUES ('trips_mdrc_chain', 'std_MDRC1', 1);
+INSERT INTO EffectChainDef VALUES ('trips_mdrc_chain', 'std_MDRC1', 2);
+INSERT INTO EffectChainDef VALUES ('trips_mdrc_chain', 'std_MDRC1', 3);
+
+
+; DRC
+INSERT INTO Template_OMXName VALUES ('drc1', 'OMX.ST.AFM.pcmprocessing.drc');
+INSERT INTO Template_Config VALUES ('drc1', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('drc1', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_48s');
+INSERT INTO Template_Config VALUES ('drc1', 'Config',  'OMX_IndexConfigAudioDRC', 'AUDIODRCTYPE', 'drc_port0_c_test1');
+INSERT INTO EffectChainDef VALUES ('drc_chain1', 'drc1', 1);
+INSERT INTO Device VALUES ('drc_HSetOut1',  'None', 'drc_chain1', 'REF_HSetOut_Sink',  '', 'None', 0, 'OUT');
+INSERT INTO EffectChainDef VALUES ('drc_chain2', 'drc1', 1);
+INSERT INTO EffectChainDef VALUES ('drc_chain2', 'drc1', 2);
+INSERT INTO EffectChainDef VALUES ('drc_chain2', 'drc1', 3);
+INSERT INTO Device VALUES ('drc_HSetOut2',  'drc_chain2', 'drc_chain2', 'REF_HSetOut_Sink',  '', 'None', 0, 'OUT');
+
+INSERT INTO Template_OMXName VALUES ('drc_dual', 'OMX.ST.AFM.pcmprocessing.drc');
+INSERT INTO Template_Config VALUES ('drc_dual', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('drc_dual', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_48s');
+INSERT INTO Template_Config VALUES ('drc_dual', 'Config',  'OMX_IndexConfigAudioDRC', 'AUDIODRCTYPE', 'drc_in_stereo_dual_c');
+INSERT INTO EffectChainDef VALUES ('drc_chain_dual', 'drc_dual', 1);
+INSERT INTO Device VALUES ('drc_dual_HSetOut',  'None', 'drc_chain_dual', 'REF_HSetOut_Sink',  '', 'None', 0, 'OUT');
+
+
+INSERT INTO Template_OMXName VALUES ('drc_8m', 'OMX.ST.AFM.pcmprocessing.drc');
+INSERT INTO Template_Config VALUES ('drc_8m', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_8m');
+INSERT INTO Template_Config VALUES ('drc_8m', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_8m');
+INSERT INTO Template_Config VALUES ('drc_8m', 'Config',  'OMX_IndexConfigAudioDRC', 'AUDIODRCTYPE', 'drc_port0_c_test1');
+INSERT INTO EffectChainDef VALUES ('drc_chain_8m', 'drc_8m', 1);
+
+INSERT INTO Template_OMXName VALUES ('drc_16m', 'OMX.ST.AFM.pcmprocessing.drc');
+INSERT INTO Template_Config VALUES ('drc_16m', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_16m');
+INSERT INTO Template_Config VALUES ('drc_16m', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_16m');
+INSERT INTO Template_Config VALUES ('drc_16m', 'Config',  'OMX_IndexConfigAudioDRC', 'AUDIODRCTYPE', 'drc_port0_c_test1');
+INSERT INTO EffectChainDef VALUES ('drc_chain_16m', 'drc_16m', 1);
+
+; TRANSDUCER EQUALIZER
+INSERT INTO Template_OMXName VALUES ('teq1', 'OMX.ST.AFM.pcmprocessing.transducer_equalizer');
+INSERT INTO Template_Config VALUES ('teq1', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('teq1', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_48s');
+INSERT INTO Template_Config VALUES ('teq1', 'Param',  'AFM_IndexParamTransducerEqualizer', 'PARAM_TRANSDUCEREQUALIZERTYPE', 'teq_fir_bass_boost_p');
+INSERT INTO Template_Config VALUES ('teq1', 'Config',  'AFM_IndexConfigTransducerEqualizer', 'CONFIG_TRANSDUCEREQUALIZERTYPE', 'teq_fir_bass_boost_c');
+INSERT INTO EffectChainDef VALUES ('teq_chain1', 'teq1', 1);
+INSERT INTO Device VALUES ('teq_HSetOut1',  'None', 'teq_chain1', 'REF_HSetOut_Sink',  '', 'None', 0, 'OUT');
+
+; SOUND PRESSURE LIMITER
+INSERT INTO Template_OMXName VALUES ('spl1', 'OMX.ST.AFM.pcmprocessing.spl');
+INSERT INTO Template_Config VALUES ('spl1', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES ('spl1', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_48s');
+INSERT INTO Template_Config VALUES ('spl1', 'Param',  'AFM_IndexParamSpl', 'PARAM_SPLTYPE', 'spl_p_test1');
+INSERT INTO Template_Config VALUES ('spl1', 'Config',  'OMX_IndexConfigSpllimit', 'CONFIG_SPLLIMITTYPE', 'spl_c_limit_test1');
+INSERT INTO Template_Config VALUES ('spl1', 'Config',  'OMX_IndexConfigAudioVolume', 'VOLUMETYPE', 'spl_vol_600');
+INSERT INTO EffectChainDef VALUES ('spl_chain1', 'spl1', 1);
+INSERT INTO Device VALUES ('spl_HSetOut1',  'None', 'spl_chain1', 'REF_HSetOut_Sink',  '', 'None', 0, 'OUT');
+
+; NOISE REDUCTION
+INSERT INTO Template_OMXName VALUES ('noisereduction_48s',  'OMX.ST.AFM.pcmprocessing.noise_reduction');
+INSERT INTO Template_Config VALUES  ('noisereduction_48s',  'Param',    'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES  ('noisereduction_48s',  'Param',    'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_48s');
+INSERT INTO Template_Config VALUES  ('noisereduction_48s',  'Config',   'OMX_STE_IndexConfigAudioNoiseReduction', 'CONFIG_NOISEREDUCTIONTYPE', 'noisereduction_c');
+INSERT INTO EffectChainDef VALUES   ('noisereduction_chain_48s', 'noisereduction_48s', 1);
+INSERT INTO Device VALUES ('noisereduction_48s_HSetIn', 'noisereduction_chain_48s', 'None', 'REF_HSetIn_Source', '', 'None', 0, 'IN');
+INSERT INTO EffectChainDef VALUES   ('nr_virtualizer_chain_48s', 'noisereduction_48s', 1);
+INSERT INTO EffectChainDef VALUES   ('nr_virtualizer_chain_48s', 'virtualizer_hp', 2);
+INSERT INTO Device VALUES ('nr_virtualizer_48s_HSetIn', 'nr_virtualizer_chain_48s', 'None', 'REF_HSetIn_Source', '', 'None', 0, 'IN');
+
+INSERT INTO Template_OMXName VALUES ('noisereduction_8m',  'OMX.ST.AFM.pcmprocessing.noise_reduction');
+INSERT INTO Template_Config VALUES  ('noisereduction_8m',  'Param',    'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_8m');
+INSERT INTO Template_Config VALUES  ('noisereduction_8m',  'Param',    'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_8m');
+INSERT INTO Template_Config VALUES  ('noisereduction_8m',  'Config',   'OMX_STE_IndexConfigAudioNoiseReduction', 'CONFIG_NOISEREDUCTIONTYPE', 'noisereduction_c');
+INSERT INTO EffectChainDef VALUES   ('noisereduction_chain_8m', 'noisereduction_8m', 1);
+INSERT INTO Device VALUES ('noisereduction_8m_HSetIn', 'noisereduction_chain_8m', 'None', 'REF_HSetIn_Source', '', 'None', 0, 'IN');
+
+INSERT INTO Template_OMXName VALUES ('noisereduction_dual_48s',  'OMX.ST.AFM.pcmprocessing.noise_reduction');
+INSERT INTO Template_Config VALUES  ('noisereduction_dual_48s',  'Param',    'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_48s');
+INSERT INTO Template_Config VALUES  ('noisereduction_dual_48s',  'Param',    'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_48s');
+INSERT INTO Template_Config VALUES  ('noisereduction_dual_48s',  'Config',   'OMX_STE_IndexConfigAudioNoiseReduction', 'CONFIG_NOISEREDUCTIONTYPE', 'noisereduction_in_stereo_dual_c');
+INSERT INTO EffectChainDef VALUES   ('noisereduction_dual_chain_48s', 'noisereduction_dual_48s', 1);
+INSERT INTO Device VALUES ('noisereduction_dual_48s_HSetIn', 'noisereduction_dual_chain_48s', 'None', 'REF_HSetIn_Source', '', 'None', 0, 'IN');
+
+
+
+; Complete compensation chain for Headset
+INSERT INTO EffectChainDef VALUES ('comphset_chain1', 'virtualizer_hp', 1);
+INSERT INTO EffectChainDef VALUES ('comphset_chain1', 'drc1', 2);
+INSERT INTO EffectChainDef VALUES ('comphset_chain1', 'teq1', 3);
+INSERT INTO EffectChainDef VALUES ('comphset_chain1', 'spl1', 4);
+INSERT INTO Device VALUES ('comp_HSetOut',  'None', 'comphset_chain1', 'REF_HSetOut_Sink',  '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('comp_HSetOut2',  'comphset_chain1', 'None', 'REF_HSetOut_Sink',  '', 'None', 0, 'OUT');
+INSERT INTO Device VALUES ('comp_HSetIn',  'None', 'comphset_chain1', 'REF_HSetIn_Source',  '', 'None', 0, 'IN');
+INSERT INTO Device VALUES ('comp_HSetIn2',  'comphset_chain1', 'None', 'REF_HSetIn_Source',  '', 'None', 0, 'IN');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn',  'comp_HSetOut',   8000, 'None', 'None', 'REF_SpeechHSet');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn',  'comp_HSetOut',  16000, 'None', 'None', 'REF_SpeechHSet');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn',  'comp_HSetOut2',  8000, 'None', 'comphset_chain1', 'REF_SpeechHSet');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn',  'comp_HSetOut2', 16000, 'None', 'comphset_chain1', 'REF_SpeechHSet');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn2', 'comp_HSetOut',   8000, 'comphset_chain1', 'None', 'REF_SpeechHSet');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn2', 'comp_HSetOut',  16000, 'comphset_chain1', 'None', 'REF_SpeechHSet');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn2', 'comp_HSetOut2',  8000, 'comphset_chain1', 'comphset_chain1', 'REF_SpeechHSet');
+; INSERT INTO SpeechConfig VALUES ('comp_HSetIn2', 'comp_HSetOut2', 16000, 'comphset_chain1', 'comphset_chain1', 'REF_SpeechHSet');
+
+; Complete compensation chain for Speaker
+; INSERT INTO EffectChainDef VALUES ('compspeaker_chain1', 'virtualizer_ls', 1);
+; INSERT INTO EffectChainDef VALUES ('compspeaker_chain1', 'drc1', 2);
+; INSERT INTO EffectChainDef VALUES ('compspeaker_chain1', 'teq1', 3);
+; INSERT INTO EffectChainDef VALUES ('compspeaker_chain1', 'spl1', 4);
+; INSERT INTO Device VALUES ('comp_Speaker',  'None', 'compspeaker_chain1', 'REF_Speaker_Sink',  '', 'None', 0, 'OUT');
+; INSERT INTO SpeechConfig VALUES ('REF_Mic', 'comp_Speaker',  8000, 'None', 'None', 'REF_SpeechSpkr');
+; INSERT INTO SpeechConfig VALUES ('REF_Mic', 'comp_Speaker', 16000, 'None', 'None', 'REF_SpeechSpkr');
+
+; test_input_filter - unused configuration so we can a semilarge graph
+
+; INSERT INTO Device VALUES ('dev_test20', 'fc_test20a', 'fc_test20b', 'comp_test20a', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO Template_OMXName VALUES ('comp_test20a', 'STE.IL.TEST.COMPONENT');
+
+; INSERT INTO EffectChainDef VALUES ('fc_test20a', 'compcfg_test20_c1', 1);
+; INSERT INTO EffectChainDef VALUES ('fc_test20a', 'compcfg_test20_c2', 2);
+; INSERT INTO EffectChainDef VALUES ('fc_test20b', 'compcfg_test20_c1', 1);
+
+; INSERT INTO Template_Config VALUES ('compcfg_test20_c1', 'Config', 'TEST.EXTENSION.INDEX1', 'cfgset_test20_1', 'cfg_test20_a');
+; INSERT INTO Template_Config VALUES ('compcfg_test20_c1', 'Config', 'TEST.EXTENSION.INDEX2', 'cfgset_test20_2', 'cfg_test20_c');
+; INSERT INTO Template_OMXName VALUES ('compcfg_test20_c1', 'STE.IL.TEST.COMPONENT1');
+
+; INSERT INTO Template_Config VALUES ('compcfg_test20_c2', 'Config', 'TEST.EXTENSION.INDEX1', 'cfgset_test20_1', 'cfg_test20_b');
+; INSERT INTO Template_OMXName VALUES ('compcfg_test20_c2', 'STE.IL.TEST.COMPONENT2');
+
+
+
+; definition of cfgset_test20_1
+; INSERT INTO StructDef VALUES('cfgset_test20_1', 'value8', 'int', 8, 64);
+; INSERT INTO StructDef VALUES('cfgset_test20_1', 'value16', 'int', 16, 96);
+; INSERT INTO StructDef VALUES('cfgset_test20_1', 'value32', 'int', 32, 128);
+; INSERT INTO StructDef VALUES('cfgset_test20_1', 'name', 'text', 128, 192);
+; INSERT INTO StructDef VALUES('cfgset_test20_1', 'owner', 'text', 128, 192+128);
+; INSERT INTO StructDef VALUES('cfgset_test20_1', 'hex1', 'rawhex', 128, 192+128+128);
+; INSERT INTO StructDef VALUES('cfgset_test20_1', 'hex2', 'rawhex', 8, 192+128+128+128);
+
+; Belongs to set cfgset_test20_1
+; INSERT INTO StructData VALUES ('cfg_test20_a', 'value8', '-4');
+; INSERT INTO StructData VALUES ('cfg_test20_a', 'value16',   '-4');
+; INSERT INTO StructData VALUES ('cfg_test20_a', 'value32',   '-4');
+; INSERT INTO StructData VALUES ('cfg_test20_a', 'name',    'cfg_test20_a');
+; INSERT INTO StructData VALUES ('cfg_test20_a', 'owner', 'abcdefghijklm');
+; INSERT INTO StructData VALUES ('cfg_test20_a', 'hex1', '0123456789ABCDEF0011223344556677');
+; INSERT INTO StructData VALUES ('cfg_test20_a', 'hex2', 'EE');
+
+; Belongs to set cfgset_test20_1
+; No owner specified here
+; INSERT INTO StructData VALUES ('cfg_test20_b', 'value8', '-1');
+; INSERT INTO StructData VALUES ('cfg_test20_b', 'value16',   '-1');
+; INSERT INTO StructData VALUES ('cfg_test20_b', 'value32',   '-1');
+; INSERT INTO StructData VALUES ('cfg_test20_b', 'name',    'cfg_test20_b');
+
+; definition of cfgset_test20_2
+; INSERT INTO StructDef VALUES('cfgset_test20_2', 'arg1', 'int', 8, 64);
+; INSERT INTO StructDef VALUES('cfgset_test20_2', 'arg2', 'int', 32, 128);
+; INSERT INTO StructDef VALUES('cfgset_test20_2', 'name', 'text', 96, 192);
+
+; Belongs to set cfgset_test20_2
+; INSERT INTO StructData VALUES ('cfg_test20_c', 'arg1',   '-2');
+; INSERT INTO StructData VALUES ('cfg_test20_c', 'arg2',   '-2');
+; INSERT INTO StructData VALUES ('cfg_test20_c', 'name',   'cfg_test20_b');
+
+
+
+
+; test_input_filter - unused configuration full of invalid or close-border data
+; Each consists of a single component with a single configuration
+
+; INSERT INTO Template_OMXName VALUES ('dummy_il_comp', 'STE.IL.DUMMY');
+; INSERT INTO Device VALUES ('dev_test1', 'filterchain_test1', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test1', 'compcfg_test1', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test1', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test1', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test1', 'compcfgval_test1');
+; INSERT INTO StructDef VALUES('cfgset_test1', 'testvalue', 'int', 7, 64);
+; INSERT INTO StructData VALUES ('compcfgval_test1', 'testvalue', '2');
+
+; INSERT INTO Device VALUES ('dev_test2', 'filterchain_test2', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test2', 'compcfg_test2', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test2', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test2', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test2', 'compcfgval_test2');
+; INSERT INTO StructDef VALUES('cfgset_test2', 'testvalue', 'int', 8, 63);
+; INSERT INTO StructData VALUES ('compcfgval_test2', 'testvalue', '2');
+
+; INSERT INTO Device VALUES ('dev_test3', 'filterchain_test3', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test3', 'compcfg_test3', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test3', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test3', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test3', 'compcfgval_test3');
+; INSERT INTO StructDef VALUES('cfgset_test3', 'testvalue', 'int', 8, 31);
+; INSERT INTO StructData VALUES ('compcfgval_test3', 'testvalue', '2');
+
+; INSERT INTO Device VALUES ('dev_test4', 'filterchain_test4', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test4', 'compcfg_test4', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test4', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test4', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test4', 'compcfgval_test4');
+; INSERT INTO StructDef VALUES('cfgset_test4', 'testvalue', 'text', 0, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test4', 'testvalue', 'banana');
+
+; INSERT INTO Device VALUES ('dev_test5', 'filterchain_test5', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test5', 'compcfg_test5', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test5', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test5', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test5', 'compcfgval_test5');
+; INSERT INTO StructDef VALUES('cfgset_test5', 'testvalue', 'text', 1, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test5', 'testvalue', 'banana');
+
+; INSERT INTO Device VALUES ('dev_test6', 'filterchain_test6', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test6', 'compcfg_test6', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test6', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test6', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test6', 'compcfgval_test6');
+; INSERT INTO StructDef VALUES('cfgset_test6', 'testvalue', 'text', 8, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test6', 'testvalue', 'banana');
+
+; INSERT INTO Device VALUES ('dev_test7', 'filterchain_test7', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test7', 'compcfg_test7', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test7', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test7', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test7', 'compcfgval_test7');
+; INSERT INTO StructDef VALUES('cfgset_test7', 'testvalue', 'text', 16, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test7', 'testvalue', 'banana');
+
+; INSERT INTO Device VALUES ('dev_test8', 'filterchain_test8', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test8', 'compcfg_test8', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test8', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test8', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test8', 'compcfgval_test8');
+; INSERT INTO StructDef VALUES('cfgset_test8', 'testvalue', 'incorrect_type', 16, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test8', 'testvalue', 'banana');
+
+; Tests of rawhex
+
+; Zero-length output buffer
+; INSERT INTO Device VALUES ('dev_test9', 'filterchain_test9', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test9', 'compcfg_test9', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test9', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test9', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test9', 'compcfgval_test9');
+; INSERT INTO StructDef VALUES('cfgset_test9', 'testvalue', 'rawhex', 0, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test9', 'testvalue', 'banana');
+
+; Non-multiple of 8 output buffer
+; INSERT INTO Device VALUES ('dev_test10', 'filterchain_test10', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test10', 'compcfg_test10', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test10', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test10', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test10', 'compcfgval_test10');
+; INSERT INTO StructDef VALUES('cfgset_test10', 'testvalue', 'rawhex', 17, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test10', 'testvalue', 'banana');
+
+; Invalid char in hex string
+; INSERT INTO Device VALUES ('dev_test11', 'filterchain_test11', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test11', 'compcfg_test11', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test11', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test11', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test11', 'compcfgval_test11');
+; INSERT INTO StructDef VALUES('cfgset_test11', 'testvalue', 'rawhex', 16, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test11', 'testvalue', '01fo');
+
+; Empty hex string
+; INSERT INTO Device VALUES ('dev_test12', 'filterchain_test12', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test12', 'compcfg_test12', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test12', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test12', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test12', 'compcfgval_test12');
+; INSERT INTO StructDef VALUES('cfgset_test12', 'testvalue', 'rawhex', 32, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test12', 'testvalue', '');
+
+; Too long hex string
+; INSERT INTO Device VALUES ('dev_test13', 'filterchain_test13', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test13', 'compcfg_test13', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test13', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test13', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test13', 'compcfgval_test13');
+; INSERT INTO StructDef VALUES('cfgset_test13', 'testvalue', 'rawhex', 16, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test13', 'testvalue', 'aaabbccc');
+
+; Too short hex string
+; INSERT INTO Device VALUES ('dev_test14', 'filterchain_test14', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test14', 'compcfg_test14', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test14', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test14', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test14', 'compcfgval_test14');
+; INSERT INTO StructDef VALUES('cfgset_test14', 'testvalue', 'rawhex', 128, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test14', 'testvalue', 'abba');
+
+; Odd length hex string
+; INSERT INTO Device VALUES ('dev_test15', 'filterchain_test15', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test15', 'compcfg_test15', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test15', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test15', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test15', 'compcfgval_test15');
+; INSERT INTO StructDef VALUES('cfgset_test15', 'testvalue', 'rawhex', 128, 128);
+; INSERT INTO StructData VALUES ('compcfgval_test15', 'testvalue', 'abb');
+
+; Struct in which the last parameter is not used
+; INSERT INTO Device VALUES ('dev_test16', 'filterchain_test16', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test16', 'compcfg_test16', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test16', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test16', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test16', 'compcfgval_test16');
+; INSERT INTO StructDef VALUES('cfgset_test16', 'testvalue', 'rawhex', 32, 128);
+; INSERT INTO StructDef VALUES('cfgset_test16', 'testvalue_unused', 'rawhex', 32, 256);
+; INSERT INTO StructData VALUES ('compcfgval_test16', 'testvalue', 'abbaeeFF');
+
+; Empty struct (no members); should just contain IL header
+; INSERT INTO Device VALUES ('dev_test17', 'filterchain_test17', 'none', 'dummy_il_comp', 'IO.Handler.Petra', 'None', 0, 'IN');
+; INSERT INTO EffectChainDef VALUES ('filterchain_test17', 'compcfg_test17', 1);
+; INSERT INTO Template_OMXName VALUES ('compcfg_test17', 'STE.IL.TEST.COMPONENT');
+; INSERT INTO Template_Config VALUES ('compcfg_test17', 'Config', 'TEST.EXTENSION.INDEX', 'cfgset_test17', 'compcfgval_test17');
+
+; speech proc effects
+;; belongs to reference_db.txt
+
+;Virtual Surround headset
+INSERT INTO Device VALUES ('HSetOutVS', 'None', 'None', 'REF_HSetOut_Sink', '', 'virtualsurround', 0, 'OUT');
+INSERT INTO Template_OMXName VALUES ('virtualsurround', 'OMX.ST.AFM.pcmprocessing.virtualsurround');
+INSERT INTO Template_Config VALUES ('virtualsurround', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port1_48s');
+INSERT INTO Template_Config VALUES ('virtualsurround', 'Param',  'OMX_IndexParamAudioPcm', 'PCMMODETYPE', 'port0_48_5.1');
+INSERT INTO Template_Config VALUES ('virtualsurround', 'Config', 'OMX_STE_IndexConfigAudioVirtualSurround', 'VIRTUALSURROUNDTYPE', 'virtual_surround');
+
+;headset 5.1 in and stereo to headsetout
+INSERT INTO Device VALUES ('HSetOut5.1', 'None', 'None', 'REF_HSetOut5.1_Sink', '', 'None', 0, 'OUT');
+INSERT INTO Template_OMXName VALUES ('REF_HSetOut5.1_Sink', 'OMX.ST.AFM.NOKIA_AV_SINK');
+INSERT INTO Template_Config VALUES  ('REF_HSetOut5.1_Sink', 'Param',  'OMX_IndexParamAudioPcm',     'PCMMODETYPE', 'port0_48_5.1toStereo');
+INSERT INTO Template_Config VALUES  ('REF_HSetOut5.1_Sink', 'Config', 'OMX_IndexConfigAudioVolume', 'VOLUMETYPE', 'port0_vol90mB');
+INSERT INTO Template_Config VALUES  ('REF_HSetOut5.1_Sink', 'Config', 'OMX_IndexConfigAudioMute',   'MUTETYPE', 'port0_mute_off');
+
+
+; Compensation chain (voice chain) for headset in
+INSERT INTO Template_OMXName VALUES ('treq_default_in', 'OMX.ST.AFM.pcmprocessing.transducer_equalizer');
+INSERT INTO Template_Config VALUES('treq_default_in','Param','OMX_IndexParamAudioPcm','PCMMODETYPE','port0_8m');
+INSERT INTO Template_Config VALUES('treq_default_in','Param','OMX_IndexParamAudioPcm','PCMMODETYPE','port1_8m');
+INSERT INTO Template_Config VALUES('treq_default_in','Param','AFM_IndexParamTransducerEqualizer','PARAM_TRANSDUCEREQUALIZERTYPE','treq_in_default_p');
+INSERT INTO Template_Config VALUES('treq_default_in','Config','AFM_IndexConfigTransducerEqualizer','CONFIG_TRANSDUCEREQUALIZERTYPE','treq_in_default_c');
+INSERT INTO EffectChainDef VALUES ('default_speech_indev_chain', 'treq_default_in', 1);
+
+; Compensation chain (voice chain) for headset out
+INSERT INTO Template_OMXName VALUES ('treq_default_out', 'OMX.ST.AFM.pcmprocessing.transducer_equalizer');
+INSERT INTO Template_Config VALUES('treq_default_out','Param','OMX_IndexParamAudioPcm','PCMMODETYPE','port0_8m');
+INSERT INTO Template_Config VALUES('treq_default_out','Param','OMX_IndexParamAudioPcm','PCMMODETYPE','port1_8m');
+INSERT INTO Template_Config VALUES('treq_default_out','Param','AFM_IndexParamTransducerEqualizer','PARAM_TRANSDUCEREQUALIZERTYPE','treq_out_default_p');
+INSERT INTO Template_Config VALUES('treq_default_out','Config','AFM_IndexConfigTransducerEqualizer','CONFIG_TRANSDUCEREQUALIZERTYPE','treq_out_default_c');
+INSERT INTO EffectChainDef VALUES ('default_speech_outdev_chain', 'treq_default_out', 1);
+
+; Compensation chain (common chain) for headset out
+; INSERT INTO Template_OMXName VALUES ('spl_default', 'OMX.ST.AFM.pcmprocessing.spl');
+; INSERT INTO Template_Config VALUES('spl_default','Param','OMX_IndexParamAudioPcm','PCMMODETYPE','port0_48s');
+; INSERT INTO Template_Config VALUES('spl_default','Param','OMX_IndexParamAudioPcm','PCMMODETYPE','port1_48s');
+; INSERT INTO Template_Config VALUES('spl_default','Param','AFM_IndexParamSpl','PARAM_SPLTYPE','spl_default_p');
+; INSERT INTO Template_Config VALUES('spl_default','Config','OMX_IndexConfigSpllimit','CONFIG_SPLLIMITTYPE','spl_default_c');
+; INSERT INTO Template_Config VALUES('spl_default','Config','OMX_IndexConfigAudioVolume','VOLUMETYPE','spl_default_volume');
+; INSERT INTO EffectChainDef VALUES ('default_output_common_chain', 'spl_default', 1);
+
+

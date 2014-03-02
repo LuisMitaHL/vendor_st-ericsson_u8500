@@ -1,0 +1,34 @@
+#
+# LpDDR2 configuration
+#
+
+menuconfig LPDDR2
+	bool "LpDDR2 Configuration"
+	help
+	  Tool to read/write DDR2 content from Linux userspace.
+
+if LPDDR2
+
+config LPDDR2_DIR
+	string
+	default ./LpDDR2
+
+config LPDDR2_DEPS
+	string
+	default ""
+
+config LPDDR2_STRIP_DISABLED
+	bool "Disable strip"
+	depends on LPDDR2
+	default n
+	help
+	  This will disable strip for this module
+
+config LPDDR2_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LPDDR2
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LPDDR2

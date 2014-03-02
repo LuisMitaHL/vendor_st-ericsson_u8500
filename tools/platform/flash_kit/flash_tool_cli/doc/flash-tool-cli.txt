@@ -1,0 +1,1017 @@
+Flash Tool CLI(1)
+=================
+
+NAME
+----
+Flash Tool CLI - interface for communication with Backend.
+
+SYNOPSIS
+--------
+*flash-tool* [command] [-options]
+
+DESCRIPTION
+-----------
+Backend clients is the common name for the applications that use the remote message protocol to communicate with the Backend. The purpose of the client is to provide the user with a simple interface to manipulate the mobile platform.
+
+Flash Tool CLI is a simple command line interface that communicates with Backend by sending and receiving requests (commands) supported by remote message protocol. The backend remote protocol accepts requests from flash-tool.
+
+COMMANDS AND OPTIONS
+--------------------
+COMMANDS INDEX
+~~~~~~~~~~~~~~
+<<help,-help>> +
+
+*BACKEND*
+
+<<disable_auto_initialize,disable_auto_initialize>> +
+<<disable_auto_sense,disable_auto_sense>> +
+<<enable_auto_initialize,enable_auto_initialize>> +
+<<enable_auto_sense,enable_auto_sense>> +
+<<get_active_profile,get_active_profile>> +
+<<get_auto_initialize_status,get_auto_initialize_status>> +
+<<get_auto_sense_status,get_auto_sense_status>> +
+<<get_available_profiles,get_available_profiles>> +
+<<get_available_security_properties,get_available_security_properties>> +
+<<get_connected_equipments,get_connected_equipments>> +
+<<get_core_dump_location,get_core_dump_location>> +
+<<get_equipment_profile,get_equipment_profile>> +
+<<get_next_connected_equipment,get_next_connected_equipment>> +
+<<reload_configuration,reload_configuration>> +
+<<set_active_profile,set_active_profile>> +
+<<set_core_dump_location,set_core_dump_location>> +
+<<set_equipment_profile,set_equipment_profile>> +
+<<set_local_signing,set_local_signing>> +
+<<shutdown_backend,shutdown_backend>> +
+<<trigger_uart_port,trigger_uart_port>> +
+
+
+*CORE DUMP*
+
+<<delete_dump,delete_dump>> +
+<<download_dump,download_dump>> +
+<<get_auto_delete_status,get_auto_delete_status>> +
+<<get_auto_download,get_auto_download>> +
+<<get_subscription,get_subscription>> +
+<<set_auto_delete,set_auto_delete>> +
+<<set_auto_download,set_auto_download>> +
+<<set_subscription,set_subscription>> +
+
+*EQUIPMENT STORAGE*
+
+<<erase_global_data_set,erase_global_data_set>> +
+<<read_global_data_set,read_global_data_set>> +
+<<read_global_data_unit,read_global_data_unit>> +
+<<write_global_data_set,write_global_data_set>> +
+<<write_global_data_unit,write_global_data_unit>> +
+
+*FILE SYSTEM*
+
+<<change_access,change_access>> +
+<<console,console>> +
+<<copy_file,copy_file>> +
+<<create_directory,create_directory>> +
+<<delete_file,delete_file>> +
+<<format_volume,format_volume>> +
+<<list_directory,list_directory>> +
+<<move_file,move_file>> +
+<<properties,properties>> +
+<<volume_properties,volume_properties>> +
+<<check_compatibility,check_compatibility>> +
+<<list_modules,list_modules>> +
+
+*FLASH*
+
+<<dump_area,dump_area>> +
+<<erase_area,erase_area>> +
+<<set_enhanced_area,set_enhanced_area>> +
+<<list_devices,list_devices>> +		
+<<process_file,process_file>> +
+
+*OTP*
+
+<<burn_otp,burn_otp>> +
+<<read_otp,read_otp>> +
+
+*SECURITY*
+
+<<get_domain,get_domain>> +
+<<get_equipment_properties,get_equipment_properties>> +
+<<get_equipment_property,get_equipment_property>> +
+<<set_domain,set_domain>> +
+<<set_equipment_property,set_equipment_property>> +
+<<bind_properties,bind_properties>> +
+<<write_rpmb_key,write_rpmb_key>> +
+
+*SYSTEM*
+
+<<authenticate_certificate,authenticate_certificate>> +
+<<authenticate_control_keys,authenticate_control_keys>> +
+<<collect_data,collect_data>> +
+<<deauthenticate,deauthenticate>> +
+<<execute_software,execute_software>> +
+<<get_authentication_state,get_authentication_state>> +
+<<initialize_equipment,initialize_equipment>> +
+<<permanent_authentication,permanent_authentication>> +
+<<reboot_equipment,reboot_equipment>> +
+<<send_raw_data,send_raw_data>> +
+<<shutdown_equipment,shutdown_equipment>> +
+<<init_arb_table ,init_arb_table>> +
+<<get_device_info ,get_device_info>> +
+
+COMMANDS DESCRIPTION
+~~~~~~~~~~~~~~~~~~~~
+[[help]]
+*-help*::
+    Shows the help message.
+    
+Example:
+----
+flash-tool -help
+----
+
+[[authenticate_certificate]]
+*authenticate_certificate -equipment_id* '<equipment_id>' *-sign_package_name* '<sign_package_name>' *-permanent* 'permanent'::
+    This command is used to authenticate the user to elevate the rights to perform certain operations on specified equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <sign_package_name>     - Name of sign package to use for authentication.
+    <permanent>             - Optional flag which is used for Fairbanks and Thorium platform's permanent authentication, accepts true/false. 
+
+Example:
+----
+flash-tool authenticate_certificate -equipment_id USB0 -sign_package_name SIGN_PACKAGE
+----
+
+[[authenticate_control_keys]]
+*authenticate_control_keys -equipment_id* '<equipment_id>' *-key_set* '<key_set>' *-permanent* 'permanent'::
+    This command is used to authenticate the user to elevate the rights to perform certain operations on specified equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <key_set>               - A set of control keys to use for authentication.
+    <permanent>             - Optional flag which is used for Fairbanks and Thorium platform's permanent authentication, accepts true/false. 
+
+Example:
+----
+flash-tool.bat authenticate_control_keys -equipment_id USB0 -key_set "{Network Lock Key=5530592768011169,Network Subset Lock Key=1113474185369446,Service Provider Lock Key=0920954133604256,Corporate Lock Key=1330296042918872,Flexible ESL Lock Key=5979950341706796}"
+----
+
+[[bind_properties]]
+*bind_properties -equipment_id* '<equipment_id>'::
+    This command is used to bind the properties previously set with the *set_equipment_property* command.
+    
+    <equipment_id> - The identifier string for connected equipment.
+    
+Example:
+----
+flash-tool bind_properties -equipment_id USB0
+----
+
+[[write_rpmb_key]]
+*write_rpmb_key -equipment_id* '<equipment_id>'::
+    This command is used to store authentication key in RPMB.
+
+    <equipment_id> - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool write_rpmb_key -equipment_id USB0
+----
+
+[[burn_otp]]
+*burn_otp* *-equipment_id* '<equipment_id>' *-path* '<path>'::
+    This command is used to burn OTP data provided in the specified file to the specified ME.
+
+    <equipment_id> - The identifier string for connected equipment.
+    <path>         - Host path to the file from which data will be read.
+
+Example:
+----
+flash-tool burn_otp -equipment_id USB0 -path /home/data.otp
+----
+
+[[change_access]]
+*change_access* *-equipment_id* '<equipment_id>' *-target_path* '<target_path>' *-access* '<access>'::
+    This command is used to change access permissions of specified path on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <target_path>           - Target file or directory path in the file system.
+    <access>                - Access permissions as an integer value where lowest nine bits represent the read, write and execute permissions (rwx) for owner, group and others, respectively.
+
+[width="50%",cols="3,3,3,3,3,3,3,3,3",options="header"]
+|============================================================================================
+|Bit 8|Bit 7|Bit 6|Bit 5|Bit 4|Bit 3|Bit 2|Bit 1|Bit 0
+|R – owner|W – owner|X – owner|R – group|W – group|X – group|R – others|W – others|X – others
+|============================================================================================
+
+Example (access permissions bits are 110100100 = 420):
+----
+flash-tool change_access -equipment_id USB0 -target_path /device/volume:/directory/file -access 420
+----
+
+[[collect_data]]
+*collect_data -equipment_id* '<equipment_id>' *-type* '<type>'::
+    This command is used to read out detailed flashing status information from the loader.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <type>                  - Type of flashing status report:
+				0: if the debug print channel is redirected to internal RAM memory, then the command 
+				   returns printout data that is extracted from internal buffers.
+				1: the command returns measurement data.
+				2: the command returns detailed flashing information from the last flashing.
+
+Example:
+----
+flash-tool collect_data -equipment_id USB0 -type 2
+----
+
+[[console]]
+*console*::
+    Starts Flash Tool Console. For mobile device access is used path format '<EQUIPMENT-ID>-</SOME/PATH/IN/ME>'.
+		For absolute path please specify Equipment ID. For your computer PC should be specifyed instead.
+		
+Available commands:
+
+[width="50%",cols="3,1,3",options="header"]
+|============================================================
+|Command|Function|Example
+|CD '<TARGET_DIRECTORY>'|Change current directory|cd COM1-/flash0/cabs0:/afs
+|LS '<TARGET_DIRECTORY>'|List directory|ls ./settings
+|DEV|Print available devices|dev
+|MV '<SOURCE>' '<TARGET>'|Move file|mv COM1-/flash0/cabs0:/afs/test.txt COM1-/flash0/cabs0:/afs/test/test.txt
+|RM '<TARGET>'|Remove file|rm COM1-/flash0/cabs0:/afs/test.txt
+|CP '<TARGET>'|Copy file|mv COM1-/flash0/cabs0:/afs/test.txt COM1-/flash0/cabs0:/afs/test/test.txt
+|MKDIR '<TARGET_DIRECTORY>'|Create directory|mkdir COM1-/flash0/cabs0:/afs/test
+|PROPERTIES '<TARGET_FILE>'|Print properties of file|properties COM1-/flash0/cabs0:/afs/test.txt
+|VOLUME '<TARGET_VOLUME>'|Print volume information|volume COM1-/flash0/cabs0:/afs
+|FORMAT '<TARGET_VOLUME>'|Format volume|format COM1-/flash0/cabs0:/afs
+|CHMOD '<TARGET>' '<ACCESS_LEVEL>'|Change user access permissions|chmod COM1-/flash0/cabs0:/afs/test.txt 420
+|EXIT|Exit console|exit
+|============================================================
+
+[[copy_file]]
+*copy_file* *-equipment_id* '<equipment_id>' *-source_path* '<source_path>' *-destination_path* '<destination_path>'::
+    This command is used to copy file from the source path to the destination path on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <source_path>           - Source file path in the file system.
+    <destination_path>      - Destination directory path in the file system.
+
+****
+There are three possible scenarios:
+
+* Copy file from PC to ME
+* Copy file from ME to PC
+* Copy file between two directories or file systems on ME
+
+Prefix is used to distinguish between PC and ME file system paths:
+
+* If the source or destination path represents path on the PC, it has prefix *PC:*
+* If the source or destination path represents path on the ME, it hasn't any prefix
+
+If source file resides on a PC and is a load module (elf file) and destination ME directory is defined to hold
+load modules (precompiled set of directories) and the tool is beeing run on windows, then automatic compatibility
+check is performed. The compatibility check failure is not considered to be critical, that is the file gets copied to 
+the destination directory even if the compatibility check has failed. The compatibilty failure is reported as a 
+warning on the console.
+
+****
+
+Example:
+----
+Copy file from PC to ME: flash-tool copy_file -equipment_id USB0 -source_path PC:/volume/directory/file -destination_path /device/volume:/directory
+Copy file from ME to PC: flash-tool copy_file -equipment_id USB0 -source_path /device/volume:/directory/file -destination_path PC:/volume/directory
+Copy file from ME to ME: flash-tool copy_file -equipment_id USB0 -source_path /device/volume:/directory/file -destination_path /device/volume:/directory_2
+----
+
+[[create_directory]]
+*create_directory* *-equipment_id* '<equipment_id>' *-target_path* '<target_path>'::
+    This command is used to create directory in specified path on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <target_path>           - Target directory path in the file system.
+
+Example:
+----
+flash-tool create_directory -equipment_id USB0 -target_path /device/volume:/new_directory
+----
+
+[[check_compatibility]]
+*check_compatibility* *-equipment_id* '<equipment_id>' *-path* '<source_path>'::
+    This command is used to check compatibility between installed load modules on specified equipment and elf file in specified path.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <source_path>           - Source file path of elf file in the file system.
+
+Example:
+----
+flash-tool check_compatibility -equipment_id USB0 -path C:\path\to\file.elf
+----
+
+[[list_modules]]
+*list_modules* *-equipment_id* '<equipment_id>'::
+    This command is used to list installed load modules in specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool list_modules -equipment_id USB0
+----
+
+[[deauthenticate]]
+*deauthenticate* *-equipment_id* '<equipment_id>'::
+This command is used for deauthentication on thorium/fairbanks platforms.
+
+Example:
+----
+flash-tool deauthenticate
+----
+
+[[delete_dump]]
+
+*delete_dump -dump_file_name* '<dump_file_name>' *-equipment_id* '<equipment_id>'::
+    This command is used to delete dump files on specified equipment.
+
+    <dump_file_name>          - The file name of the dump file to delete.
+    <equipment_id>            - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool delete_dump -dump_file_name coredump1
+----
+
+[[delete_file]]
+*delete_file* *-equipment_id* '<equipment_id>' *-target_path* '<target_path>'::
+    This command is used to delete file or empty directory in specified path on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <target_path>           - Target file or directory path in the file system.
+
+Example:
+----
+flash-tool delete_file -equipment_id USB0 -target_path /device/volume:/directory/file
+----
+
+[[disable_auto_initialize]]
+*'(not implemented)' disable_auto_initialize*::
+    This command is used to signal the backend not to initialize any mobile equipment that can be in an uninitialized state.
+
+[[disable_auto_sense]]
+*disable_auto_sense*::
+    This command is used to signal the backend not to initialize any mobile equipment that can be in an uninitialized state.
+
+Example:
+----
+flash-tool disable_auto_sense
+----
+
+[[download_dump]]
+*download_dump -dump_file_name* '<dump_file_name>' *-equipment_id* '<equipment_id>'::
+    This command is used to download dump files from specified equipment.
+
+    <dump_file_name>          - The file name of the dump file to download.
+    <equipment_id>            - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool download_dump -dump_file_name coredump1
+----
+
+[[dump_area]]
+*dump_area -area_path* '<area_path>' *-equipment_id* '<equipment_id>' *-length* '<length>' *-offset* '<offset>' *-path* '<path>' *-skip_redundant_area* '<skip_redundant_area>' *-include_bad_blocks* '<include_bad_blocks>'::
+    This command is used to dump an area of the flash from the specified equipment to specified path.
+    
+    <equipment_id>   - The identifier string for connected equipment.
+    <area_path>      - Absolute path of flash area.
+    <offset>         - An offset inside the flash area to be dumped.
+    <length>         - Number of bytes to be dumped or "ALL" to specify the maximal number.
+    <path>           - Host path to file where the dumped data is to be stored.
+    <skip_redundant_area> - Optional parameter which determines if redundant area should be skipped or not (true/false)
+    <include_bad_blocks>  - Optional parameter which determines if bad blocks should be included or not(true/false)
+
+Example:
+----
+flash-tool dump_area -area_path /flash0 -equipment_id USB0 -length 0x400000 -offset 0 -path c:\temp\dump.bin -skip_redundant_area true
+----
+
+[[enable_auto_initialize]]
+*'(not implemented)' enable_auto_initialize*::
+    This command is used to signal the backend to auto-initialize any mobile equipment that can be in an uninitialized state.
+
+[[enable_auto_sense]]
+*enable_auto_sense*::
+    This command is used to signal the server backend to start looking for new equipment connected to the host.
+
+Example:
+----
+flash-tool enable_auto_sense
+----
+
+[[erase_area]]
+*erase_area -area_path* '<area_path>' *-equipment_id* '<equipment_id>' *-length* '<length>' *-offset* '<offset>'::
+    This command is used to erase an area (or part of area) on the flash on the specified equipment.
+    
+    <area_path>    - Absolute path of flash area.
+    <equipment_id> - The identifier string for connected equipment.
+    <offset>       - An offset inside the flash area to be erased.
+    <length>       - Number of bytes to be erased or "ALL" to specify the maximal number.
+
+Example:
+----
+flash-tool erase_area -area_path /flash0/cabs1 -equipment_id USB0 -length 1024 -offset 0
+----
+
+[[set_enhanced_area]]
+*set_enhanced_area -area_path* '<area_path>' *-equipment_id* '<equipment_id>' *-length* '<length>' *-offset* '<offset>'::
+    This command is used to create the enhanced area on the specified equipment.
+
+    <area_path>    - Absolute path of flash area.
+    <equipment_id> - The identifier string for connected equipment.
+    <offset>       - Start address in bytes, must be Write Protected Group size aligned.
+    <length>       - Size of enhanced area in bytes, must be Write Protected Group size aligned. (512kb,8mb)
+
+Example:
+----
+flash-tool set_enhanced_area -area_path /flash0 -equipment_id USB0 -offset 0 -length 524288
+----
+
+[[erase_global_data_set]]  
+*erase_global_data_set -equipment_id* '<equipment_id>' *-storage_id* '<storage_id>'::
+    This command is used to erase a set of global data storage on connected equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <storage_id>            - Storage identifier.
+
+Example:
+----
+flash-tool erase_global_data_set -equipment_id USB0 -storage_id /flash0
+----
+
+[[execute_software]]
+*execute_software -equipment_id* '<equipment_id>' *-path* '<path>'::
+    This command is used to download and execute specified software on specified equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <path>                  - Host path or equipment path to executable software file.
+
+[[format_volume]]
+*format_volume* *-equipment_id* '<equipment_id>' *-device_path* '<device_path>'::
+    This command is used to format specified file system volume on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <device_path>           - Device path of the file system volume.
+
+Example:
+----
+flash-tool format_volume -equipment_id USB0 -device_path /device/volume
+----
+
+[[get_active_profile]]
+*get_active_profile*::
+    This command is used to retrieve the current active profile on the server backend.
+
+Example:
+----
+flash-tool get_active_profile
+----
+
+[[get_auto_delete_status]]
+*get_auto_delete_status*::
+    This command is used to retrieve the status of the "auto delete dump file" feature. 
+
+[[get_authentication_state]]
+*get_authentication_state* *-equipment_id* '<equipment_id>'::
+This command is used for getting authentication status (permanent/regular authentication) from the device.
+
+Example:
+----
+flash-tool get_authentication_state
+----    
+
+[[get_auto_download]]
+*get_auto_download*::
+    This command is used to retrieve the status of the "auto download dump file" feature.
+
+Example:
+----
+flash-tool get_auto_download
+----
+
+[[get_auto_initialize_status]]
+*'(not implemented)' get_auto_initialize_status*::
+    This command is used to retrieve the current status of the "auto-initialize" feature.
+
+[[get_auto_sense_status]]
+*get_auto_sense_status*::
+    This command is used to retrieve the current status for the "auto sense" (if the backend is to accept connections from mobile equipments or not).
+
+Example:
+----
+flash-tool get_auto_sense_status
+----
+
+[[get_available_profiles]]
+*get_available_profiles -wait* '<wait>'::
+    This command is used to retrieve a list of available profiles known to the server backend.
+    
+    <wait> - Wait for backend if all profiles are not loaded yet.
+
+Example:
+----
+flash-tool get_available_profiles -wait y
+----
+
+[[get_available_security_properties]]
+*get_available_security_properties*::
+    This command retrieves security properties defined in active profile.
+    
+Example:
+----
+flash-tool get_available_security_properties
+----
+
+[[get_connected_equipments]]
+*get_connected_equipments*::
+    This command is used to retrieve a list of currently connected equipment.
+
+Example:
+----
+flash-tool get_connected_equipments
+----
+
+[[get_core_dump_location]]
+*get_core_dump_location*::
+    This command is used to retrieve the location where the backend server stores any core dump data.
+
+[[get_domain]]
+*get_domain -equipment_id* '<equipment_id>'::
+    This command is used to retrieve the security domain for connected equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool get_domain -equipment_id USB0
+----
+
+[[get_equipment_profile]]
+*get_equipment_profile -equipment_id* '<equipment_id>'::
+    This command is used to get the active profile for a connected equipment.
+    
+    <equipment_id> - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool get_equipment_profile -equipment_id USB0
+----
+
+[[get_equipment_properties]]
+*get_equipment_properties -equipment_id* '<equipment_id>'::
+    This command is used to retrieve a list of properties of specified equipment.
+    
+    <equipment_id> - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool get_equipment_properties -equipment_id USB0
+----
+
+[[get_equipment_property]]
+*get_equipment_property* *-equipment_id* '<equipment_id>' *-equipment_property* '<equipment_property>'::
+    This command is used to retrieve property of given ID or name of specified equipment.
+    
+    <equipment_id> - The identifier string for connected equipment.
+    <equipment_property> - The ID or name of property.
+
+Example:
+----
+Via name: flash-tool get_equipment_property -equipment_id USB0 -equipment_property IMEI
+
+Via ID:   flash-tool get_equipment_property -equipment_id USB0 -equipment_property 0x01
+----
+
+[[get_next_connected_equipment]]
+*get_next_connected_equipment*::
+    This command is used to trigger the backend to notify the client when new equipment is connected.
+
+Example:
+----
+flash-tool get_next_connected_equipment
+----
+
+[[get_subscription]]
+*get_subscription -subscriber_ip* '<subscriber_ip>' *-subscriber_port* '<subscriber_port>'::
+    This command is used to list the subscription for the provided IP and port.
+
+Example:
+----
+flash-tool get_subscription -subscriber_ip localhost -subscriber_port 6667
+----
+
+[[initialize_equipment]]
+*'(not implemented)' initialize_equipment -equipment_id* '<equipment_id>'::
+    This command is used to initialize any mobile equipment that can be in an uninitialized state.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+
+[[list_devices]]
+*list_devices -equipment_id* '<equipment_id>'::
+    This command is used to let the loader retrieve detected block devices in the ME
+    
+    <equipment_id>          - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool list_devices -equipment_id USB0
+----
+
+[[list_directory]]
+*list_directory* *-equipment_id* '<equipment_id>' *-target_path* '<target_path>'::
+    This command is used to list files and directories in specified path on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <target_path>           - Target directory path in the file system.
+
+Example:
+----
+flash-tool list_directory -equipment_id USB0 -target_path /device/volume:/directory
+----
+
+[[move_file]]
+*move_file* *-equipment_id* '<equipment_id>' *-source_path* '<source_path>' *-destination_path* '<destination_path>'::
+    This command is used to move or rename file from the source path to the destination path on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <source_path>           - Source file path in the file system.
+    <destination_path>      - Destination file or directory path in the file system.
+
+Example:
+----
+flash-tool move_file -equipment_id USB0 -source_path /device/volume:/directory/file -destination_path /device/volume:/directory_2
+----
+
+[[permanent_authentication]]
+*permanent_authentication* *-equipment_id* '<equipment_id>'::
+This command is used for permanent authentication on Mont Blanc platform.
+
+Example:
+----
+flash-tool permanent_authentication
+----
+
+[[process_file]]
+*process_file -equipment_id* '<equipment_id>' *-path* '<path>'::
+    This command is used to let the loader executing on the equipment process a specified file. In most cases it is to perform a flash operation.
+    
+    <equipment_id> - The identifier string for connected equipment.
+    <path>         - Host path or equipment path to file to process (flash).
+
+Example:
+----
+flash-tool process_file -equipment_id USB0 -path /home/Apps/soft_file.zip
+----
+
+[[properties]]
+*properties* *-equipment_id* '<equipment_id>' *-target_path* '<target_path>'::
+    This command is used to retrieve properties of file or directory in specified path on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <target_path>           - Target file or directory path in the file system.
+
+Example:
+----
+flash-tool properties -equipment_id USB0 -target_path /device/volume:/directory/file
+----
+
+[[read_global_data_set]]
+*read_global_data_set -equipment_id* '<equipment_id>' *-storage_id* '<storage_id>' *-path* '<path>'::
+    This command is used to read a set of global data storage on connected equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <storage_id>            - Storage identifier.
+    <path>                  - Host path to file containing global data to read.
+
+Example:
+----
+flash-tool read_global_data_set -equipment_id USB0 -storage_id /flash0 -path /flash0/gdfsRead.gdf
+----  
+
+[[read_global_data_unit]]
+*read_global_data_unit -equipment_id* '<equipment_id>' *-storage_id* '<storage_id>' *-unit_id* '<unit_id>'::
+    This command is used to read a single unit of parameter storage data from specified storage on connected equipment.
+    
+    <equipment_id> - The identifier string for connected equipment.
+    <storage_id>   - Storage identifier.
+    <unit_id>      - Unit identifier.
+    <unit_data>    - Data (bytes) read from global data unit (for example 0123456789ABCDEF).
+
+Example:
+----
+flash-tool read_global_data_unit -equipment_id USB0 -storage_id /flash0 -unit_id 1
+----
+
+[[read_otp]]
+*read_otp* *-equipment_id* '<equipment_id>' *-path* '<path>'::
+    This command is used to read OTP data from the specified ME and write it to the specified file.
+
+    <equipment_id> - The identifier string for connected equipment.
+    <path>         - Host path to the file where data will be written.
+
+Example:
+----
+flash-tool read_otp -equipment_id USB0 -path /home/data.otp
+----
+
+[[reboot_equipment]]
+*reboot_equipment -equipment_id* '<equipment_id>' *-mode* '<mode>'::
+    This command is used to send a reboot command to specified equipment in order for it to reboot in specified mode.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <mode>                  - Mode of reboot operation:
+				0: indicates normal restart
+				1: indicates restart in service mode
+				2: indicates restart with JTAG debugging enabled
+				3: indicates restart in service mode and with JTAG debugging enabled
+
+Example:
+----
+flash-tool reboot_equipment -equipment_id USB0 -mode 0
+----
+
+[[reload_configuration]]
+*reload_configuration*::
+    This command is used to signal the server backend to reload its configuration.
+    
+Example:
+----
+flash-tool reload_configuration
+----
+
+[[send_raw_data]]
+*send_raw_data -data* '<data>' *-equipment_id* '<equipment_id>'::
+    This command is used to send raw data to connected equipment.
+    
+    <data>         - Raw data.
+    <equipment_id> - The identifier string for connected equipment.
+    
+Example:
+----
+flash-tool send_raw_data -data AABCEEEE010409240000005E0000006008000302070000002F666C6173683001005002F434F4D4D -equipment_id USB0
+----
+
+[[set_active_profile]]    
+*set_active_profile -profile_name* '<profile_name>'::
+    This command is used to change the current active profile on the server backend.
+    
+    <profile_name> - The name of the profile to set as active profile for the server backend.
+    
+Example:
+----
+flash-tool set_active_profile -profile_name STE_DB8500
+----
+
+[[set_auto_delete]]
+*set_auto_delete -set_status* '<set_status>'::
+    This command is used to set the status of the "auto download dump file" feature. When set to "enable", a dump file which is downloaded will automatically be deleted from target.
+
+    <set_status>    - Status identifier enable/disable
+
+Example:
+----
+flash-tool set_auto_delete -set_status enable
+----
+
+[[set_auto_download]]
+*set_auto_download -set_status* '<set_status>'::
+    This command is used to set the status of the "auto download dump file" feature. When set to "enable", a generated dump file will automatically be downloaded.
+
+    <set_status>     - Status identifier enable/disable
+
+Example:
+----
+flash-tool set_auto_download -set_status enable
+----
+
+[[set_core_dump_location]]
+*set_core_dump_location -path* '<path>'::
+    This command is used to configure the location where the server backend will put core dump data.
+    
+    <path>                  - Host path specifying the new location of core dump files.
+
+[[set_domain]]
+*set_domain -domain* '<domain>' *-equipment_id* '<equipment_id>'::
+    This command is used to update the security domain for connected equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <domain>                - Domain identifier:
+        0: service
+        1: product
+        2: R&D
+        3: factory
+
+Example:
+----
+flash-tool set_domain -equipment_id USB0 -domain 0
+----
+
+[[set_equipment_profile]]
+*set_equipment_profile -equipment_id* '<equipment_id>' *-profile_name* '<profile_name>'::
+    This command is used to set the active profile for a connected equipment.
+    
+    <equipment_id> - The identifier string for connected equipment.
+    <profile_name> - The name of the profile to set as active profile for the connected equipment.
+
+Example:
+----
+flash-tool set_equipment_profile -equipment_id USB0 -profile_name STE_DB8500
+----
+
+[[set_equipment_property]]
+*set_equipment_property -equipment_id* '<equipment_id>' *-equipment_properties* '<equipment_properties>'::
+    This command is used to set one or more properties of specified equipment. After *set_equipment_property* command you have to send *bind_properies* command to apply your changes.
+    
+    <equipment_id>         - The identifier string for connected equipment.
+    <equipment_property>   - A structure describing one or more properties of the equipment (for example key1=value1,key2=value2).
+
+
+.Examples of property identities specified for U8500 and U5500 are the following:
+****
+Property identity for IMEI is 0x01
+
+* 0x01=<imei>
+
+The IMEI number has 14 digits.
+
+Property identity for SIMLock control keys is 0x10
+
+* 0x10="{Network Lock Key=<network_lock_key>,Network Subset Lock Key=<network_subset_lock_key>,Service Provider Lock Key=<service_provider_lock_key>,Corporate Lock Key=<corporate_lock_key>,Flexible ESL Lock Key=<flexible_esl_lock_key>}"
+    
+The keys specified should have 16 digits.
+    
+Property identity for default data is 0x100
+
+* 0x100=<default_data_with_path>
+****
+    
+Example:
+----
+flash-tool set_equipment_property -equipment_id USB0 -equipment_property 0x10="{Network Lock Key=5530592768011169,Network Subset Lock Key=1113474185369446,Service Provider Lock Key=0920954133604256,Corporate Lock Key=1330296042918872,Flexible ESL Lock Key=5979950341706796}"
+----
+
+[[set_local_signing]]
+*set_local_signing -local_signing* '<value>'::
+    This command is used to set up local signing feature. When set to "true" Flash Tool Backend will not use Sign Server, but use sign packages and keys stored localy instead.
+
+    <value>   - Possible values are: true, false.
+
+Example:
+----
+flash-tool set_local_signing -local_signing true
+----
+
+[[shutdown_backend]]
+*shutdown_backend*::
+    This command is used to remotely shut the Flash Tool Backend down.
+
+Example:
+----
+flash-tool shutdown_backend
+----
+
+[[set_subscription]]
+*set_subscription subscriber_ip* '<subscriber_ip>' *-subscriber_port* <subscriber_port> *-subscription_type* '<subscription_type>'::
+    This command is used to add a subscription for receiving dump notifications of the specified type on the provided ip and port.
+
+    <subscriber_ip>      - The IP address of the subscriber that will be listening for dump notifications.
+    <subscriber_port>    - The port on which the subscriber will be listening for dump notifications.
+    <subscription_type>  - The type of subscription. Possible types are: 0 (detect dumping ME) and 1 (detect automatically downloaded dump).
+
+Example:
+----
+flash-tool set_subscription -subscriber_ip 11.222.33 -subscriber_port 6667 -subscription_type 0
+----
+
+[[shutdown_equipment]]
+*shutdown_equipment -equipment_id* '<equipment_id>'::
+    Shutdown command to specified equipment in order for it to power down.
+
+    <equipment_id> - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool shutdown_equipment -equipment_id USB0
+----
+
+[[init_arb_table]]
+*init_arb_table -arb_data* '<data>'::
+    Initializing and calculating initial integrity of SW version table.
+
+    <data> - Anti-rollback data.
+
+Example:
+----
+flash-tool init_arb_table -arb_data 0xAABB
+----
+
+[[get_device_info]]
+*get_device_info -equipment_id* '<equipment_id>'::
+    Get basic information about connected device.
+
+    <equipment_id> - The identifier string for connected equipment.
+
+Example:
+----
+flash-tool get_device_info -equipment_id USB0
+----
+
+[[trigger_uart_port]]
+*trigger_uart_port -port_name* '<port_name>'::
+    This command is used to trigger UART port specified by its name.
+
+    <port_name> - UART port name.
+
+Example:
+----
+flash-tool trigger_uart_port -port_name COM1
+----
+
+[[volume_properties]]
+*volume_properties* *-equipment_id* '<equipment_id>' *-device_path* '<device_path>'::
+    This command is used to retrieve properties of the specified file system volume on specified equipment.
+
+    <equipment_id>          - The identifier string for connected equipment.
+    <device_path>           - Device path of the file system volume.
+
+Example:
+----
+flash-tool volume_properties -equipment_id USB0 -device_path /device/volume
+----
+
+[[write_global_data_set]]
+*write_global_data_set -equipment_id* '<equipment_id>' *-storage_id* '<storage_id>' *-path* '<path>'::
+    This command is used to write a set of global data storage on connected equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <storage_id>            - Storage identifier.
+    <path>                  - Host path to file containing global data to write.
+
+Example:
+----
+flash-tool write_global_data_set -equipment_id USB0 -storage_id /flash0 -path /flash0/gdfsWrite.gdf
+----  
+
+[[write_global_data_unit]]
+*write_global_data_unit -equipment_id* '<equipment_id>' *-storage_id* '<storage_id>' *-unit_data* '<unit_data>' *-unit_id* '<unit_id>'::
+    This command is used to write a single unit of parameter storage data to the specified storage on connected equipment.
+    
+    <equipment_id>          - The identifier string for connected equipment.
+    <storage_id>            - Storage identifier.
+    <unit_id>               - Unit identifier.
+    <unit_data>             - Data (bytes) read from global data unit (for example 0123456789ABCDEF).
+
+Example:
+----
+flash-tool write_global_data_unit -equipment_id USB0 -storage_id /flash0/TOC/CSPSA0 -unit_id 1 -unit_data "abcd"
+----
+
+OPTIONAL OPTIONS
+----------------
+
+Each command has its own optional options.
+
+*-help*::
+    Help for specified command.
+
+Example:
+----
+flash-tool shutdown_equipment -help
+----
+
+*-host*::
+    Host with running Backend, 'localhost' is used as default.
+
+*-port*::
+    Port where Backend is listening, '8088' is used as default.
+
+*-v*::
+    To enable verbose output to stdout. 
+    
+*-b*::
+    To enable bare output, the data portion of results will be unformatted.
+
+*-t* '<timeout in seconds>'::
+    To reconnect repeatedly to Flash Tool Backend until timeout occures.
+
+EXIT STATUS
+-----------
+flash-tool returns a zero exit status if it succeeds.
+A non zero is returned in case of failure.
+
+*0*::
+    Success
+
+*1*::
+    Unknown error
+    
+*2*::
+    Could not connect to backend

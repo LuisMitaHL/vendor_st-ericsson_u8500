@@ -1,0 +1,219 @@
+test_start BIN_SPL_004
+test_property TEST_NAME binary_splitter_enable_disable_port_omxall
+
+# instantiate and configure splitter
+OMX_GetHandle splitter OMX.ST.AFM.binary_splitter
+
+alias INPUT_FILE    $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+MMTE_attach_io      splitter 0 MEM $(INPUT_FILE) 0 0 0
+test_property       input_file $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/splitter_pcm.out
+alias OUTPUT_SIZE   500000
+MMTE_attach_io      splitter 1 MEM $(OUTPUT_FILE) $(OUTPUT_SIZE) 0 0
+test_property       output_file $(OUTPUT_DIR)/splitter_pcm.out
+
+# 2nd output port
+alias OUTPUT_FILE2   $(OUTPUT_DIR)/splitter_pcm_2.out
+alias OUTPUT_SIZE    500000
+test_property        output_file2 $(OUTPUT_DIR)/splitter_pcm_2.out
+MMTE_attach_io       splitter 2 MEM $(OUTPUT_FILE2) $(OUTPUT_SIZE) 0 0
+
+alias REF_FILE       $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+test_property        ref_file $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+alias REF_DIGEST     $(AUDIO_STREAMS)/binary_splitter/streams/Machado_digest.hash
+
+# test OMX state machine 
+# disable / re-enable ports in loaded state
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+OMX_SendCommand splitter OMX_CommandPortDisable 1
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+OMX_SendCommand splitter OMX_CommandPortEnable 1
+OMX_SendCommand splitter OMX_CommandPortEnable 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable  ports in loaded state
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+OMX_SendCommand splitter OMX_CommandPortDisable 1
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Idle with both ports disabled
+OMX_SendCommand splitter  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand splitter  OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand splitter  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# re-enable ports
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+OMX_SendCommand splitter OMX_CommandPortEnable 1
+OMX_SendCommand splitter OMX_CommandPortEnable 2
+MMTE_AllocateBuffers splitter 0
+MMTE_AllocateBuffers splitter 1
+MMTE_AllocateBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable / re-enable ports in Idle
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+OMX_SendCommand splitter OMX_CommandPortDisable 1
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+mmte_sleep 1000
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+OMX_SendCommand splitter OMX_CommandPortEnable 1
+OMX_SendCommand splitter OMX_CommandPortEnable 2
+MMTE_AllocateBuffers splitter 0
+MMTE_AllocateBuffers splitter 1
+MMTE_AllocateBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable ports
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+OMX_SendCommand splitter OMX_CommandPortDisable 1
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+mmte_sleep 1000
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Executing with ports disabled
+OMX_SendCommand splitter  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# enable ports
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+OMX_SendCommand splitter OMX_CommandPortEnable 1
+OMX_SendCommand splitter OMX_CommandPortEnable 2
+MMTE_AllocateBuffers splitter 1
+MMTE_AllocateBuffers splitter 2
+MMTE_AllocateBuffers splitter 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+MMTE_WaitEvent splitter OMX_EventBufferFlag 1 0
+
+# disable ports in Executing
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+OMX_SendCommand splitter OMX_CommandPortDisable 1
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+mmte_sleep 1000
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Pause with ports disabled
+OMX_SendCommand splitter  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# re-enable ports
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+OMX_SendCommand splitter OMX_CommandPortEnable 1
+OMX_SendCommand splitter OMX_CommandPortEnable 2
+MMTE_AllocateBuffers splitter 0
+MMTE_AllocateBuffers splitter 1
+MMTE_AllocateBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable / re-enable ports in Pause
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+OMX_SendCommand splitter OMX_CommandPortDisable 1
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+mmte_sleep 1000
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+OMX_SendCommand splitter OMX_CommandPortEnable 1
+OMX_SendCommand splitter OMX_CommandPortEnable 2
+MMTE_AllocateBuffers splitter 0
+MMTE_AllocateBuffers splitter 1
+MMTE_AllocateBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable ports
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+OMX_SendCommand splitter OMX_CommandPortDisable 1
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+mmte_sleep 1000
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Idle with ports disabled
+OMX_SendCommand splitter  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+OMX_SendCommand splitter OMX_CommandPortEnable 1
+OMX_SendCommand splitter OMX_CommandPortEnable 2
+MMTE_AllocateBuffers splitter 0
+MMTE_AllocateBuffers splitter 1
+MMTE_AllocateBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 1
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# Go to Loaded with ports disabled
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle splitter
+
+MMTE_CheckMemoryStatus
+
+file_comp OUTPUT_FILE REF_FILE
+hash_comp OUTPUT_FILE REF_DIGEST
+file_comp OUTPUT_FILE2 REF_FILE
+hash_comp OUTPUT_FILE2 REF_DIGEST
+
+unalias INPUT_FILE
+unalias OUTPUT_FILE
+unalias OUTPUT_FILE2
+unalias REF_FILE
+unalias REF_DIGEST
+
+test_end

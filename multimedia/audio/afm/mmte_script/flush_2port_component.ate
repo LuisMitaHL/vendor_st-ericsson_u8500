@@ -1,0 +1,81 @@
+# This script sends flush command to input and ouptut ports of a 2-port component named $1.
+# !! OUTPUT_SIZE alias has to be defined
+# sequence is:
+# - Start 
+# - Go to Pause mode
+# - Flush buffers
+# - compare decoded data
+# - attach again input/output files
+# - Go to Executing mode until EOS
+
+
+alias TIMEOUT 10000
+
+# Basic OMX checks
+MMTE_CheckParameter $1 OMX_IndexParamAudioInit nPorts=2 nStartPortNumber=0
+MMTE_CheckParameter $1 OMX_IndexParamVideoInit nPorts=0
+MMTE_CheckParameter $1 OMX_IndexParamImageInit nPorts=0
+MMTE_CheckParameter $1 OMX_IndexParamOtherInit nPorts=0
+
+# Go to Idle 
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers $1 0
+MMTE_AllocateAndUseBuffers $1 1
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Executing
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# consume some buffers
+mmte_sleep 100
+
+# Go to Pause
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# flush buffers
+OMX_SendCommand $1 OMX_CommandFlush OMX_ALL
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandFlush 1
+
+# flush MMTE Received Event List
+MMTE_FlushReceivedEvent
+
+# compare first decoded data
+MMTE_detach_io $1 1
+file_comp OUTPUT_FILE REF_FILE
+
+# attach again input and output files
+MMTE_attach_io   $1 0 MEM $(INPUT_FILE) 0 0 0
+alias OUTPUT_FILE   $(OUTPUT_FILE).2
+MMTE_attach_io   $1 1 MEM $(OUTPUT_FILE) $(OUTPUT_SIZE) 0 0
+
+# Go to Executing
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent  $1 OMX_EventBufferFlag 1 0
+
+# Go to Idle
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers $1 0
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent  $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# compare decoded data
+file_comp OUTPUT_FILE REF_FILE
+
+# Free Handle
+OMX_FreeHandle $1
+
+# check memory status
+#MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias TIMEOUT

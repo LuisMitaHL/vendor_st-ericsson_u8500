@@ -1,0 +1,37 @@
+; Sets breaks depending on the currently loaded symbols.
+; Note: here we do not delete any breaks for unloaded modules.
+; This is done directly in the NMF-core code because only there
+; we specifically knows which modules are unloaded.
+
+entry &symbol &comp_inst1 &comp_inst2 &comp_inst3
+
+;; New NMF components naming rules since T32MMDSP 6.5.3
+&comp1="\\$"+"&comp_inst1"
+&comp2="\\$"+"&comp_inst2"
+&comp3="\\$"+"&comp_inst3"
+
+if y.exist("&symbol")
+(
+	print "<NMF: break.set &symbol>"
+	if "&comp_inst1"==""
+	(
+		break.set &symbol
+	)
+	else if "&comp_inst2"==""
+	(
+		break.set &symbol /COND NMF.ISACTIVE("&comp1")
+	)
+	else if "&comp_inst3"==""
+	(
+		break.set &symbol /COND (NMF.ISACTIVE("&comp1")||NMF.ISACTIVE("&comp2"))
+	)
+	else
+	(
+		break.set &symbol /COND (NMF.ISACTIVE("&comp1")||NMF.ISACTIVE("&comp2")||NMF.ISACTIVE("&comp3"))
+	)
+)
+else
+(
+	print "<NMF: setbreaks.cmm : unknown symbol: &symbol>"
+)
+enddo

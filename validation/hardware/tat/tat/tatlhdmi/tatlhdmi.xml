@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlhdmi">
+  	
+  	<argument path="/DTH/HDMI/config/menus/menu_14hdmi.xml" type="FILE" user_data="ACT_HDMI_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlhdmi/config/menus\nFilename=menu_14hdmi.xml</info> 
+	  </argument>
+	  <argument path="/DTH/HDMI/config/panels/hdmi_registers.xml" type="FILE" user_data="ACT_HDMI_REGISTERS_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlhdmi/config/panels\nFilename=hdmi_registers.xml</info> 
+	  </argument>
+	  <argument path="/DTH/HDMI/config/panels/hdmi_send_config.xml" type="FILE" user_data="ACT_HDMI_SEND_CMD_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlhdmi/config/panels\nFilename=hdmi_send_config.xml</info> 
+	  </argument>
+  	
+    <action path="/DTH/HDMI/Registers/Act_RWREG0/RWREG0" type="U8" user_data="ACT_RWREG0:0" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:STANDBY REG @0x00\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG0/RWREG0/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG1/RWREG1" type="U8" user_data="ACT_RWREG1:1" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:HDMI_5_VOLT_TIME REG @0x01\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG1/RWREG1/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG2/RWREG2" type="U8" user_data="ACT_RWREG2:2" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:STANDBY_INTERRUPT_MASK REG @0x02\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG2/RWREG2/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG3/RWREG3" type="U8" user_data="ACT_RWREG3:3" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:STANDBY_PENDING_INTERRUPT REG @0x03\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG3/RWREG3/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG4/RWREG4" type="U8" user_data="ACT_RWREG4:4" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:GENERAL_INTERRUPT_MASK REG @0x04\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG4/RWREG4/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG5/RWREG5" type="U8" user_data="ACT_RWREG5:5" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:GENERAL_INTERRUPT REG @0x05\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG5/RWREG5/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG6/RWREG6" type="U8" user_data="ACT_RWREG6:6" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:GENERAL_STATUS REG @0x06\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG6/RWREG6/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG7/RWREG7" type="U8" user_data="ACT_RWREG7:7" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:GPIO_CONFIGURATION REG @0x07\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG7/RWREG7/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG8/RWREG8" type="U8" user_data="ACT_RWREG8:8" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:GENERAL_CONTROL REG @0x08\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG8/RWREG8/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG9/RWREG9" type="U8" user_data="ACT_RWREG9:9" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:HDMI REG @0x09\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG9/RWREG9/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG10/RWREG10" type="U8" user_data="ACT_RWREG10:10" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:HDMI REG @0x0a\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG10/RWREG10/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG11/RWREG11" type="U8" user_data="ACT_RWREG11:11" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:HDMI REG @0x0b\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG11/RWREG11/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG12/RWREG12" type="U8" user_data="ACT_RWREG12:12" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:HDMI REG @0x0c\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG12/RWREG12/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG13/RWREG13" type="U8" user_data="ACT_RWREG13:13" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:HDMI REG @0x0d\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG13/RWREG13/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG14/RWREG14" type="U8" user_data="ACT_RWREG14:14" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:HDMI REG @0x0e\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG14/RWREG14/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Registers/Act_RWREG15/RWREG15" type="U8" user_data="ACT_RWREG15:15" set="Dth_ActHDMIParam_Set" exec="Dth_ActHDMI_exec">
+      <enum>
+        <enum_item value="HDMIREG_READ">READ</enum_item>
+        <enum_item value="HDMIREG_WRITE">WRITE</enum_item>
+      </enum>
+      <info>Shape: Horizontal\nLabel Action:FIRMWARE_DOWNLOAD_ENTRY REG @0x0f\n</info>
+      <argument path="/DTH/HDMI/Registers/Act_RWREG15/RWREG15/REG_VALUE" type="U8" user_data="INOUT_REGVALUE" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <info>Prefered Format:hexa\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Commands/ACT_SEND_COMMAND/SEND_COMMAND" type="STRING" user_data="ACT_SENDXCOMMAND" exec="Dth_ActHDMI_exec">
+      <info>Label Action:Send multiple configuration command\n</info>
+      <argument path="/DTH/HDMI/Commands/ACT_SEND_COMMAND/SEND_COMMAND/In_command" type="STRING" user_data="IN_FULLCOMMAND" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <info>paste here your HDMI command\n</info>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/ACT_SEND_COMMAND/SEND_COMMAND/Out_command" type="STRING" user_data="OUT_FULLCOMMAND" get="Dth_ActHDMIParam_Get">
+        <info>result of the HDMI command\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND" type="STRING" user_data="ACT_SENDCONFIG" exec="Dth_ActHDMI_exec">
+      <info>Label Action:Send one configuration command in array format\n</info>
+      <argument path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND/In_CmdID" type="U8" user_data="IN_CMDID" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND/In_DataLength" type="U8" user_data="IN_DATALEN" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="129"/>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND/In_Data" type="U8" user_data="IN_DATA" set="Dth_ActHDMIParam_Set">
+        <range min="0" max="255"/>
+        <array rows="1" cols="129"/>
+        <info>ElementPerLine:15\nPrefered Format:hexa\nCellText:any:byte{celln}\n</info>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND/Out_CmdID" type="U8" user_data="OUT_CMDID" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set" >
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND/Out_ReturnStatus" type="U8" user_data="OUT_RETURNSTATUS" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set" >
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND/Out_DataLength" type="U8" user_data="OUT_DATALEN" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set" >
+        <range min="0" max="129"/>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/ACT_Send_config/SEND_COMMAND/Out_Data" type="U8" user_data="OUT_DATA" set="Dth_ActHDMIParam_Set" get="Dth_ActHDMIParam_Get">
+        <range min="0" max="255"/>
+        <array rows="1" cols="129"/>
+        <info>ElementPerLine:15\nPrefered Format:hexa\nCellText:any:byte{celln}\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Commands/CHECK_OTP/Check_OTP_status" type="STRING" user_data="ACT_HDCPOTPSTAT" exec="Dth_ActHDMI_exec">
+      <info>Label Action:Check HDCP OTP key status\n</info>
+      <argument path="/DTH/HDMI/Commands/CHECK_OTP/Check_OTP_status/Out_OTP_status" type="U8" user_data="OUT_HDCPOTPSTAT" get="Dth_ActHDMIParam_Get">
+        <enum>
+          <enum_item value="VIRGIN">Virgin</enum_item>
+          <enum_item value="PROGRAMMED">Programmed</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Commands/WRITE_OTP/Write_AES_key_in_OTP" type="STRING" user_data="ACT_HDCPOTPPRO" exec="Dth_ActHDMI_exec">
+      <info>Label Action:Write HDCP OTP key provisioning\n</info>
+      <argument path="/DTH/HDMI/Commands/WRITE_OTP/Write_AES_key_in_OTP/OTP_KEY" type="STRING" user_data="IN_HDCPOTPPRO" get="Dth_ActHDMIParam_Get" set="Dth_ActHDMIParam_Set">
+        <info>paste here the 128 bits key to bum\n</info>
+      </argument>
+      <argument path="/DTH/HDMI/Commands/WRITE_OTP/Write_AES_key_in_OTP/Out_status" type="U8" user_data="OUT_HDCPOTPPROSTAT" get="Dth_ActHDMIParam_Get">
+        <enum>
+          <enum_item value="OK">OK</enum_item>
+          <enum_item value="FAILED">Failed</enum_item>
+	  <enum_item value="BADINPUTCMD">CRC_Mismatch</enum_item>
+        </enum>
+        <range min="0" max="2"/>
+      </argument>
+    </action>
+    <action path="/DTH/HDMI/Commands/CHECK_AES/Load_and_check_HDCP_keys" type="STRING" user_data="ACT_HDCPAESSTAT" exec="Dth_ActHDMI_exec">
+      <info>Label Action:Check HDCP AES Encrypted keyset loading and verification\n9ptimeout:20000</info>
+      <argument path="/DTH/HDMI/Commands/CHECK_AES/Load_and_check_HDCP_keys/Out_AES_status" type="U8" user_data="OUT_HDCPAESSTAT" get="Dth_ActHDMIParam_Get">
+        <enum>
+          <enum_item value="OK">OK</enum_item>
+          <enum_item value="FAILED">Failed</enum_item>
+          <enum_item value="NOKEY">No_key</enum_item>
+	  <enum_item value="CRCMISMATCH">CRC_Mismatch</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>
+    </action>
+<argument path="/DTH/HDMI/Commands/Files/HDCPBIN" type="FILE" user_data="ARG_FILES_HDCPBIN">
+      <info>Automatic Procedure\nFilepath=/\nFilename=hdcp_key.bin</info>
+    </argument>		
+  </module>
+</dthapi>

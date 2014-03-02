@@ -1,0 +1,74 @@
+#include <misc/xbusdma/afmxdmaperiph.idt>
+
+/**
+ * \brief Get Xbus Dma interrupt
+ *
+ * \param xdma_channel Xbus Dma channel
+ *
+ */
+t_uint16 get_xbusdma_interrupt(t_uint16 xdma_channel);
+
+
+/**
+ * \brief Enable Xbus Dma interrupt
+ *
+ * \param xdma_channel Xbus Dma channel
+ *
+ */
+void enable_xbusdma_interrupt(t_uint16 xdma_channel);
+
+
+/**
+ * \brief Disable Xbus Dma interrupt
+ *
+ * \param xdma_channel Xbus Dma channel
+ *
+ */
+void disable_xbusdma_interrupt(t_uint16 xdma_channel);
+
+
+/**
+ * \brief Configure one Xbus Dma channel for transfer with peripheral
+ *
+ * \param periph periph to address with xbus dma
+ * \param direction direction of transfer (receive or transmit)
+ * \param xdma_channel  Xbus Dma channel
+ * \param ssi_channel ssi channel to use. Only used if periph is AFM_XDMA_SSI
+ * \param endianess indicates what endianess correction to apply (NONE/BYTE/WORD/BYTE_AND_WORD)
+ * \return IT level used for Xbus Dma transfer
+ *
+ */
+void configure_xbusdma(AFM_XDMA_PERIPH periph, XbusDmaDirection direction,
+        t_uint16 xdma_channel, t_uint16 ssi_channel,
+        AFM_XDMA_ENDIANESS endianess);
+
+
+/**
+ * \brief Start one Xbus Dma transfer
+ *
+ * \param xdma_channel Xbus Dma channel
+ * \param buffer pointer on buffer to transmit/receive. PRECONDITION: must point in TCM
+ * \param buffer_size size of transfer (in 16bits words)
+ *
+ */
+void start_xbusdma_transfer(t_uint16 xdma_channel, t_uint16 * buffer, t_uint16 buffer_size);
+
+void start_xbusdma_transfer_to_memory(t_uint16 xdma_channel, t_uint16 * buffer, t_uint16 buffer_size, t_uint32 mFileADDR);
+
+
+/**
+ * \brief Stop one Xbus Dma transfer
+ *
+ * \param xdma_channel Xbus Dma channel
+ *
+ */
+void stop_xbusdma_transfer(t_uint16 xdma_channel);
+
+
+/**
+ * \brief Reset Xbus Dma channel
+ *
+ * \param xdma_channel Xbus Dma channel
+ *
+ */
+void reset_xbusdma_channel(t_uint16 xdma_channel);

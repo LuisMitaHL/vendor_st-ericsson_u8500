@@ -1,0 +1,56 @@
+# This script creates the following audio network for bitexactness check against a reference:
+# decoder
+#
+# Script's arguments:
+#   1: script name for decoder (contains specific configuration for a given stream)
+#   2: script name for commands sent while playing
+
+alias TIMEOUT 0
+
+do $1 decoder input_reference output_reference
+
+OMX_SendCommand decoder OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers decoder 0
+MMTE_AllocateAndUseBuffers decoder 1
+MMTE_WaitEvent decoder OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+MMTE_PrintComponentMemory decoder
+
+#Start
+OMX_SendCommand decoder OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  decoder OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+do $2 decoder 
+
+#Wait EOS
+MMTE_WaitEvent decoder OMX_EventBufferFlag 1 TIMEOUT
+
+#Stop
+OMX_SendCommand decoder OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  decoder OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_PrintMemoryStatus
+
+OMX_SendCommand decoder OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers decoder 0
+MMTE_FreeBuffers decoder 1
+MMTE_WaitEvent decoder OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+hash_comp OUTPUT_FILE REF_DIGEST
+
+MMTE_PrintMemoryStatus
+
+ens_network_destroy
+
+MMTE_PrintMemoryStatus
+MMTE_CheckMemoryStatus
+
+unalias INPUT_FILE
+unalias OUTPUT_FILE
+unalias OUTPUT_SIZE
+unalias REF_FILE
+unalias REF_DIGEST
+unalias TIMEOUT

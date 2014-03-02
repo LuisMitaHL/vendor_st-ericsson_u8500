@@ -1,0 +1,28 @@
+#
+# Modemfs configuration
+#
+
+menuconfig MODEMFS
+	bool "Modemfs Configuration"
+	depends on MODEM_TYPE_U8500
+	help
+	  Copy modem filesystem on target.
+
+if MODEMFS
+
+config MODEMFS_DIR
+	string
+	default ./modemfs
+
+config MODEMFS_DEPS
+	string
+	default ""
+
+config MODEMFS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on MODEMFS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # MODEMFS

@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+composite nmfDistributedEE {
+    contains rt                                         as rt
+    contains os                                         as os
+
+    contains ee.onCMkernel                              as kernel
+    binds kernel.sem                                    to os.sem
+    binds kernel.mutex                                  to os.mutex
+    binds kernel.allocator                              to os.allocator
+    binds kernel.osd                                    to eeConfiguration.osd
+    binds kernel.stm					to os.stm
+    
+    //ee configuration
+    contains eeConfiguration                            as eeConfiguration
+    binds eeConfiguration.schedStartRoutine             to kernel.schedStartRoutine
+    binds eeConfiguration.distributionStartRoutine      to kernel.distributionStartRoutine
+    binds eeConfiguration.distributionServiceRoutine  	to kernel.distributionServiceStartRoutine
+    binds eeConfiguration.init                          to kernel.init
+    binds eeConfiguration.out                           to kernel.out
+}
+

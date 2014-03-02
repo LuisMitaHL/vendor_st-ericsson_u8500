@@ -1,0 +1,9 @@
+type sleep.sleepType {
+    provides ee.api.sleep                       as sleep unambiguous
+    provides ee.api.sleepRegister               as registerSleep unambiguous
+    provides sleep.api.ulp                      as ulp
+    //this is temp until we have prcmu firmware
+    requires sleep.api.prcmu                    as prcmu optional
+    
+    requires rtos.api.sched                     as scheduler
+}

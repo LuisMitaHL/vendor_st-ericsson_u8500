@@ -1,0 +1,17 @@
+#!/bin/ash
+if ! grep -q /dev/mmcblk2p1 /proc/mounts; then
+    mount /dev/mmcblk2p1 /mnt
+fi
+MMC_ROOT=$(grep -m 1 '/dev/mmcblk2p1' /proc/mounts | cut -d " " -f 2)
+rm -f ${MMC_ROOT}/cdump.elf
+umount ${MMC_ROOT}
+
+cp /etc/init.d/rc.init  /etc/init.d/rc.init.orig
+echo "mount /dev/mmcblk2p1 /mnt" >> /etc/init.d/rc.init
+echo 'if /opt/udump_test/dump_verifier /mnt/cdump.elf; then echo "Dump looks Ok"; else echo "Dump is corrupt"; fi' >> /etc/init.d/rc.init
+echo 'umount /mnt' >> /etc/init.d/rc.init
+echo "cp -f /etc/init.d/rc.init.orig  /etc/init.d/rc.init" >> /etc/init.d/rc.init
+echo "rm -f /etc/init.d/rc.init.orig" >> /etc/init.d/rc.init
+sync
+/sbin/kexec --append=reboot_at_crash -p
+echo c > /proc/sysrq-trigger

@@ -1,0 +1,36 @@
+Thermal sensor temperature conversion library
+---------------------------------------------
+
+The libthermalutils library offers an interface to convert thermistor
+sensor temperature from millivolts to degree celsius and vice versa.
+At present only few sensors are supported and can be extended to
+support other sensors for ux500 platforms.
+
+Every ux500 platform will have its own xml configuration file named
+thermal_sensors_ux500.xml located in /system/etc/ path. Typically,
+configuration will have list of sensors and their characteristics
+of inflexions points.
+
+<Sensors>
+<Count>1</Count>
+<Sensor name="xtal_temp" part="NCP15XM472J03RC_1800V">
+  <Characteristics count="x">
+     <InflexionPoint temp="-40" adcout="1734"/>
+     <InflexionPoint temp="-30" adcout="1682"/>
+     .
+     .
+     .
+     <InflexionPoint temp="125" adcout="90"/>
+  </Characteristics>
+</Sensor>
+</Sensors>
+
+To add new sensor modify the existing configuration file by
+adding <Sensor>...</Sensor> with its characteristics. Also update
+the <Count>x</Count> tag with number of supported sensors.
+
+To support new ux500 platform, add new thermal_sensors_ux500.xml
+configuration file and update the module build configuration
+file to export the file to /system/etc path.
+
+Refer to interface header file for api description.

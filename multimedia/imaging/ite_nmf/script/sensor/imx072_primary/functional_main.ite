@@ -1,0 +1,16 @@
+#do $(IMAGING_PATH)/ite_nmf/script/sensor/imx072_primary/functional_main.ite
+
+sensorname IMX072
+
+NVM_RAW enable
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+do $(IMAGING_PATH)/ite_nmf/script/sensor/imx072_primary/raw_nvm_data_valid.ite
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite
+
+NVM_RAW disable
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+do $(IMAGING_PATH)/ite_nmf/script/sensor/imx072_primary/nvm_data_valid.ite
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor/imx072_primary/main.ite
+do $(IMAGING_PATH)/ite_nmf/script/common/main.ite
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite

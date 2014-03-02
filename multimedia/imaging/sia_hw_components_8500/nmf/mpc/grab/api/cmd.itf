@@ -1,0 +1,48 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   nmf method declaration
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <grab_types.idt>
+#include <trace.idt>
+
+/** 
+ * \addtogroup grabInterfaces
+ * this starts a "Grab" task, which is a wrapper around the DMA process to 
+ * capture data coming from one of the Pipes of the SIA.
+ * the available pipes are listed in \ref e_grabPipeID, the formats supported by
+ * the pipes are explained in the doc for \ref e_grabFormat
+ * \param pipe which pipe to grab from, see \ref e_grabPipeID
+ * \param params the parameters of the image to grab, must be sync'd with
+ * pipe output format controlled through IspCtrl (or eventually CamCtrl).
+ * Not all parameters are useful for all pipes, and not all pipes support
+ * all formats
+ * \param client_id the index of the Data-Dependancy calling this function
+ * so that the component will know where to return events related to this 
+ * task
+ */
+
+void traceInit(TraceInfo_t trace_info, t_uint16 id);
+
+void abort(enum e_grabPipeID pipe, t_uint16 client_id);
+
+void execute(enum e_grabPipeID pipe, struct s_grabParams params, t_uint16 client_id);
+
+void subscribeEvents(t_uint16 info_events, t_uint16 error_events, t_uint32 debug_events, t_uint16 client_id);
+
+void unsubscribeEvents(t_uint16 info_events, t_uint16 error_events, t_uint32 debug_events, t_uint16 client_id);
+
+void Overscan_Supported(t_uint16 Adaptive_Overscan_legacy);
+
+void disableDspFineLowPower(void);
+
+void setBMSAdd(t_uint16 bmsHadd,t_uint16 bmsLadd);
+
+void setHiddenBMS(t_uint16 hiddenBMS);

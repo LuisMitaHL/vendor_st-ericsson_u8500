@@ -1,0 +1,19 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#include <vfm_common.idt>
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_mpeg4.idt>
+#include <omxcommand.idt>
+
+interface mpeg4dec.arm_nmf.api.ddep {
+//void setConfig(t_uint16 error_reporting);
+void setConfig(t_uint16 error_reporting, t_uint16 valueDecision, t_uint32 tempValue);
+void setParameter(t_uint32 deblocking_param_struct[10], t_t1xhv_algo_id algoId, ts_ddep_buffer_descriptor ddep_vdc_mpeg4_param_desc,void *mpc_vfm_mem_ctxt);
+void setNeeds(t_uint16 error_reporting,t_uint8 BufCountActual,ts_ddep_buffer_descriptor bbm_desc, ts_ddep_buffer_descriptor debugBuffer_desc,t_uint16 disable);
+void sendCommandX(OMX_COMMANDTYPE cmd, t_uword param);
+void CopyComplete(t_uint32 bytes_written,t_uint16 InBuffCnt);
+}

@@ -1,0 +1,15 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#ifndef HAMAC_INTER_H
+#define HAMAC_INTER_H
+
+#include "types.h"
+#include "hamac_types.h"
+
+t_uint16 DecodeInter(t_hamac_mb_info *p_hamac, t_sint16 *p_decoded_mb);
+
+#endif

@@ -1,0 +1,266 @@
+Crash Safe Parameter Storage Area Design Specification
+======================================================
+
+****************
+This document is the design specification of a generic Crash Safe Parameter Storage Area (CSPSA)
+that can be used to implement a so called "trim area" or any type of parameter/value
+storage.
+****************
+
+Introduction
+------------
+****************
+The CSPSA is an area in a persistent memory media containing parameter values. It needs to be
+accessible both from application in user space and from OS free applications. The area must
+reside outside any file system partition, and must have a direct interface
+to low level storage routines. In a Linux user space application CSPSA will access e.g. MTD or MMC
+directly as devices. In OS free applications it needs to interface low level drivers
+directly.
+
+It is a requirement that the CSPSA is designed to be as crash safe as possible. It must
+be assumed that power can be cut off at any moment both at production and at end user.
+
+CSPSA API will be implemented as a shared library in Linux userspace, operating against device nodes such as MTD and eMMC directly, and as
+an OS free static library for e.g. Loaders that operates directly against the flash memory drivers.
+
+In Linux userspace one must consider that there may be several clients, but there must be only one common instance of the cached
+CSPSA image.
+
+CSPSA must be design to be able to handle different flash memory types such as MMC and NAND flashes, and cope with specific characteristic such as blocks being or becoming
+bad in NAND flash memories.
+
+****************
+
+[[U5]]
+Persistant Media Storage
+------------------------
+****************
+There are two important features that should make the CSPSA crash safe:
+
+1. There must always exist at least one valid CSPSA image
+2. There must be a checksum or hash value that can determin if a CSPSA image is valid
+
+The solution for these requirements is to have two places where the CSPSA header and data can be written so that
+an old version of CSPSA image is not overwritten until the new is completed. The first image is situated
+from the start of the CSPSA partition and grows upwards, while the second is put last in the CSPSA partition growing
+sector or erase block wise downwards. Bad blocks are skipped as if they did not exist.
+
+Furthermore there must exist a header containing a CRC32 value protecting the integrity of the data and the
+header, and an index value incremented for each instance of the header. After an image is written completely
+the previously valid header must be erased to mark the completion. Meaning that if there is only one valid header
+at the opening of CSPSA the previous writing of the header was performed uninterrupted. If there are two
+valid headers, the one with the highest index may have a data retention problem.
+****************
+
+****************
+Normally there will be only one valid image that CSPSA can load, but it may happen that there are two
+valid images. In this case either of these cases may apply:
+
+1. Last write operation was interrupted just before it was completely finished. Data in this last sector
+may suffer from data retention problem. That is, data appears valid but may get unstable in a near future.
+2. The erase of the previous header was interrupted in a very early state. Data may appear valid but
+may get instable in a near future.
+
+To cope with this state the newest valid image must be used to overwrite the old version during the
+next session even though nothing has been written to the CSPSA.
+
+If there seem to be two valid images, but the newest has corrupt data, the old one should
+be used. It is important to load the entire CSPSA structure before overwriting an older.
+
+This is the sequence of how the three first stores of the CSPSA image would look like:
+
+[width="100%",cols="1,1,3^,1,1"]
+.First image. Write header 1 and data.
+|===================================================
+|Header 1 |Data 1 |... |... |...
+|===================================================
+
+[width="100%",cols="1,1,3^,1,1"]
+.Second image. Write header 2 and data.
+|====================================================
+|Header 1 |Data 1 |... |Data 2 |Header 2
+|====================================================
+
+[width="100%",cols="1,1,3^,1,1"]
+.Second image. Erase header 1.
+|====================================================
+|* |Data 1 |... |Data 2 |Header 2
+|====================================================
+
+[width="100%",cols="1,1,3^,1,1"]
+.Third image. Write header 3 and data.
+|====================================================
+|Header 3 |Data 3 |... |Data 2 |Header 2
+|====================================================
+
+[width="100%",cols="1,1,3^,1,1"]
+.Third image. Erase header 2
+|====================================================
+|Header 3 |Data 3 |... |Data 2 |*
+|====================================================
+
+
+****************
+
+****************
+With memory medias that may have bad blocks, it is assumed those blocks are just skipped as if they do not exist. This strategy
+will not be repeated in the text below, but should be assumed wherever applicable. CSPSA will keep a table over bad blocks
+in the CSPSA header for such devices according to the ONFI standard. If the CSPSA partition is empty, a scan must be done
+to find all factory bad blocks.
+****************
+
+****************
+When CSPSA code is reading a CSPSA image the following should apply:
+
+- Try to read headers at both start and end of the CSPSA partition. For NAND flash devices the second header is found
+at the first page of the last erase block. For other devices the second header is found at the last sector.
+- Normally there will only be one valid header available. However it may occur a special case where two valid headers
+are found. In this case the image with the highest index should be loaded. If it is corrupt the other image should be
+loaded. When an image is loaded CSPSA must store its contents to flash before doing anything else.
+- The sector/page at the end with invalid header must be determined to be fully erased. Otherwise a new copy
+of the current image must be created.
+- Data is read sequentially upwards from start of CSPSA partition or sequentially downwards, sector or erase block wise,
+at the end of the CSPSA partition.
+
+****************
+
+****************
+When CSPSA code is writing a CSPSA image the following should apply:
+
+- Write header and data at the end opposite of the one with the highest header index. If writing starts at the end
+of the CSPSA partition, data is written sector or erase block wise downwards.
+- Erase the previously valid header to mark completion.
+- If writing new data would overlap old valid data, writing must be aborted.
+
+****************
+
+[[U1]]
+Header (Persistant Media Storage)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The CSPSA header contains ten fixed data fields. There are different CRC32 values for data and header. This allows for quick
+verification of headers. For flash memory types that may have bad blocks, there is a bad block table trailing the header.
+Each bit represents an erase block in the CSPSA partition, where '1' indicates the blocks is ok and LSB represents the first
+erase block in the CSPSA partition. For devices that do not have bad blocks, this BBT has no meaning and the BBT Size must
+be set to 0. There are four 32-bit values dedicated for a "fast parameter" feature, which means that an application that
+only needs access to the these parameters only has to read the CSPSA header(s). Furthermore there are four reserved fields
+for future usage.
+
+****************
+[width="100%"]
+.Header Format (Little Endian)
+|===================================================
+|Magic (uint32_t) |Version (uint32_t) |Index (uint32_t) |Flags (uint32_t) |Data Size (uint32_t)|CRC32 Data (uint32_t)|CRC32 Header(uint32_t) |FastParameter[4] (uint32_t)|Reserved[4] (uint32_t)|BBT Size (uint32_t) |BBT #1 (uint32_t)|BBT #2 |...
+|===================================================
+****************
+
+****************
+[width="100%",cols="3,3,20",options="header"]
+.CSPSA Image Format
+|===================================================
+|Field | Type | Contents
+|Magic | uint32_t | 0x00415350 => "PSA"; ''Magic'' word to help recognize a CSPSA image.
+|Version | uint32_t | Version of CSPSA image. Current value is 0x00000001.
+|Index | uint32_t | Index that grows with 1 for each instance of an CSPSA image.
+|Flags | uint32_t | Flags for current CSPSA image. If bit #0 is 0 it means header's data is put at start of CSPSA
+partition, otherwise it is put at the end.
+|Data Size | uint32_t | Size of data part in bytes.
+|CRC32 Data | uint32_t | CRC32 value covering all data based on polynomial 0x04C11DB7, with initial value 0x00415350. CRC32 value
+is calculated with data in sequence from first item after the header to the last.
+|CRC32 Header | uint32_t | CRC32 value covering header based on polynomial 0x04C11DB7, with initial value 0x00415350. CRC32 value
+is calculated with header in sequence from first byte to last according to BBT Size, excluding the CRC32 Header itself.
+|FastParameter[4] | uint32_t | Four 32-bit values for "fast parameter" feature. There are four dedicated keys for fast parameters at
+0xFFFFFFFC to 0xFFFFFFFF.
+|Reserved[4] | uint32_t | Four 32-bit values reserved for future usage.
+|BBT Size | uint32_t | Determines the size of the bad block table. Size must be a multiple of 4 as the data part must start on a
+32 bit aligned address.
+|BBT #1 | uint32_t | Bad block table #1 representing erase block #0 to #31 into the CSPSA partition. A '1' represents a valid block,
+while a '0' represents a bad block.
+|BBT #2 | uint32_t | Bad block table #2 representing erase block #32 to #63 into the CSPSA partition. A '1' represents a valid block,
+while a '0' represents a bad block.
+|===================================================
+****************
+
+[[U2]]
+Data (Persistant Media Storage)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Data field contains a sorted array of triplets of +{key, size, data}+, where +key+ is a 32-bit identifier, +size+
+is the size of data in bytes and +data+ is the data. The array is sorted with increasing +key+ value.
+
+See <<TableDataFormat,Table 4>>. Fields +key+ and +size+ are of C99 type uint32_t stored in little endian format.
+
+The +key+ element must start at a 32-bit aligned address, so data part is padded with extra bytes of 0xFF when necessary.
+The padding is not included in the +size+ value.
+
+A data item may have a data size of 0 (zero), but normally deleted items should not be stored in persistant memory media
+allowing a compact storage of a sparse key array.
+
+There are four keys dedicated for the fast parameters feature at 0xFFFFFFFC to 0xFFFFFFFF. These items are always
+accessible, always 4 bytes in size and cannot be deleted. Access is done through normal read and write functions. The
+default value for these fields are zero.
+
+****************
+[[TableDataFormat]]
+[width="100%"]
+.Data Format (Little Endian)
+|===================================================
+|+key (uint32_t)+ |+size (uint32_t)+ |+data (...)+ |+key+  |+size+ |+data (...)+ |...
+|===================================================
+****************
+
+Implementation Design
+---------------------
+
+****************
+The implementation should focus on optimizing access speed rather than on saving space in RAM or on flash memory. Adding
+new items and changing size of existing items should be considered as rare operations, but must be possible.
+****************
+
+****************
+At startup of CSPSA code, a valid CSPSA image will be found according to chapter <<U5,Persistant Media Storage>>. CSPSA shall
+load the image into an field of arrays with an effort that no array is larger than 8kB (should be configurable), sorted by
+increasing +key+ order. If single elements are larger than 8kB, then they will occur as single items in the array of image. Each
+array must start with a +key+ value so data fields may not wrap to next array. This field of arrays will assure
+item search can be done in a deterministic time period, while the number of heap allocations is kept at a low level.
+****************
+
+****************
+All operations should operate on this field-of-array image if possible. When deleting objects, it is sufficient to set size to zero.
+Actual deletion of item may be performed at a later time when storing image to flash memory. New items, or items of new
+size is kept in a separate linked list, sorted on increasing +key+ value, on the side of the main data cache image. When reading
+or writing CSPSA must use the separate item list prior to using the image arrays.
+****************
+
+****************
+When it is required to store a CSPSA image to flash memory, CSPSA will store data in chunks depending on the media.
+The chunk size should be a multiple of the smallest size that can be written do current flash media. The
+contents of the chunk shall be composed of the main data image in combination with the new item list, so that a sorted array is
+stored in flash memory. Any deleted objects should be skipped. The storage of the CSPSA image must follow directions in
+chapter <<U5,Persistant Media Storage>>. As the first flash memory page/sector will contain the CSPSA image header, it must be saved to be
+stored after all data. After all data is stored, details in the Header field can  be determined and at last the final CRC32 Data and Header
+values can be caclulated.
+
+NOTE: In NAND flashes it is normally required that pages are written in sequence from start to end within an erase block. Thus, one cannot
+write the first page last as suggested above, but the entire first erase block must be cached in RAM before being stored to flash.
+****************
+
+Limitations
+------------
+****************
+
+To limit physical space requirements there is a situation when power is cut muliple times in a row
+at critical moments during writing of an image, that cannot be handled with out risk of unrecoverable
+damages to the area. Here is a detailed description of this scenario:
+
+1. A new CSPSA image is stored, but power is cut while writing the last sector/page of data so that
+data is having a retention problem. This means that data may appear valid, but is really unstable and
+may deteriorate much quicklier than normally.
+2. CSPSA is re-opened and finds two valid headers. After loading of data it starts erasing and overwriting
+the oldest image with the newly read image data. If power is cut just after the erase of the sector/page containing
+the header, CSPSA can no longer determine that the apparently valid image actually may have a data retention
+problem.
+
+The probability of this scenario should be very rare and in practice should never occur.
+
+****************

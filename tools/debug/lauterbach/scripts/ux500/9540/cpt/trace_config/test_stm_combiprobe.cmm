@@ -1,0 +1,28 @@
+do ../init_9540 v1 mop up+dbgboot cpu0
+
+  data.set eahb:0x8000E120 %long 0xFF800000      ;GPIO2_AFSLA altC on GPIO155-159 //combiprobe 2  // ALT-C STM-APE  // ALT-C2 PTM D9-D13
+  data.set eahb:0x8000E124 %long 0xFF800000      ;GPIO2_AFSLB altC on GPIO155-159 //combiprobe 2  // ALT-C STM-APE  // ALT-C2 PTM D9-D13
+
+ ; data.set eahb:0x8000E1A0 %long 0x000001FF      ;GPIO2_AFSLA altC on GPIO153-160
+ ; data.set eahb:0x8000E1A4 %long 0x000001FF      ;GPIO2_AFSLB altC on GPIO153-160
+
+ ; data.set eahb:0x8000E020  %long 0x00003FC0     ;GPIO2_AFSLA altC on GPIO70-77 //mipi34  // ALT-C STM-APE
+ ; data.set eahb:0x8000E024  %long 0x00003FC0     ;GPIO2_AFSLB altC on GPIO70-77 //mipi34  // ALT-C STM-APE
+
+  system.config.stm stp
+  trace.method canalyzer
+  canalyzer.threshold 0.9
+  canalyzer.init
+  canalyzer.autoarm off
+  canalyzer.arm
+
+; enable STM module
+  data.set a:0x8010f010 %long 0xff
+
+; send pattern
+  data.set a:0x80100000 %long 0xdeadbeef
+
+  canalyzer.off
+  canalyzer.list
+enddo
+

@@ -1,0 +1,25 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file
+* \brief   resource_sharer ARM-NMF component description
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+primitive resource_sharer singleton
+{
+
+        provides resource_sharer.api.free as free[4] //clientId is either ispproc or Camera
+		provides resource_sharer.api.ping as ping[4] //clientId is either ispproc or Camera
+		requires resource_sharer.api.rs_alert as alert[4] optional //clientId is either ispproc or Camera
+
+		provides resource_sharer.api.lock as lock[4] //clientId is either ispproc or Camera
+		provides resource_sharer.api.release as release[4] //clientId is either ispproc or Camera
+		
+		//requires resource_sharer.api.info as info[4] optional //clientId is either ispproc or Camera
+			
+
+}

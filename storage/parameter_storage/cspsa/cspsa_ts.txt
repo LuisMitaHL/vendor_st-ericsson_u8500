@@ -1,0 +1,323 @@
+CSPSA Test Specification
+========================
+
+This document describes a basic set of tests for Crash Safe Parameter Storage Area (CSPSA). It can be used to verify CSPSA on
+different kind of platforms and media. In for example a PC Ubuntu it is possible to
+operate with an image in RAM, while in an embedded device one can operate on e.g. either MTD or MMC.
+
+The idea is that all test cases should be executed as a regression test before updated CSPSA code is released. Single test
+cases should only be executed in case of bug hunting.
+
+Before starting test, the maximum size of an internal image array in CSPSA should be configured to 512 bytes.
+
+Note: TC = Test Case
+
+CSPSA_TC_1
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Create a CSPSA image and verify it
+- All CSPSA function call durations should be summed up and presented as a test result
+- A summed duration time for each type of function call should be presented (that is separate
+sums for open, flush, close, read and write operations)
+
+Test steps
+++++++++++
+
+a. Create image in different ways when it comes to keys and sizes. E.g. increasing and decreasing
+  key values, increasing and decreasing size values etc.
+
+CSPSA_TC_2
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Delete objects in a CSPSA image and verify it
+- All CSPSA function call durations should be summed up and presented as a test result
+
+Test steps
+++++++++++
+
+a. Delete some values at beginning, end and in middle.
+b. Update some of the values that are to be deleted so that they end up in item list.
+c. Try to remove all items.
+
+CSPSA_TC_3
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Get error result if a CSPSA image cannot be written
+- All CSPSA function call durations should be summed up and presented as a test result
+
+Test steps
+++++++++++
+
+a. Try to write an image that is larger than half the storage area that is not read-only.
+
+CSPSA_TC_4
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Manipulate one bit in the CSPSA data field and make sure CSPSA detects it
+- All CSPSA function call durations should be summed up and presented as a test result
+
+Test steps
+++++++++++
+
+a. Manipulate one bit in data that is not a key or size field.
+b. Manipulate one bit in data that is a key field.
+c. Manipulate one bit in data that is a size field.
+d. Manipulate one bit in data that is a size field.
+
+CSPSA_TC_5
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Manipulate one bit in one header's CSPSA header fields (one field at a time) and make sure CSPSA detects it
+- All CSPSA function call durations should be summed up and presented as a test result
+
+Test steps
+++++++++++
+
+a. Manipulate one bit in header "Magic" field at start of storage area.
+b. Manipulate one bit in header "Magic" field at end of storage area.
+c. Manipulate one bit in "Version" field at start of storage area.
+d. Manipulate one bit in "Index" field at start of storage area.
+e. Manipulate one bit in "Index" field at end of storage area.
+f. Manipulate one bit in "Flags" field at start of storage area.
+g. Manipulate one "small" bit in "DataSize" field at start of storage area.
+h. Manipulate one "large" bit in "DataSize" field at end of storage area.
+i. Manipulate one bit in "Crc32Data" field at start of storage area.
+j. Manipulate one bit in "Crc32Data" field at end of storage area.
+k. Manipulate one bit in "Crc32Header" field at start of storage area.
+l. Manipulate one bit in "Crc32Header" field at end of storage area.
+m. Manipulate one bit in "BbtSize" field at start of storage area.
+
+CSPSA_TC_6
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Manipulate one bit in both header's CSPSA header fields (one field at a time) and make sure CSPSA fails to open
+- All CSPSA function call durations should be summed up and presented as a test result
+
+Test steps
+++++++++++
+
+a. Manipulate one bit in header "DataSize" field in both headers.
+
+CSPSA_TC_7
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Test all API functions with bad input parameters
+
+Test steps
+++++++++++
+
+a. CSPSA_Open()
+b. CSPSA_Close()
+c. CSPSA_GetSizeOfValue()
+d. CSPSA_GetSizeOfNextValue()
+e. CSPSA_ReadValue()
+f. CSPSA_WriteValue()
+g. CSPSA_DeleteValue()
+h. CSPSA_Flush()
+i. CSPSA_Format()
+j. CSPSA_Create()
+
+CSPSA_TC_8
+^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Increase and decrease the size of a CSPSA image significantly and verify it
+- All CSPSA function call durations should be summed up and presented as a test result
+
+Test steps
+++++++++++
+
+a. Add a large item after first flush.
+b. Replace with a large item after first flush.
+c. Add a large item before first flush.
+d. Replace a large item before first flush.
+e. Add and delete a large item before first flush.
+f. Replace and delete a large item before first flush.
+g. Replace and delete a large item before first flush.
+h. Replace and delete a large item (with second Key value).
+
+CSPSA_TC_9
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Increase and decrease the existing parameters small amounts
+- All CSPSA function call durations should be summed up and presented as a test result
+
+Test steps
+++++++++++
+
+a. Add a large item after first flush.
+b. Replace with a large item after first flush.
+c. Add a large item before first flush.
+d. Replace a large item before first flush.
+e. Add and delete a large item before first flush.
+f. Replace and delete a large item before first flush.
+g. Replace and delete a large item before first flush.
+h. Replace and delete a large item (with second Key value).
+
+CSPSA_TC_10
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Multiple clients test
+
+Test steps
+++++++++++
+
+a. Create CSPSA.
+b. Start five threads of which three are reading and two are writing to the same CSPSA, and let threads run for > 30 s.
+
+CSPSA_TC_11
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Performance test.
+
+Test steps
+++++++++++
+
+a. Create a CSPSA with 4096 items of 24 bytes each and measure time for each operation, except for the first flush operation.
+
+CSPSA_TC_12
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Make sure CSPSA can be opened when there are two valid headers
+
+Test steps
+++++++++++
+
+a. Both headers and data is valid.
+b. Both headers are valid, but the latest written data has a bit error.
+
+CSPSA_TC_13
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Measure performance of reads and writes to storage media.
+
+Test steps
+++++++++++
+
+a. Write 8 x 128 kB.
+b. Read 8 x 128 kB.
+
+CSPSA_TC_14
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Create a CSPSA and add a few values to it (useful initial test for testing plugin implementations)
+
+Test steps
+++++++++++
+
+a. Create a CSPSA.
+b. Add some values and flush
+
+CSPSA_TC_15
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Tests adding/deleting/flushing/reopening.
+
+Test steps
+++++++++++
+
+a. Create a CSPSA
+b. Randomly adds/deletes values, or flushes/reopens. After every add/delete/reopen it is checked that the contents of the CSPSA are correct.
+
+CSPSA_TC_16
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Tests robustness against read errors, both the case where the underlying plugin detects the read error (i.e. is unable to read from the underlying media)
+and the case where bits have become corrupt without being detected by the underlying plugin.
+
+Test steps
+++++++++++
+
+a. Create a CSPSA, adds some values and flushes the contents.
+b. Opens the CSPSA, but while reading the contents, a (induced) read error occurs; it is checked that the open fails with appropriate error code.
+   This is repeated for every block that has been written.
+c. Opens the CSPSA, but while reading the contents, a (induced) bit error occurs; the CRC check should fail; it is checked that the open fails with appropriate error code.
+   This is repeated once for every word that has been written to check that any bit error at any place is correctly detected.
+
+CSPSA_TC_17
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Check that image is stored alternating at beginning and end.
+
+Test steps
+++++++++++
+
+a. Write value and flush seven times and check that image is stored alternating at beginning and end.
+
+CSPSA_TC_18
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Create a certain sequence of items that could cause problems in function F_CSPSA_CORE_ImageArray_LoadData().
+
+Test steps
+++++++++++
+
+a. Write few values; key 1 and 2 will end up at very end of their block.
+
+CSPSA_TC_19
+^^^^^^^^^^^
+
+Test objective
+++++++++++++++
+
+- Check that the fast parameter feature works.
+
+Test steps
+++++++++++
+
+a. Write different 32-bit values to the different fast parameters and check result.
+b. Negative tests. Try writing an item with different size than 4 bytes, and try deleting
+a fast parameter.

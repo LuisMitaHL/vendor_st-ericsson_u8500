@@ -1,0 +1,22 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/sensortestpattern_reg_primary.ite
+
+##############################################################################################################
+# The Use case will test ALL Rx Test Pattern FOR HR, LR and BMS
+#  1. Set Use case with Resoultion and Image format
+#  2. Then Run the Particular Test Pattern Ite file.
+#
+##############################################################################################################
+setusecase default
+manualfps 20 NIL
+setusecase HR VGA YUV420MB_D
+setusecase LR VGA YUV422RI
+usagemode video
+do $(IMAGING_PATH)/ite_nmf/script/common/sensortestpattern_lrhr.ite
+
+setusecase BMS MODE0 RAW8
+usagemode still
+do $(IMAGING_PATH)/ite_nmf/script/common/sensortestpattern_bms8.ite
+
+setusecase BMS MODE0 RAW12
+usagemode still
+do $(IMAGING_PATH)/ite_nmf/script/common/sensortestpattern_bms12.ite

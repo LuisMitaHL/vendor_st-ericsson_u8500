@@ -1,0 +1,98 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+#WARNING COMPONENT_PATH is MANDATORY for Make.config and Make.rules
+#-------------------------------
+# Default Config
+#-------------------------------
+MMSYSTEM=x
+MMBOARD=x
+
+# This will make use of RVCT under Linux and allow to deliver pre-build library
+#USE_OPT_COMPILER=true
+include $(MM_MAKEFILES_DIR)/SharedConfig.mk
+
+
+CPPFLAGS += -I STI_facedetect/inc
+CPPFLAGS += -I src
+CPPFLAGS += -I $(MM_NMF_COMP_SRC_HOSTEE_DIR)/nmf/host
+CPPFLAGS += -I $(MM_HEADER_DIR)
+CPPFLAGS += -I $(MM_HEADER_DIR)/openmax_processor_wrp
+
+#CPPFLAGS += -DDISABLE_BUFFERSKIPPING
+
+#CPPFLAGS += -DAIQ_MEMTRACE_ENABLE -DAIQ_PERFTRACE_ENABLE
+CPPFLAGS += -DSTANDALONE -DBITS32 -DFD_EXTENDED_CFG
+
+ifdef DEBUG
+	CPPFLAGS += -DDEBUG -D__DEBUG -DOSI_DEBUG  -D_DEBUG 
+	LIBNAME   = st_omxface_detector_debug
+	SOLIBNAME   = st_omxface_detector_debug
+	CFLAGS=-g -O0
+	OBJ_EXT =odebug
+else
+	CPPFLAGS += -DRELEASE -D__RELEASE
+	LIBNAME   = st_omxface_detector
+	SOLIBNAME   = st_omxface_detector
+endif
+
+#add the inclusion of the face_detector lib
+#AR_OPTION += -a library/lib/$(MMPLATFORM)/libsti_face_detector.a
+
+
+LIBOBJ   = face_detector_proxy face_detector_process face_detector
+#removed cfgfile
+
+INSTALL_HEADER = OMX_extensions/face_detector_extensions.h
+INSTALL_LIB    = $(addprefix lib, $(addsuffix .a, $(LIBNAME)))
+
+
+
+ifneq ($(MYMMSYSTEM), symbian)
+ifneq ($(PLATFORM),x86-linux)
+# We are generating an OMX component .so - request to be installed in correct place
+IS_OMX_COMPONENT_LIB:=true
+include $(MM_MAKEFILES_DIR)/STEOMXLoaderConfig.mk
+
+SOLIBNAMES+=${LIBNAME}
+LIBOBJ_$(SOLIBNAMES) = ste_omx_ens_component
+IMAGE_LIBS = $(LIBNAME) st_wrapper_openmax sti_face_detector
+IMAGING_NMF_HOST_COMPONENTS = openmax_processor_wrp
+# WA as no immediate completion for ifm 
+IFM_LIB = $(wildcard $(foreach mmpath, $(MMSEARCHPLAT), $(MM_LIB_DIRNAME)/$(mmpath)/libst_ifm.a ))
+
+SOLIBS_${SOLIBNAMES} += $(IMAGING_NMF_HOST_COMPONENTS_LIBS)
+EXTRALIBS_${SOLIBNAMES}= $(IMAGE_LIBS)
+PLATFORM_LIST = cortexA9-linux-gnu-$(MYMMBOARD) cortexA9-linux-gnu-x cortexA9-x-rvct-x cortexA9-x-gnu-$(MYMMBOARD) cortexA9-x-rvct4gnu-x cortexA9-x-gnu-x
+LIB_DIR_LIST += $(foreach mmpath, $(PLATFORM_LIST), $(addprefix -L,$(MM_LIB_DIRNAME)/$(mmpath)))
+SOLIB_DIR_LIST =  $(foreach mmpath, $(PLATFORM_LIST), $(addprefix -L,$(MMBUILDIN)/$(ROOTFS_DIR_NAME)/$(mmpath)$(COMPONENT_PATH)))
+
+FLAGS_$(SOLIBNAMES) += $(IFM_LIB) $(LIB_DIR_LIST) $(SOLIB_DIR_LIST) 
+FLAGS_$(SOLIBNAMES) += $(LDFLAGS_STE_ENS_OMX_COMPONENTS) -llos
+
+ifneq ($(MMCOMPILER),android)
+FLAGS_ste_face_detector += -lrt
+endif
+INSTALL_SOLIB = ${SOLIBNAMES}
+endif
+endif
+
+
+#WARNING todo target is MANDATORY (exe and/or lib)
+todo: lib solib
+
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MM_MAKEFILES_DIR)/SharedRules.mk
+
+#$(LIB_DIR)/libst_omxface_detector.a: $(STATIC_OBJ)
+#	@echo generate the library ad adding libsti_face_detector.a
+#	$(VERCHAR)$(AR) $(AR_OPTION)$@ $+ 
+#	$(VERCHAR)$(AR) -r $@ STI_facedetect/lib/cortexA9-x-rvct4gnu-x/libsti_face_detector.a
+# don't work cannot mix rvct and armcc .A
+
+
+print:
+	@echo Display variables content for VARS=$(VARS)
+	@echo -e "$(foreach VAR, $(VARS),$(VAR)=$($(VAR))\n)"

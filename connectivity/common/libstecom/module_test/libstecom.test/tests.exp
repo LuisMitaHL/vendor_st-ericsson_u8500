@@ -1,0 +1,23 @@
+#
+# Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+# This code is ST-Ericsson proprietary and confidential.
+# Any use of the code for whatever purpose is subject to
+# specific written permission of ST-Ericsson SA.
+#
+
+set TOOL "$VALGRIND $UNIT_ROOT_DIR/libstecom/test/test-srv"
+set srv_pid [startTool]
+set srv_id $spawn_id
+sleep 1
+
+set TOOL "$VALGRIND $UNIT_ROOT_DIR/libstecom/test/test-cli"
+
+## TESTS
+
+# Test start
+setTest "Test"
+runProg $TOOL
+checkRegexp "Got PONG.*Subscribe OK.*event PONG.*Got PONG.*event PONG.*Unsubscribe OK.*Got PONG.*Verifying.*DONE"
+sleep 7
+# Test done
+

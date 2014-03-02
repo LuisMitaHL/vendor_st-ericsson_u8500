@@ -1,0 +1,14 @@
+alias P_ADDRESS $1
+alias P_DATA    $2
+
+#old interface
+OMX_SetConfig camera IFM_IndexConfigCommonWritePe nPEWriteList_addr[0]=P_ADDRESS nPEWriteList_data[0]=P_DATA nPEWriteList_addr[1]=0 nPEWriteList_data[1]=0
+
+#OMX_SetConfig camera IFM_IndexConfigCommonWritePe nPEToWrite=1 nPEList_addr[0]=P_ADDRESS nPEList_data[0]=P_DATA
+
+
+MMTE_WaitEvent camera OMX_EventIndexSettingChanged OMX_ALL IFM_IndexConfigCommonWritePe
+
+OMX_GetConfig ConfigGet camera IFM_IndexConfigCommonWritePe
+
+echo File_saved

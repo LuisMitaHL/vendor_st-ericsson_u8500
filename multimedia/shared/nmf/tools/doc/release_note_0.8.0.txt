@@ -1,0 +1,132 @@
+*****************************
+* Nomadik Kernel 0.8.0      *
+*****************************
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World, Training, MP3, User Fifo)
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+
+Supported target:
+	- Stn8810 SAA
+	- STn8815 SAA & SVA Cut A0/B0
+
+Changes:
+--------
+- [Tools] Composite Components are now built as Primitive ones
+- [Tools] Improve syntax/semantic checking
+- [Tools] Added support for Provided and Required Interface Collection (WARNING: a MMDSP+ compiler patch is REQUIRED)
+- [Tools] New interrupt management (through interrupt keyword and strict local naming)
+- [Tools] Internal Defect (-nk compilation flag duplication) correction 
+- [Tools] Binding component now compile with CFLAGS=-O4, can be overwrite though BC_CFLAGS
+	
+- [CM] Add dynamic management of required and provided interface collection
+- [CM] New memory management layer providing preferred bank and alignment features
+- [CM] New MPC abstraction layer
+- [CM] Composite Components managed as primitive ones
+- [CM] New loader/instantiater layer: cut into two layer a generic one and a mmdsp dependent one
+- [CM] Deep Code cleaning 
+- [CM] Add introspection API
+- [CM] Add priority parameter to CM_InstantiateComponent
+- [CM] Several API changes (see cm-api.chm):
+             - DSP -> MPC
+             - Introspection API
+             - New parameters for CM_InstantiateComponent, CM_AllocMpcMemory 
+
+- [EE] New interrupt management 
+- [EE] Code cleaning
+
+- [Examples] Added collection to MP3 example (WARNING: a MMDSP+ compiler patch is REQUIRED)
+- [Examples] Added nmf_ee support
+
+- Adding nmf_ee execution environment delivery
+
+Bug fixes:
+----------
+- [CM] [ internal ] Memory overflow on communication objects (fifo params)
+- [EE] [ Defect #26822 ] execution engine does not provide CFLAGS in .conf file
+- [CM] [ Defect #25869 ] GetComponentProperty functions return bad error
+- [CM] [ Defect #25271 ] infinite loop when Instantiate after Destroy 
+- [CM] [ Defect #26639 ] calling the component manager from C++ code does not work
+- [CM] [ Defect #26640 ] error if HCL dma.h included after cm/inc/cm.h 
+- [CM] [ Defect #28106 ] MPC memory status returned in bytes 
+- [CM] [ Defect #25099 ] problem when binding interrupt 
+- [TOOLS] [ Defect #25147 ] lexical error with signed property value
+- [TOOLS] [ Defect #25869 ] Tools generate wrong property name
+- [TOOLS] [ Defect #24515 ] Error if .conf file ends with a comment
+- [TOOLS] [ Defect #27521 ] multiple instanciation of a component in a .arch does not work
+- [Examples] [ Defect #25791 ] first build of examples fails (missing "build" directory)
+
+
+Notes:
+------
+        - Communication scheme uses active polling when overflow on communication fifos
+                Active polling will be removed when Panic mechanism will be integrated (M2 Milestone)
+
+	- MMDSP debugger not component aware in MMDSP toolset 3.0.x
+
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested and allowed only in composite 
+		component not through Component manager API (will be available in M2 Milestone)
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+		Will be fixed in STn8815B0
+	- Only the 24bits mode supported on MPC
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one segment only
+		
+	- Safe reconfiguration will be available in M2 Milestone
+	    User must check itself network activity before reconfigure it
+		
+	- MP3 example
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics
+
+Pre-requires:
+-------------
+	- At least MMDSP toolset 3.1.0 must be used (http://gnx1227.gnb.st.com:8080/releases/release_list.php)
+		MMDSP debugger not component aware
+          WARNING: MMDSP Toolset 3.1.1 does not worked with NMF (issue with THIS switching)
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)
+		(also installed by the MMDSP toolset 3.x)
+		(also available for downloading on https://codex.cro.st.com/projects/nmf/)
+   	- Gnu tools, 
+		* On Linux, installed by default
+		* On Windows, you must install either:
+			+ CygWin
+			+ MinGW/MSYS (http://www.mingw.org)
+				MSYS-1.0.10.exe (at least)
+				MinGW-5.1.3.exe (at least)
+				(also available for downloading on https://codex.cro.st.com/projects/nmf/)
+        
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		MPC: SAA & SVA
+			* For NDK10 platform, ESRAM data are mapped to SDRAM segments as no ESRAM on 8810
+		Execution Engine: Synchronous, Hybrid
+		MMDSP: 3.1.0
+		ARM: RVCT 3.0 SP1 Build 651 AND RVCT 2.2 Build 593
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-MPC
+			asynchronous intra-MPC
+			ARM -> MPC
+			MPC -> ARM
+                        inter MPCs (asynchronous)
+			error management
+		* Memory 
+			Alloc and free
+		* Misc
+			Attributes and properties
+	- Test report available in Codex download files
+

@@ -1,0 +1,128 @@
+ifeq ($(PLATFORM),x86-linux)
+SELECTED_CONF = _sw
+else
+SELECTED_CONF =
+endif
+
+# All target for lib , main and test
+RVD = source /sw/st/gnu_compil/comp/arm/rvds/3.1/linux/RVDS31env.posh && rvdebug
+#ALLEGRO 03
+STREAM = /prj/multimedia_shared/video/bitstreams/H264/ALLEGRO/Syntax/BP_L30_Syntax_80x96_v6.0/80x96/Allegro_Inter_CAVLC_B02_L30_5x6_6.0.26l
+#ALLEGRO 11
+#STREAM =/prj/multimedia_shared/video/bitstreams/H264/ALLEGRO/Syntax/BP_L30_Syntax_80x96_v6.0/80x96/Allegro_Intra_CAVLC_B05_L30_5x6_6.0.26l
+#ALLEGRO 02
+
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/ALLEGRO/Syntax/BP_L30_Syntax_80x96_v6.0/80x96/Allegro_Inter_CAVLC_B01_L30_5x6_6.0.26l
+
+#omxval_h264dec_iso_09 
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/CONFORMANCE/BA1_FT_C.264
+#omxval_h264dec_iso_22
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/CONFORMANCE/CI1_FT_B.264 
+
+#ISO30
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/CONFORMANCE/LS_SVA_D.264 
+
+#ISO10
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/CONFORMANCE/NLMQ1_JVC_C.264
+
+#ISO11
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/CONFORMANCE/NLMQ2_JVC_C.264
+
+#ERC_56
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/CUSTOM/EC/rs_80x96_1copy.264
+
+#ERC_61
+#STREAM =/prj/multimedia_shared/video/bitstreams/H264/CUSTOM/EC/rs_80x96_partialcopy.264
+
+#ERC_0ef
+#STREAM =/prj/multimedia_shared/video/bitstreams/H264/CUSTOM/EC/akiyo_CIF_256000.264
+
+# ERC_31
+#STREAM = /prj/multimedia_shared/video/bitstreams//H264/CUSTOM/EC/news_CIF_128000.264
+
+#ERC07
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/CUSTOM/EC/carphone_QCIF_128000.264
+
+
+#ERC 04
+#STREAM    = /prj/multimedia_shared/video/bitstreams/H264/CUSTOM/EC/akiyo_QCIF_128000.264
+
+#IMTC 10
+#STREAM    = /prj/multimedia_shared/video/bitstreams/H264/IMTC/emu-c5_1-h263r64.264
+
+#OK
+#TEST_STREAM   =  /prj/multimedia_shared/video/bitstreams/H264/ALLEGRO/Syntax/BP_L30_Syntax_80x96_v6.0/80x96/Allegro_Inter_CAVLC_B00_L30_5x6_6.0.26l
+#STREAM = $(TEST_STREAM)
+
+#Allegro03
+#STREAM  = /prj/multimedia_shared/video/bitstreams/H264/ALLEGRO/Syntax/BP_L30_Syntax_80x96_v6.0/80x96/Allegro_Inter_CAVLC_B02_L30_5x6_6.0.26l
+
+#Allegro05
+#STREAM  = /prj/multimedia_shared/video/bitstreams/H264/ALLEGRO/Syntax/BP_L30_Syntax_80x96_v6.0/80x96/Allegro_Inter_CAVLC_B04_L30_5x6_6.0.26l
+
+#Allegro07
+#STREAM = /prj/multimedia_shared/video/bitstreams/H264/ALLEGRO/Syntax/BP_L30_Syntax_80x96_v6.0/80x96/Allegro_Intra_CAVLC_B01_L30_5x6_6.0.26l
+
+
+
+#### RVD #####
+rvd:
+	\rm -rf argument.txt
+	echo test $(STREAM) >> argument.txt
+	#\cp -f iso.vtc argument.txt
+	$(RVD) -aws=- -nologo  -inc='./test_appli/script/rvd_$(shell whoami).inc' --stdiolog='log.log' 
+	chmod +x compare.cmd
+	compare.cmd
+
+
+#### Lauch one of the test liste #####
+test_all_stream test_all perf dut allegro bp30 iso iso9 erc:
+	$(MAKE) test_suite TEST_LIST=$@
+
+
+
+test_suite:
+	\cp vtc/$(TEST_LIST).vtc argument.txt
+	\cp vtc/$(TEST_LIST).vtc  $(MMROOT)/video/components/h264dec/arm_nmf/test_appli/bin/$(MMPLATFORM)/argument.txt
+ifneq ($(PLATFORM),x86-linux)
+	$(MMROOT)/video/components/h264dec/arm_nmf/test_appli/script/launcher.pl $(MMROOT)/video/components/h264dec/arm_nmf/test_appli/bin/$(MMPLATFORM)/h264decnmf$(SELECTED_CONF)$(EXE_EXT)
+	chmod +x compare.cmd;compare.cmd
+else
+	test_appli/bin/$(MMPLATFORM)/h264decnmf$(SELECTED_CONF)$(EXE_EXT)
+	chmod +x compare.cmd
+	compare.cmd
+endif
+
+
+
+
+
+#### SVP Stuff ####
+svp:
+	#source /prj/multimedia_shared/common/TOOLS/Linux/internals/TLM/SVP/SVP-2.4-Linux-x86-SVP_8500_2.4.0.46-RedHatEnterpriseWS_4-x86_64-gcc_3.4.6/svp/svp.csh
+	\rm -rf argument.txt
+	echo test $(STREAM) >> argument.txt
+	tlm_run.exe -arm_lib $(MMPLATFORM)/h264decnmf.axf -stop_onexit -arm_opt "$(STREAM) -digests"
+
+svpdebug_model:
+	/sw/arm/system_generator/4.2/FastModelTools_4.2/ModelDebugger_4.2/bin/modeldebugger &
+	\rm -rf argument.txt
+	echo test $(STREAM) >> argument.txt
+	tlm_run.exe -arm_lib  $(MMPLATFORM)/h264decnmf.axf -arm_opt "$(STREAM) -digests" -arm_debug &
+
+svpdebug_t32:
+	\rm -rf test_appli/argument.txt
+	echo test $(STREAM) >> test_appli/argument.txt
+	make -C test_appli svpdebug_t32
+
+svp_linux: 
+	perl test_appli/script/testsvp_linux.pl 
+	make clean -C $(MMROOT)/linux/ramdisk 
+	make -C $(MMROOT)/linux/ramdisk
+
+svp_linux_omx:
+	perl test_appli/script/testsvp_linux.pl omx
+	make realclean -C $(MMROOT)/shared/mmte
+	make -C $(MMROOT)/shared/mmte
+	make clean -C $(MMROOT)/linux/ramdisk 
+	make -C $(MMROOT)/linux/ramdisk

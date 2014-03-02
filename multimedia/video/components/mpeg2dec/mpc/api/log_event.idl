@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_mpeg2.idt>
+#include <buffer.idt>
+#include <t1xhv_resource_manager.idt>
+#include <t1xhv_vpp.idt>
+#include <omxevent.idt>
+#include <omxerror.idt>
+
+
+interface mpeg2dec.mpc.api.log_event { 
+void vppEventEndAlgo(t_t1xhv_status status,t_t1xhv_vpp_info info,t_uint32 durationInTicks);
+void decoderEventEndAlgo(t_t1xhv_status status, t_t1xhv_decoder_info info, t_uint32 durationInTicks);
+void eventReleasebuffer(t_uint32 port_idx,Buffer_p buf);
+void eventProcess();
+void event_informResourceStatus(t_t1xhv_resource_status status,t_t1xhv_resource resource);
+void eventMarkEndOfBitstream();
+void postEventHandler(OMX_EVENTTYPE ev, t_uint32 data1, t_uint32 data2);
+}

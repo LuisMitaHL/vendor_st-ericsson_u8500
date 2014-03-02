@@ -1,0 +1,115 @@
+# MMTE test of the splitter: input is an attached IO, output are fake sinks
+# Buffers allocated in the Splitter are "small" so that the file transfer requires
+# several "emptythisbuffer" toward the Splitter
+
+if SYMBIAN == 1
+   alias OMX_SPLITTER_NAME     OMX.ST.IMAGESPLITTER
+   alias OMX_FAKESINK_NAME     OMX.SYMBIAN.OTHER.MD5SINK
+   alias INPUT_FILE_PATH       Z:/mmte/img/splitter
+else
+   alias OMX_SPLITTER_NAME     OMX.ST.ImageSplitter
+   alias OMX_FAKESINK_NAME     OMX.ST.Fakesink
+   alias INPUT_FILE_PATH       $(IMAGING_PATH)/splitter/mmte_script/input
+endif
+
+alias WIDTH  10
+alias HEIGHT 10
+alias COLOR_FORMAT  OMX_COLOR_Format16bitRGB565
+alias STRIDE 1280
+alias INPUT_FILE   $(INPUT_FILE_PATH)/splitter_input_file.txt
+
+test_logDir	$(MMTE_SCRIPT)
+test_start splitter_unit_sink splitter unitary with fakesink
+
+OMX_GetHandle    splitter OMX_SPLITTER_NAME
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=1  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=2  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+
+OMX_GetHandle    fakesink1 OMX_FAKESINK_NAME
+OMX_SetParameter fakesink1 OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+
+OMX_GetHandle    fakesink2 OMX_FAKESINK_NAME
+OMX_SetParameter fakesink2 OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+
+OMX_GetHandle    fakesink3 OMX_FAKESINK_NAME
+OMX_SetParameter fakesink3 OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+
+OMX_SendCommand  splitter OMX_CommandPortDisable 4
+MMTE_WaitEvent   splitter OMX_EventCmdComplete OMX_CommandPortDisable 4
+
+OMX_SetupTunnel splitter 1 fakesink1 0
+OMX_SetupTunnel splitter 2 fakesink2 0
+OMX_SetupTunnel splitter 3 fakesink3 0
+
+ate_attach_io   splitter 0 MEM INPUT_FILE 0 0 0
+
+OMX_SendCommand fakesink1 OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand fakesink2 OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand fakesink3 OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers splitter 0
+
+MMTE_WaitEvent fakesink1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent fakesink2 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent fakesink3 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_set_nb_buffer splitter 0 20
+
+OMX_SendCommand fakesink1 OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  fakesink1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+OMX_SendCommand fakesink2 OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  fakesink2 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+OMX_SendCommand fakesink3 OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  fakesink3 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_wait_transfer splitter 0
+mmte_sleep 10
+MMTE_resume_transfer splitter 0 25
+MMTE_wait_transfer splitter 0
+mmte_sleep 10
+MMTE_resume_transfer splitter 0
+
+test_next buffer exchange achieved
+test_result PASSED
+
+OMX_SendCommand fakesink1 OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  fakesink1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand fakesink2 OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  fakesink2 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand fakesink3 OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  fakesink3 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_PrintMemoryStatus
+
+OMX_SendCommand  fakesink1 OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand  fakesink2 OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand  fakesink3 OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand  splitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers splitter 0
+MMTE_WaitEvent   splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent   fakesink1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent   fakesink2 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent   fakesink3 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+check_error
+test_next end_of_scenario achieved
+test_result PASSED
+
+ens_network_destroy
+
+test_end
+
+unalias INPUT_FILE

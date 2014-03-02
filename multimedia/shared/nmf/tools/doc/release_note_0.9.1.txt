@@ -1,0 +1,156 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 0.9.1)      *
+**********************************************************
+	"Compilé, c'est gagné" (M. Guene)
+	"La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World's, Training, Mandelbrot, User Fifo)
+ 		Hello world and mp3 Eclipse project delivered
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+	- STn8815 SAA & SVA Cut A0/B0/C0
+	
+Supported environments:
+	- nmf_bare: 	based on Nomadik HCL/services libraries
+	- nmf_Think:	based on Think component-based OS
+	- nmf_os21: 	based on ARM OS21
+
+Changes:
+--------
+[CM]
+	 
+[MPC Executive Engine]
+ 	- Panic for COMS FIFO overflow no more generated on MPC
+ 		Infinite loop until host has pop some element.
+        This potentially will drive MPC to dead if Host is dead. But we assume, this is not a issue.
+	- Communication interrupt (IT11) now mask other ITs when scheduling event in order to not
+		fall into reentrancy issue with potential lost of event.
+	
+[OS integration]
+	- Nomadik Multiprocessing Environment (NME) API.
+		Available for Bare, Think, OS21 and TLM.
+	- nmf_ee renamed nmf_think in order to break ambiguity (content not changed).
+	- All environment now developed as component and compiled through NMF tool chain.
+	
+[Tools] 
+	- Allow singleton component on composite component.
+		Only one instance of such component include in final ELF binary file.
+ 
+[Programming model]
+
+
+Bug fixes:
+----------
+	- [ Defect #34676 ] [TOOLS] Errors for multiples singletons into the same composition not always 
+	  explicit enough
+		This construction is accepted and the singleton component will be instantiate only one time 
+		in composition.
+		For information, only configuration of first singleton instance is done, other are ignored. 
+	- [ Defect #34918 ] [Tools] error if string constant declared with very long size (IDL)
+		Limit define value string as 255 characters
+	- [ Defect #34923 ] [Tools] 't_physical_address' type unsupported as a structure field (IDL)
+	- [ Defect #35069 ] [TOOLS] config. file with the 'interrupt' keyword in the provided interface 
+	  name
+	  	"prefix" and "interrupt" accepted as interfaceName.
+	- [ Defect #35160 ] [CM] value from attribute assigned to untyped attribute
+		In order to be assigned, an attribute must be typed in the ADL.
+		Tool updated for checking that.
+	- [ Defect #35237 ] [CM] PARAM_FIFO_OVERFLOW with intensive parallel communication under 
+	  os21
+	- [ Defect #35240 ] [CM] memory access violation in CM_GetAllocStatus under OS21
+	- [ Defect #35257 ] [Tools] error #59 when using big constant as array size in method 
+	  parameter (IDL)
+	  	Replaced by error already existing #91: Integer format not recognized or too long.
+		Error #59 removed.
+	- [ Defect #35258 ] [Tools] no check on '#define' with very long identifier name (IDL)
+	- [ Defect #35259 ] [Tools] character constant identifier used in enum declaration (IDL)
+		Added in grammar (parser and programming model) that enum as character accepted.
+	- [ Defect #35260 ] [Tools] enum declared with two identical fields (IDL)
+	- [ Defect #35304 ] [Tools] no error with unbinded extended interface inside composite (ADL)
+	- [ Defect #35306 ] [Tools] ac error in case of method with parameter type longer than 32bits
+	- [ Defect #35309 ] [Tools] method with return parameter is allowed in asynchronous 
+	  communication (IDL)
+	- [ Defect #35332 ] [TOOLS] Async. binding fifo size = 0 in a composite conf. file
+	- [ Defect #35333 ] [TOOLS] Composite conf. file with an asynchronous binding large fifo size
+	- [ Defect #35336 ] [TOOLS] Required lifecycle interfaces should not accept CollectionSize
+		Since component can provide lifecycle interface, but since this interface are handled 
+		in a specific way. Requireing such interfaces will be disallowed.
+	- [ Defect #35345 ] [TOOLS] Octal or Hexa for CollectionIndex in composite conf. binding 
+	  instructions
+	- [ Defect #35356 ] [ee] mutex problem in IT11
+		All interrupt will be masked when calling Sched_Event in  IT11.
+	  
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested 
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one memory segment only
+		
+	- MP3 example supported only on nmf_bare environment.
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+		Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+	- Some link issue with GNU toolchain could occur in examples until HCL/Services compiled with 
+		correct flags. 
+
+
+Pre-requires:
+-------------
+	- At least Nomadik Toolset 1.0.0 Beta
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		MPC: SAA & SVA
+		Execution Engine: Synchronous, Hybrid
+		Nomadik Toolset 1.0.0: 1.0.0 Alpha SP1
+		ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593, st-armgcc (gcc version 4.1.1)
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-MPC
+			asynchronous intra-MPC
+			ARM -> MPC
+			MPC -> ARM
+			inter MPCs (asynchronous)
+			MPC -> MPC (on 8815B0)
+			error management
+		* Memory 
+			Alloc and free
+		* User Fifo 
+		* Programming Language
+			IDL
+			ADL
+		* Collection :
+			Behavior with binds between primitives component
+			Behavior with binds between composites component
+			Behavior with binds defined in composites components (conf. files)
+		* Network introspection
+			Components (primitives or composites)
+			Interfaces with and without collections (size and index usage)
+      		Attributes
+      		Properties	
+		* Panic :
+			Behavior upon each Panic (reason) detection and after the detection.

@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSTESTMODE_HIV__
+#define __CGPSTESTMODE_HIV__
+/**
+* \file cgpsTestMode.hiv
+* \date 17/3/2010
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> TThis file contain variable internaly needed in cgps9TestMode.c\n
+*
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 19.11.09</TD><TD> BALAJI NATAKALA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+
+#ifdef __CGPS9TESTMODE_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS9TESTMODE_C__*/
+
+
+#ifdef ATT_LOGGING_ENABLE
+
+/**
+* \var vg_PsteNmeaCallback
+* \brief Function called by CGPS to send PSTE messages
+*/
+GLOBAL t_cgps_PsteNmeaCallback vg_PsteNmeaCallback
+#ifdef __CGPS9TESTMODE_C__
+= NULL
+#endif
+;
+
+#endif /*ATT_LOGGING_ENABLE*/
+
+#ifdef CGPS_CNO_VALUE_FTR
+
+GLOBAL t_cgps_ProductionTestCallback vg_ProductionTestCallback
+#ifdef __CGPS9TESTMODE_C__
+= NULL
+#endif
+;
+
+#endif /* CGPS_CNO_VALUE_FTR */
+
+#ifdef CMCC_LOGGING_ENABLE
+
+GLOBAL char s_CmccLog[CGPS_SUPL_CMCC_STRING_MAX_LENGHT];
+
+#endif //#ifdef CMCC_LOGGING_ENABLE
+
+
+GLOBAL uint32_t           vg_TREQ_Status;
+
+GLOBAL t_CGPS_TestRequest vg_TREQ_TestRequest;
+
+GLOBAL uint16_t           vg_TREQTestMask;
+
+
+#undef GLOBAL
+
+#endif /* __CGPSTESTMODE_HIV__ */
+

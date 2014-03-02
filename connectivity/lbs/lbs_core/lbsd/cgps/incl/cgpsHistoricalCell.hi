@@ -1,0 +1,55 @@
+#ifndef __CGPSHISTCELL_HI__
+#define __CGPSHISTCELL_HI__
+/**
+* \file cgpsHistCell.hic
+* \date 27/08/2010
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all dependency file CGPS\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 27.08.10</TD><TD> Puneet Misra </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef AGPS_HISTORICAL_DATA_FTR
+ 
+#include "cgpscommon.hi"
+
+#ifdef __RTK_E__
+#define ACCESS_RIGHTS_ALL
+#include "tatman.h"
+#undef ACCESS_RIGHTS_ALL
+
+#define ACCESS_RIGHTS_MAPI
+#include "mea.h"
+#undef ACCESS_RIGHTS_MAPI
+
+#include "errhdl.h"
+
+#include "gfl.h"
+
+#include "utser.h"
+
+#include "cgpsutils.him"
+
+#endif /*__RTK_E__*/
+
+
+#include "cgpsHistoricalCell.hic"
+#include "cgpsHistoricalCell.hit"
+#include "cgpsHistoricalCell.hip"
+#include "cgpsHistoricalCell.hiv"
+
+#endif  /* AGPS_HISTORICAL_DATA_FTR  */
+
+#endif /* __CGPSLEARNINGCELL_HI__ */
+
+

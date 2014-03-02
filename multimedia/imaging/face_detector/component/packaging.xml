@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/component.xml" />
+    <include name="component/packaging.xml" />
+    <include name="Makefile" />
+    <include name="Make_build" />
+    <include name="ReleaseNotes.txt"/>
+    <include name="OMX_extensions/**"/>
+  </fileset>
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="src/*.h" />
+      <include name="lib/cortexA9-x-android-x/*.a" />
+      <include name="lib/cortexA9-x-android-x/*.so" />
+    </fileset>
+  </package>
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="src/*.h" />
+      <include name="src/*.cpp" />
+    </fileset>
+  </package>
+  <package name="arm-proc-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="STI_facedetect/inc/facedetect_api.h" />
+      <include name="STI_facedetect/lib/cortexA9-x-rvct4gnu-x/*.a" />
+    </fileset>
+  </package>
+  <package name="arm-proc-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="STI_facedetect/Makefile" />
+      <include name="STI_facedetect/inc/*.h" />
+      <include name="STI_facedetect/src/*.cpp" />
+    </fileset>
+  </package>
+</packages>

@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/queue.idt>
+#include <nmf/inc/channel_type.h>
+#include <nmf/inc/service_type.h>
+
+typedef t_uint32 t_ee_cb_msg_type;
+#define EE_CB_ITF_MSG               ((t_ee_cb_msg_type)1)
+#define EE_CB_SVC_MSG               ((t_ee_cb_msg_type)2)
+
+typedef struct {
+    t_queue_link event;
+    t_ee_cb_msg_type type;
+} t_ee_msg_header;
+
+typedef struct {
+    t_ee_msg_header msg;
+    void *THIS;
+    void *pReaction;
+    void *clientContext; //TODO : check if cannot be put inside interface
+    t_nmf_channel channel; //TODO : check if cannot be put inside interface
+} t_callback_event;
+
+typedef struct {
+    t_ee_msg_header msg;
+    t_nmf_service_type serviceType;
+    t_nmf_channel channel;
+    t_uint32 messageSize;
+} t_msg_service_header;
+
+typedef struct {
+    t_msg_service_header header;
+    t_nmf_service_data data;
+} t_msg_service;
+
+interface ee.api.callback unmanaged {
+    IMPORT_SHARED t_nmf_error nmfChannelAddRef(t_nmf_channel channel);
+    IMPORT_SHARED t_nmf_error nmfChannelRemoveRef(t_nmf_channel channel);
+    IMPORT_SHARED void nmfPushMessageInChannel(t_nmf_channel channel, t_queue_link *pEvent);
+    IMPORT_SHARED t_queue_link* nmfRemoveMessageFromChannel(t_nmf_channel channel);
+    IMPORT_SHARED void nmfPushServiceMessage(t_msg_service_header *pMsg);
+}
+

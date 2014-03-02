@@ -1,0 +1,23 @@
+#!/bin/bash
+if [ $# -ne 4 ]
+    then
+    echo "Usage: $0 <SYSTEMFS_INSTALL_DIR> <TOOLCHAIN_TARGET_DIR> <LOG_PATH> <HATS_CONFIG>"
+    echo Populates the template target file system tree
+    echo 1st arg: SYSTEMFS_INSTALL_DIR
+    echo 2nd arg: TOOLCHAIN_TARGET_DIR
+    echo 3rd arg: LOG_PATH
+    echo 4th arg: HATS_CONFIG
+    exit 1
+else
+    SYSTEMFS_INSTALL_DIR=$1
+    TOOLCHAIN_TARGET_DIR=$2
+    LOG_PATH=$3
+    HATS_CONFIG=$4
+
+    #Adding home-made scripts links
+    ln -sf ../init.d/mdev $SYSTEMFS_INSTALL_DIR/etc/rcS.d/S00mdev
+    ln -sf ../init.d/VirtualConsoles $SYSTEMFS_INSTALL_DIR/etc/rcS.d/S15VirtualConsoles
+    ln -sf ../init.d/networking $SYSTEMFS_INSTALL_DIR/etc/rcS.d/S45networking
+    ln -sf ../init.d/9pserverd $SYSTEMFS_INSTALL_DIR/etc/rcS.d/S659pserverd
+fi
+exit 0

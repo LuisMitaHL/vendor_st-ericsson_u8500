@@ -1,0 +1,69 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/smstest.ite
+setusecase default
+setusecase LR VGA YUV422RI
+setusecase HR VGA YUV420MB_D
+setusecase BMS MODE0 RAW12
+bmsmode STILL
+bmsout BAYERSTORE2
+usagemode video
+
+LogPE disable
+
+bmsmode STILL
+bmsout BAYERSTORE2
+
+SMSHelp
+
+# ------------------------------------------------
+# ------- first test : SMS Sanity Test ---------
+# ------------------------------------------------
+bms prepare
+bms start
+
+SMSSanityTest
+
+bms stop
+bms free
+
+HR prepare
+HR start
+
+SMSSanityTest
+
+HR stop
+HR free
+
+
+LR prepare
+LR start
+
+SMSSanityTest
+
+LR stop
+LR free
+
+
+
+# ------------------------------------------------
+# ------- second test : SMS Test Rx Streaming -
+# ------------------------------------------------
+# to be debugged with parta as this is hardcoded
+#SMSTest HR wait 3280 2464 1640 1232 2400 0x0A08
+
+#SMSTest LR wait 1728 968 864 484 2940 0x0A08
+
+#SMSTest BMS wait 1728 968 864 484 2940 0x0A08
+
+# ------------------------------------------------
+# ------- third test :  SMS Test Rx Stopped ------
+# ------------------------------------------------
+
+#SMSTest HR nowait 3280 2464 1640 1232 2400 0x0A08
+
+#SMSTest LR nowait 1728 968 864 484 2940 0x0A08
+
+#SMSTest BMS nowait 1728 968 864 484 2940 0x0A08
+
+# ------------------------------------------------
+# -- Fourth test [Stress test]: ---
+# ------------------------------------------------

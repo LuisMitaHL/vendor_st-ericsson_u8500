@@ -1,0 +1,427 @@
+#
+# Copyright (C) 2010 ST-Ericsson AS
+# Author: François Choleau / francois.choleau@stericsson.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# See the NOTICE file distributed with this work for additional
+# information regarding copyright ownership.
+#
+
+# Modem Init Daemon (MID) configuration file
+
+####### SHELL COMMANDS SECTION ######
+
+# Modem init command. One time command executed when MID starts.
+# engineering_modem_init_cmd = "";
+# itp_modem_init_cmd = "";
+# service_modem_init_cmd = "";
+# modemtest_modem_init_cmd = "";
+retail_modem_init_cmd = "stop lins-proxy-acc; stop lins-proxy-app;";
+nomodem_modem_init_cmd = "stop lins-proxy-acc; stop lins-proxy-app; stop ril-daemon-ste";
+
+# Modem preflash command. Operation to execute before flashing the modem (flashed configuration) or firmware upload (flashless configuration)
+engineering_modem_prefl_cmd = "start rfm; insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/hsi_char.ko;";
+itp_modem_prefl_cmd = "start rfm; insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/hsi_char.ko;";
+# service_modem_prefl_cmd = "";
+modemtest_modem_prefl_cmd = "start rfm; insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/hsi_char.ko;";
+retail_modem_prefl_cmd = "start rfm; insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/hsi_char.ko;";
+# nomodem_modem_prefl_cmd = "";
+
+# Modem postflash command. Operation to execute after flashing the modem (flashed configuration) or firmware upload (flashless configuration)
+engineering_modem_postfl_cmd = "rmmod hsi_char;";
+itp_modem_postfl_cmd = "rmmod hsi_char;";
+# service_modem_postfl_cmd = "";
+modemtest_modem_postfl_cmd = "rmmod hsi_char;";
+retail_modem_postfl_cmd = "rmmod hsi_char;";
+# nomodem_modem_postfl_cmd = "";
+
+# Modem interface up commands. Operartion to execute when modem interface is up
+# Not used for Service mode
+engineering_modem_ifup_cmd  = "insmod /system/lib/modules/3.0.8+/kernel/drivers/net/caif/caif_hsi.ko &&
+                          insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/cfhsi.ko && ifconfig cfhsi0 up;";
+# Need to stop lbsd (ER 414959) and admsrv for ITP mode, to avoid iteratives try to open CAIF canal
+itp_modem_ifup_cmd     = "stop lbsd; stop admsrv;
+                          insmod /system/lib/modules/3.0.8+/kernel/drivers/net/caif/caif_hsi.ko &&
+                          insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/cfhsi.ko && ifconfig cfhsi0 up;";
+# service_modem_ifup_cmd = "";
+modemtest_modem_ifup_cmd = "insmod /system/lib/modules/3.0.8+/kernel/drivers/net/caif/caif_hsi.ko &&
+                            insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/cfhsi.ko && ifconfig cfhsi0 up;";
+retail_modem_ifup_cmd = "insmod /system/lib/modules/3.0.8+/kernel/drivers/net/caif/caif_hsi.ko &&
+                            insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/cfhsi.ko && ifconfig cfhsi0 up;";
+# nomodem_modem_ifup_cmd = "";
+
+# Modem pre crash command. Operation to execute before a crash dump
+# Not used for ITP and Service mode
+engineering_modem_pre_crashdump_cmd  = "insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/hsi_char.ko;";
+# itp_modem_pre_crashdump_cmd     = "";
+# service_modem_pre_crashdump_cmd = "";
+modemtest_modem_pre_crashdump_cmd = "insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/hsi_char.ko;";
+retail_modem_pre_crashdump_cmd  = "insmod /system/lib/modules/3.0.8+/kernel/drivers/hsi/clients/hsi_char.ko;";
+# nomodem_modem_pre_crashdump_cmd  = "";
+
+# Modem post crash command. Operation to execute after a crash dump
+# Not used for ITP and Service mode
+# ER 419311: "sleep 36000" introduced as workaround to forbid modem to reboot, until silent restart feature is enabled
+engineering_modem_post_crashdump_cmd  = "rmmod hsi_char;sleep 36000;";
+# itp_modem_post_crashdump_cmd     = "";
+# service_modem_post_crashdump_cmd = "";
+modemtest_modem_post_crashdump_cmd = "rmmod hsi_char;";
+retail_modem_post_crashdump_cmd  = "rmmod hsi_char;sleep 36000;";
+# nomodem_modem_post_crashdump_cmd  = "";
+
+# Modem on commands. Operation to execute when modem is on
+# Not used for Service mode
+# ER 411144: ril is already started in init.rc, but DBUS issue if not started again in mid-conf (engineering and retail mode)
+engineering_modem_on_cmd  = "start at-proxy; start ril-daemon-ste";
+itp_modem_on_cmd     = "stop ril-daemon-ste && start itp-proxy";
+# service_modem_on_cmd = "";
+modemtest_modem_on_cmd = "stop ril-daemon-ste && start at-proxy && start nap-proxy";
+retail_modem_on_cmd    = "start ril-daemon-ste";
+# nomodem_modem_on_cmd    = "";
+
+# Modem off commands. Operation to execute when modem is off
+# Not used for Service mode
+engineering_modem_off_cmd  = "stop at-proxy; stop rfm; ifconfig cfhsi0 down; rmmod cfhsi; rmmod caif_hsi; ";
+# Need to start lbsd (ER 414959) and admsrv after ITP
+itp_modem_off_cmd  = "start lbsd; start admsrv; start ril-daemon-ste; stop itp-proxy; stop rfm; ifconfig cfhsi0 down; rmmod cfhsi; rmmod caif_hsi;";
+# service_modem_off_cmd     = "";
+modemtest_modem_off_cmd = "stop nap-proxy; stop at-proxy; start ril-daemon-ste; stop rfm; ifconfig cfhsi0 down; rmmod cfhsi; rmmod caif_hsi;";
+retail_modem_off_cmd = "stop rfm; ifconfig cfhsi0 down; rmmod cfhsi; rmmod caif_hsi;";
+# nomodem_modem_off_cmd = "";
+
+####### MID INTERNAL SETTINGS #######
+
+# MANDATORY: MID runtime mode.
+# Possible options are "engineering", "itp", "service", "modemtest", "retail" and "nomodem".
+runtime_mode = "engineering";
+
+modemcontrol="95xx";
+
+# Daemonize, run as a daemon
+# daemonize = false;
+# Enable Socket interface to MID
+# ipc_sock_enabled = true;
+
+# Boot retry attempts. Number of tentative to start the modem
+# boot_retry = 3;
+
+# System reboot after security data extraction
+# post_security_reboot = false;
+
+# RFM delay. Used to fake RFM completion for target that does not support AT Ready
+# engineering_rfm_delay  = 0;
+# itp_rfm_delay     = 0;
+# service_rfm_delay = 0;
+# modemtest_rfm_delay = 0;
+# retail_rfm_delay  = 0;
+# nomodem_rfm_delay  = 0;
+
+# Log file. As soon this option is enabled, turn on daemonize as well.
+# Otherwise MID will keep the console
+# log = "";
+
+# Log debug level. From 0 (minimum debug) to 5 (maximum debug)
+log_debug_level = 3;
+
+# PID file
+# pid = "";
+
+# The parameter shall be checked when PWRRESET_CA goes low during
+# normal operation of modem (takes place when i.e. modem receives POFF):
+#
+# If poweroff_modem_at_modem_shutdown_indication = true,
+# then ONSWa/c is set low and modem is not restarted.
+#
+# If poweroff_modem_at_modem_shutdown_indication = false,
+# default action shall apply meaning the modem shall be power cycled.
+# engineering_poweroff_modem_at_modem_shutdown_indication = false;
+itp_poweroff_modem_at_modem_shutdown_indication = true;
+# service_poweroff_modem_at_modem_shutdown_indication = false;
+# modemtest_poweroff_modem_at_modem_shutdown_indication = false;
+# retail_poweroff_modem_at_modem_shutdown_indication = false;
+# nomodem_poweroff_modem_at_modem_shutdown_indication = false;
+
+# Due to missing GPIO support(GPIO_PWRRSTIN) we need to have different
+# modes for shutting down modem. Should be removed/dissabled when having PWRRSTIN support.
+# Decide whether RESOUT2 going low should be handled as modem is of
+# Need in ITP mode where ITP turn of modem without informing MID.
+# Modem shutdown mode: 0 = Normal
+#                      1 = Handle Resout2 low as indication for modem is off
+# engineering_modem_shutdown_mode  = 0;
+itp_modem_shutdown_mode     = 1;
+# service_modem_shutdown_mode = 0;
+# modemtest_modem_shutdown_mode = 0;
+# retail_modem_shutdown_mode  = 0;
+# nomodem_modem_shutdown_mode  = 0;
+
+service_keep_in_service_mode = true;
+
+####### CRASH DUMP SETTINGS #######
+# Crash dump type: 0=Disabled
+#                  1=Full, header + memory dump
+#                  2=Small, header only
+engineering_crash_dump_type  = 1;
+# itp_crash_dump_type     = 0;
+# service_crash_dump_type = 0;
+modemtest_crash_dump_type = 1;
+retail_crash_dump_type  = 1;
+# nomodem_crash_dump_type  = 0;
+
+# Directory to place dump file
+# Not used for ITP and Service mode
+dump_directory = "/sdcard";
+
+# Dump filename
+# dump_filename = "crash_dump.log";
+
+# Add YYYY-MM-DD_HH-MM-SS as dump file name prefix
+# dump_timestamp = true;
+
+# Maximum number of stored dump files.
+# If the number of logfiles exceed this number MID
+# will delete the oldest one before creating a new one.
+max_dump_files = 8;
+
+####### MODEM PARAMETERS SECTION #######
+
+# MID modem firmware location, daemon will chroot to this directory
+modem_directory = "/modemfs/HSI/Phone_FS/boot";
+
+# What location to read the ReadFilesList.txt file from. 
+engineering_readfilelist_directory = "ssw";
+itp_readfilelist_directory = "itp";
+modemtest_readfilelist_directory = "ssw";
+retail_readfilelist_directory = "ssw";
+nomodem_readfilelist_directory = "";
+
+# Firmware upgrade-related settings
+# engineering_modem_fota_dir = "/data/ste/modem_fota";
+# engineering_modem_fota_img_name = "FirmwareDeliveryPackage.upkg";
+
+# Modem version to report. Used to load the appropriate modem library
+# OSMIUM - 0x1
+# HASSIUM - 0x2
+# THORIUM - 0x3
+modem_arch = "THORIUM";
+
+# Turn on bootloader to upload modem firmware on flashless configuration
+bootloader = true;
+
+# Enable low battery event subscription
+# engineering_enable_low_battery_subscription  = true;
+itp_enable_low_battery_subscription     = false;
+service_enable_low_battery_subscription = false;
+# modemtest_enable_low_battery_subscription  = true;
+# retail_enable_low_battery_subscription  = true;
+nomodem_enable_low_battery_subscription  = false;
+
+# Enable high temperature event subscription
+# engineering_enable_high_temperature_subscription = true;
+itp_enable_high_temperature_subscription    = false;
+enable_high_temperature_subscription        = false;
+# modemtest_enable_high_temperature_subscription = true;
+# retail_enable_high_temperature_subscription = true;
+nomodem_enable_high_temperature_subscription = false;
+
+# Enable AT channel
+# engineering_enable_mid_atchannel  = true;
+itp_enable_mid_atchannel     = false;
+service_enable_mid_atchannel = false;
+# modemtest_enable_mid_atchannel  = true;
+# retail_enable_mid_atchannel  = true;
+nomodem_enable_mid_atchannel  = false;
+
+# Enable AT+CFUN forwarding
+# engineering_enable_efwd_atcfun  = true;
+itp_enable_efwd_atcfun     = false;
+service_enable_efwd_atcfun = false;
+# modemtest_enable_efwd_atcfun = true;
+# retail_enable_efwd_atcfun  = true;
+nomodem_enable_efwd_atcfun  = false;
+
+# Enable AT+CGMR command
+# engineering_enable_atcgmr  = true;
+itp_enable_atcgmr     = false;
+service_enable_atcgmr = false;
+# modemtest_enable_atcgmr  = true;
+# retail_enable_atcgmr  = true;
+nomodem_enable_atcgmr  = false;
+
+# Allow AT+CFUN=0. This is fastest way to shutdown OnSwA type modem (GPIO assert is too long).
+# Prepare for shutdown (AT+CFUN=100) followed by GPIO ON toggling is the normal (and default) way
+# to shutdown OnSwC type modem. So use_atcfun0 should never be set when use_onSwC = true
+# use_atcfun0 = false;
+
+####### HASSIUM HIGHSPEED INTERFACE SETTINGS ######
+# Not used for Service mode
+
+# MID primary device. Used to handshake the modem for firmware upload
+# Not used for Service mode
+primary_device = "/dev/ttyAMA1";
+
+# Device type 0 serial 9600, 1 serial 115200, 5 USB
+primary_device_mode = 1;
+
+# Parity used for Uart: 0=No parity, 1=Odd parity  2=Even parity
+uart_parity = 2;
+
+# MID secondary device. High bandwith physical bearer for firmware upload and crashdump
+secondary_device = "/dev/hsi_char";
+
+# Device type 0 serial 9600, 1 serial 115200, 2 serial 460400, 3 serial 921600, 4 SPI, 5 USB, 6 HSI, 7 XSHM
+secondary_device_mode = 6;
+
+# Configure security data. Unlocked modem only
+engineering_configure_sec_data = true;
+# itp_configure_sec_data = false;
+# service_configure_sec_data = false;
+modemtest_configure_sec_data = true;
+retail_configure_sec_data = true;
+# nomodem_configure_sec_data = false;
+
+# Disable HSI configuration.
+# these HSI parameters are relevant only for hsi_char driver but hsi_char on 9540 does not support ioctl
+# all HSI speicfied below are useless if hsi_disable_config set to 1
+hsi_disable_config = 1;
+
+# HSI configuration is symetric for TX and RX channels
+# HSI flow type, 0 synchronized
+hsi_flow = 0;
+
+# HSI frame size
+hsi_frame_size = 31;
+
+# HSI number of channels
+hsi_channels = 1;
+
+# HSI divisor (bus speed) 1 = XMhz, 0 = XMhz
+hsi_divisor = 1;
+
+# HSI mode 0 SLEEP, 1 STREAM, 2 FRAME
+hsi_mode = 2;
+
+# HSI ARB mode 0 mode RR, 1 mode PRIO
+hsi_arb_mode = 0;
+
+# USB device name
+# usb_id = "";
+
+# USB VID
+# usb_vid = 3035; # 0x0bdb
+
+# USB PID
+# usb_pid = 4110; # 0x100e
+
+# USB index
+# usb_index = 0;
+
+####### OSMIUM FLASHLESS SETTINGS ######
+
+# Static data file name. The path is relative to modem_directory option
+# static_data = "";
+
+# Bypass static data upload. Unlocked modem only
+# skip_static_data = false;
+
+# ACC 2nd boot stage file name. The path is relative to modem_directory option
+# acc_2sbc = "";
+
+# APP 2nd boot stage file name. The path is relative to modem_directory option
+# app_2sbc = "";
+
+# EMIF data file name. The path is relative to modem_directory option
+# emif_data = "";
+
+# ACC main software file name. The path is relative to modem_directory option
+# main_acc = "";
+
+# APP main software file name. The path is relative to modem_directory option
+# main_app = "";
+
+####### HASSIUM FLASHLESS SETTINGS ######
+
+# ACC 2nd boot stage file name. The path is relative to modem_directory option
+bootrecord_2sbc = "bootrecord_2sbc.bin";
+
+# ACC 3rd boot stage file name. The path is relative to modem_directory option
+bootrecord_3sbc = "bootrecord_3sbc.bin";
+
+# ACC patch stage file name. The path is relative to modem_directory option
+bootrecord_patch = "bootrecord_patch.bin";
+
+# File storing secure data. R&D unlocked modem only
+sec_data_file = "/data/ste/modem/Phone_FS/ifs/COPS_DATA_0.csd";
+
+####### FLASHING SETTINGS #######
+
+# Flash retry attempts. Number of tentative to flash firmware
+# Only applicable for Flashed variants
+# flash_retry = 3;
+
+# Turn off the modem (GPIO) after flash operation
+# flash_force_pwroff = true;
+
+####### MID GPIOs SETTINGS #######
+
+# GPIO base path. Path to gpioXXX sys class entries
+# gpio_base_path = "/sys/class/gpio";
+
+# GPIO control. Enable modem gpio toggling by the MID
+# gpio_ctrl = true;
+
+# GPIO reduced control set. For kernel that disables export/unexport/direction for sys/class/gpio entries
+# stub_gpio_xport_api = false;
+# stub_gpio_dir_api = false;
+
+# GPIO active low API stub. Some kernel version does not support
+# active low GPIO api. Set true if you need to stub it.
+# stub_aclow_api = false;
+
+# Modem GPIO ONSWA/C configuration details
+# Modem power line behaviour. Default is onSwA mode. If trues is set, then onSwA is replaced by onSwC
+# use_onSwC = true;
+
+# gpio_on_id = ;
+# gpio_on_aclow = false;
+# gpio_on_value = 0;
+
+# Modem GPIO RESOUT2 configuration details
+# gpio_rst2_id = ;
+# gpio_rst2_aclow = false;
+# gpio_rst2_edge = 3; # 0 none, 1 rising, 2 falling, 3 both
+
+# Modem GPIO SERVICE configuration details
+# gpio_serv_id = ;
+# gpio_serv_aclow = true;
+# gpio_serv_value = 0;
+
+# Modem GPIO PWRRSTIN configuration details
+# gpio_pwrin_id = ;
+# gpio_pwrin_aclow = false;
+# gpio_pwrin_edge = 3; # 0 none, 1 rising, 2 falling, 3 both
+
+# Modem GPIO PWRRSTOUT configuration details
+# gpio_pwrout_id = ;
+# gpio_pwrout_aclow = false;
+# gpio_pwrout_value = 0;
+
+##############################################################
+#                       R&D settings                         #
+##############################################################
+# Crashdump development mode
+# -1: Start downloading dump immediatly after MID started.
+# 0: Normal mode
+# x: Start downloading dump x seconds after MID enters ON
+# crashdump_dev_mode = -1;
+# crashdump_dev_mode = 0;

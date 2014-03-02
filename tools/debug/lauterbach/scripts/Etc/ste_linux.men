@@ -1,0 +1,36 @@
+add
+menu
+(
+	popup "ST-Ericsson"
+	(
+		popup "Linux and Android debug"
+		(
+			menuitem "Display (and save) dmesg" "do dmesg"
+			menuitem "Display (and save) Android logcat(s)" "do logcat_extr"
+			menuitem "Rebuild stack with dmesg" "do linux-bug-fill-register.cmm dmesg"
+			menuitem "Rebuild stack with logcat" "do linux-bug-fill-register.cmm logcat"
+
+			IF (OS.VERSION(0)>=0x10)
+			(
+				menuitem "Terminal on USB"
+				(
+					if (os.file(/dev/ttyUSB0))
+					(
+						term.reset
+						term.scroll ON
+						term.size 80 10000
+						term.mode VT100
+						term.method COM /dev/ttyUSB0 115200 8 NONE 1STOP NONE
+						term.view
+					)
+					else
+					(
+						print "Terminal failed : /dev/ttyUSB0 not available"
+					)
+				)
+			)
+		)
+		separator
+	)
+)
+

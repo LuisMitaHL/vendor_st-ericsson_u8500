@@ -1,0 +1,15 @@
+\chapter{Startup}
+MMDSP startup code is written in assembly code. After a reset MMDSP start code
+execution at address 0. This code then jump into my\_init\_core().
+
+my\_init\_core() then execute following algorithm:
+\begin{itemize}
+  \item Test isSleeping global to test if we are waking up from an ULP sleep. If
+  this is the case then jump to sleep\_wakeup().
+  \item Else test for isFirstBoot global to see if this is a normal boot. If
+  this is the case then jump into init\_core() where the MMDSP init sequence
+  will occur.
+  \item Else we detect an invalid jump in 0. This generally occur when we use an
+  unbinded interface, so we jump into Unbinded() where a panic will be
+  triggered.
+\end{itemize}

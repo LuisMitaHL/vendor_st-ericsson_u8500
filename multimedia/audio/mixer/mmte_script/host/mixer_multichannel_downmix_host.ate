@@ -1,0 +1,90 @@
+test_start mix_host_0014
+test_property       TEST_NAME mixer_multichannel_downmix_host
+
+alias TIMEOUT 0
+alias FILE_NAME     mix_host_0014_48k_multichannel.out
+alias OUTPUT_FILE   $(OUTPUT_DIR)/$(FILE_NAME)
+alias REF_FILE      $(AUDIO_STREAMS)/mixer/streams/host_ref/$(FILE_NAME).ref
+
+OMX_GetHandle       mixer OMX.ST.AFM.mixer_host
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=2 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/danse_of_furie.pcm 0 0 0
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=2 nChannels=6 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF eChannelMapping[2]=OMX_AUDIO_ChannelLFE eChannelMapping[3]=OMX_AUDIO_ChannelCF eChannelMapping[4]=OMX_AUDIO_ChannelLS eChannelMapping[5]=OMX_AUDIO_ChannelRS
+ate_attach_io       mixer 2 MEM $(AUDIO_STREAMS)/mixer/streams/5_1.pcm 0 0 0
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 6000000 0 0
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+
+MMTE_AllocateAndUseBuffers mixer 1
+MMTE_AllocateAndUseBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Start in Paused in order to send buffers in each mixer input port
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+mmte_sleep 100
+
+#Go in Executing
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+OMX_SendCommand mixer OMX_CommandPortEnable 0
+MMTE_AllocateAndUseBuffers mixer 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+#Wait EOS
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 2 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_FreeBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+unalias OUTPUT_FILE
+unalias REF_FILE
+unalias FILE_NAME
+test_end

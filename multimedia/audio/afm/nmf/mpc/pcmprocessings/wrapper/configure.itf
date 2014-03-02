@@ -1,0 +1,28 @@
+#include <samplefreq.idt>
+
+typedef struct {
+  t_sample_freq freq;
+  t_uint16 nof_channels;
+  t_uint16 nof_bits_per_sample;
+} t_effect_format;
+
+typedef struct {
+  t_uint32 block_size;
+  t_effect_format infmt;
+  t_effect_format outfmt;
+} t_effect_config;
+
+typedef enum {
+  PCMPROCESSING_MODE_INPLACE_PUSH,
+  PCMPROCESSING_MODE_INPLACE_PULL,
+  PCMPROCESSING_MODE_NOT_INPLACE,
+  PCMPROCESSING_MODE_COUNT // Last value
+} t_pcmprocessing_mode;
+
+typedef struct {
+    t_pcmprocessing_mode    processingMode;
+    t_effect_config         effectConfig;
+} t_pcmprocessing_config;
+
+void setParameter(t_pcmprocessing_config config);
+

@@ -1,0 +1,351 @@
+;------------------------------------------------------------
+; etm_settings.cmm
+;------------------------------------------------------------
+; Startup file to setup etm settings
+;
+;-----------------------------------------------------------
+
+
+local &gpio_en
+
+if analyzer()
+(
+	if !run()
+	(
+		;ETM/PTM 32bits
+
+		;TPIU_CTL at GPIO64 altC3
+		;TPIU_CLK at GPIO65 altC3
+
+		;TPIU_D15..D0  at GPIO66-GPIO67,GPIO70-GPIO83 altC3
+		;TPIU_D21..D16 at GPIO153-GPIO158 altC3
+		;TPIU_D23..D22 at GPIO84-GPIO85 altC3
+		;TPIU_D25..D24 at GPIO86-GPIO87 altC3
+		;TPIU_D31..D26 at GPIO159-GPIO164 altC3
+
+		; P3_GPIO_CTRL =
+		;Grp0 : GPIO64-GPIO95   is configured at 0x8000E000--0x8000E07F
+		;Grp2 : GPIO128-GPIO159 is configured at 0x8000E100--0x8000E17F
+		;Grp3 : GPIO160-GPIO191 is configured at 0x8000E180--0x8000E1FF
+
+		;SLPM = sleep mode register, at offset 0x1C
+		;AFSLA = alternative function select A register, at offset 0x20
+		;ALSLB = alternative function select B register, at offset 0x24
+
+		;PRCM_GPIOCR muxing control register (ICos Table 9. Alternate-C[4:1] control bits.)
+		; prcm_gpiocr1 = 0x80157138
+		; prcm_gpiocr2 = 0x80157574
+		; prcm_gpiocr3 = 0x801572BC
+		; ICos v1_04, Table 9. Alternate-C[4:1] control bits.
+		;==8Bits====================================
+		;GPIO64:
+		; 0=prcm_gpiocr1[15]: AltC1=MODOBS
+		;                     AltC2=none
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_CTL
+		; 0=prcm_gpiocr2[23]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO65:
+		; 0=prcm_gpiocr1[19]: AltC1=MODOBS
+		; 0=prcm_gpiocr1[24]: AltC2=Hx_CLK
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_CLK
+		; 0=prcm_gpiocr2[24]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO76-79:
+		; 0=prcm_gpiocr3[7] : AltC1=MOD_PRCMU_DEBUG
+		; 0=prcm_gpiocr1[25]: AltC2=Hx_GPIO
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_D[4-7]
+		; 0=prcm_gpiocr2[29]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO80:
+		; 0=prcm_gpiocr1[26]: AltC1=MODACC_GPO[0]
+		; 0=prcm_gpiocr1[25]: AltC2=Hx_GPIO
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_D[3]
+		; 0=prcm_gpiocr2[30]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO81:
+		; 0=prcm_gpiocr2[17]: AltC1=MODACC_GPO[1]
+		; 0=prcm_gpiocr1[25]: AltC2=Hx_GPIO
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_D[2]
+		; 0=prcm_gpiocr2[30]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO82-83:
+		; 0=prcm_gpiocr3[8] : AltC1=MODACC_GPO
+		; 0=prcm_gpiocr1[25]: AltC2=Hx_GPIO
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_D[0-1]
+		; 0=prcm_gpiocr2[30]: AltC4=HW_OBS_APE_PRCMU
+		;==16bit====================================
+		;GPIO66:
+		; 0=prcm_gpiocr1[15]: AltC1=MODOBS
+		;                     AltC2=none
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_D[15]
+		; 0=prcm_gpiocr2[25]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO67:
+		; 0=prcm_gpiocr1[1] : AltC1=MODUART1
+		; 0=prcm_gpiocr1[6] : AltC2=MODACCUART
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_D[14]
+		; 0=prcm_gpiocr2[26]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO70-74:
+		; 0=prcm_gpiocr3[6] : AltC1=MOD_PRCMU_DEBUG
+		; 0=prcm_gpiocr1[10]: AltC2=STMMOD
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU_D[9-13]
+		; 0=prcm_gpiocr2[27]: AltC4=HW_OBS_APE_PRCMU
+		;GPIO75:
+		; 0=prcm_gpiocr1[12]: AltC1=MODOBS
+		; 0=prcm_gpiocr2[1] : AltC2=MODUART_STM
+		; 1=prcm_gpiocr1[2] : AltC3=TPIU[D8]
+		; 0=prcm_gpiocr2[28]: AltC4=HW_OBS_APE_PRCMU
+		;==24bits===================================
+		;GPIO84:
+		; 0=prcm_gpiocr3[9] : AltC1=MOD_PRCMU_DEBUG
+		; 0=prcm_gpiocr1[8] : AltC2=SBAG
+		; 1=prcm_gpiocr1[3] : AltC3=TPIU_D[23]
+		; 0=prcm_gpiocr1[16]: AltC4=MODUART
+		;GPIO85:
+		; 0=prcm_gpiocr3[9] : AltC1=MOD_PRCMU_DEBUG
+		; 0=prcm_gpiocr1[8] : AltC2=SBAG
+		; 1=prcm_gpiocr1[3] : AltC3=TPIU_D[22]
+		; 0=prcm_gpiocr1[11]: AltC4=STMMOD
+		;GPIO153-GPIO154:
+		; 0=prcm_gpiocr3[2] : AltC1=KP_O/KP_I
+		; 0=prcm_gpiocr1[8] : AltC2=SBAG
+		; 1=prcm_gpiocr1[3] : AltC3=TPIU_D[20-21]
+		; 0=prcm_gpiocr1[0] : AltC4=MODUART1
+		;GPIO155-GPIO156:
+		; 0=prcm_gpiocr3[3] : AltC1=KP_O
+		; 0=prcm_gpiocr1[8] : AltC2=SBAG
+		; 1=prcm_gpiocr1[3] : AltC3=TPIU_D[18-19]
+		; 0=prcm_gpiocr1[5] : AltC4=MODACCUART
+		;GPIO157:
+		; 0=prcm_gpiocr3[4] : AltC1=KP_I
+		; 0=prcm_gpiocr1[23]: AltC2=MODOBS
+		; 1=prcm_gpiocr1[3] : AltC3=TPIU_D[17]
+		; 0=prcm_gpiocr1[14]: AltC4=MODACCUART
+		;GPIO158:
+		; 0=prcm_gpiocr3[4] : AltC1=KP_I
+		; 0=prcm_gpiocr2[0] : AltC2=U28TXD
+		; 1=prcm_gpiocr1[3] : AltC3=TPIU_D[16]
+		; 0=prcm_gpiocr1[14]: AltC4=MODACCUART
+		;==32bits===================================
+		;GPIO86:
+		; 0=prcm_gpiocr3[9] : AltC1=MOD_PRCMU_DEBUG
+		; 0=prcm_gpiocr1[8] : AltC2=STMAPE_DAT
+		; 1=prcm_gpiocr1[4] : AltC3=TPIU_D[25]
+		; 0=prcm_gpiocr1[11]: AltC4=STMMOD_DAT
+		;GPIO87:
+		; 0=prcm_gpiocr3[8] : AltC1=MODACC_GPO
+		; 0=prcm_gpiocr2[3] : AltC2=U2_RXD
+		; 1=prcm_gpiocr1[4] : AltC3=TPIU_D[24]
+		; 0=prcm_gpiocr1[21]: AltC4=MODUART_STMMUX
+		;GPIO159-GPIO160:
+		; 0=prcm_gpiocr3[5] : AltC1=KP_I/KP_O
+		; 0=prcm_gpiocr3[10]: AltC2=MODUART0
+		; 1=prcm_gpiocr1[4] : AltC3=TPIU_D[30-31]
+		;                     AltC4=none
+		;GPIO161-GPIO164:
+		; 0=prcm_gpiocr3[5] : AltC1=MOD_PRCMU_DEBUG
+		; 0=prcm_gpiocr2[18]: AltC2=STMAPE
+		; 1=prcm_gpiocr1[4] : AltC3=TPIU_D[29-26]
+		; 0=prcm_gpiocr1[11]: AltC4=none
+
+;#############################################################################
+;#	Configure GPIOs to outpout PTM
+;#############################################################################
+
+	if ID.PREPRO()==70			;LA-7991
+	(
+
+		warning " DB8540 trace can content error with LA-7991 at max frequency"
+
+	)
+	if (ID.PREPRO()==70)||(ID.PREPRO()==71)	;LA-7992
+	(
+		&prcmu_per3clk=data.long(eahb:0x80157034)
+		;Enable clock
+		data.set AD:0x80157034 %LONG 0x12C		; force enable PER3CLK
+		if ((data.long(eahb:0x8000F010)&0x100)!=0x100)
+		(
+			;force GPIOCTRL clock = PRCC_PCKEN : CLK_P3_GPIOCTRL = 1 (bit 8)
+			data.set eahb:0x8000F000 %long 0x100	; Enable bus clock (GPIO)
+			&gpio_en="TRUE"
+		)
+
+		if ("&EtmPortSize"=="")
+			&EtmPortSize=16.
+
+		if ("&EtmPortSize"=="8.")
+		(
+			;TPIU_CTL:GPIO64, TPIU_CLK:GPIO65, TPIU_D07..D0: GIPO76-GPIO83
+			;0x000FF003=00000000000011111111000000000011
+			;P3_GPIO_CTRL 0x8000E000 GPIOs 64 to 95
+			data.set A:0x8000E020 %LE %LONG d.l.le(A:0x8000E020)|0x000FF003 ;GPIO2_AFSLA altC3 on GPIO64-65,GPIO76-83
+			data.set A:0x8000E024 %LE %LONG d.l.le(A:0x8000E024)|0x000FF003 ;GPIO2_AFSLB altC3 on GPIO64-65,GPIO76-83
+			data.set A:0x8000E01C %LE %LONG d.l.le(A:0x8000E01C)|0x000FF003 ;GPIO2_SLPM on GPIO64-65,GPIO76-83
+
+			;PRCM_GPIOCR muxing control register
+			data.set A:0x80157138 %LE %LONG (d.l.le(A:80157138)&~0x07088000)|0x00000004
+			data.set A:0x80157574 %LE %LONG (d.l.le(A:80157574)&~0x61820000)|0x00000000
+			data.set A:0x801572BC %LE %LONG (d.l.le(A:801572BC)&~0x00000180)|0x00000000
+
+		)
+		else if "&EtmPortSize"=="16."
+		(
+			;TPIU_CTL:GPIO64, TPIU_CLK:GPIO65, TPIU_D15..D0 at GPIO66-GPIO67,GPIO70-GPIO83
+			;0x000FFFCF=00000000000011111111111111001111
+			;GPIO2 0x8000E000 GPIOs 64 to 95
+			data.set A:0x8000E020 %LE %LONG d.l.le(A:0x8000E020)|0x000FFFCF ;GPIO2_AFSLA altC3 on GPIO64-67,GPIO70-83
+			data.set A:0x8000E024 %LE %LONG d.l.le(A:0x8000E024)|0x000FFFCF ;GPIO2_AFSLB altC3 on GPIO64-67,GPIO70-83
+			data.set A:0x8000E01C %LE %LONG d.l.le(A:0x8000E01C)|0x000FFFCF ;GPIO2_SLPM on GPIO64-67,GPIO70-83
+
+			;PRCMU_GPIOCR1 GPIO muxing control register
+			data.set A:0x80157138 %LE %LONG (d.l.le(A:80157138)&~0x07089442)|0x00000004
+			data.set A:0x80157574 %LE %LONG (d.l.le(A:80157574)&~0x7F820002)|0x00000000
+			data.set A:0x801572BC %LE %LONG (d.l.le(A:801572BC)&~0x000001C0)|0x00000000
+
+		)
+		else if "&EtmPortSize"=="24."
+		(
+			;TPIU_CTL:GPIO64, TPIU_CLK:GPIO65, TPIU_D15..D0 at GPIO66-GPIO67,GPIO70-GPIO83, TPIU_D23..D22 at GPIO84-GPIO85
+			;0x003FFFCF=00000000001111111111111111001111
+			;GPIO2 0x8000E000 GPIOs 64 to 95
+			data.set A:0x8000E020 %LE %LONG d.l.le(A:0x8000E020)|0x003FFFCF ;GPIO2_AFSLA altC3 on GPIO64-67,GPIO70-85
+			data.set A:0x8000E024 %LE %LONG d.l.le(A:0x8000E024)|0x003FFFCF ;GPIO2_AFSLB altC3 on GPIO64-67,GPIO70-85
+			data.set A:0x8000E01C %LE %LONG d.l.le(A:0x8000E01C)|0x003FFFCF ;GPIO2_SLPM on GPIO64-67,GPIO70-85
+
+			;TPIU_D21..D16 at GPIO153-GPIO158
+			;0x7E000000=01111110000000000000000000000000
+			;GPIO4 0x8000E100 GPIOs 128 to 159
+			data.set A:0x8000E120 %LE %LONG d.l.le(A:0x8000E120)|0x7E000000 ;GPIO4_AFSLA altC3 on GPIO153-GPIO158
+			data.set A:0x8000E124 %LE %LONG d.l.le(A:0x8000E124)|0x7E000000 ;GPIO4_AFSLB altC3 on GPIO153-GPIO158
+			data.set A:0x8000E11C %LE %LONG d.l.le(A:0x8000E11C)|0x7E000000 ;GPIO4_SLPM on GPIO153-GPIO158
+
+			;PRCMU_GPIOCR GPIO muxing control register
+			data.set A:0x80157138 %LE %LONG (d.l.le(A:80157138)&~0x0789DD63)|0x0000000C
+			data.set A:0x80157574 %LE %LONG (d.l.le(A:80157574)&~0x7F820003)|0x00000000
+			data.set A:0x801572BC %LE %LONG (d.l.le(A:801572BC)&~0x000003DC)|0x00000000
+		)
+		else if "&EtmPortSize"=="32."
+		(
+			;TPIU_CTL:GPIO64, TPIU_CLK:GPIO65, TPIU_D15..D0 at GPIO66-GPIO67,GPIO70-GPIO83,
+			;TPIU_D23..D22 at GPIO84-GPIO85,TPIU_D25..D24 at GPIO86-GPIO87
+			;0x000FFFCF=00000000111111111111111111001111
+			;GPIO2 0x8000E000 GPIOs 64 to 95
+			data.set A:0x8000E020 %LE %LONG d.l.le(A:0x8000E020)|0x00FFFFCF ;GPIO2_AFSLA altC3 on GPIO64-67,GPIO70-85
+			data.set A:0x8000E024 %LE %LONG d.l.le(A:0x8000E024)|0x00FFFFCF ;GPIO2_AFSLB altC3 on GPIO64-67,GPIO70-85
+			data.set A:0x8000E01C %LE %LONG d.l.le(A:0x8000E01C)|0x00FFFFCF ;GPIO2_SLPM on GPIO64-67,GPIO70-85
+
+			;TPIU_D21..D16 at GPIO153-GPIO158, TPIU31 at GPIO159
+			;0x7E000000=11111110000000000000000000000000
+			;GPIO4 0x8000E100 GPIOs 128 to 159
+			data.set A:0x8000E120 %LE %LONG d.l.le(A:0x8000E120)|0xFE000000 ;GPIO4_AFSLA altC3 on GPIO153-GPIO159
+			data.set A:0x8000E124 %LE %LONG d.l.le(A:0x8000E124)|0xFE000000 ;GPIO4_AFSLB altC3 on GPIO153-GPIO159
+			data.set A:0x8000E11C %LE %LONG d.l.le(A:0x8000E11C)|0xFE000000 ;GPIO4_SLPM on GPIO153-GPIO159
+
+			;TPIU_D30..D26 at GPIO160-GPIO164 altC3
+			;0x0000001F=00000000000000000000000000011111
+			;GPIO5 0x8000E180 GPIOs 160 to 191
+			data.set A:0x8000E1A0 %LE %LONG d.l.le(A:0x8000E1A0)|0x0000001F ;GPIO5_AFSLA altC3 on GPIO160-164
+			data.set A:0x8000E1A4 %LE %LONG d.l.le(A:0x8000E1A4)|0x0000001F ;GPIO5_AFSLB altC3 on GPIO160-164
+			data.set A:0x8000E19C %LE %LONG d.l.le(A:0x8000E19C)|0x0000001F ;GPIO5_SLPM on GPIO160-164
+
+			;PRCMU_GPIOCR GPIO muxing control register
+			data.set A:0x80157138 %LE %LONG (d.l.le(A:80157138)&~0x0789DD63)|0x0000001C
+			data.set A:0x80157574 %LE %LONG (d.l.le(A:80157574)&~0x7F86000B)|0x00000000
+			data.set A:0x801572BC %LE %LONG (d.l.le(A:801572BC)&~0x000007FC)|0x00000000
+		)
+		else
+		(
+			print "etm_settings.cmm: EtmPortSize=&EtmPortSize not supported"
+			enddo
+		)
+
+		;Disable clock
+		if "&gpio_en"=="TRUE"
+		(
+			;Periph3 PRCC settings
+			data.set eahb:0x8000F004 %long 0x00000100	; Disable bus clock (GPIO)
+		)
+		data.set AD:0x80157034 %LONG &prcmu_per3clk		; reset PER3CLK
+
+		etm.portmode CONTINUOUS
+	)
+	else
+	(
+		print "etm_settings.cmm: ID.PREPRO() not supported"
+		enddo
+	)
+	print "trace port = &EtmPortSize"
+
+	;Setup etm clock
+	&APETRACECLK=d.l.le(A:0x80157060)
+	&APETRACECLK_OP1=&APETRACECLK
+	if "&EtmTraceClk"=="Default"
+	(
+		//keep default APETRACECLK
+		//if ((&APETRACECLK&0x1F)>=4)
+		//(
+		//	print "APETRACECLK : keep default (OPP 50% detected)"
+			// autofocus on OP1 : frequency multiply by 2
+		//	&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|((&APETRACECLK&0x1F)>>1)
+		//)
+		//else
+		//(
+			print "APETRACECLK : keep default"
+		//)
+	)
+	else if "&EtmTraceClk"=="266MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0x3 ; Divide 800 Mhz by 3
+	else if "&EtmTraceClk"=="200MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0x4 ; Divide 800 Mhz by 4
+	else if "&EtmTraceClk"=="160MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0x5 ; Divide 800 Mhz by 5
+	else if "&EtmTraceClk"=="133MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0x6 ; Divide 800 Mhz by 6
+	else if "&EtmTraceClk"=="80MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0xA ; Divide 800 Mhz by 10
+	else
+	(
+		print "unknown EtmTraceClk=&EtmTraceClk"
+	)
+	&APETRACECLK_DIV=800./(&APETRACECLK_OP1&0x1F)
+	print "APETRACECLK : &APETRACECLK_DIV MHz"
+	data.set A:0x80157060 %LE %LONG &APETRACECLK_OP1
+
+	trace.method analyzer
+	etm.portsize &EtmPortSize
+	etm.traceid 1.
+	etm.tracepriority 1.
+	etm.contextid 32.
+
+	t.disable	;Disable trace during a.af since execution could be running
+
+	// autofocus on OP1 : max frequency
+	a.af
+
+	//disable autofocus on OP2
+	//TRACECLK(Derived from SoC0 can go up to 266 MHz) stays at same frequency independently of the OPP to serve modem and APE.
+	// autofocus on OP2 : frequency divided by 2
+	//&APETRACECLK_OP2=(&APETRACECLK_OP1&~0x1F)|((&APETRACECLK_OP1&0x1F)<<1)
+	//data.set A:0x80157060 %LE %LONG &APETRACECLK_OP2
+	//a.af /accumulate
+
+	// restore OP1 frequency
+	//data.set A:0x80157060 %LE %LONG &APETRACECLK_OP1
+
+	if "&EtmApp"=="False"
+		etm.off
+	else
+		etm.on
+
+	t.init
+
+	t.arm
+
+	if ("&LinuxDebug"=="TRUE")
+	(
+		; perhaps need to force STM deactivation for APE and MODEM
+		; V mipi60 = "none"
+		; V mipi34 = "none"
+	)
+	)
+	else
+	(
+		print "Can't run this script while the CPU is running"
+	)
+)
+
+enddo

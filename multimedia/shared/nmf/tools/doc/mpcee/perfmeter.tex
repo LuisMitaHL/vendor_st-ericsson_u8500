@@ -1,0 +1,25 @@
+\chapter{Perfmeter}
+Perfmeter module is in charge to provide MMDSP load information. This allow CM
+driver code to select MMDSP frequency for power savings but can also be use by
+any client (display MMDSP load for example).
+
+MPCEE will provide to the CM driver a counter that count the number of time
+MMDSP spent to work. It will use a PRCMU timer running at 32Khz as the time
+base.
+
+MPCEE will call mpcload\_SetIdleState() and mpcload\_SetLoadState() repectively
+when going in ulp or idle mode and when exiting ulp or idle mode. These funcions
+will update information report to the CM driver which consist to three parts:
+\begin{itemize}
+  \item a 48 bits counter that count time MMDSP is working.
+  \item a 48 bits timestamp that give the last time MMDSP go from idle to load
+  or from load to idle.
+  \item state which give current MMDSP state, either idle or load.
+\end{itemize}
+These informations are located in a sdram buffer to allow CM driver to access
+them even when MMDSP is in ulp mode.
+
+To insure coherency of these data an 8 bits update counter is inserted before
+them. This counter is increment each time these informations are updated. This
+allow CM driver to retry read when it detect incoherent state.
+

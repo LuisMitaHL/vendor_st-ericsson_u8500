@@ -1,0 +1,33 @@
+#!/bin/sh
+case $1 in
+    start)
+    echo "Starting $0..."
+# these lines come from Android init script (/init.rc)
+    echo "mass_storage,acm,ecm" >/sys/class/android_usb/android0/functions
+    echo "1" > /sys/class/android_usb/android0/f_acm/instances
+    echo "0x2323" > /sys/class/android_usb/android0/idProduct
+    echo "0x04cc" > /sys/class/android_usb/android0/idVendor
+    echo "1" > /sys/class/android_usb/android0/enable
+#8500 uses AB8500 while 8520 uses AB8505, we need to check the version in use(folder AB85XX-i2C),in order to enable usb
+    if [ -d /sys/devices/platform/ab8500-i2c.0 ]
+    then
+    echo "0" > /sys/devices/platform/ab8500-i2c.0/ab8500-usb.0/boot_time_device
+    elif [ -d /sys/devices/platform/ab8505-i2c.0 ]
+    then
+    echo "0" > /sys/devices/platform/ab8505-i2c.0/ab8500-usb.0/boot_time_device
+    elif [ -d /sys/devices/platform/ab9540-i2c.0 ]
+    then
+    echo "0" > /sys/devices/platform/ab9540-i2c.0/ab9540-usb.0/boot_time_device
+    fi
+    ;;
+    stop)
+    echo "Stopping $0..."
+    echo "Nothing to be done"
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

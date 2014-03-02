@@ -1,0 +1,331 @@
+entry &FileName
+
+&prcmu_regs_base=0x80157000
+&prcmu_data_base=0x801B8000
+
+&ReqMb5=&prcmu_data_base+0xE44
+&AckMb5=&prcmu_data_base+0xDF4
+&Headers=&prcmu_data_base+0x0FFE8
+
+&PRCM_MBOX_CPU_SET=&prcmu_regs_base+0x100
+&PRCM_ARM_IT1_VAL=&prcmu_regs_base+0x494
+&PRCM_ARM_IT1_CLR=&prcmu_regs_base+0x48C
+
+entry &FileName
+open #1 &FileName /Create
+gosub READ_AB_VALUE 0x0100 TurnOnstatus
+gosub READ_AB_VALUE 0x0101 Resetstatus
+gosub READ_AB_VALUE 0x0102 PonKey1PressStatus
+gosub READ_AB_VALUE 0x0142 SysClkReqStatus
+gosub READ_AB_VALUE 0x0180 STw4500Ctrl1
+gosub READ_AB_VALUE 0x0181 STw4500Ctrl2
+gosub READ_AB_VALUE 0x0200 STw4500Ctrl3
+gosub READ_AB_VALUE 0x0201 MainWDogCtrl
+gosub READ_AB_VALUE 0x0202 MainWDogTimer
+gosub READ_AB_VALUE 0x0203 LowBat
+gosub READ_AB_VALUE 0x0204 BattOk
+gosub READ_AB_VALUE 0x0205 SysClkTimer
+gosub READ_AB_VALUE 0x0206 SmpsClkCtrl
+gosub READ_AB_VALUE 0x0207 SmpsClkSel1
+gosub READ_AB_VALUE 0x0208 SmpsClkSel2
+gosub READ_AB_VALUE 0x0209 SmpsClkSel3
+gosub READ_AB_VALUE 0x020A SysUlpClkConf
+gosub READ_AB_VALUE 0x020B SysUlpClkCtrl1
+gosub READ_AB_VALUE 0x020C SysClkCtrl
+gosub READ_AB_VALUE 0x020D SysClkReq1Valid
+gosub READ_AB_VALUE 0x020F SystemCtrlSpare
+gosub READ_AB_VALUE 0x0210 SysClkReq1RfClkBuf
+gosub READ_AB_VALUE 0x0211 SysClkReq2RfClkBuf
+gosub READ_AB_VALUE 0x0212 SysClkReq3RfClkBuf
+gosub READ_AB_VALUE 0x0213 SysClkReq4RfClkBuf
+gosub READ_AB_VALUE 0x0214 SysClkReq5RfClkBuf
+gosub READ_AB_VALUE 0x0215 SysClkReq6RfClkBuf
+gosub READ_AB_VALUE 0x0216 SysClkReq7RfClkBuf
+gosub READ_AB_VALUE 0x0217 SysClkReq8RfClkBuf
+gosub READ_AB_VALUE 0x0230 SwatCtrl
+gosub READ_AB_VALUE 0x0232 HiQClkCtrl
+gosub READ_AB_VALUE 0x0233 VsimSysClkCtrl
+gosub READ_AB_VALUE 0x0300 ReguSerialCtrl1
+gosub READ_AB_VALUE 0x0303 ReguRequestCtrl1
+gosub READ_AB_VALUE 0x0304 ReguRequestCtrl2
+gosub READ_AB_VALUE 0x0305 ReguRequestCtrl3
+gosub READ_AB_VALUE 0x0306 ReguRequestCtrl4
+gosub READ_AB_VALUE 0x0307 ReguSysClkReq1HPValid1
+gosub READ_AB_VALUE 0x0308 ReguSysClkReq1HPValid2
+gosub READ_AB_VALUE 0x0309 ReguHwHPReq1Valid1
+gosub READ_AB_VALUE 0x030A ReguHwHPReq1Valid2
+gosub READ_AB_VALUE 0x030B ReguHwHPReq2Valid1
+gosub READ_AB_VALUE 0x030C ReguHwHPReq2Valid2
+gosub READ_AB_VALUE 0x030D ReguSwHPReqValid1
+gosub READ_AB_VALUE 0x030E ReguSwHPReqValid1
+gosub READ_AB_VALUE 0x030F ReguSysClkReq1Valid
+gosub READ_AB_VALUE 0x0310 ReguSysClkReq2Valid
+gosub READ_AB_VALUE 0x0381 OTGSupplyCtrl
+gosub READ_AB_VALUE 0x0380 ReguMisc1
+gosub READ_AB_VALUE 0x0382 VusbCtrl
+gosub READ_AB_VALUE 0x0383 VaudioSupply
+gosub READ_AB_VALUE 0x0384 ReguCtrl1Spare
+gosub READ_AB_VALUE 0x0400 ArmRegu1
+gosub READ_AB_VALUE 0x0401 ArmRegu2
+gosub READ_AB_VALUE 0x0402 VapeRegu
+gosub READ_AB_VALUE 0x0403 Vsmps1Regu
+gosub READ_AB_VALUE 0x0404 Vsmps2Regu
+gosub READ_AB_VALUE 0x0405 Vsmps3Regu
+gosub READ_AB_VALUE 0x0406 VpllVanaRegu
+gosub READ_AB_VALUE 0x0407 VrefDDR
+gosub READ_AB_VALUE 0x0408 ExtSupplyRegu
+gosub READ_AB_VALUE 0x0409 Vaux12Regu
+gosub READ_AB_VALUE 0x040A VRF1Vaux3Regu
+gosub READ_AB_VALUE 0x040B VarmSel1
+gosub READ_AB_VALUE 0x040C VarmSel2
+gosub READ_AB_VALUE 0x040D VarmSel3
+gosub READ_AB_VALUE 0x040E VapeSel1
+gosub READ_AB_VALUE 0x040F VapeSel2
+gosub READ_AB_VALUE 0x0410 VapeSel3
+gosub READ_AB_VALUE 0x0411 VBBSel1
+gosub READ_AB_VALUE 0x0412 VBBSel2
+gosub READ_AB_VALUE 0x0413 Vsmps1Sel1
+gosub READ_AB_VALUE 0x0414 Vsmps1Sel2
+gosub READ_AB_VALUE 0x0415 Vsmps1Sel3
+gosub READ_AB_VALUE 0x0417 Vsmps2Sel1
+gosub READ_AB_VALUE 0x0418 Vsmps2Sel2
+gosub READ_AB_VALUE 0x0419 Vsmps2Sel3
+gosub READ_AB_VALUE 0x041B Vsmps3Sel1
+gosub READ_AB_VALUE 0x041C Vsmps3Sel2
+gosub READ_AB_VALUE 0x041D Vsmps3Sel3
+gosub READ_AB_VALUE 0x041F Vaux1Sel
+gosub READ_AB_VALUE 0x0420 Vaux2Sel
+gosub READ_AB_VALUE 0x0421 VRF1Vaux3Sel
+gosub READ_AB_VALUE 0x0422 ReguCtrl2Spare
+gosub READ_AB_VALUE 0x0440 VmodRegu
+gosub READ_AB_VALUE 0x0441 VmodSel1
+gosub READ_AB_VALUE 0x0442 VmodSel2
+gosub READ_AB_VALUE 0x0443 ReguCtrlDisch
+gosub READ_AB_VALUE 0x0444 ReguCtrlDisch2
+gosub READ_AB_VALUE 0x0480 REG1-SGR1L
+gosub READ_AB_VALUE 0x0481 REG1-SGR1U
+gosub READ_AB_VALUE 0x0482 REG2-SCR1L
+gosub READ_AB_VALUE 0x0483 REG2-SCR1U
+gosub READ_AB_VALUE 0x0484 REG3-SCTRLRL
+gosub READ_AB_VALUE 0x0485 REG3-SCTRLRU
+gosub READ_AB_VALUE 0x0486 IsoUiccIntSourceReg
+gosub READ_AB_VALUE 0x0487 IsoUiccIntLatchReg
+gosub READ_AB_VALUE 0x0488 IsoUiccIntMaskReg
+gosub READ_AB_VALUE 0x0489 REG4-UsbUiccReg
+gosub READ_AB_VALUE 0x048A SDELAYSEL
+gosub READ_AB_VALUE 0x0580 UsbLineStatus
+gosub READ_AB_VALUE 0x0581 UsbLineCtrl1
+gosub READ_AB_VALUE 0x0582 UsbLineCtrl2
+gosub READ_AB_VALUE 0x0583 UsbLineCtrl3
+gosub READ_AB_VALUE 0x0587 UsbOTGCtrl
+gosub READ_AB_VALUE 0x0588 UsbOTGStatus
+gosub READ_AB_VALUE 0x0589 UsbPHYStatus
+gosub READ_AB_VALUE 0x058A UsbPhyCtrl
+gosub READ_AB_VALUE 0x0680 TVoutCtrl
+gosub READ_AB_VALUE 0x0681 TVoutCtrl2
+gosub READ_AB_VALUE 0x0880 AccDetect1
+gosub READ_AB_VALUE 0x0881 AccDetect2
+gosub READ_AB_VALUE 0x0882 AccDetectCtrl
+gosub READ_AB_VALUE 0x0A00 GPADCCtrl1
+gosub READ_AB_VALUE 0x0A01 GPADCCtrl2
+gosub READ_AB_VALUE 0x0A02 GPADCCtrl3
+gosub READ_AB_VALUE 0x0A03 GPADCTrigTimer
+gosub READ_AB_VALUE 0x0A04 GPADCStatus
+gosub READ_AB_VALUE 0x0A05 GPADCSwDataL
+gosub READ_AB_VALUE 0x0A06 GPADCSwDataH
+gosub READ_AB_VALUE 0x0A07 GPADCHwDataL
+gosub READ_AB_VALUE 0x0A08 GPADCHwDataH
+gosub READ_AB_VALUE 0x0B00 MainChStatus1
+gosub READ_AB_VALUE 0x0B01 MainChStatus2
+gosub READ_AB_VALUE 0x0B02 UsbChStatus1
+gosub READ_AB_VALUE 0x0B03 UsbChStatus2
+gosub READ_AB_VALUE 0x0B05 ChargerStatus
+gosub READ_AB_VALUE 0x0B40 ChVoltLevel
+gosub READ_AB_VALUE 0x0B41 ChVoltLevelMax
+gosub READ_AB_VALUE 0x0B42 ChOutputCurrentLevel
+gosub READ_AB_VALUE 0x0B43 ChOutputCurrentLevelMax
+gosub READ_AB_VALUE 0x0B50 hargWDTimer
+gosub READ_AB_VALUE 0x0B51 ChargWDCtrl
+gosub READ_AB_VALUE 0x0B52 BtempHighTh
+gosub READ_AB_VALUE 0x0B53 LedIndicatorPwmCtrl
+gosub READ_AB_VALUE 0x0B54 LedIndicatorPwmDuty
+gosub READ_AB_VALUE 0x0B55 BattOVV
+gosub READ_AB_VALUE 0x0B80 MainChCtrl1
+gosub READ_AB_VALUE 0x0B81 MainChCtrl2
+gosub READ_AB_VALUE 0x0B82 MainChInputCurrLevel
+gosub READ_AB_VALUE 0x0B83 ChargWD
+gosub READ_AB_VALUE 0x0BC0 UsbChCtrl1
+gosub READ_AB_VALUE 0x0BC1 UsbChCtrl2
+gosub READ_AB_VALUE 0x0BC2 UsbChInputCurrLevel
+gosub READ_AB_VALUE 0x0C00 CCCtrl
+gosub READ_AB_VALUE 0x0C07 CCSampleConvL
+gosub READ_AB_VALUE 0x0C08 CCSampleConvH
+gosub READ_AB_VALUE 0x0C09 CCCounterAvgOffset
+gosub READ_AB_VALUE 0x0C0A CCOffset
+gosub READ_AB_VALUE 0x0C10 NconvAccu
+gosub READ_AB_VALUE 0x0C11 NconvAccuCtrl
+gosub READ_AB_VALUE 0x0C12 CC_NconvAccuLow
+gosub READ_AB_VALUE 0x0C13 CC_NconvAccuMed
+gosub READ_AB_VALUE 0x0C14 CC_NconvAccuHigh
+gosub READ_AB_VALUE 0x0E00 ITSource1
+gosub READ_AB_VALUE 0x0E01 ITSource2
+gosub READ_AB_VALUE 0x0E02 ITSource3
+gosub READ_AB_VALUE 0x0E03 ITSource4
+gosub READ_AB_VALUE 0x0E04 ITSource5
+gosub READ_AB_VALUE 0x0E06 ITSource7
+gosub READ_AB_VALUE 0x0E07 ITSource8
+gosub READ_AB_VALUE 0x0E12 ITSource19
+gosub READ_AB_VALUE 0x0E13 ITSource20
+gosub READ_AB_VALUE 0x0E14 ITSource21
+gosub READ_AB_VALUE 0x0E15 ITSource22
+gosub READ_AB_VALUE 0x0E16 ITSource23
+gosub READ_AB_VALUE 0x0E17 ITSource24
+gosub READ_AB_VALUE 0x0E20 ITLatch1
+gosub READ_AB_VALUE 0x0E21 ITLatch2
+gosub READ_AB_VALUE 0x0E22 ITLatch3
+gosub READ_AB_VALUE 0x0E23 ITLatch4
+gosub READ_AB_VALUE 0x0E24 ITLatch5
+gosub READ_AB_VALUE 0x0E25 ITLatch6
+gosub READ_AB_VALUE 0x0E26 ITLatch7
+gosub READ_AB_VALUE 0x0E27 ITLatch8
+gosub READ_AB_VALUE 0x0E28 ITLatch9
+gosub READ_AB_VALUE 0x0E29 ITLatch10
+gosub READ_AB_VALUE 0x0E32 ITLatch19
+gosub READ_AB_VALUE 0x0E33 ITLatch20
+gosub READ_AB_VALUE 0x0E34 ITLatch21
+gosub READ_AB_VALUE 0x0E35 ITLatch22
+gosub READ_AB_VALUE 0x0E36 ITLatch23
+gosub READ_AB_VALUE 0x0E37 ITLatch24
+gosub READ_AB_VALUE 0x0E40 ITMask1
+gosub READ_AB_VALUE 0x0E41 ITMask2
+gosub READ_AB_VALUE 0x0E42 ITMask3
+gosub READ_AB_VALUE 0x0E43 ITMask4
+gosub READ_AB_VALUE 0x0E44 ITMask5
+gosub READ_AB_VALUE 0x0E45 ITMask6
+gosub READ_AB_VALUE 0x0E46 ITMask7
+gosub READ_AB_VALUE 0x0E47 ITMask8
+gosub READ_AB_VALUE 0x0E48 ITMask9
+gosub READ_AB_VALUE 0x0E49 ITMask10
+gosub READ_AB_VALUE 0x0E52 ITMask19
+gosub READ_AB_VALUE 0x0E53 ITMask20
+gosub READ_AB_VALUE 0x0E54 ITMask21
+gosub READ_AB_VALUE 0x0E55 ITMask22
+gosub READ_AB_VALUE 0x0E56 ITMask23
+gosub READ_AB_VALUE 0x0E57 ITMask24
+gosub READ_AB_VALUE 0x0F00 SwitchOffStatus
+gosub READ_AB_VALUE 0x0F01 CCConf
+gosub READ_AB_VALUE 0x0F02 RTCReadRequest
+gosub READ_AB_VALUE 0x0F03 WatchtimeSecMid
+gosub READ_AB_VALUE 0x0F04 WatchtimeSecHigh
+gosub READ_AB_VALUE 0x0F05 WatchtimeMinLow
+gosub READ_AB_VALUE 0x0F06 WatchtimeMinMid
+gosub READ_AB_VALUE 0x0F07 WatchtimeMinHigh
+gosub READ_AB_VALUE 0x0F08 AlarmMinLow
+gosub READ_AB_VALUE 0x0F09 AlarmMinMid
+gosub READ_AB_VALUE 0x0F0A AlarmMinHigh
+gosub READ_AB_VALUE 0x0F0B RtcCtrl
+gosub READ_AB_VALUE 0x0F0C RtcBackupChg
+gosub READ_AB_VALUE 0x0F0D RtcForceBackup
+gosub READ_AB_VALUE 0x0F0E RtcCalibration
+gosub READ_AB_VALUE 0x0F0F RtcSwitchStatus
+gosub READ_AB_VALUE 0x1000 GpioSel1
+gosub READ_AB_VALUE 0x1001 GpioSel2
+gosub READ_AB_VALUE 0x1002 GpioSel3
+gosub READ_AB_VALUE 0x1003 GpioSel4
+gosub READ_AB_VALUE 0x1004 GpioSel5
+gosub READ_AB_VALUE 0x1005 GpioSel6
+gosub READ_AB_VALUE 0x1010 GpioDir1
+gosub READ_AB_VALUE 0x1011 GpioDir2
+gosub READ_AB_VALUE 0x1012 GpioDir3
+gosub READ_AB_VALUE 0x1013 GpioDir4
+gosub READ_AB_VALUE 0x1014 GpioDir5
+gosub READ_AB_VALUE 0x1015 GpioDir6
+gosub READ_AB_VALUE 0x1020 GpioOut1
+gosub READ_AB_VALUE 0x1021 GpioOut2
+gosub READ_AB_VALUE 0x1022 GpioOut3
+gosub READ_AB_VALUE 0x1023 GpioOut4
+gosub READ_AB_VALUE 0x1024 GpioOut5
+gosub READ_AB_VALUE 0x1025 GpioOut6
+gosub READ_AB_VALUE 0x1030 GpioPud1
+gosub READ_AB_VALUE 0x1031 GpioPud2
+gosub READ_AB_VALUE 0x1032 GpioPud3
+gosub READ_AB_VALUE 0x1033 GpioPud4
+gosub READ_AB_VALUE 0x1034 GpioPud5
+gosub READ_AB_VALUE 0x1035 GpioPud6
+gosub READ_AB_VALUE 0x1040 GpioIn1
+gosub READ_AB_VALUE 0x1041 GpioIn2
+gosub READ_AB_VALUE 0x1042 GpioIn3
+gosub READ_AB_VALUE 0x1043 GpioIn4
+gosub READ_AB_VALUE 0x1044 GpioIn5
+gosub READ_AB_VALUE 0x1045 GpioIn6
+gosub READ_AB_VALUE 0x1050 AlternatFunction
+gosub READ_AB_VALUE 0x1060 PWMOutCtrl1
+gosub READ_AB_VALUE 0x1061 PWMOutCtrl2
+gosub READ_AB_VALUE 0x1062 PWMOutCtrl3
+gosub READ_AB_VALUE 0x1063 PWMOutCtrl4
+gosub READ_AB_VALUE 0x1064 PWMOutCtrl5
+gosub READ_AB_VALUE 0x1065 PWMOutCtrl6
+gosub READ_AB_VALUE 0x1066 PWMOutCtrl7
+gosub READ_AB_VALUE 0x1067 I2CPadCtrl
+gosub READ_AB_VALUE 0x1080 STw4500rev
+gosub READ_AB_VALUE 0x1100 DebugTestModeReg
+gosub READ_AB_VALUE 0x1101 I2CTrig1adr
+gosub READ_AB_VALUE 0x1102 I2CTrig1id
+gosub READ_AB_VALUE 0x1103 I2CTrig2adr
+gosub READ_AB_VALUE 0x1104 I2CTrig2id
+gosub READ_AB_VALUE 0x1105 NoAccessSupReg
+gosub READ_AB_VALUE 0x1106 FsmStatus1
+gosub READ_AB_VALUE 0x1110 ChargerFsmStatus1
+gosub READ_AB_VALUE 0x1111 ChargerFsmStatus2
+gosub READ_AB_VALUE 0x1112 ChargerFsmStatus3
+gosub READ_AB_VALUE 0x1113 ChargerFsmStatus4
+gosub READ_AB_VALUE 0x1114 ChargerFsmStatus5
+gosub READ_AB_VALUE 0x1115 ChargerFsmStatus6
+gosub READ_AB_VALUE 0x1116 ChargerFsmStatus7
+gosub READ_AB_VALUE 0x1117 ChargerFsmStatus8
+gosub READ_AB_VALUE 0x1118 ChargerFsmStatus9
+gosub READ_AB_VALUE 0x1119 ChargerFsmStatus10
+gosub READ_AB_VALUE 0x111A ChargerFsmStatus11
+gosub READ_AB_VALUE 0x111B ChargerFsmStatus12
+gosub READ_AB_VALUE 0x111C ChargerFsmStatus13
+gosub READ_AB_VALUE 0x111D ChargerFsmStatus14
+gosub READ_AB_VALUE 0x111E ChargerFsmStatus15
+gosub READ_AB_VALUE 0x111F ChargerFsmStatus16
+gosub READ_AB_VALUE 0x1120 ChargerFsmStatus17
+gosub READ_AB_VALUE 0x1121 ChargerFsmStatus18
+gosub READ_AB_VALUE 0x1201 DebugSpare1
+gosub READ_AB_VALUE 0x1202 DebugSpare2
+gosub READ_AB_VALUE 0x1203 DebugUsbStatus
+gosub READ_AB_VALUE 0x1204 DebugUsbReg4
+gosub READ_AB_VALUE 0x1205 DebugUsbReg6
+gosub READ_AB_VALUE 0x1206 DebugUsbReg7
+gosub READ_AB_VALUE 0x1207 DebugUsbReg8
+gosub READ_AB_VALUE 0x1208 CurrentGaugeTestReg1
+gosub READ_AB_VALUE 0x1280 DebugRtc
+
+close #1
+enddo
+
+READ_AB_VALUE:
+	entry &Reg_Address &Reg_Name
+	&I2CRequest=0x00000801|((&Reg_Address&0x00FF)<<16.)|((&Reg_Address&0xFF00)>>7)
+	data.set a:&ReqMb5 %long &I2CRequest
+	data.set a:&PRCM_MBOX_CPU_SET  %long 0x20
+
+	&count=0.
+	&it_val=0
+	while (((&it_val&0x20)!=(0x20))&&&count<100.)
+	(
+		&it_val=DATA.LONG(a:&PRCM_ARM_IT1_VAL)
+		&count=&count+1.;
+	)
+
+	if &count==100.
+	(
+		Write #1 "Value Read for &Reg_Address Failed"
+		return
+	)
+	data.set a:&PRCM_ARM_IT1_CLR 0x20
+	&ValueToRead=DATA.LONG(a:&AckMb5)>>24.
+	Write #1  "&Reg_Address : &ValueToRead	&Reg_Name "
+	return

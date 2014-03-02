@@ -1,0 +1,30 @@
+; #####################################################################
+; # L8540 debug & Trace script file: xmip_trace_config.cmm            #
+; # Copyright (C) 2012, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for XMIP core trace config via ETF/TPIU
+; Created by HED/CSP/CPT/ACT on 2012-02-24
+; Contact: jingyi-xiaoyan.lu@st.com
+
+if string.upr(cpu())=="DB8540XMIPAPE"
+(
+	if analyzer()
+	(
+		sys.config.etfbase apb:0x80191000
+		sys.config.etbbase 0
+		sys.config.tpiufunnelbase apb:0x80193000
+		sys.config.etbfunnelbase apb:0x0
+		sys.config.etmtpiufunnelport 1.
+
+		; --- GPIOs config
+	)
+	else
+	(
+		sys.config.etfbase 0
+		sys.config.etbbase apb:0x80191000
+		sys.config.tpiufunnelbase apb:0x0
+		sys.config.etbfunnelbase apb:0x80193000
+		sys.config.etmetbfunnelport 1.
+	)
+)
+enddo

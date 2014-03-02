@@ -1,0 +1,3165 @@
+#!/usr/bin/env bash
+
+#-- Variables ----------------------------------------------------------------
+#
+
+# Script version
+version=0.0.16
+
+# Since Mac OS does not support the GNU-style readlink -f
+# this workaround is used to be able to keep one generic script for Linux and Mac.
+# http://stackoverflow.com/questions/1055671/how-can-i-get-the-behavior-of-gnus-readlink-f-on-a-mac
+function readlink_minus_f(){
+    TARGET_FILE=$1
+    cd `dirname $TARGET_FILE`
+    TARGET_FILE=`basename $TARGET_FILE`
+    # Iterate down a (possible) chain of symlinks
+    while [ -L "$TARGET_FILE" ]
+    do
+        TARGET_FILE=`readlink $TARGET_FILE`
+        cd `dirname $TARGET_FILE`
+        TARGET_FILE=`basename $TARGET_FILE`
+    done
+    # Compute the canonicalized name by finding the physical path
+    # for the directory we're in and appending the target file.
+    PHYS_DIR=`pwd -P`
+    RESULT=$PHYS_DIR/$TARGET_FILE
+    echo $RESULT
+}
+
+# directory where the script is placed
+scriptdir="`readlink_minus_f .`"
+
+# directory which we run from
+rundir="`readlink_minus_f .`"
+
+# Tooldir relative to this script
+tooldir=$scriptdir/flashkit/
+
+# HW configuration list
+configlist=$scriptdir/config.list
+
+# Flashlayout
+flashlayout=$scriptdir/flashlayout.txt
+
+# Archive descriptor file
+archivedescr=$scriptdir/flasharchive.xml
+
+# BIP descriptor file
+bipdescr="$tooldir/configs/bip.xml"
+
+#loader descriptor file
+loaderdescr="$tooldir/configs/loader.xml"
+
+#xlaunching descriptor file
+xlaucherdescr="$tooldir/configs/ramload_normal.xml"
+
+# bootimages prefix
+bootprefix=./boot/
+
+# Modem images prefix
+modemprefix=./modem_images/
+
+# loaders prefix
+loaderprefix=./loaders/
+
+# Default flash images
+filelist_complete=$scriptdir/_filelist_complete.txt
+
+# Sign package to be used
+signpackage=U8500_STE_R1E
+signpackageauth=U8500_STE_AUTH_R1A
+
+# local signpackage and key path
+defsignpackegepath="$scriptdir"/signing/signpackages
+defkeypath="$scriptdir"/signing/signkeys
+
+# image sign config file
+sign_image_config_rnd=$scriptdir/sw_type_map_no_signing.txt
+sign_image_config_commercial=$scriptdir/sw_type_map.txt
+
+# Flasharchive name
+flasharchive=$rundir/flasharchive/flashimage.zip
+
+# data for booting itp
+boot_itp_data=06000000
+
+# data for booting kernel
+boot_kernel_data=03000000
+
+# These are the supported short and long options
+shortopts="hvVt:lioCp:LNB:e::Ew:I:cmFTx:d:g::u:U:Ps:fG:a:b:X:R"
+longopts="help,verbose,version,target-hw:,list-targets,list-images,list-on-target-images,sign-for-commercial,signpackage:,sign-local,no-signing-archive,boot-itp:,erase::,erase_no_emmc,write:,create-flasharchive:,write-complete,write-complete-cspsa,create-complete-flasharchive,create-complete-flasharchive-cspsa,write-existing:,dump-data:,set-enhanced-area:,dump-gd::,write-gd-unit:,write_gd_file:,write-sec-par:,format-gd,write-gd-image:,permanent-authentication,init-arb-table:,set-bootmode:,xlaunch:,trigger-uart-port:,debug,write-rpmb:,dnt:,write-otp:,read-otp:,sw_type_map:,sign-remote,set-hardware-reset::,set-unenhanced-force::"
+
+# State flags and other configuration populated in runtime
+# Target, from cmd line
+target_hw=""
+
+# Images defined in configlist
+boot_image=""
+dntcert=""
+mem_init=""
+power_management=""
+loader=""
+ipl=""
+modem=""
+xloader=""
+tee=""
+issw=""
+loader_bip=""
+loader_meminit=""
+loader_prcmu=""
+loader_issw=""
+loader_xloader=""
+crkc=""
+stedntcert=""
+archive_signed=1
+
+# Default sign tool is 8500 unless altered by config.list
+sign_tool=sign-tool-cli/sign-tool-u8500.sh
+
+# Default cspsa data
+default_cspsa=u8500_default_cspsa.bin
+
+# Cspsa path
+cspsa_path=/flash0/TOC/CSPSA0
+# Flag to check backend status
+backend_running=0
+
+# Flag to check loader created
+loader_created=0
+
+# Flag to check if bip is handled already
+biphandled=0
+
+# Remote signing
+remote_signing=0
+
+# Permanent authentication
+perm_auth=0
+
+# Sign as for commercial or RND unit
+commercial_signing=0
+
+# User has selected a signpackage so those variables hould not be overwritten by hw config
+userselectedsignpackage=0
+
+# Name of UART port to be triggered
+trigger_uart_port=""
+
+# Set if not U8xxx HW
+non_u8xxx_hw=0
+
+# Security profile
+user_sw_type_map=""
+
+#backend debug enabled
+debug_enabled=0
+
+#-- Command functions --------------------------------------------------------
+#
+
+
+# -h, --help
+#  Input     : N/A
+#  Output    : N/A
+#  Comment   : Print help text
+#
+function print_help()
+{
+	echo "Usage:"
+	echo "flash-tool -<command>[<parameter1,parameter2,<...parameterN>>] [-<command>[<parameter(s)>]]"
+	echo ""
+	echo "Commands:"
+	echo "  -h"
+	echo "  --help"
+	echo "    Help screen"
+	echo ""
+	echo "  -v"
+	echo "  --verbose"
+	echo "    Verbose operation"
+	echo ""
+	echo "  -V"
+	echo "  --version"
+	echo "    Echo script version"
+	echo ""
+	echo "  -t<HW>"
+	echo "  --target-hw=<HW>"
+	echo "    Set target HW to flash. must always be first command"
+	echo "    Parameters: <HW>      HW, format TBD"
+	echo ""
+	echo "  -l"
+	echo "  --list-targets"
+	echo "    List available HW configurations"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -i"
+	echo "  --list-images"
+	echo "    List images currently in flashlayout for target"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -o"
+	echo "  --list-on-target-images"
+	echo "    List devices on ME"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -C"
+	echo "  --sign-for-commercial"
+	echo "    Sign for commercial device. Default is RnD"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -p<SIGN_PACKAGE_NAME>"
+	echo "  --signpackage=<SIGN_PACKAGE_NAME>"
+	echo "    Set Signpackage. Default is" $signpackage
+	echo "    Parameters: <SIGN_PACKAGE_NAME>"
+	echo ""
+	echo "  -L"
+	echo "  --sign-local"
+	echo "    Use local signing. Default is local signing."
+	echo "    Parameters: None"
+	echo ""
+	echo "  -R"
+	echo "  --sign-remote"
+	echo "    Use remote signing. Default is local signing."
+	echo "    Parameters: None"
+	echo ""
+	echo "  -N"
+	echo "  --no-signing-archive"
+	echo "    Do not sign the flash archive. Default is that it's signed."
+	echo "    Note: To be able to flash an unsigned archive, loader support"
+	echo "    is also required. As of today there is no such support in generic"
+	echo "    U8500."
+	echo "    Parameters: None"
+	echo ""
+	echo "  -B<[ON | OFF]>"
+	echo "  --boot-itp=<[ON | OFF]>"
+	echo "    Set BOOT_ITP flag ON or OFF."
+	echo "    Parameters: <[ON | OFF]> Set boot from ITP ON or OFF"
+	echo ""
+	echo "  -e[<IMAGE>][,<IMAGE 2>][,...<IMAGE N>]"
+	echo "  --erase[=<IMAGE>][,<IMAGE 2>][,...<IMAGE N>]"
+	echo "    Erase flash"
+	echo "    Parameters: <IMAGE> can be any valid flash area."
+	echo "                Any number of areas can be given."
+	echo "                If no area is given the entire flash (except CSPSA!) will be erased."
+	echo "                To erase CSPSA it must be given as a separate  parameter."
+	echo "                To erase all including CSPSA in one go, run erase twice:"
+	echo "                ./flasher -e e/flash0/TOC/CSPSA0"
+	echo ""
+	echo "  -E"
+	echo "  --erase_no_emmc"
+	echo "    Erase flash except the storage emmc partition"
+	echo "    This will erase from 0x0 to 0xafffffff"
+	echo ""
+	echo "  -w<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]"
+	echo "  --write=<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]"
+	echo "    Write <IMAGE> to ME according to flashlayout."
+	echo "    Supported images listed by -i"
+	echo "    Parameters: <IMAGE>     Image to write"
+	echo "                <FILENAME>  File to use as <IMAGE>"
+	echo ""
+	echo "  -I<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]"
+	echo "  --create-flasharchive=<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]"
+	echo "    Create flasharchive for ME according to flashlayout with supplied images."
+	echo "    Supported images listed by -i"
+	echo "    Parameters: <IMAGE>     Image to write"
+	echo "                <FILENAME>  File to use as <IMAGE>"
+	echo ""
+	echo "  -c"
+	echo "  --write-complete"
+	echo "    Write complete image to ME"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -m"
+	echo "  --write-complete-cspsa"
+	echo "    Write complete image plus default cspsa data to ME"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -F"
+	echo "  --create-complete-flasharchive"
+	echo "    Create a complete flasharchive"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -T"
+	echo "  --create-complete-flasharchive-cspsa"
+	echo "    Create a complete flasharchive with default cspsa data"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -x<ARCHIVE>"
+	echo "  --write-existing=<ARCHIVE>"
+	echo "    Write an existing archive to ME"
+	echo "    Parameters: <ARCHIVE>   Flash archive to flash including optional path"
+	echo ""
+	echo "  -d<START>,<LENGTH>[,<OUTFILE>]"
+	echo "  --dump-data=<START>,<LENGTH>[,<OUTFILE>]"
+	echo "    Dump memory region."
+	echo "    Parameters: <START>     Start address, hex"
+	echo "                <LENGTH>    Amount of data, hex"
+	echo "                [<OUTFILE>] Optional, out file name. Default is dump.bin"
+	echo ""
+	echo "  --set-enhanced-area=<AREA PATH>,<START>,<LENGHT>"
+	echo "    Set enhanced area region."
+	echo "    Parameters: <AREA_PATH> flash area path, string"
+	echo "                <START>     Start offset, hex"
+	echo "                <LENGTH>    Amount of data, hex"
+	echo ""
+	echo "  -g[<OUTFILE>]"
+	echo "  --dump-gd[=<OUTFILE>]"
+	echo "    Dump GD area to ASCII file"
+	echo "    Parameters: [<OUTFILE>] Optional, out file name. Default is dump.gdf"
+	echo ""
+	echo "  -u<UNIT>,<DATA>"
+	echo "  --write-gd-unit=<UNIT>,<DATA>"
+	echo "    Write GD parameter"
+	echo "    Parameters: <UNIT>      GD unit, hex"
+	echo "                <DATA>      GD data, hex"
+	echo ""
+	echo "  -U<FILE>"
+	echo "  --write_gd_file=<FILE>"
+	echo "    Write multiple gd data from <FILE>"
+	echo "    Parameters: <FILE>      GD ASCII data file"
+	echo ""
+	echo "  -s[IMEI=<imei>,][SIMLOCK-CODES=<simlockcodes>,][COPS-DATA-FILE=<copsdatafile>]"
+	echo "  --write-sec-par=[IMEI=<imei>,][SIMLOCK-CODES=<simlockcodes>,][COPS-DATA-FILE=<copsdatafile>]"
+	echo "    Write security parameters and bind properties."
+	echo "    Parameters: <IMEI>            IMEI number, 15 characters"
+	echo "                <SIMLOCK-CODES>   SIM-lock codes. min 8, max 16 chars per key"
+	echo "                                  <Network Lock Key>:<Network Subset Lock Key>:<Service Provider Lock Key>:<Corporate Lock Key>:<Flexible ESL Lock Key>"
+	echo "                <COPS-DATA-FILE>  File containing COPS data"
+	echo ""
+	echo "  -P"
+	echo "  --permanent-authentication"
+	echo "    Use permanent authentication"
+	echo ""
+	echo "  -f"
+	echo "  --format_gd"
+	echo "    Format gd area"
+	echo "    Parameters: None"
+	echo ""
+	echo "  -G<FILE>"
+	echo "  --write-gd-image=<FILE>"
+	echo "    Write binary image <FILE> to gd area"
+	echo "    Parameters: <FILE>      binary image to write"
+	echo ""
+	echo "  -a<DATA>"
+	echo "  --init-arb-table=<DATA>"
+	echo "    Initilize anti-roll back table"
+	echo "    Parameters: <DATA>"
+	echo "    Id of a mobile device, can be entered in decimal or hex format,"
+	echo "    if it is in hex format then it has to begin with 0x"
+	echo ""
+	echo "  -b<MODEM>"
+	echo "  --set-bootmode=<MODE>"
+	echo "    Wait for next connected ME and send indication to start in special mode"
+	echo "    Parameters: <MODE>      adl, production or normal_debug"
+	echo ""
+	echo " -X<DEBUGENABLED>,<FILE>"
+	echo "  --xlaunch=<DEBUGENABLED>,<FILE>"
+	echo "    Download bootimages plus file specified on command line to ram on next connected ME"
+	echo "    Parameters: <DEBUGENABLED>   0 or 1"
+	echo "                <FILE>           File to run as \"normal\""
+	echo ""
+	echo "  --trigger-uart-port=<PORT-NAME>"
+	echo "    Set name of UART port to be triggered. Must be specified after target."
+	echo "    Parameters: <PORT-NAME>      UART port name"
+	echo ""
+	echo "  --debug"
+	echo "    Enable backend debug log"
+	echo ""
+	echo "  --dnt=<FILE>"
+	echo "    Write Debug and Test certificate to ME"
+	echo "    Parameters: <FILE>      Certificate to write"
+	echo ""
+	echo "  --write-otp=<FILE>"
+	echo "    Write OTP data to ME from input file"
+	echo "    Parameters: <FILE>      path to and name of input file "
+	echo ""
+	echo "  --read-otp=<FILE>"
+	echo "    Read OTP data from ME"
+	echo "    Parameters: <FILE>      path to and name of output file"
+	echo ""
+	echo "  --sw_type_map=<FILE>"
+	echo "    Path to sw_type_map file"
+	echo "    Parameters: <FILE>      Path to sw_type_map file"
+	echo ""
+	echo "  --write-rpmb"
+	echo "    Write RPMB key"
+	echo "    Parameters: <INTEGER>, <BOOLEAN> (device_id, boolean)"
+	echo ""
+	echo "  --set-hardware-reset=<[ON | OFF]>"
+	echo "    Set HW reset flag"
+	echo "    Parameters: <[ON | OFF]> Set HW reset pin ON or OFF"
+	echo ""
+	echo "  --set-unenhanced-force=<[ON | OFF]>"
+	echo "    Set forced flashing of enhanced images to unenhanced storage"
+	echo "    Parameters: <[ON | OFF]> Set ON or OFF"
+}
+
+
+# -v
+# --verbose
+#  Input     : N/A
+#  Output    : N/A
+#  Comment   : Verbose operation
+#
+function set_verbose()
+{
+	echo ""
+	echo "Set verbose"
+
+	#close fd 4
+	exec 4>&-
+
+	#open again to stdout
+	exec 4<&1
+}
+
+# -V
+# --version
+#  Input     : N/A
+#  Output    : N/A
+#  Comment   : Print script version
+#
+function print_version()
+{
+	echo ""
+	echo "$0 $version"
+}
+
+# -t<HW>
+# --target-hw=<HW>
+#  Input     : Target HW string as found in config.list
+#  Output    : Set boot images variables according to config.list
+#  Comment   :
+#
+function set_target_hw()
+{
+	target_hw=$1
+
+	echo
+	echo Set target $1
+	parse_configlist $target_hw
+
+	echo boot image $boot_image >&4
+	echo issw $issw >&4
+	echo x-loader $xloader >&4
+	echo mem-init $mem_init >&4
+	echo power-management $power_management >&4
+	echo loader $loader >&4
+	echo ipl $ipl >&4
+	echo modem $modem >&4
+	echo loader boot image $loader_bip >&4
+	echo loader issw $loader_issw >&4
+	echo loader xloader $loader_xloader >&4
+	echo loader meminit $loader_meminit >&4
+	echo loader prcmu $loader_prcmu >&4
+	echo signpackage $signpackage >&4
+	echo stedntcert $stedntcert >&4
+	echo dntcert $dntcert >&4
+	echo tee $tee >&4
+	echo sw_type_map $user_sw_type_map >&4
+	echo authentication signpackage $signpackageauth >&4
+
+	# Check if target hw is U5500
+	if [[ $target_hw == *5500* ]]; then
+		non_u8xxx_hw=1;
+	fi
+	# Check if target hw is U9500
+	if [[ $target_hw == *9500* ]]; then
+		non_u8xxx_hw=1;
+	fi
+	# Check if target hw is U9540
+	if [[ $target_hw == *9540* ]]; then
+		non_u8xxx_hw=1;
+		default_cspsa=u9540_default_cspsa.bin
+	fi
+	# Check if target hw is L8540
+	if [[ $target_hw == *8540* ]]; then
+		non_u8xxx_hw=1;
+	fi
+}
+
+
+# -l
+# --list-targets
+#  Input     : N/A
+#  Output    : Echo HW as found in config.list
+#  Comment   :
+#
+function list_targets()
+{
+	echo ""
+	echo "Available target HW in $configlist:"
+
+	while read line
+	do
+		local hw=`echo $line | grep -e [[] | sed -e 's/\[//g' -e 's/\]//g'`
+		if [ "$hw" ]; then
+			echo $hw
+		fi
+	done <"$configlist"
+}
+
+
+# -i
+# --list-images
+#  Input     : N/A
+#  Output    : Echo images as found in flashlayout.txt
+#  Comment   :
+#
+function list_images()
+{
+	echo ""
+	echo -e "Available images in $flashlayout:"
+
+	while read line
+	do
+		local image=`echo $line | grep -e Path | sed -e 's/Path: //g'`
+		if [ "$image" ]; then
+			echo $image
+		fi
+	done <"$flashlayout"
+}
+
+#  Input     : N/A
+#  Output    : Find CSPSA path from flashlayout.txt
+#  Comment   :
+#
+function get_cspsa()
+{
+	while read line
+	do
+		local gcimage=`echo $line | grep -e Path | sed -e 's/Path: //g'`
+		if [ "$gcimage" ]; then
+			local tmpcspsa=`echo $gcimage | grep CSPSA`
+			if [ "$tmpcspsa" ]; then
+				cspsa_path=$tmpcspsa
+			fi
+		fi
+	done <"$flashlayout"
+}
+
+
+# -o
+# --list-on-target-images
+#  Input     : N/A
+#  Output    : Echo output from list_devices
+#  Comment   :
+#
+function list_me_devices()
+{
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...list on target images failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh list_devices
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...list devices failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+# -C"
+# --sign-for-commercial"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_commercial_signing()
+{
+	echo ""
+	echo "set_commercial_signing"
+	commercial_signing=1
+}
+
+
+# -p<SIGN_PACKAGE_NAME>"
+# --signpackage=<SIGN_PACKAGE_NAME>"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_sign_package()
+{
+	echo ""
+	echo "set_sign_package $1"
+	signpackage=$1
+	signpackageauth=${signpackage}_AUTH
+	userselectedsignpackage=1
+
+	echo signpackage $signpackage >&4
+	echo authentication signpackage $signpackageauth >&4
+}
+
+
+# -L"
+# --sign-local"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_local_signing()
+{
+	echo ""
+	remote_signing=0
+	echo "use local signing"
+}
+
+
+# -R"
+# --sign-remote"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_remote_signing()
+{
+	echo ""
+	remote_signing=1
+	echo "use remote signing"
+}
+
+
+# -N"
+# --no-signing-archive"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_no_signing_archive()
+{
+	echo ""
+	archive_signed=0
+	echo "Do not sign flash archive"
+}
+
+
+# -B<[ON | OFF]>"
+# -boot-itp=<[ON | OFF]>"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_boot_itp_flag()
+{
+	echo ""
+	echo "set_boot_itp_flag $1"
+	local data=""
+
+	if [ "$1" == "ON" ]; then
+		data=$boot_itp_data
+	else
+		data=$boot_kernel_data
+	fi
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...set_boot_itp_flag failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh write_global_data_unit -storage_id $cspsa_path -unit_id 0xfffffffc -unit_data $data
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write gd unit failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+# -e[<IMAGE>][,<IMAGE 2>][,...<IMAGE N>]
+# --erase=[<IMAGE>][,<IMAGE 2>][,...<IMAGE N>]
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function erase()
+{
+	IFS=","
+	set -- $1
+	IFS=" "
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...erase failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	if [ -z "$1" ]; then
+		# Erase ALL
+		"$tooldir"/flash-tool-cli/flash-tool.sh erase_area -area_path /flash0 -offset 0x0 -length ALL
+		returnvalue=$?
+	else
+
+		for entry in "$@"
+		do
+			echo "Erase $entry"
+			# Add trailing '/' to entry to also erase TOC-entry (otherwise only data is erased)
+			"$tooldir"/flash-tool-cli/flash-tool.sh erase_area -area_path $entry/ -offset 0x0 -length ALL
+			returnvalue=$?
+
+			if [ "$returnvalue" -ne "0" ]; then
+				break
+			fi
+		done
+	fi
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...erase failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+# -E
+# --erase_no_emmc
+# This is for 9540, as the last partition on emmc is used as storage
+# With this command we erase all partitions except this last one,
+# which starts at 0x40000000
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function erase_no_emmc()
+{
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...erase failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	# Erase from 0x0 to 0xafffffff
+	"$tooldir"/flash-tool-cli/flash-tool.sh erase_area -area_path /flash0 -offset 0x0 -length 0xafffffff
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...erase failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+# -w<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]
+# --write=<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]
+#  Input     : Image and disk file name pairs
+#  Output    :
+#  Comment   :
+#
+function write_images()
+{
+	echo ""
+	echo "Write images to ME"
+
+	# Create temp filelist
+	local tempfile="wi_tmpfilelist.txt"
+
+	# Always include layout
+	echo flashlayout = $flashlayout >> $tempfile
+
+	IFS=","
+	set -- $1
+	IFS=" "
+
+	for entry in "$@"
+	do
+		# Cmd line entry: path=file , split into separate variables
+		#local areapath=`echo "$entry"|cut -d'=' -f1`
+		#local filename=`echo "$entry"|cut -d'=' -f2`
+		local areapath=""
+		local filename=""
+
+		IFS="=" read -r areapath filename <<< "$entry"
+
+		filename="`readlink_minus_f "$filename"`"
+
+		findsourceentry $areapath sourcename
+
+		if [ -n "$sourcename" ]; then
+			echo $sourcename=$filename >> $tempfile
+		else
+			echo "Partition $areapath doesnot exist. Please point to a correct partition."
+			exit 1
+		fi
+	done
+
+	echo "Flashing images:"
+	cat $tempfile
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_images failed..."
+		return $returnvalue
+	fi
+
+	# Create archive
+	createarchive $tempfile "$flasharchive"
+	returnvalue=$?
+	rm -f $tempfile
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create archive failed..."
+		exit 1
+	fi
+
+	# Flash
+	flash_file "$flasharchive"
+}
+
+
+
+# -I<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]
+# --create-flasharchive=<IMAGE>=<FILENAME>[,<IMAGE 2>=<FILENAME 2>][,...<IMAGE N>=<FILENAME N>]
+#  Input     : Image and disk file name pairs
+#  Output    :
+#  Comment   :
+#
+function create_flasharchive()
+{
+	IFS=","
+	set -- $1
+	IFS=" "
+
+	echo ""
+	echo "Create flasharchive"
+
+	# Create temp filelist
+	local tempfile="cf_tmpfilelist.txt"
+
+	# Always include layout
+	echo flashlayout = $flashlayout >> $tempfile
+
+
+	for entry in "$@"
+	do
+		# Cmd line entry: path=file , split into separate variables
+		#local areapath=`echo "$entry"|cut -d'=' -f1`
+		#local filename=`echo "$entry"|cut -d'=' -f2`
+		local areapath=""
+		local filename=""
+
+		IFS="=" read -r areapath filename <<< "$entry"
+
+		filename="`readlink_minus_f "$filename"`"
+
+		findsourceentry $areapath sourcename
+
+		echo $sourcename=$filename >> $tempfile
+	done
+
+	echo "Including images:"
+	cat $tempfile
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create_flasharchive failed..."
+		return $returnvalue
+	fi
+
+	# Create archive
+	createarchive $tempfile "$flasharchive"
+	returnvalue=$?
+	rm -f $tempfile
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create archive failed..."
+		exit 1
+	fi
+}
+
+# -c
+# --write-complete
+#  Input     : None
+#  Output    :
+#  Comment   : Write all available images to ME
+#
+function write_complete()
+{
+	echo ""
+	echo "[Write all available images to ME]"
+	echo ""
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write complete failed..."
+		return $returnvalue
+	fi
+
+	local tempfile="wc_tmpfilelist.txt"
+
+	# Assemble filelist of complete image
+	handlebip "$tempfile"
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_complete failed..."
+		return $returnvalue
+	fi
+	if [ -n "$dntcert" ]; then
+		echo dntcert=$dntcert >>$tempfile
+	fi
+	if [ -n "$mem_init" ]; then
+		echo mem_init=$mem_init >>$tempfile
+	fi
+	if [ -n "$power_management" ]; then
+		echo power_management=$power_management >>$tempfile
+	fi
+	if [ -n "$ipl" ]; then
+		echo ipl=$ipl >>$tempfile
+	fi
+	if [ -n "$modem" ]; then
+		echo modem=$modem >>$tempfile
+	fi
+
+	#parse the filelist and expand all relative path to absolute
+	#and write in temporary filelist
+	pushd "`dirname "$filelist_complete"`" >>/dev/null
+
+	while read line
+	do
+		local marker=${line:0:1}
+
+		if [[ "$marker" != "#" && "${line}" != "" ]]; then
+			local entryname=${line%%=*}
+			local filename=${line##*=}
+
+			filename="`readlink_minus_f $filename`"
+
+			echo $entryname=$filename >>$tempfile
+		fi
+	done <"$filelist_complete"
+
+	popd >>/dev/null
+
+	# add a dummy for cspsa
+	local cspsadummy="tmpcspsadummy.txt"
+	echo "" >>$cspsadummy
+	echo cspsa.bin=$cspsadummy >>$tempfile
+
+	# add dummies for ARB
+	if [ "$non_u8xxx_hw" -ne "1" ]; then
+		local arbdummy="tmparbdummy.txt"
+		echo "">>$arbdummy
+		echo arb1.bin=$arbdummy >>$tempfile
+		echo arb2.bin=$arbdummy >>$tempfile
+	fi
+
+	echo
+	echo Files to flash. From "$configlist" and "$filelist_complete" >&4
+	cat $tempfile  >&4
+
+	# Create archive
+	createarchive $tempfile "$flasharchive"
+	returnvalue=$?
+
+	rm -f $tempfile
+	rm -f $cspsadummy
+
+	if [ "$non_u8xxx_hw" -ne "1" ]; then
+		rm -f $arbdummy
+	fi
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create archive failed..."
+		exit 1
+	fi
+
+	# Flash
+	flash_file "$flasharchive"
+	echo ""
+	echo "[Done writing all available images to ME]"
+	echo ""
+}
+
+# -m
+# --write-complete-cspsa
+#  Input     : None
+#  Output    :
+#  Comment   : Write all available images to ME
+#
+function write_complete_cspsa()
+{
+	echo ""
+	echo "Write complete cspsa"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_complete_cspsa failed..."
+		return $returnvalue
+	fi
+
+	local tempfile="wcc_tmpfilelist.txt"
+
+	# Assemble filelist of complete image
+	handlebip "$tempfile"
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_complete_cspsa failed..."
+		return $returnvalue
+	fi
+	if [ -n "$dntcert" ]; then
+		echo dntcert=$dntcert >>$tempfile
+	fi
+	if [ -n "$mem_init" ]; then
+		echo mem_init=$mem_init >>$tempfile
+	fi
+	if [ -n "$power_management" ]; then
+		echo power_management=$power_management >>$tempfile
+	fi
+	if [ -n "$ipl" ]; then
+		echo ipl=$ipl >>$tempfile
+	fi
+	if [ -n "$modem" ]; then
+		echo modem=$modem >>$tempfile
+	fi
+
+	#parse the filelist and expand all relative path to absolute
+	#and write in temporary filelist
+	pushd "`dirname "$filelist_complete"`" >>/dev/null
+
+	while read line
+	do
+		local marker=${line:0:1}
+
+		if [[ "$marker" != "#" && "${line}" != "" ]]; then
+			local entryname=${line%%=*}
+			local filename=${line##*=}
+
+			filename="`readlink_minus_f $filename`"
+
+			echo $entryname=$filename >>$tempfile
+		fi
+	done <"$filelist_complete"
+
+	popd >>/dev/null
+
+	# add default cspsa data
+	echo cspsa.bin=$default_cspsa >>$tempfile
+
+	echo ""
+	echo "Files to flash. From $configlist and $filelist_complete"
+	cat $tempfile
+
+	# Create archive
+	createarchive $tempfile "$flasharchive" "" true
+	returnvalue=$?
+
+	rm -f $tempfile
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create archive failed..."
+		exit 1
+	fi
+
+	# Flash
+	flash_file "$flasharchive"
+}
+
+# -F
+# --create-complete-flasharchive
+#  Input     : None
+#  Output    :
+#  Comment   : Create a flasharchive with all available images
+#
+function create_complete_flasharchive()
+{
+	echo ""
+	echo "Create complete flasharchive"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create complete flasharchive failed..."
+		return $returnvalue
+	fi
+	local tempfile="ccf_tmpfilelist.txt"
+
+	# Assemble filelist of complete image
+	handlebip "$tempfile"
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create_complete_flasharchive failed..."
+		return $returnvalue
+	fi
+	if [ -n "$dntcert" ]; then
+		echo dntcert=$dntcert >>$tempfile
+	fi
+	if [ -n "$mem_init" ]; then
+		echo mem_init=$mem_init >>$tempfile
+	fi
+	if [ -n "$power_management" ]; then
+		echo power_management=$power_management >>$tempfile
+	fi
+	if [ -n "$ipl" ]; then
+		echo ipl=$ipl >>$tempfile
+	fi
+	if [ -n "$modem" ]; then
+		echo modem=$modem >>$tempfile
+	fi
+
+	#parse the filelist and expand all relative path to absolute
+	#and write in temporary filelist
+	pushd "`dirname "$filelist_complete"`" >>/dev/null
+
+	while read line
+	do
+		local marker=${line:0:1}
+
+		if [[ "$marker" != "#" && "${line}" != "" ]]; then
+			local entryname=${line%%=*}
+			local filename=${line##*=}
+
+			filename="`readlink_minus_f $filename`"
+
+			echo $entryname=$filename >>$tempfile
+		fi
+	done <"$filelist_complete"
+
+	popd >>/dev/null
+
+	# add a dummy for cspsa
+	local cspsadummy="tmpcspsadummy.txt"
+	echo "" >>$cspsadummy
+	echo cspsa.bin=$cspsadummy >>$tempfile
+
+	# add dummies for ARB
+	if [ "$non_u8xxx_hw" -ne "1" ]; then
+		local arbdummy="tmparbdummy.txt"
+		echo"" >>$arbdummy
+		echo arb1.bin=$arbdummy >>$tempfile
+		echo arb2.bin=$arbdummy >>$tempfile
+	fi
+
+	echo ""
+	echo "Files to include. From $configlist and $filelist_complete"
+	cat $tempfile
+
+	# Create archive
+	createarchive $tempfile "$flasharchive"
+	returnvalue=$?
+
+	rm -f $tempfile
+	rm -f $cspsadummy
+
+	if [ "$non_u8xxx_hw" -ne "1" ]; then
+		rm -f $arbdummy
+	fi
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create archive failed..."
+		exit 1
+	fi
+}
+
+# -T
+# --create-complete-flasharchive-cspsa
+#  Input     : None
+#  Output    :
+#  Comment   : Create a flasharchive with all available images plus default cspsa data
+#
+function create_complete_flasharchive_cspsa()
+{
+	echo ""
+	echo "Create complete flasharchive"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create complete flasharchive cspsa failed..."
+		return $returnvalue
+	fi
+
+	local tempfile="ccfcspsa_tmpfilelist.txt"
+
+	# Assemble filelist of complete image
+	handlebip "$tempfile"
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create_complete_flasharchive_cspsa failed..."
+		return $returnvalue
+	fi
+	if [ -n "$dntcert" ]; then
+		echo dntcert=$dntcert >>$tempfile
+	fi
+	if [ -n "$mem_init" ]; then
+		echo mem_init=$mem_init >>$tempfile
+	fi
+	if [ -n "$power_management" ]; then
+		echo power_management=$power_management >>$tempfile
+	fi
+	if [ -n "$ipl" ]; then
+		echo ipl=$ipl >>$tempfile
+	fi
+	if [ -n "$modem" ]; then
+		echo modem=$modem >>$tempfile
+	fi
+
+	#parse the filelist and expand all relative path to absolute
+	#and write in temporary filelist
+	pushd "`dirname "$filelist_complete"`" >>/dev/null
+
+	while read line
+	do
+		local marker=${line:0:1}
+
+		if [[ "$marker" != "#" && "${line}" != "" ]]; then
+			local entryname=${line%%=*}
+			local filename=${line##*=}
+
+			filename="`readlink_minus_f $filename`"
+
+			echo $entryname=$filename >>$tempfile
+		fi
+	done <"$filelist_complete"
+
+	popd >>/dev/null
+
+	# add default cspsa data
+	echo cspsa.bin=$default_cspsa >>$tempfile
+
+	echo ""
+	echo "Files to include. From $configlist and $filelist_complete"
+	cat $tempfile
+
+	# Create archive
+	createarchive $tempfile "$flasharchive" "" true
+	returnvalue=$?
+
+	rm -f $tempfile
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create archive failed..."
+		exit 1
+	fi
+}
+
+# -x
+# --write-existing
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function write_existing()
+{
+	echo ""
+	echo "write existing $1"
+	local file="`readlink_minus_f "$@"`"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_existing failed..."
+		return $returnvalue
+	fi
+	flash_file "$file"
+}
+
+
+# -d<START>,<LENGTH>[,<OUTFILE>]
+# --dump-data=<START>,<LENGTH>[,<OUTFILE>]
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function dump_data()
+{
+	IFS=',' read -a argumentarray <<<"$@"
+
+	local start=${argumentarray[0]}
+	local end=${argumentarray[1]}
+
+	local dumpfile="$rundir"/dump.bin
+	if [ -n "${argumentarray[2]}" ]; then
+		dumpfile="`readlink_minus_f "${argumentarray[2]}"`"
+	fi
+
+	echo "Dump start $start length $end to $dumpfile"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...dump_data failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh dump_area -area_path /flash0 -offset $start -length $end -path "$dumpfile"
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...dump failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+# --set-enhanced-area=<AREA_PATH>,<OFFSET>,<LENGHT>
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function set_enhanced_area()
+{
+	IFS=',' read -a argumentarray <<<"$@"
+
+	local path=${argumentarray[0]}
+	local start=${argumentarray[1]}
+	local size=${argumentarray[2]}
+
+	echo "set enhanced area in flash: $path start: $start size: $size"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...set_enhanced_area failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh set_enhanced_area -area_path $path -offset $start -length $size
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...set enhanced area failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+
+# -g[<OUTFILE>]
+# --dump-gd=[<OUTFILE>]
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function dump_gd()
+{
+	local gddumpfile="$rundir"/dump.gdf
+
+	if [ -n "$1" ]; then
+		gddumpfile="`readlink_minus_f "$@"`"
+	fi
+
+	echo "Dump gd to $gddumpfile"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...dump_gd failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh read_global_data_set -path "$gddumpfile" -storage_id $cspsa_path
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...dump gd failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+# -u<UNIT>,<DATA>
+# --write-gd-unit=<UNIT>,<DATA>
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function write_gd_unit()
+{
+	IFS=","
+	set -- $1
+	local unit=$1
+	local data=$2
+	IFS=" "
+
+	if [ -z "$unit" ]; then
+		echo "No unit specified"
+		return 1
+	fi
+
+	if [ -z "$data" ]; then
+		echo "No data specified"
+		return 1
+	fi
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_gd_unit failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh write_global_data_unit -storage_id $cspsa_path -unit_id $unit -unit_data $data
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write gd unit failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+# -U<FILE>
+# --write_gd_file=<FILE>
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function write_gd_file()
+{
+	if [ -z "$1" ]; then
+		echo "No file specified"
+		return 1
+	else
+		local file="`readlink_minus_f "$@"`"
+	fi
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_gd_file failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh write_global_data_set -path "$file" -storage_id $cspsa_path
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write gd unit failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+# -s[IMEI=<imei>,][SIMLOCK-CODES=<simlockcodes>,[]COPS-DATA-FILE=<copsdatafile>]
+# --write-sec-par=[IMEI=<imei>,][SIMLOCK-CODES=<simlockcodes>,[]COPS-DATA-FILE=<copsdatafile>]
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function write_sec_par()
+{
+	echo ""
+	echo "Write security parameters to ME"
+
+	IFS=","
+	set -- $1
+	IFS=" "
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_sec_par failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	returnvalue=0
+
+	for entry in "$@"
+	do
+		local key=${1%%=*}
+		local value=${1##*=}
+
+		case "$key" in
+			"IMEI")
+				echo Setting IMEI: $value
+				"$tooldir"/flash-tool-cli/flash-tool.sh set_equipment_property -equipment_property 0x01=$value
+				returnvalue=$?
+				;;
+			"SIMLOCK-CODES")
+				local nlk=`echo "$value"| cut -d':' -f1`
+				if [ -z "$nlk" ]; then
+					echo Network Lock Key not set, aborting
+					returnvalue=1
+				fi
+				local nsl=`echo "$value"| cut -d':' -f2`
+				if [ -z "$nsl" ]; then
+					echo Network Subset Lock Key not set, aborting
+					returnvalue=1
+				fi
+				local spl=`echo "$value"| cut -d':' -f3`
+				if [ -z "$spl" ]; then
+					echo Service Provider Lock Key not set, aborting
+					returnvalue=1
+				fi
+				local clk=`echo "$value"| cut -d':' -f4`
+				if [ -z "$clk" ]; then
+					echo Corporate Lock Key not set, aborting
+					returnvalue=1
+				fi
+				local fel=`echo "$value"| cut -d':' -f5`
+				if [ -z "$fel" ]; then
+					echo Flexible ESL Lock Key not set, aborting
+					returnvalue=1
+				fi
+
+				if [ "$returnvalue" -ne "1" ]; then
+					echo Setting SimLock Keys "{Network Lock Key=$nlk,Network Subset Lock Key=$nsl,Service Provider Lock Key=$spl,Corporate Lock Key=$clk,Flexible ESL Lock Key=$fel}"
+					"$tooldir"/flash-tool-cli/flash-tool.sh set_equipment_property -equipment_property 0x10="{Network Lock Key=$nlk,Network Subset Lock Key=$nsl,Service Provider Lock Key=$spl,Corporate Lock Key=$clk,Flexible ESL Lock Key=$fel}"
+					returnvalue=$?
+				fi
+				;;
+			"COPS-DATA-FILE")
+				if [ -f $value ]; then
+					echo Setting cops data using file $value
+					local file="`readlink_minus_f $value`"
+					"$tooldir"/flash-tool-cli/flash-tool.sh set_equipment_property -equipment_property 0x100="$file"
+					returnvalue=$?
+				else
+					echo Specified cops-data-file does not exist!
+					returnvalue=1
+				fi
+				;;
+			*)
+				returnvalue=1
+				;;
+		esac
+
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "..write_sec_par failed..."
+			stopbackend
+			exit 1
+		fi
+
+		shift
+	done
+
+	authentication
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_sec_par failed..."
+		stopbackend
+		return $returnvalue
+	fi
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh bind_properties
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "..bind properties failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+function authentication()
+{
+	if [ $perm_auth -eq 1 ]; then
+		"$tooldir"/flash-tool-cli/flash-tool.sh permanent_authentication
+		returnvalue=$?
+	else
+		checksignsetup
+		returnvalue=$?
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "...authentication failed..."
+			return $returnvalue
+		fi
+		if [ $remote_signing -eq 1 ]; then
+			"$tooldir"/flash-tool-cli/flash-tool.sh set_local_signing -local_signing false
+			returnvalue=$?
+		else
+			"$tooldir"/flash-tool-cli/flash-tool.sh set_local_signing -local_signing true
+			returnvalue=$?
+		fi
+
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "..failed to setup local signing..."
+			return $returnvalue
+		fi
+		"$tooldir"/flash-tool-cli/flash-tool.sh authenticate_certificate -sign_package_name $signpackageauth
+		returnvalue=$?
+	fi
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "..authenticate failed..."
+		return $returnvalue
+	fi
+}
+
+
+# -P"
+# --permanent-authentication"
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function set_permanent_authentication()
+{
+	echo ""
+	perm_auth=1
+	echo "use permanent_authentication"
+}
+
+
+# -f
+# --format-gd
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function format_gd()
+{
+	echo ""
+	echo "format gd"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...format_gd failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh erase_global_data_set -storage_id $cspsa_path
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "..format cspsa failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+# -G
+# --write-gd-image
+#  Input     : binary image to write
+#  Output    :
+#  Comment   :
+#
+function write_gd_image()
+{
+	if [ -z "$1" ]; then
+		echo "No file specified"
+		return 1
+	else
+		local file="`readlink_minus_f "$*"`"
+	fi
+
+	echo ""
+	echo "write gd image $file"
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_gd_image failed..."
+		return $returnvalue
+	fi
+
+	# this creates the needed xml for this case
+	local flashgdxml="tmpflashgdxml.xml"
+
+	echo "<?xml version=\"1.0\"?>" >>$flashgdxml
+	echo "<!DOCTYPE target_configuration [" >>$flashgdxml
+	echo "    <!ELEMENT target_configuration                    	(bax:flash_archive?, bax:ram_image?)>" >>$flashgdxml
+	echo "    <!ELEMENT bax:source                              	(#PCDATA)>" >>$flashgdxml
+	echo "    <!ELEMENT bax:flash_archive                       	(bax:entry*)>" >>$flashgdxml
+	echo "    <!ELEMENT bax:ram_image								(bax:entry*)>" >>$flashgdxml
+	echo "    <!ELEMENT bax:entry                               	(bax:source,bax:attribute*)>" >>$flashgdxml
+	echo "    <!ELEMENT bax:attribute                         	(#PCDATA)>" >>$flashgdxml
+	echo "    <!ATTLIST target_configuration      xmlns:bax       CDATA                                   	#FIXED \"TBD\">" >>$flashgdxml
+	echo "    <!ATTLIST bax:entry                 name      		CDATA                         				#REQUIRED>" >>$flashgdxml
+	echo "    <!ATTLIST bax:entry                 type      		CDATA										#REQUIRED>" >>$flashgdxml
+	echo "    <!ATTLIST bax:attribute             name      		CDATA                         				#REQUIRED>" >>$flashgdxml
+	echo "]>" >>$flashgdxml
+	echo "<target_configuration>" >>$flashgdxml
+	echo "<bax:flash_archive>" >>$flashgdxml
+	echo "<bax:entry name=\"flashlayout.txt\" type=\"x-empflash/flash-layout\">" >>$flashgdxml
+	echo "<bax:source>flashlayout</bax:source>" >>$flashgdxml
+	echo "</bax:entry>" >>$flashgdxml
+	echo "<bax:entry name=\"cspsa.bin\" type=\"x-empflash/image\">" >>$flashgdxml
+	echo "<bax:source>cspsa</bax:source>" >>$flashgdxml
+	echo "<bax:attribute name=\"Target\">$cspsa_path, 0x0 </bax:attribute>" >>$flashgdxml
+	echo "<bax:attribute name=\"TOC-ID\">CSPSA0</bax:attribute>" >>$flashgdxml
+	echo "</bax:entry>" >>$flashgdxml
+	echo "</bax:flash_archive>" >>$flashgdxml
+	echo "</target_configuration>" >>$flashgdxml
+
+	# Create temp filelist
+	local tempfile="wgd_tmpfilelist.txt"
+
+	# Always include layout
+	echo flashlayout = $flashlayout >> $tempfile
+	echo cspsa = "$file" >> $tempfile
+
+	# Create archive
+	createarchive $tempfile "$flasharchive" $flashgdxml
+	returnvalue=$?
+
+	rm -f "$tempfile"
+	rm -f "$flashgdxml"
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create archive failed..."
+		exit 1
+	fi
+
+	# Flash
+	flash_file "$flasharchive"
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...flashing failed..."
+		exit 1
+	fi
+}
+
+
+# -B<MODE>
+# --set-bootmode=<MODE>
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function set_special_bootmode()
+{
+	if [ -z "$1" ]; then
+		echo "No bootmode specified"
+		return 1
+	fi
+
+	local mode=$1
+
+	case "$mode" in
+		"adl")
+			profile=STE_DB8500_adlboot
+			;;
+		"production")
+			profile=STE_DB8500_productionboot
+			;;
+		"normal_debug")
+			profile=STE_DB8500_normalboot_bootdebug
+			;;
+		*)
+			echo "invalid parameter"
+			return 1
+			;;
+	esac
+
+	startbackend $profile
+}
+
+# -a<DATA>
+# --init-arb-table=<DATA>
+# Initilize anti-roll back table
+# Parameters: <DATA>
+function arbtable ()
+{
+	echo ""
+	echo "Initilize anti-roll back table"
+
+	local arbdata=""
+
+	if [ -z "$1" ]; then
+		echo "No arbdata specified"
+		return 1
+	else
+		arbdata=$1
+	fi
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...arbtable failed..."
+		return $returnvalue
+	fi
+	startbackend
+	authentication
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...arbtable failed..."
+		stopbackend
+		return $returnvalue
+	fi
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh init_arb_table -arb_data $arbdata
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...initilize anti-roll back table failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+# -X<MODE>,<FILE>
+# --xlaunch=<MODE>,<FILE>
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function xlauncher()
+{
+	IFS=',' read -a argumentarray <<<"$@"
+
+	if [ -z "${argumentarray[0]}" ]; then
+		echo "Debug mode not specified"
+		return 1
+	fi
+
+	if [ -z "${argumentarray[1]}" ]; then
+		echo "File not specified"
+		return 1
+	fi
+
+	local debugenabled=${argumentarray[0]}
+	local file="`readlink_minus_f "${argumentarray[1]}"`"
+
+	if [ "$debugenabled" -eq "0" ]; then
+		local profile=STE_DBX500_ramload_normal
+	else
+		local profile=STE_DBX500_ramload_bootdebug
+	fi
+
+	local filelist="xl_tmpfilelist.txt"
+
+	checksignsetup
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...checksignsetup failed..."
+		return $returnvalue
+	fi
+
+	handlebip $filelist
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...xlauncher failed..."
+		return $returnvalue
+	fi
+	if [ -n "$dntcert" ]; then
+		echo dntcert=$dntcert >>$filelist
+	fi
+	if [ -n "$mem_init" ]; then
+		echo mem_init=$mem_init >>$filelist
+	fi
+	if [ -n "$power_management" ]; then
+		echo power_management=$power_management >>$filelist
+	fi
+	echo normal="$file" >>$filelist
+
+	sign_images $filelist
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...sign images failed..."
+		return $returnvalue
+	fi
+
+
+	"$tooldir"/assemble-tool-cli/assemble-tool.sh -f -v -t ram_image -c $xlaucherdescr -l "$filelist" "$rundir/ramload_normal.ldr" >&4
+	returnvalue=$?
+
+	rm -f $filelist
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...create xlauncher image failed..."
+		return $returnvalue
+	fi
+
+	startbackend $profile
+}
+
+#-- Internal support functions -----------------------------------------------
+#
+# Developer notes: all internal functions assumes the paths are expanded
+# when the functions are called
+
+#find source entry for a areapath
+#finds the "sourcename" for an areapath
+#parameters:
+#areapath name
+#name of variable to store the result
+function findsourceentry()
+{
+	local areapath=$1
+	local varname=$2
+
+	local result=""
+	local insideentry=0
+	local targetfound=0
+	local temp=""
+	local source=""
+
+	# Read archivedescr to match path to a source
+	while read line
+	do
+		echo $line|grep --quiet '<bax:entry' && insideentry=1
+		echo $line|grep --quiet '</bax:entry' && insideentry=0
+
+		if [ $insideentry -eq 1 ]; then
+			# Find Target entry, i.e. path in ME flash
+			temp=`echo $line|grep '.*bax:attribute.*name="Target".*'|sed 's/^.*<bax:attribute name="Target">//g'| sed 's/,.*<\/bax:attribute>//g'`
+
+			if [[ $temp == "$areapath" ]] ; then
+				targetfound=1
+			else
+				# Find source entry
+				temp=`echo $line|grep '.*<bax:source>.*'|sed 's/^.*<bax:source>//g'| sed 's/<\/bax:source>//g'`
+				if [ ! -z "$temp" ]; then
+					source=$temp
+				fi
+			fi
+
+			if [[ targetfound -eq 1 && ! -z "$source" ]]; then
+				targetfound=0
+				# Combine source entry with filename from cmd line to form temfile entry
+				result=$source
+			fi
+		fi
+	done <"$archivedescr"
+
+	eval "$varname=$result"
+}
+
+#common checks and initializations
+function common_init()
+{
+	# Check if HW set
+	if [ -z "$target_hw" ]; then
+		echo "HW not selected"
+		echo "The hardware must be selected before this operation using the -t option"
+		exit 1
+	fi
+
+	# Assemble loader
+	createloader
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...common_init failed..."
+		return $returnvalue
+	fi
+
+}
+
+#creates loader.ldr file
+function createloader()
+{
+	if [ "$loader_created" -eq "0" ]; then
+		local filelist="cldr_tmpfilelist.txt"
+
+		checksignsetup
+		returnvalue=$?
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "...checksignsetup failed..."
+			return $returnvalue
+		fi
+
+		handlebip $filelist true
+		returnvalue=$?
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "...createloader failed..."
+			return $returnvalue
+		fi
+	        if [ -n "$dntcert" ]; then
+	            echo dntcert="$dntcert" >>$filelist
+	        fi
+		if [ -n "$loader_meminit" ]; then
+			echo mem_init="$loader_meminit" >>$filelist
+		else
+			if [ -n "$mem_init" ]; then
+				echo mem_init="$mem_init" >>$filelist
+			fi
+		fi
+		if [ -n "$loader_prcmu" ]; then
+			echo power_management="$loader_prcmu" >>$filelist
+		else
+			if [ -n "$power_management" ]; then
+				echo power_management="$power_management" >>$filelist
+			fi
+		fi
+
+		if [ -n "$loader" ]; then
+			echo loader="$loader" >>$filelist
+		else
+			echo "No loader specified!"
+		fi
+
+		if [ -n "$tee" ]; then
+			echo tee="$tee" >>$filelist
+		fi
+
+		sign_images "$filelist"
+		returnvalue=$?
+
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "...sign images failed..."
+			return $returnvalue
+		fi
+
+		"$tooldir"/assemble-tool-cli/assemble-tool.sh -f -v -t ram_image -c "$loaderdescr" -l "$filelist" "$rundir/loader.ldr" >&4
+		returnvalue=$?
+
+		rm -f "$filelist"
+
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "...create loader failed..."
+			return $returnvalue
+		fi
+
+		loader_created=1
+	fi
+}
+
+# creates a flasharchive according to the filelist passed to it
+# parameters
+# filelist
+# name of outputfile
+# (optionally) alternative xml file to use
+# (optionally) argument for flashing default cspsa data
+function createarchive()
+{
+	local filelist=$1
+	local outfile=$2
+	local include_default_cspsa=$4
+	local descriptor=$archivedescr
+
+	if [ -n "$3" ]; then
+		descriptor="`readlink_minus_f $3`"
+	fi
+
+	echo "Assemble archive"
+
+	checksignsetup
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...createarchive failed..."
+		return $returnvalue
+	fi
+	sign_images "$filelist"
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...sign images failed..."
+		return $returnvalue
+	fi
+
+
+	local outdirname=`dirname "$outfile"`
+
+	mkdir -p "$outdirname"
+
+	if [ "$include_default_cspsa" == "true" ]; then
+		"$tooldir"/assemble-tool-cli/assemble-tool.sh -f -v -r -t flash_archive -c "$descriptor" -l "$filelist" "$outdirname/contents.zip" >&4
+		returnvalue=$?
+	else
+		"$tooldir"/assemble-tool-cli/assemble-tool.sh -f -v -t flash_archive -c "$descriptor" -l "$filelist" "$outdirname/contents.zip" >&4
+		returnvalue=$?
+	fi
+
+	if [[ "$returnvalue" -ne "1" && "$archive_signed" -ne "0" ]]; then
+		echo "Signing flash archive.."
+
+		if [ $remote_signing -eq 1 ]; then
+			"$tooldir"/$sign_tool -b 1047040 -v -p $signpackage -s flash_archive "$outdirname/contents.zip" "$outfile" >&4
+			returnvalue=$?
+		else
+			"$tooldir"/$sign_tool --local -b 1047040 -v -p $signpackage -s flash_archive "$outdirname/contents.zip" "$outfile" >&4
+			returnvalue=$?
+		fi
+		rm -f "$outdirname/contents.zip"
+		echo "Done signing flash archive."
+	else
+	    mv "$outdirname/contents.zip" "$outdirname/flashimage.zip"
+	    echo "Not signing flash archive."
+	fi
+
+
+	if [ "$returnvalue" -ne "1" ]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
+#sign images according to configuration and if it should do "commercial"
+#or "rnd" signing.
+#this overwrites the filelist passed in with a new one conatining the
+#the resulting files.
+function sign_images()
+{
+	local filelist="$1"
+	local configfile=$sign_image_config_rnd
+	local signedfilelist=signedfilelist.txt
+
+	echo "Signing images with sign package, [$signpackage] .."
+
+	if [ $commercial_signing -eq 1 ]; then
+		configfile=$sign_image_config_commercial
+	fi
+	if [ "$user_sw_type_map" != "" ]; then
+		configfile=$user_sw_type_map
+	fi
+
+	rm -f "$signedfilelist"
+	touch "$signedfilelist"
+
+	while read fileline
+	do
+		local marker=${fileline:0:1}
+
+		if [[ "$marker" != "#" && "$fileline" != "" ]]; then
+			local filetype=""
+			local filename=""
+			IFS="= " read -r filetype filename <<< "$fileline"
+			filetype=(`echo $fileline |  cut -d"=" -f1-1`)
+			filename=(`echo $fileline |  cut -d"=" -f2-2`)
+			local filename_post="$filename"
+			local signentry=(`grep "^$filetype " "$configfile" | cut -d" " -f1-1`)
+			local sw_type=(`grep "^$filetype " "$configfile" | cut -d" " -f2-2`)
+			local sw_version=(`grep "^$filetype " "$configfile" | cut -d" " -f3-3`)
+			if [[  "$sw_type" != "" && "$sw_type" != "NA" ]]; then
+				filename_post="$rundir"/`basename "$filename"`_signed
+				if [ "$sw_version" == "" ]; then
+					sw_version=0
+				fi
+				echo signing "$filename" version "$sw_version" as type \'$sw_type\' to "$filename_post"  >&4
+
+				if [ $remote_signing -eq 1 ]; then
+					"$tooldir"/$sign_tool -s "$sw_type" -b 1047040 -v -p $signpackage -sv $sw_version "$filename" "$filename_post" >&4
+					returnvalue=$?
+				else
+					"$tooldir"/$sign_tool --local -s "$sw_type" -b 1047040 -v -p $signpackage -sv $sw_version "$filename" "$filename_post" >&4
+					returnvalue=$?
+				fi
+
+				if [ "$returnvalue" -ne "0" ]; then
+					echo "...signing of images failed..."
+					return $returnvalue
+				fi
+			fi
+			echo ${filetype}=${filename_post} >>$signedfilelist
+		fi
+	done < "$filelist"
+
+	mv $signedfilelist $filelist
+	echo "Done signing images."
+}
+
+#handles bips, xloader and issw in the filelist
+#this can handle either a combined bip or a seperate issw and xloader
+#and adds it to the filelist
+function handlebip()
+{
+	local filelistname=$1
+	local forloader=$2
+	local tmpbip=""
+	local tmpissw=""
+	local tmpxloader=""
+
+	if [ "$forloader" == "true" ]; then
+		if [[ -n "$loader_issw" || -n "$loader_xloader" || -n "$loader_bip" ]]; then
+			tmpbip=$loader_bip
+			tmpissw=$loader_issw
+			tmpxloader=$loader_xloader
+		else
+			tmpbip=$boot_image
+			tmpissw=$issw
+			tmpxloader=$xloader
+		fi
+
+		if [ "$loader_biphandled" -eq "1" ]; then
+			echo boot_image="$loader_bip" >>$filelistname
+			return 0
+		fi
+	else
+		tmpbip=$boot_image
+		tmpissw=$issw
+		tmpxloader=$xloader
+
+		if [ "$biphandled" -eq "1" ]; then
+			echo boot_image="$boot_image" >>$filelistname
+			return 0
+		fi
+	fi
+
+	if [[ "$tmpissw" != "" && "$tmpxloader" != "" ]]; then
+		assemblebip tmpbip "$tmpissw" "$tmpxloader"
+		returnvalue=$?
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "...handlebip failed..."
+			return $returnvalue
+		fi
+
+		# if different bootimages specified for the loader then if only needs
+		# needs to be created once independent if this call was done in the
+		# "create loader" scenario or any other scenario
+		# this is checked before loader_bip is set by this function so
+		# it can be sure that loader_bip was empty to begin with
+		if [[ -z "$loader_issw" && -z "$loader_xloader" && -z "$loader_bip" ]]; then
+			# if this call was for loader then loader_biphandled should be one
+			# so the "not-loader" variabels can be set as well
+			if [ "$forloader" == "true" ]; then
+				boot_image=$tmpbip
+				biphandled=1
+			else
+				loader_bip=$tmpbip
+				loader_biphandled=1
+			fi
+		fi
+
+		if [ "$forloader" == "true" ]; then
+			loader_bip=$tmpbip
+			loader_biphandled=1
+		else
+			boot_image=$tmpbip
+			biphandled=1
+		fi
+	else
+		if [[ "$tmpissw" != "" || "$tmpxloader" != "" ]]; then
+			echo "...seperate issw or x-loader provided but not both..."
+			return 1
+		fi
+	fi
+
+	echo boot_image="$tmpbip" >>$filelistname
+}
+
+#returns software type for x-loader image used during signing
+function get_xloader_sw_type()
+{
+	local sw_type_list=$sign_image_config_rnd
+	if [ $commercial_signing -eq 1 ]; then
+		sw_type_list=$sign_image_config_commercial
+	fi
+	if [ "$user_sw_type_map" != "" ]; then
+		sw_type_list=$user_sw_type_map
+	fi
+	while read sw_type_line
+	do
+		sw_type_line=${sw_type_line%% }
+		sw_type_line=${sw_type_line## }
+
+		local sw_type_index=`echo "$sw_type_line" | sed -n "s/["' '"].*//p" | wc -c`
+                local xloader_sw_type=${sw_type_line:$sw_type_index}
+		local xloader_image_name=${sw_type_line:0:$sw_type_index}
+
+		xloader_sw_type=${xloader_sw_type%% }
+		xloader_sw_type=${xloader_sw_type## }
+		xloader_image_name=${xloader_image_name%% }
+		xloader_image_name=${xloader_image_name## }
+
+		if [[ "$xloader_image_name" == "x-loader" ]]; then
+			echo $xloader_sw_type
+		fi
+	done < "$sw_type_list"
+}
+
+#this assembles a bip and place the filename in variable passed in
+function assemblebip()
+{
+	local varname=$1
+	local isswi=$2
+	local xloaderi=$3
+
+	checksignsetup
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...assemblebip failed..."
+		return $returnvalue
+	fi
+
+	local assembledbipname="$rundir"/boot_image_assembled.bin
+
+	local xloadersigned="$rundir/`basename "$xloaderi"`_signed"
+
+	local xloader_sw_type=$(get_xloader_sw_type)
+
+	local xloader_sw_version=${xloader_sw_type#*' '}
+
+	if [[ "$xloader_sw_version" == "$xloader_sw_type" ]]; then
+		xloader_sw_version=0
+	else
+		local index=`echo "$xloader_sw_type" | sed -n "s/["' '"].*//p" | wc -c`
+		xloader_sw_type=${xloader_sw_type:0:$index}
+		xloader_sw_type=${xloader_sw_type%% }
+		xloader_sw_type=${xloader_sw_type## }
+	fi
+
+	if [[ $xloader_sw_type != NA ]]; then
+		echo signing xloader "$xloaderi" version "$xloader_sw_version" as "$xloadersigned" >&4
+
+		if [ $remote_signing -eq 1 ]; then
+		"$tooldir"/$sign_tool -s xloader -sv "$xloader_sw_version" -b 1047040 -v -p $signpackage "$xloaderi" "$xloadersigned" >&4
+			returnvalue=$?
+		else
+		"$tooldir"/$sign_tool --local -s xloader -sv "$xloader_sw_version" -b 1047040 -v -p $signpackage "$xloaderi" "$xloadersigned" >&4
+			returnvalue=$?
+		fi
+
+		if [ "$returnvalue" -ne "0" ]; then
+			echo "...signing of xloader failed..."
+			exit $returnvalue
+		fi
+	else
+		echo X-LOADER will not be signed. Coping "$xloaderi" to "$xloadersigned"
+		cp "$xloaderi" "$xloadersigned"
+	fi
+
+	local bipfilelist=tempbipfilelist.txt
+
+	echo issw="$isswi" >"$bipfilelist"
+	if [ -n "$crkc" ]; then
+		echo crkc="$crkc" >>$bipfilelist
+	fi
+	if [ -n "$stedntcert" ]; then
+		echo stedntcert="$stedntcert" >>$bipfilelist
+	fi
+	echo x-loader="$xloadersigned" >>$bipfilelist
+
+	"$tooldir"assemble-tool-cli/assemble-tool.sh -f -v -t ram_image -c "$bipdescr" -l "$bipfilelist" "$assembledbipname" >&4
+	returnvalue=$?
+
+	rm -f "$bipfilelist"
+	rm -f "$xloadersigned"
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...creation of bip failed..."
+		return $returnvalue
+	fi
+
+	eval "$varname=$assembledbipname"
+}
+
+#flashes the file that is passed in as argument
+function flash_file()
+{
+	local flasharchive=$1
+
+	startbackend
+	echo "Flashing .."
+	"$tooldir"/flash-tool-cli/flash-tool.sh process_file -path "$flasharchive"
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "1" ]; then
+		"$tooldir"/flash-tool-cli/flash-tool.sh collect_data -type 2 >&4
+		returnvalue=$?
+	fi
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...flashing failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+#parses config list to find the hw specific components
+#fills the variables "loader" "ipl" "modem" "boot_image" "mem_init"
+#and "power_management" with the correct files for this hw
+function parse_configlist()
+{
+	local found=0
+	local basepath=`dirname "$configlist"`
+
+	while read line
+	do
+		# Look for HW passed to function
+		local hw=`echo $line | grep -e "\[$1\]"`
+		if [ $hw ]; then
+			#echo $hw : configuration according to $configlist
+			# Found it, read next line
+			found=1
+			continue
+		fi
+
+		if [ $found -eq 1 ]; then
+			# loader and bip must be recreated after this
+			loader_created=0
+			biphandled=0
+			loader_biphandled=0
+
+			# Check for new record. Exit if found
+			local finish=`echo $line | grep -e [[]`
+			if [ $finish ]; then
+				break
+			fi
+
+			local name=`echo "$line"| cut -d'=' -f1| sed 's/^ *//g'| sed 's/ *$//g'`
+			local value=`echo "$line"| cut -d'=' -f2| sed 's/^ *//g'| sed 's/ *$//g'`
+
+			pushd "$basepath" >>/dev/null
+
+			case "$name" in
+			"loader")
+				loader=$value
+				if [ ! -f "$loader" ] ; then
+					loader=`echo $loaderprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$loader"
+				loader=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"ipl")
+				if [ "$value" != "nonexistant" ]; then
+					ipl=$value
+					if [ ! -f "$ipl" ] ; then
+						ipl=`echo $modemprefix/$value`
+					fi
+					IFS=' ' read -a argumentarray <<<"$ipl"
+					ipl=`readlink_minus_f "${argumentarray[0]}"`
+
+					check_file_existance argumentarray $name $value
+				fi
+				;;
+			"modem")
+				if [ "$value" != "nonexistant" ]; then
+					modem=$value
+					if [ ! -f "$modem" ] ; then
+						modem=`echo $modemprefix/$value`
+					fi
+					IFS=' ' read -a argumentarray <<<"$modem"
+					modem=`readlink_minus_f "${argumentarray[0]}"`
+
+					check_file_existance argumentarray $name $value
+				fi
+				;;
+			"boot_image")
+				boot_image=$value
+				if [ ! -f "$boot_image" ] ; then
+					boot_image=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$boot_image"
+				boot_image=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"mem_init")
+				mem_init=$value
+				if [ ! -f "$mem_init" ] ; then
+					mem_init=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$mem_init"
+				mem_init=`readlink_minus_f "${argumentarray[0]}"`
+
+				check_file_existance argumentarray $name $value
+				;;
+			"power_management")
+				power_management=$value
+				if [ ! -f "$power_management" ] ; then
+					power_management=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$power_management"
+				power_management=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"x-loader")
+				xloader=$value.bin
+				if [ ! -f "$xloader" ] ; then
+					xloader=`echo $bootprefix/$value`.bin
+				fi
+				IFS=' ' read -a argumentarray <<<"$xloader"
+				xloader=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"issw")
+				issw=$value
+				if [ ! -f "$issw" ] ; then
+					issw=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$issw"
+				issw=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"tee")
+				tee=$value
+				if [ ! -f "$tee" ] ; then
+					tee=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$tee"
+				tee=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"loader-bip")
+				loader_bip=$value
+				if [ ! -f "$loader_bip" ] ; then
+					loader_bip=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$loader_bip"
+				loader_bip=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"loader-meminit")
+				loader_meminit=$value
+				if [ ! -f "$loader_meminit" ] ; then
+					loader_meminit=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$loader_meminit"
+				loader_meminit=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"loader-prcmu")
+				loader_prcmu=$value
+				if [ ! -f "$loader_prcmu" ] ; then
+					loader_prcmu=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$loader_prcmu"
+				loader_prcmu=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"loader-issw")
+				loader_issw=$value
+				if [ ! -f "$loader_issw" ] ; then
+					loader_issw=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$loader_issw"
+				loader_issw=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"loader-xloader")
+				loader_xloader=$value
+				if [ ! -f "$loader_xloader" ] ; then
+					loader_xloader=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$loader_xloader"
+				loader_xloader=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"rootsignpackage")
+				if [ $userselectedsignpackage -eq 0 ]; then
+					signpackage=$value
+				fi
+				;;
+			"authsignpackage")
+				if [ $userselectedsignpackage -eq 0 ]; then
+					signpackageauth=$value
+				fi
+				;;
+			"crkc")
+				crkc=$value
+				if [ ! -f "$crkc" ] ; then
+					crkc=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$crkc"
+				crkc=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"stedntcert")
+				stedntcert=$value
+				if [ ! -f "$stedntcert" ] ; then
+					stedntcert=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$stedntcert"
+				stedntcert=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"dntcert")
+				dntcert=$value
+				if [ ! -f "$dntcert" ] ; then
+					dntcert=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$dntcert"
+				dntcert=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"sw_type_map")
+				user_sw_type_map=$value
+				if [ ! -f "$user_sw_type_map" ] ; then
+					user_sw_type_map=`echo $bootprefix/$value`
+				fi
+				IFS=' ' read -a argumentarray <<<"$user_sw_type_map"
+				 user_sw_type_map=`readlink_minus_f "${argumentarray[0]}"`
+				check_file_existance argumentarray $name $value
+				;;
+			"mark-hw")
+				if [ "$value" == "U5500" ]; then
+					sign_tool=sign-tool-cli/sign-tool-u5500.sh
+				fi
+				;;
+			"archive_signed")
+				archive_signed=$value
+				;;
+			*)
+				;;
+			esac
+
+			popd >>/dev/null
+		fi
+	done <"$configlist"
+
+	if [ $found -eq 0 ]; then
+		echo "Hardware $1 is not supported"
+		exit 1
+	fi
+}
+# function to check variables in config.list
+function check_file_existance()
+{
+	local configname=$2
+	local filename=$3
+
+	IFS=' '
+	local filename_string="$1[*]"
+	local filename_array=(${!filename_string})
+
+	if [ ! -n "$filename" ]; then
+		echo "Warning: No file specified for $configname in the config.list file"
+		return 2
+	fi
+	if [ ! -f "${filename_array[0]}" ] ; then
+		echo "Warning:  Could not find file ${filename_array[0]} ,please check $configname in the config.list file"
+		return 1
+	fi
+	if [ -n "${filename_array[1]}" ]; then
+		echo "Warning: you have more than one $configname file, ${filename_array[0]} will be used"
+	fi
+}
+
+# --write-otp=<FILE>
+#  Input     : Path and name to a otp file
+#  Output    :
+#  Comment   :
+#
+function write_otp()
+{
+	if [ -z "$1" ]; then
+		echo "No file specified"
+		return 1
+	else
+		local otpfile=$1
+	fi
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_otp failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	authentication
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_otp failed..."
+		stopbackend
+		return $returnvalue
+	fi
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh burn_otp -path "$otpfile"
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write otp data failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+# --read-otp=<FILE>
+#  Input     : Path and name to a otp file
+#  Output    :
+#  Comment   :
+#
+function read_otp()
+{
+	if [ -z "$1" ]; then
+		echo "No file specified"
+		return 1
+	else
+		local otpfile=$1
+	fi
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...read_otp failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	authentication
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...authentication failed..."
+		stopbackend
+		return $returnvalue
+	fi
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh read_otp -path "$otpfile"
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...read otp data failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+# --sw_type_map=<FILE>
+#  Input     : Path and name to security profile definition
+#  Output    :
+#  Comment   :
+#
+function set_sw_type_map()
+{
+	if [ -z "$1" ]; then
+		echo "No file specified"
+		return 1
+	else
+		user_sw_type_map=$1
+		user_sw_type_map=`readlink_minus_f "$user_sw_type_map"`
+		echo sw_type_map file "$user_sw_type_map" selected
+	fi
+
+}
+
+# --write-rpmb
+#  Input     :
+#  Output    :
+#  Comment   :
+#
+function write_rpmb()
+{
+
+	IFS=',' read -a argumentarray <<<"$@"
+
+	local dev_id=${argumentarray[0]}
+	local commercial=${argumentarray[1]}
+	 
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_rpmb failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	authentication
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write_rpmb failed..."
+		stopbackend
+		return $returnvalue
+	fi
+	
+	"$tooldir"/flash-tool-cli/flash-tool.sh write_rpmb_key -device_id $dev_id -commercial $commercial
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...write rpmb key failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+
+#start the backend and also request the user to turn on the hw so it
+#connects to the backend
+function startbackend()
+{
+	echo ""
+	echo "Waiting for Flash-tool-backend"
+
+	if [ $backend_running -eq 0 ]; then
+		local profile=STE_DBX500_flashloader
+
+		if [ -n "$1" ]; then
+			profile=$1
+		fi
+
+		if [ $debug_enabled -eq 1 ]; then
+			"$tooldir/flash-tool-backend/flash-tool-backend.sh" -d -l "$rundir" >>/dev/null &
+		else
+			"$tooldir/flash-tool-backend/flash-tool-backend.sh" -l "$rundir" >>/dev/null &
+		fi
+
+		# Only check for errorlevel indicating that the backend is not started
+		"$tooldir"/flash-tool-cli/flash-tool.sh get_available_profiles -wait n >/dev/null 2>/dev/null
+		while [ $? -eq 2 ]; do
+			"$tooldir"/flash-tool-cli/flash-tool.sh get_available_profiles -wait n >/dev/null  2>/dev/null
+		done
+
+		echo "Flash-tool-backend is up and running."
+
+		#do we need this?
+		"$tooldir"/flash-tool-cli/flash-tool.sh set_active_profile -profile_name $profile >/dev/null
+
+		if [ -n "$trigger_uart_port" ]; then
+			"$tooldir"/flash-tool-cli/flash-tool.sh trigger_uart_port -port_name $trigger_uart_port >/dev/null
+		fi
+
+		trigger_uart_port=""
+		echo ""
+		echo "Waiting for next connected equipment.."
+		echo "Connect and reset or power on ME"
+		echo ""
+		#wait for next connected equipment
+		"$tooldir"/flash-tool-cli/flash-tool.sh get_next_connected_equipment
+		if [ $? -eq 2 ]; then
+			echo "ERROR OCCURED. Description:"
+			echo "64 bit LCD and LCM drivers cannot be found in the native folder. You can:"
+			echo "1. Use 32 bit java with 32 bit drivers, or"
+			echo "2. Build 64 bit LCD and LCM drivers and copy to the native folder in flash-tool-backend."
+			echo ""
+		else
+			echo "Connection established."
+			backend_running=1
+		fi
+	fi
+
+	# Set the errorlevel to 0, errorlevels are acceptable here since
+	# they will be checked in later scripts.
+	return 0
+}
+
+#stops the backend
+function stopbackend()
+{
+	if [ $backend_running -eq 1 ]; then
+		"$tooldir"/flash-tool-cli/flash-tool.sh shutdown_backend
+		backend_running=0
+	fi
+}
+
+#if using remote signing it checks that the variables are set and for
+#local signing it sets the variables to the default location
+function checksignsetup()
+{
+	if [ $remote_signing -eq 1 ]; then
+		if [ -z $SIGNSERVER ]; then
+			echo "The environment variable SIGNSERVER must be set and point to the sign server to use."
+			echo "For instructions, look in the sign tool documentation"
+			echo "$tooldir/sign-tool-cli/doc/sign-tool-cli-u5500.html"
+			echo ""
+			echo "Example:"
+			echo "export SIGNSERVER=<ip-address>:<port>"
+			echo ""
+			return 1
+		fi
+
+		if [ -z $SIGNPACKAGEROOT ]; then
+			echo "The environment variable SIGNPACKAGEROOT must be set and point to the local mounted signpackages."
+			echo "For instructions, look in the sign tool documentation"
+			echo "$tooldir/sign-tool-cli/doc/sign-tool-cli-u5500.html"
+			echo ""
+			echo "Example:"
+			echo "mount.cifs //<ip-address>/<share> /tmp/signpackageroot -o user=<domain>/<username>"
+			echo "export SIGNPACKAGEROOT=/tmp/signpackageroot"
+			echo ""
+			return 1
+		fi
+	else
+		export LOCAL_SIGNPACKAGEROOT="$defsignpackegepath"
+		export LOCAL_KEYROOT="$defkeypath"
+	fi
+}
+
+# --debug"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function backend_debug_enabled()
+{
+	echo ""
+	debug_enabled=1
+	echo "backend debug enabled"
+}
+
+
+# --set-hardware-reset=<[ON | OFF]>"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_hardware_reset_flag()
+{
+	echo ""
+	echo "set_hardware_reset_flag $1"
+	local data=""
+
+	if [ "$1" == "OFF" ]; then
+		data=0
+	else
+		data=1
+	fi
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...set_hardware_reset_flag failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh select_loader_options -ui_property 1 -ui_value $data
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...set_hardware_reset_flag failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+# --set-unenhanced-force=<[ON | OFF]>"
+#  Input     : N/A
+#  Output    :
+#  Comment   :
+#
+function set_unenhanced_force_flag()
+{
+	echo ""
+	echo "set_unenhanced_force_flag $1"
+	local data=""
+
+	if [ "$1" == "OFF" ]; then
+		data=0
+	else
+		data=1
+	fi
+
+	common_init
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...set_unenhanced_force_flag failed..."
+		return $returnvalue
+	fi
+	startbackend
+
+	"$tooldir"/flash-tool-cli/flash-tool.sh select_loader_options -ui_property 0 -ui_value $data
+	returnvalue=$?
+
+	if [ "$returnvalue" -ne "0" ]; then
+		echo "...set_unenhanced_force_flag failed..."
+		stopbackend
+		exit 1
+	fi
+}
+
+#-- Main script execution ----------------------------------------------------
+#
+
+trap "stopbackend" INT TERM EXIT
+
+if [ $# -lt 1 ]; then
+	echo $0: no options specified try \"$0 --help\" to see available options
+	exit 1
+fi
+# open output
+exec 4>/dev/null
+
+machine=`uname`
+if [ "$machine" == "Linux" ] ; then
+	getoptline=`getopt -s bash --options $shortopts --longoptions $longopts --name "$0" -- "$@"`
+elif [ -f  "/opt/local/bin/getopt" ] ; then
+	getoptline=`/opt/local/bin/getopt -s bash --options $shortopts --longoptions $longopts --name "$0" -- "$@"`
+elif [ "$machine" == "Darwin" ] ; then
+	echo "To make this script run on Mac OS, please install the getopt MacPort!
+First install MacPorts: http://www.macports.org/install.php, then
+sudo port install getopt"
+	exit 1
+fi
+
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+
+get_cspsa
+
+eval set -- "$getoptline"
+
+# The target hw must be set first on cmd line. If not, a list will be presented
+# to the user to choose from
+while true; do
+	case $1 in
+		-h|--help)
+			print_help
+			;;
+		-v|--verbose)
+			set_verbose
+			;;
+		-V|--version)
+			print_version
+			;;
+		-t|--target-hw)           # -t<HW>
+			shift
+			set_target_hw $1
+			;;
+		-l|--list-targets)
+			list_targets
+			;;
+		-i|--list-images)
+			list_images
+			;;
+		-o|--list-on-target-images)
+			list_me_devices
+			;;
+		-C|--sign-for-commercial)
+			set_commercial_signing
+			;;
+		-p|--signpackage)
+			shift
+			set_sign_package $1
+			;;
+		-L|--sign-local)
+			set_local_signing
+			;;
+		-R|--sign-remote)
+			set_remote_signing
+			;;
+		-N|--no-signing-archive)
+			set_no_signing_archive
+			;;
+		-B|--boot-itp)
+			shift
+			set_boot_itp_flag $1
+			;;
+		-e|--erase)               # -e[<IMAGE>][,<IMAGE 2>][,...<IMAGE N>]
+		  shift
+			erase $1
+			;;
+		-E|--erase_no_emmc)
+			erase_no_emmc
+			;;
+		-w|--write)               # -w<IMAGE>,<FILENAME>[,<IMAGE 2>,<FILENAME 2>][,...<IMAGE N>,<FILENAME N>]
+			shift
+			write_images $1
+			;;
+		-I|--create-flasharchive) # -I<IMAGE>,<FILENAME>[,<IMAGE 2>,<FILENAME 2>][,...<IMAGE N>,<FILENAME N>]
+			shift
+			create_flasharchive $1
+			;;
+		-c|--write-complete)
+			write_complete
+			;;
+		-m|--write-complete-cspsa)
+			write_complete_cspsa
+			;;
+		-F|--create-complete-flasharchive)
+			create_complete_flasharchive
+			;;
+		-T|--create-complete-flasharchive-cspsa)
+			create_complete_flasharchive_cspsa
+			;;
+		-x|--write-existing)      # <ARCHIVE>
+			shift
+			write_existing $1
+			;;
+		-d|--dump-data)           # -d<START>,<LENGTH>[,<OUTFILE>]
+			shift
+			dump_data $1
+			;;
+		--set-enhanced-area)
+			shift
+			set_enhanced_area $1
+			;;
+		-g|--dump-gd)             # -g[<OUTFILE>]
+			shift
+			dump_gd $1
+			;;
+		-u|--write-gd-unit)       # -u<UNIT>,<BLOCK>,<DATA>
+			shift
+			write_gd_unit $1
+			;;
+		-U|--write_gd_file)       # -U<FILE>
+			shift
+			write_gd_file $1
+			;;
+		-s|--write-sec-par)       # -s<IMEI>,<SIMLOCK-CODES>,<COPS-DATA-FILE>
+			shift
+			write_sec_par $1
+			;;
+		-P|--permanent-authentication)
+			set_permanent_authentication
+			;;
+		-f|--format_gd)
+			format_gd
+			;;
+		-G|--write-gd-image)       # -G<FILE>
+			shift
+			write_gd_image $1
+			;;
+		-a|--init-arb-table)       # -a<DATA>
+			shift
+			arbtable $1
+			;;
+		-b|--set-bootmode)       # -G<FILE>
+			shift
+			set_special_bootmode $1
+			;;
+		-X|--xlaunch)       # -G<FILE>
+			shift
+			xlauncher $1
+			;;
+		--trigger-uart-port)      # --trigger-uart-port=<PORT-NAME>
+			shift
+			trigger_uart_port=$1
+			;;
+		--dnt)       # --dnt<FILE>
+			shift
+			dntcert=$1
+			;;
+		--write-otp)       # --write-otp<FILE>
+			shift
+			write_otp "$1"
+			;;
+		--read-otp)       # --read-otp<FILE>
+			shift
+			read_otp "$1"
+			;;
+		--sw_type_map)       # --sw_type_map=<FILE>
+			shift
+			set_sw_type_map "$1"
+			;;
+		--write-rpmb) #--write-rpmb - device_id INTEGER, commercial BOOLEAN
+			shift
+			write_rpmb $1
+			;;
+		--set-hardware-reset)
+			shift
+			set_hardware_reset_flag "$1"
+			;;
+		--set-unenhanced-force)
+			shift
+			set_unenhanced_force_flag "$1"
+			;;
+		--debug)
+			backend_debug_enabled
+			;;
+		#This three cases must be checked for correct way to handle, I think "--" indicate end-of-parameters
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			;;
+		--)
+			break
+			;;
+		*)
+			echo "internal error" >&2
+			;;
+	esac
+	returnvalue=$?
+	if [ "$returnvalue" -ne "0" ]; then
+		break
+	fi
+	shift
+done
+stopbackend
+
+#close output
+exec 4>&-
+
+exit $returnvalue

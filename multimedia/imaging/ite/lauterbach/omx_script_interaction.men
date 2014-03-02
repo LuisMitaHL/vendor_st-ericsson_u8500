@@ -1,0 +1,2255 @@
+add 
+menu 
+( 
+  popup "&OMX_CAMERA_interaction" 
+  ( 
+	  popup "Save/Restore of Default Config" 
+	  ( 
+		menuitem "img_config_save.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/img_config_save.ite  "
+		)
+		menuitem "img_config_restore.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/img_config_restore.ite  "
+		)
+	   )
+	separator
+	
+	popup "CONFIG STEP 0 : config STAB" 
+	( 
+		menuitem "omx_0_set_stab_activated.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_0_set_stab_activated.ite  "
+		)
+		menuitem "omx_0_set_stab_desactivated.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_0_set_stab_desactivated.ite  "
+		)
+	)
+	separator
+	
+	popup "CONFIG STEP 0 : NETWORK_FRAMEWORK_USE_TUNNELING" 
+	( 
+		menuitem "alias NETWORK_FRAMEWORK_USE_TUNNELING 0 "
+		(
+			do cmd "alias NETWORK_FRAMEWORK_USE_TUNNELING 0  "
+		)
+		menuitem "alias NETWORK_FRAMEWORK_USE_TUNNELING 1 "
+		(
+			do cmd "alias NETWORK_FRAMEWORK_USE_TUNNELING 1  "
+		)
+	)
+	separator
+
+	popup "CONFIG STEP 0 : config DARBOX" 
+	( 
+		menuitem "omx_darbox_stub_off.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_darbox_stub_off.ite  "
+		)
+		menuitem "omx_darbox_stub_on.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_darbox_stub_on.ite  "
+		)
+		menuitem "alias EXTERN_ENV_CONFIG_USE_DARKBOX 1 "
+		(
+			do cmd "alias EXTERN_ENV_CONFIG_USE_DARKBOX 1  "
+		)
+		menuitem "alias EXTERN_ENV_CONFIG_USE_DARKBOX 0 "
+		(
+			do cmd "alias EXTERN_ENV_CONFIG_USE_DARKBOX 0  "
+		)
+		menuitem "dbox_env_default_settings.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/darkbox/dbox_env_default_settings.ite  "
+		)
+		menuitem "dbox_env_null_settings.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/darkbox/dbox_env_null_settings.ite  "
+		)
+	)
+	separator
+
+	popup "CONFIG STEP 1 : config DISPLAY" 
+	( 
+		menuitem "display_enable_disable_usage : DISABLE " 
+		(
+		do cmd "do $(IMG_SCRIPT)/display_enable_disable_usage.ite DISABLE " 
+		)
+		menuitem "display_enable_disable_usage : ENABLE " 
+		(
+		do cmd "do $(IMG_SCRIPT)/display_enable_disable_usage.ite ENABLE " 
+		)
+		menuitem "omx_1_set_displaysink_on_vpb0.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_1_set_displaysink_on_vpb0.ite  "
+		)
+		menuitem "omx_1_set_displaysink_on_vpb1.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_1_set_displaysink_on_vpb1.ite  "
+		)
+		menuitem "   if display on vpb1 : display_still_view_output_0 " 
+		(
+			do cmd "do $(IMG_SCRIPT)/display_still_view_output_0.ite " 
+		)
+		menuitem "   if display on vpb1 : display_still_view_output_1 " 
+		(
+			do cmd "do $(IMG_SCRIPT)/display_still_view_output_1.ite " 
+		)
+		menuitem "omx_1_set_displaysink_on_vpb2.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_1_set_displaysink_on_vpb2.ite  "
+		)
+		menuitem "omx_1_set_displaysink_none.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_1_set_displaysink_none.ite  "
+		)
+	)
+	separator
+	
+	popup "CONFIG STEP 2 : config SPLITTER" 
+	( 
+		menuitem "omx_2_insert_splitter.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_2_insert_splitter.ite  "
+		)
+		menuitem "omx_2_remove_splitter.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_2_remove_splitter.ite  "
+		)
+	)
+	separator
+
+	popup "CONFIG STEP 2 : config ISPPROC" 
+	( 
+		menuitem "omx_2_insert_ispproc.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_2_insert_ispproc.ite  "
+		)
+		menuitem "omx_2_remove_ispproc.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_2_remove_ispproc.ite  "
+		)
+	)
+	separator
+	
+	popup "CONFIG STEP 3 : config IMGFILTER" 
+	( 
+		menuitem "omx_3_insert_imgfilter.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_3_insert_imgfilter.ite  "
+		)
+		menuitem "omx_3_remove_imgfilter.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_3_remove_imgfilter.ite  "
+		)
+		menuitem "alias IMG_FORCE_SAVE_BUFFER 1 "
+		(
+			do cmd "alias IMG_FORCE_SAVE_BUFFER 1  "
+		)
+		menuitem "alias IMG_FORCE_SAVE_BUFFER 0 "
+		(
+			do cmd "alias IMG_FORCE_SAVE_BUFFER 0  "
+		)
+	)
+ 	separator
+	
+	popup "   --- define alias : FRAME RATE" 
+	( 
+		menuitem "omx_framerate_vpb0_vpb1_vpb2.ite fpsvpb0and2 0 fpsvpb0and2 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite fpsvpb0and2 0 fpsvpb0and2  "
+		)
+		menuitem "omx_framerate_vpb0_vpb1_vpb2.ite 0 5 0 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 0 5 0  "
+		)
+		menuitem "omx_framerate_vpb0_vpb1_vpb2.ite 0 0 0 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 0 0 0  "
+		)
+		popup "FPS VPB0 and VPB1 and VPB2" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 0 0 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 1 1 1  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 5 5 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 10 10 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 15 15 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 20 20 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 25 25 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite 30 30 30  "
+			)
+			menuitem "omx_framerate_vpb0_vpb1_vpb2.ite fpsvpb012 fpsvpb012 fpsvpb012 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0_vpb1_vpb2.ite fpsvpb012 fpsvpb012 fpsvpb012  "
+			)
+		)
+		popup "FPS VPB0" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 1  "
+			)
+			menuitem "FPS = 2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 2  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite 30  "
+			)
+			menuitem "FPS = fpsvpb0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb0.ite fpsvpb0  "
+			)
+		)
+		popup "FPS VPB1" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 1  "
+			)
+			menuitem "FPS = 2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 2  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite 30  "
+			)
+			menuitem "FPS = fpsvpb1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb1.ite fpsvpb1  "
+			)
+		)
+		popup "FPS VPB2" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 1  "
+			)
+			menuitem "FPS = 2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 2  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite 30  "
+			)
+			menuitem "FPS = fpsvpb2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_vpb2.ite fpsvpb2  "
+			)
+		)
+	)
+	separator
+	popup "   --- apply setting alias : FRAME RATE" 
+	( 
+		menuitem "omx_framerate_apply_vpb0_vpb1_vpb2.ite fpsvpb0and2 0 fpsvpb0and2 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite fpsvpb0and2 0 fpsvpb0and2  "
+		)
+		menuitem "omx_framerate_apply_vpb0_vpb1_vpb2.ite 0 5 0 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 0 5 0  "
+		)
+		menuitem "omx_framerate_apply_vpb0_vpb1_vpb2.ite 0 0 0 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 0 0 0  "
+		)
+		popup "FPS VPB0 and VPB1 and VPB2" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 0 0 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 1 1 1  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 5 5 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 10 10 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 15 15 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 20 20 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 25 25 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite 30 30 30  "
+			)
+			menuitem "omx_framerate_apply_vpb0_vpb1_vpb2.ite fpsvpb012 fpsvpb012 fpsvpb012 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0_vpb1_vpb2.ite fpsvpb012 fpsvpb012 fpsvpb012  "
+			)
+		)
+		popup "FPS VPB0" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 1  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite 30  "
+			)
+			menuitem "FPS = fpsvpb0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb0.ite fpsvpb0  "
+			)
+		)
+		popup "FPS VPB1" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 1  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite 30  "
+			)
+			menuitem "FPS = fpsvpb1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb1.ite fpsvpb1  "
+			)
+		)
+		popup "FPS VPB2" 
+		( 
+			menuitem "FPS = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 0  "
+			)
+			menuitem "FPS = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 1  "
+			)
+			menuitem "FPS = 5 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 5  "
+			)
+			menuitem "FPS = 10 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 10  "
+			)
+			menuitem "FPS = 15 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 15  "
+			)
+			menuitem "FPS = 20 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 20  "
+			)
+			menuitem "FPS = 25 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 25  "
+			)
+			menuitem "FPS = 30 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite 30  "
+			)
+			menuitem "FPS = fpsvpb2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_framerate_apply_vpb2.ite fpsvpb2  "
+			)
+		)
+	)
+	separator	
+	popup "   --- define alias : RESOLUTION" 
+	( 
+		menuitem "omx_resolution_all_subqcif.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_all_subqcif.ite  "
+		)
+		menuitem "omx_resolution_all_vga.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_all_vga.ite  "
+		)
+		popup "Resolution VPB0" 
+		( 
+			menuitem "4_3_SUBQCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_4_3_SUBQCIF IMG_HEIGHT_AR_4_3_SUBQCIF  "
+			)
+			menuitem "11_9_QCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_11_9_QCIF IMG_HEIGHT_AR_11_9_QCIF  "
+			)
+			menuitem "4_3_QVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_4_3_QVGA IMG_HEIGHT_AR_4_3_QVGA  "
+			)
+			menuitem "11_9_CIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_11_9_CIF IMG_HEIGHT_AR_11_9_CIF  "
+			)
+			menuitem "16_9_nHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_16_9_nHD IMG_HEIGHT_AR_16_9_nHD  "
+			)
+			menuitem "4_3_VGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_4_3_VGA IMG_HEIGHT_AR_4_3_VGA  "
+			)
+			menuitem "16_9_WVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_16_9_WVGA IMG_HEIGHT_AR_16_9_WVGA  "
+			)
+			menuitem "16_9_QHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_16_9_QHD IMG_HEIGHT_AR_16_9_QHD  "
+			)
+			menuitem "4_3_XGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite IMG_WIDTH_AR_4_3_XGA IMG_HEIGHT_AR_4_3_XGA  "
+			)
+			menuitem "widthvpb0 x heightvpb0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb0.ite widthvpb0 heightvpb0  "
+			)
+		)
+		popup "Resolution VPB1_0" 
+		( 
+			menuitem "4_3_SUBQCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_4_3_SUBQCIF IMG_HEIGHT_AR_4_3_SUBQCIF  "
+			)
+			menuitem "11_9_QCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_11_9_QCIF IMG_HEIGHT_AR_11_9_QCIF  "
+			)
+			menuitem "4_3_QVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_4_3_QVGA IMG_HEIGHT_AR_4_3_QVGA  "
+			)
+			menuitem "11_9_CIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_11_9_CIF IMG_HEIGHT_AR_11_9_CIF  "
+			)
+			menuitem "16_9_nHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_16_9_nHD IMG_HEIGHT_AR_16_9_nHD  "
+			)
+			menuitem "4_3_VGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_4_3_VGA IMG_HEIGHT_AR_4_3_VGA  "
+			)
+			menuitem "16_9_WVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_16_9_WVGA IMG_HEIGHT_AR_16_9_WVGA  "
+			)
+			menuitem "16_9_QHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_16_9_QHD IMG_HEIGHT_AR_16_9_QHD  "
+			)
+			menuitem "4_3_XGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite IMG_WIDTH_AR_4_3_XGA IMG_HEIGHT_AR_4_3_XGA  "
+			)
+			menuitem "widthvpb1_0 x heightvpb1_0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_0.ite widthvpb1_0 heightvpb1_0  "
+			)
+		)		
+		popup "Resolution VPB1_1" 
+		( 
+			menuitem "4_3_SUBQCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_SUBQCIF IMG_HEIGHT_AR_4_3_SUBQCIF  "
+			)
+			menuitem "11_9_QCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_11_9_QCIF IMG_HEIGHT_AR_11_9_QCIF  "
+			)
+			menuitem "4_3_QVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_QVGA IMG_HEIGHT_AR_4_3_QVGA  "
+			)
+			menuitem "11_9_CIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_11_9_CIF IMG_HEIGHT_AR_11_9_CIF  "
+			)
+			menuitem "16_9_nHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_16_9_nHD IMG_HEIGHT_AR_16_9_nHD  "
+			)
+			menuitem "4_3_VGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_VGA IMG_HEIGHT_AR_4_3_VGA  "
+			)
+			menuitem "16_9_WVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_16_9_WVGA IMG_HEIGHT_AR_16_9_WVGA  "
+			)
+			menuitem "16_9_QHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_16_9_QHD IMG_HEIGHT_AR_16_9_QHD  "
+			)
+			menuitem "4_3_XGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_XGA IMG_HEIGHT_AR_4_3_XGA  "
+			)
+			menuitem "16_9_720P_HDTV "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_16_9_720P_HDTV IMG_HEIGHT_AR_16_9_720P_HDTV "
+			)
+			menuitem "4_3_2Mega_UXGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_2Mega_UXGA IMG_HEIGHT_AR_4_3_2Mega_UXGA  "
+			)
+			menuitem "4_3_3Mega_QXGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_3Mega_QXGA IMG_HEIGHT_AR_4_3_3Mega_QXGA  "
+			)
+			menuitem "4_3_5Mega "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_5Mega IMG_HEIGHT_AR_4_3_5Mega  "
+			)
+			menuitem "16_9_5Mega "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_16_9_5Mega IMG_HEIGHT_AR_16_9_5Mega  "
+			)
+			menuitem "4_3_8Mega "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_4_3_8Mega IMG_HEIGHT_AR_4_3_8Mega "
+			)
+			menuitem "16_9_8Mega "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite IMG_WIDTH_AR_16_9_8Mega IMG_HEIGHT_AR_16_9_8Mega "
+			)
+			menuitem "widthvpb1_1 x heightvpb1_1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb1_1.ite widthvpb1_1 heightvpb1_1  "
+			)
+		)
+		popup "Resolution VPB2" 
+		( 
+			menuitem "4_3_SUBQCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_4_3_SUBQCIF IMG_HEIGHT_AR_4_3_SUBQCIF  "
+			)
+			menuitem "11_9_QCIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_11_9_QCIF IMG_HEIGHT_AR_11_9_QCIF  "
+			)
+			menuitem "4_3_QVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_4_3_QVGA IMG_HEIGHT_AR_4_3_QVGA  "
+			)
+			menuitem "11_9_CIF "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_11_9_CIF IMG_HEIGHT_AR_11_9_CIF  "
+			)
+			menuitem "16_9_nHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_16_9_nHD IMG_HEIGHT_AR_16_9_nHD  "
+			)
+			menuitem "4_3_VGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_4_3_VGA IMG_HEIGHT_AR_4_3_VGA  "
+			)
+			menuitem "16_9_WVGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_16_9_WVGA IMG_HEIGHT_AR_16_9_WVGA  "
+			)
+			menuitem "16_9_QHD "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_16_9_QHD IMG_HEIGHT_AR_16_9_QHD  "
+			)
+			menuitem "4_3_XGA "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_4_3_XGA IMG_HEIGHT_AR_4_3_XGA  "
+			)
+			menuitem "16_9_720P_HDTV "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_16_9_720P_HDTV IMG_HEIGHT_AR_16_9_720P_HDTV "
+			)
+			menuitem "16_9_1080P_HDTV "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite IMG_WIDTH_AR_16_9_1080P_HDTV IMG_HEIGHT_AR_16_9_1080P_HDTV  "
+			)
+			menuitem "widthvpb2 x heightvpb2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_resolution_vpb2.ite widthvpb2 heightvpb2  "
+			)
+		)
+	)
+ 	separator
+	
+	 popup "   --- define alias : COLORFORMAT" 
+	 ( 
+		menuitem "omx_coloformat_all_cbycry.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_all_cbycry.ite  "
+		)
+		popup "Colorfotmat VPB0" 
+		( 
+			menuitem "omx_coloformat_vpb0_cbycry.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb0_cbycry.ite  "
+			)
+			menuitem "omx_coloformat_vpb0_rgb565.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb0_rgb565.ite  "
+			)
+			menuitem "omx_coloformat_vpb0_rgb888.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb0_rgb888.ite  "
+			)
+		)
+		popup "Colorfotmat VPB1_0" 
+		( 
+			menuitem "omx_coloformat_vpb1_0_cbycry.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_0_cbycry.ite  "
+			)
+			menuitem "omx_coloformat_vpb1_0_rgb565.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_0_rgb565.ite  "
+			)
+			menuitem "omx_coloformat_vpb1_0_rgb888.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_0_rgb888.ite  "
+			)
+		)
+		popup "Colorfotmat VPB1_1" 
+		( 
+			menuitem "omx_coloformat_vpb1_1_cbycry.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_1_cbycry.ite  "
+			)
+			menuitem "omx_coloformat_vpb1_1_yuv420packedplanar.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_1_yuv420packedplanar.ite  "
+			)
+			menuitem "omx_coloformat_vpb1_1_yuv420mb.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_1_yuv420mb.ite  "
+			)
+		)
+		popup "Colorfotmat VPB1" 
+		( 
+			menuitem "omx_coloformat_vpb1_raw8.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_raw8.ite  "
+			)
+			menuitem "omx_coloformat_vpb1_raw12.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb1_raw12.ite  "
+			)
+		)
+		popup "Colorfotmat VPB2" 
+		( 
+			menuitem "omx_coloformat_vpb2_cbycry.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb2_cbycry.ite  "
+			)
+			menuitem "omx_coloformat_vpb2_yuv420mb.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb2_yuv420mb.ite  "
+			)
+			menuitem "omx_coloformat_vpb2_yuv420packedplanar.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_vpb2_yuv420packedplanar.ite  "
+			)
+		)
+	)
+	separator
+	 popup "   --- apply setting : COLORFORMAT" 
+	 ( 
+		popup "Colorfotmat VPB0" 
+		( 
+			menuitem "omx_coloformat_apply_vpb0_cbycry.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_apply_vpb0_cbycry.ite  "
+			)
+			menuitem "omx_coloformat_apply_vpb0_rgb565.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_apply_vpb0_rgb565.ite  "
+			)
+			menuitem "omx_coloformat_apply_vpb0_rgb888.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_apply_vpb0_rgb888.ite  "
+			)
+		)
+		popup "Colorfotmat VPB2" 
+		( 
+			menuitem "omx_coloformat_apply_vpb2_cbycry.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_apply_vpb2_cbycry.ite  "
+			)
+			menuitem "omx_coloformat_apply_vpb2_yuv420mb.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_apply_vpb2_yuv420mb.ite  "
+			)
+			menuitem "omx_coloformat_apply_vpb2_yuv420packedplanar.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_coloformat_apply_vpb2_yuv420packedplanar.ite  "
+			)
+		)
+	)
+	separator
+	 popup "   --- define alias : FIFO SIZE" 
+	 ( 
+		popup "nBufferCountActual VPB0" 
+		( 
+			menuitem "VALUE = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb0.ite	1  "
+			)
+			menuitem "VALUE = 2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb0.ite	2  "
+			)
+			menuitem "VALUE = 3 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb0.ite	3  "
+			)
+			menuitem "VALUE = 4 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb0.ite	4  "
+			)
+			menuitem "VALUE = fifosizevpb0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb0.ite	fifosizevpb0  "
+			)
+		)
+		popup "nBufferCountActual VPB1" 
+		( 
+			menuitem "VALUE = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb1.ite	1  "
+			)
+			menuitem "VALUE = 2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb1.ite 2  "
+			)
+			menuitem "VALUE = 3 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb1.ite 3  "
+			)
+			menuitem "VALUE = 4 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb1.ite 4  "
+			)
+			menuitem "VALUE = fifosizevpb1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb1.ite fifosizevpb1  "
+			)
+		)
+		popup "nBufferCountActual VPB2" 
+		( 
+			menuitem "VALUE = 1 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb2.ite 1  "
+			)
+			menuitem "VALUE = 2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb2.ite 2  "
+			)
+			menuitem "VALUE = 3 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb2.ite 3  "
+			)
+			menuitem "VALUE = 4 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb2.ite 4  "
+			)
+			menuitem "VALUE = fifosizevpb2 "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_fifo_size_vpb2.ite fifosizevpb2  "
+			)
+		)
+	)
+	separator
+			
+	popup "CONFIG STEP 4 : nothing -> loaded -> state IDLE" 
+	( 
+		menuitem "omx_4_from_initialize_to_idle_for_still.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_4_from_initialize_to_idle_for_still.ite  "
+		)
+		menuitem "omx_4_from_initialize_to_idle_for_video.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_4_from_initialize_to_idle_for_video.ite  "
+		)
+		menuitem "cam_sensormode.ite OMX_ALL ONE_SHOT_VIDEO "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/features/cam_sensormode.ite OMX_ALL ONE_SHOT_VIDEO "
+		)
+		menuitem "cam_sensormode.ite OMX_ALL ONE_SHOT_STILL "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/features/cam_sensormode.ite OMX_ALL ONE_SHOT_STILL "
+		)
+	)
+ 	separator
+ 		
+	 popup "   --- setting : TEST MODE" 
+	 ( 
+		menuitem "omx_tm_colorbar.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_tm_colorbar.ite  "
+		)
+		menuitem "omx_tm_normal.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_tm_normal.ite  "
+		)
+		menuitem "omx_tm_solidbar_red.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_tm_solidbar_red.ite  "
+		)
+		menuitem "omx_tm_pn9.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_tm_pn9.ite  "
+		)
+	)
+	separator
+
+	 popup "   --- getting : PORT DEFINITION" 
+	 ( 
+		menuitem "cam_getparameter_portdefinition_vpb0.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/features/cam_getparameter_portdefinition_vpb0.ite  "
+		)
+		menuitem "cam_getparameter_portdefinition_vpb1.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/features/cam_getparameter_portdefinition_vpb1.ite  "
+		)
+		menuitem "cam_getparameter_portdefinition_vpb2.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/features/cam_getparameter_portdefinition_vpb2.ite  "
+		)
+	)
+	separator
+		
+	popup "CONFIG STEP 5 : -> state EXECUTING" 
+	( 
+		menuitem "omx_5_start_vf.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_5_start_vf.ite  "
+		)
+	)
+	separator
+
+	 popup "   --- setting : SAVE IMAGE" 
+	 ( 
+		popup "Synchro save image thanks to imgfilter" 
+		( 
+			menuitem "if_wait_event.ite OMX_EventPortSettingsChanged IFM_Index_ConfigCommonSaveImage"
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/if_wait_event.ite OMX_EventPortSettingsChanged IFM_Index_ConfigCommonSaveImage "				
+			)
+		)
+		popup "Set FileName for save image thanks to imgfilter" 
+		( 
+			menuitem "if_set_filename_for_save_image.ite my_new_file_name.bmp"
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/if_set_filename_for_save_image.ite my_new_file_name.bmp "				
+			)
+			menuitem "if_set_filename_for_save_image.ite itefilename (define previously this alias)"
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/if_set_filename_for_save_image.ite itefilename "				
+			)
+		)
+		popup "Save image in BMP thanks to imgfilter" 
+		( 
+			menuitem "omx_save_next_image_bmp_on_vpb0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_on_vpb0.ite  "
+			)
+			menuitem "omx_save_next_image_bmp_on_vpb1_0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_on_vpb1_0.ite  "
+			)
+			menuitem "omx_save_next_image_bmp_on_vpb1_1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_on_vpb1_1.ite  "
+			)
+			menuitem "omx_save_next_image_bmp_on_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_on_vpb2.ite  "
+			)
+		)
+		popup "Save image in RAW thanks to imgfilter" 
+		( 
+			menuitem "omx_save_next_image_raw_on_vpb0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_raw_on_vpb0.ite  "
+			)
+			menuitem "omx_save_next_image_raw_on_vpb1_0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_raw_on_vpb1_0.ite  "
+			)
+			menuitem "omx_save_next_image_raw_on_vpb1_1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_raw_on_vpb1_1.ite  "
+			)
+			menuitem "omx_save_next_image_raw_on_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_raw_on_vpb2.ite  "
+			)
+		)
+		popup "Save image in BMP and RAW thanks to imgfilter" 
+		( 
+			menuitem "omx_save_next_image_bmp_and_raw_on_vpb0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_and_raw_on_vpb0.ite  "
+			)
+			menuitem "omx_save_next_image_bmp_and_raw_on_vpb1_0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_and_raw_on_vpb1_0.ite  "
+			)
+			menuitem "omx_save_next_image_bmp_and_raw_on_vpb1_1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_and_raw_on_vpb1_1.ite  "
+			)
+			menuitem "omx_save_next_image_bmp_and_raw_on_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_bmp_and_raw_on_vpb2.ite  "
+			)
+		)
+		popup "Save image in RAW thanks to FakeSink" 
+		( 
+			menuitem "omx_save_next_image_thanks_fakesink_raw_on_vpb0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_raw_on_vpb0.ite  "
+			)
+			menuitem "omx_save_next_image_thanks_fakesink_raw_on_vpb1_0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_raw_on_vpb1_0.ite  "
+			)
+			menuitem "omx_save_next_image_thanks_fakesink_raw_on_vpb1_1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_raw_on_vpb1_1.ite  "
+			)
+			menuitem "omx_save_next_image_thanks_fakesink_raw_on_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_raw_on_vpb2.ite  "
+			)
+		)
+		popup "Save image in BMP thanks to FakeSink" 
+		( 
+			menuitem "omx_save_next_image_thanks_fakesink_bmp_on_vpb0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_bmp_on_vpb0.ite  "
+			)
+			menuitem "omx_save_next_image_thanks_fakesink_bmp_on_vpb1_0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_bmp_on_vpb1_0.ite  "
+			)
+			menuitem "omx_save_next_image_thanks_fakesink_bmp_on_vpb1_1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_bmp_on_vpb1_1.ite  "
+			)
+			menuitem "omx_save_next_image_thanks_fakesink_bmp_on_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_save_next_image_thanks_fakesink_bmp_on_vpb2.ite  "
+			)
+		)
+	)
+	separator
+	
+	 popup "   --- setting : TRACE BUFFERS ON INPUTPORTS IMGFILTER" 
+	 ( 
+		menuitem "omx_trace_all_ports.ite thanks to imgfilter "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_trace_all_ports.ite  "
+		)
+		menuitem "omx_trace_no_ports.ite thanks to imgfilter "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_trace_no_ports.ite  "
+		)
+		menuitem "omx_trace_vpb0.ite thanks to imgfilter "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_trace_vpb0.ite  "
+		)
+		menuitem "omx_trace_vpb1_0.ite thanks to imgfilter "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_trace_vpb1_0.ite  "
+		)
+		menuitem "omx_trace_vpb1_1.ite thanks to imgfilter "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_trace_vpb1_1.ite  "
+		)
+		menuitem "omx_trace_vpb2.ite thanks to imgfilter "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_trace_vpb2.ite  "
+		)
+	)
+ 	separator
+	
+	 popup "   --- setting : DISABLE/ENABLE PORTS FRAMEWORK" 
+	 ( 
+		popup "Disable Port" 
+		( 
+			menuitem "network_disable_all.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_disable_all.ite  "
+			)
+			menuitem "network_disable_all_consecutively.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_disable_all_consecutively.ite  "
+			)
+			menuitem "network_disable_vpb0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_disable_vpb0.ite  "
+			)
+			menuitem "network_disable_vpb1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_disable_vpb1.ite  "
+			)
+			menuitem "network_disable_vpb1_0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_disable_vpb1_0.ite  "
+			)
+			menuitem "network_disable_vpb1_1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_disable_vpb1_1.ite  "
+			)
+			menuitem "network_disable_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_disable_vpb2.ite  "
+			)
+		)
+		popup "Enable Port" 
+		( 
+			menuitem "network_enable_all.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_enable_all.ite  "
+			)
+			menuitem "network_enable_all_consecutively.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_enable_all_consecutively.ite  "
+			)
+			menuitem "network_enable_vpb0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_enable_vpb0.ite  "
+			)
+			menuitem "network_enable_vpb1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_enable_vpb1.ite  "
+			)
+			menuitem "network_enable_vpb1_0.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_enable_vpb1_0.ite  "
+			)
+			menuitem "network_enable_vpb1_1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_enable_vpb1_1.ite  "
+			)
+			menuitem "network_enable_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_enable_vpb2.ite  "
+			)
+		)
+	)
+  	separator
+	
+	 popup "   --- setting : FEATURES CAM" 
+	 ( 
+		 popup "BRIGHTNESS (all ports)" 
+		 ( 
+			menuitem "cam_brightness.ite VALUE = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_brightness.ite OMX_ALL 0  "
+			)
+			menuitem "cam_brightness.ite VALUE = 50 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_brightness.ite OMX_ALL 50  "
+			)
+			menuitem "cam_brightness.ite VALUE = 100 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_brightness.ite OMX_ALL 100  "
+			)
+			menuitem "cam_brightness.ite VALUE = brightnessvalue "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_brightness.ite OMX_ALL brightnessvalue  "
+			)
+		  )
+		 popup "CALLBACKS " 
+		 ( 
+		 	menuitem "MMTE_FlushReceivedEvent  "
+			(
+				do cmd "MMTE_FlushReceivedEvent  "
+			)
+  	        separator
+			menuitem "cam_exposure_lock.ite eImageLock=OMX_SYMBIAN_LockImmediate "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_lock.ite OMX_SYMBIAN_LockImmediate  "
+			)
+			menuitem "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigExposureLock  "
+			(
+				do cmd "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigExposureLock  "
+			)
+  	        separator
+			menuitem "cam_focus_control.ite OMX_IMAGE_FocusControlOn nFocusSteps=0 nFocusStepIndex=100 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_focus_control.ite OMX_IMAGE_FocusControlOn 0 100 "
+			)
+			menuitem "cam_wait_focus_status_indicates_lock.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wait_focus_status_indicates_lock.ite  "
+			)
+			menuitem "cam_focus_lock_synchronised.ite  "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_focus_lock_synchronised.ite  "
+			)
+			menuitem "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigFocusLock  "
+			(
+				do cmd "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigFocusLock  "
+			)
+  	        separator
+			menuitem "cam_wb_lock.ite eImageLock=OMX_SYMBIAN_LockImmediate "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_lock.ite OMX_SYMBIAN_LockImmediate  "
+			)
+			menuitem "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigWhiteBalanceLock  "
+			(
+				do cmd "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigWhiteBalanceLock  "
+			)
+  	        separator
+			menuitem "cam_ask_cb_all_algo_lock.ite nPortIndex=OMX_ALL bEnable=OMX_FALSE  "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_ask_cb_all_algo_lock.ite OMX_ALL OMX_FALSE  "
+			)
+			menuitem "cam_ask_cb_all_algo_lock.ite nPortIndex=OMX_ALL bEnable=OMX_TRUE  "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_ask_cb_all_algo_lock.ite OMX_ALL OMX_TRUE  "
+			)
+			menuitem "cam_all_algo_lock.ite eImageLock=OMX_SYMBIAN_LockImmediate "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_all_algo_lock.ite OMX_SYMBIAN_LockImmediate  "
+			)
+			menuitem "cam_wait_wall_algo_lock.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wait_all_algo_lock.ite  "
+			)
+			menuitem "cam_all_algo_lock_synchronised.ite  "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_all_algo_lock_synchronised.ite  "
+			)
+			menuitem "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigAllLock  "
+			(
+				do cmd "MMTE_DisableEvent camera OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigAllLock  "
+			)
+		  )
+		 popup "CONTRAST (all ports)" 
+		 ( 
+			menuitem "cam_contrast.ite VALUE = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_contrast.ite OMX_ALL 0  "
+			)
+			menuitem "cam_contrast.ite VALUE = 50 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_contrast.ite OMX_ALL 50  "
+			)
+			menuitem "cam_contrast.ite VALUE = 100 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_contrast.ite OMX_ALL 100  "
+			)
+			menuitem "cam_contrast.ite VALUE = contrastvalue "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_contrast.ite OMX_ALL contrastvalue  "
+			)
+		)
+		 popup "EXPOSURE" 
+		 ( 
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlAuto "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlAuto  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlOff "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlOff  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlNight "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlNight  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlBackLight "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlBackLight  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlSpotLight "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlSpotLight  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlSports "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlSports  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlSnow "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlSnow  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlBeach "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlBeach  "
+			)
+			menuitem "cam_exposure_preset.ite VALUE = OMX_ExposureControlFacePriorityMode "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_exposure_preset.ite OMX_ExposureControlFacePriorityMode  "
+			)
+		)
+		 popup "FLASH" 
+		 ( 
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlOn "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlOn   "
+			)
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlOff "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlOff  "
+			)
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlAuto "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlAuto  "
+			)
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlRedEyeReduction "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlRedEyeReduction  "
+			)
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlFillin "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlFillin  "
+			)
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlTorch "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlTorch  "
+			)
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlSlowFrontSync "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlSlowFrontSync  "
+			)
+			menuitem "cam_flash.ite VALUE = OMX_IMAGE_FlashControlSlowRearSync "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_flash.ite OMX_IMAGE_FlashControlSlowRearSync  "
+			)
+		)
+		 popup "FOCUS" 
+		 ( 
+			menuitem "cam_wait_focus_status_indicates_lock.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wait_focus_status_indicates_lock.ite  "
+			)
+			menuitem "cam_getconfig_focus_status.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_getconfig_focus_status.ite "
+			)
+			menuitem "omx_focus_continuous.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_continuous.ite  "
+			)
+			menuitem "omx_focus_manual_near.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_manual_near.ite  "
+			)
+			menuitem "omx_focus_manual_middle.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_manual_middle.ite  "
+			)
+			menuitem "omx_focus_manual_far.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_manual_far.ite  "
+			)
+			menuitem "omx_focus_single_shot.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_single_shot.ite  "
+			)
+			menuitem "omx_focus_single_shot_and_wait_focus_status_indicates_lock.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_single_shot_and_wait_focus_status_indicates_lock.ite  "
+			)
+			menuitem "omx_focus_assistant_light.ite ControlOff"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_assistant_light.ite OMX_SYMBIAN_ControlOff "
+			)
+			menuitem "omx_focus_assistant_light.ite ControlOn"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_assistant_light.ite OMX_SYMBIAN_ControlOn "
+			)
+			menuitem "omx_focus_assistant_light.ite ControlAuto"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_assistant_light.ite OMX_SYMBIAN_ControlAuto "
+			)
+			menuitem "omx_focus_range.ite FocusRangeAuto"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeAuto "
+			)
+			menuitem "omx_focus_range.ite FocusRangeHyperfocal"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeHyperfocal "
+			)
+			menuitem "omx_focus_range.ite FocusRangeSuperMacro"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeSuperMacro "
+			)
+			menuitem "omx_focus_range.ite FocusRangeMacro"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeMacro "
+			)
+			menuitem "omx_focus_range.ite FocusRangeInfinity"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeInfinity "
+			)
+			menuitem "omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionAuto"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionAuto "
+			)
+			menuitem "omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionManual"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionManual "
+			)
+			menuitem "omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionFacePriority"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionFacePriority "
+			)
+			menuitem "omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionObjectPriority"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionObjectPriority "
+			)
+		)
+		popup "IMAGEFILTER (all ports)" 
+		 ( 
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilter_None "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilter_None  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilter_Noise "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL ImageFilter_Noise  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilter_Emboss "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilter_Emboss  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilter_Negative "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilter_Negative  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_SYMBIAN_ImageFilterSepia "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_SYMBIAN_ImageFilterSepia  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_SYMBIAN_ImageFilterGrayScale "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_SYMBIAN_ImageFilterGrayScale  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilterSolarize "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilterSolarize  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilterSketch "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilterSketch  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilterOilPaint "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilterOilPaint  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilterHatch "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilterHatch  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = ImageFilter_Antialias "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL ImageFilter_Antialias  "
+			)
+			menuitem "cam_imagefilter_preset.ite VALUE = OMX_ImageFilterDeRing "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_imagefilter_preset.ite OMX_ALL OMX_ImageFilterDeRing  "
+			)
+		)
+		popup "MIRROR (all ports)" 
+		 ( 
+			menuitem "cam_mirror.ite VALUE = OMX_MirrorNone "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_mirror.ite OMX_ALL OMX_MirrorNone  "
+			)
+			menuitem "cam_mirror.ite VALUE = OMX_MirrorVertical "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_mirror.ite OMX_ALL OMX_MirrorVertical  "
+			)
+			menuitem "cam_mirror.ite VALUE = OMX_MirrorHorizontal "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_mirror.ite OMX_ALL OMX_MirrorHorizontal  "
+			)
+			menuitem "cam_mirror.ite VALUE = OMX_MirrorBoth "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_mirror.ite OMX_ALL OMX_MirrorBoth  "
+			)
+		)
+		popup "ROTATION (only for vpb2)" 
+		 ( 
+			menuitem "cam_rotation.ite VALUE = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_rotation.ite CAM_PORT_VPB2 0  "
+			)
+			menuitem "cam_rotation.ite VALUE = 90 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_rotation.ite CAM_PORT_VPB2 90  "
+			)
+			menuitem "cam_rotation.ite VALUE = 180 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_rotation.ite CAM_PORT_VPB2 180  "
+			)
+			menuitem "cam_rotation.ite VALUE = 270 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_rotation.ite CAM_PORT_VPB2 270  "
+			)
+			menuitem "cam_rotation.ite VALUE = -90 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_rotation.ite CAM_PORT_VPB2 -90  "
+			)
+			menuitem "cam_rotation.ite VALUE = -180 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_rotation.ite CAM_PORT_VPB2 -180  "
+			)
+			menuitem "cam_rotation.ite VALUE = -270 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_rotation.ite CAM_PORT_VPB2 -270  "
+			)
+			menuitem "omx_propagate_settings_vpb2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_propagate_settings_vpb2.ite  "
+			)
+		)
+		popup "SATURATION (all ports)" 
+		 ( 
+			menuitem "cam_saturation.ite VALUE = -100 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_saturation.ite OMX_ALL -100  "
+			)
+			menuitem "cam_saturation.ite VALUE = 0 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_saturation.ite OMX_ALL 0  "
+			)
+			menuitem "cam_saturation.ite VALUE = 100 "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_saturation.ite OMX_ALL 100  "
+			)
+			menuitem "cam_saturation.ite VALUE = saturationvalue "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_saturation.ite OMX_ALL saturationvalue  "
+			)
+		)
+		 popup "WHITE BALANCE" 
+		 ( 
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlAuto "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlAuto  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlOff "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlOff  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlSunLight "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlSunLight  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlCloudy "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlCloudy  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlShade "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlShade  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlTungsten "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlTungsten  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlFluorescent "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlFluorescent  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlIncandescent "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlIncandescent  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlHorizon "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlHorizon  "
+			)
+			menuitem "cam_wb_preset.ite VALUE = OMX_WhiteBalControlFlash "
+			(
+				do cmd "do $(IMG_SCRIPT)/unitary/features/cam_wb_preset.ite OMX_WhiteBalControlFlash  "
+			)
+		)
+		 popup "ZOOM" 
+		 ( 
+			menuitem "omx_zoom_x1.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_zoom_x1.ite  "
+			)
+			menuitem "omx_zoom_x2.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_zoom_x2.ite  "
+			)
+			menuitem "omx_zoom_x3.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_zoom_x3.ite  "
+			)
+			menuitem "omx_zoom_x4.ite "
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_zoom_x4.ite  "
+			)
+			menuitem "omx_zoom__zoomvalue.ite VALUE = zoomvalue"
+			(
+				do cmd "do $(IMG_SCRIPT)/interaction/omx_zoom__zoomvalue.ite  "
+			)
+		)
+	)
+ 	separator
+
+	 popup "   --- getting config CAM: " 
+	 ( 
+		menuitem "cam_getconfig_focus_status.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/features/cam_getconfig_focus_status.ite "
+		)
+	)
+ 	separator
+
+	 popup "   --- imaging COMMANDS : " 
+	 ( 
+		menuitem "ite_omx_getTime_Start"
+		(
+			do cmd "ite_omx_getTime_Start  "
+		)
+		menuitem "ite_omx_getTime_Stop"
+		(
+			do cmd "ite_omx_getTime_Stop  "
+		)
+		menuitem "omx_force_save_buffer.ite 0 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_force_save_buffer.ite 0 "
+		)
+		menuitem "omx_force_save_buffer.ite 1 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_force_save_buffer.ite 1 "
+		)
+		menuitem "omx_imgfilter_compute_framerate_vpb0.ite 10000 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_imgfilter_compute_framerate_vpb0.ite 10000 "
+		)
+		menuitem "omx_imgfilter_compute_framerate_vpb2.ite 10000 "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_imgfilter_compute_framerate_vpb2.ite 10000 "
+		)
+		menuitem "if_wait_event.ite OMX_EventPortSettingsChanged IFM_Index_Information_frame_arriving_vpb2 "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/features/if_wait_event.ite OMX_EventPortSettingsChanged IFM_Index_Information_frame_arriving_vpb2 "
+		)
+	 )
+	 separator
+
+	 popup "   --- ExtraData COMMANDS : " 
+	 ( 
+		popup "   my_sink_VPB0 CMD : " 
+		( 
+			menuitem "my_sink_VPB0 trace none "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB0 OMX_IndexParamActiveStream nU32=0  "
+			)
+			menuitem "my_sink_VPB0 trace ExtraData "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB0 OMX_IndexParamActiveStream nU32=1  "
+			)
+			menuitem "my_sink_VPB0 trace Exif "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB0 OMX_IndexParamActiveStream nU32=2  "
+			)
+		)
+		popup "   my_sink_VPB1_0 CMD : " 
+		( 
+			menuitem "my_sink_VPB1_0 trace none "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB1_0 OMX_IndexParamActiveStream nU32=0  "
+			)
+			menuitem "my_sink_VPB1_0 trace ExtraData "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB1_0 OMX_IndexParamActiveStream nU32=1  "
+			)
+			menuitem "my_sink_VPB1_0 trace Exif "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB1_0 OMX_IndexParamActiveStream nU32=2  "
+			)
+		)		
+		popup "   my_sink_VPB1_1 CMD : " 
+		( 
+			menuitem "my_sink_VPB1_1 trace none "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB1_1 OMX_IndexParamActiveStream nU32=0  "
+			)
+			menuitem "my_sink_VPB1_1 trace ExtraData "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB1_1 OMX_IndexParamActiveStream nU32=1  "
+			)
+			menuitem "my_sink_VPB1_1 trace Exif "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB1_1 OMX_IndexParamActiveStream nU32=2  "
+			)
+		)
+		popup "   my_sink_VPB2 CMD : " 
+		( 
+			menuitem "my_sink_VPB2 trace none "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB2 OMX_IndexParamActiveStream nU32=0  "
+			)
+			menuitem "my_sink_VPB2 trace ExtraData "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB2 OMX_IndexParamActiveStream nU32=1  "
+			)
+			menuitem "my_sink_VPB2 trace Exif "
+			(
+				do cmd "OMX_SetConfig my_sink_VPB2 OMX_IndexParamActiveStream nU32=2  "
+			)
+		)
+		popup "   my_own_sink CMD : (need to define alias my_own_sink)" 
+		( 
+			menuitem "my_own_sink trace none "
+			(
+				do cmd "OMX_SetConfig my_own_sink OMX_IndexParamActiveStream nU32=0  "
+			)
+			menuitem "my_own_sink trace ExtraData "
+			(
+				do cmd "OMX_SetConfig my_own_sink OMX_IndexParamActiveStream nU32=1  "
+			)
+			menuitem "my_own_sink trace Exif "
+			(
+				do cmd "OMX_SetConfig my_own_sink OMX_IndexParamActiveStream nU32=2  "
+			)
+		)
+	)
+	separator
+
+	 popup "   --- mmte COMMANDS : " 
+	 ( 
+		menuitem "MMTE_DisableEvent camera OMX_EventBufferFlag  "
+		(
+			do cmd "MMTE_DisableEvent camera OMX_EventBufferFlag   "
+		)
+		menuitem "MMTE_DisableEvent camera OMX_EventIndexSettingChanged  "
+		(
+			do cmd "MMTE_DisableEvent camera OMX_EventIndexSettingChanged   "
+		)
+		menuitem "MMTE_FlushReceivedEvent "
+		(
+			do cmd "MMTE_FlushReceivedEvent   "
+		)
+		menuitem "MMTE_OMX_SetTraceLevel 1"
+		(
+			do cmd "MMTE_OMX_SetTraceLevel 1  "
+		)
+		menuitem "MMTE_OMX_SetTraceLevel 0"
+		(
+			do cmd "MMTE_OMX_SetTraceLevel 0  "
+		)
+		menuitem "MMTE_SetTraceLevel 1"
+		(
+			do cmd "MMTE_SetTraceLevel 1  "
+		)
+		menuitem "MMTE_SetTraceLevel 0"
+		(
+			do cmd "MMTE_SetTraceLevel 0  "
+		)
+		menuitem "MMTE_CLI_SetTraceLevel 1"
+		(
+			do cmd "MMTE_CLI_SetTraceLevel 1  "
+		)
+		menuitem "MMTE_CLI_SetTraceLevel 0"
+		(
+			do cmd "MMTE_CLI_SetTraceLevel 0  "
+		)
+		menuitem "MMTE_SetVerb_on_off 2"
+		(
+			do cmd "MMTE_SetVerb_on_off 2  "
+		)
+		menuitem "MMTE_SetVerb_on_off 1"
+		(
+			do cmd "MMTE_SetVerb_on_off 1  "
+		)
+		menuitem "MMTE_SetVerb_on_off 0"
+		(
+			do cmd "MMTE_SetVerb_on_off 0  "
+		)
+	)
+	separator
+		
+	popup "CONFIG STEP 6 : stream control in EXECUTING" 
+	( 
+		menuitem "omx_6a_start_still.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6a_start_still.ite  "
+		)
+		menuitem "omx_6b_start_limited_burst.ite 3"
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6b_start_limited_burst.ite 3 "
+		)
+		menuitem "omx_6b_start_limited_burst.ite 5"
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6b_start_limited_burst.ite 5 "
+		)
+		menuitem "omx_6b_start_limited_burst.ite nb_burst"
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6b_start_limited_burst.ite nb_burst "
+		)
+		menuitem "omx_6c_start_infinite_burst.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6c_start_infinite_burst.ite  "
+		)
+		menuitem "MMTE_DisableEvent camera OMX_EventBufferFlag  "
+		(
+			do cmd "MMTE_DisableEvent camera OMX_EventBufferFlag   "
+		)
+		menuitem "MMTE_FlushReceivedEvent "
+		(
+			do cmd "MMTE_FlushReceivedEvent   "
+		)
+		menuitem "omx_6c_stop_infinite_burst.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6c_stop_infinite_burst.ite  "
+		)
+		menuitem "omx_6d_start_video.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6d_start_video.ite  "
+		)
+		menuitem "omx_6d_stop_video.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6d_stop_video.ite  "
+		)
+		menuitem "omx_6d_stop_video_no_wait_eos_vpb2.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6d_stop_video_no_wait_eos_vpb2.ite  "
+		)
+		menuitem "omx_6e_pause.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6e_pause.ite  "
+		)
+		menuitem "omx_6e_unpause.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6e_unpause.ite  "
+		)
+		menuitem "omx_6f_start_still_autopause.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6f_start_still_autopause.ite  "
+		)
+		menuitem "omx_6g_after_autopause_cam_executing.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_6g_after_autopause_cam_executing.ite  "
+		)
+	)
+	separator
+	
+	popup "CONFIG STEP 7 : executing -> state IDLE" 
+	( 
+		menuitem "omx_7_stop_vf.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_7_stop_vf.ite  "
+		)
+	)
+	separator
+	
+	popup "CONFIG STEP 8 : idle -> state LOADED" 
+	( 
+		menuitem "omx_8_from_idle_to_loaded.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_8_from_idle_to_loaded.ite  "
+		)
+	)
+	separator
+
+	popup "CONFIG STEP 8 bis: ELEMENTARY ACTIONS" 
+	( 
+		menuitem "network_free_handles.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_free_handles.ite "
+		)
+		menuitem "network_get_handles.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_get_handles.ite "
+		)
+		menuitem "img_init_param.ite STILL"
+		(
+			do cmd "do $(IMG_SCRIPT)/img_init_param.ite ONE_SHOT_STILL DEFAULT_FRAMERATE_VPB0 DEFAULT_FRAMERATE_VPB1 DEFAULT_FRAMERATE_VPB2 "
+		)
+		menuitem "img_init_param.ite VIDEO"
+		(
+			do cmd "do $(IMG_SCRIPT)/img_init_param.ite ONE_SHOT_VIDEO DEFAULT_FRAMERATE_VPB0 DEFAULT_FRAMERATE_VPB1 DEFAULT_FRAMERATE_VPB2 "
+		)
+		menuitem "network_parameters_configure.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_parameters_configure.ite P_VPB0_WIDTH P_VPB0_HEIGHT P_VPB0_COLOR_FORMAT P_VPB1_0_WIDTH P_VPB1_0_HEIGHT P_VPB1_0_COLOR_FORMAT P_VPB1_1_WIDTH P_VPB1_1_HEIGHT P_VPB1_1_COLOR_FORMAT P_VPB2_WIDTH P_VPB2_HEIGHT P_VPB2_COLOR_FORMAT P_ONE_SHOT P_FRAMERATE_VPB0 P_FRAMERATE_VPB1 P_FRAMERATE_VPB2 "
+		)
+		menuitem "network_setup_tunnel.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_setup_tunnel.ite "
+		)
+		menuitem "network_loaded_to_idle.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/unitary/statemachine/network_loaded_to_idle.ite "
+		)
+	)
+	separator
+	
+	popup "CONFIG STEP 9 : -> FREE MEMORY" 
+	( 
+		menuitem "omx_9_from_loaded_to_network_destroy.ite "
+		(
+			do cmd "do $(IMG_SCRIPT)/interaction/omx_9_from_loaded_to_network_destroy.ite  "
+		)
+	)
+	separator
+	separator
+	
+	 popup "DARK BOX" 
+	 ( 
+		menuitem "omx_darky_box_init.ite "
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_init.ite  "
+		)
+		menuitem "dbox_env_default_settings.ite "
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/unitary/darkbox/dbox_env_default_settings.ite  "
+		)
+		popup "Lux" 
+		( 
+			menuitem "omx_darky_box_lux_null.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_lux_null.ite  "
+			)
+			menuitem "omx_darky_box_lux_medium.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_lux_medium.ite  "
+			)
+			menuitem "omx_darky_box_lux_high.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_lux_high.ite  "
+			)
+		)
+		popup "Color" 
+		( 
+			menuitem "omx_darky_box_color_blue"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_color_blue.ite  "
+			)
+			menuitem "omx_darky_box_color_green.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_color_green.ite  "
+			)
+			menuitem "omx_darky_box_color_red.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_color_red.ite  "
+			)
+			menuitem "omx_darky_box_color_none.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_color_none.ite  "
+			)
+		)
+		popup "Chart" 
+		( 
+			menuitem "omx_darky_box_chart_0.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_chart_0.ite  "
+			)
+			menuitem "omx_darky_box_chart_1.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_chart_1.ite  "
+			)
+			menuitem "omx_darky_box_chart_2.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_chart_2.ite  "
+			)
+			menuitem "omx_darky_box_chart_3.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_chart_3.ite  "
+			)
+			menuitem "omx_darky_box_chart_4.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_chart_4.ite  "
+			)
+			menuitem "omx_darky_box_chart_5.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_chart_5.ite  "
+			)
+		)
+		popup "Shuttle" 
+		( 
+			menuitem "omx_darky_box_shuttle_near.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_shuttle_near.ite "
+			)
+			menuitem "omx_darky_box_shuttle_far.ite"
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_shuttle_far.ite  "
+			)
+		)
+		menuitem "omx_darky_box_reset.ite"
+		(
+			do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/imaging_scripts/interaction/omx_darky_box_reset.ite  "
+		)
+	)	
+	separator
+ )
+ 
+  popup "&OMX_UNITARY_Tests" 
+  ( 
+		popup "imgfilter" 
+		( 
+			menuitem "ut_save_bmp.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_save_bmp.mmte  "
+			)
+			menuitem "ut_change_parameters_in_idle_state.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_change_parameters_in_idle_state.mmte  "
+			)
+			menuitem "ut_debug.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_debug.mmte  "
+			)
+			menuitem "ut_enable_disable_port.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_enable_disable_port.mmte  "
+			)
+			menuitem "ut_enable_disable_port_0.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_enable_disable_port_0.mmte  "
+			)
+			menuitem "ut_enable_disable_port_0_then_all.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_enable_disable_port_0_then_all.mmte  "
+			)
+			menuitem "ut_enable_disable_port_all.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_enable_disable_port_all.mmte  "
+			)
+			menuitem "ut_extradata.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_extradata.mmte  "
+			)
+			menuitem "ut_flush.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_flush.mmte  "
+			)
+			menuitem "ut_propagate_settings.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_propagate_settings.mmte  "
+			)
+			menuitem "ut_standalone.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_standalone.mmte  "
+			)
+			menuitem "ut_state_machine.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/ite_omx_use_cases/mmte_script/ut_state_machine.mmte  "
+			)
+		)
+		separator
+		popup "hsmcamera" 
+		( 
+			menuitem "ut_debug.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/hsmcamera/mmte_script/ut_debug.mmte  "
+			)
+			menuitem "ut_state_machine.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/hsmcamera/mmte_script/ut_state_machine.mmte  "
+			)
+		)
+		separator
+		popup "fakesource" 
+		( 
+			menuitem "ut_capturemode.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_capturemode.mmte  "
+			)
+			menuitem "ut_debug.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_debug.mmte  "
+			)
+			menuitem "ut_nbuffercount.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_nbuffercount.mmte  "
+			)
+			menuitem "ut_enable_disable_port.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_enable_disable_port.mmte  "
+			)
+			menuitem "ut_extradata.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_extradata.mmte  "
+			)
+			menuitem "ut_fakesource_display.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_fakesource_display.mmte  "
+			)
+			menuitem "ut_flush.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_flush.mmte  "
+			)
+			menuitem "ut_mono_block_script.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_mono_block_script.mmte  "
+			)
+			menuitem "ut_frame_by_frame.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_frame_by_frame.mmte  "
+			)
+			menuitem "ut_non_tunneled.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_non_tunneled.mmte  "
+			)
+			menuitem "ut_state_machine.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesource/mmte_script/ut_state_machine.mmte  "
+			)
+		)
+		separator
+		popup "fakesink" 
+		( 
+			menuitem "ut_debug.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_debug.mmte  "
+			)
+			menuitem "ut_save_bmp.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_save_bmp.mmte  "
+			)
+			menuitem "ut_enable_disable_port.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_enable_disable_port.mmte  "
+			)
+			menuitem "ut_extradata.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_extradata.mmte  "
+			)
+			menuitem "ut_propagate_settings.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_propagate_settings.mmte  "
+			)
+			menuitem "ut_save_continunous_discontinuous.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_save_continunous_discontinuous.mmte  "
+			)
+			menuitem "ut_simple_streaming.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_simple_streaming.mmte  "
+			)
+			menuitem "ut_imaging.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/fakesink/mmte_script/ut_imaging.mmte  "
+			)
+		)
+		separator
+		popup "splitter" 
+		( 
+			menuitem "ut_debug.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/ut_debug.mmte  "
+			)
+			menuitem "ut_camera_splitter_fakesink.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/ut_camera_splitter_fakesink.mmte  "
+			)
+			menuitem "ut_camera_splitter_fakesink_with_dispatchstate.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/ut_camera_splitter_fakesink_with_dispatchstate.mmte  "
+			)
+			menuitem "ut_fakesource_splitter_fakesink.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/ut_fakesource_splitter_fakesink.mmte  "
+			)
+			menuitem "ut_fakesource_splitter_fakesink_with_dispatchstate.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/ut_fakesource_splitter_fakesink_with_dispatchstate.mmte  "
+			)
+			menuitem "ut_state_machine.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/ut_state_machine.mmte  "
+			)
+			menuitem "splitter_input_attach_io_output_fakesinks.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/splitter_input_attach_io_output_fakesinks.mmte  "
+			)
+			menuitem "splitter_unit_test_full_attach_io.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/splitter_unit_test_full_attach_io.mmte  "
+			)
+			menuitem "splitter_with_camera_and_display.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/splitter/mmte_script/splitter_with_camera_and_display.mmte  "
+			)
+		)
+		
+		separator
+		popup "armivproc" 
+		( 
+			menuitem "siaalgo_init.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/siaalgo/armivproc/siaalgo_init.mmte  "
+			)
+			menuitem "change_resolution.mmte "
+			(
+				do cmd "do $(IMAGING_PATH)/siaalgo/armivproc/change_resolution.mmte  "
+			)
+		)
+	) 
+)

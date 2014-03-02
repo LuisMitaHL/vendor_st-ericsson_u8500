@@ -1,0 +1,111 @@
+test_start mix_0024
+test_property        TEST_NAME mixer_add2ndinput_in_executing_state.ate 
+# This script creates the following audio network:
+# (2) mixer
+#
+# Script's arguments:
+#   1: script name for mixer
+#   2: script name for input 1 PCM (contains specific configuration for a given stream)
+#   3: script name for input 2 PCM (contains specific configuration for a given stream)
+#   4: script name for output PCM (contains specific configuration for a given stream)
+#   5: script name for commands sent while playing
+
+alias TIMEOUT 0
+
+enable_mem_trace
+
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=2 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=2 nChannels=1 nSamplingRate=22050 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+ate_attach_io       mixer 2 MEM $(AUDIO_STREAMS)/mixer/streams/danse_of_furie.pcm 0 0 0
+MMTE_set_nb_buffer  mixer 2 10
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/mixer_add2ndinputs_48k_mono_mix_0024.out
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/mixer/streams/mixer_add2ndinputs_48k_mono.ref.out
+
+# Disable output port so as to control when mixing starts
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+# Go to Idle
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+# Go to Executing (only port 2 is enabled)
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+OMX_SendCommand mixer OMX_CommandPortEnable 0
+MMTE_AllocateAndUseBuffers mixer 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+# wait until buffers on port 2 have been processed and then enable input port 1
+MMTE_wait_transfer mixer 2
+
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateAndUseBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+ate_attach_io mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/casta_8m.pcm 0 0 0
+
+MMTE_resume_transfer mixer 2
+
+#Wait EOS
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 2 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_FreeBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+unalias TIMEOUT
+ens_network_destroy
+
+disable_mem_trace
+
+test_end

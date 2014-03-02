@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+<fileset id="always-delivered">
+<include name="component/**" />
+<include name="Make.nmf" />
+<include name="Makefile" />
+<include name="make.ost_conf" />
+
+</fileset>
+<package name="arm-proxy-bin">
+<fileset idref="always-delivered" />
+<fileset>
+<include name="proxy/*.h" />
+<include name="proxy/lib/cortexA9-x-android-x/*.a" />
+<include name="bellagio/lib/cortexA9-android-android-**/*.so" />
+<include name="./*.nmf" />
+<include name="./Makefile" />
+<include name="bellagio/Makefile" />
+<include name="proxy/Makefile" />
+</fileset>
+</package>
+<package name="arm-proxy-src">
+<fileset idref="always-delivered" />
+<fileset>
+<include name="proxy/*.h" />
+<include name="proxy/*.cpp" />
+<include name="bellagio/*.cpp" />
+<include name="./*.nmf" />
+<include name="./Makefile" />
+<include name="bellagio/Makefile" />
+<include name="proxy/Makefile" />
+</fileset>
+</package>
+<package name="mmdsp-nmf-src">
+<fileset idref="always-delivered" />
+<fileset>
+<include name="nmfil/effect/*.idt" />
+<include name="nmfil/effect/*.itf" />
+<include name="nmfil/effect/src/*.c" />
+<include name="nmfil/effect/*.conf" />
+<include name="nmfil/Makefile" />
+</fileset>
+</package>
+<package name="mmdsp-nmf-bin">
+<fileset idref="always-delivered" />
+<fileset>
+<include name="nmf_repository/mmdsp_*/**" />
+<include name="nmfil/effect/*.idt" />
+<include name="nmfil/effect/*.itf" />
+<include name="nmfil/effect/*.conf" />
+<include name="nmfil/effect/*.conf" />
+<include name="nmfil/Makefile" />
+</fileset>
+</package>
+</packages>

@@ -1,0 +1,199 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \brief   Contains the source for the development of vpp video component
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vpp.idt>
+
+interface vpp.mpc.api.algo { 
+
+
+/* This file specifies methods included inside provided interface named iAlgo
+          i.e. :          - configureAlgoFormatConv
+						  - configureAlgoDeblock
+                          - controlAlgo
+                          - setDebug
+*/
+
+/** @addtogroup vppConfigureAlgoGroup configureAlgoFormatConv
+ *  @ingroup vppProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+ \param[in]  format_conv_type		     "Format Conversion Type".
+ \param[in]  addr_src_frame_buffer       "Input frame buffer" address (Alignment : Multiple of 256).
+ \param[in]  addr_dst_frame_buffer       "Output frame buffer" address (Alignment : Multiple of 256).
+ \param[in]  offset_x			         "Horizontal Offset" (Multiple of 16).
+ \param[in]  offset_y			         "Vertical Offset" (Multiple of 16).
+ \param[in]  in_width				     "Src Frame Width" (Multiple of 16).
+ \param[in]  in_height				     "Src Frame Height" (Multiple of 16).
+ \param[in]  out_width				     "Dst Frame Width" (Multiple of 16).
+ \param[in]  out_height				     "Dst Frame Height" (Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vppConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+
+ * \msc
+    vpp_data_dep,vpp_algo;
+    vpp_data_dep=>vpp_algo [label="configureAlgoFormatConv()"];
+    vpp_data_dep<<vpp_algo;    
+  \endmsc
+  \n
+ *
+ */ 
+
+void configureAlgoFormatConv(vpp.mpc.api.end_algo *cb,
+					t_uint32 format_conv_type,	
+					t_uint32 addr_src_frame_buffer,
+					t_uint32 addr_dst_frame_buffer,
+					t_uint16 offset_x,
+					t_uint16 offset_y,
+					t_uint16 in_width,
+					t_uint16 in_height,
+					t_uint16 out_width,
+					t_uint16 out_height);
+
+ /** @} */ // end of vppConfigureAlgoGroup
+ 
+
+ /** @addtogroup vppConfigureAlgoGroup configureAlgoFormatConv
+ *  @ingroup vppProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+ \param[in]  vpp_task_type				"Task Type".
+ \param[in]  addr_src_frame_buffer		"Input frame buffer" address (Alignment : Multiple of 256).
+ \param[in]  addr_dst_frame_buffer		"Output frame buffer" address (Alignment : Multiple of 256).
+ \param[in]  addr_deblock_param_buffer  "Deblocking parameter buffer" address (Alignment : Multiple of 8).
+ \param[in]  width						"Frame Width" (Multiple of 16).
+ \param[in]  height						"Frame Height" (Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vppConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+
+ * \msc
+    vpp_data_dep,vpp_algo;
+    vpp_data_dep=>vpp_algo [label="configureAlgoDeblock()"];
+    vpp_data_dep<<vpp_algo;    
+  \endmsc
+  \n
+ *
+ */ 
+
+void configureAlgoDeblock(vpp.mpc.api.end_algo *cb,
+					t_uint32 vpp_task_type,	
+					t_uint32 addr_src_frame_buffer,
+					t_uint32 addr_dst_frame_buffer,
+					t_uint32 addr_deblock_param_buffer,
+					t_uint16 width,
+					t_uint16 height);
+
+ /** @} */ // end of vppConfigureAlgoGroup
+
+ /** @addtogroup vppControlAlgoGroup configureAlgoDeblock
+ *  @ingroup vppProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  channelNumber  The channel (i.e. instance number) the algo is linked to
+ \param[in]  param    (Not yet implemented) The parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vppConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Normal sequence of a encode
+ *   
+ * \msc
+    vpp_data_dep,vpp_algo,resource_manager;
+    vpp_data_dep=>vpp_algo [label="controlAlgo(CMD_START, 0x00)"];
+    vpp_data_dep<<vpp_algo;
+    vpp_algo=>resource_manager [label="...."];
+    vpp_algo<<resource_manager;
+    vpp_data_dep<<=vpp_algo [label="endAlgo(STATUS_JOB_COMPLETE, VPP_ERT_NONE)"];
+  \endmsc
+  \n
+ * Abnormal sequence of a encode (incorrect configuration parameter)
+ *  
+ * \msc
+    vpp_data_dep,vpp_algo;
+    vpp_data_dep=>vpp_algo [label="controlAlgo(CMD_START, 0x00)"];
+    vpp_data_dep<=vpp_algo [label="endAlgo(STATUS_JOB_ABORTED, [error code])"];
+  \endmsc
+ *\n 
+ * @} */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 channelNumber, t_uint16 param);
+
+ /** @} */ // end of vppControlAlgoGroup
+ 
+
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vppConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Example of normal usage of debug mode. In this particular case, the "vpp" NMF Algo component will copy 
+ * the content of the input image buffer into the ouput image buffer (see \ref vppConfigureAlgoGroup for details).
+ * As soon as the copy will be finished, the interface signaling the end of algo will be called.
+ * 
+ * 
+ * \msc
+    vpp_data_dep,vpp_algo;
+    vpp_data_dep=>vpp_algo [label="setDebug(DBG_MODE_PATTERN, 0x00, 0x00)"];
+    vpp_data_dep<<vpp_algo;
+    vpp_data_dep=>vpp_algo [label="configureAlgo(...)"];
+    vpp_data_dep<<vpp_algo;
+    vpp_data_dep=>vpp_algo [label="controlAlgo(CMD_START, 0x00)"];
+    vpp_data_dep<=vpp_algo [label="endAlgo(STATUS_JOB_COMPLETE, VPP_ERT_NONE"];
+    vpp_data_dep,vpp_algo;
+    vpp_data_dep=>vpp_algo [label="setDebug(DBG_MODE_NORMAL, 0x00, 0x00)"];
+  \endmsc
+  \n
+ * Another exemple of normal usage of debug mode. In this case, the NMF algo component will only
+ * acknowledge the CMD_START command by calling the endAlgo interface.
+ *  
+ * \msc
+    vpp_data_dep,vpp_algo;
+    vpp_data_dep=>vpp_algo [label="setDebug(DBG_MODE_NO_HW, 0x00, 0x00)"];
+    vpp_data_dep<=vpp_algo [label="endAlgo(STATUS_JOB_COMPLETE, VPP_ERT_NONE"];
+  \endmsc
+  \n
+ * @} */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint32 param1, t_uint32 param2);
+
+ /** @} */ // end of vppSetDebugAlgoGroup 
+
+} // interface vpp.mpc.api.algo
+

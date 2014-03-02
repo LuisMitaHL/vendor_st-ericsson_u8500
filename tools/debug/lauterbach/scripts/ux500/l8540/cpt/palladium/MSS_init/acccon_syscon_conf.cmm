@@ -1,0 +1,65 @@
+&mpre="a"
+
+; ACCCON_RESET_CTRL
+d.s &mpre:0xBFFF21A8 %L 0x0
+
+; ACCCON_WR_DSP_PLL_LOCK_COUNT
+d.s &mpre:0xBFFF21B8 %L 0xFF
+
+; ACCCON_DSP_WAKEUP_EN
+d.s &mpre:0xBFFF2108 %L 0x1
+
+; ACCCON_LOWEST_MODE_ACC_CPU_A/B
+d.s &mpre:0xBFFF2114 %L 0x3
+d.s &mpre:0xBFFF2118 %L 0x3
+
+; ACCCON_LOWEST_MODE_DSP
+d.s &mpre:0xBFFF211C %L 0x3
+
+
+; ACCCON_CPU_A/B_WAKEUP_EN
+d.s &mpre:0xBFFF2100 %L 0x1
+d.s &mpre:0xBFFF2104 %L 0x1
+
+; ACCCON_DDR_ACK_CTRL_ENABLE
+d.s &mpre:0xBFFF2194 %L 0x1
+d.s &mpre:0xBFFF2198 %L 0x1
+
+
+
+; SYSCON_CLK_CTRL
+d.s &mpre:0xBFFDA004 %L 0xFFFFFFFF
+
+; SYSCON_CLK_EN
+d.s &mpre:0xBFFDA008 %L 0xFFFFFFFF
+
+; SYSCON_RESET
+d.s &mpre:0xBFFDA0BC %L 0x8
+
+//; MOD_PWR_EVP_ACK,
+//d.s &mpre:0x8006883C %L 0xFFFFFFFF
+
+; PRCM_MOD_DDR_REQ, set mod_mem_req_en
+d.s &mpre:0x800688C4 %L 0x01
+
+; PRCM_MOD_DDR_ACK, set ddr_ack
+d.s &mpre:0x800688C8 %L 0x01
+
+
+print "ACCCON & SYSCON Configuration Done"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

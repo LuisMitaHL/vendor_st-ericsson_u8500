@@ -1,0 +1,52 @@
+#!/bin/sh
+
+isDisconnected="CONFIGURED";
+while [ "$isDisconnected" == "CONFIGURED" ]
+do
+  isDisconnected=`cat /sys/class/android_usb/android0/state`; 
+# echo "1"$isDisconnected
+ # cat /sys/class/android_usb/android0/state > isDisconnected
+#echo "2"$isDisconnected
+#cat /sys/class/android_usb/android0/state > $isDisconnected
+#echo "3"$isDisconnected
+#cat /sys/class/android_usb/android0/state >> $isDisconnected
+#echo "3"$isDisconnected
+#isDisconnected=$(cat /sys/class/android_usb/android0/state); 
+#echo "3"$isDisconnected
+# cat /sys/class/android_usb/android0/state
+  sleep 1
+done
+
+#echo "really disconnecte d!" $isDisconnected
+echo 0 > /sys/devices/system/cpu/cpu1/online
+echo "cpu 1 off"
+
+#count=$1
+
+#while [ "$count" != "0" ]
+#  do
+#    sleep 1
+   # isListening=`netstat -atp 2>/dev/null | grep mid`
+ #   count=`expr $count - 1`
+#done
+
+while [ "$isDisconnected" == "DISCONNECTED" ]
+do
+ isDisconnected=`cat /sys/class/android_usb/android0/state`; 
+# echo "1"$isDisconnected
+ # cat /sys/class/android_usb/android0/state > isDisconnected
+#echo "2"$isDisconnected
+#cat /sys/class/android_usb/android0/state > $isDisconnected
+#echo "3"$isDisconnected
+#cat /sys/class/android_usb/android0/state >> $isDisconnected
+#echo "3"$isDisconnected
+#isDisconnected=$(cat /sys/class/android_usb/android0/state); 
+#echo "3"$isDisconnected
+# cat /sys/class/android_usb/android0/state
+echo ""
+  sleep 1
+done
+echo 1 > /sys/devices/system/cpu/cpu1/online;
+echo "cpu 1 on"
+exit
+

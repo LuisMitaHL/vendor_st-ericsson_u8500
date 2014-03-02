@@ -1,0 +1,35 @@
+#
+# TatlIqtuning configuration
+#
+
+menuconfig TATLIQTUNING
+	bool "TatlIqtuning"
+	depends on DTHSRVHELPER && IQTSERVICES && TATTOOLS && LIBPNG
+	help
+	  depends on DTHSRVHELPER, IQTSERVICES, TATTOOLS and LIBPNG
+
+if TATLIQTUNING
+
+config TATLIQTUNING_DIR
+	string
+	default ../tat/tat/tatliqtuning
+
+config TATLIQTUNING_DEPS
+	string
+	default "DTHSRVHELPER IQTSERVICES TATTOOLS LIBPNG"
+
+config TATLIQTUNING_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLIQTUNING
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLIQTUNING_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLIQTUNING
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLIQTUNING

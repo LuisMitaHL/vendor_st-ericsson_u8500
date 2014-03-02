@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<toc xmlns="http://www.stericsson.com/refman/API_StdToc.xsd" label="API">
+  <topic label="Multimedia">
+    <topic label="User space">
+    <!-- Proprietary user-space modules will have the following elements
+         instead of the standardapi element.
+
+      <topic label="b2r2">
+        <topic label="1" href="bar.html"/>
+        <topic label="2" href="foo.html"/>
+        <topic label="3" href="mySection.html"/>
+      </topic>
+      -->
+
+      <standardapi title="Open GL ES"
+        modulename="opengl"
+        modulepath="opengl"
+        documentation="ste-meta-data/opengl-index.xml">
+      <!--
+
+The value of the title attribute must match the name of the module
+in the UML module. It will be used in the table of contents.
+
+The value of the modulepath attribute may be relative path
+such as opengl (for the android/frameworks/base git),
+or shared/omxil, (for the multimedia git) where the path is
+relative to the root of the git.
+The value can be omitted if the files are located in the root
+of the git (such as the android/external/alsa/alsa-lib git)
+
+The value of the modulename attribute shall be a name
+which is unique within the product. Normally, it equals
+the last part of the modulepath. It is used to avoid
+namespace collision for files in different modules.
+
+The value of the documentation attribute may contain a relative path
+such as ste-meta-data/opengl-index.xml or
+shared/omxil/documentation/omx.xml,
+where the path is relative to the root of the git. The name need
+not to be postfixed with -index, but if the documentation is
+located in the ste-meta-data directory, it can be beneficial
+to ensure the name matches that of the toc-location.xml file
+for the module, by using the -index postfix.
+
+The file indicated by the documentation attribute is a DocBook file,
+containing the all the information specified in the
+guidlines for standardized interfaces.
+It is converted to a set of HTML files.
+
+Examples:
+
+case:
+git contains several modules in root,
+but we don't want to contribute the xml documentation back
+git: android/frameworks/base
+modulename: opengl
+moduelpath: opengl
+documentation:ste-meta-data/opengl-index.xml
+
+case:
+git contains one module with the files
+directly in the root,
+and we don't want to contribute xml documentation back
+git: android/external/alsa/alsa-lib
+modulename: alsa-lib
+modulepath: <empty or ommitted>
+documentation: ste-meta-data/alsa-lib-index.xml
+
+case:
+git contains several module organized in directories
+directly in the root,
+and we don't want to contribute xml documentation back
+git: multimedia
+modulename: omxil
+modulepath: shared/omxil
+documentation: ste-meta-data/omxil-index.xml              (1)
+  or           shared/omxil-documentation/index.xml       (2)
+  also possible, but not recommended:
+               shared/omxil/ste-meta-data/omxil-index.xml (3)
+    or         shared/omxil/omxil-index.xml               (4)
+  (1) is recommended since it keeps all ste-specific data together,
+  but for large gits, (2) might be more feasible, keeping the documentation
+  closer to the implementation. Both solutions keeps documentation away
+  from the actual sources, simplifying merges from the community, however
+  (1) makes it very easy to ensure customers don't receive cluttered
+  directories, since all meta-data is kept in one location.
+  (3) keeps the documentation within the sources, as if the module would
+  have been a git, but mixes ste-proprietary stuff with things to contribute
+  (4) same as for (3), but since the xml file is located in the root of the
+  module, all the relative references within the xml file uses the same root
+  as references in the toc-locations file, thus minimizing the risk for
+  broken links.
+
+      -->
+
+      <!--
+The line below
+copies entire content recursively of android/opengl/includedir/ to
+eclipseplugin/html/opengl/includes/
+the opengl-index.xml must contain at least one link to one of the files,
+using the “includes/filename.h” notation.
+For documents that requires proxies (such as plaintext or .pdf files),
+a document named similarly, with the extension –proxy.html is
+automatically created.
+If the destination is omitted, the files are copied directly
+to eclipseplugin/html/opengl/. This is not recommended, since it
+increases the risk of problems due to namespace collisions within
+the module.
+      -->
+        <includedirectory name="includedir/" destination="includes"/>
+
+      <!--
+The line below
+copies only the android/frameworks/base/opengl/es_full_spec.1.1.10.pdf
+to eclipseplugin/html/opengl/docs/.
+The opengl-index.xml must contain at least one link to the file,
+using the “docs/es_full_spec.1.1.10.pdf” notation
+If the documents requires a proxy (such as plaintext or .pdf files),
+a document named similarly, with the extension –proxy.html is
+automatically created.
+If the destination is ommitted, the files are copied directly
+to eclipseplugin/html/opengl/. This is not possible if the file
+to copy is named index.html
+
+In some cases, (actually, such as OpenGL) we do not want to put the
+OpenGL documentation into the git itself, but we still want to
+distribute it.
+
+In that case, it is best to either
+a) create a separate git for all the
+documentation (including the toc-location
+file. Locate the git in such way, that the relative
+paths appears to position a subdirectory within the module.
+or
+b) Locate a directory called documentation or similar within the
+ste-meta-data directory. The include file name will in that
+case need to include one or several ../ and also include
+ste-meta-data in the path. Put all third-party documentation
+for the module in that directory.
+      -->
+
+        <includefile name="es_full_spec.1.1.10.pdf" destination="docs"/>
+        <externalScript script="testScript" startDir="directory/to/start/in"/>
+      </standardapi>
+    </topic>
+  </topic>
+</toc>

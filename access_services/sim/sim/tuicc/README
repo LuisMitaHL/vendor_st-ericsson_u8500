@@ -1,0 +1,23 @@
+There are three ways to set the debug level within simd.
+
+1. On the command line, by specifying -v through to -vvvv
+On the host, this is normally achieved using say ./simd -vvvv
+On the target, this is normally set by editing the init.rc file.
+Note that simd and modem have the same level using this mechanism.
+
+2. By configuration file on the target, to assist with tracing startup issues.
+For example, from the console shell prompt, enter commands such as
+
+# echo 3 > /etc/simd_debug_level.ini
+# echo 3 > /etc/modem_debug_level.ini
+To restore the default level, remove the configuration file.
+Note: Only the first character is read, and it should be 0, 1, 2 or 3.
+Note: This method is NOT supported on the host.
+
+3. By using tuicc commands.
+# tuicc -i setSimDebugLevel
+# tuicc -i setModemDebugLevel
+Each prompts for an integer in the range 0 to 3.
+
+The default level for both sub-systems without any configuration
+option is to display only errors.

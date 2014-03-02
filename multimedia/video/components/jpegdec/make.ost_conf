@@ -1,0 +1,29 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+#
+
+MODULE_NAME = jpegdec
+OST_COMPILER = 1
+OST_COMPONENT_NAME = JPEGDEC
+OST_COMPONENT_INC = $(MMROOT)/video/components/$(MODULE_NAME)/inc
+OST_SRC_DIR = src
+OST_DICO_NAME = $(OST_COMPONENT_NAME)
+#MY_OST_COMPILER_OPTION = "--tgdf=$(MMROOT)/video/components/$(MODULE_NAME)/test/ost/fixed_id.txt"
+TRACECOMPILERDIR = $(MMROOT)/shared/osttools/osttc
+
+# from multimedia\video\uid\inc\st_video_uid.hrh
+# Module ID: #define KUidOmxIlStJpegDecoder      KStUidVideoDefine009
+# Dicos  ID: #define KStUidVideoSpare042     KStUidVideoDefine042
+# from src\soc\core\hal\nomadikuid.hrh
+# Module ID: #define KStUidVideoDefine009  0x20020C25 = 537005093 
+# Dicos  ID: #define KStUidVideoDefine042  0x20024D9D = 537021853
+
+OST_MODULE_ID = 537005093
+
+OST_TOP_DICO_LIST = $(OST_COMPONENT_NAME)::$(OST_MODULE_ID)
+OST_COMPONENT_ID_HOST    = 537021853 
+OST_COMPONENT_ID_NMF_ARM = 537021854 
+OST_COMPONENT_ID_NMF_ARM_1 = 537021855
+OST_COMPONENT_ID_NMF_ARM_2 = 537021856 
+OST_COMPONENT_ID_NMF_DSP = 537021857
+

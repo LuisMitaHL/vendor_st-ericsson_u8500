@@ -1,0 +1,61 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSGSA_HIV__
+#define __HALGPSGSA_HIV__
+
+/**
+* \file halgpsgsa.hiv
+* \date 17/07/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain the variables used by internal module.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 17.07.09 </TD><TD> R. GUPTA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+#ifdef __HALGPS20GSA_C__
+#define GLOBAL 
+#else
+#define GLOBAL extern
+#endif   /* __HALGPS20GSA_C__ */
+
+/**
+* \var vg_HALGPS_GSAStatus
+* \brief AFC status and frequency uncertainty\n
+*
+* This variable is used to store the AFC status and frequency uncertainty\n
+*/
+GLOBAL t_HALGPSAFCStatus vg_HALGPS_AFCStatus;
+
+
+/**
+* \var vg_HALGPS_FreqAidingStatus
+* \brief Frequency aiding status\n
+*
+* This variable is used to store the frequency aiding status\n
+*/
+GLOBAL e_halgps_gsastatus vg_HALGPS_FreqAidingStatus
+#ifdef __HALGPS20GSA_C__
+= HALGPS_GSA_UNKNOWN
+#endif
+;
+ 
+#endif /*__HALGPSGSA_HIV__*/
+
+
+

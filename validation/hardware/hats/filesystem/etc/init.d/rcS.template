@@ -1,0 +1,31 @@
+#!/bin/sh
+#rcS script
+
+echo -e "\033[0m\033[31mWelcome to \033[34m6A657279HATSCONF_KERNELVERSION6A657279\033[0m"
+
+# Update env for subsequant actions and daemons
+export LD_LIBRARY_PATH=/lib:/usr/lib:/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/system/bin:/system/usr/bin
+[ -f /etc/version ] && cat /etc/version
+# Prepare HATS start
+if [ -z "`ls /proc`" ]
+then
+    # Assuming that /proc is not mounted yet
+    mount -n /proc
+fi
+#e2fsck -pv /dev/mmcblk0p2
+mount -n -o remount,rw /
+mount -a
+
+# Change path right access
+chmod -R 755 /etc/rcS.d >&2 /dev/null
+chmod -R 755 /usr/bin >&2 /dev/null
+chmod -R 644 /usr/lib >&2 /dev/null
+chmod -R 755 /usr/local/bin >&2 /dev/null
+chmod -R 750 /sbin >&2 /dev/null
+chmod -R 755 /lib >&2 /dev/null
+
+# Launch services
+for i in /etc/rcS.d/S*; do
+	$i start 2>&1
+done

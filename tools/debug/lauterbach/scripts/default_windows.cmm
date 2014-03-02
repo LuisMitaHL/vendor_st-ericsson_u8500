@@ -1,0 +1,47 @@
+// T32 Thu Jul 13 18:03:59 2006
+B::
+
+TOOLBAR ON
+STATUSBAR ON
+WINPAGE.RESET
+
+WINCLEAR
+
+; the windows position change between windows and Linux
+
+IF (OS.VERSION(0)>=0x10)
+( ; script running on linux
+ CMDPOS 0. 0. 145. 12.
+
+ WINPOS 0. 17. 81. 32. 13. 1. W000
+ WINTABS 16. 10. 25. 62.
+ data.list
+
+ WINPOS 85. 17. 56. 25. 8. 1. W002
+ WINTABS 32.
+ trace.list
+
+ WINPOS 85. 50. 56. 15. 0. 0. W001
+ register /spotlight
+
+ area.create A000 80. 1000.
+ WINPOS 0. 55. 81. 6. 0. 0. A000
+ area
+)
+else
+( ; windows version
+ WINPOS 0.0 0.0 81. 41. 13. 1. W000
+ WINTABS 16. 10. 25. 62.
+ data.list
+
+ WINPOS 85.0 0.0 56. 25. 8. 1. W002
+ WINTABS 32.
+ trace.list
+
+ WINPOS 85. 31. 56. 12. 0. 0. W001
+ register /spotlight
+
+ WINPAGE.SELECT P000     
+)
+
+ENDDO

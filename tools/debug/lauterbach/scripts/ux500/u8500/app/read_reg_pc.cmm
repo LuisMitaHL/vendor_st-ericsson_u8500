@@ -1,0 +1,53 @@
+;------------------------------------------------------------
+; read_reg_pc.cmm
+;------------------------------------------------------------
+; Read the 2 PC register of Cortex A9 when the target in running
+; by using AHB access to the debug register of the core (mappend on APB)
+;
+; Debug script to investigat freeze cases
+; usage :  do read_reg_pc [<nb loop>]
+; result => area displayed and file (todelete.txt) with value
+;           of the PC register sampled 5000 times
+;           and associated function found in the symbol list
+;           (comment area.view to increase speed / no live display)
+;-----------------------------------------------------------
+
+LOCAL &loop_nb
+ENTRY &loop_nb
+
+if ("&loop_nb"=="")
+  &loop_nb=5000.
+
+area.create myarea 1000. 5000.
+area.select myarea
+area.clear myarea
+area.open myarea read_reg_pc.txt
+area.view myarea
+
+sys.m.a
+if !run()
+	go
+&loop=0
+while (&loop<&loop_nb)
+(
+	; debug register are memory-maped on APB
+	; => DBGPCSR offset = 0x84 (RO)
+
+	; CPU0 = COREBASE_0 + 0x84
+	&pc_v=d.l(eapb:0x801A8084)
+	print "0 : &pc_v => " y.function(p:&pc_v)
+
+	if CORENUMBER()>1
+	(
+		; CPU1 = COREBASE_1 + 0x84
+		&pc_v=d.l(eapb:0x801AA084)
+		print "1 : &pc_v => " y.function(p:&pc_v)
+	)
+	&loop=&loop+1
+
+	if !run()
+		&loop=&loop_nb
+)
+area.close myarea
+area.select
+enddo

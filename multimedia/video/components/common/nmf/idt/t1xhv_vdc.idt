@@ -1,0 +1,228 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    
+* \brief   Common data structure and/or definition for all NMF ALGO decoder 
+*          components
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+
+#ifndef	_t1xhv_vdc_idt
+#define _t1xhv_vdc_idt
+
+#include <t1xhv_retarget.idt>
+
+/* ****************************** Enumerates ******************************** */
+
+/** @ingroup vdcAlgoAPIGroup
+ *  Kind of type an ALGO component will be assigned
+ *  @{ 
+ */
+
+typedef enum {
+
+  /**  Job complete with No error (provided with a status STATUS_JOB_COMPLETE)   */
+  VDC_ERT_NONE,
+
+  /**  Job complete with void execution of codec (provided with a status STATUS_JOB_COMPLETE)   */
+  VDC_VOID,
+  
+  /**  All error codes following VDC_ERT are provided with a status STATUS_JOB_ABORTED */
+  VDC_ERT,
+
+  /**  Not enough data to be decoded (End Of Window internal interrupt, i.e. EOW) */
+  VDC_ERT_END_OF_BITSREAM_REACHED,
+  VDC_ERT_BEGINNING_OF_BITSREAM_REACHED,
+
+  /**  The requested feature is not supported */
+  VDC_ERT_NOT_SUPPORTED,                
+
+  /**  One of the input parameter is wrong */
+  VDC_ERT_BAD_PARAMETER,
+
+  /** bitstream error detected while decoding */
+  VDC_ERT_BITSTREAM_ERR                 ,
+
+  /** addr_fwd_ref_buffer is not a multiple of 256   */
+  VDC_ERT_BAD_ADD_FWD_REF_BUFFER        , 
+
+  /** addr_dest_buffer is not a multiple of 256  */
+  VDC_ERT_BAD_ADD_DEST_BUFFER           , 
+
+  /** addr_deblocking_param_buffer is not a multiple of 4   */
+  VDC_ERT_BAD_ADD_DEBLOCKING_PARAM_BUFFER, 
+
+  /**  addr_bitstream_start is not a multiple of 16  */
+  VDC_ERT_BAD_ADD_BITSTREAM_START       , 
+
+  /** addr_buffer_start is not a multiple of 16   */
+  VDC_ERT_BAD_ADD_BUFFER_START          , 
+
+  /** addr_buffer_end is not a multiple of 16   */
+  VDC_ERT_BAD_ADD_BUFFER_END            , 
+
+  /** addr_window_start is not a multiple of 16   */
+  VDC_ERT_BAD_ADD_WINDOW_START          , 
+
+  /** addr_window_end is not a multiple of 16   */
+  VDC_ERT_BAD_ADD_WINDOW_END            ,
+
+  /** frame_width is not a multiple of 16   */ 
+  VDC_ERT_BAD_FRAME_WIDTH               ,
+
+  /** frame_height is not a multiple of 16  */ 
+  VDC_ERT_BAD_FRAME_HEIGHT              , 
+
+  /** quant is equal to 0    */
+  VDC_ERT_BAD_QUANT                     ,
+
+  /** vop_fcode_forward is equal to 0   */
+  VDC_ERT_BAD_VOP_FCODE_FORWARD         ,
+
+  /** vop_time_increment_resolution is equal to 0   */
+  VDC_ERT_BAD_TIME_INCREMENT_RESOLUTION ,
+
+  /** EAD is different from EAJ in enable_annexes   */
+  VDC_ERT_EAD_DIFF_EAJ                  ,
+
+  /** EAF is different from EAJ in enable_annexes    */
+  VDC_ERT_EAF_DIFF_EAJ                  ,
+
+  /** data_partitioned=1 while frame size is greater than CIF    */
+  VDC_ERT_DATA_PARTITIONED_WITH_FS_GT_CIF
+
+} t_t1xhv_decoder_info;
+
+/** \brief This structure defines a Decode input frame buffers. */
+typedef struct {
+
+    t_ahb_address   addr_fwd_ref_buffer;  /**<\brief Address of Forward reference buffer (i.e. start 
+                                            address of the forward reference buffer, which contains the
+                                            previous reconstructed frame, used as a reference for decoding).
+                                            \n Remark : addr_fwd_ref_buffer is the address of the first 32-bit 
+                                            word that belongs to the forward reference buffer. The luminance 
+                                            data is stored first, the chrominance data is stored at address:
+                                            addr_fwd_ref_buffer+frame_width*frame_height).
+                                            \n <b>The minimum buffer size (in bytes) should be: frame_width*frame_height*1.5</b>
+                                            \n Alignment : Multiple of 256.*/
+    t_ahb_address   addr_bwd_ref_buffer; 	/**<\brief Address of backward reference buffer (i.e. start 
+                                            address of the backward reference buffer, which contains the
+                                            next reconstructed frame, used as a reference for decoding.
+                                            \n Remark : addr_bwd_ref_buffer is the address of the first 32-bit 
+                                            word that belongs to the forward reference buffer. The luminance 
+                                            data is stored first, the chrominance data is stored at address:
+                                            addr_bwd_ref_buffer+frame_width*frame_height). 
+                                            \n <b>The minimum buffer size (in bytes) should be: frame_width*frame_height*1.5</b>
+                                            \n Alignment : Multiple of 256.*/
+    t_ahb_address  addr_source_buffer;                      //Source buffer start address for deblocking 
+    t_ahb_address  addr_deblocking_param_buffer_in;    //Deblocking parameters will used  as a input of deblocking 
+
+} ts_t1xhv_vdc_frame_buf_in;
+
+/*!
+* \typedef ts_t1xhv_vdc_frame_buf_in *tps_t1xhv_vdc_frame_buf_in;
+*/
+typedef ts_t1xhv_vdc_frame_buf_in *tps_t1xhv_vdc_frame_buf_in;
+
+/** \brief This structure defines a Decode Output frame buffer. */
+typedef struct {
+
+    t_ahb_address   addr_dest_buffer;             /**<\brief Address of output frame buffer (i.e. start 
+                                                    address of the destination buffer, which contains the current
+                                                    reconstructed frame).
+                                                    \n Remark : addr_dest_buffer is the address of the first 32-bit 
+                                                    word that belongs to the destination buffer. The luminance data is 
+                                                    stored first, the chrominance data is stored at address:
+                                                    addr_dest_buffer+frame_width*frame_height.
+                                                    \n <b>The minimum buffer size (in bytes) should be: frame_width*frame_height*1.5</b>.
+                                                    \n Remark : VC1 (8815A) - The destination buffer is filled in pixel raster 
+                                                    scan order. 
+                                                    \n The luminance is stored first on a macro block aligned size (raster Y plan 
+                                                    aligned on 16x16 pixels boundaries. Y size = EXTEND_TO_16(picture_width) * 
+                                                    EXTEND_TO_16(picture_height) where picture_height and picture_width are the 
+                                                    actual decoded picture dimension (not the maximum ones in case of MULTIRES stream).
+                                                    \n Cb and Cr plan are stored after Y plan in pixel raster order aligned on 8x8 
+                                                    pixels boundaries. Cb/Cr size = EXTEND_TO_8(picture_width) * EXTEND_TO_8(picture_height).
+                                                    \n Remark : VC1 for 8815B - The Cb and Cr component first pixels are aligned on 128 byte boundaries.
+                                                    \n Alignment : Multiple of 256.
+                                                    \n
+                                                    \n with EXTEND_TO_16 extends a value to the next 16 multiple if the value is not already a 16 multiple.
+                                                    \n and EXTEND_TO_8 extends a value to the next 8 multiple if the value is not already a 8 multiple. */
+    t_ahb_address   addr_deblocking_param_buffer; /**<\brief Address of parameters for PPP (i.e. start 
+                                                    address of the deblocking parameter buffer, which contains
+                                                    the parameters for the post-processing filters to be applied 
+                                                    in the decode task (H263/H264 deblocking filter in the decoding loop).
+                                                    \n Remark : addr_deblocking_param_buffer is the address of the first 32-bit word 
+                                                    that belongs to the deblocking parameter buffer. 
+                                                    \n <b>The minimum buffer size (in bytes) should be : ((picture_width/16+2)*(picture_height/16+2)*4+15)&0xFFF0 or
+                                                    (picture_width/16)*(v/16)*16 for H264 filtering</b>
+                                                    \n Alignment : Multiple of 16.*/
+    t_ahb_address   addr_motion_vector_buffer;    /**<\brief NOT USED*/
+    t_ahb_address   addr_jpeg_coef_buffer;        /**<\brief Address of JPEG coefficient buffer (i.e. start address of the JPEG coefficient buffer,
+                                                    which contains the frequency domain data of a JPEG decode subtask in progressive mode. It is used 
+                                                    only if progressive_mode=1).
+                                                    \n Remark : addr_jpeg_coef_buffer is the address of the first 32-bit word that belongs to the 
+                                                    JPEG coefficient buffer. It is used only if progressive_mode=1.
+                                                    \n <b>The minimum buffer size (in bytes) should be: picture_width*picture_height*2*(h_sampling_factor_y*v_sampling_factor_y
+                                                    +h_sampling_factor_cb*v_sampling_factor_cb+h_sampling_factor_cr*v_sampling_factor_cr)</b>
+                                                    (max(h_sampling_factor_y,h_sampling_factor_cb,h_sampling_factor_cr)*max(v_sampling_factor_y,v_sampling_factor_cb,v_sampling_factor_cr))
+                                                    (an upper bound of which being picture_width*picture_height*6)
+                                                    \n Alignment : Multiple of 16.*/
+    t_ahb_address   addr_jpeg_line_buffer;        /**<\brief Address of JPEG line buffer (i.e. start address of the JPEG line buffer, which contains 
+                                                    intermediate chrominance data of a JPEG decode subtask. It is used only if v_sampling_factor_y =
+                                                    v_sampling_factor_cb = v_sampling_factor_cr = 1 and downsampling_factor = 8.
+                                                    \n Remark : addr_jpeg_line_buffer is the address of the first 32-bit word that belongs to the 
+                                                    JPEG line buffer. It is used only if v_sampling_factor_y = v_sampling_factor_cb = v_sampling_factor_cr 
+                                                    = 1 and downsampling_factor = 8.
+                                                    \n <b>The minimum buffer size (in bytes) should be: MAX(64,picture_width/2)</b>
+                                                    \n Alignment : Multiple of 16.*/
+    t_ahb_address   addr_dest_local_rec_buffer;   /**<\brief Address of reconstructed local buffer */   
+    t_ahb_address   addr_dest_buffer_deblock;       /*Destination buffer start address for deblocking */
+    t_ahb_address   addr_debug_mtf_buffer;        /**<\brief addr_debug_mtf_buffer                    */
+} ts_t1xhv_vdc_frame_buf_out;
+
+/*!
+* \typedef ts_t1xhv_vdc_frame_buf_out *tps_t1xhv_vdc_frame_buf_out;
+*/
+typedef ts_t1xhv_vdc_frame_buf_out *tps_t1xhv_vdc_frame_buf_out;
+
+/** \brief This structure defines a Decode internal buffer. */
+typedef struct {
+
+    t_ahb_address   addr_vpp_dummy_buffer;     /**<\brief Address of temporary buffer used by VPP.
+                                                    \n Remark : TBD
+                                                    \n <b>The minimum buffer size (in bytes) should be: TBD </b>
+                                                    \n Alignment : TBD.*/
+    t_ahb_address   addr_h264d_block_info;     /**<\brief Address of block_info (ED only)
+                                                    \n Remark : TBD
+                                                    \n <b>The minimum buffer size (in bytes) should be: TBD </b>
+                                                    \n Alignment : TBD.*/
+    t_ahb_address   addr_h264d_mb_slice_map;   /**<\brief Address of mb_slice_map
+                                                    \n Remark : TBD
+                                                    \n <b>The minimum buffer size (in bytes) should be: TBD </b>
+                                                    \n Alignment : TBD.*/
+    t_ahb_address   addr_mv_history_buffer;    /**<\brief VC1 motion vector history buffer (for B framesdecoding)
+                                                    \n Remark : TBD
+                                                    \n <b>The minimum buffer size (in bytes) should be: TBD </b>
+                                                    \n Alignment : TBD.*/
+	t_ahb_address   addr_mv_type_buffer;        /*  This buffer is used for mpeg4 decoder to keep information of current MB is of 1MV of 4MV */   
+    t_ahb_address   addr_mb_not_coded;          /* This buffer is used for mpeg4 decoder to keep information of the current MB is coded ot not-coded*/         
+    t_ahb_address   addr_x_err_res_buffer;      /* This buffer is used for mpeg4 decoder to keep MV dx of the current MB that will be used for error concealment*/
+	t_ahb_address   addr_y_err_res_buffer;      /* This buffer is used for mpeg4 decoder to keep MV dy of the current MB that will be used for error concealment*/
+
+} ts_t1xhv_vdc_internal_buf;
+
+/*!
+* \typedef ts_t1xhv_vdc_internal_buf *tps_t1xhv_vdc_internal_buf;
+*/
+typedef ts_t1xhv_vdc_internal_buf *tps_t1xhv_vdc_internal_buf;
+
+/** @} */ // end of vdcAlgoAPIGroup
+
+#endif /* _t1xhv_vdc_idt */

@@ -1,0 +1,336 @@
+Assemble Tool CLI(1)
+====================
+
+NAME
+----
+Assemble Tool CLI - required to assemble the software used by ST-Ericsson(tm) HW.
+
+SYNOPSIS
+--------
+*assemble-tool* [options] -t <output type> -c <configuration file> -l <file list> <output file>
+
+DESCRIPTION
+-----------
+It is necessary to assemble the software in the correct format to be able to
+flash it to the mobile equipment. This is a requirement regardless of whether
+it is loaders, app or acc SW, or flash archives.
+
+The assemble tool supports also ADL boot. It means that the loader is stored at the ADL location, so the TOC could contain the ADL item.
+It is based on the customer requirement that it should not be necessary to download a loader to communicate with the Mobile Equipment.
+The solution is then to make the loader already present in Mobile Equipment persistent storage.
+This can be done by having the loader included in the pre-flash image already downloaded to the flash memory.
+This way it is possible to use the loader commands without having to download the loader first..
+
+The desired output format is specified by the --type argument. The assembled
+image content and layout is specified by the XML configuration file and the
+paths to the files to include are listed in the file list file as plain text
+on separate lines.
+
+XML configuration file document type definition (DTD):
+----
+
+<!DOCTYPE target_configuration [
+    <!ELEMENT target_configuration (bax:flash_archive?, bax:ram_image?, bax:preflash_image?)>
+    <!ELEMENT bax:source           (#PCDATA)>
+    <!ELEMENT bax:flash_archive    (bax:entry*)>
+    <!ELEMENT bax:ram_image        (bax:entry*)>
+    <!ELEMENT bax:preflash_image   (bax:entry*, bax:profile)>
+    <!ELEMENT bax:entry            (bax:source, bax:attribute*, bax:skip?)>
+    <!ELEMENT bax:attribute        (#PCDATA)>
+    <!ELEMENT bax:profile          (#PCDATA)>
+    <!ELEMENT bax:skip             EMPTY>
+
+    <!ATTLIST target_configuration xmlns:bax     CDATA #FIXED "TBD">
+    <!ATTLIST bax:entry            name          CDATA #REQUIRED>
+    <!ATTLIST bax:entry            type          CDATA #REQUIRED>
+    <!ATTLIST bax:attribute        name          CDATA #REQUIRED>
+    <!ATTLIST bax:profile          path          CDATA #REQUIRED>
+    <!ATTLIST bax:skip             block_size    CDATA #REQUIRED>
+    <!ATTLIST bax:skip             block_pattern CDATA #REQUIRED>
+]>
+----
+
+OPTIONS
+-------
+*-h, --help*::
+    Show help text.
+
+*-c, --configuration* '<configuration file>'::
+    Set the XML configuration file to use.
+
+*-t, --type* '<output type>'::
+    Set the type of software to assemble. Possible values: *flash_archive* | *ram_image* | *preflash_image*
+
+*-l, --file_list* '<file list>'::
+    Set the file list to use.
+
+*-v, --verbose*::
+    Enable visual output to stdout.
+
+*-f, --force*::
+    Force overwrite if output file already exists.
+
+*-r, --trim_file*::
+     Include Trim Area file in flash archive (manifest.txt will contain record 'name="cspsa.bin" type="x-steflash/image"' instead of 'name="cspsa.bin" type="x-steflash/initilized-area"')
+
+*--buffer-size* '<size>'::
+    Set the buffer size to use when creating flash archive (in bytes). Valid suffixes are k and M (e.g. 128k or 1M). Default value is 8k.
+
+*--alignment-size* '<size>'::
+    Set the alignment size of flash archive entries (in bytes). Default value is 512.
+
+Entry types
+-----------
+[width="60%",frame="topbot",options="header", cols="2*<3, 1*<4"]
+|===================
+|Entry type					|Valid for 				|Description
+|x-steflash/image			| bax:flash_archive, bax:ram_image | A plain image that will be transferred to the output file as is.
+|x-steflash/bootimage		| bax:flash_archive, bax:ram_image | An image containing a table of contents. The bootimage will be split into smaller images according to the TOC.
+|x-steflash/flasharchive	| bax:preflash_image | A flasharchive that will be used as input to the preflash tool.
+|x-steflash/gdfs			| bax:flash_archive, bax:preflash_image | A GDFS file that will be added in a binary format (conversion is done by the Assemble Tool) to a flash archive or a GDFS file that will be used as an input to the preflash tool.
+|x-steflash/preflashimage	| bax:flash_archive  | The output from a bax:preflash_image target. The preflashimage will be split and converted into binary format before written to the flash archive.
+|x-steflash/crkc			| bax:flash_archive, bax:ram_image | Customer root key certificate (CRKC) file.
+|==================                                           
+
+Versioning information
+----------------------
+Assemble tool can parse version information from binary files and put that information to versions.txt file.
+Version.txt is then one of entries in flash archive.
+
+Following binaries can be parsed: XLOADER, ISSW, MEM_INIT, PWR_MGT, MODEM, IPL.
+
+In order to parse version information from binary file, new attribute "VERSION-ID" has to be added to configuration (xml) file for each entry.
+
+*Example: mem_init*
+----
+    <bax:entry name="mem_init.bin" type="x-steflash/image">
+        <bax:source>mem_init</bax:source>
+        <bax:attribute name="Target">/flash0/TOC/MEM_INIT, 0x00000000</bax:attribute>
+        <bax:attribute name="TOC-ID">MEM_INIT</bax:attribute>
+        <bax:attribute name="Enhanced">TRUE</bax:attribute>
+        <bax:attribute name="VERSION-ID">MEM_INIT</bax:attribute>
+    </bax:entry>
+----
+
+Enhanced Area in User Partition (U5500)
+---------------------------------------
+eMMC allows one area in User Data Area to be defined as enhanced area which will have better reliability. 
+In order to mark binary which should be placed in enhanced area , new attribute "Enhanced" has to be added to configuration (xml) file for each entry.
+
+*Example: cspsa.bin*
+----
+    <bax:entry name="cspsa.bin" type="x-steflash/initilized-area">
+      <bax:source>cspsa.bin</bax:source>
+      <bax:attribute name="Target">/flash0/TOC/CSPSA0, 0x00000000 </bax:attribute>
+      <bax:attribute name="Enhanced">TRUE</bax:attribute>
+      <bax:attribute name="TOC-ID">CSPSA0</bax:attribute>
+    </bax:entry>
+----
+
+Generic Debug And Test Certificate (DNT-CERT) File
+--------------------------------------------------
+
+Entry for generic debug and test certificate (DNT-CERT) in XML configuration file has the following format:
+----
+<bax:entry name="dntcert.ssw" type="x-steflash/image">
+	<bax:source>dntcert</bax:source>
+	<bax:attribute name="Target">/flash0/boot0/DNT-CERT, 0x00000000</bax:attribute>
+	<bax:attribute name="TOC-ID">DNT-CERT</bax:attribute>
+</bax:entry>
+----
+
+Entry for generic debug and test certificate (DNT-CERT) in TXT File list file:
+----
+dntcert=/path/to/dntcert.ssw
+# This is a comment
+----
+
+STE Debug And Test Certificate (STE-DNT-CERT) File for customer separation
+--------------------------------------------------------------------------
+Entry for STE debug and test certificate (STE-DNT-CERT) in XML configuration file has the following format:
+----
+<bax:entry name="stedntcert.ssw" type="x-steflash/image">
+	<bax:source>stedntcert</bax:source>
+	<bax:attribute name="Target">/flash0/boot0/DNT-CERT, 0x00000000</bax:attribute>
+	<bax:attribute name="TOC-ID">STE-DNT-CERT</bax:attribute>
+</bax:entry>
+----
+
+Entry for STE debug and test certificate (STE-DNT-CERT) in TXT File list file:
+----
+stedntcert=/path/to/stedntcert.ssw
+# This is a comment
+----
+
+Customer Root Key Certificate (CRKC) File
+-----------------------------------------
+Entry for customer root key certificate (CRKC) in XML configuration file has the following format:
+----
+<bax:entry name="crkc.bin" type="x-steflash/crkc">
+  <bax:source>crkc</bax:source>
+  <bax:attribute name="Target"> target area </bax:attribute>
+  <bax:attribute name="TOC-ID">CRKC</bax:attribute>
+</bax:entry>
+----
+
+Adding GDFS Files in a Binary Format to a Flash Archive
+-------------------------------------------------------
+Entry with the type *x-steflash/gdfs* in XML configuration file for assembling 
+flash archive represents a GDFS file that will be converted by Assemble Tool to 
+a binary format before being added to a flash archive.
+
+Example:
+----
+<bax:entry name="gdfs.bin" type="x-steflash/gdfs">
+  <bax:source>gdfs.gdf</bax:source>
+  <bax:attribute name="Target"> target area </bax:attribute>
+</bax:entry>
+----
+
+Minimizing Journaling Flash File System (JFFS) Image Files
+----------------------------------------------------------
+Journaling Flash File System (JFFS) image files can be minimized when stored in flash archive.
+Minimized image file is created by skipping unused (empty) blocks of data when writing file to flash archive.
+This results in smaller flash archive size.
+Block skipping is configured for particular file by its *bax:entry* element in XML configuration file.
+Entry element must contain element *bax:skip* to enable skipping:
+----
+<bax:skip block_size="number in hexadecimal format" block_pattern="number in hexadecimal format"/>
+----
+Attribute *block_size* specifies size of the block and attribute *block_pattern* specifies
+pattern of bytes contained in the block to be skipped.
+Image file is read as a series of blocks having specified size and if such block contains
+specified pattern of bytes then it is skipped.
+
+Example of the XML configuration file entry for minimized JFFS image file:
+----
+<bax:entry name="ramdisk.img" type="x-steflash/image">
+  <bax:source>ramdisk.img</bax:source>
+  <bax:attribute name="Target">/flash0/TOC/ROOTFS, 0x00000000 </bax:attribute>
+  <bax:attribute name="TOC-ID">ROOTFS</bax:attribute>
+  <bax:skip block_size="0x800" block_pattern="0xFF">/
+</bax:entry>
+----
+In the example above, where size of the block is 2048 bytes (0x800 in hexadecimal number format),
+every block that is filled with byte value 255 (0xFF in hexadecimal number format) is going to be skipped.
+
+EXAMPLES
+--------
+Configuration files:
+
+*flash archive*
+----
+<target_configuration>
+	<bax:flash_archive>
+		<bax:entry name="boot_image" type="x-steflash/bootimage">
+			<bax:source>boot_image.bin</bax:source>
+			<bax:attribute name="Target">/flash0/boot0, 0x00000000</bax:attribute>
+		</bax:entry>
+		<bax:entry name="normal" type="x-steflash/image">
+			<bax:source>normal.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x00080800</bax:attribute>
+			<bax:attribute name="TOC-ID">NORMAL</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x10203040</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x00000000</bax:attribute>
+		</bax:entry>
+	</bax:flash_archive>
+</target_configuration>
+----
+
+*ram image*
+----
+<target_configuration>
+	<bax:ram_image>
+		<bax:entry name="boot_image" type="x-steflash/bootimage">
+			<bax:source>boot_image.bin</bax:source>
+		</bax:entry>
+		<bax:entry name="normal" type="x-steflash/image">
+			<bax:source>normal.bin</bax:source>
+			<bax:attribute name="TOC-ID">NORMAL</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x10203040</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x00000000</bax:attribute>
+			<bax:attribute name="Enhanced">TRUE</bax:attribute>
+		</bax:entry>
+	</bax:ram_image>
+</target_configuration>
+----
+
+*preflash image*
+----
+<target_configuration>
+	<bax:preflash_image>
+		<bax:entry name="preflash" type="x-steflash/flasharchive">
+			<bax:source>flasharchive.zip</bax:source>
+		</bax:entry>
+		<!--bax:entry name="gdfs" type="x-steflash/gdfs">
+			<bax:source>GDFS</bax:source>
+		</bax:entry-->
+		<bax:profile path="path/to/profile-STE_DB8500_flashloader.mesp" />
+	</bax:preflash_image>
+</target_configuration>
+----
+Note that the selected profile must have an entry that specifies the path to the preflash tool:
+*PreFlashTool Windows="C:\path\to\preflash_tool.exe" Linux="/path/to/preflash_tool"* +
+
+
+*preflash archive*
+----
+<target_configuration>
+	<bax:flash_archive>
+		<bax:entry name="preflash.bin" type="x-steflash/preflashimage">
+			<bax:source>preflash.a01</bax:source>
+		</bax:entry>
+	</bax:flash_archive>
+</target_configuration>
+----
+
+File list file:
+----
+BOOT_IMAGE=/path/to/boot_image.bin
+NORMAL=/path/to/normal
+# This is a comment
+----
+
+Then the configuration file <bax:source> XML element can specify this alias instead of a filename:
+----
+  ...
+	<bax:entry name="boot_image" type="x-steflash/bootimage">
+		<bax:source>BOOT_IMAGE</bax:source>
+		<bax:attribute name="Target">/flash0/boot0, 0x00000000</bax:attribute>
+  	</bax:entry>
+  ...
+----
+
+Using the * and ? wildcards in the file list file:
+----
+#Pattern below will match xyz_modem_1.2.3.bin but NOT xyz_modem_1.2.bin in the directory /path/to/
+MODEM=/path/to/*_modem_?.?.?.bin
+#Pattern below will match all file names in /path/to/ that contains "issw"
+/path/to/*issw*
+----
+
+Assembling a flash archive:
+----
+assemble-tool -t flash_archive -c /path/to/config.xml -l /path/to/filelist.txt /path/to/flasharchive.zip
+----
+
+Assembling a RAM image:
+----
+assemble-tool -t ram_image -c /path/to/config.xml -l /path/to/file_list.txt /path/to/ram_image.bin
+----
+
+Assembling a preflash image image:
+----
+assemble-tool -t preflash_image -c /path/to/config.xml -l /path/to/file_list.txt /path/to/preflash_image.bin
+----
+
+EXIT STATUS
+-----------
+assemble-tool returns a zero exit status if it succeeds during assembling.
+A non zero is returned in case of failure.
+
+*0*::
+    Success
+
+*1*::
+    Unknown error

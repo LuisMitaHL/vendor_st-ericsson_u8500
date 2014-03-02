@@ -1,0 +1,56 @@
+//
+//       Configuration file for h264 decoder Data Dependancy     
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+
+
+//composite h264dec.mpc.ddep 
+primitive h264dec.mpc.ddep extends debug.mpc.printf_type
+{
+
+requires resource_manager.api.resource					as iResource
+provides resource_manager.api.inform_resource_status	as iInformResourceStatus referenced
+requires resource_manager.api.sleep             as iSleep
+
+
+// coming from the host
+provides h264dec.mpc.ddep.api.start_codec				as iStartCodec
+requires h264dec.mpc.ddep.api.end_codec					as iEndCodec
+
+// transmit directly to the codec
+requires h264dec.mpc.api.algo							as iAlgo
+requires h264dec.mpc.api.cabac            as iCabac
+
+// Feed back from the codec
+provides h264dec.mpc.api.end_algo						as iEndAlgo referenced
+provides h264dec.mpc.api.end_cabac					as iEndCabac referenced
+
+// OST
+provides h264dec.mpc.api.trace_init					as iTraceInit
+
+// log event
+requires h264dec.mpc.ddep.api.log_event					as iSendLogEvent
+provides h264dec.mpc.ddep.api.log_event					as iGetLogEvent
+
+provides lifecycle.starter								as starter
+
+requires rtos.api.panic									as panic static
+
+// OST capability
+requires osttrace.api.osttrace                                          as osttrace static
+
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+option CPPFLAGS "-ICONF_ROOT/inc -D__T1XHV_NMF_ENV=1 -DMMDSP=1"
+option CFLAGS "-O3 -g -mode16"
+option stack= 512
+
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+}

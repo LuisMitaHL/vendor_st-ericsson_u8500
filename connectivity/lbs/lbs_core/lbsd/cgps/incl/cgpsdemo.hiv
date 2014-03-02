@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSDEMO_HIV__
+#define __CGPSDEMO_HIV__
+/**
+* \file cgpsdemo.hiv
+* \date 02/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all variable used by cgps3demo.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 14.03.08</TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+#ifdef __CGPS3DEMO_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS3DEMO_C__*/
+
+GLOBAL uint8_t pg_CGPS_DemoReceiveTrameBuffer[CGPS_DEMO_BUFFER_SIZE];
+
+GLOBAL uint32_t vg_demoCurrentReadIndex;
+
+GLOBAL uint32_t vg_demoCurrentWriteIndex;
+
+GLOBAL int32_t vg_demoBufferLenght;
+
+#undef GLOBAL
+
+#endif /*__CGPSDEMO_HIV__*/

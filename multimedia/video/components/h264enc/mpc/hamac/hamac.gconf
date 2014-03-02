@@ -1,0 +1,57 @@
+//
+//       Configuration file for h264enc hamac
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite h264enc.mpc.hamac
+{
+
+// Sub components
+contains h264enc.mpc.h264enc							as  cH264enc
+contains h264enc.mpc.ddep								as  cDdep
+contains h264enc.mpc.adapter							as  cAdapter
+contains resource_manager								as  cResource_manager
+
+// Debug component
+contains  debug.mpc.dsp_printf 							as dsp_printf	
+
+//Debug interface
+requires debug.mpc.api.msg								as oMsg optional
+
+// coming from the host
+provides h264enc.mpc.ddep.api.start_codec				as iStartCodec
+requires h264enc.mpc.ddep.api.end_codec					as iEndCodec
+
+// binds from/to host
+binds this.iStartCodec									to cAdapter.iStartCodec24bits
+binds cAdapter.iEndCodec24bits							to this.iEndCodec					asynchronous fifo=2
+
+#ifdef DEBUG_TRACES
+// Printf MSG
+binds dsp_printf.oMsg 									to  this.oMsg
+
+// Debug messages
+binds cDdep.oPrintf									    to dsp_printf.iPrintf				
+binds cH264enc.oPrintf									to dsp_printf.iPrintf				
+#endif
+
+binds cAdapter.iStartCodec16bits						to cDdep.iStartCodec
+binds cDdep.iEndCodec									to cAdapter.iEndCodec16bits
+
+binds cDdep.iSendLogEvent								to cDdep.iGetLogEvent				asynchronous fifo=2
+binds cDdep.iAlgo										to cH264enc.iAlgo					asynchronous fifo=2
+binds cDdep.iResource									to cResource_manager.iResource		asynchronous fifo=2
+binds cH264enc.iBuffer									to cResource_manager.iBuffer
+binds cH264enc.iMtf										to cResource_manager.iMtf
+binds cH264enc.iInterrupt								to cResource_manager.iInterrupt
+
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+}

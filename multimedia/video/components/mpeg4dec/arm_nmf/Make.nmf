@@ -1,0 +1,84 @@
+
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+MODULE_NAME:=mpeg4dec
+CORE=arm
+export CORE
+COMPONENT_PATH += $(MMROOT)/video/components
+
+SRCPATH += $(MMROOT)/shared/ens
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENTS+= mpeg4dec.arm_nmf.mpeg4deccomparm
+
+CONFFILES =     $(MODULE_NAME)/arm_nmf/parser/parser.conf               \
+                $(MODULE_NAME)/arm_nmf/mpeg4deccontroller/mpeg4deccontroller.conf               \
+                $(MODULE_NAME)/arm_nmf/mpeg4deccomparm/mpeg4deccomparm.conf       
+                		
+CPPPATH += -I$(MMROOT)/shared/ens/components/common
+
+# OST capability
+include ../make.ost_conf
+OST_SRC_DIR += parser/src
+OST_SRC_DIR += mpeg4deccontroller/src
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_ARM)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_mpc
+CPPFLAGS  += -I$(MMROOT)/video/components/mpeg4dec/inc/autogentraces
+
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/api/memoryRequirements.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/Copy.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/sendportSettings.idl
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/portSettings.idl
+
+
+			
+PREBUILD_COMPONENTS = conf-check $(CONFFILES)	
+
+
+SRCPATH += $(NMF)/$(MMSYSTEM)/api
+SRCPATH += $(MM_IDT_DIR)
+SRCPATH += $(MMROOT)/shared/ens/nmf/common
+SRCPATH += $(MMROOT)/shared/ens/nmf
+SRCPATH += $(MMROOT)/shared/ens/nmf/mpc/common
+SRCPATH += $(MMROOT)/shared/ens/nmf/mpc
+SRCPATH += $(MMROOT)/shared/ens/nmf/host
+SRCPATH += $(MMROOT)/shared/ens/nmf/host/common
+SRCPATH += $(MMROOT)/video/components/vpp/mpc
+SRCPATH += $(MMROOT)/video/components/vpp/mpc/share
+SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)/mpc/share
+SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)/mpc/share/$(SVA_SUBSYSTEM)
+SRCPATH += $(MMROOT)/shared/nmf/tools/api/mpcee
+
+SRCPATH+= \
+        $(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/mpeg4deccontroller/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/share  
+SRCPATH+=$(MM_NMF_COMP_SRC_MMDSP_DIR) $(MM_NMF_COMP_SRC_MMDSP_DIR)/common
+
+        
+CPPFLAGS +=  -D__MPEG4DEC_ARM_NMF
+CPPFLAGS += -D_CACHE_OPT_
+CPPFLAGS += -D__CACHE_OPTI
+CPPFLAGS+= \
+    -I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser/inc\
+	-I$(SHARED_REPOSITORY) \
+	-I$(MMROOT)/shared/ens/proxy/omxil \
+	-I$(MMROOT)/shared/ens/proxy/include	\
+       
+CPPFLAGS += -DRELEASE -D__RELEASE
+CPPFLAGS+= -I$(MMROOT)/video/include
+
+
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+
+
+       
+        
+
+
+
+    

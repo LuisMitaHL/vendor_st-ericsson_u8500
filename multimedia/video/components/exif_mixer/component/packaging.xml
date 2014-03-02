@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/**" />
+    <include name="Make*" />
+    <include name="make.ost_conf" />    
+    <include name="inc/autogentraces/*.xml" />
+  </fileset>
+  
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+         <include name="proxy/inc/**"/>
+         <include name="proxy/lib/**" />
+	 <include name="proxy/Make*"/>
+    </fileset>
+  </package>
+  
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+         <include name="proxy/inc/**"/>
+         <include name="proxy/src/**"/>
+	 <include name="proxy/Make*"/>
+    </fileset>
+  </package>
+  
+  <package name="arm-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+        <include name="arm_nmf/**"/>
+  	<exclude name="arm_nmf/**.c"/>
+  	<exclude name="arm_nmf/**.cpp"/>
+	<exclude name="arm_nmf/test/**"/>
+	<include name="nmf_repository/cortexA9-**"/>        
+    </fileset>
+  </package>
+  
+  <package name="arm-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+       <include name="arm_nmf/**"/>
+       <exclude name="arm_nmf/test/**"/>
+       <exclude name="nmf_repository/cortexA9-**"/>
+    </fileset>
+  </package>
+</packages>

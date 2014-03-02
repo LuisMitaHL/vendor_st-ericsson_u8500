@@ -1,0 +1,71 @@
+//
+//       Configuration file for      algo (JPEG decode)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive jpegdec.mpc.algo
+{
+provides lifecycle.constructor                              as constructor
+//
+// Provided interfaces to a jpeg_decoder_ddep component
+provides jpegdec.mpc.api.algo             as iAlgo
+provides jpegdec.mpc.api.configure_algo	  as iConfigureAlgo
+provides jpegdec.mpc.api.update_algo	  as iUpdateAlgo
+
+//
+// Provided interfaces to a resource_manager component
+//provides resource_manager.api.signal                        as iSignalJpegDecoder
+provides resource_manager.api.signal                        as iSignal referenced
+
+// 
+// Required interfaces to a jpeg_decoder_ddep component
+//requires jpegdec.mpc.api.end_algo                     as iResultJpegDecoder0
+//requires jpegdec.mpc.api.end_algo                     as iResultJpegDecoder1
+
+// 
+// Required interfaces to a resource_manager component
+requires resource_manager.api.buffer                        as iBuffer
+
+
+// 
+// Required interfaces to a mtf component
+requires resource_manager.api.mtf                           as  iMtf
+
+// Debug printf interface
+requires ee.api.debug 					                    as _debug
+
+//      --------------
+//      - Source files
+
+
+sources src/SVA_SUBSYSTEM/algo.c
+sources src/SVA_SUBSYSTEM/t1xhv_djpeg.c
+sources src/SVA_SUBSYSTEM/djpeg_co_bitstream.c
+sources src/SVA_SUBSYSTEM/djpeg_hamac_interface.c
+sources src/SVA_SUBSYSTEM/djpeg_hv_ace_preprocessing.c
+sources src/SVA_SUBSYSTEM/djpeg_hv_bitstream.c
+sources src/SVA_SUBSYSTEM/djpeg_hv_huffman.c
+sources src/SVA_SUBSYSTEM/djpeg_hv_idct_hamac.c
+sources src/SVA_SUBSYSTEM/djpeg_hv_postproc_any_formats.c
+sources src/SVA_SUBSYSTEM/djpeg_hv_postproc_typical_formats.c
+sources src/SVA_SUBSYSTEM/djpeg_utils.c
+
+sources src/SVA_SUBSYSTEM/dma_api.c
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+//option CPPFLAGS "-I../share -Iinc -Ijpegdec/mpc/algo/inc -Ijpegdec/mpc/algo/inc_dec -I../../common/inc -I../../hardware/inc"
+option CFLAGS "-O3 -D__T1XHV_NMF_ENV=1 -D_BASE_TYPE_=1 -DSOFT_ERR_DECODE=1 -DMMDSP=1 -DFINAL_IMPLEMENTATION=1 -DTARGET=dsp16 -mode16 "
+// -D__DEBUG_TRACE_ENABLE=1"
+//option incdir -DSTATIC_CONF_1=1 -D__DEBUG_TRACE_ENABLE=1 "./inc;./inc_dec"
+
+//option CFLAGS "-O3 -g -DSTATIC_CONF_1=1 -D__T1XHV_NMF_ENV=1 -D_BASE_TYPE_=1 -DSOFT_ERR_DECODE=1 -DMMDSP=1 -DFINAL_IMPLEMENTATION=1 -DTARGET=dsp16 -D__DEBUG_TRACE_ENABLE=1 -mode16"
+//option incdir "./inc;./inc_dec"
+
+
+option memories EMB24RAM|EMB16RAM|EMB16ROM|EXT16RAM
+}

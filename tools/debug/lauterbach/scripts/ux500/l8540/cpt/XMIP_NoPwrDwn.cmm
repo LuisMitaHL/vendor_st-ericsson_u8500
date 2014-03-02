@@ -1,0 +1,32 @@
+; #####################################################################
+; # DB8500 debug & Trace script file: XMIP_NoPwrDwn.cmm               #
+; # Copyright (C) 2012, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; set/reset the MOD_DBGNOPWRDWN. Registered by the PRCMU within the CSYSPWRUPREQ/ACK sequence.
+; Created by HED/CSP/CPT/ACT on 2012-02-20
+; contact: jingyi-xiaoyan.lu@st.com
+
+entry &requested_val
+
+if "&requested_val"==""||("&requested_val"!="0"&&"&requested_val"!="1")
+(
+	print "Need parameter 0 or 1."
+	enddo
+)
+
+&PRCM_DBG_PWRCTL_SET_addr=0x80068874
+&PRCM_DBG_PWRCTL_CLR_addr=0x80068878
+&PRCM_DBG_PWRCTL_VAL_addr=0x8006887C
+&MODNOPWRDN_bitpos=2
+if &requested_val==1
+	data.set eahb:&PRCM_DBG_PWRCTL_addr %long d.l(eahb:&PRCM_DBG_PWRCTL_SET_addr)|1<<&MODNOPWRDN_bitpos
+else
+	data.set eahb:&PRCM_DBG_PWRCTL_addr %long d.l(eahb:&PRCM_DBG_PWRCTL_CLR_addr)|1<<&MODNOPWRDN_bitpos
+sys.down
+sys.m.attach
+// read back
+if d.l(eahb:&PRCM_DBG_PWRCTL_VAL_addr)>>&MODNOPWRDN_bitpos!=&requested_val
+	print "Mod_NoPwrDwn.cmm FAILED!"
+else
+	print "DONE."
+enddo

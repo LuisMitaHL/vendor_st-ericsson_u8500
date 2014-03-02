@@ -1,0 +1,19 @@
+#include <pcmdump/configure.idt>
+
+typedef struct {
+    t_uint24 *    buffer;
+    t_uint24      buffer_size;
+    t_uint24      buffer_write_offset;
+    void *        trace_p;
+    const void *  complete_cb;
+    t_uint8       buffer_write_id;
+    t_uint8       omx_port_idx;
+    BOOL          is_enabled;
+    t_uint24      effect_position_idx;
+} PcmDump_t;
+
+interface pcmdump.probe unmanaged {
+    void configure(PcmDumpConfigure_t sConfigure, void * trace_p, const void* complete_cb, PcmDump_t * config);
+    BOOL probe(void * buf, t_uint24 size, PcmDump_t * config);
+}
+

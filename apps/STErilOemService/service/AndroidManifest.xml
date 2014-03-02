@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.stericsson.ril.oem.service"
+	android:sharedUserId="android.uid.phone">
+
+    <permission android:name="com.stericsson.permission.SEND_RIL_OEM_HOOK"
+	                android:label="Send OEM RIL Messages"
+	                android:protectionLevel="signature" />
+
+	<application>
+        <uses-library android:name="com.stericsson.ril.oem" />
+		<service android:name=".STErilOemService"
+                 android:process="com.android.phone"
+                 android:permission="com.stericsson.permission.SEND_RIL_OEM_HOOK">
+			<intent-filter>
+				<!-- Remote service -->
+				<action android:name="com.stericsson.ril.oem.service.STErilOemService"/>
+			</intent-filter>
+
+		</service>
+	</application>
+
+</manifest>

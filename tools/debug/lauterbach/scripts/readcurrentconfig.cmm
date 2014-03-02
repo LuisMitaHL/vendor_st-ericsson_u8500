@@ -1,0 +1,231 @@
+;------------------------------------------------------------
+; readcurrentconfig.cmm
+;------------------------------------------------------------
+; Cmm-file used for reading stored settings from T32_Settings.txt
+;
+; 070907 - KM Initial version
+; 071019 - KM Added support for Linux
+; 071212 - DE Changed so conf. name is used.
+; 071217 - DE Added busmon
+; 081118 - NJ Added extended Linux Support
+; 090403 - NJ Modified for U380
+; 090428 - KM Added Ramdisk
+; 101011 - KM Added etm portzize used by U5500
+; 101129 - KM Added support for Jenny SVP
+; 110511 - KM Added support for Jenny
+; 110516 - KM STM padmux support for Jenny
+;-----------------------------------------------------------
+
+local &line
+local &pos
+local &settingsName
+local &settingsValue
+
+
+ &TrgExist="FALSE"
+
+
+
+if os.file(&UsrPath/T32_settings.txt)
+(
+	open #1 "&UsrPath"/T32_settings.txt /read
+	repeat
+	(
+		read #1 %line &line
+		if (("&line"=="&CurConfig")&&("&line"!=""))
+		(
+			&TrgExist="TRUE"
+
+			&ExeMem=""
+			&LOption=""
+			&LOptionVM=""
+			&LOptionStrip=""
+			&ElfFile=""
+			&SrcPath=""
+			&RSrcPath=""
+			&LinuxDebug=""
+			&LinuxDualRam=""
+			&UseWin=""
+			&UseBrk=""
+			&UseAttach=""
+			&UsrCmm=""
+			&LoadModPath=""
+			&RamdiskFile=""
+			&SynchApp=""
+			&SynchDat=""
+			&SynchAcc=""
+			&SynchAud=""
+			&SynchLte=""
+			&SynchCeva=""
+			&SynchApe=""
+			&SynchCpuA=""
+			&SynchCpuB=""
+			&EtmApp=""
+			&EtmDat=""
+			&EtmAcc=""
+			&EtmAud=""
+			&EtmLte=""
+			&EtmCeva=""
+			&EtmApe=""
+			&EtmCpuA=""
+			&EtmCpuB=""
+			&StmApe=""
+			&AppDataTrace=""
+			&DatDataTrace=""
+			&AccDataTrace=""
+			&AudDataTrace=""
+			&LteDataTrace=""
+			&CevaDataTrace=""
+			&CpuADataTrace=""
+			&CpuBDataTrace=""
+			&EtmPortSize=""
+			&EtmTraceClk=""
+			&SmpDebug=""
+			&RamdumpPath=""
+			&PORStop=""
+			&PRCMUDebug=""
+			do busmon_init
+
+			repeat
+			(
+				read #1 %line &line
+
+				&pos=string.scan("&line","=",0)
+				if (&pos!=-1)
+				(
+					&settingsValue=string.cut("&line",&pos+1)
+					&settingsName=string.cut("&line",&pos-string.len("&line"))
+					; strip spaces
+					&pos=string.scan("&settingsName"," ",0)
+					if (&pos>0)
+						&settingsName=string.cut("&settingsName",&pos-string.len("&settingsName"))
+					&pos=string.scan("&settingsValue"," ",0)
+					if (&pos>=0)
+						&settingsValue=string.cut("&settingsValue",&pos+1)
+
+					if ("&settingsName"=="ExecutionMemory")
+						&ExeMem="&settingsValue"
+					else if ("&settingsName"=="LoadOption")
+						&LOption="&settingsValue"
+					else if ("&settingsName"=="LoadOptionVM")
+						&LOptionVM="&settingsValue"
+					else if ("&settingsName"=="LoadOptionStrip")
+						&LOptionStrip="&settingsValue"
+					else if ("&settingsName"=="LoadFile")
+						&ElfFile="&settingsValue"
+					else if ("&settingsName"=="SourcePath")
+						&SrcPath="&settingsValue"
+					else if ("&settingsName"=="UseRecursePath")
+						&RSrcPath="&settingsValue"
+					else if ("&settingsName"=="UseLinuxDebug")
+						&LinuxDebug="&settingsValue"
+					else if ("&settingsName"=="UseLinuxDualRam")
+						&LinuxDualRam="&settingsValue"
+					else if ("&settingsName"=="UseDefaultWin")
+						&UseWin="&settingsValue"
+					else if ("&settingsName"=="UseDefaultBrk")
+						&UseBrk="&settingsValue"
+					else if ("&settingsName"=="UseAttachRunning")
+						&UseAttach="&settingsValue"
+					else if ("&settingsName"=="UserCmmFile")
+						&UsrCmm="&settingsValue"
+					else if ("&settingsName"=="LoadMod")
+						&LoadModPath="&settingsValue"
+					else if ("&settingsName"=="RamiskFile")
+						&RamdiskFile="&settingsValue"
+					else if ("&settingsName"=="BusmonTracedataDir")
+						&BUSMON_TRACEDATA_DIR="&settingsValue"
+					else if ("&settingsName"=="Perl")
+						&PERL="&settingsValue"
+					else if ("&settingsName"=="UseSynchApp")
+						&SynchApp="&settingsValue"
+					else if ("&settingsName"=="UseSynchDat")
+						&SynchDat="&settingsValue"
+					else if ("&settingsName"=="UseSynchAcc")
+						&SynchAcc="&settingsValue"
+					else if ("&settingsName"=="UseSynchAud")
+						&SynchAud="&settingsValue"
+					else if ("&settingsName"=="UseSynchLte")
+						&SynchLte="&settingsValue"
+					else if ("&settingsName"=="UseSynchCeva")
+						&SynchCeva="&settingsValue"
+					else if ("&settingsName"=="UseSynchApe")
+						&SynchApe="&settingsValue"
+					else if ("&settingsName"=="UseSynchCpuA")
+						&SynchCpuA="&settingsValue"
+					else if ("&settingsName"=="UseSynchCpuB")
+						&SynchCpuB="&settingsValue"
+					else if ("&settingsName"=="UseEtmApp")
+						&EtmApp="&settingsValue"
+					else if ("&settingsName"=="UseEtmDat")
+						&EtmDat="&settingsValue"
+					else if ("&settingsName"=="UseEtmAcc")
+						&EtmAcc="&settingsValue"
+					else if ("&settingsName"=="UseEtmAud")
+						&EtmAud="&settingsValue"
+					else if ("&settingsName"=="UseEtmLte")
+						&EtmLte="&settingsValue"
+					else if ("&settingsName"=="UseEtmCeva")
+						&EtmCeva="&settingsValue"
+					else if ("&settingsName"=="UseEtmApe")
+						&EtmApe="&settingsValue"
+					else if ("&settingsName"=="UseEtmCpuA")
+						&EtmCpuA="&settingsValue"
+					else if ("&settingsName"=="UseEtmCpuB")
+						&EtmCpuB="&settingsValue"
+					else if ("&settingsName"=="UseStmApe")
+						&StmApe="&settingsValue"
+					else if ("&settingsName"=="UseAppDataTrace")
+						&AppDataTrace="&settingsValue"
+					else if ("&settingsName"=="UseDatDataTrace")
+						&DatDataTrace="&settingsValue"
+					else if ("&settingsName"=="UseAccDataTrace")
+						&AccDataTrace="&settingsValue"
+					else if ("&settingsName"=="UseAudDataTrace")
+						&AudDataTrace="&settingsValue"
+					else if ("&settingsName"=="UseLteDataTrace")
+						&LteDataTrace="&settingsValue"
+					else if ("&settingsName"=="UseCevaDataTrace")
+						&CevaDataTrace="&settingsValue"
+					else if ("&settingsName"=="UseCpuADataTrace")
+						&CpuADataTrace="&settingsValue"
+					else if ("&settingsName"=="UseCpuBDataTrace")
+						&CpuBDataTrace="&settingsValue"
+					else if ("&settingsName"=="EtmPortSize")
+						&EtmPortSize="&settingsValue"
+					else if ("&settingsName"=="EtmTraceClk")
+						&EtmTraceClk="&settingsValue"
+					else if ("&settingsName"=="UseSmpDebug")
+						&SmpDebug="&settingsValue"
+					else if ("&settingsName"=="ModemTapEnabled")
+						&ModemTapEnabled="&settingsValue"
+					else if ("&settingsName"=="RamdumpPath")
+						&RamdumpPath="&settingsValue"
+					else if ("&settingsName"=="PORStop")
+						&PORStop="&settingsValue"
+					else if ("&settingsName"=="PRCMUDebug")
+						&PRCMUDebug="&settingsValue"
+					else if ("&settingsName"=="BusmonParseScript")
+						&&BUSMON_PARSE_SCRIPT="&settingsValue"
+					else if ("&settingsName"=="BusmonPerlInclude")
+						&&BUSMON_PERL_INCLUDE="&settingsValue"
+
+				)
+			)
+			while "&line"!="<EOB>"
+		)
+
+		if version.build()>=15499.
+		(
+			if eof()
+				goto done
+		)
+	)
+	while "&line"!="<EOF>"
+)
+
+done:
+close #1
+
+ENDDO
+

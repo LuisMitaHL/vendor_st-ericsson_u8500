@@ -1,0 +1,83 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+USE_OPT_COMPILER=true
+
+include $(MMROOT)/shared/makefiles/Make.config
+
+CPPFLAGS+=  -I$(MMROOT)/video/components/mpeg4enc_sw/arm_nmf/inc \
+		    -DFORCEINLINE= -DINLINE= -O3 -DBOOL_OPT \
+			-I$(MMROOT)/video/components/mpeg4enc/arm_nmf/algo/inc/NEON \
+		    -O3 --asm --thumb
+			
+CPPFLAGS+= -D__ARM_NEON_FDCT__ -D__ARM_NEON_IDCT__
+
+CPPFLAGS+= -D__ARM_NEON_IQ__ -D__ARM_NEON_FQ__
+
+CPPFLAGS+= -D__ARM_NEON_COPY__  -D__ARM_NEON_SAD__  -D__ARM_NEON_SAE__
+
+CPPFLAGS+=  -D__ARM_NEON_EVENT__   
+
+CPPFLAGS+= -D__ARM_NEON_ME__  -D__ARM_NEON_CM__ 
+
+#-DCHROMA_INTERLEAVE
+#-DPROFILE -DALTERNATE_SUB_SAMPLING
+
+CPPFLAGS+= -DCA9 
+
+CPPFLAGS+= -D__NMF
+CPPFLAGS+= -I$(MMROOT)/shared/nmf/$(MMSYSTEM)/api/inc
+
+#CPPFLAGS+= -mfloat-abi=softfp -mfpu=neon	  
+#CPPFLAGS+= -std=c99 -mfloat-abi=softfp -mfpu=neon
+
+
+LDFLAGS += -map -list="mpeg4enc_sw.map"
+
+
+VPATH += $(MMROOT)/video/components/mpeg4enc/arm_nmf/algo/src
+VPATH += $(MMROOT)/video/components/mpeg4enc/arm_nmf/algo/src/NEON
+
+LIBNAME  = mp4enc_sw_nmf
+
+LIBOBJ   = Algorithmic_data_encode \
+   bitstream \
+   bitstream_cpu \
+   dc_prediction \
+   fdct \
+   fquantize \
+   generate_mv \
+   idct \
+   iquantize \
+   MaSa_ratectrl \
+   MMS_ratectrl \
+   motion_compensation \
+   motion_emp \
+   mp4_initialize \
+   mp4e_encode_frame \
+   no_control \
+   random \
+   util \
+   vbv \
+   vlc \
+   writebits \
+   zigzag \
+   fdct_neon \
+   fquantize_neon \
+   util_neon \
+   idct_neon \
+   iquantize_neon \
+   benchmark \
+   motion_compensation_neon \
+   post_filters \
+   H263_dblk \
+   motion_neon   
+	
+
+todo: lib
+
+INSTALL_LIB = libmp4enc_sw_nmf.a
+
+include $(MMROOT)/shared/makefiles/Make.rules
+
+

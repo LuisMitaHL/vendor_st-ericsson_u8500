@@ -1,0 +1,412 @@
+CHANGES
+=======
+
+Forest
+------
+Modified files:
+
+. stelp/ux500.mak
+
+git diff HEAD^ HEAD -- stelp/ux500.mak
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+............................................................
+
+diff --git a/ux500.mak b/ux500.mak
+index 06bf994..2dcf929 100644
+--- a/ux500.mak
++++ b/ux500.mak
+@@ -57,6 +57,15 @@ PATH := $(CURDIR)/u-boot/tools:$(PATH)
+ PATH := $(CURDIR)/tools/toolchain/arm-2009q3/bin:$(PATH)
+ export PATH
+ 
++LOADERS_DIR := '$(TOPLEVEL)/tools/platform/flash_kit/loaders'
++LOADERS_INSTALLDIR := $(TOPLEVEL)/$(IMAGE_OUTPUT_BASE)/loaders
++LOADERS_FLAGS := BINDEST="$(LOADERS_INSTALLDIR)" CROSS_PREFIX=$(CROSS_PREFIX)
++ifeq ($(STE_USE_V1_HW),1)
++  LOADERS_FLAGS += HW_VERSION="__DB_8500_V1"
++else
++  LOADERS_FLAGS += HW_VERSION="__DB_8500_ED"
++endif
++
+ .PHONY: default
+ default: help
+ 
+@@ -126,7 +135,7 @@ kernelfs:
+ ifeq ($(SW_VARIANT),kernel)
+ config: config-$(SW_VARIANT)
+ else	
+-config: config-uboot config-linux-$(STE_PLATFORM) config-$(SW_VARIANT)
++config: config-uboot config-linux-$(STE_PLATFORM) config-$(SW_VARIANT) config-loaders
+ endif
+ 
+ .PHONY: config-linux
+@@ -141,14 +150,14 @@ build: build-$(SW_VARIANT)
+ else ifeq ($(SW_VARIANT),stelp)
+ build: build-uboot build-linux build-wlan build-ltp build-multimedia build-$(SW_VARIANT)
+ else
+-build: build-uboot build-linux build-wlan build-$(SW_VARIANT) build-ltp
++build: build-uboot build-linux build-wlan build-$(SW_VARIANT) build-ltp build-loaders
+ endif
+ 
+ .PHONY: install
+ ifeq ($(SW_VARIANT),kernel)
+ install: install-$(SW_VARIANT)
+ else
+-install: install-$(SW_VARIANT) install-linux-$(STE_PLATFORM) install-wlan
++install: install-$(SW_VARIANT) install-linux-$(STE_PLATFORM) install-wlan install-loaders
+ endif
+ 
+ .PHONY: image
+@@ -156,10 +165,10 @@ image:
+ 	$(MAKE) -f ux500.mak image-$(SW_VARIANT)
+ 	$(MAKE) -f ux500.mak collect-$(SW_VARIANT)
+ .PHONY: clean
+-clean: clean-uboot clean-ltp clean-$(SW_VARIANT) clean-wlan clean-linux
++clean: clean-uboot clean-ltp clean-$(SW_VARIANT) clean-wlan clean-linux clean-loaders
+ 
+ .PHONY: distclean
+-distclean: distclean-uboot distclean-linux
++distclean: distclean-uboot distclean-linux distclean-loaders
+ 
+ .PHONY: config-uboot
+ config-uboot:
+@@ -200,6 +209,9 @@ config-linux-u5500_svp:
+ .PHONY: config-linux-android_emu
+ config-linux-android_emu:
+ 	$(MAKE) -C $(KERNELDIR) $(KERNEL_FLAGS) goldfish_ste_defconfig
++.PHONY: config-loaders
++config-loaders:
++	$(MAKE) -C $(LOADERS_DIR) $(LOADERS_FLAGS) config
+ 
+ .PHONY: config-android
+ config-android:
+@@ -307,6 +319,9 @@ build-lbp:
+ .PHONY: build-ltp
+ build-ltp:
+ 	$(MAKE) -C ltp $(LBP_FLAGS) -f ltp.mak build
++.PHONY: build-loaders
++build-loaders:
++	$(MAKE) -C $(LOADERS_DIR) LOADERS_DEBUG=$(LOADERS_DEBUG)
+ 
+ .PHONY: install-lbp
+ install-lbp:
+@@ -330,6 +345,10 @@ install-linux:
+ install-wlan:
+ 	$(MAKE) -C connectivity/wlan $(WLAN_FLAGS) INSTALL_MOD_PATH=$(INSTALL_MOD_PATH) install
+ 
++.PHONY: install-loaders
++install-loaders:
++	$(MAKE) -C $(LOADERS_DIR) install
++
+ # Installs Linux kernel for u5500 & u8500 & u8500_svp & u5500_svp
+ .PHONY:install-linux-u5500 install-linux-u8500 install-linux-u8500_svp install-linux-u5500_svp install-linux-android_emu
+ install-linux-u5500 install-linux-u8500 install-linux-u8500_svp install-linux-u5500_svp install-linux-android_emu:
+@@ -399,6 +418,9 @@ clean-ltp:
+ .PHONY: clean-wlan
+ clean-wlan:
+ 	$(MAKE) -C connectivity/wlan $(WLAN_FLAGS) clean
++.PHONY: clean-loaders
++clean-loaders:
++	$(MAKE) -C $(LOADERS_DIR) clean
+ .PHONY: distclean-linux
+ distclean-linux:
+ 	$(MAKE) -C $(KERNELDIR) $(KERNEL_FLAGS) distclean
+@@ -409,4 +431,7 @@ distclean-uboot:
+ distclean-android:
+ .PHONY: distclean-lbp
+ distclean-lbp:
++.PHONY: distclean-loaders
++distclean-loaders:
++	$(MAKE) -C $(LOADERS_DIR) distclean
+ 
+............................................................
+
+NewLIB
+------
+Modified files:
+
+. newlib/libc/stdio/Makefile.in
+. newlib/libc/stdio/Makefile.am
+. newlib/libc/stdlib/Makefile.in
+. newlib/libc/stdlib/Makefile.am
+
+diff -u newlib/libc/stdio/Makefile.in newlib/libc/stdio/Makefile.in.orig 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+............................................................
+--- Makefile.in 2010-04-15 13:55:38.298611374 +0200
++++ Makefile.in.orig    2010-04-15 13:55:24.196323248 +0200
+@@ -1457,16 +1457,16 @@
+ # libtool moves vfprintf.o and subsequently can't find it.
+ 
+ $(lpfx)vfprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -short-enums -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)vfiprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -DINTEGER_ONLY -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -short-enums -DINTEGER_ONLY -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)svfprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -short-enums -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)svfiprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -DINTEGER_ONLY -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -short-enums -DINTEGER_ONLY -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)vfscanf.$(oext): vfscanf.c
+        $(LIB_COMPILE) -c $(srcdir)/vfscanf.c -o $@
+............................................................
+
+diff -u newlib/libc/stdio/Makefile.am newlib/libc/stdio/Makefile.am.orig 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+............................................................
+--- Makefile.am 2010-04-15 13:58:40.614669675 +0200
++++ Makefile.am.orig    2010-04-15 13:53:04.952111738 +0200
+@@ -168,16 +168,16 @@
+ # libtool moves vfprintf.o and subsequently can't find it.
+ 
+ $(lpfx)vfprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -fshort-enums -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)vfiprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -DINTEGER_ONLY -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -fshort-enums -DINTEGER_ONLY -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)svfprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -fshort-enums -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)svfiprintf.$(oext): vfprintf.c
+-       $(LIB_COMPILE) -DINTEGER_ONLY -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
++       $(LIB_COMPILE) -fshort-enums -DINTEGER_ONLY -DSTRING_ONLY -c $(srcdir)/vfprintf.c -o $@
+ 
+ $(lpfx)vfscanf.$(oext): vfscanf.c
+        $(LIB_COMPILE) -c $(srcdir)/vfscanf.c -o $@
+............................................................
+
+diff -u newlib/libc/stdlib/Makefile.in newlib/libc/stdlib/Makefile.in.orig 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+............................................................
+--- Makefile.in 2010-04-15 13:50:02.878164118 +0200
++++ Makefile.in.orig    2010-04-15 13:49:43.400110938 +0200
+@@ -1401,7 +1401,7 @@
+ $(lpfx)ldtoa.$(oext): ldtoa.c mprec.h
+ $(lpfx)ecvtbuf.$(oext): ecvtbuf.c mprec.h
+ $(lpfx)mbtowc_r.$(oext): mbtowc_r.c mbctype.h
+-       $(LIB_COMPILE) -c $(srcdir)/mbtowc_r.c -o $@
++       $(LIB_COMPILE) -c -fshort-enums $(srcdir)/mbtowc_r.c -o $@
+ 
+ $(lpfx)mprec.$(oext): mprec.c mprec.h
+ $(lpfx)strtod.$(oext): strtod.c mprec.h
+............................................................
+
+diff -u newlib/libc/stdlib/Makefile.am newlib/libc/stdlib/Makefile.am.orig 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+............................................................
+--- Makefile.am 2010-04-15 13:49:33.580795259 +0200
++++ Makefile.am.orig    2010-04-15 13:49:24.620610881 +0200
+@@ -266,7 +266,7 @@
+ $(lpfx)ldtoa.$(oext): ldtoa.c mprec.h
+ $(lpfx)ecvtbuf.$(oext): ecvtbuf.c mprec.h
+ $(lpfx)mbtowc_r.$(oext): mbtowc_r.c mbctype.h
+-       $(LIB_COMPILE) -c $(srcdir)/mbtowc_r.c -o $@
++       $(LIB_COMPILE) -c -fshort-enums $(srcdir)/mbtowc_r.c -o $@
+ 
+ $(lpfx)mprec.$(oext): mprec.c mprec.h
+ $(lpfx)strtod.$(oext): strtod.c mprec.h
+............................................................
+
+Tool Chain
+----------
+Modified files:
+
+. android-ndk-toolchain-20100414/build/Makefile.in
+. android-ndk-toolchain-20100414/build/configure
+
+
+git diff -- android-ndk-toolchain-20100414/build/Makefile.in
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+............................................................
+diff --git a/Makefile.in b/Makefile.in
+index dd85c95..20e27a6 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -94,9 +94,9 @@ export        CC_FOR_TARGET="$(TARGET_GCC_BUILDDIR)/gcc/xgcc \
+ # CFLAGS_FOR_TARGET= -O2 -Os -g -fexceptions
+ # CXXFLAGS_FOR_TARGET=$(CFLAGS_FOR_TARGET) -frtti
+ # 
+-CFLAGS_FOR_TARGET= -O2 -Os -g
++CFLAGS_FOR_TARGET= -O2 -Os -g -fno-short-enums
+ CXXFLAGS_FOR_TARGET=$(CFLAGS_FOR_TARGET)
+-LDFLAGS_FOR_TARGET=-mandroid
++LDFLAGS_FOR_TARGET=-mandroid -nostdlib
+ 
+ # Helper
+ prefix-list = $(foreach e, $(2), $(join $1, $e))
+@@ -238,10 +238,13 @@ stmp-config-target-newlib: stmp-build-target-binutils \
+         $(TARGET_BINUTILS_EXPORTS) ; \
+         $(TARGET_MINIMAL_GCC_EXPORTS) ; \
+         $(call find-package-srcdir, ${NEWLIB_VERSION})/configure \
+-         $(NEWLIB_CONFIG_ARGS && \
++         $(NEWLIB_CONFIG_ARGS)) && \
+        $(STAMP) $@
+ stmp-build-target-newlib: stmp-config-target-newlib
+-       $(MAKE) -C ${NEWLIB_VERSION} && $(STAMP) $@
++       $(MAKE) -C ${NEWLIB_VERSION} \
++               CFLAGS="$(CFLAGS) -fno-short-enums" \
++               CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
++       && $(STAMP) $@
+ install-target-newlib: stmp-build-target-newlib
+        $(MAKE) -C ${NEWLIB_VERSION} install
+...........................................................
+
+git diff -- android-ndk-toolchain-20100414/build/configure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+............................................................
+diff --git a/configure b/configure
+index 0d92cf6..53fe475 100755
+--- a/configure
++++ b/configure
+@@ -1838,7 +1838,7 @@ case $target in
+     BUILD_ANDROID_GCC=yes
+     GDB_TARGET=arm-elf-linux
+     ;;
+-  arm-newlib-elf)
++  arm-newlib-elf | arm-none-eabi)
+     BUILD_ANDROID_GCC=no
+     ;;
+   i[3456]86-*-linux-gnu | x86_64-*-linux-gnu)
+@@ -2111,7 +2111,7 @@ fi
+ 
+ # newlib version (default is 1.16.0)
+ # newlib is only used for arm-newlib-eabi for testing
+-if test x$target == xarm-newlib-elf ; then
++if test x$target == xarm-newlib-elf || test x$target == xarm-none-eabi; then
+ { echo "$as_me:$LINENO: checking target newlib version to build" >&5
+ echo $ECHO_N "checking target newlib version to build... $ECHO_C" >&6; }
+............................................................
+
+NOTES
+~~~~~
+Maybe we should update the auto make and auto configure scripts as well?
+
+Loaders
+-------
+Modified files:
+
+. Makefile
+
+git diff -- Makefile
+~~~~~~~~~~~~~~~~~~~~
+............................................................
+diff --git a/Makefile b/Makefile
+index f7d3b59..15544c4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -16,6 +16,8 @@ LOADERVERSION := P1B
+ LEGACY_COMPAT_INCLUDE_PATH := -I./src/platform_support/stn8500/legacy_compatibility
+ REAL_INCLUDE_PATH := ${LEGACY_COMPAT_INCLUDE_PATH} \
+                -I$(AUTO_DIR)/ \
++               -I$(CLIBINCL)/\
++               -I$(GCCLIBINCL)/\
+                -I./src/platform_support/\
+                -I./src/platform_support/stn8500/chipid/\
+                -I./src/platform_support/stn8500/hardware_drivers/stn8500/memmap/\
+@@ -176,11 +178,11 @@ HWCONFIG_FLAGS := -DCNH1606644_BDM_USES_EMMC -DCNH1606644_BAM_USES_EMMC -DCNH160
+                   -DENABLE_DEFAULT_BAM_CONFIGURATION -DENABLE_DEFAULT_BDM_CONFIGURATION \
+                   -DCNH1606644_FM_USES_EMMC -DCNH1606644_BDM_USES_EMMC -DCNH1606644_BAM_USES_EMMC \
+                   -D__MMCI_HCL_ENHANCED -D__MMCI_HCL_ELEMENTARY -D__HCL_USB_FB -D$(HW_VERSION)
+-PROJECT_FLAGS := -DUINT64_SUPPORTED -DSINT64_SUPPORTED -DINT64_BASE_TYPE="long long" -DCFG_ENABLE_LOADER_TYPE -D__UART_ENHANCED -DMACH_TYPE_STN8500 -D__RELEASE -DLOADERNAME=\"$(LOADERNAME)\" -DLOADERVERSION=\"$(LOADERVERSION)\" $(HWCONFIG_FLAGS) $(APPCONFIG_FLAGS)
++PROJECT_FLAGS := -fno-short-enums -fdollars-in-identifiers -DUINT64_SUPPORTED -DSINT64_SUPPORTED -DINT64_BASE_TYPE="long long" -DCFG_ENABLE_LOADER_TYPE -D__UART_ENHANCED -DMACH_TYPE_STN8500 -D__RELEASE -DLOADERNAME=\"$(LOADERNAME)\" -DLOADERVERSION=\"$(LOADERVERSI
+ BASE_CFLAGS := -I. $(REAL_INCLUDE_PATH) -mcpu=cortex-a9 -mtune=cortex-a9 -mfpu=vfp -mfloat-abi=softfp -mthumb-interwork \
+                                                         $(if $(USE_THUMB), -mthumb, ) -ffunction-sections -fdata-sections -std=c99 -Wl,-static -Wcast-align $(PROJECT_FLAGS) $(CFLAGS)
+ BASE_AFLAGS := -mthumb-interwork -mcpu=cortex-a9 $(AFLAGS)
+-ALL_LDFLAGS := -T loader.ld -Map $(BUILDFOLDER)/loader.map -static -nostdlib --cref -L$(IMP_CLIB) -L$(IMP_GCCLIB) -lc -liberty -lssp -lgcc -lg --gc-sections $(LDFLAGS)
++ALL_LDFLAGS := -T loader.ld -Map $(BUILDFOLDER)/loader.map -static -nostdlib --cref -L$(IMP_CLIB) -L$(IMP_GCCLIB) -lc -lgcc -lg --gc-sections $(LDFLAGS)
+ 
+ default: build
+ 
+@@ -193,25 +195,27 @@ default: build
+ config : BUILDFOLDER := $(PWD)/build
+ config : AUTO_DIR:=$(BUILDFOLDER)/autogenerated
+ config : IMPORT_DIR:=$(BUILDFOLDER)/imported_dependencies
+-config : CC ?= arm-none-eabi-gcc
+-config : AS ?= arm-none-eabi-as
+-config : LD ?= arm-none-eabi-ld
+-config : GIT ?= "$(shell bash -c "which git")"
+-config : PERL ?= "$(shell bash -c "which perl")"
+-config : OBJCOPY ?= arm-none-eabi-objcopy
+-config : CLIBDIR ?= arm-none-eabi/lib
++config : CC := arm-none-eabi-gcc
++config : AS := arm-none-eabi-as
++config : LD := arm-none-eabi-ld
++config : GIT := "$(shell bash -c "which git")"
++config : PERL := "$(shell bash -c "which perl")"
++config : OBJCOPY := arm-none-eabi-objcopy
++config : CLIBDIR := ./src/platform_support/newlib/lib/
++config : CLIBINCL:= $(CLIBDIR)/../include/
+ config : CLIBDIR := $(patsubst %/thumb,%,$(CLIBDIR))
+ config : CLIBDIR := $(patsubst %/thumb/,%,$(CLIBDIR))
+ config : CLIBDIR := $(if $(USE_THUMB), $(patsubst %,%/thumb,$(CLIBDIR)), $(CLIBDIR) )
+-config : GCCLIBDIR ?= lib/gcc/arm-none-eabi/4.4.1
++config : GCCLIBDIR := lib/gcc/arm-none-eabi/4.4.1
++config : GCCLIBINCL:= $(GCCLIBDIR)/install-tools/include/
+ config : GCCLIBDIR := $(patsubst %/thumb,%,$(GCCLIBDIR))
+ config : GCCLIBDIR := $(patsubst %/thumb/,%,$(GCCLIBDIR))
+ config : GCCLIBDIR := $(if $(USE_THUMB), $(patsubst %,%/thumb,$(GCCLIBDIR)), $(GCCLIBDIR) )
+-config : LCM_CONFIG ?= ./src/loader_code_base/cnh1606344_ldr_communication_module/config
+-config : LCM_CUST_CONFIG ?= ./src/loader_code_base/cnh1606344_ldr_communication_module/customer_config
+-config : SRCDEST ?= ""
+-config : BINDEST ?= ""
+-config : HW_VERSION ?= __DB_8500_ED
++config : LCM_CONFIG := ./src/loader_code_base/cnh1606344_ldr_communication_module/config
++config : LCM_CUST_CONFIG := ./src/loader_code_base/cnh1606344_ldr_communication_module/customer_config
++config : SRCDEST := ""
++config : BINDEST := ""
++config : HW_VERSION := __DB_8500_ED
+ config : LINEPREFIX := "$(shell bash -c "if [ ${VERBOSE} ]; then echo ""; else echo "@"; fi")"
+ config : IMP_CLIB := $(IMPORT_DIR)/newlib/
+ config : IMP_GCCLIB := $(IMPORT_DIR)/gcc/
+@@ -234,6 +238,10 @@ config :
+        @echo "CLIBDIR := $(CLIBDIR)" >> ./.config
+        @echo GCCLIBDIR: $(GCCLIBDIR)
+        @echo "GCCLIBDIR := $(GCCLIBDIR)" >> ./.config
++       @echo CLIBINCL: $(CLIBINCL)
++       @echo "CLIBINCL := $(CLIBINCL)" >> ./.config
++       @echo GCCLIBINCL: $(GCCLIBINCL)
++       @echo "GCCLIBINCL := $(GCCLIBINCL)" >> ./.config
+        @echo LCM_CONFIG: $(LCM_CONFIG)
+        @echo "LCM_CONFIG := $(LCM_CONFIG)" >> ./.config
+        @echo LCM_CUST_CONFIG: $(LCM_CUST_CONFIG)
+@@ -256,8 +264,6 @@ config :
+        @echo "IMP_CLIB := $(IMP_CLIB)" >> ./.config
+        @echo IMP_GCCLIB: $(IMP_GCCLIB)
+        @echo "IMP_GCCLIB := $(IMP_GCCLIB)" >> ./.config
+-       @echo VERBOSE: $(VERBOSE)
+-       @echo "LINEPREFIX := $(LINEPREFIX)" >> ./.config
+        @if test ! -e specific_flags.txt; then \
+                echo "#Addtional flags for specific files can be added in this file" >specific_flags.txt; \
+                echo "#and will be used when compiling/assemble the source file" >>specific_flags.txt; \
+@@ -618,7 +624,6 @@ sign:
+ # Will remove every built file from
+ # the local copy.
+ clean:
+-       @rm -f  ./.config
+        @rm -f  $(AUTO_DIR)/error_codes.h 2> /dev/null
+        @rm -f  $(AUTO_DIR)/audit.h 2> /dev/null
+        @rm -f  $(AUTO_DIR)/audit.c 2> /dev/null
+@@ -638,6 +643,11 @@ clean:
+        @rm -rf $(BUILDFOLDER) 2> /dev/null
+        @rm -f  $(EXE_DIR)/lcm.so 2> /dev/null
+ 
++# Will remove every built file from
++# the local copy.
++distclean: clean
++       @rm -f ./.config
++
+ #Generate LCM files
+ lcm_generate: setup_config auto ./src/platform_support/stn8500/hardware_drivers/stn8500/memmap/memmap_logical.h ./src/platform_support/stn8500/hardware_drivers/stn8500/memmap/memmap_physical.h
+        $(LINEPREFIX) cp -f ./src/platform_support/stn8500/hardware_drivers/stn8500/memmap/memmap_logical.h     $(BUILDFOLDER)/inc/memmap_logical.h
+...........................................................

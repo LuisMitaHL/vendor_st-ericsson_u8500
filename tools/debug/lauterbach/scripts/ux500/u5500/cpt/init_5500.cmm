@@ -1,0 +1,250 @@
+; #####################################################################
+; # DB5500 debug & Trace script file: init_5500.cmm                   #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2010-01-19
+; Contact: jingyi-xiaoyan.lu@st.com
+; 2010-09-17: New platform names support; debug_through_reset call by script and added it to 5500_config parameters.
+; 2010-10-17: activate L2cache support if DDR is enabled. 
+;	      DB5500-V2 support.
+; 2011-02-24: restructure so that it's more readable.
+; 2011-03-15: added "semihost" parameter in dbg_config.
+
+;!!!!!!!!!!!!!!!!!!!!!!!!!!!
+; PLEASE CHECK OR UPDATE THE "SECTION_3" of this script before integrate this script into your working environment.
+;!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;
+; This script is used for debug and SoC configuration on DB5500.
+;
+; ---- Usage and Parameters
+; Usage: do init_5500 <5500_ver> <platform> <dbg_config> <core> <5500_config>
+; Parameters:
+; <5500_ver> indicates the version of DB5500. It can be
+;	v1:		means DB5500-V1.
+;	v2:		means DB5500-V2.
+; <platform> indicates the name of platform on which this script is executed. It can be
+;	B5500:		means big board.
+;	S5500 :		means small board.
+;	EVB:		means Electrical Validation Board.
+;	palladium	means Palladium platform
+; <dbg_config> indicates the configuration related to the debugging. It can be one of the following values or a combination of them. Use "+" for the combination, like "attach+cjtag2pin"
+;	attach:		means the "system.mode.attach" command is used to connect the Trace32 debugger to the CortexA9 core(s). 
+;			The system and core status keep intact in this case. It can not be combined with "up".
+;	up:		means the "system.up" Trace32 command is used to connect the Trace32 debugger to the CortexA9 core(s), and a SYSTEM RESET is issued by the script. It can not be combined with "attach".
+;	cjtag2pin:	means configure the debugger to the cJTAG 2-Pin (narrow) mode. Only available from DB5500 V1.
+;			NOTE THAT the cJTAG is in 4-Pin (wide) mode after the DB5500 boot. Without this value, the debugging is run in cJTAG 4-pin mode.
+;	prcmu		means the PRCMU debugging is needed in DB5500 V1 or higher. Consequently the TAP-PRCMU will be added onto the scan chain.
+;	dbg_thr_reset	means the "debug through reset" is needed. The debugger is configured correctly in this case and the core enters in debug state right after the cpu reset release.
+;	pwrdwn		means the core power domains can be power down during the debugging session. By default, the power down is disabled.
+;	semihost	means configuration script for the semihosting settings. This parameter opens and configures the terminal window.
+; <core> can be
+;	smp:		means SMP debugging. The Trace32 debugger is connected to both CortexA9-0 and CortexA9-1.
+;	cpu0:		means AMP debugging. The Trace32 debugger is Connected to the CortexA9-0.
+;	cpu1:		means AMP debugging. The Trace32 debugger is connected to the CortexA9-1.
+;
+; <5500_config> indicates the scripts related to the DB5500 configuration to be called by init_5500.cmm. It can be one of the following values or a combination of them. Use "+" for the combination, like "default+sxa".
+;	NoConfig:	means not any configuration script is called after the connection to the core(s). Can not be combined with other values. 
+;	default:	means the default necessary configuration script needed by the platform specified by <platform>. If necessary, modify the configuration invoked by this parameter value.
+;	prcmu:		means configuration script related to the PRCMU is called.
+;			Current version calls script initializing the SxA & XP70[PRCMU] clock, reset and PLL frequency settings.
+;	ptm:		means configuration script for the PTM trace activation is called.
+;
+; All parameters are mandatory. Any error in the parameter syntax will cause the execution of the script to quit.
+; 
+
+local &cur_dir &noconfig &default &prcmu &ptm &mod &dbg_thr_reset &smp &debug_stop_the_other_core &semihost
+entry &5500_ver &platform &dbg_config &core &5500_config
+area
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_1: 
+// Parameters stuff
+//
+////////////////////////////////////////////////////////////////////
+gosub HandleParameters
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_2: 
+// Debugger configuration (Do not modify)
+//
+////////////////////////////////////////////////////////////////////
+gosub ConfigDebug
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_3:
+// Please give your approriate configuration scripts here below
+//
+////////////////////////////////////////////////////////////////////
+; ---- check cutID
+; ASIC ID number is provided into the ROM at address 0x9001_FFF4
+&cutID=d.l(eahb:0x9001FFF4) 
+if &cutID==0x005500A0&&"&5500_ver"!="V1"||&cutID==0x005500B0&&"&5500_ver"!="V2"
+(
+	print "ERROR: wrong 5500 version: &5500_ver, comparing to Chip ID 0x", %HEX &cutID
+	enddo (1==0)
+)
+
+; ---- call configuration scripts 
+if &noconfig==0  // Not NoConfig
+(
+	if &default==1  //the default necessary configuration needed by the platform specified by <platform>.
+	(
+		if "&platform"=="B5500"||"&platform"=="S5500"||"&platform"=="EVB"
+		(
+			&cur_dir=os.ppd()
+			if "&5500_ver"=="V1"
+				do "&cur_dir/mem_init/V1/db5500_top_script.cmm"
+			else if "&5500_ver"=="V2"
+				do "&cur_dir/mem_init/V2/db5500_top_script.cmm"
+		)
+		else if "&platform"=="PALLADIUM"
+		(
+			do "&cur_dir/palladium/system_init.cmm
+		)
+	)
+	if &prcmu==1
+		//call the PRCMU init script here, if needed.
+	if &ptm==1
+	  	do "ca9_ptm_cfg.cmm"
+	if &mod==1
+	(
+		if "&platform"=="B5500"||"&platform"=="S5500"||"&platform"=="EVB"
+		(
+		 	do "db5500_init_modem.cmm"	
+		)
+		else if "&platform"=="PALLADIUM"
+		(	
+			do "&cur_dir/palladium/modem_init.cmm"
+		)
+
+	)
+
+	// other configuration here, if any.
+)
+
+
+; ---- semihosting settings
+if &semihost==1
+(
+	do "&cur_dir/semihosting_setting.cmm"
+
+	// !!!!!!! The stack and heap settings here are only example. Give your own settings below.  !!!!!!!!
+	if "&core"=="CPU0"
+	  term.heapinfo 0x40020000 0x40030000 0x40040000 0x40030000
+	else
+	  term.heapinfo 0x40040000 0x40050000 0x40060000 0x40050000
+)
+
+; ---- set the L2 Cache base address
+if (d.l(eahb:0x8015601C)>>16.&1)==1
+	sys.o.l2cb 0xA0412000
+
+enddo (0==0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; =================== Sub Functions ===================
+
+
+HandleParameters:
+	; ---- Parameter Check
+	&debug_stop_the_other_core="Y" // AMP mode, when cpu0 runs the chip configuration, the cpu1 should be halted.
+	if string.upr("&5500_ver")!="V1"&&string.upr("&5500_ver")!="V2"
+	(
+		print "init_5500.cmm: Unknow DB5500 version: &5500_ver !"
+		enddo (1==0)
+	)
+	&5500_ver=string.upr("&5500_ver")
+	if string.upr("&platform")!="B5500"&&string.upr("&platform")!="S5500"&&string.upr("&platform")!="PALLADIUM"&&string.upr("&platform")!="EVB"
+	(
+		print "init_5500.cmm: Unknown platform: &platform !"
+		enddo (1==0)
+	)
+	&platform=string.upr("&platform")
+	// &dbg_config parameter is checked by the debug config scrips called by this script.
+	&smp=0.
+	if string.upr("&core")=="SMP"
+	(
+		print "SMP debug."
+		&smp=1.
+		&debug_stop_the_other_core="N"
+	)
+	else if string.upr("&core")=="CPU0"||string.upr("&core")=="CPU1"
+	(
+		print "AMP debug."
+		&smp=0.
+	)
+	else
+	(
+		print "init_5500.cmm: Unknown core name: &core. Expected value: smp, cpu0 or cpu1"
+		enddo (1==0)
+	)
+	&core=string.upr("&core")
+	
+	; --- extract the config values
+	&noconfig=0
+	&default=0
+	&prcmu=0
+	&ptm=0
+	&mod=0
+	while string.len("&5500_config")!=0
+	(
+		&plus_idx=STRING.SCAN("&5500_config","+",0)
+		if &plus_idx==0
+		(
+			print "Invalid parameter: &5500_config !"
+			enddo
+		)
+		if &plus_idx==-1 // there is not any "+", i.e. &5500_config contains only 1 word
+			&plus_idx=string.len("&5500_config")
+	
+		// extract the first parameter
+		&temp=string.mid("&5500_config",0,&plus_idx)
+		&param=string.lwr("&temp")
+	
+		// check the extraited paramter's validity
+		if "&param"!="noconfig"&&"&param"!="default"&&"&param"!="prcmu"&&"&param"!="ptm"&&"&param"!="etm"&&"&param"!="mod"
+		(
+			print "init_5500.cmm: Invalid configuration parameter: &temp !"
+			enddo (1==0)
+		)
+	
+		&&(param)=1
+	
+		// cut off the first parameter and the "+"
+		&5500_config=string.cut("&5500_config",&plus_idx+1)
+	)
+	return
+
+ConfigDebug:
+	; ---- general GUI settings
+	&cur_dir=os.ppd()
+	do "&cur_dir/general_gui_setting.cmm"
+	
+	; ---- path setting
+	do "&cur_dir/general_path_setting.cmm"
+	
+	; ---- call debug configuration script
+	do "&cur_dir/5500_debug_config_a9ss.cmm" &5500_ver &platform &dbg_config &core &debug_stop_the_other_core
+	entry &ret
+	if !&ret
+		enddo &ret
+	return
+

@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML>
+<HEAD>
+  <TITLE>Trace Viewer help -- Getting Started</TITLE>
+    <LINK REL=Stylesheet TYPE="text/css" HREF="../../css/trcviewer_help.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+</HEAD>
+<BODY class='WhiteBackgnd, main'>
+
+<!-- Start of header.inc -->
+<table width="100%" cellpadding=4 cellspacing=0 border=0>
+  <td valign="top">
+    <tr>
+      <td bgcolor="" align=left>
+        <img src="../../images/trcviewer_icon_64x64.gif" width=64 height=64 ALT="Trace Viewer Logo">
+      </td>
+      <td bgcolor="">
+      </td>
+      <td class= 'HeaderBanner' align=left valign=top width="100%">
+        <p class= 'TitleBig'>Trace Viewer Workbench</p>
+        <p class= 'TitleMedium'>Documentation &gt; Getting Started</p>
+      </td>
+    </tr>
+  </td>
+</table>
+<!-- End of header.inc -->
+
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Requirements</p>
+
+<p>Prior to using decoder/Trace Viewer you should have either collected a trace file or be planning to collect a trace using one of the supported capture boxes (with STMProbe or Lauterbach Trace32 for example).
+</p>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>How it works</p>
+
+<p>The Trace Viewer workbench is a GUI tool based on Eclipse that wraps the decoder executable.</p>
+<p>This is to say that when you start parsing a trace file, the Trace Viewer workbench executes the decoder and then read its outputs from a socket.
+ It parses the descriptors to add context to the data displayed (such as link to source, name displaying, ...) and computes some basic statistics (source annotations only, when available).
+</p>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Collect data from a trace file</p>
+
+<p>You have 3 ways to collect data with decoder:</p>
+<ul>
+  <li>
+    <p>Using Trace Viewer GUI.</p>
+  </li>
+  <li>
+    <p>Using Trace Viewer from your shell.</p>
+  </li>
+  <li>
+    <p>Using decoder directly from your shell.</p>
+  </li>
+</ul>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>1. Using Trace Viewer GUI</p>
+
+<p align="center"><img src="../../images/trcviewer_wb.png"/></p>
+
+<p>This can be done in a few steps detailed below:</p>
+<ol>
+  <li>
+    <p>Launch Trace Viewer Workbench using the trcviewer.[sh|bat] script.</p>
+  </li>
+  <li>
+    <p>Click on the <img src="../../images/open.gif"/> "Open" button of the Trace Viewer view or select "File > Open Trace Stream..." in the menu or press "CTRL+O". A dialog box should appear.</p>
+  </li>
+  <li>
+    <p>In this dialog box you can configure the options of the decoder instance that will be executed. The configuration is divided in multiple tabs.</p>
+    <ul>
+      <br/>
+      <br/>
+      <li>
+        <p><i>Input Tab:</i></p>
+        <br/>
+        <p align="left"><img src="../../images/getting_started_1.png"/></p>
+        <br/>
+        <p>Select a source for your trace data:</p>
+        <ul>
+          <li>
+            <p>Trace File</p>
+            <p>Use a binary file as input. Recognized formats are STPv1 from a Combiprobe box through Trace32, special format from "Other" box and MTT trace format. Enter the path to your trace file in the text field.</p>
+          </li>
+          <li>
+            <p>Named Pipe</p>
+            <p>Use a named pipe as input. Recognized formats are the same as for the file input. Enter the name of your pipe in the text field (for example "\\.\pipe\mypipe" on windows).</p>
+          </li>
+          <li>
+            <p>Capture Box Connection</p>
+            <p>Connect to a capute box stream (through TraceServer). The use of the TraceServer is transparent to the user, by default the TraceServer will be started (and managed) automatically by Trace Viewer (see "Tools > Preferences > Trace Viewer > Trace Server" to modify this behaviour). You can then select one of following targets:</p>
+            <ul>
+              <li>
+                <p><i>COMBIPROBE</i>: connect to a Combiprobe box through a named pipe (same as using the named pipe option).</p>
+              </li>
+              <li>
+                <p><i>OTHER</i>: connect to a "Other" box. No more options required.</p>
+              </li>
+              <li>
+                <p><i>STMPROBE</i>: connect to a STMProbe box. The location of the FPGA driver directory is requested.</p>
+              </li>
+              <li>
+                <p><b>[Must be activated in the preferences]</b> <i>FILE_COMBIPROBE</i>: use a Combiprobe generated file as input (same as using the trace file option).</p>
+              </li>
+              <li>
+                <p><b>[Must be activated in the preferences]</b> <i>FILE_OTHER</i>: use a "Other" box generated file as input (same as using the trace file option).</p>
+              </li>
+              <li>
+                <p><b>[Must be activated in the preferences]</b> <i>FILE_TS_STP</i>: debug purpose only, use a STP file dumped by the TraceServer as input (cannot be achieved using the trace file option).</p>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <p>Select the options your trace data:</p>
+        <ul>
+          <li>
+            <p>Pause on startup</p>
+            <p>The viewer will start the parsing in pause mode which is slightly faster but does not display live results. For more information please refer to the Tips section at the bottom of this page.</p>
+          </li>
+        </ul>
+      </li>
+      <br/>
+      <br/>
+      <li>
+        <p><i>Descriptors Tab:</i></p>
+        <br/>
+        <p align="left"><img src="../../images/getting_started_3.png"/></p>
+        <br/>
+        <p>Enter the XML descriptors to use (xml files, supported types are OST and CTDT in version 2.7.0, SBAG descriptors planned in future releases)</p>
+        <ul>
+          <li>
+            <p><i>Descriptors (-d|--descriptor option):</i></p>
+            <p>Add the descriptors you want to use in this list.</p>
+          </li>
+          <li>
+            <p><i>Lists (-D|--descriptors-file option):</i></p>
+            <p>Add here your descriptors list, this is to say a file with one descriptor path per line, relative paths are considered relative to the list file (this and the above list are added to the descriptors of decoder).</p>
+          </li>
+        </ul>
+      </li>
+      <br/>
+      <br/>
+      <li>
+        <p><i>Advanced Tab:</i></p>
+        <br/>
+        <p align="left"><img src="../../images/getting_started_2.png"/></p>
+        <br/>
+        <p>Enter the advanced options to use</p>
+        <ul>
+          <li>
+            <p>Working Directory:</p>
+            <p>Optional field to set the working directory of decoder.</p>
+          </li>
+          <li>
+            <p>Manual Options:</p>
+            <p>Optional field to set advanced options for the decoder. The "Help" button displays the list of availabe options. You might press 'CTRL+SPACE' to activate auto-completion for your options.</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>If the options are correct, the status line (at the bottom of the window) should be green, if it is not the case the cause of the error (red) or warning (orange) is detailed.</p>
+  </li>
+  <li>
+    <p>Click the OK button, the parsing starts or waits for a pipe connection in pipe mode, or wait for a TraceServer connection in TraceServer mode (success is achieve when "INFO: Connected to TraceServer" is displayed in blue in the console view). The console view should always display a message saying that the socket connection with the workbench is ok (blue message) and it also displays the command-line that has been executed.</p>
+  </li>
+</ol>
+<br/>
+<br/>
+<p align="center"><img src="../../images/trcviewer_wb_run.png"/></p>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>2. Using Trace Viewer from command-line</p>
+
+<p>Trace Viewer in command-line mode means that you use command-line options to set-up which trace will be parsed when the GUI will appear.</p>
+<p>The steps are described below:</p>
+<ul>
+  <li>
+    <p><b>Launch:</b></p>
+    <p>Launch Trace Viewer.[sh|bat] followed by "--decoder" option and then the decoder options you want to use ("bin/decoder --help" will show you the available options for this task, or see below for a list of options available in v0.10.0).</p>
+  </li>
+  <li>
+    <p><b>Result:</b></p>
+    <p>As a result the GUI is opening normally and when it is openend the parsing starts directly, without having to click on the "Open" button</p>
+  </li>
+</ul>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>3. Using the decoder executable from command-line</p>
+
+<p>The decoder executable is located in the "bin" directory of your install.</p>
+<p>You can get the full list of options with the "--full-help" option. You can get even more details on some options using "--detailed-help" instead.</p>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Tips</p>
+
+<ol>
+  <li>
+    <p><b>Pause on Startup:</b></p>
+    <p>Pause the viewer before executing decoder and shows a progress bar until the execution is over, then the viewer is refreshed with the full parsed data (no live display of the events).</p>
+    <p>While pause is active the parsing speed is slightly increased, so this option is recommended if you want to parse a file and see the result only when it is complete (resume/refresh is automatically done at the end of the parsing).</p>
+    <p>Note that even if this option is activated you can resume the live display view by clicking on the resume button. If you do so, the automatic resume at the end of the parsing is deactivated.</p>
+  </li>
+  <li>
+    <p><b>Contextual Help:</b></p>
+    <p>Press F1 in a focused view to get a quick link to the view documentation.</p>
+    <br/>
+    <br/>
+    <p align="center"><img src="../../images/contextual_help.png"/></p>
+    <br/>
+    <br/>
+    <p align="center"><img src="../../images/help_trcviewer.png"/></p>
+  </li>
+</ol>
+
+
+<!-- Start of footer.inc -->
+<br/>
+<br/>
+<br/>
+<table width="100%" align="center" cellspacing="2" cellpadding="0"  border="0">
+  <tr>
+    <td>
+      <img src="../../images/st_logo.jpg" width=76 height=45 ALT="ST Logo">
+    </td>
+    <td width="100%">
+      <p class="vsmall"><i>&copy; STMicroelectronics and others 2010, 2011, 2012. All rights reserved.</i>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- End of footer.inc -->
+
+</BODY>
+</HTML>
+

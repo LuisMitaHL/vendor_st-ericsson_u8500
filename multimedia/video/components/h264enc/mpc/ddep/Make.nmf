@@ -1,0 +1,69 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+COMPONENT_TOP_DIR=../..
+ITF_PREFIX := video_h264enc_ddep
+
+COMPONENTS+= h264enc.mpc.ddep
+
+CONFFILES = h264enc/mpc/ddep/ddep.conf
+#Trace
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+OST_SRC_DIR = src 
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_DSP)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_dsp
+INSTALL_DICO=$(OST_DICO_NAME).xml
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/inc/autogentraces
+CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/mpc/fsm/generic/include
+CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/common
+USER2MPCITFS_CPP += h264enc.mpc.api.mpc_trace_init
+MPC2USERITFS_CPP += h264enc.mpc.api.mpc_trace_init_ack
+
+COMPONENT_TOP_DIR=../..
+
+ITF_PREFIX := video_h264enc_ddep
+
+COMPONENTS+= h264enc.mpc.ddep
+
+CONFFILES = h264enc/mpc/ddep/ddep.conf
+
+IDLLIST += 	h264enc/mpc/api/algo.idl				\
+			h264enc/mpc/api/end_algo.idl			\
+			h264enc/mpc/ddep/api/start_codec.idl	\
+			h264enc/mpc/ddep/api/end_codec.idl    \
+			h264enc/mpc/api/mpc_trace_init.idl  \
+			h264enc/mpc/api/mpc_trace_init_ack.idl
+
+IDTLIST +=	h264enc/mpc/share/$(SVA_SUBSYSTEM)/t1xhv_vec_h264.idt	\
+			../idt/$(MMDSPCORE)/t1xhv_common.idt					\
+			../idt/$(MMDSPCORE)/t1xhv_retarget.idt					\
+			../idt/$(MMDSPCORE)/t1xhv_vdc.idt
+
+
+SRCPATH+= \
+	$(MMROOT)/shared/ens/components 								\
+	$(MMROOT)/shared/ens/components/common 							\
+	$(MM_IDT_DIR)								\
+	$(MMROOT)/video/idt												\
+	$(MMROOT)/video/vfm/common										\
+	$(MMROOT)/video/components/h264enc/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/h264enc/mpc/share
+
+CPPFLAGS+=
+
+#host FSM != mpc fsm  (ORDER: mpc first!!!)
+CPPFLAGS += -I$(MM_NMF_COMP_SRC_MMDSP_DIR)/fsm/generic/include
+CPPFLAGS += -I$(MM_NMF_REPO_DIR)/$(MMDSPCORE)
+
+USER2MPCITFS_CPP += h264enc.mpc.ddep.api.start_codec
+
+MPC2USERITFS_CPP += h264enc.mpc.ddep.api.end_codec
+
+ASYNCITFS_CPP += h264enc.mpc.ddep.api.log_event
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+#include $(MMROOT)/video/makefiles/Make.doc
+

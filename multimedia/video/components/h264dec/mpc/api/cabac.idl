@@ -1,0 +1,38 @@
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_h264.idt>
+
+interface h264dec.mpc.api.cabac { 
+
+/* This file specifies methods included inside provided interface named iCabac
+          i.e. :          - startCabac
+*/
+
+/** @addtogroup h264decStartCabacGroup startCabac
+ *  @ingroup h264decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Launch HED phase
+ \param[in]  cb							call back pointer
+ \param[in]  bitstream_start    Start address of input bitstream buffer 
+ \param[in]  bitstream_end      End address of input bitstream buffer, points to last byte of last NAL
+ \param[in]  ib_start           Intermediate Buffer start address
+ \param[in]  hed_cfg            Value to be programmed in PP_CFG
+ \param[in]  hed_picwidth       Value to be programmed in PP_PICWIDTH
+ \param[in]  hed_codelength     Value to be programmed in PP_CODELENGTH
+ *
+ *
+ */ 
+
+void startCabac(	
+					h264dec.mpc.api.end_cabac *cb,
+					t_uint32 bitstream_start,
+					t_uint32 bitstream_end,
+					t_uint32 ib_start,
+					t_uint32 hed_cfg,
+					t_uint32 hed_picwidth,
+					t_uint32 hed_codelength);
+
+ /** @} */ // end of h264decStartCabacGroup
+
+} // interface h264dec.mpc.api.cabac

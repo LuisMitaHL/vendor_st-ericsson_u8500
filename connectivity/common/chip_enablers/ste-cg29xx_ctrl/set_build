@@ -1,0 +1,63 @@
+#!/bin/bash
+
+USAGE="usage: $0 BUILD=[obj|src]"
+
+#Sanity check of arguments
+if [ $# != 1 ]; then
+    echo $USAGE
+    echo "  BUILD=src: source git is used in build"
+    echo "  BUILD=obj: object git is used in build"
+    exit
+fi
+
+# split key=value into two separate key and value parameters
+until [ -z $1  ]; do
+  OPTLEN=`expr length "$1"`
+  KEYPOS=`expr index "$1" =`
+  KEY=`expr substr "$1" 1 $((KEYPOS - 1))`
+  VALUE=`expr substr "$1" $((KEYPOS + 1)) $OPTLEN`
+  shift
+
+  case $KEY in
+    BUILD )
+      BUILD=$VALUE ;;
+    * )
+      echo "Unknown parameter ${KEY}"
+      echo $USAGE
+      exit
+  esac
+done
+
+
+MODULE_NAME="ste-cg29xx_ctrl"
+FLAGS="-v"
+
+
+if [ "$BUILD" = "src" ]; then
+# move prebuilt git away, restore source git
+    if [ -d ${MODULE_NAME}_hidden ]; then
+	mv $FLAGS $MODULE_NAME prebuilt/${MODULE_NAME}
+	mv $FLAGS ${MODULE_NAME}_hidden ${MODULE_NAME}
+    fi
+    if [ -f ${MODULE_NAME}/Android.mk.hidden ]; then
+	mv $FLAGS  ${MODULE_NAME}/Android.mk.hidden ${MODULE_NAME}/Android.mk
+    fi
+    if [ -f prebuilt/${MODULE_NAME}/Android.mk ]; then
+	mv $FLAGS prebuilt/${MODULE_NAME}/Android.mk prebuilt/${MODULE_NAME}/Android.mk.hidden
+    fi
+fi
+
+
+if [ "$BUILD" = "obj" ]; then
+    if [ -d prebuilt/${MODULE_NAME} ]; then
+# move source git away, restore prebuilt git
+	mv $FLAGS ${MODULE_NAME} ${MODULE_NAME}_hidden
+	mv $FLAGS prebuilt/${MODULE_NAME} ${MODULE_NAME}
+    fi
+    if [ -f ${MODULE_NAME}_hidden/Android.mk ]; then
+	mv $FLAGS ${MODULE_NAME}_hidden/Android.mk ${MODULE_NAME}_hidden/Android.mk.hidden
+    fi
+    if [ -f ${MODULE_NAME}/Android.mk.hidden ]; then
+	mv $FLAGS ${MODULE_NAME}/Android.mk.hidden ${MODULE_NAME}/Android.mk
+    fi
+fi

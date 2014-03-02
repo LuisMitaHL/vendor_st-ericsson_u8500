@@ -1,0 +1,924 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.7" />
+<title></title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Times New Roman;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+tt {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+.monospaced {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install();
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_1_signing">1. Signing</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>When security is enabled in the Platform, Flash Kit needs to have a sign server configured when signing the software.
+There are several possbilities regarding signing using Sign tool CLI.
+The first option is to use <a href="#global"><strong>sign server</strong></a> which should have all packages that you need.
+Another option is to set up local sign server which is not a standard part of delivery due to security reasons.
+And finally it is possible to sign <a href="#local"><strong>without using sign server</strong></a>, if the switch --local is used in the signing command.<br />
+It is necessary to set <strong>SIGNSERVER</strong> and <strong>SIGNPACKAGEROOT</strong> (in Linux system) environment variables if a sign server is going to be used to do the signing.
+For correct IP for Sign Server in STE enviroment or gvfs setup info see official <a href="http://wiki.lud.stericsson.com/wiki/index.php/Flash_Kit#Configure_a_Sign_Server">wikipage</a>.
+If local signing  is used, it is necessary to set <strong>LOCAL_SIGNPACKAGEROOT</strong>, <strong>LOCAL_KEYROOT</strong> and <strong>LOCAL_SIGNKEYSANDPACKAGESROOT</strong> environment variables.</p></div>
+<div class="paragraph"><p>It is possible to overwrite the enviroment variables with program arguments.</p></div>
+<div class="paragraph"><p><em>For acces problems in STE environment see <a href="http://wiki.lud.stericsson.com/wiki/index.php/Signing_software">wikipage</a></em></p></div>
+<div class="sect2">
+<h3 id="_1_1_environment_variables">1.1 Environment variables</h3>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<strong>SIGNSERVER</strong> [REQUIRED]
+</dt>
+<dd>
+<p>
+    Is to point to a server
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>SIGNPACKAGEROOT</strong> [REQUIRED in Linux environment]
+</dt>
+<dd>
+<p>
+    Is to point to the share that contains the sign packages.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>LOCAL_SIGNPACKAGEROOT</strong> [OPTIONAL]
+</dt>
+<dd>
+<p>
+        Is to point to the local sign package root.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>LOCAL_KEYROOT</strong> [OPTIONAL]
+</dt>
+<dd>
+<p>
+        Is to point to the local key root (used for software signing).
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>LOCAL_ENCRYPTIONKEYROOT</strong> [OPTIONAL]
+</dt>
+<dd>
+<p>
+  Is to point to the local encryptionkey root (used for loader encryption).
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>LOCAL_SIGNKEYSANDPACKAGESROOT</strong> [OPTIONAL]
+</dt>
+<dd>
+<p>
+  Is to point to the local common folder where keys and packages are stored (used for software signing).
+</p>
+</dd>
+</dl></div>
+</div>
+<div class="sect2">
+<h3 id="_1_2_program_arguments_to_overwrite_enviroment_variables">1.2 Program arguments to overwrite enviroment variables</h3>
+<div class="paragraph"><p>You can set any of the above enviroment variables as program argument in command line and overwrite the value defined in the enviroment variable.</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<strong>-ss or --sign-servers</strong> [REQUIRED]
+</dt>
+<dd>
+<p>
+    To overwrtie SIGNSERVER enviroment variable you should use <em>-ss</em> or <em>--sign-servers</em> as program argument in command line.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-spr or --sign-package-root</strong> [REQUIRED in Linux environment]
+</dt>
+<dd>
+<p>
+    To overwrtie SIGNPACKAGEROOT enviroment variable you should use <em>-spr</em> or <em>--sign-package-root</em> as program argument in command line.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-lspr or --local-sign-package-root</strong> [OPTIONAL]
+</dt>
+<dd>
+<p>
+        To overwrtie LOCAL_SIGNPACKAGEROOT enviroment variable you should use <em>-lspr</em> or <em>--local-sign-package-root</em> as program argument in command line.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-lkr or --local-key-root</strong> [OPTIONAL]
+</dt>
+<dd>
+<p>
+        To overwrtie LOCAL_KEYROOT enviroment variable you should use <em>-lkr</em> or <em>--local-key-root</em> as program argument in command line.
+</p>
+</dd>
+<dt class="hdlist1">
+<strong>-lekr or --local-encription-key-root</strong> [OPTIONAL]
+</dt>
+<dd>
+<p>
+        To overwrtie LOCAL_ENCRYPTIONKEYROOT enviroment variable you should use <em>-lekr</em> or <em>--local-encription-key-root</em> as program argument in command line.<br />
+</p>
+</dd>
+</dl></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="local">2. Setting up enviroment for local signing</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_2_1_windows_configuration">2.1 Windows configuration</h3>
+<div class="paragraph"><p>You can set Environment variables permanently using Control panel &#8594; System &#8594; Advanced tab &#8594; Environment variables or type them for current command line session using <strong>SET</strong> command.</p></div>
+<div class="paragraph"><p><strong><em>SET LOCAL_ENCRYPTIONKEYROOT=</strong> &lt;local encryptionkeys directory&gt;</em><br />
+<strong><em>SET LOCAL_KEYROOT=</strong> &lt;local keys directory&gt;</em><br />
+<strong><em>SET LOCAL_SIGNPACKAGEROOT=</strong> &lt;local packages directory&gt;</em> <br />
+<strong><em>SET LOCAL_SIGNKEYSANDPACKAGESROOT=</strong> &lt;local common directory where keys and packages are stored&gt;</em> <br />
+<strong><em>SET SIGNSERVER=</strong> &lt;local sign directory&gt;</em><br /></p></div>
+<div class="paragraph"><p>If you are trying to use local sign server, there is recommended to share your package folder using standard windows sharing. This will make folder easily accessible for linux machines.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_2_2_linux_configuration">2.2 Linux configuration</h3>
+<div class="paragraph"><p>There is several ways to set up environment variable under Linux.
+ You can add function to .bashrc located in your home folder, or you can write .sh script to do that (add this script to you profile.d folder to run script automatically after startup)
+ There is possibility to simply type variables to your terminal window using <strong>export</strong> command (only using profile.d located script, variables will be set permanently)</p></div>
+<div class="paragraph"><p><strong><em>export LOCAL_SIGNPACKAGEROOT</strong>  &lt;local packages directory&gt;</em> <br />
+<strong><em>export LOCAL_KEYROOT</strong> &lt;local keys directory&gt;</em><br />
+<strong><em>export LOCAL_ENCRYPTIONKEYROOT</strong> &lt;local encryptionkeys directory&gt;</em> <br />
+<strong><em>export LOCAL_SIGNKEYSANDPACKAGESROOT</strong> &lt;local common directory where keys and packages are stored&gt;</em> <br /></p></div>
+<div class="paragraph"><p>If you are trying to acces local copy of sign server on linux you should mount windows package dir on sign server.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>Example:
+1) mkdir &lt;mount-point folder&gt;
+2) export SIGNPACKAGEROOT=&lt;mount-point folder&gt;
+3) root mount.ciffs  //&lt;server IP&gt;/ &lt;shared folder name&gt;  $SIGNPACKAGEROOT  –o user=USER_NAME  domain=DOMAIN</tt></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="global">3.  Setting up enviroment for Sign Server</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_3_1_windows_configuration">3.1 Windows configuration</h3>
+<div class="paragraph"><p>To use a sign server from a Windows workstation, the user must define one environment variable pointing out the sign server to use.<br /></p></div>
+<div class="paragraph"><p><strong><em>SET SIGNSERVER</strong>=&lt;sign server ip number&gt;:&lt;sign server port&gt;</em> will set adress of sign server only for current console window<br />
+It is also possible to set more then one sign server.<br />
+<strong><em>SET SIGNSERVER</strong>=&lt;sign server 1 ip number&gt;sign server 1 port&gt;;&lt;sign server 2 ip number&gt;sign server 2 port&gt;</em>'</p></div>
+<div class="paragraph"><p>It is also possible to set this value with the control panel for permanent usage. The computer has to be restarted after, but when this is done, the value will be set for the computer until it is removed.</p></div>
+<div class="paragraph"><p>Control panel &#8594; System &#8594; Advanced tab &#8594; Environment variables &#8594;
+Set a new “user variables” named <em>SIGNSERVER</em> to value “&lt;sign server ip number&gt;:&lt;sign server port&gt;”</p></div>
+</div>
+<div class="sect2">
+<h3 id="_3_2_linux_configuration">3.2 Linux configuration</h3>
+<div class="paragraph"><p>To use a sign server from a Linux workstation, the user must define two enviroment variables.<br /></p></div>
+<div class="paragraph"><p><strong><em>export SIGNSERVER=</strong>&lt;sign server ip number&gt;:&lt;sign server port&gt;</em><br />
+<strong><em>export SIGNPACKAGEROOT</strong>=&lt;mount point&gt;</em><br />
+It is also possible to set more then one sign server.<br />
+<strong><em>export SIGNSERVER=</strong>&lt;sign server ip number&gt;:&lt;sign server port&gt;;&lt;sign server 2 ip number&gt;sign server 2 port&gt;</em><br />
+<strong><em>export SIGNPACKAGEROOT</strong>=&lt;mount point1&gt;;&lt;mount point2&gt;</em><br /></p></div>
+<div class="paragraph"><p>The user also has to mount a windows share where the sign packages are stored, because sign server is running on windows only.<br />
+<em>mount.cifs //&lt;share ip number&gt;/&lt;share&gt; $SIGNPACKAGEROOT -o user=$USER</em><br /></p></div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2012-09-04 11:30:33 Central European Daylight Time
+</div>
+</div>
+</body>
+</html>

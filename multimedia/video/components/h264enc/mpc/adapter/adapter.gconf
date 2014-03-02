@@ -1,0 +1,24 @@
+//
+//       Configuration file for h264 encoder Adapter
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+
+primitive h264enc.mpc.adapter
+{
+
+// H264 Encoder adapter
+requires h264enc.mpc.ddep.api.start_codec					as iStartCodec16bits
+provides h264enc.mpc.ddep.api.start_codec					as iStartCodec24bits
+
+requires h264enc.mpc.ddep.api.end_codec						as iEndCodec24bits
+provides h264enc.mpc.ddep.api.end_codec						as iEndCodec16bits
+
+option CPPFLAGS "-ICONF_ROOT/inc -D__T1XHV_NMF_ENV=1 -DMMDSP=1"
+// adapter MUST work in mode 24
+option CFLAGS "-O3 -g"
+option stack= 512
+
+}

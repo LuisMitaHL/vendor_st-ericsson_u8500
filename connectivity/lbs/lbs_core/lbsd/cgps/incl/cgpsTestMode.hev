@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPS_TESTMODE_HEV__
+#define __CGPS_TESTMODE_HEV__
+
+/*
+* Copyright (C) ST-Ericsson 2009
+*
+* cgpsTestMode.hev
+* Date: 07-09-2009
+* Author: Balaji Natakala
+* Email : balaji.natakala@stericsson.com
+*/
+
+#ifdef AGPS_TEST_MODE_FTR
+
+#ifdef __CGPS9TESTMODE_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif
+
+/* + LMSQC06481 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \var vg_CgpsATcommandActivated
+* \brief Gloabl variable set by AT when at command is recieved
+*/
+GLOBAL bool vg_CgpsATcommandActivated
+#ifdef __CGPS9TESTMODE_C__
+= FALSE
+#endif
+;
+#endif /*CGPS_CNO_VALUE_FTR*/
+/* - LMSQC06481 : Production test */
+
+#undef GLOBAL
+
+#endif /* AGPS_TEST_MODE_FTR */
+
+#endif /*__CGPS_TESTMODE_HEV__*/
+

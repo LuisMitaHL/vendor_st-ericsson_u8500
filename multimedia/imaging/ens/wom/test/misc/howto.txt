@@ -1,0 +1,32 @@
+Launch make file from scratch
+STE_PLATFORM    =ux600_svp
+LBP_BUILD_TOP   =/work1/1232
+LBP_PRODUCT_OUT =$LBP_BUILD_TOP/out/$STE_PLATFORM
+
+
+setenv MM_MAKEFILES_DIR $LBP_BUILD_TOP/vendor/st-ericsson/multimedia/shared/makefiles
+
+Compilation:
+sources are installed for debug in  $LBP_PRODUCT_OUT/obj/mmbuildout/rootfs/cortexA15-x-gnu-x/$PWD
+libraries are  installed in  $LBP_PRODUCT_OUT/obj/mmbuildout/lib/cortexA15-x-gnu-x/
+obj are  installed in        $LBP_PRODUCT_OUT/obj/mmbuildint/imaging/ens/wom/obj/cortexA15-x-gnu-x/
+components are installed in:
+$LBP_PRODUCT_OUT/obj/mmbuildout/rootfs/cortexA15-x-gnu-x/usr/lib/ste_omxcomponents/
+$LBP_BUILD_TOP/out/tmp/ux500-build.MLIxxfZVXX6JB/rootfs/usr/lib/ste_omxcomponents
+$LBP_BUILD_TOP/out/tmp/ux500-build.MLIxxfZVXX6JB/symbols/usr/lib/ste_omxcomponents
+
+Omx components:
+standard omx ens components are installed in usr/lib/ste_omxcomponents/.
+
+Imaging one in usr/lib/ste_img_omxcomponents/.
+For changing this path  you can override IMG_OMX_COMPONENTS_DIR environment variable
+		export IMG_OMX_COMPONENTS_DIR=usr/lib/ste_img_omxcomponents
+		
+Test with mmte_bellagio
+OMX_GetHandle ImgCpt OMX.ST.ImgEns_Test1
+OMX_FreeHandle ImgCpt
+
+
+Loader Bellagio:
+Uses a file in root omxladers. each line contains the full path of the omxloader to load. For us lib/libste_img_enswrapper.so
+

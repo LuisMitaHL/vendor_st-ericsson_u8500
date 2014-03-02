@@ -1,0 +1,42 @@
+﻿<?xml version="1.0"?>
+<!-- The following DTD must not be included in every configuration file. It is only used when   -->
+<!-- validating the XML document                                                                -->
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                    	(bax:flash_archive?, bax:ram_image?)>
+    <!ELEMENT bax:source                              	(#PCDATA)>
+    <!ELEMENT bax:flash_archive                       	(bax:entry*)>
+	<!ELEMENT bax:ram_image								(bax:entry*)>
+    <!ELEMENT bax:entry                               	(bax:source,bax:attribute*)>
+    <!ELEMENT bax:attribute                         	(#PCDATA)>
+
+    <!ATTLIST target_configuration      xmlns:bax       CDATA                                   	#FIXED "TBD">
+    <!ATTLIST bax:entry                 name      		CDATA                         				#REQUIRED>
+    <!ATTLIST bax:entry                 type      		CDATA										#REQUIRED>
+    <!ATTLIST bax:attribute             name      		CDATA                         				#REQUIRED>
+]>
+<target_configuration>
+	<bax:ram_image>
+	    <bax:entry name="boot_image.bin" type="x-empflash/bootimage">
+			<bax:source>loader-bip</bax:source>
+		</bax:entry>
+		<bax:entry name="mem_init.bin" type="x-empflash/image">
+			<bax:source>loader-meminit</bax:source>
+			<bax:attribute name="TOC-ID">MEM_INIT</bax:attribute>
+		</bax:entry>
+		<bax:entry name="power_management.bin" type="x-empflash/image">
+			<bax:source>loader-prcmu</bax:source>
+			<bax:attribute name="Target">/flash0, 0x00090000</bax:attribute>
+			<bax:attribute name="TOC-ID">PWR_MGT</bax:attribute>
+		</bax:entry>
+		<bax:entry name="loader" type="x-empflash/image">
+			<bax:source>loader</bax:source>
+			<bax:attribute name="TOC-ID">NORMAL</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x00000000</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x00000000</bax:attribute>
+		</bax:entry>
+	</bax:ram_image>
+</target_configuration>
+

@@ -1,0 +1,22 @@
+primitive mpeg4dec.mpc.algo_deblock
+{
+provides lifecycle.constructor                              as constructor
+
+provides mpeg4dec.mpc.api.algo_deblock                        as iAlgoDeblock
+requires mpeg4dec.mpc.api.end_algodeblock                    as oEndAlgoDeblock
+
+requires resource_manager.api.resource  as iResource
+provides resource_manager.api.inform_resource_status   as iInformResourceStatus referenced
+
+requires vpp.mpc.api.algo                         as vpp_algo
+provides vpp.mpc.api.end_algo                     as ivppEndAlgo prefix vpp referenced
+
+sources src/algo_deblock.c
+
+option memories EMB24RAM|EMB16RAM|XROM|EXT24RAM|EXT16RAM
+
+option CFLAGS "-O3 -g -D__T1XHV_NMF_ENV=1 -DMMDSP=1"
+
+option stack= 256
+
+}

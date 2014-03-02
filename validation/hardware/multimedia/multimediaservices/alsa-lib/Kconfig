@@ -1,0 +1,34 @@
+#
+# Alsa-lib configuration
+#
+
+menuconfig ALSALIB
+	bool "Alsa-lib Configuration"
+	help
+	  This module provides alsa library
+
+if ALSALIB
+
+config ALSALIB_DIR
+	string
+	default ./multimediaservices/alsa-lib
+
+config ALSALIB_DEPS
+	string
+	default ""
+
+config ALSALIB_STRIP_DISABLED
+	bool "Disable strip"
+	depends on ALSALIB
+	default n
+	help
+	  This will disable strip for this module
+
+config ALSALIB_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on ALSALIB
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # ALSALIB

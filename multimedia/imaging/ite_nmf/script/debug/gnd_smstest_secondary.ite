@@ -1,0 +1,64 @@
+#do $(IMAGING_PATH)/ite_nmf/script/debug/gnd_smstest_secondary.ite
+LogPE disable
+
+#For LR Pipe
+#setusecase LR VGA YUV422RI
+# For LR Pipe
+#setusecase HR VGA YUV420MB_D
+# For BMS
+#setusecase BMS VGA RAW12
+bmsmode STILL
+bmsout BAYERSTORE2
+
+SMSHelp
+
+# ------------------------------------------------
+# ------- first test : SMS Sanity Test ---------
+# ------------------------------------------------
+bms prepare
+bms start
+
+SMSSanityTest
+
+bms stop
+bms free
+
+HR prepare
+HR start
+
+SMSSanityTest
+
+HR stop
+HR free
+
+
+LR prepare
+LR start
+
+SMSSanityTest
+
+LR stop
+LR free
+
+# ------------------------------------------------
+# ------- second test : SMS Test Rx Streaming -
+# ------------------------------------------------
+SMSTest HR wait 640 488 640 488 400 0x0A0A
+
+SMSTest LR wait 320 244 320 244 2940 0x0A0A
+
+SMSTest BMS wait 320 244 320 244 2940 0x0A0A
+
+
+# ------------------------------------------------
+# ------- third test :  SMS Test Rx Stopped ------
+# ------------------------------------------------
+
+SMSTest HR nowait 640 488 640 488 400 0x0A0A
+
+SMSTest LR nowait 320 244 320 244 2940 0x0A0A
+
+SMSTest BMS nowait 320 244 320 244 2940 0x0A0A
+
+
+#stopenv

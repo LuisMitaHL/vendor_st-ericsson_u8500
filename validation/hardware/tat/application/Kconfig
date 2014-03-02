@@ -1,0 +1,39 @@
+#
+# Tatapplication configuration
+#
+
+menu "Tatapplication"
+
+menuconfig TATAPPLICATION
+	bool "Tatapplication"
+	depends on LIBAB && LIBDB && LIBI2C
+	help
+	  depends on LIBAB, LIBDB and LIBI2C
+
+if TATAPPLICATION
+
+config TATAPPLICATION_DIR
+	string
+	default ../tat/application
+
+config TATAPPLICATION_DEPS
+	string
+	default "LIBAB LIBDB LIBI2C"
+
+config TATAPPLICATION_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATAPPLICATION
+	default n
+	help
+	  This will disable strip for this module
+
+config TATAPPLICATION_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATAPPLICATION
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATAPPLICATION
+
+endmenu

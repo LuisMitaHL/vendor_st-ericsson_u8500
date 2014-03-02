@@ -1,0 +1,37 @@
+;------------------------------------------------------------
+; syncronize_targets.cmm
+;------------------------------------------------------------
+;
+; 090508 - KM Initial version
+;-----------------------------------------------------------
+
+// Prepare for syncronize debuggers
+
+;What cores are we debugging?
+if INTERCOM.PING(&icApp)
+	&AppStarted="True"
+if INTERCOM.PING(&icMmdspSva)
+	&MmdspSvaStarted="True"
+if INTERCOM.PING(&icMmdspSia)
+	&MmdspSiaStarted="True"
+
+ SYNCH.MASTERGO ON
+ SYNCH.MASTERBREAK ON
+ SYNCH.MASTERSTEP OFF
+ SYNCH.SLAVEGO ON
+ SYNCH.SLAVEBREAK ON
+ SYNCH.SLAVESTEP OFF
+
+ if ("&AppStarted"=="True")
+	SYNCH.CONNECT &icApp
+
+  SYNCH.ON			;bugfix
+ if (STR.SCAN(OS.ID(),"SVA",0)>=0)&&("&SynchMmdspSva"=="False")
+	SYNCH.OFF
+ else if (STR.SCAN(OS.ID(),"SIA",0)>=0)&&("&SynchMmdspSia"=="False")
+	SYNCH.OFF
+ else
+	SYNCH.ON
+
+
+ ENDDO

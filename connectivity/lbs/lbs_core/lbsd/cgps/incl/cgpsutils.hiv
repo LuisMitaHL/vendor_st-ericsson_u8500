@@ -1,0 +1,103 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSUTILS_HIV__
+#define __CGPSUTILS_HIV__
+/**
+* \file cgpsutils.hiv
+* \date 07/08/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all varaibale used by cgps4utils.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 07.08.08 </TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __CGPS4UTILS_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS4UTILS_C__*/
+
+
+/**
+*\var vg_CgpsCpOperatorRules
+*\brief TRUE if the next control plane registration is dedicated to an emergency call
+*/
+GLOBAL t_CGPSOperatorRules vg_CgpsCpOperatorRules[CGPS_MAX_OPERATOR_IN_RULE_TAB_SIZE]
+#ifdef __CGPS4UTILS_C__
+=
+{
+   /* Default requirements */
+   {
+      0,        /* MCC */
+      0,        /* MNC */
+      0x7FFF,   /* new session Rules */
+      0,        /* old session rules */
+      0         /*operator rule */
+   }
+}
+#endif
+;
+
+/**
+*\var vg_CGPS_CurrentOperator
+*\brief Current operator obtained with MCC and MNC
+*/
+GLOBAL uint8_t vg_CGPS_CurrentOperator
+#ifdef __CGPS4UTILS_C__
+= 0   /* default rules */
+#endif
+;
+/*+SYScs46505*/
+/**
+*\var vg_AssistTrack
+*\brief Assistance Tracking context
+*/
+GLOBAL t_cgps_AssistTracking vg_AssistTrack;
+
+/*-SYScs46505*/
+/**
+* \var vg_cgps_user_config
+* \brief Used to store User Configuration informations
+*/
+GLOBAL t_CGPSUserConfig vg_cgps_user_config;
+
+/**
+* \var vg_cgps_logging_config
+* \brief Used to store Logging Configuration informations
+*/
+GLOBAL t_CGPSLoggingConfig vg_cgps_logging_config;
+
+
+/**
+* \var vg_cgps_platform_config
+* \brief Used to store Platform Configuration informations
+*/
+GLOBAL t_CGPSPlatformConfig vg_cgps_platform_config;
+
+/**
+* \var vg_CGPS_Config_Ver
+* \brief contains the config tool version to be used
+*/
+GLOBAL int8_t vg_CGPS_Config_Ver[]
+#ifdef __CGPS4UTILS_C__
+= CONFIG_VER
+#endif
+;
+
+#undef GLOBAL
+#endif /* __CGPSUTILS_HIV__ */

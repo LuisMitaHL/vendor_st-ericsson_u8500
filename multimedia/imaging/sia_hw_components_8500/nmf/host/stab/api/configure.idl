@@ -1,0 +1,17 @@
+/* used to provide the projection curve address mapping (physical as reported by DSP,
+   logical as used by stab). As stab uses a pair of buffers for ping-pong, it 
+   will automatically calculate offset of second buffers from size 
+*/
+void informBuffers(t_uint32 hCurvePhysical, t_sint32 * hCurveLogical, 
+                   t_uint32 vCurvePhysical, t_sint32 * vCurveLogical, 
+                   t_uint32 lr_x_size, t_uint32 lr_y_size,
+                   t_uint32 hr_x_size, t_uint32 hr_y_size,
+                   t_uint32 lr_x_origin, t_uint32 lr_y_origin,
+                   t_uint32 hr_x_origin, t_uint32 hr_y_origin,
+                   t_uint32 max_lr_x_size, t_uint32 max_lr_y_size,
+                   t_uint32 max_hr_x_size, t_uint32 max_hr_y_size,t_sint32 rotation);
+
+/* used to enable/disable stab, and inform it of LR-only mode. Calling this function
+   will also reinitialize stab algorithm
+*/
+void activateStab(t_bool enable, t_bool lr_only, t_uint32 framerate);

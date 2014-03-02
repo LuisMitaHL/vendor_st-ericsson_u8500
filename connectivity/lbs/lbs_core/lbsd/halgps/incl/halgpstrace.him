@@ -1,0 +1,106 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSTRACE_HIM__
+#define __HALGPSTRACE_HIM__
+/**
+* \file halgpstrace.him
+* \date 25/01/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all macro used to generate trace in HALGPS module.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.01.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+#ifdef __RTK_E__
+#define ACCESS_RIGHTS_ALL
+#include "trace.h"
+#undef ACCESS_RIGHTS_ALL
+#endif  /* __RTK_E__ */
+
+
+#ifdef __RTK_E_
+#define HALGPS_MAX_TRACE_BYTES  4000
+#elif AGPS_LINUX_FTR
+#define HALGPS_MAX_TRACE_BYTES  1000
+#else
+#define HALGPS_MAX_TRACE_BYTES  1000
+#endif
+
+
+#define HALGPS_MAX_FILE_BYTES  1005
+
+
+/**
+* \def MC_HALGPS_TRACE_ERR
+*
+* Used to trace errors from HALGPS
+*/
+#define MC_HALGPS_TRACE_ERR(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_ERR, __VA_ARGS__ )
+
+/**
+* \def MC_HALGPS_TRACE_WRN
+*
+* Used to trace warnings from HALGPS
+*/
+#define MC_HALGPS_TRACE_WRN(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_WRN, __VA_ARGS__ )
+
+/**
+* \def MC_HALGPS_TRACE_INF
+*
+* Used to trace information messages from HALGPS
+*/
+#define MC_HALGPS_TRACE_INF(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_INF, __VA_ARGS__ )
+
+/**
+* \def MC_HALGPS_TRACE_DBG
+*
+* Used to trace debug information from HALGPS
+*/
+#define MC_HALGPS_TRACE_DBG(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_DBG, __VA_ARGS__ )
+
+
+/**
+* \def MC_HALGPS_TRACE_FNC
+*
+* Used to trace function information from HALGPS
+*/
+#define MC_HALGPS_TRACE_FNC(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_FNC, __VA_ARGS__ )
+
+
+/**
+* \def MC_HALGPS_GENERATE_ERROR_NUMBER
+*
+* Genrate error number for HALGPS module and a no blocking defense
+*/
+#define MC_HALGPS_GENERATE_ERROR_NUMBER(halgps_error)\
+        (((uint8_t)FILE_NUMBER << 24) | ((uint8_t)PROCEDURE_NUMBER << 16) | ((uint8_t)halgps_error<<8) | ((uint8_t)0)); \
+        MC_DIN_ERROR( NO_BLOCKING, halgps_error )
+
+
+/**
+* \def MC_HALGPS_GENERATE_ERROR_NUMBER
+*
+* Genrate error number for HALGPS module
+*/
+#define MC_HALGPS_TRACE_ERROR(halgps_error)\
+    { memset((int8_t*)pg_HALGPS_TraceErrorBuffer,0,HALGPS_MAX_ERROR_SIZE);\
+        snprintf((char*)pg_HALGPS_TraceErrorBuffer, HALGPS_MAX_ERROR_SIZE, "*********** HALGPS ERROR ************ code : 0x%08lx \n", (long unsigned int)halgps_error);\
+        MC_HALGPS_TRACE_INF((char*)pg_HALGPS_TraceErrorBuffer); }
+
+
+#endif /* __HALGPSTRACE_HIM__ */
+

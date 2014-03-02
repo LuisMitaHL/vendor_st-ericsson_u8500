@@ -1,0 +1,197 @@
+;===================================================
+;
+;  STMicroelectronics confidential
+;  ACT/Physical Debug
+;
+;===================================================
+
+global &elfpath &sourcepath &strippart &targetos
+global &nmf_repositories
+
+;;since T32 MMDSP prod 6.5.1, support of NMF Loadmap 1.2
+entry &pSolibFilename &pAddrProg &pAddrEmbProg &pThis &pComponentName &pXROM &pYROM
+;; solibFilename and other info comes from NMF Loadmap info.
+
+
+;print ""
+;print "<NMF: ^^^^^^^^^^^^^^^^^^ autoload.cmm: &pComponentName ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^>"
+;print "NMF>> calling autoload.cmm : &pSolibFilename &pAddrProg &pAddrEmbProg &pThis &pComponentName &pXROM &pYROM "
+
+;;====
+;;== Checking Parameters ...
+;;=====
+if ("&pSolibFilename"=="")||("&pSolibFilename"=="0x0")
+(
+	print "NMF>>Invalid MPC filename : &pSolibFilename"
+	enddo
+)
+if ("&pComponentName"=="")||("&pComponentName"=="0x0")
+(
+	print "NMF>>Invalid pComponentName : &pComponentName"
+	enddo
+)
+if ("&pAddrProg"=="")
+(
+	print "NMF>>Invalid AddrProg !"
+	enddo
+)
+if ("&pAddrEmbProg"=="")
+(
+	print "NMF>>Invalid pAddrEmbProg !"
+	enddo
+)
+
+;; ====
+;; == Getting NMF Elf files directory list ...
+;; =====
+&nmf_repositories="&ElfFile"+","
+
+if ("&nmf_repositories"==",")
+(
+	print ""
+	print "ERROR : NMF MPC repository list is empty !!!"
+	print ""
+	enddo
+)
+
+;print "NMF>>ELF dir list=&nmf_repositories"
+
+;; ====
+;; == Formatting SolibFilename : '\' -> '/'
+;; =====
+&len_=string.len("&pSolibFilename")
+&offset_hex=string.scan("&pSolibFilename","\",0) ;"
+&offset=format.decimal(3,&offset_hex)
+while &offset>=0
+(
+	&next_hex=&offset_hex+1
+	&before_part=string.mid("&pSolibFilename",0,&offset_hex)
+	&after_part=string.mid("&pSolibFilename",&next_hex,&len_)
+	&pSolibFilename="&before_part"+"/"+"&after_part"
+	&offset_hex=string.scan("&pSolibFilename","\",&next_hex)   ;")
+	&offset=format.decimal(3,&offset_hex)
+)
+;print "NMF>>Elf filename=&pSolibFilename"
+
+
+;; ====
+;; == MPC Components ELF file lookup
+;; =====
+&rev_index=""
+&temp_dir_=""
+
+&index=string.scan("&nmf_repositories",",",0)
+&scan_list="&nmf_repositories"
+&found=0x0
+;print ">> scan_list=&scan_list"
+;print ">> index=&index"
+
+while (&index!=-1)&&(&found==0x0)
+(
+	&rev_index=string.len("&scan_list")-&index
+	&temp_dir_=string.cut("&scan_list",-&rev_index)
+
+	;print ">>index=&index"
+	;print ">>temp_dir_=&temp_dir_"
+	;print ">>rev_index=&rev_index"
+
+	&elf_file="&(temp_dir_)/&(pSolibFilename)"
+	;print ">>elf_file= &elf_file"
+
+	if OS.FILE("&elf_file")
+	(
+		&scan_list="&temp_dir_"
+		;print "NMF>> File &pSolibFilename found in &temp_dir_"
+		&found=0x1
+	)
+	else
+	(
+		&scan_list=string.cut("&scan_list",&index+1)
+	)
+	&index=string.scan("&scan_list",",",0)
+)
+
+if (&found==0x0)
+(
+	print "ERROR : ELF file not found in ELF dir list !!"
+	enddo
+)
+
+&elf_dir="&scan_list"
+&elf_file="&elf_dir/&pSolibFilename"
+
+
+;; ====
+;; == Preparing data.load.elf command arguments
+;; =====
+
+; *** WITH /NMF parameter ***
+;;===> This is not recommanded, does not support multi-instances components since the /nmf option makes load of
+;component static
+; Creating the auto-load command;
+;&loadoptions="/nmf x:&pThis /nocode /noclear /reloc mem0.1 at P:&pAddrProg /name &pComponentName /strippath"
+
+; *** WITHOUT /NMF  ==> must be preceded somehow by "sys.o.nmf on" command
+;; Strippath completly remove any path info from debug info
+
+;; Relocation of standard RAM instructions
+&pAddrProgReloc=""
+if (&pAddrProg!=0x0)||((&pAddrProg==0x0)&&(&pAddrEmbProg==0x0)&&(&pThis==0x0))
+(
+	&pAddrProgReloc="/reloc mem0.1 at P:&pAddrProg"
+)
+
+;; Relocation of ESRAM instructions
+&pAddrEmbProgReloc=""
+if (&pAddrEmbProg!=0x0)
+(
+	&pAddrEmbProgReloc="/reloc mem10 at P:&pAddrEmbProg"
+)
+
+&loadoptions="/nocode /noclear &pAddrProgReloc &pAddrEmbProgReloc"
+
+&data_reloc_used=""
+&temp=""
+if ("&pXROM"!="")&&(&pXROM!=0x0)
+(
+	&temp="&(loadoptions) /reloc mem1.1 at X:&pXROM /reloc mem1.2 like mem1.1 /reloc mem1.4 like mem1.1"
+	&loadoptions="&temp"
+	&data_reloc_used="yes"
+)
+
+if ("&pYROM"!="")&&(&pYROM!=0x0)
+(
+	&temp="&(loadoptions) /reloc mem2.1 at X:&pYROM"
+	&loadoptions="&temp"
+	&data_reloc_used="yes"
+)
+
+&temp="&(loadoptions) /name &pComponentName"
+&loadoptions="&temp"
+
+&nmf_load_option="/dnmf"
+if ("&pThis"=="&pXROM")
+(
+	;; Singleton case
+	&nmf_load_option="/nmf &pThis"
+)
+
+if ("&data_reloc_used"=="yes")
+(
+	&temp="&(nmf_load_option) &(loadoptions)"
+	&loadoptions="&temp"
+)
+
+;print "<NMF: load options: &loadoptions"
+
+if "&SrcPath"!=""
+	&source_info="/sourcepath &SrcPath /strippart ""&LOptionStrip"" "
+
+;print "<NMF: source info: &source_info"
+
+; Executing the command
+d.load.elf &elf_file &loadoptions &source_info
+
+;print "<NMF: vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv>"
+
+enddo

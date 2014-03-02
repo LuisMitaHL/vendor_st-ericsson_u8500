@@ -1,0 +1,171 @@
+/*******************************************************************************
+ *                            C STMicroelectronics
+ *    Reproduction and Communication of this document is strictly prohibited 
+ *      unless specifically authorized in writing by STMicroelectronics.
+ ******************************************************************************/
+/**
+ * \file    t1xhv_vec_h264.idt
+ * \brief   Common data structure and/or definition for H264 encoder algorithm
+ * \author  SVA Firmware team
+ * \date    2010
+ **/
+
+/** @addtogroup vecH264Group H264 Encoder NMF Component
+ *  \brief This part shows a H264 Encoder NMF Component description (in terme
+ *  of configuration and interfaces)
+ *  @{
+ *   
+ * \image html h264_encoder-overview.jpg
+ *   
+ */ 
+
+/** @addtogroup vecH264ConfigurationGroup NMF Configuration file
+ *  \brief Source code of the configuration file of the component \ref vecH264Group 
+ *  @{
+ *  \include h264_encoder_algo.conf
+ */ 
+/** @} */ // end of vecH264ConfigurationGroup
+
+
+/** @addtogroup vecH264ProvidedInterfaceGroup Provided interface(s)
+ *  \brief Description of all provided interfaces of NMF component \ref vecH264Group 
+ *  @{
+ */ 
+
+/** @} */ // end of vecH264ProvidedInterfaceGroup
+
+/** @addtogroup vecH264RequiredInterfaceGroup Required interface(s)
+ *  \brief Description of all required interfaces of NMF component \ref vecH264Group  
+ *  @{
+ */ 
+
+/** @} */ // end of vecH264RequiredInterfaceGroup
+
+#ifndef	_t1xhv_vec_h264_idt
+#define _t1xhv_vec_h264_idt
+
+#include <t1xhv_vec.idt>
+#include <t1xhv_retarget.idt>
+
+/** \brief This structure define parameters of a subtask encode for H264. */
+typedef struct {
+
+  /* the following are image parameters and can change from frame to frame */
+
+  /* FRAME SIZE & CODING MODE */
+  t_ushort_value  frame_width;                  /**<\brief Width  in pixels from current frame         */
+  t_ushort_value  frame_height;                 /**<\brief Height in pixels from current frame         */
+  t_ushort_value  window_width;                 /**<\brief Width  in pixels from current Window        */
+  t_ushort_value  window_height;                /**<\brief Height in pixels from current Window        */
+  t_ushort_value  window_horizontal_offset;     /**<\brief Horizontal offset from current Window       */
+  t_ushort_value  window_vertical_offset;       /**<\brief Vertical offset from current Window         */
+
+  t_ushort_value  picture_coding_type;          /**<\brief Type I or P of actual frame                 */
+  t_ushort_value  idr_flag;                     /**<\brief Picture Intra type IDR                      */
+  t_ulong_value   frame_num;                    /**<\brief Frame number                                */
+  t_ushort_value  pic_order_cnt_type;           /**<\brief POC mode: 0,1,2                             */
+  t_ushort_value  log2_max_frame_num_minus4;    /**<\brief log2 max frame num minus4                   */
+
+  t_ushort_value  FirstPictureInSequence;       /**<\brief Flag to signal if it's the first frame in the sequence       */
+  
+  /* SLICE CONTROL AND ERROR RESILIENCE */
+  t_ushort_value  use_constrained_intra_flag;   /**<\brief 0: Inter MB pixels are allowed for intra prediction 1: Not allowed */
+  t_ushort_value  slice_size_type;              /**<\brief control of the slice size                           */
+  t_ushort_value  slice_byte_size;               /**<\brief  Argument to the specified slice algorithm           */
+
+  t_ushort_value  slice_mb_size;                /**<\brief  Argument to the specified slice algorithm           */
+  t_ushort_value  intra_refresh_type;           /**<\brief enables the Adaptive Intra Refresh (AIR) algorithm */
+  t_ushort_value  air_mb_num;                   /**<\brief the number of macroblocks per frame to be refreshed by the AIR algorithm */
+  t_ushort_value  mv_toggle;                    /**<\brief  toggle to switch temporal MV field index in IME block */
+  
+  t_ushort_value  slice_loss_first_mb[8];       /**<\brief the positions of the first macroblock of slices that have been concealed */
+  t_ushort_value  slice_loss_mb_num[8];         /**<\brief number of macroblocks of slices that have been concealed */
+
+  t_ulong_value   MaxSumNumBitsInNALU ;         /** <\brief max size for a AU   */
+  
+  /* the following parameters are to control the deblocking filter */
+  t_ushort_value  disable_deblocking_filter_idc;  /**<\brief disable loop filter  */
+  t_short_value   slice_alpha_c0_offset_div2;     /**<\brief custom loop filter parameter                */
+ 
+  t_short_value   slice_beta_offset_div2;         /**<\brief custom loop filter parameter                */
+
+  /* the following are specific for use with the rate-controller */
+  t_ushort_value  brc_type;                       /**<\brief the bit rate control (BRC) algorithm       */
+  t_ulong_value   lastBPAUts;                     /**<\brief removal timestamp of last AU with BP SEI message associated with */
+
+  t_ulong_value   NALfinal_arrival_time;          /**<\brief arrival time of previous frame. Used by CBR for 
+                                                    dynamic bitrate change support. */
+  t_ulong_value   NonVCLNALUSize;                 /**<\brief size of non-VCL NALU (i.e. SPS, PPS, filler NALU,...) */
+  
+  t_ulong_value   CpbBufferSize;                  /**<\brief size of CPB buffer. Used by VBR. */
+  t_ulong_value   bit_rate;                       /**<\brief Target bitrate     */
+
+  t_ulong_value   timestamp;                      /**<\brief Timestamp value of current frame */
+  t_ushort_value  sampling_mode;                      /**<\brief Target sampling_mode     */
+  t_ushort_value  TransformMode;                  /**<\brief Controls the use of 4x4 and 8x8 transform mode */
+
+  t_ushort_value  encoder_complexity;             /**<\brief encoder complexity control */
+  t_ushort_value  quant;                          /**<\brief Quantification param used for fixed Qp (no BRC) */
+  t_ushort_value  framerate_num;                  /**<\brief Framerate num*/
+  t_ushort_value  framerate_den;                  /**<\brief Framerate den*/
+
+  t_ushort_value  Delay;                          /**<\brief End-To-End initial delay */
+  t_ushort_value StrictHRDCompliancy;             /**<\brief Flag for HRD compliancy ->impact encoding quality */
+  t_ushort_value QPmin;                           /**<\brief min Qp threshold */
+  t_ushort_value QPmax;                           /**<\brief max Qp threshold */
+
+  t_ulong_value addr_source_buffer;              /**<\brief address of input frame buffer for current frame */
+  t_ulong_value addr_fwd_ref_buffer;             /**<\brief address of reference frame buffer */
+
+  t_ulong_value addr_rec_buffer;                 /**<\brief address of reconstructed frame buffer */
+  t_ulong_value addr_output_bitstream_start;     /**<\brief output bitstream start address */
+
+  t_ulong_value addr_output_bitstream_end;       /**<\brief output bitstream end address */
+  t_ushort_value bitstream_offset;               /**<\brief offset in bits between aligned bitstream start address and
+                                                   first bit to be written by HVA. range value is [0..63]  */
+  t_ushort_value reserved16_1; 
+
+  t_ulong_value addr_ectx;                       /**<\brief Context picture buffer address */
+  t_ulong_value addr_param_inout;                /**<\brief Address of output paramter structure */
+
+  t_ulong_value addr_external_sw;                /**<\brief Address of external search window */
+  t_ulong_value addr_local_rec_buffer;           /**<\brief Address of local reconstructed buffer */
+
+  t_ulong_value addr_external_cwi;               /**<\brief Address of external current window input */
+  t_ulong_value addr_sequence_info_buffer;       /**<\brief Address of sequence info buffer (aka FXB) */ 
+
+} ts_t1xhv_vec_h264_param_in;
+
+typedef ts_t1xhv_vec_h264_param_in *tps_t1xhv_vec_h264_param_in;
+
+
+/** \brief This structure define parameters at the same time input
+ * and output of a subtask encode for H264. */
+typedef struct {
+    t_ulong_value   bitstream_size;               /**<\brief Size in bits of the bitstream that has been written 
+                                                    by an encode subtask, including the header but not the stuffing bits. */
+    t_ulong_value   stuffing_bits;                /**<\brief Number of stuffing bits added in the bitstream during the encode subtask.*/
+
+    t_ulong_value   removal_time;                 /**<\brief Removal time of current frame (nb of ticks 1/framerate) */
+    t_ulong_value   hvc_start_time;               /**<\brief Timestamp of task. Written by HVA */
+
+    t_ulong_value   hvc_stop_time;                /**<\brief Timestamp of task. Written by HVA */
+    t_ulong_value   reserved;
+} ts_t1xhv_vec_h264_param_inout;
+
+typedef ts_t1xhv_vec_h264_param_inout *tps_t1xhv_vec_h264_param_inout;
+
+
+/** \brief This structure define parameters output of a subtask encode for H264. */
+typedef struct {
+  t_ushort_value  error_type;               /**<\brief Error type if an error occurs during the encode subtask. */
+  t_ushort_value  reserved;                 /**<\brief Padding for 4*32 multiple struct size  */
+  t_ulong_value   reserved_1[3];            /**<\brief Padding for 4*32 multiple struct size  */
+} ts_t1xhv_vec_h264_param_out;
+
+typedef ts_t1xhv_vec_h264_param_out *tps_t1xhv_vec_h264_param_out;
+
+
+/** @} */ // end of vecH264Group
+
+#endif /* _t1xhv_vec_h264_idt */

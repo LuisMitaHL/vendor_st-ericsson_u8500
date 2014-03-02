@@ -1,0 +1,518 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#ifndef __CGPS_HEP__
+#define __CGPS_HEP__
+
+/**
+* \file cgps.hep
+*
+* <B>Description:</B> This file contains all external functions required and provided by CGPS.
+*
+*/
+
+/**
+* \addtogroup CGPS_AppliSession_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                          Positioning Session related APIs                                   */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/**
+* \fn e_cgps_Error CGPS0_10ServiceStartReq(uint32_t* pp_Handle)
+* \brief Makes up a handle and returns it to the application.
+* Don't use this function directly, use the macro \ref MC_CGPS_SERVICE_START
+* \param  pp_Handle [out] index to the array of the handler
+* \return error code
+*/
+e_cgps_Error CGPS0_10ServiceStartReq(uint32_t* pp_Handle);
+
+
+/**
+* \fn e_cgps_Error CGPS0_73ServiceStartReq2(uint32_t* pp_Handle)
+* \brief Makes up a handle and returns it to the application.
+* Don't use this function directly, use the macro \ref MC_AGPS_SERVICE_START_REQUEST_2
+* \param  pp_Handle [out] index to the array of the handler
+* \param  p_AppId_Info [in] pointer to the address where the information about application which is requesting for service is stored.
+* \return error code
+*/
+
+
+e_cgps_Error CGPS0_73ServiceStartReq2(uint32_t* pp_Handle, t_cgps_ApplicationID_Info *p_AppId_Info);
+
+/**
+* \fn e_cgps_Error CGPS0_11ServiceStopReq(uint32_t vp_Handle)
+* \brief Deregisters application using vp_Handle and set to default the GPS configuration into CGPS context.
+* Don't use this function directly, use the macro \ref MC_CGPS_SERVICE_STOP
+* \param  vp_Handle [in] index of the handle to deregister
+* \return error code
+*/
+e_cgps_Error CGPS0_11ServiceStopReq(uint32_t vp_Handle);
+
+
+/* +LMSqb93565 */
+/* +LMSqc17721 - BNS : Change in function prototype */
+/**
+* \fn e_cgps_Error CGPS0_05RegisterFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, uint16_t vp_NmeaMask, uint32_t vp_FixRate , uint32_t vp_Timeout, uint16_t vp_HorizAccuracy, uint16_t vp_VertAccuracy, uint32_t vp_AgeLimit)
+* \brief Registers configuration for an application requesting for a fix with specfied QoP. Updates will be returned with defined period until timeout or QoP satisfied.
+* Don't use this function directly, use the macro \ref MC_CGPS_REGISTER_FIX
+* \param vp_Handle the application's handle index
+* \param vp_Callback the callback function called when requested data is available
+* \param vp_OutputType type of data returned to the callback (NMEA or 'C' struct) \ref e_cgps_NavDataType
+* \param vp_FixRate GPS Fix interval in milliseconds, 0 sets value at default rate.
+* \param vp_NmeaMask Nmea mask \ref e_cgps_NmeaMask
+* \param vp_Timeout Max time in milliseconds to deliver the navigation data, even if the accuracy requested isn't reached
+* \param vp_HorizAccuracy horizontal measure accuracy in meters. Setting it to 0,default value of 100m is used.
+* \param vp_VertAccuracy vertical measure accuracy in meters. Setting it to 0,default value of 150m is used.
+* \param vp_AgeLimit age limit in milliseconds of the navigation data. Too old data can't be delivered. 0 value sends only a new position fix.
+* \return error code
+*/
+e_cgps_Error CGPS0_05RegisterFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, uint16_t vp_NmeaMask, uint32_t vp_FixRate , uint32_t vp_Timeout, uint16_t vp_HorizAccuracy, uint16_t vp_VertAccuracy, uint32_t vp_AgeLimit);
+/*e_cgps_Error CGPS0_05RegisterFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, e_cgps_NmeaMask vp_NmeaMask, uint32_t vp_FixRate , uint32_t vp_Timeout, uint16_t vp_HorizAccuracy, uint16_t vp_VertAccuracy, uint32_t vp_AgeLimit);*/
+/* -LMSqc17721 - BNS : Change in function prototype */
+/* -LMSqb93565 */
+
+
+/* +LMSqc17721 - BNS : Change in function prototype */
+/**
+* \fn e_cgps_Error CGPS0_12RegisterPeriodicFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, uint16_t vp_NmeaMask, uint32_t vp_FixRate)
+* \brief Registers configuration for an application requesting a periodic fix
+* Don't use this function directly, use the macro \ref MC_CGPS_REGISTER_PERIODIC_FIX
+* \param vp_Handle index of the application's handle
+* \param vp_Callback the callback function called each time CGPS gets new data
+* \param vp_OutputType type of data returned to the callback (NMEA or 'C' struct) \ref e_cgps_NavDataType
+* \param vp_NmeaMask Nmea mask \ref e_cgps_NmeaMask
+* \param vp_FixRate GPS Fix interval in milliseconds, 0 sets value at default rate.
+* \return error code
+*/
+/*e_cgps_Error CGPS0_12RegisterPeriodicFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, e_cgps_NmeaMask vp_NmeaMask, uint32_t vp_FixRate);*/
+e_cgps_Error CGPS0_12RegisterPeriodicFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, uint16_t vp_NmeaMask, uint32_t vp_FixRate);
+
+
+/**
+* \fn e_cgps_Error CGPS0_13RegisterSingleShotFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, uint16_t vp_NmeaMask, uint32_t vp_Timeout, uint16_t vp_HorizAccuracy, uint16_t vp_VertAccuracy, uint32_t vp_AgeLimit)
+* \brief Registers configuration for an application requesting a single shot fix.
+* Don't use this function directly, use the macro \ref MC_CGPS_REGISTER_SINGLE_SHOT_FIX
+* \param vp_Handle index of the application's handle
+* \param vp_Callback the callback function called when requested data is available
+* \param vp_OutputType type of data returned to the callback (NMEA or 'C' struct) \ref e_cgps_NavDataType
+* \param vp_NmeaMask Nmea mask \ref e_cgps_NmeaMask
+* \param vp_Timeout Max time in milliseconds to deliver the navigation data, even if the accuracy requested isn't reached
+* \param vp_HorizAccuracy horizontal measure accuracy. Setting it to 0,default value of 100m is used.
+* \param vp_VertAccuracy vertical measure accuracy. Setting it to 0,default value of 150m is used.
+* \param vp_AgeLimit age limit in milliseconds of the navigation data. Too old data can't be delivered. 0 value sends only a new position fix.
+* \return error code
+*/
+/*e_cgps_Error CGPS0_13RegisterSingleShotFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, e_cgps_NmeaMask vp_NmeaMask, uint32_t vp_Timeout, uint16_t vp_HorizAccuracy, uint16_t vp_VertAccuracy, uint32_t vp_AgeLimit);*/
+e_cgps_Error CGPS0_13RegisterSingleShotFix(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType, uint16_t vp_NmeaMask, uint32_t vp_Timeout, uint16_t vp_HorizAccuracy, uint16_t vp_VertAccuracy, uint32_t vp_AgeLimit);
+/* -LMSqc17721 - BNS : Change in function prototype */
+
+
+
+/**
+* \fn e_cgps_Error CGPS0_72RegisterGeoTargetAreaFence(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, uint8_t   vp_OutputType, uint16_t vp_NmeaMask, t_cgps_PositioningParams vp_PositioningParams, t_cgps_GeographicTargetArea* pp_TargetArea, uint16_t  vp_SpeedThreshold, e_cgps_EventType vp_EventType)
+* \brief Registers configuration for an application requesting for positioning based on events.
+* Don't use this function directly, use the macro \ref MC_CGPS_REGISTER_FENCE_GEO_TARGET_AREA
+* \param vp_Handle index of the application's handle
+* \param vp_Callback the callback function called when requested data is available
+* \param vp_OutputType type of data returned to the callback (NMEA or 'C' struct) \ref e_cgps_NavDataType
+* \param vp_NmeaMask                   Nmea mask \ref e_cgps_NmeaMask
+*  @param positioning params          Positioning params required for getting position fix
+*  @param targetArea                     Geographical target area  maybe a circle, ellipse and polygon and the boundary defining parameters for the selected shape
+*  @param speedThreshold              Speed Threshold limit
+*  @param areaEventType               Geographic Area Event type(entering,leaving,inside or outside)
+* \return error code
+*/
+e_cgps_Error CGPS0_72RegisterGeoTargetAreaFence( uint32_t           vp_Handle,
+                                                 t_cgps_NavigationCallback    vp_Callback,
+                                                 uint8_t                      vp_OutputType,
+                                                 uint16_t                     vp_NmeaMask,
+                                                 t_cgps_PositioningParams     vp_PositioningParams,
+                                                 t_cgps_GeographicTargetArea* pp_TargetArea,
+                                                 uint16_t                     vp_SpeedThreshold,
+                                                 e_cgps_AreaEventType         vp_AreaEventType
+                                               );
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliGeneral_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                                   General APIs                                              */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/* + LMSqb92911 */
+/**
+* \fn void CGPS0_48SaveNVStore()
+* \brief Saves NV RAM area to host platform NV Store
+* Don't use directly this function. Use the macro \ref MC_CGPS_SAVE_NV_STORE
+* \return none
+*/
+void CGPS0_48SaveNVStore( void );
+/* - LMSqb92911 */
+
+
+/*+ LMSqc13768 : DeleteGpsData */
+/**
+* \fn void CGPS0_62DeleteNVStoreFields(uint32_t v_Fields);
+* \brief Deletes the data items that are specified in the non volatile store.
+* Don't use this function directly, use the macro \ref MC_CGPS_DELETE_NV_STORE_FIELD
+* \param v_Fields [in] Fields that are required to be deleted. Field is are passed as flag, refer \ref e_cgps_NVStoreFields
+* Note that COLD WARM HOT & FACTORY RESET starts delete the required fields to achieve respective starts and shouldnt be combined with other fields.
+* \return none
+*/
+void CGPS0_62DeleteNVStoreFields(uint32_t v_Fields);
+/*- LMSqc13768 : DeleteGpsData */
+
+
+/**
+* \fn void CGPS0_58EnableGps()
+* \brief Enables GPS Service
+* Don't use directly this function. Use the macro \ref MC_CGPS_ENABLE_GPS
+* \return none
+*/
+void CGPS0_58EnableGps(void);
+
+
+/**
+* \fn void CGPS0_59DisableGps()
+* \brief Switches OFF GPS.
+* Note : This function call is effective only when all applications are de-registered.
+* Don't use this function directly. Use the macro \ref MC_CGPS_DISABLE_GPS
+* \return none
+*/
+void CGPS0_59DisableGps(void);
+
+
+/**
+* \fn void CGPS0_00Init()
+* \brief Informs the AGPS stack of mobile initialization during the task creation
+* Don't use this function directly, use the macro \ref MC_CGPS_INIT
+* \return None
+*/
+void CGPS0_00Init(void);
+
+
+/**
+* \fn void CGPS0_09Deinit()
+* \brief Informs the AGPS stack of mobile shutting down
+* Don't use this function directly, use the macro \ref MC_CGPS_DEINIT
+* \return None
+*/
+void CGPS0_09Deinit(void);
+
+
+/**
+* \fn void CGPS0_04UTCCorruptedInd()
+* \brief Indicates UTC corruption by HALGPS.
+* This function sends a message to cgps once the UTC is corrupted.
+* Don't use this function directly, use the macro \ref MC_CGPS_UTC_CORRUPTED
+* \return None
+*/
+void CGPS0_04UTCCorruptedInd(void);
+
+
+/**
+* \fn e_cgps_GpsStatus CGPS0_71EventNotificationRegister(t_cgps_NotifyEventsCallback vp_Callback );
+* \brief Indicates Registering the NI Event Notification
+* This function registers the NI EVENT Callback
+* Don't use this function directly, use the macro \ref MC_CGPS_EVENT_NOTIFICATION_CB_REGISTER
+* \return e_cgps_GpsStatus
+*/
+e_cgps_GpsStatus CGPS0_71EventNotificationRegister(t_cgps_NotifyEventsCallback vp_Callback );
+
+
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliConfig_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                               Configuration APIs                                            */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+
+/**
+* \fn void CGPS0_45UpdateUserConfiguration(t_cgps_Config * pp_Config)
+* \brief Updates the user configuration to agps sub-system.
+* Don't use this function directly, use the macro \ref MC_CGPS_UPDATE_USER_CONFIGURATION
+* Only parameter that requires to be updated need to be marked in the configuration. 
+* Other parameter shall be either use the default value or the last updated value.  
+* \param pp_Config [in] Shall provide the parameter which are expected to be updated
+* \return error code
+*/
+e_cgps_Error CGPS0_45UpdateUserConfiguration(t_cgps_Config * pp_Config);
+
+
+/**
+* \fn e_cgps_Error CGPS0_69UpdatePlatformConfiguration(t_cgps_PlatformConfig * pp_Config);
+* \brief Updates the platform configuration to agps sub-system.
+* Don't use this function directly, use the macro \ref MC_CGPS_UPDATE_PLATFORM_CONFIGURATION
+* Only parameter that requires to be updated need to be marked in the configuration.
+* Other parameter shall be either use the default value or the last updated value.
+* \param pp_Config [in] Shall provide the parameter which are expected to be updated
+* \return error code
+*/
+e_cgps_Error CGPS0_69UpdatePlatformConfiguration(t_cgps_PlatformConfig * pp_Config);
+
+
+
+/**
+* \fn e_cgps_Error CGPS0_80UpdateLoggingConfiguration(t_cgps_ModuleTraceConfig * pp_Config);
+* \brief Updates the logging configuration to LBS sub-system.
+* Don't use this function directly, use the macro \ref MC_CGPS_UPDATE_TRACE_CONFIGURATION
+* \param pp_Config [in] Shall provide the parameters for logging configuration.
+* \return error code
+*/
+e_cgps_Error CGPS0_80UpdateTraceConfiguration(t_cgps_ModuleTraceConfig * pp_Config);
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliAGPS_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                                    AGPS APIs                                                */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/***********************************************************************************************/
+/*                                    Control Plane                                            */
+/***********************************************************************************************/
+#ifdef AGPS_FTR
+
+/**
+* \fn void CGPS0_42ECall_Start(void)
+* \brief Notifies CGPS that emergency call is in progress. CGPS starts the GPS service with this API without waiting for NI positioning request.
+* Don't use this function directly, use the macro \ref MC_CGPS_ECALL_START
+* \return None
+*/
+void CGPS0_42ECall_Start(void);
+
+
+/**
+* \fn void CGPS0_43ECall_Stop()
+* \brief Notifies  CGPS that emergency call is finished.
+* Don't use this function directly, use the macro \ref MC_CGPS_ECALL_STOP
+* \return None
+*/
+void CGPS0_43ECall_Stop(void);
+#endif /* AGPS_FTR */
+
+
+/***********************************************************************************************/
+/*                                       User Plane                                            */
+/***********************************************************************************************/
+/* ++ LMSqb95626    ANP 03/07/2009 */
+/* ++ LMSqb93693 */
+#ifdef AGPS_UP_FTR
+
+/**
+* \fn void CGPS0_51DataCntNotificationRegisterReq(t_cgps_DataCntNotificationCallback vp_Callback)
+* \brief Registesr a callback with CGPS through which the data connection notification indication is passed to the application.
+* Don't use this function directly, use the macro \ref MC_CGPS_DATA_CNT_NOTIFICATION_CB_REGISTER
+* \param vp_Callback [in] callback used to notify the user of any data connection (Cf. \ref t_cgps_DataCntNotificationCallback)
+*/
+void CGPS0_51DataCntNotificationRegisterReq(t_cgps_DataCntNotificationCallback vp_Callback);
+/* -- LMSqb93693 */
+/* -- LMSqb95626    ANP 03/07/2009 */
+
+
+/* ++ LMSqc00847    ANP 14/07/2009 */
+
+/**
+* \fn e_cgps_Error CGPS0_50UpdateCertificate(uint8_t CertId, uint32_t v_CertLen, uint8_t * p_CertName, uint8_t* p_Cert);
+* \brief Updates the TLS certificate for establishing secured connection
+* for user plane AGPS session (SUPL). Application may call this function many times depending on the
+* number of certificate files to be loaded.
+* Don't use this function directly, use the macro \ref MC_CGPS_UPDATE_CERTIFICATE
+* All pointers allocated by the Caller for this function must be managed/freed by the CGPS and
+* must not be accessed later by caller.
+* \param CertId [in] This information shall be a unique identity for a certificate.
+                     this may be set to 1 if there is only one certificate.
+* \param v_CertLen [in] The total Length of one certificate
+* \param p_CertName [in] This will provide the name of Certificate file and is optional.
+                         If this informaition is not provided, name shall be generated and provided to the certificate.
+* \param p_Cert [in] This will contain the complete Certificate.
+
+* \return error code .
+*/
+e_cgps_Error CGPS0_50UpdateCertificate(uint8_t CertId, uint32_t v_CertLen, uint8_t * p_CertName, uint8_t* p_Cert);
+
+
+/* + LMSQC16384 : LMSQC16386 SUPL WAP Push */
+/**
+* \fn e_cgps_Error CGPS5_27SuplPush  ( t_cgps_SuplPush  v_SuplPush )
+* \brief Updates the SUPL Client for the Network Initiated SUPL request.
+* This function shall be registered with Wap Stack and shall be called when WAP PUSH is received containing SUPL INIT.
+* SUPL raw PDU shall be forwarded.
+* All internal pointers allocated by the Caller for this function must be managed/freed by the CGPS and
+* must not be accessed later by caller.
+* Don't use this function directly, use the macro \ref MC_CGPS_SUPL_PUSH
+* \param v_SuplPush  [in] This information shall contain the SUPL Pdu and Hash.
+* \return error code . .
+*/
+e_cgps_Error CGPS5_27SuplPush  ( t_cgps_SuplPush  v_SuplPush );
+/* - LMSQC16384 : LMSQC16386 SUPL WAP Push */
+
+
+/**
+* \fn void CGPS0_27InitSupl(void)
+* \brief Hlinit calls this API once network information are available.
+* Don't use this function directly, use the macro \ref MC_CGPS_INIT_SUPL
+* \return None
+*/
+void CGPS0_27InitSupl(void);
+
+#endif /* AGPS_UP_FTR*/
+/* -- LMSqc00847    ANP 14/07/2009 */
+
+
+/***********************************************************************************************/
+/*                          AGPS - User & Control Plane                                        */
+/***********************************************************************************************/
+#if defined(AGPS_UP_FTR) || defined(AGPS_FTR)
+
+/**
+* \fn void CGPS0_21NotificationRegisterReq(t_cgps_NotificationCallback vp_Callback)
+* \brief CGPS uses this function to register a callback through which the SUPL notification indication is passed to the application.
+* Don't use this function directly, use the macro \ref MC_CGPS_NOTIFICATION_CB_REGISTER
+* \param vp_Callback [in] callback used to notify the user of any SUPL request from the network (Cf. \ref t_cgps_Notification)
+*/
+void CGPS0_21NotificationRegisterReq(t_cgps_NotificationCallback vp_Callback);
+
+
+/**
+* \fn void CGPS0_22NotificationUserAnswerReq(e_cgps_UserAnswer vp_AnswerUser, void * pp_Handle)
+* \brief API to intimate CGPS of user response (accept/deny) for notification message.
+* Don't use this function directly, use the macro \ref MC_CGPS_NOTIFICATION_USER_ANSWER
+* \param vp_AnswerUser [in] Response of the user (Cf. \ref e_cgps_UserAnswer)
+* \param pp_Handle [in] Handle provided when calling \ref t_cgps_NotificationCallback
+* \return None
+*/
+void CGPS0_22NotificationUserAnswerReq(e_cgps_UserAnswer vp_AnswerUser, void * pp_Handle);
+
+
+/**
+* \fn e_cgps_Error CGPS0_67RegisterLocationForward(uint32_t vp_Handle,  t_cgps_ClientInfo *vp_ClientInfo,  e_cgps_LcsServiceType vp_ServType,  t_cgps_QoP *vp_Qop);
+* \brief Registers an application requesting to forward the user location.
+* Don't use this function directly, use the macro \ref MC_CGPS_REGISTER_LOCATION_FORWARD
+* \param vp_Handle index of the application's handle
+* \param vp_ClientInfo the Client information to which Location need to be forwarded \ref t_cgps_ClientInfo
+* \param vp_ServType the Client information to which Location need to be forwarded \ref e_cgps_LcsServiceType
+* \param vp_Qop Quality of Position \ref t_cgps_QoP
+* \return error code
+*/
+e_cgps_Error CGPS0_67RegisterLocationForward(uint32_t vp_Handle,
+                                                      t_cgps_ClientInfo *vp_ClientInfo,
+                                                      e_cgps_LcsServiceType vp_ServType,
+                                                      t_cgps_QoP *vp_Qop);
+/**
+* \fn e_cgps_Error CGPS0_76RegisterLocationRetrieval(uint32_t vp_Handle, t_cgps_NavigationCallback vp_Callback, t_cgps_ClientInfo *vp_ClientInfo, t_cgps_ApplicationID_Info *vp_AppIdInfo, t_cgps_QoP *vp_Qop )
+* \brief Registers configuration for an application requesting for retrieval of third party position
+* Don't use this function directly, use the macro \ref REGISTER_LOCATION_RETRIEVAL
+* \param vp_Handle index of the application's handle
+* \param vp_Callback the callback function called when requested data is available
+* \param vp_ClientInfo - the Client information to which Location need to be forwarded \ref t_cgps_ClientInfo
+*\                                   Client info has the third party information whose position retrieval is requested with the call and it is a mandatory parameter
+* \param vp_Qop Quality of Position, its an optional parameter and set to NULL if unused \ref t_cgps_QoP
+
+
+* \return error code
+*/
+e_cgps_Error CGPS0_76RegisterLocationRetrieval(  int32_t                      vp_Handle,
+                                                        t_cgps_NavigationCallback    vp_Callback,
+                                                        t_cgps_ClientInfo            *vp_ClientInfo,
+                                                        t_cgps_QoP                   *vp_Qop);
+
+#endif /* AGPS_UP_FTR || AGPS_FTR*/
+
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliTest_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                                      Test    APIs                                           */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/**
+* \fn e_cgps_Error CGPS0_28NmeaTestCtrlReq(uint8_t* pp_Buffer, uint32_t vp_Length)
+* \brief Provides mechanism to inject test NMEA commands (PGNV strings) to GPS library.
+* Don't use this function directly, use the macro \ref MC_CGPS_NMEA_TEST_CONTROL
+* \return Indicates if the service has been correctly executed or not (Cf. \ref e_cgps_Error)
+* \param pp_Buffer [in] PGNV input (which can do for example "HOT, "WARM" or "COLD" start)
+* \param vp_Length [in] PGNV input length in bytes
+*/
+e_cgps_Error CGPS0_28NmeaTestCtrlReq(uint8_t* pp_Buffer, uint32_t vp_Length);
+
+
+/**
+* \fn e_cgps_Error CGPS0_35TestRegisterForAll(t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType,uint16_t vp_NmeaMask)
+* \brief Registers callback to receive all information once an application is registered
+* Don't use this function directly, use the macro \ref MC_CGPS_TEST_REGISTER_CALLBACK_FOR_ALL
+* \param vp_Callback the callback function called when requested data is available
+* \param vp_OutputType type of data returned to the callback (NMEA or 'C' struct)
+* \param vp_NmeaMask Nmea mask
+* \return return true if the callback is registered
+*/
+e_cgps_Error CGPS0_35TestRegisterForAll(t_cgps_NavigationCallback vp_Callback, uint8_t vp_OutputType,uint16_t vp_NmeaMask);
+
+
+#ifdef AGPS_UP_FTR
+/**
+* \fn void CGPS5_17SmsPushTest(void)
+* \brief Sends a SMS payload to CGPS for TEST only.
+* Don't use this function directly, use the macro \ref MC_CGPS_SMS_PUSH_TEST
+*/
+void CGPS5_17SmsPushTest(void);
+#endif /* AGPS_UP_FTR */
+
+/**
+*\}
+*/
+
+
+
+
+/* +LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+#if defined (DUAL_OS_GEN_FTR) || defined( CR_LMSQC18522_CPR )
+/* -LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+void  CGPS0_61LaunchInit(void);
+
+#endif
+#endif  /* __CGPS_HEP__ */

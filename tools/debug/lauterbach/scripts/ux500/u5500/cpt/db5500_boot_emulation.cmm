@@ -1,0 +1,154 @@
+;*****************************************************************************
+;*  ST-Ericsson                                                              *
+;*  Reproduction and Communication of this document is strictly prohibited   *
+;*  unless specifically authorized in writing by ST-Ericsson.                *
+;*---------------------------------------------------------------------------*/
+
+;****************************************************************************
+;* Author        : E.EDDI
+;* Description   : This Code/Script is for Folllowing Board Configuration:
+;*
+;*                 Board            :   Maja Validation Board.
+;*                 SoC name/version :   DB5500V1 (Maja)
+;*                 Flash Memory     :   .
+;*                 MuxOneNAND       :   .
+;*                 Ethernet         :   .
+;*                 SRAM             :   .
+;*                 NOR              :   .
+;*                 Code/Script for  :   Lauterbach Power Debug.
+;*                 Version          :   V1.3
+;*
+;*
+;* File Name     : DB5500_boot_emulation.cmm
+;*----------------------------------------------------------------------------*
+
+;#########################################
+;#         Set clocks as done by ROM code
+;#########################################
+print "Set clocks as done by ROM code..."
+;SOC0 for periph and bus
+data.set 0x80157080 %long 0x0004017B	; 800MHz for PPLSOC0 (VCO at 1599MHz)
+data.set 0x80157090 %long 0x00000001	; PLL running
+
+; Wait PLL SOC0 lock status
+&loop=1
+while (d.b(d:0x801570A0))!=0x3&&&loop<200.
+(
+	&loop=&loop+1
+)
+if &loop>=200.
+(
+	print "ERROR: PLLSOC0 doesn't lock !!"
+)
+else 
+(
+  print "PLLSOC0 locked ..."
+)
+
+data.set 0x80157538 %long 0x00301007	; RTCCLCK_RUNNING, REFCLCK_RUNNING, PLLSOC0CLCK_RUNNING, SYSCLCK_0_RUNNING
+																			; Enable PPLSOC0_Div12_EN and PPLSOC0_Div2_EN in PRCM_CLKACTIV
+
+;PLLSOC0 periph clock settings
+data.set 0x8015706C %long 0x00000041	; Disable DSIALTCLK
+data.set 0x80157000 %long 0x00000121	; ARMCLKFIX 400 MHz (clock enabled) => ARMCORECLK 200MHz (enabled); there are 2 dividers by 2 on ARMCLKFIX and ARMCORECLK clock paths
+data.set 0x80157004 %long 0x00000124	; ACLK (interconnect) 200 MHz (clock enabled)
+data.set 0x80157074 %long 0x00000124	; DMACLK 200 MHz (clock enabled)
+data.set 0x80157018 %long 0x00000320	; UARTCLK 26 MHz (from SYSCLK) (clock enabled)  
+data.set 0x80157020 %long 0x00000131	; I2CCLK 47 MHz (clock enabled)
+data.set 0x80157024 %long 0x00000130	; SDMMCCLK 50 MHz (clock enabled)
+data.set 0x8015750C %long 0x00000001	; RNG oscillator enabled
+data.set 0x80157284 %long 0x00000320	; RNGCLK 26 MHz (from SYSCLK, clock enabled) 
+data.set 0x8015702C %long 0x00000123	; PER1CLK 133.3 MHz (clock enabled) (there is already a divider by 2 on the clock path)
+data.set 0x80157030 %long 0x00000126	; PER2CLK 133.3 MHz (clock enabled)
+data.set 0x80157034 %long 0x00000126	; PER3CLK 133.3 MHz (clock enabled)
+data.set 0x80157038 %long 0x00000126	; PER5CLK 133.3 MHz (clock enabled)
+data.set 0x8015703C %long 0x00000126	; PER6CLK 133.3 MHz (clock enabled)
+
+;##########################################
+;#     Switch enabled clock on PLLSOC0 
+;##########################################
+data.set 0x801570E8 %long 0x00000004				;	switch periph clocks from sysclk to PLLs
+
+
+;#######################################
+;#         PRCC as done by ROM code
+;#######################################
+print "Set PRCC as done by ROM code..."
+;Periph1 PRCC settings
+data.set 0xA002F000 %long 0x0000006E	; Enable bus clock (GPIO, FSMC, UART0, SDI0, SDI2)
+data.set 0xA002F008 %long 0x0000000E	; Enable kernel clock (UART0, SDI0, SDI2)
+
+;Periph2 PRCC settings
+data.set 0xA001F000 %long 0x00000003	; Enable bus clock (GPIO, USB)
+
+;Periph3 PRCC settings
+data.set 0x8014F000 %long 0x00000004	; Enable bus clock (GPIO)
+
+;Periph5 PRCC settings
+data.set 0x8011F000 %long 0x00008000	; Enable bus clock (GPIO)
+
+;Periph6 PRCC settings
+data.set 0x8012F000 %long 0x000000EF	; Enable bus clock (MTU0/1, CfgReg, PKA, HASH0, CRYP0, RNG)
+data.set 0x8012F008 %long 0x00000001	; Enable kernel clock (RNG)
+
+
+;#########################################
+;#       Secure Registers programming
+;#########################################
+print " Secure Registers programming (for DDR)..."
+;ROMCode way
+data.set ZSD:0x80155178 %long 0x0			; DDRModemLowAddrCheck
+data.set ZSD:0x8015517C %long 0xffffffff 		; DDRModemHighAddrCheck 
+data.set ZSD:0x80155180 %long 0xffffffff 		; DDRShareHighAddrCheck 
+data.set ZSD:0x80155184 %long 0x0			; DDRApeSecLowAddrCheck 
+data.set ZSD:0x80155188 %long 0x0			; DDRApeSecHighAddrCheck 
+data.set ZSD:0x8015518C %long 0x0			; DDRApeCortexLowAddrCheck 
+data.set ZSD:0x80155190 %long 0x0			; DDRApeCortexHighAddrCheck 
+data.set ZSD:0x80155194 %long 0xffffffff 		; DDRMaxSpace 
+
+
+;#########################################
+;#         Address Filtering programming
+;#########################################
+print "Address Filtering programming..."
+data.set 0xA0412C04 %long 0x40000000	; pl310->AddrFilterEnd
+data.set 0xA0412C00 %long 0x00000001	; pl310->AddrFilterStart + add filtering enable
+data.set 0xA0410044 %long 0x40000000	; scu->AddrFilterEnd
+data.set 0xA0410040 %long 0x00000000	; scu->AddrFilterStart
+data.set 0xA0410000 %long 0x00000001	; SCU_CR (address filtering disabling, SCU enable)
+
+
+;#######################################
+;#         PRCMU FW loading
+;#######################################
+;For "Header" Fw: Remove header size => 176bytes (so PRCMU Fw base address - 0xB0)
+data.load.binary "./../../software/common/prcmu_fw/prcmufw_5500A0_ste.bin" ZSD:0x80160000 /SKIP 0xB0		; Path to define if needed
+
+wait 1s
+
+;Set up GPIO to be able to read/write HWI2C (aka I2C0)
+data.set ZSD:0x8015A020 %long d.l.le(d:0x8015A020)|0x30
+data.set ZSD:0x8015A024 %long d.l.le(d:0x8015A024)&~0x30
+
+//################################################
+//#      xP70 core starting to go up to ApBoot
+//################################################
+print "xP70 core starting to go up to ApBoot..."
+
+;; CAUTION: PRCM_XP70CFGCR reg is now secure (DB8500 vs DB5500)
+data.set ZSD:0x801580E0 %long d.l(d:0x801580E0)|0x9		; xP70 Fetch Enable and ACK
+
+; Wait boot_status information from xP70 Fw
+&loop=1
+while (((d.b(d:&pfw_boot_status))!=0xFF)&&&loop<1000.)
+(
+	&loop=&loop+1
+)
+if &loop>=200.
+(
+	print "ERROR: boot status not OK"
+)
+else 
+(
+  print " ApBoot state reached..."
+)

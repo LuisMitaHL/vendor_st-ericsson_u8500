@@ -1,0 +1,39 @@
+#include    <gsmfr.h>
+#include	<gsm_types.h>
+#include 	<c_rx_dtx_handler.h>
+#include	<n_sid_decode.h>
+#include	<f_decode.h>
+#include	<f_tables.h>
+#include    <generate_rand.h>
+#include    <audiolibs_common.h>
+#include    <common_interface.h>
+#include	<f_lpc.h>
+#include	<v_vad_compute.h>
+#include	<v_priod_updt.h>
+#include	<v_tone_detect.h>
+#include	<f_preprocess.h>
+#include	<f_short_term.h>
+#include	<f_long_term.h>
+#include	<f_rpe.h>
+#include	<f_code.h>
+#include    <f_basic_oper.h>
+#include 	<gsmfr_encoder.h>
+#include    <gsmfr_decoder.h>
+#include    <gsm_exp_imp.h>
+
+interface gsmfr.codec.libgsmfr.libgsmfr unmanaged {
+
+	void gsmfr_fc_rx_dtx_handler(DECSTATDEF *pDecStat,DECDTXSTATDEF *pDecDtxStat);
+	void gsmfr_fc_rx_dtx_handler_init(DECDTXSTATDEF *pDecDtxStat);
+	void gsmfr_fc_tx_dtx_handler(CODSTATDEF *pCodStat,CODDTXSTATDEF *pCodDtxStat);
+	void gsmfr_fc_tx_dtx_handler_init(CODDTXSTATDEF *pCodDtxStat);
+	void gsmfr_init_cod(GSMFR_ENCODER_STRUCT_T *pCoderGlobal);
+	void gsmfr_FF_coder(GSMFR_ENCODER_STRUCT_T *pCoderGlobal);
+	void gsmfr_init_dec(GSMFR_DECODER_STRUCT_T *pDecoderGlobal);
+	void gsmfr_FF_decoder(GSMFR_DECODER_STRUCT_T *pDecoderGlobal);
+	word gsm_get_vad(CODSTATDEF *pCodStat);
+	void gsm_explode(CODSTATDEF *pCodStat,word *source, word has_dtx, word payloadFormat);
+	void gsm_implode(DECSTATDEF *pDecStat,word *source, word has_dtx, word payloadFormat);
+
+}
+

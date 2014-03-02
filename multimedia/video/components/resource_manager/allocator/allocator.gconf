@@ -1,0 +1,36 @@
+primitive resource_manager.allocator 
+{
+//singleton
+
+// Constructor of this component
+provides lifecycle.constructor  as  constructor
+
+// Destructor of this component
+provides lifecycle.destructor  as  destructor
+
+
+// Provided interfaces
+provides resource_manager.api.resource        as  iResource
+provides resource_manager.api.mtf_resource    as  iMtfResource
+provides resource_manager.api.sleepstatus	as iSleepStatus
+provides resource_manager.api.signal          as  iTimeout referenced
+
+// Required interfaces
+requires resource_manager.api.mtf                     as iMtf
+requires resource_manager.api.resource                as oResource
+requires resource_manager.api.interrupt               as iInterrupt
+requires resource_manager.api.intsleep 		as iIntSleep
+
+// Additionnal informations : 
+//    --------------
+//    - Source files
+sources src/allocator.c
+sources src/watchdog.c
+
+
+//    ----------------------------------------
+//    - Necessary paths (mainly for inclusion)
+option CPPFLAGS "-ICONF_ROOT/inc -DMMDSP=1 -D__T1XHV_NMF_ENV=1 -DTARGET=dsp16 "
+option CFLAGS "-O3 -g -mode16"
+
+}

@@ -1,0 +1,191 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vec_mpeg4.idt>
+
+interface mpeg4enc.mpc.api.algo { 
+
+
+/* This file specifies methods included inside provided interface named iAlgo
+          i.e. :          - configureAlgo
+                          - controlAlgo
+                          - updateAlgo
+                          - setDebug
+*/
+
+/** @addtogroup vecMpeg4ConfigureAlgoGroup configureAlgo
+ *  @ingroup vecMpeg4ProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+
+ \param[in]  algoId                     Algo Identifier of the ALGO Component.
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vec_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vec_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_internal_buffer       "Internal buffer" structure address (i.e. ts_t1xhv_vec_internal_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_header_buffer      "Input Header buffer" structure address (i.e. ts_t1xhv_vec_header_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_bitstream_buffer  "Output bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vec_mpeg4_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vec_mpeg4_param_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_frame_parameters   "Input In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_mpeg4_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_parameters  "Output In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_mpeg4_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecMpeg4ConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+
+ * \msc
+    mpeg4_encoder_data_dep,mpeg4_encoder_algo;
+    mpeg4_encoder_data_dep=>mpeg4_encoder_algo [label="configureAlgo()"];
+    mpeg4_encoder_data_dep<<mpeg4_encoder_algo;    
+  \endmsc
+  \n
+ *
+ */
+
+void configureAlgo(mpeg4enc.mpc.api.end_algo *cb,	
+					t_uint32 addr_in_frame_buffer,
+					t_uint32 addr_out_frame_buffer,
+					t_uint32 addr_internal_buffer,
+          t_uint32 addr_in_header_buffer,
+					t_uint32 addr_in_bitstream_buffer,
+					t_uint32 addr_out_bitstream_buffer,
+					t_uint32 addr_in_parameters,
+					t_uint32 addr_out_parameters,
+					t_uint32 addr_in_frame_parameters,
+					t_uint32 addr_out_frame_parameters);
+
+ /** @} */ // end of vecMpeg4ConfigureAlgoGroup
+ 
+/** @addtogroup vecMpeg4ControlAlgoGroup controlAlgo
+ *  @ingroup vecMpeg4ProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  channelNumber  The channel (i.e. instance number) the algo is linked to
+ \param[in]  param    (Not yet implemented) The parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecMpeg4ConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Normal sequence of a encode
+ *   
+ * \msc
+    mpeg4_encoder_data_dep,mpeg4_encoder_algo,resource_manager;
+    mpeg4_encoder_data_dep=>mpeg4_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    mpeg4_encoder_data_dep<<mpeg4_encoder_algo;
+    mpeg4_encoder_algo=>resource_manager [label="...."];
+    mpeg4_encoder_algo<<resource_manager;
+    mpeg4_encoder_data_dep<<=mpeg4_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE)"];
+  \endmsc
+  \n
+ * Abnormal sequence of a encode (error while encoding the bitstream)
+ *  
+ * \msc
+    mpeg4_encoder_data_dep,mpeg4_encoder_algo;
+    mpeg4_encoder_data_dep=>mpeg4_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    mpeg4_encoder_data_dep<=mpeg4_encoder_algo [label="endAlgo(STATUS_JOB_ABORTED, VEC_ERT_BITSTREAM_ERR"];
+  \endmsc
+  \n
+ * Abnormal sequence of a encode (incorrect configuration parameter)
+ *  
+ * \msc
+    mpeg4_encoder_data_dep,mpeg4_encoder_algo;
+    mpeg4_encoder_data_dep=>mpeg4_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    mpeg4_encoder_data_dep<=mpeg4_encoder_algo [label="endAlgo(STATUS_JOB_ABORTED, [error code])"];
+  \endmsc
+ *\n 
+ * @} */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 channelNumber, t_uint16 param);
+
+ /** @} */ // end of vecMpeg4ControlAlgoGroup 
+
+ /** @addtogroup vecMpeg4UpdateAlgoGroup updateAlgo
+ *  @ingroup vecMpeg4ProvidedInterfaceGroup
+ *  @{
+ */
+/*!
+ Description : (Not yet implemented) Update the configuration of a specific NMF algo component.
+ *   
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecMpeg4ConfigurationGroup
+ */ 
+//< void updateAlgo(t_t1xhv_command command);
+
+/** @} */ // end of vecMpeg4UpdateAlgoGroup
+
+/** @addtogroup vecMpeg4SetDebugAlgoGroup setDebug
+ *  @ingroup vecMpeg4ProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecMpeg4ConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Example of normal usage of debug mode. In this particular case, the "VEC_Mpeg4" NMF Algo component will copy 
+ * the content of the input bitstream buffer into the ouput image buffer (see \ref vecMpeg4ConfigureAlgoGroup for details).
+ * As soon as the copy will be finished, the interface signaling the end of algo will be called.
+ * 
+ * 
+ * \msc
+    Mpeg4_encoder_data_dep,Mpeg4_encoder_algo;
+    Mpeg4_encoder_data_dep=>Mpeg4_encoder_algo [label="setDebug(DBG_MODE_PATTERN, 0x00, 0x00)"];
+    Mpeg4_encoder_data_dep<<Mpeg4_encoder_algo;
+    Mpeg4_encoder_data_dep=>Mpeg4_encoder_algo [label="configureAlgo(VEC_Mpeg4, ...)"];
+    Mpeg4_encoder_data_dep<<Mpeg4_encoder_algo;
+    Mpeg4_encoder_data_dep=>Mpeg4_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    Mpeg4_encoder_data_dep<=Mpeg4_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE"];
+    Mpeg4_encoder_data_dep,Mpeg4_encoder_algo;
+    Mpeg4_encoder_data_dep=>Mpeg4_encoder_algo [label="setDebug(DBG_MODE_NORMAL, 0x00, 0x00)"];
+  \endmsc
+  \n
+ * Another exemple of normal usage of debug mode. In this case, the NMF algo component will only
+ * acknowledge the CMD_START command by calling the endAlgo interface.
+ *  
+ * \msc
+    Mpeg4_encoder_data_dep,Mpeg4_encoder_algo;
+    Mpeg4_encoder_data_dep=>Mpeg4_encoder_algo [label="setDebug(DBG_MODE_NO_HW, 0x00, 0x00)"];
+    Mpeg4_encoder_data_dep<=Mpeg4_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE"];
+  \endmsc
+  \n
+ * @} */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint32 param1, t_uint32 param2);
+
+ /** @} */ // end of vecMpeg4SetDebugAlgoGroup
+
+} // interface mpeg4enc.mpc.api.algo

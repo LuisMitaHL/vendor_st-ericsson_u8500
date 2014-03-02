@@ -1,0 +1,25 @@
+;&cmd_line="root=/dev/ram0 init=init rw console=ttyAMA0,115200n8 mem=24MB@0 mem=208M@48M initrd=0x3000000,60M earlyprintk memmap=0x01800000$0x01800000 mloader_helper.shm_total_size=0x00030000"
+&cmd_line="root=/dev/ram0 initrd=0x3000000,60M init=init rw console=ttyAMA0,115200n8 mem=24M@0 mem=464M@48M crashkernel=crashkernel=1M@0x5600000 earlyprintk memmap=0x01800000$0x01800000 mloader_helper.shm_total_size=0x00030000"
+&atag_core="0x54410001"
+&atag_cmdline="0x54410009"
+&atag_none="0x00000000"
+&cpu_magic_number="0x80151FF0"
+
+
+d.s 0x100--0xfff 0
+
+;Setup Atag list
+data.set 0x100 %LONG 0x2
+data.set 0x104 %LONG &atag_core
+data.set 0x108 %LONG 0x4A               ;2+ (288 byte of cmdline)/4
+data.set 0x10c %LONG &atag_cmdline
+data.set 0x110 "&cmd_line"
+data.set 0x230 %LONG 0
+data.set 0x234 %LONG &atag_none
+
+r.reset
+;r.set r0 0x0
+r.set r1 0xB4A       ;MACHINE_TYPE, for U5500 = 2890
+;r.set r2 0x100
+ ;noinitrd init=init crashkernel=crashkernel=1M@0x5600000 root=/dev/mmcblk0p2 rootwait console=ttyAMA0,115200n8 mem=24M@0 mem=464M@48M memmap=0x01800000$0x01800000 mloader_helper.shm_total_size=0x00030000
+

@@ -1,0 +1,31 @@
+//--------------------------------------------------------------------
+// Lauterbach T32 Emulator script: dmesg.cmm
+//
+// Comments: Extract and display dmesg
+//
+//
+// Written by: frq08728
+//
+// Creation date: 30/04/2010
+// Last Change: Wed Jun 13 13:00 2012 CEST
+//
+//--------------------------------------------------------------------
+
+
+&size_dmesg=v.value(sizeof(__log_buf))-1
+&log_offset=v.value(log_start)&(&size_dmesg)
+&log_end=v.value(log_end)-1
+
+if &log_end<&size_dmesg
+	DATA.SAVE.BINARY dmesg.txt SD:(__log_buf+&log_offset)--SD:(__log_buf+&log_end)
+else
+	DATA.SAVE.BINARY dmesg.txt SD:(__log_buf+&log_offset)--SD:(__log_buf+&size_dmesg)
+
+if &log_offset!=0
+(
+	DATA.SAVE.BINARY dmesg2.txt SD:__log_buf--SD:(__log_buf+&log_offset-1)
+	os.command perl &(toolsPath)/concatenation.pl dmesg.txt dmesg2.txt
+)
+type "dmesg.txt"
+
+enddo

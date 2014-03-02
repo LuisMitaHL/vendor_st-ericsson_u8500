@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# /etc/init.d/msa
+#
+case "$1" in
+	start)
+	if [ -e /usr/bin/msa ]; then
+		echo "Starting MSA server..."
+		/usr/bin/msa -b -l syslog
+		exit $?
+	else
+		echo "No MSA server found"
+		exit 1
+	fi
+	;;
+	stop)
+	;;
+esac

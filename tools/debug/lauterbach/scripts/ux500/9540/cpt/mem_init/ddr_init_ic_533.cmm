@@ -1,0 +1,427 @@
+; This script is used for LPDDR2/LPDDR2_GFX configuration on AP9540 on IC.
+; Created by HED/CSP/CPT/ACT on 2011-05-05
+
+
+LOCAL &LPDDR2
+LOCAL &LPDDR2_GFX
+LOCAL &SYSCLK_38_4MHz
+LOCAL &SYS_CLK
+
+LOCAL &Rdiv
+LOCAL &Ndiv
+LOCAL &Ddiv
+
+
+&LPDDR2=0
+&LPDDR2_GFX=1
+&SYSCLK_38_4MHz=0
+&SYSCLK_26MHz=1
+; In case of SYS Clock @ 26MHz, change the value from SYSCLK_38_4MHz to SYSCLK_26MHz
+&SYS_CLK=&SYSCLK_38_4MHz
+
+; Configure PLL for DDR0/1 
+gosub DDR_PLL_Configuration &LPDDR2
+gosub DDR_PLL_Configuration &LPDDR2_GFX
+
+;Configure registers for DDR0/1
+gosub nkvp_DDR_controller_initialisation &LPDDR2
+gosub nkvp_DDR_controller_initialisation &LPDDR2_GFX
+
+print "DDR init done."
+enddo
+
+DDR_PLL_Configuration:
+	entry &DDR_type
+	if &SYS_CLK==&SYSCLK_38_4MHz
+	(
+		; # PLL DDR 38.4Mhz clkin_Rdiv = 4
+		; # PLL DDR 38.4Mhz clkin_Ddiv = 6f
+		; # PLL DDR 38.4Mhz clkin_Ndiv = 01
+		; # PLL DDR 38.4Mhz clkin_Seldiv2 = 0
+
+		&Rdiv=0x4
+		&Ndiv=0x01
+		&Ddiv=0x6F
+		print "DDR PLL configured to 1066MHz for 38.4MHz SYS_CLK"
+	)
+	else
+	(
+		; # PLL DDR 26Mhz clkin_Rdiv = 2
+		; # PLL DDR 26Mhz clkin_Ddiv = 52
+		; # PLL DDR 26Mhz clkin_Ndiv = 01
+		; # PLL DDR 26Mhz clkin_Seldiv2 = 0
+
+		&Rdiv=0x2
+		&Ndiv=0x01
+		&Ddiv=0x52
+		print "DDR PLL configured to 1066MHz for 26MHz SYS_CLK"
+	)
+
+	print "Configure PLL DDR",&DDR_type
+
+	if &DDR_type==&LPDDR2
+		&pll_ddr_address=0x8015708C
+	else
+		&pll_ddr_address=0x8015908C
+
+	data.set az:&pll_ddr_address %l ((&Rdiv<<16.)|(&Ndiv<<8.)|(&Ddiv))
+	wait 0.1s
+
+	print "----> Done"
+return
+		
+nkvp_DDR_controller_initialisation:
+	entry &DDR_type
+		 
+	// Disable functionnality of DDR sharing
+	data.set az:0x801550E8 %l 0xFFFFFFFF
+	data.set az:0x801550E8 %l 0xFFFFFFFF
+		
+	
+	if &DDR_type==&LPDDR2
+		data.set az:0xA0412C00 %l 0x40000001
+	else
+		data.set az:0xA0412C04 %l 0xC0000000
+	
+	data.set az:0xA0410000 %l d.l(az:0xA0410000)&0xFFFFFFFD
+		
+	if &DDR_type==&LPDDR2
+	(
+		print "----> Start DDR controller init for LPDDR2"
+		gosub nkvp_DBAHN_init_lpddr2 &LPDDR2
+		print "----> End DDR controller init for LPDDR2";
+	)
+	else if &DDR_type==&LPDDR2_GFX
+	(
+		print "----> Start DDR controller init for LPDDR2_GFX"
+		gosub nkvp_DBAHN_init_lpddr2 &LPDDR2_GFX
+		print "----> End DDR controller init for LPDDR2_GFX"
+	)
+	return
+
+nkvp_DBAHN_init_lpddr2:
+	entry &DDR_type
+  	&loop_config=0
+
+	if &DDR_type==&LPDDR2
+	(
+		//Put CLK38M_DDRPLL_SW field to 0x0
+		data.set az:0x801570b0 %l d.l(az:0x801570b0)&(0xFFFFFF1F)
+		//enable SYSCLK for DDR0: CLK38M_DDRPLL_SW = 3'b001
+		data.set az:0x801570b0 %l d.l(az:0x801570b0)|0x20
+
+
+		// release fsm reset
+		data.set az:0x80157438 %l 0
+		data.set az:0x8015709C %l 1
+		data.set az:0x80157470 %l 1
+  
+		// release fsm reset
+		data.set az:0x801571E4 %l 0x00060000  
+		// release DDR reset
+		data.set az:0x801571E4 %l d.l(az:0x801571E4)|1<<19.
+
+		
+		&loop_config=0
+		while (&loop_config!=7)
+		(
+			if (d.l(az:0x80157448)&0x01)==0x01
+			(	
+				gosub nkvp_DBAHN_settings_LPDDR2 &DDR_type
+				&loop_config=&loop_config|1
+				data.set az:0x8015744C %l d.l(az:0x8015744C)|0x01
+			)
+			if (d.l(az:0x80157448)&0x02)==0x02 
+			(
+				&loop_config=&loop_config|2
+				data.set az:0x80156120 %l d.l(az:0x80156120)|0x060b1001
+				// this two line request a phy compensation
+				data.set az:0x80156124 %l d.l(az:0x80156124)|0x02000000
+				data.set az:0x80156124 %l d.l(az:0x80156124)&~0x02000000
+
+				// this line enable the clock output
+				data.set az:0x80156030 %l 0x00000301
+
+				data.set az:0x8015744C %l d.l(az:0x8015744C)|0x02
+				data.set az:0x8015601C %l d.l(az:0x8015601C)|0x10000
+			)
+			if (d.l(az:0x801570AC)&1)==1
+			( 	
+				&loop_config=&loop_config|4
+				data.set az:0x80157538 %l d.l(az:0x80157538)|0x10
+			)
+		)	
+		
+		// Here we should use the dedicated function to wait on...
+		while (d.l(az:0x80157480)&1)==0
+		(
+			print "."
+		)
+	)
+	else
+	(
+		// Put value to 0x0 for CLK38M_DDR1PLL_SW field
+		data.set az:0x80157528 %l d.l(az:0x80157528)&(0xFFF8FFFF)
+
+		//enable SYSCLK for DDR1: CLK38M_DDR1PLL_SW = 3'b001
+		data.set az:0x80157528 %l d.l(az:0x80157528)|0x10000
+	
+		// release fsm reset
+		data.set az:0x80159450 %l 0
+		data.set az:0x80159438 %l 0
+		data.set az:0x8015909C %l 1
+		data.set az:0x80159470 %l 1
+		
+		// release fsm reset
+		data.set az:0x801571E4 %l d.l(az:0x801571E4)|0x00010000
+		// release DDR reset
+		data.set az:0x801571E4 %l d.l(az:0x801571E4)|0x00200000
+		
+		&loop_config=0
+		while (&loop_config!=7)
+		(
+			if (d.l(az:0x80159448)&0x01)==0x01
+			(
+				gosub nkvp_DBAHN_settings_LPDDR2 &DDR_type
+				&loop_config=&loop_config|1
+				data.set az:0x8015944C %l d.l(az:0x8015944C)|0x01
+			)
+			if (d.l(az:0x80159448)&0x02)==0x02
+			(	 
+				&loop_config=&loop_config|2
+			
+				data.set az:0x8015A120 %l d.l(az:0x8015A120)|0x060b1001
+				// this two line request a phy compensation
+				data.set az:0x8015A124 %l d.l(az:0x8015A124)|0x02000000
+				data.set az:0x8015A124 %l d.l(az:0x8015A124)&~0x02000000
+			
+				// this line enable the clock output
+				data.set az:0x8015A030 %l 0x00000301
+			
+				data.set az:0x8015944C %l d.l(az:0x8015944C)|0x02
+				data.set az:0x8015A01C %l d.l(az:0x8015A01C)|0x10000
+			)
+			if (d.l(az:0x801590AC)&1)==1
+			(	  
+				&loop_config=&loop_config|4
+				data.set az:0x80157538 %l d.l(az:0x80157538)|0x00800000
+			)
+		)
+		// Here we should use the dedicated function to wait on...
+		while (d.l(az:0x80159480)&1)==0
+		(
+		)
+  	)
+	return
+
+
+nkvp_DBAHN_settings_LPDDR2:
+	entry &DDR_type
+
+	&tabLPDDR2_0=0x00000101
+	&tabLPDDR2_1=0x01010100
+	&tabLPDDR2_2=0x00010001
+	&tabLPDDR2_3=0x00010100
+	&tabLPDDR2_4=0x01010100
+	&tabLPDDR2_5=0x01000100
+	&tabLPDDR2_6=0x00000000
+	&tabLPDDR2_7=0x00000001
+	&tabLPDDR2_8=0x00000101
+	&tabLPDDR2_9=0x02020304
+	&tabLPDDR2_10=0x03030303
+	&tabLPDDR2_11=0x01030303
+	&tabLPDDR2_12=0x00030301
+	&tabLPDDR2_13=0x00000000
+	&tabLPDDR2_14=0x00000207
+	&tabLPDDR2_15=0x03000000
+	&tabLPDDR2_16=0x06020202
+	&tabLPDDR2_17=0x10000f04
+	&tabLPDDR2_18=0x00000f12
+	&tabLPDDR2_19=0x00120000
+	&tabLPDDR2_20=0x0002000a
+	&tabLPDDR2_21=0x00080a03
+	&tabLPDDR2_22=0x05000909
+	&tabLPDDR2_23=0x32002e22
+	&tabLPDDR2_24=0x23003200
+	&tabLPDDR2_25=0x00000000
+	&tabLPDDR2_26=0x0a170000
+	&tabLPDDR2_27=0x00000046
+	&tabLPDDR2_28=0x00000000
+	&tabLPDDR2_29=0x08130813
+	&tabLPDDR2_30=0x08130813
+	&tabLPDDR2_31=0x00000000
+ 	&tabLPDDR2_32=0xffff0000
+	&tabLPDDR2_33=0xffffffff
+	&tabLPDDR2_34=0x0000ffff
+	&tabLPDDR2_35=0x00100100
+	&tabLPDDR2_36=0x00000000
+	&tabLPDDR2_37=0x00040000
+	&tabLPDDR2_38=0x004c1b4e
+	&tabLPDDR2_39=0x0000004d
+	&tabLPDDR2_40=0x00000036
+	&tabLPDDR2_41=0x00000000
+	&tabLPDDR2_42=0x00000000
+	&tabLPDDR2_43=0x00000000
+	&tabLPDDR2_44=0x00000000
+	&tabLPDDR2_45=0x00000000
+	&tabLPDDR2_46=0x00000000
+	&tabLPDDR2_47=0x00000000
+	&tabLPDDR2_48=0x00000000
+	&tabLPDDR2_49=0x00000000
+	&tabLPDDR2_50=0x00000000
+	&tabLPDDR2_51=0x00000000
+	&tabLPDDR2_52=0x00000000
+	&tabLPDDR2_53=0x00000000
+	&tabLPDDR2_54=0x00000000
+	&tabLPDDR2_55=0x00000000
+	&tabLPDDR2_56=0x00000000
+	&tabLPDDR2_57=0x00000000
+	&tabLPDDR2_58=0x00000000
+	&tabLPDDR2_59=0x00000000
+	&tabLPDDR2_60=0x00000000
+	&tabLPDDR2_61=0x00000000
+	&tabLPDDR2_62=0x00000000
+	&tabLPDDR2_63=0x05000004
+	&tabLPDDR2_64=0x00050009
+	&tabLPDDR2_65=0x00000000
+	&tabLPDDR2_66=0x00000000
+	&tabLPDDR2_67=0x00000000
+	&tabLPDDR2_68=0x00000000
+	&tabLPDDR2_69=0x00000000
+	&tabLPDDR2_70=0x00000000
+	&tabLPDDR2_71=0x00000000
+	&tabLPDDR2_72=0x00000000
+	&tabLPDDR2_73=0x00007c00
+	&tabLPDDR2_74=0x00000000
+	&tabLPDDR2_75=0x00000000
+	&tabLPDDR2_76=0x01000100   
+	&tabLPDDR2_77=0x01000103   
+	&tabLPDDR2_78=0x02030300   
+	&tabLPDDR2_79=0x02000104   
+	&tabLPDDR2_80=0x1b000100   
+	&tabLPDDR2_81=0x0001b040   
+	&tabLPDDR2_82=0x00c00000   
+	&tabLPDDR2_83=0x02140030   
+	&tabLPDDR2_84=0x0000001b   
+	&tabLPDDR2_85=0x00000000   
+	&tabLPDDR2_86=0x00000000   
+	&tabLPDDR2_87=0x00c20000   
+	&tabLPDDR2_88=0x000600c2   
+	&tabLPDDR2_89=0x00010006   
+	&tabLPDDR2_90=0x00000001   
+	&tabLPDDR2_91=0x00000000   
+	&tabLPDDR2_92=0x00019f8f   
+	&tabLPDDR2_93=0x00000214   
+	&tabLPDDR2_94=0x000014c8   
+	&tabLPDDR2_95=0x00010100   
+	&tabLPDDR2_96=0x01000001   
+	&tabLPDDR2_97=0x0a010101
+	&tabLPDDR2_98=0x000c0c0a
+	&tabLPDDR2_99=0x1fff0000
+	&tabLPDDR2_100=0x00001fff
+	&tabLPDDR2_101=0x03022000
+	&tabLPDDR2_102=0x00050804  
+	&tabLPDDR2_103=0x08130813  
+	&tabLPDDR2_104=0x00000813  
+	&tabLPDDR2_105=0x000a0503
+	&tabLPDDR2_106=0x00170c06  
+	&tabLPDDR2_107=0x39462312  
+	&tabLPDDR2_108=0x04080200  
+	&tabLPDDR2_109=0x00140813  
+	&tabLPDDR2_110=0x004c0027  
+	&tabLPDDR2_111=0x00280015  
+	&tabLPDDR2_112=0x00d1004d  
+	&tabLPDDR2_113=0x00490711  
+	&tabLPDDR2_114=0x0449b388  
+	&tabLPDDR2_115=0x0001800c  
+	&tabLPDDR2_116=0x00060030  
+	&tabLPDDR2_117=0x000c0030  
+	&tabLPDDR2_118=0x186230c4
+	&tabLPDDR2_119=0x00210022  
+	&tabLPDDR2_120=0x006100c2  
+	&tabLPDDR2_121=0x00210022  
+	&tabLPDDR2_122=0x00010001  
+	&tabLPDDR2_123=0x00030006  
+	&tabLPDDR2_124=0x00010001  
+	&tabLPDDR2_125=0x02899001  
+	&tabLPDDR2_126=0x034a1001  
+	&tabLPDDR2_127=0x06684711  
+	&tabLPDDR2_128=0x02114106  
+	&tabLPDDR2_129=0x24934906  
+	&tabLPDDR2_130=0x1041a907  
+	&tabLPDDR2_131=0x1041a8a3  
+	&tabLPDDR2_132=0x03462449
+	&tabLPDDR2_133=0x00000000
+	&tabLPDDR2_134=0x00000000
+	&tabLPDDR2_135=0x00000000
+	&tabLPDDR2_136=0x00000000
+	&tabLPDDR2_137=0x00000000
+	&tabLPDDR2_138=0x00000000
+	&tabLPDDR2_139=0x00000000
+	&tabLPDDR2_140=0x00000000
+	&tabLPDDR2_141=0x060b1001
+	&tabLPDDR2_142=0x00010003
+	&tabLPDDR2_143=0x00008001
+	&tabLPDDR2_144=0x00010003
+	&tabLPDDR2_145=0x00000000
+	&tabLPDDR2_146=0x00000000
+	&tabLPDDR2_147=0x00000000
+	&tabLPDDR2_148=0x00000000
+	&tabLPDDR2_149=0x00000000
+	&tabLPDDR2_150=0x00000000
+	&tabLPDDR2_151=0x00000000
+	&tabLPDDR2_152=0x00000000
+	&tabLPDDR2_153=0x00000000
+	&tabLPDDR2_154=0x00000000
+	&tabLPDDR2_155=0x00000000
+	&tabLPDDR2_156=0x00000000
+	&tabLPDDR2_157=0x00000000
+	&tabLPDDR2_158=0x00000000
+	&tabLPDDR2_159=0x00000000
+	&tabLPDDR2_160=0x00000000
+	&tabLPDDR2_161=0x00000000
+	&tabLPDDR2_162=0x00000000
+	&tabLPDDR2_163=0x00000000
+	&tabLPDDR2_164=0x00000000
+	&tabLPDDR2_165=0x00000000
+	&tabLPDDR2_166=0x00000000
+	&tabLPDDR2_167=0x00000000
+	&tabLPDDR2_168=0x00000000
+	&tabLPDDR2_169=0x00000000
+	&tabLPDDR2_170=0x00000000
+	&tabLPDDR2_171=0x00000000
+
+	&DENALI_CTL_start_addr=0x80156000
+
+	if &DDR_type==&LPDDR2_GFX
+	(
+		&DENALI_CTL_start_addr=0x8015A000
+	)
+
+	&i=0
+	&sz_tabLPDDR2=172.
+	while &i<&sz_tabLPDDR2
+	(
+		if &i<10.
+			&ii=FORMAT.UDECIMAL(1,&i)
+		else if &i<100.
+			&ii=FORMAT.UDECIMAL(2,&i)
+		else
+			&ii=FORMAT.UDECIMAL(3,&i)
+		&&temp=&tabLPDDR2_&ii
+		&addr=&DENALI_CTL_start_addr+&i*4
+		data.set &addr %l &temp
+		&i=&i+1
+	)
+
+	// --- LpDDR2 phy init ------------------------------
+	data.set &DENALI_CTL_start_addr+72.*4 %l 0x060b1001 ; DDR PHY register direct access.
+	data.set &DENALI_CTL_start_addr+73.*4 %l 0x02007c00 ; FORCE_PHY_COMPENSATION: software trigger a phy compensation (done at 1’b1 written).
+	data.set &DENALI_CTL_start_addr+73.*4 %l 0x00007c00    ; FORCE_PHY_COMPENSATION: write back a 1’b0)
+	wait 0.1s
+	data.set &DENALI_CTL_start_addr+12.*4 %l 0x00000301  ; => CS0&1 activation + Axi3 write priority set to 1
+	data.set &DENALI_CTL_start_addr+7.*4 %l 0x00010001   ; => initiate cmd processing in the controlle
+
+return
+
+

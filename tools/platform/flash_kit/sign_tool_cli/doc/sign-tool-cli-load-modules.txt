@@ -1,0 +1,154 @@
+Sign Tool CLI Load Modules(1)
+=============================
+
+NAME
+----
+Sign Tool Load Modules - required to sign the software used by ST Ericsson(tm) U5500/U8500/Thorium HW.
+
+SYNOPSIS
+--------
+*sign-tool-load-modules* [options] -c <xml_configuration_file> <input_file_list> <output_folder>
+
+DESCRIPTION
+-----------
+In order to download ELF load modules to a mobile equipment the load modules must be
+signed. Sign Tool CLI (sign-tool-load-modules) is used to sign several load modules
+listed in the file list as plain text on separate lines. Sign configuration for all
+ELF load modules is specified in the XML configuration file.
+
+XML configuration file document type definition (DTD):
+----
+<?xml version="1.0"?>
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                      (bax:loadmodule?)>
+    <!ELEMENT bax:source                                (#PCDATA)>  
+    <!ELEMENT bax:loadmodule                            (bax:source*,bax:sign)>
+    <!ELEMENT bax:sign                                  (bax:attribute*)>
+    <!ELEMENT bax:attribute                             (#PCDATA)>
+    
+    <!ATTLIST target_configuration      xmlns:bax         CDATA                 #FIXED "TBD">
+    <!ATTLIST bax:sign                  platform          CDATA                 #REQUIRED>
+    <!ATTLIST bax:attribute             name              CDATA                 #REQUIRED>
+]>
+----
+
+ENVIRONMENT VARIABLES
+---------------------
+It is necessary to set *SIGNSERVER* and *SIGNPACKAGEROOT* (in Linux system) environment
+variables if a sign server is going to be used to do the signing.
+
+It is necessary to set *LOCAL_SIGNPACKAGEROOT* and *LOCAL_KEYROOT*
+environment variables if local signing (user have access to keys)
+is used.
+
+For more informations see file:signing.html[ Step by step information about setting up sign server ]
+
+OPTIONS
+-------
+*-c, --configuration*='CONFIGURATION FILE'::
+    Set the xml configuration file to use.
+
+*-h, --help*::
+    Shows the help information.
+
+*-v, --verbose*::
+    To enable visual output to stdout.
+
+EXAMPLES
+--------
+Configuration file (xml) :
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+----
+<target_configuration>
+  <bax:loadmodule>
+        <bax:source>elf_load_module_1.elf</bax:source>
+        <bax:source>elf_load_module_2.elf</bax:source>
+        <bax:sign platform="M7400">
+            <bax:attribute name="--sign-package">M7400</bax:attribute>
+            <bax:attribute name="--verbose"/>            
+        </bax:sign>
+  </bax:loadmodule>
+</target_configuration>
+----
+XML elements
+^^^^^^^^^^^^
+
+<bax:loadmodule>
+++++++++++++++++
+XML configuration file can contain several <bax:loadmodule> elements.
+Each <bax:loadmodule> element specifies names of source load modules (<bax:source>)
+and sign configuration (<bax:sign>) valid for all source load modules specified in actual <bax:loadmodule>.
+
+<bax:source>
+++++++++++++
+Specifies just names of source load modules, full paths are specified in file list.
+
+<bax:sign>
+++++++++++
+Specifies sign configuration of all load modules. Sign element has required attribute "platform".
+
+<bax:attribute>
++++++++++++++++
+Sign attributes are:
+
+*-p, --sign-package* '<sign_package>'::
+    Set sign package to use. Use one of names from the list of sign packages on sign server.
+
+*-v, --verbose*::
+    To enable visual output to stdout.
+	
+*--local*::
+    Disables the use of sign server and uses local sign packages and
+    keys. This requires LOCAL_KEYROOT and LOCAL_SIGNPACKAGEROOT system
+    variables to be set.
+    
+*-ss, --sign-servers* '<sign-servers_list>'::
+	Overwrites the value for the enviroment variable SIGNSERVER
+	
+*-spr, --sign-package-root* '<path_to_sign-package-root>'::
+	Overwrites the value for the enviroment variable SIGNPACKAGEROOT	
+	
+*-lspr, --local-sign-package-root* '<path_to_local-sign-package-root>'::
+	Overwrites the value for the enviroment variable LOCAL_SIGNPACKAGEROOT
+
+*-lkr, --local-key-root* '<path_to_local-key-root>'::
+	Overwrites the value for the enviroment variable LOCAL_KEYROOT
+	
+*-lekr, --local-encription-key-root* '<path_to_local-encription-key-root>'::
+	Overwrites the value for the enviroment variable LOCAL_ENCRYPTIONKEYROOT
+
+File list (txt) :
+~~~~~~~~~~~~~~~~~
+Full paths to ELF load modules are listed in the file list as plain text on separate lines.
+
+----
+<my_load_modules_storage>/elf_load_module_1.elf
+<my_load_modules_storage>/elf_load_module_2.elf
+----
+
+Output folder :
+~~~~~~~~~~~~~~~~~
+Folder where signed ELF load modules are stored.
+
+EXAMPLES
+--------
+
+Load modules signing
+~~~~~~~~~~~~~~~~~~~~
+Sign load modules:
+*sign-tool-load-modules* -c \~/config_file.xml \~/filelist.txt ~/output_folder
+
+EXIT STATUS
+-----------
+sign-tool-load-modules returns a zero exit status if it succeeds during signing.
+A non zero is returned in case of failure.
+
+*0*::
+    Success
+
+*1*::
+    Error in arguments
+

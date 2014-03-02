@@ -1,0 +1,100 @@
+;------------------------------------------------------------
+; load_code.cmm
+;------------------------------------------------------------
+; Startup file to load code to bigboard
+;
+; 101004 - KM Initial version for Maja
+;------------------------------------------------------------
+
+if !("&ElfFile"=="")
+(
+	
+
+	if simulator()
+		data.load "&ElfFile" /plusvm &LOptionStrip /noclear
+	else
+	(	
+		if "&LinuxDebug"=="TRUE"
+		(
+			data.load.elf "&ElfFile" 0x8000-0xc0008000 &LOption /nosymbol /noclear	
+			data.load.elf "&ElfFile" &LOptionVM &LOptionStrip /nocode /gnu /noclear /noreg
+		)
+		else
+		(
+			data.load.elf "&ElfFile" &LOption &LOptionVM &LOptionStrip /noclear
+		)
+	)
+
+	print "Elf File Loaded"
+)
+
+
+if !("&SrcPath"=="")
+(
+	if "&LinuxDebug"=="TRUE"
+		y.spath.setbasedir "&SrcPath"
+	else if "&RSrcPath"=="TRUE"
+		y.spath.setrecursedir "&SrcPath"
+	else
+		y.spath.setdir "&SrcPath"
+	print "Source Path Set"
+)	
+
+;Load Ramdisk
+if "&RamdiskFile"!=""
+(
+		data.load.binary "&RamdiskFile" 0x3000000 /noclear
+		print "Ramdisk loaded"
+	
+)
+
+if "&LinuxDebug"=="TRUE"
+(
+	if os.file(&CMM_PATH_BASE/Etc/linux.t32)
+	(
+		task.config &CMM_PATH_BASE/Etc/linux.t32
+	)
+	else if os.file(~~/demo/arm/kernel/linux/linux.t32)
+	(
+		task.config ~~/demo/arm/kernel/linux/linux.t32
+	)
+	else if os.file(C:\T32\demo\arm\kernel\linux\linux.t32)
+	(
+		task.config C:\T32\demo\arm\kernel\linux\linux.t32
+	)
+
+	if os.file(&CMM_PATH_BASE/Etc/linux.men)
+	(
+		menu.reprogram &CMM_PATH_BASE/Etc/linux.men
+	)
+	else if os.file(~~/demo/arm/kernel/linux/linux.men)
+	(
+		menu.reprogram ~~/demo/arm/kernel/linux/linux.men
+	)
+	else if os.file(C:\T32\demo\arm\kernel\linux\linux.men)
+	(
+		menu.reprogram C:\T32\demo\arm\kernel\linux\linux.men
+	)	
+	
+	if os.file(&CMM_PATH_BASE/Etc/ste_linux.men)
+	(
+		&toolsPath="&CMM_PATH_BASE/Etc"
+		PATH + &toolsPath
+		menu.reprogram &CMM_PATH_BASE/Etc/ste_linux.men
+	)
+)
+
+
+
+ENDDO
+
+
+
+
+
+
+
+
+
+
+

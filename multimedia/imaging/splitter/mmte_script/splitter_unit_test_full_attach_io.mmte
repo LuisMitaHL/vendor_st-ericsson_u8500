@@ -1,0 +1,86 @@
+# MMTE unit test of the splitter: all ports connected to attached IOs, using an input file
+# Buffers allocated in the Splitter are "small" so that the file transfer requires
+# several "emptythisbuffer" toward the Splitter
+# The genarated output file is compared to the input one => files should be identical.
+
+if SYMBIAN == 1
+   alias OMX_SPLITTER_NAME     OMX.ST.IMAGESPLITTER
+   alias INPUT_FILE_PATH       Z:/mmte/img/splitter
+   alias OUTPUT_FILES_PATH     C:/logs
+else
+   alias OMX_SPLITTER_NAME     OMX.ST.ImageSplitter
+   alias INPUT_FILE_PATH       $(IMAGING_PATH)/splitter/mmte_script/input
+   alias OUTPUT_FILES_PATH     $(IMAGING_PATH)/splitter/mmte_script/output
+endif
+
+alias WIDTH  10
+alias HEIGHT 10
+alias COLOR_FORMAT  OMX_COLOR_Format16bitRGB565
+alias STRIDE 1280
+alias INPUT_FILE      $(INPUT_FILE_PATH)/splitter_input_file.txt
+alias OUTPUT_SIZE     2000000
+alias OUTPUT_FILE_1   $(OUTPUT_FILES_PATH)/splitter_output_file_1.txt
+alias OUTPUT_FILE_2   $(OUTPUT_FILES_PATH)/splitter_output_file_2.txt
+alias OUTPUT_FILE_3   $(OUTPUT_FILES_PATH)/splitter_output_file_3.txt
+
+test_logDir	$(MMTE_SCRIPT)
+test_start splitter_unit_io splitter unitary with attached IO
+
+OMX_GetHandle    splitter OMX_SPLITTER_NAME
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=1  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=2  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+OMX_SetParameter splitter OMX_IndexParamPortDefinition nPortIndex=3  format.video.pNativeRender=0 format.video.nFrameWidth=WIDTH format.video.nFrameHeight=HEIGHT format.video.nSliceHeight=WIDTH format.video.nStride=STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=COLOR_FORMAT format.video.pNativeWindow=0
+
+OMX_SendCommand  splitter OMX_CommandPortDisable 4
+MMTE_WaitEvent   splitter OMX_EventCmdComplete OMX_CommandPortDisable 4
+
+ate_attach_io    splitter 0 MEM INPUT_FILE 0 0 0
+ate_attach_io    splitter 1 MEM OUTPUT_FILE_1 OUTPUT_SIZE 0 0
+ate_attach_io    splitter 2 MEM OUTPUT_FILE_2 OUTPUT_SIZE 0 0
+ate_attach_io    splitter 3 MEM OUTPUT_FILE_3 OUTPUT_SIZE 0 0
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers splitter 0
+MMTE_AllocateAndUseBuffers splitter 1
+MMTE_AllocateAndUseBuffers splitter 2
+MMTE_AllocateAndUseBuffers splitter 3
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_set_nb_buffer splitter 0 20
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_wait_transfer splitter 0
+mmte_sleep 10
+MMTE_resume_transfer splitter 0 25
+MMTE_wait_transfer splitter 0
+mmte_sleep 10
+MMTE_resume_transfer splitter 0
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_FreeBuffers splitter 3
+MMTE_WaitEvent splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE_1 INPUT_FILE
+file_comp OUTPUT_FILE_2 INPUT_FILE
+file_comp OUTPUT_FILE_3 INPUT_FILE
+
+ens_network_destroy
+
+MMTE_PrintMemoryStatus
+
+test_end
+
+unalias OUTPUT_SIZE
+unalias OUTPUT_FILE_1
+unalias OUTPUT_FILE_2
+unalias OUTPUT_FILE_3
+unalias INPUT_FILE

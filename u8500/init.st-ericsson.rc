@@ -1,0 +1,499 @@
+# NOTE: This file contains ST-Ericsson related additions/modifications/deletions to init.rc
+#       Commented out lines are kept for reference.
+
+import /init.${ro.hardware}.usb.rc
+
+on early-init
+
+    # Set init and its forked children's oom_adj.
+    write /proc/1/oom_score_adj -16
+
+on init
+
+    # setup the global environment
+    export PATH /system/sbin:/system/bin:/system/xbin:/sbin:/bin:/vendor/bin
+    export LD_LIBRARY_PATH /system/lib:/lib:/usr/lib:/system/lib/ste_omxcomponents/:/vendor/lib
+    export EXTERNAL_STORAGE /mnt/sdcard
+    export OMX_STE_ENS_COMPONENTS_DIR /system/lib/ste_omxcomponents/
+    export OMX_BELLAGIO_LOADER_REGISTRY /system/omxloaders
+
+    # create mountpoints
+    mkdir /mnt/sdcard 0000 system system
+    symlink /mnt/sdcard /sdcard
+
+    mkdir /system 0775 system system
+    mkdir /modemfs 0771 system system
+
+    # Shared memory file system
+    mkdir /dev/shm 0700 audio system
+    mount tmpfs tmpfs /dev/shm mode=0755,gid=1000
+
+    write /proc/sys/kernel/sched_rt_period_us 10000000
+    write /proc/sys/kernel/sched_rt_runtime_us 9500000
+
+    # create /tmp directory needed by psccd and CSPSA
+    mkdir /tmp
+
+    # mount debugfs in order for Audio ADM component to retrieve debug information
+    mkdir /debug
+    mount debugfs none /debug
+
+on fs
+
+    # mount mtd partitions
+    # Mount /system rw first to give the filesystem a chance to save a checkpoint
+    mount ext4 /dev/block/mmcblk0p2 /system ro
+
+    # Start CSPSA before synchronously running the factory reset utility that
+    # checks the factory reset triggers in sysfs and CSPSA and then formats
+    # the block device belonging to /data.
+    start cspsa
+    exec /system/bin/logwrapper /system/bin/factoryreset -f /sys/devices/soc0/reset_reason -r factory-reset -c CSPSA0 -p 0xfffffffc:31 /dev/block/mmcblk0p5
+
+    # Once any factory reset is completed (this is why exec is used above) it is
+    # OK to mount the remaining file system volumes.
+    mount ext4 /dev/block/mmcblk0p4 /cache nosuid nodev nodelalloc,noauto_da_alloc,discard
+    mount ext4 /dev/block/mmcblk0p5 /data nosuid nodev nodelalloc,noauto_da_alloc,discard
+    mount ext4 /dev/block/mmcblk0p1 /modemfs nosuid nodev
+
+on post-fs
+
+    # once everything is setup, no need to modify /
+    chown system system /system
+    chmod 0775 /system
+
+    chown radio radio /modemfs
+    chmod 0770 /modemfs
+    chown radio radio /modemfs/CONF
+    chmod 0755 /modemfs/CONF
+    chown radio radio /modemfs/CONF/MCE
+    chmod 0755 /modemfs/CONF/MCE
+    chown radio radio /modemfs/CONF/MCE/MCE.CFG
+    chmod 0644 /modemfs/CONF/MCE/MCE.CFG
+    chown radio radio /modemfs/PERM
+    chmod 0755 /modemfs/PERM
+    chown radio radio /modemfs/PERM/PROT
+    chmod 0755 /modemfs/PERM/PROT
+    chown radio radio /modemfs/PERM/PROT/LABEP.CFG
+    chmod 0644 /modemfs/PERM/PROT/LABEP.CFG
+    chown radio radio /modemfs/PERM/PROT/PPVALUES.DAT
+    chmod 0644 /modemfs/PERM/PROT/PPVALUES.DAT
+
+    # Set permissions for wake locks before services are launched that use them
+    chown system system /sys/power/state
+    chown system system /sys/power/wakeup_count
+    chown radio system /sys/power/wake_lock
+    chown radio system /sys/power/wake_unlock
+    chmod 0660 /sys/power/state
+    chmod 0660 /sys/power/wake_lock
+    chmod 0660 /sys/power/wake_unlock
+
+on post-fs-data
+
+    # create basic filesystem structure
+    mkdir /data/misc/hcid 0770 bluetooth bluetooth
+    mkdir /data/misc/psdata
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    chmod 0770 /data/misc/wifi/wpa_supplicant.conf
+
+    # give system access to ril_config
+    copy -u /system/etc/ril_config /data/misc/ril_config
+    chmod 0660 /data/misc/ril_config
+    chown root radio /data/misc/ril_config
+
+    # Create directory for STE OMX debug logs
+    mkdir /data/ste-debug 0777 root root
+
+    # remove single instance stedump lock file before stedump service starts
+    rm /data/ste-debug/singlestedump.lock
+
+    # give system access to sterc_script when enabling usb nap
+    copy -u /system/etc/psdata/sterc_conf /data/misc/psdata/sterc_conf
+    copy -u /system/etc/psdata/sterc_script_connect /data/misc/psdata/sterc_script_connect
+    copy -u /system/etc/psdata/sterc_script_disconnect /data/misc/psdata/sterc_script_disconnect
+    copy -u /system/etc/psdata/sterc_conf_alt /data/misc/psdata/sterc_conf_alt
+    copy -u /system/etc/psdata/sterc_script_connect_alt /data/misc/psdata/sterc_script_connect_alt
+    copy -u /system/etc/psdata/sterc_script_connect_dun /data/misc/psdata/sterc_script_connect_dun
+    copy -u /system/etc/psdata/sterc_script_disconnect_dun /data/misc/psdata/sterc_script_disconnect_dun
+    chmod 0660 /data/misc/psdata/sterc_conf
+    chmod 0500 /data/misc/psdata/sterc_script_connect
+    chmod 0500 /data/misc/psdata/sterc_script_disconnect
+    chmod 0660 /data/misc/psdata/sterc_conf_alt
+    chmod 0500 /data/misc/psdata/sterc_script_connect_alt
+    chmod 0500 /data/misc/psdata/sterc_script_connect_dun
+    chmod 0500 /data/misc/psdata/sterc_script_disconnect_dun
+    chown root radio /data/misc/psdata/sterc_conf
+    chown root radio /data/misc/psdata/sterc_conf_alt
+
+    # give system access to stepscc_conf
+    copy -u /system/etc/psdata/stepscc_conf /data/misc/psdata/stepscc_conf
+    chmod 0660 /data/misc/psdata/stepscc_conf
+    chown root radio /data/misc/psdata/stepscc_conf
+
+    # Setup paths used for socket communication with the wpa supplicant.
+    mkdir /data/system 0775 system system
+    mkdir /data/system/wpa_supplicant 0770 wifi wifi
+    chown system system /data/system
+    chown wifi wifi /data/system/wpa_supplicant
+
+    # Setup paths used for socket communication with the dhcp daemon(dhcpd)
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    chown dhcp dhcp /data/misc/dhcp
+
+    # Modem Log Relay runs as system
+    chown system system /dev/db8500-modem-trace
+    chmod 0600 /dev/db8500-modem-trace
+    chown system system /dev/dbx500_mloader_fw
+    chmod 0600 /dev/dbx500_mloader_fw
+
+    # create var/run, var/lib for avahi
+    mkdir /var
+    mkdir /var/run
+    mkdir /var/lib
+
+    # create directory for RXN MSL
+    mkdir /data/RXN 0774 root root
+
+    # Change permissions for modem_log_relay config file
+    chmod 666 /data/misc/trace_auto.conf
+
+    # Set permission rights for ping
+    chmod 4755 /system/bin/ping
+
+    # set proper access to modem storage pipe
+    chown radio radio /dev/rpc
+    chmod 0600 /dev/rpc
+
+on early-boot
+
+    # Enable line below if you want console in charging mode
+#    start console
+
+    # Launch core services in case charging mode is entered
+    start watchdog-kicker
+
+    # Prepare modem
+    class_start modem-u8500
+    class_start modem-core
+
+    # Enable autonomous power management in CM
+    write /sys/module/cm/parameters/enable_auto_pm 1
+    exec /system/bin/chargemode
+
+on boot
+
+    # Set timeout value for rmnet stats.
+    write /sys/devices/virtual/net/rmnet0/timeout_suspend 5000000
+
+    chown system system /sys/class/leds/lp5521_pri:channel0/brightness
+    chown system system /sys/class/leds/lp5521_pri:channel1/brightness
+    chown system system /sys/class/leds/lp5521_pri:channel2/brightness
+    chown system system /sys/class/leds/lp5521_pri:channel0/device/engine1_load
+    chown system system /sys/class/leds/lp5521_pri:channel0/device/engine2_load
+    chown system system /sys/class/leds/lp5521_pri:channel0/device/engine3_load
+    chown system system /sys/class/leds/lp5521_pri:channel0/device/engine1_mode
+    chown system system /sys/class/leds/lp5521_pri:channel0/device/engine2_mode
+    chown system system /sys/class/leds/lp5521_pri:channel0/device/engine3_mode
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-005c/enable
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0029/power_state
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-001e/iio:device2/mode
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-001e/iio:device2/sampling_frequency
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-001e/iio:device2/in_magn_x_scale
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0018/iio:device0/mode
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0018/iio:device0/in_accel_scale
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0018/iio:device0/sampling_frequency
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0019/iio:device0/mode
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0019/iio:device0/in_accel_scale
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0068/iio:device1/mode
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0068/iio:device1/sampling_frequency
+    chown system system /sys/class/i2c-dev/i2c-2/device/2-0068/iio:device1/in_anglvel_scale
+    chown radio radio /sys/devices/platform/sim-detect.0/voltage
+    chown audio audio /sys/devices/system/cpu/usecase/voice-call
+    chown audio audio /sys/devices/system/cpu/usecase/low-power-audio
+    chown audio audio /dev/shm
+
+    # Set radio device and parameters permissions
+    chown system system /sys/module/radio_cg2900/parameters/band
+    chown system system /sys/module/radio_cg2900/parameters/grid
+    chmod 0660 /sys/module/radio_cg2900/parameters/band
+    chmod 0660 /sys/module/radio_cg2900/parameters/grid
+
+    # Define support for SIM card hot swap
+    setprop icc.hotswap supported
+
+    # Define interface name for wlan
+    setprop wifi.interface wlan0
+
+    # Install cw1200_core WLAN module (openMAC solution only)
+    insmod /system/lib/modules/3.4.0+/kernel/net/compat-wireless-openmac/drivers/staging/cw1200/cw1200_core.ko
+
+    # Modem
+    class_start modem
+    class_start default
+
+    # Enable wide-band speech for Bluetooth
+    setprop bt.hfp.wideband 1
+
+    # Create Directory for Caching files for camera
+    mkdir /data/tuning 0700 media camera
+
+service console /system/bin/sh
+    class core
+    console
+#   disabled
+#    user shell
+#    group log
+
+service netd /system/bin/netd
+    class main
+    socket netd stream 0660 root system dbus_access
+    socket dnsproxyd stream 0660 root inet
+    socket mdns stream 0660 root system
+
+service media /system/bin/logwrapper /system/bin/mediaserver
+    class main
+    user media
+    group audio camera inet net_bt net_bt_admin net_bw_acct drmrpc
+    ioprio rt 4
+
+service dbus /system/bin/logwrapper /system/bin/dbus-daemon --system --nofork
+    class main
+    socket dbus stream 660 bluetooth bluetooth
+    socket dbus_ste stream 660 bluetooth dbus_access
+    user bluetooth
+    group bluetooth net_bt_admin dbus_access
+
+service bluetoothd /system/bin/logwrapper /system/bin/bluetoothd -d -n
+    class main
+    socket bluetooth stream 660 bluetooth bluetooth
+    socket dbus_bluetooth stream 660 bluetooth bluetooth
+    # init.rc does not yet support applying capabilities, so run as root and
+    # let bluetoothd drop uid to bluetooth with the right linux capabilities
+    group bluetooth net_bt_admin misc radio
+    disabled
+
+service flash_recovery /system/bin/logwrapper /system/etc/install-recovery.sh
+    class main
+    oneshot
+
+# Crash Safe Parameter Storage Area, serving production parameter requests from clients.
+# Configuration is read from file "/etc/cspsa.conf" and each found area spawns a CSPSA server
+# process.
+service cspsa /system/bin/logwrapper /system/bin/cspsa-server
+    class parameter_storage
+    user root
+    oneshot
+
+# init shrm net device required for Phonet communication with Modem
+service shrm-netdev /system/bin/ifconfig shrm0 up
+    class modem-u8500
+    oneshot
+
+# init Phonet net device required for Phonet communication with Modem
+service phonet-netdev /system/bin/ifconfig upnlink0 up
+    class main
+    oneshot
+
+# Copy RF trim data from CSPSA, and start the Modem Storage Agent (MSA) service
+service modem /system/bin/sh /system/etc/ste_modem.sh
+    class modem-u8500
+    user radio
+    group radio system
+    capability NET_ADMIN
+
+# Modem-supervisor
+service modem-supervisor /system/bin/modem-supervisor -r -f /dev/dbx500_mloader_fw -i /sys/devices/platform/ab8505-i2c.0/chip_id,/sys/devices/platform/ab8500-i2c.0/chip_id -c monitor
+    class modem-u8500
+    user root
+
+# Creating Modem Security daemon
+service copsd /system/bin/copsdaemon
+    class modem-core
+    user root
+    group system
+
+# Modem_log_relay
+service modem_log_relay /system/bin/modem_log_relay --ctrl_port=2001 --data_port=2002 --inv_port=2003 --report_port=2005
+    class modem
+    user root
+
+service admsrv /system/bin/logwrapper /system/bin/admsrv
+    class main
+    user audio
+    group system audio inet net_bt net_bt_admin net_raw shell sdcard_rw
+    ioprio rt 4
+    capability NET_ADMIN NET_RAW SYS_NICE
+
+#service stedump /system/bin/logwrapper /system/bin/stedump
+#    class main
+#    user system
+#    group system audio inet net_bt net_bt_admin net_raw shell
+
+service hdmid /system/bin/hdmid
+    class main
+    socket hdmid stream 0660 system graphics
+    oneshot
+
+service ste-cg29xx_ctrl /system/bin/logwrapper /system/xbin/ste-cg29xx_ctrl -b 115200 -p 6 -l 23 -i /system/bin/cg2900-channel_init.sh /dev/ttyAMA0
+    class main
+    user root
+    group bluetooth net_bt_admin misc root system
+    oneshot
+
+# DHCP client for Bluetooth PANU
+service dhcpcd_bnep0 /system/bin/dhcpcd -dABKL -o domain_name_servers
+    class main
+    group dhcp
+    disabled
+    oneshot
+
+service iprenew_bnep0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+service lbsd /system/bin/lbsd
+    class main
+    user root
+    disabled
+    group radio
+
+on property:dev.bootcomplete=1
+    start lbsd
+
+service RXN_IntApp /system/bin/RXN_IntApp
+    class main
+    user root
+    disabled
+    group radio
+
+on property:dev.bootcomplete=1
+    start RXN_IntApp
+
+service thermald /system/bin/thermald
+    class main
+    user root
+    group root dbus_access
+
+service wpa_supplicant /system/bin/wpa_supplicant -dd -Dnl80211 -i wlan0 -c/data/misc/wifi/wpa_supplicant.conf
+    class main
+    group wifi
+    disabled
+    oneshot
+
+service softap /system/bin/wpa_supplicant -dd -Dnl80211 -i wlan0 -c/data/misc/wifi/wpa_supplicant.conf
+    class main
+    group wifi
+    disabled
+    oneshot
+
+service dhcpcd_wlan0 /system/bin/dhcpcd -dABKL -o domain_name_servers
+    class main
+    group dhcp
+    disabled
+    oneshot
+
+service iprenew_wlan0 /system/bin/dhcpcd -n
+    class main
+    disabled
+    oneshot
+
+on property:init.svc.wpa_supplicant=stopped
+    stop dhcpcd
+
+on property:init.svc.dhcpcd=stopped
+    stop dhcpcd
+
+# C&N service daemon
+service cn_server /system/bin/cn_server
+    class modem-core
+    user root
+    group radio misc
+
+# PS connection control
+service init_stepscc /system/bin/sh /data/misc/psdata/stepscc_init.sh
+    class main
+    oneshot
+
+service psccd /system/bin/psccd -f -c /data/misc/psdata/stepscc_conf
+    class modem
+    user root
+    group radio inet
+
+# PS routing control
+service init_sterc /system/bin/sh /data/misc/psdata/sterc_init.sh
+    class main
+    oneshot
+
+service stercd /system/bin/stercd -d 9 -r /data/misc/psdata/sterc_script_connect -s /data/misc/psdata/sterc_script_disconnect -c /data/misc/psdata/sterc_conf
+    class modem
+    user root
+    group radio
+    oneshot
+
+# SIM daemon
+service simd /system/bin/simd
+    class modem-core
+    user root
+    group radio
+
+# SIMPB daemon
+service simpbd /system/bin/simpbd
+    class modem-core
+    user root
+    group radio
+
+# SMS Server control
+service sms_server /system/bin/sms_server
+    class modem
+    user root
+    group radio
+
+# AT daemon
+service atd /system/bin/at_core -mode normal -serial ttyGS0
+    class modem
+    user root
+    group radio audio system
+
+# Modem Access daemon
+service mad /system/bin/ste_mad
+    class modem
+    user radio
+    group radio dbus_access misc
+
+# Avahi Autoip daemon
+service avahi-autoipd /system/bin/avahi-autoipd usb0 -D
+    class main
+    user root
+
+# Avahi daemon
+service avahi-daemon /system/bin/avahi-daemon
+    class main
+    user root
+
+# Avahi-publish
+service avahi-publish /system/bin/avahi-publish -s READY _mobile._tcp 5353
+    class main
+    user root
+
+service watchdog-kicker /system/xbin/watchdog-kicker -d /dev/watchdog -t 120
+    class main
+    oneshot
+
+service battery_params /system/xbin/battery_params
+    class main
+    user system
+    group system
+    oneshot
+
+service usbid_init /system/bin/usbid_init.sh
+    class main
+    oneshot
+
+# RTC Calibration daemon
+service rtc_calibration /system/bin/rtc_calibration
+    user root
+
+service zram_config /system/bin/sh /system/etc/zram_config.sh
+    class main
+    oneshot

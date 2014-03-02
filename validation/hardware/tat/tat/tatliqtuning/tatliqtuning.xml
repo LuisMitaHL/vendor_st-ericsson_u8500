@@ -1,0 +1,427 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatliqtuning">
+  	
+  	<argument path="/DTH/iq_tunning/config/menus/menu_15iqtuning.xml" type="FILE" user_data="ACT_IQTUNING_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatliqtuning/config/menus\nFilename=menu_15iqtuning.xml</info> 
+	  </argument>
+	  <argument path="/DTH/iq_tunning/config/panels/camera_xml_files.xml" type="FILE" user_data="ACT_IQTUNING_CAMERA_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatliqtuning/config/panels\nFilename=camera_xml_files.xml</info> 
+	  </argument>
+	  <argument path="/DTH/iq_tunning/config/panels/iq_tuning_registers.xml" type="FILE" user_data="ACT_IQTUNING_REGISTER_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatliqtuning/config/panels\nFilename=iq_tuning_registers.xml</info> 
+	  </argument>
+	  <argument path="/DTH/iq_tunning/config/panels/streaming_control.xml" type="FILE" user_data="ACT_IQTUNING_STREAMING_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatliqtuning/config/panels\nFilename=streaming_control.xml</info> 
+	  </argument>
+    <action path="/DTH/iq_tunning/streaming_control/AcquisitionControl" type="U8" user_data="AcquisitionControl" set="Dth_ActIQTParam_Set" exec="Dth_ActIQT_exec">
+       <enum>
+         <enum_item value="AcquisitionControl_About"> About</enum_item>
+         <enum_item value="AcquisitionControl_GoToIdle"> GoToIdle</enum_item>
+         <enum_item value="AcquisitionControl_Pause"> Pause</enum_item>
+         <enum_item value="AcquisitionControl_Resume"> Resume</enum_item>
+         <enum_item value="AcquisitionControl_GetCurrentState"> Get Current State</enum_item>
+         <enum_item value="AcquisitionControl_PageElementDth"> Mount PE dth</enum_item>
+         <enum_item value="AcquisitionControl_MmteTrace"> mmte_trace</enum_item>
+         <enum_item value="AcquisitionControl_ResolutionUpdate"> Resolution Update</enum_item>
+         <enum_item value="AcquisitionControl_Reboot"> Reboot</enum_item>
+         <enum_item value="AcquisitionControl_MemoryAvailable"> Ram Disk memory free</enum_item>
+        </enum>
+      <info>Horizontal:9\n9ptimeout:70000</info>
+      <range min="0" max="9"/>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/CurrentState" type="U8" user_data="AcquisitionControl_CurrentState" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="acquisitionControl_CurrentState_Init"> Init</enum_item>
+         <enum_item value="acquisitionControl_CurrentState_Idle"> Idle</enum_item>
+         <enum_item value="acquisitionControl_CurrentState_ViewFinder"> ViewFinder</enum_item>
+         <enum_item value="acquisitionControl_CurrentState_StillPicture"> StillPicture</enum_item>
+         <enum_item value="acquisitionControl_CurrentState_Video"> Video</enum_item>
+         <enum_item value="acquisitionControl_CurrentState_Pause"> Pause</enum_item>
+        </enum>
+      	<range min="0" max="5"/>
+    </argument>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/OmxGraphUsed" type="U8" user_data="AcquisitionControl_OmxGraphUsed" get ="Dth_ActIQTParam_Get" set="Dth_ActIQTParam_Set"> 
+       <enum>
+         <enum_item value="acquisitionControl_OmxGraphUsed_IQT"> IQT Omx Graph</enum_item>
+         <enum_item value="acquisitionControl_OmxGraphUsed_NOT_IQT"> Not IQT omx Graph</enum_item>
+         <enum_item value="acquisitionControl_OmxGraphUsed_IQT_debug_still_display"> IQT omx Graph: debug still display</enum_item>
+        </enum>
+      	<range min="0" max="2"/>
+    </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/RamDiskSize_Mbytes" type="U32" user_data="AcquisitionControl_RamDiskSize" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="120"/>
+      </argument>
+    </action>
+    <action path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder" type="U8" user_data="ViewFinder" set="Dth_ActIQTParam_Set" exec="Dth_ActIQT_exec">
+      <enum>
+         <enum_item value="ViewFinder_Launch"> ViewFinder</enum_item>
+         <enum_item value="ViewFinder_SaveToSDcard"> SaveToSDcard</enum_item>
+	 <enum_item value="ViewFinder_LsFrame"> ls /iqt_rd/viewfinder</enum_item>
+	 <enum_item value="ViewFinder_RemoveLr"> rm /iqt_rd/viewfinder/LR</enum_item>
+      </enum>
+      <info>Horizontal:9\n9ptimeout:240000</info>
+      <range min="0" max="3"/>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/SDcardDirectory" type="STRING" user_data="ViewFinder_SDcardDirectory" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+    </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/Resolution" type="U32" user_data="ViewFinder_Resolution" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="ViewFinder_Resolution_SQCIF"> 0128x0096: SQCIF</enum_item>
+         <enum_item value="ViewFinder_Resolution_QQVGA"> 0160x0120: QQVGA</enum_item>
+          <enum_item value="ViewFinder_Resolution_QCIF"> 0176x0144: QCIF</enum_item>
+          <enum_item value="ViewFinder_Resolution_QVGA"> 0320x0240: QVGA</enum_item>
+         <enum_item value="ViewFinder_Resolution_QVGAp"> 0240x0320: QVGAp</enum_item>
+         <enum_item value="ViewFinder_Resolution_WQVGA"> 0400x0240: WQVGA</enum_item>
+           <enum_item value="ViewFinder_Resolution_CIF"> 0352x0288: CIF</enum_item>
+          <enum_item value="ViewFinder_Resolution_HVGA"> 0480x0320: HVGA</enum_item>
+           <enum_item value="ViewFinder_Resolution_nHD"> 0640x0360: nHD</enum_item>
+           <enum_item value="ViewFinder_Resolution_VGA"> 0640x0480: VGA  </enum_item>
+            <enum_item value="ViewFinder_Resolution_D1"> 0720x0576: D1</enum_item>
+          <enum_item value="ViewFinder_Resolution_SVGA"> 0800x0600: SVGA</enum_item>
+          <enum_item value="ViewFinder_Resolution_WVGA"> 0848x0480: WVGA</enum_item>
+           <enum_item value="ViewFinder_Resolution_qHD"> 0960x0540: qHD</enum_item>
+          <enum_item value="ViewFinder_Resolution_XVGA"> 1024x0768: XVGA</enum_item>
+          <enum_item value="ViewFinder_Resolution_SXGA"> 1280x1024: SXGA</enum_item>
+          <enum_item value="ViewFinder_Resolution_UXGA"> 1600x1200: UXGA</enum_item>
+          <enum_item value="ViewFinder_Resolution_QXGA"> 2048x1536: QXGA</enum_item>
+           <enum_item value="ViewFinder_Resolution_5MP"> 2608x1952: 5MP</enum_item>
+        </enum>
+      	<range min="0" max="18"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/Width" type="U16" user_data="ViewFinder_Width" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/Height" type="U16" user_data="ViewFinder_Height" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/DisplayActivation" type="U8" user_data="ViewFinder_DisplayActivation" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="ViewFinder_DisplayActivation_OFF"> OFF</enum_item>
+         <enum_item value="ViewFinder_DisplayActivation_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/DisplayResolution" type="U8" user_data="ViewFinder_DisplayResolution" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="ViewFinder_LowResolution"> LR</enum_item>
+        </enum>
+      	<range min="0" max="0"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/SaveFirstFrame" type="U32" user_data="ViewFinder_SaveFirstFrame" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/SaveFrameCount" type="U8" user_data="ViewFinder_SaveFrameCount" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/SaveMode" type="U8" user_data="ViewFinder_SaveMode" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="ViewFinder_FirstFrame"> First Frames</enum_item>
+         <enum_item value="ViewFinder_FIFO"> FIFO</enum_item>
+         <enum_item value="ViewFinder_NORMAL"> Normal</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/SaveActivation" type="U8" user_data="ViewFinder_SaveActivation" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="ViewFinder_SaveActivation_OFF"> OFF</enum_item>
+         <enum_item value="ViewFinder_SaveActivation_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/SaveResolutionLR" type="U8" user_data="ViewFinder_SaveResolutionLR" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="ViewFinder_SaveResolutionLR_OFF"> OFF</enum_item>
+         <enum_item value="ViewFinder_SaveResolutionLR_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/FrameRate" type="U32" user_data="ViewFinder_FrameRate" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+        <range min="0" max="30"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/FrameSkippingNumber" type="U32" user_data="ViewFinder_FrameSkippingNumber" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/ViewFinder_On_Display" type="U32" user_data="ViewFinder_On_Display" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="ViewFinder_OnDisplayActivation_OFF"> OFF</enum_item>
+         <enum_item value="ViewFinder_OnDisplayActivation_ON"> ON</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/SavePrefix" type="STRING" user_data="ViewFinder_SavePrefix" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      </argument>
+    </action>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/CurrentFrame" type="FILE" user_data="ViewFinder_CurrentFrame"  get="Dth_ActIQTPreActionFile_GetVF"> 
+   <info>Automatic Procedure\nFilepath=/iqt_rd/viewfinder/LR\nSubPanelName=Viewfinder\nFilename=current\nFileImage=True\nCoddec=DEFAULT_CODDEC\nCyclic=300</info>
+    </argument>
+    <action path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture" type="U8" user_data="StillPicture" set="Dth_ActIQTParam_Set" exec="Dth_ActIQT_exec">
+      <enum>
+         <enum_item value="StillPicture_Launch"> StillPicture</enum_item>
+         <enum_item value="StillPicture_SaveToSDcard"> SaveToSDcard</enum_item>
+	 <enum_item value="StillPicture_LsFrame"> ls /iqt_rd/still</enum_item>
+	 <enum_item value="StillPicture_RemoveLr"> rm /iqt_rd/still/LR</enum_item>
+	 <enum_item value="StillPicture_RemoveHr"> rm /iqt_rd/still/HR</enum_item>
+	 <enum_item value="StillPicture_RemoveRaw"> rm /iqt_rd/still/Raw</enum_item>
+      </enum>
+      <info>Horizontal:9\n9ptimeout:60000</info>
+      <range min="0" max="5"/>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SDcardDirectory" type="STRING" user_data="StillPicture_SDcardDirectory" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Resolution" type="U32" user_data="StillPicture_Resolution" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_Resolution_SQCIF"> 0128x0096: SQCIF</enum_item>
+         <enum_item value="StillPicture_Resolution_QQVGA"> 0160x0120: QQVGA</enum_item>
+          <enum_item value="StillPicture_Resolution_QCIF"> 0176x0144: QCIF</enum_item>
+          <enum_item value="StillPicture_Resolution_QVGA"> 0320x0240: QVGA</enum_item>
+         <enum_item value="StillPicture_Resolution_QVGAp"> 0240x0320: QVGAp</enum_item>
+         <enum_item value="StillPicture_Resolution_WQVGA"> 0400x0240: WQVGA</enum_item>
+           <enum_item value="StillPicture_Resolution_CIF"> 0352x0288: CIF</enum_item>
+          <enum_item value="StillPicture_Resolution_HVGA"> 0480x0320: HVGA</enum_item>
+           <enum_item value="StillPicture_Resolution_nHD"> 0640x0360: nHD</enum_item>
+           <enum_item value="StillPicture_Resolution_VGA"> 0640x0480: VGA  </enum_item>
+            <enum_item value="StillPicture_Resolution_D1"> 0720x0576: D1</enum_item>
+          <enum_item value="StillPicture_Resolution_SVGA"> 0800x0600: SVGA</enum_item>
+          <enum_item value="StillPicture_Resolution_WVGA"> 0848x0480: WVGA</enum_item>
+           <enum_item value="StillPicture_Resolution_qHD"> 0960x0540: qHD</enum_item>
+          <enum_item value="StillPicture_Resolution_XVGA"> 1024x0768: XVGA</enum_item>
+          <enum_item value="StillPicture_Resolution_SXGA"> 1280x1024: SXGA</enum_item>
+          <enum_item value="StillPicture_Resolution_UXGA"> 1600x1200: UXGA</enum_item>
+          <enum_item value="StillPicture_Resolution_QXGA"> 2048x1536: QXGA</enum_item>
+           <enum_item value="StillPicture_Resolution_5MP"> 2608x1952: 5MP</enum_item>
+        </enum>
+      	<range min="0" max="18"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Width" type="U16" user_data="StillPicture_Width" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Height" type="U16" user_data="StillPicture_Height" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/DisplayActivation" type="U8" user_data="StillPicture_DisplayActivation" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_DisplayActivation_OFF"> OFF</enum_item>
+         <enum_item value="StillPicture_DisplayActivation_ON_LR"> ON_LR</enum_item>
+         <enum_item value="StillPicture_DisplayActivation_ON_RAW_HR"> ON_RAW_AND_HR</enum_item>
+         <enum_item value="StillPicture_DisplayActivation_ON_LR_RAW_HR"> ON_LR_AND_RAW_AND_HR</enum_item>
+        </enum>
+      	<range min="0" max="3"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/DisplayResolution" type="U8" user_data="StillPicture_DisplayResolution" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_LowResolution"> LR</enum_item>
+        </enum>
+      	<range min="0" max="0"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SaveFirstFrame" type="U32" user_data="StillPicture_SaveFirstFrame" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SaveFrameCount" type="U8" user_data="StillPicture_SaveFrameCount" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SaveMode" type="U8" user_data="StillPicture_SaveMode" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_FirstFrame"> First Frames</enum_item>
+         <enum_item value="StillPicture_FIFO"> FIFO</enum_item>
+         <enum_item value="StillPicture_NORMAL"> Normal</enum_item>
+        </enum>
+      	<range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SaveActivation" type="U8" user_data="StillPicture_SaveActivation" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_SaveActivation_OFF"> OFF</enum_item>
+         <enum_item value="StillPicture_SaveActivation_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SaveResolutionLR" type="U8" user_data="StillPicture_SaveResolutionLR" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_SaveResolutionLR_OFF"> OFF</enum_item>
+         <enum_item value="StillPicture_SaveResolutionLR_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SaveResolutionHR" type="U8" user_data="StillPicture_SaveResolutionHR" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_SaveResolutionHR_OFF"> OFF</enum_item>
+         <enum_item value="StillPicture_SaveResolutionHR_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SaveResolutionRAW" type="U8" user_data="StillPicture_SaveResolutionRAW" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_SaveResolutionRAW_OFF"> OFF</enum_item>
+         <enum_item value="StillPicture_SaveResolutionRAW_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Mode" type="U8" user_data="StillPicture_Mode" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="StillPicture_Continuous"> Continuous</enum_item>
+         <enum_item value="StillPicture_Single"> Single</enum_item>
+         <enum_item value="StillPicture_Burst"> Burst</enum_item>
+        </enum>
+      	<range min="0" max="2"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/BurstFrameCount" type="U8" user_data="StillPicture_BurstFrameCount" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/FrameSkippingNumber" type="U32" user_data="StillPicture_FrameSkippingNumber" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/FrameRate" type="U32" user_data="StillPicture_FrameRate" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+        <range min="0" max="30"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/SavePrefix" type="STRING" user_data="StillPicture_SavePrefix" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      </argument>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/RawSingleFrame" type="FILE" user_data="StillPicture_RawSingleFrame" get="Dth_ActIQTPreActionFile_GetRawStill">
+    <info>Automatic Procedure\nFilepath=/iqt_rd/still/RAW\nSubPanelName=RawStillPicture\nFilename=f001\nFileImage=True\nCoddec=CODDEC_1</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/HrSingleFrame" type="FILE" user_data="StillPicture_HrSingleFrame"  get="Dth_ActIQTPreActionFile_GetHrStill">
+    <info>Automatic Procedure\nFilepath=/iqt_rd/still/HR\nSubPanelName=HrStillPicture\nFilename=f001\nFileImage=True\nCoddec=CODDEC_2</info>
+    </argument>
+    </action>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/CurrentFrame" type="FILE" user_data="StillPicture_CurrentFrame"  get="Dth_ActIQTPreActionFile_GetStill"> 
+   <info>Automatic Procedure\nFilepath=/iqt_rd/still/LR\nSubPanelName=StillPicture\nFilename=current\nFileImage=True\nCoddec=DEFAULT_CODDEC\nCyclic=300</info>
+    </argument>
+    <action path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video" type="U8" user_data="Video" set="Dth_ActIQTParam_Set" exec="Dth_ActIQT_exec">
+      <enum>
+         <enum_item value="Video_Launch"> Video</enum_item>
+         <enum_item value="Video_SaveToSDcard"> SaveToSDcard</enum_item>
+	 <enum_item value="Video_LsFrame"> ls /iqt_rd/video</enum_item>
+	 <enum_item value="Video_RemoveLr"> rm /iqt_rd/video/LR</enum_item>
+	 <enum_item value="Video_RemoveHr"> rm /iqt_rd/video/HR</enum_item>
+      </enum>
+      <info>Horizontal:9\n9ptimeout:20000</info>
+      <range min="0" max="4"/>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SDcardDirectory" type="STRING" user_data="Video_SDcardDirectory" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/Resolution" type="U32" user_data="Video_Resolution" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_Resolution_SQCIF"> 0128x0096: SQCIF</enum_item>
+         <enum_item value="Video_Resolution_QQVGA"> 0160x0120: QQVGA</enum_item>
+          <enum_item value="Video_Resolution_QCIF"> 0176x0144: QCIF</enum_item>
+          <enum_item value="Video_Resolution_QVGA"> 0320x0240: QVGA</enum_item>
+         <enum_item value="Video_Resolution_QVGAp"> 0240x0320: QVGAp</enum_item>
+         <enum_item value="Video_Resolution_WQVGA"> 0400x0240: WQVGA</enum_item>
+           <enum_item value="Video_Resolution_CIF"> 0352x0288: CIF</enum_item>
+          <enum_item value="Video_Resolution_HVGA"> 0480x0320: HVGA</enum_item>
+           <enum_item value="Video_Resolution_nHD"> 0640x0360: nHD</enum_item>
+           <enum_item value="Video_Resolution_VGA"> 0640x0480: VGA  </enum_item>
+            <enum_item value="Video_Resolution_D1"> 0720x0576: D1</enum_item>
+          <enum_item value="Video_Resolution_SVGA"> 0800x0600: SVGA</enum_item>
+          <enum_item value="Video_Resolution_WVGA"> 0848x0480: WVGA</enum_item>
+           <enum_item value="Video_Resolution_qHD"> 0960x0540: qHD</enum_item>
+          <enum_item value="Video_Resolution_XVGA"> 1024x0768: XVGA</enum_item>
+          <enum_item value="Video_Resolution_SXGA"> 1280x1024: SXGA</enum_item>
+          <enum_item value="Video_Resolution_UXGA"> 1600x1200: UXGA</enum_item>
+          <enum_item value="Video_Resolution_QXGA"> 2048x1536: QXGA</enum_item>
+           <enum_item value="Video_Resolution_5MP"> 2608x1952: 5MP</enum_item>
+        </enum>
+      	<range min="0" max="18"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/Width" type="U16" user_data="Video_Width" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/Height" type="U16" user_data="Video_Height" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/DisplayActivation" type="U8" user_data="Video_DisplayActivation" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_DisplayActivation_OFF"> OFF</enum_item>
+         <enum_item value="Video_DisplayActivation_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/DisplayResolution" type="U8" user_data="Video_DisplayResolution" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_LowResolution"> LR</enum_item>
+        </enum>
+      	<range min="0" max="0"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SaveFirstFrame" type="U32" user_data="Video_SaveFirstFrame" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SaveFrameCount" type="U8" user_data="Video_SaveFrameCount" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SaveMode" type="U8" user_data="Video_SaveMode" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_FirstFrame"> First Frames</enum_item>
+         <enum_item value="Video_FIFO"> FIFO</enum_item>
+         <enum_item value="Video_NORMAL"> Normal</enum_item>
+        </enum>
+      	<range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SaveActivation" type="U8" user_data="Video_SaveActivation" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_SaveActivation_OFF"> OFF</enum_item>
+         <enum_item value="Video_SaveActivation_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SaveResolutionLR" type="U8" user_data="Video_SaveResolutionLR" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_SaveResolutionLR_OFF"> OFF</enum_item>
+         <enum_item value="Video_SaveResolutionLR_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SaveResolutionHR" type="U8" user_data="Video_SaveResolutionHR" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_SaveResolutionHR_OFF"> OFF</enum_item>
+         <enum_item value="Video_SaveResolutionHR_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/HREncodedSaveActivation" type="U8" user_data="Video_HREncodedSaveActivation" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+       <enum>
+         <enum_item value="Video_HREncodedSaveActivation_OFF"> OFF</enum_item>
+         <enum_item value="Video_HREncodedSaveActivation_ON"> ON</enum_item>
+        </enum>
+      	<range min="0" max="0"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/HREncodedSavePrefix" type="STRING" user_data="Video_HREncodedSavePrefix" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/FrameRate" type="U32" user_data="Video_FrameRate" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+        <range min="0" max="30"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/FrameSkippingNumber" type="U32" user_data="Video_FrameSkippingNumber" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      	<range min="0" max="4095"/>
+      </argument>
+      <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/SavePrefix" type="STRING" user_data="Video_SavePrefix" set="Dth_ActIQTParam_Set" get ="Dth_ActIQTParam_Get">
+      </argument>
+    </action>
+    <argument path="/DTH/iq_tunning/streaming_control/AcquisitionControl/ViewFinder/StillPicture/Video/CurrentFrame" type="FILE" user_data="Video_CurrentFrame" get="Dth_ActIQTPreActionFile_GetVideo">
+   <info>Automatic Procedure\nFilepath=/iqt_rd/video/LR\nSubPanelName=Video\nFilename=current\nFileImage=True\nCoddec=DEFAULT_CODDEC\nCyclic=300</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/Common001" type="FILE" user_data="Common001">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunCommon-010045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/Common002" type="FILE" user_data="Common002">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunCommon-020045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/Still001" type="FILE" user_data="Still001">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunStiCap-010045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/Still002" type="FILE" user_data="Still002">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunStiCap-020045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/StillPreview001" type="FILE" user_data="StillPreview001">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunStiPre-010045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/StillPreview002" type="FILE" user_data="StillPreview002">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunStiPre-020045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/VideoPreview001" type="FILE" user_data="VideoPreview001">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunVidPre-010045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/VideoPreview002" type="FILE" user_data="VideoPreview002">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunVidPre-020045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/VideoRecord001" type="FILE" user_data="VideoRecord001">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunVidRec-010045.xml</info>
+    </argument>
+    <argument path="/DTH/iq_tunning/xml_omx_camera_parameters/VideoRecord002" type="FILE" user_data="VideoRecord002">
+    <info>Automatic Procedure\nFilepath=/system/usr/share/camera/tuning\nFilename=TunVidRec-020045.xml</info>
+    </argument>
+  </module>
+</dthapi>

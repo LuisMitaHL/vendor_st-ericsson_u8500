@@ -1,0 +1,6 @@
+#!/bin/sh
+
+VERSION=`git describe --tag`
+echo '\providecommand{\\versionnumber}{'$VERSION'}' > version.tex
+sed -i "s/_/\\\_/g" version.tex
+

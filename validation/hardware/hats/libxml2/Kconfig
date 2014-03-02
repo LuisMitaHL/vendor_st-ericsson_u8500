@@ -1,0 +1,29 @@
+#
+# Libxml2 configuration
+#
+
+menuconfig LIBXML2
+	bool "Libxml2 Configuration"
+	help
+	  Libxml2 is the XML C parser and toolkit developed for the Gnome project
+	  (but usable outside of the Gnome platform), it is free software available
+	  under the MIT License.
+
+if LIBXML2
+
+config LIBXML2_DIR
+	string
+	default ./libxml2
+
+config LIBXML2_DEPS
+	string
+	default ""
+
+config LIBXML2_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LIBXML2
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LIBXML2

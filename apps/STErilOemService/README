@@ -1,0 +1,34 @@
+
+
+# STErilOemService - Support mechanism for raw OEM RIL request/responses.
+
+## Introduction
+
+The STErilOemService consists of two parts:
+
+1. A service that runs as `com.android.phone` and thus has access to Android's RIL.
+   It forwards raw OEM RIL requests from OEM applications onwards to the RIL.
+   Unsolicited raw OEM RIL responses are broadcasted to interested OEM applications.
+
+2. A library for OEM applications to use which encapsulates the communication with the service.
+   It supports both synchronous and asynchronous operation. See [Important OEM Application Information]
+   below.
+
+## Build & Install
+
+Builds as part of the Android build system.
+
+## Testing
+
+See tests/README
+
+## Important OEM Application Information
+
+* OEM applications need to request for the permission "com.stericsson.permission.SEND_RIL_OEM_HOOK"
+  in their AndroidManifest.xml
+
+* Unsolicited raw OEM RIL responses are broadcasted using the intent action:
+  STErilOemHook.ACTION_UNSOL_RESPONSE_OEM_HOOK_RAW.  The data contained in the broadcast intent
+  is extracted by calling `intent.getByteArrayExtra("data")`
+
+

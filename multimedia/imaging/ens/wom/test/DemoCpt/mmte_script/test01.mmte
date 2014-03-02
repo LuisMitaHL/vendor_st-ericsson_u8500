@@ -1,0 +1,65 @@
+# womDemoCpt scenario
+#      ---------------          -------------------- -      ----------------
+#      |  Fakesource 0|---------|0  womDemoCpt 1 |-------|0  FakeSink   |
+#      ---------------          ---------------------        ----------------
+# test01 check womDemoCpt describe the test here
+
+exist_alias &SIA_ALGO_PATH &bExist
+
+if $(bExist) != 0
+	alias S_WOMDEMOCPT_CURRENT_PATH $(SIA_ALGO_PATH)/womDemoCpt
+else
+	alias S_WOMDEMOCPT_CURRENT_PATH .
+endif
+
+if $(CLI_PLATFORM) == x86
+	echo we are in x86
+else
+	echo we are in other target
+endif
+
+MMTE_OMX_SetTraceLevel 1
+enable_disp_alias_process
+enable_skip_unknown_command
+
+test_logDir $(S_WOMDEMOCPT_CURRENT_PATH)/output
+test_start test01.mmte test womDemoCpt
+
+alias Output_filename test01.mmte_vga_yuv.yuv
+
+OMX_GetHandle    Fakesource OMX.ST.Fakesource
+OMX_SetParameter Fakesource OMX_IndexParamPortDefinition nPortIndex=0  format.video.nFrameWidth=640 format.video.nFrameHeight=480 format.video.nSliceHeight=0 format.video.nStride=0  format.video.eColorFormat=OMX_COLOR_FormatYUV420PackedPlanar  eDomain=OMX_PortDomainVideo
+OMX_SetParameter Fakesource OMX_IndexParamContentURI contentURI=$(S_WOMDEMOCPT_CURRENT_PATH)/../library/dflash_tu/scn/sounion_640x480.yuv
+OMX_SetConfig    Fakesource OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE bFrameLimited=OMX_TRUE nFrameLimit=100
+
+OMX_GetHandle    womDemoCpt  OMX.STE.WOMDEMOCPT
+OMX_SetParameter womDemoCpt  OMX_IndexParamPortDefinition nPortIndex=0 format.video.nFrameWidth=640  format.video.nFrameHeight=480 format.video.nStride=0 format.video.nSliceHeight=0 format.video.eColorFormat=OMX_COLOR_FormatYUV420PackedPlanar
+OMX_SetParameter womDemoCpt  OMX_IndexParamPortDefinition nPortIndex=1 format.video.nFrameWidth=640  format.video.nFrameHeight=480 format.video.nStride=0 format.video.nSliceHeight=0 format.video.eColorFormat=OMX_COLOR_FormatYUV420PackedPlanar
+
+OMX_GetHandle    FakeSink   OMX.ST.FakesinkGeneric
+OMX_SetParameter FakeSink   OMX_IndexParamPortDefinition nPortIndex=0  format.video.nFrameWidth=640 format.video.nFrameHeight=480 format.video.nStride=0  format.video.nSliceHeight=0 format.video.eColorFormat=OMX_COLOR_FormatYUV420PackedPlanar  eDomain=OMX_PortDomainVideo
+OMX_SetParameter FakeSink   OMX_IndexParamContentURI contentURI=$(S_WOMDEMOCPT_CURRENT_PATH)/output/$(Output_filename)
+OMX_SetConfig    FakeSink   OMX_IndexConfigCaptureMode bContinuous=OMX_TRUE bFrameLimited=OMX_FALSE nFrameLimit=300
+OMX_SetConfig    FakeSink   OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+test_next Tunnel_Setup
+OMX_SetupTunnel Fakesource 0 womDemoCpt 0
+OMX_SetupTunnel womDemoCpt  1 FakeSink  0
+
+MMTE_DispatchState   OMX_StateIdle      Fakesource womDemoCpt FakeSink
+MMTE_DispatchState   OMX_StateExecuting Fakesource womDemoCpt FakeSink
+
+MMTE_WaitEvent       womDemoCpt      OMX_EventBufferFlag 1  EOS 2000
+MMTE_WaitEvent       Fakesource         OMX_EventBufferFlag 0  EOS 2000
+MMTE_WaitEvent       FakeSink           OMX_EventBufferFlag 0  EOS 2000
+
+MMTE_DispatchState   OMX_StateIdle      Fakesource womDemoCpt FakeSink
+MMTE_DispatchState   OMX_StateLoaded    Fakesource womDemoCpt FakeSink
+
+test_result PASSED
+
+test_result PASSED
+
+ens_network_destroy
+
+test_end

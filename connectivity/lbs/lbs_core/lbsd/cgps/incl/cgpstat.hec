@@ -1,0 +1,243 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSTAT_HEC__
+#define __CGPSTAT_HEC__
+/**
+* \file cgpstat.hec
+* \date 25/01/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all constant needed by cgps0main.c and all external application using CGPS module\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.01.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+* \addtogroup Message
+*\ingroup CGPS_TAT
+*\{
+*/
+
+/**
+* \enum e_cgps_tat_state
+* \brief TAT Activate parameter
+* this enum is used like parameter on CGPS_TAT_ACTIVATION_REQ/CNF message 
+*/
+typedef enum
+{
+  CGPS_TAT_STATE_ACTIVATED,     /*!< Activate state*/
+  CGPS_TAT_STATE_DEACTIVATED,   /*!< deactivate state*/
+  CGPS_TAT_STATE_NOT_INITIATE,  /*!< state before receive CGPS_TAT_INIT_CNF*/
+  CGPS_TAT_STATE_UNKNOWN = 0x7FFFFFFF
+} e_cgps_tat_state;
+
+/**
+* \enum e_cgps_tat_error
+* \brief CGPS possible error generated for TAT request
+* this enum define value used in error case by CGPS during TAT request
+*/
+typedef enum
+{
+  CGPS_TAT_ERROR_INVALID_PARAM,  /*!< one parameter is invalid*/
+  CGPS_TAT_ERROR_UNKNOWN = 0x7FFFFFFF
+} e_cgps_tat_error;
+
+/**
+* \enum e_cgps_tat_mode
+* \brief CGPS possible modes requested from TAT
+*/
+typedef enum
+{
+  CGPS_TAT_NORMAL_MODE,    /*!< CGPS run normaly fix are generated */
+  CGPS_TAT_SLEEP_MODE,     /*!< GPS are in sleep mode no fix but data are always in cache */
+  CGPS_TAT_COMA_MODE,      /*!< some part of cache are deleted */
+  CGPS_TAT_DEEP_COMA_MODE, /*!< The GPS restart like a cold start */
+  CGPS_TAT_OFF_MODE,       /*!< same that coma mode*/
+  CGPS_TAT_UNKNOWN = 0x7FFFFFFF
+} e_cgps_tat_mode;
+
+
+enum e_cgps_tat_msg_id
+{
+    CGPS_F_TAT_ACTIVATION = CGPS_F_LAST_MESSAGE_ID, /* to avoid duplicate message ID */
+    CGPS_F_TAT_GET_INFO,
+    CGPS_F_TAT_GET_LOCATION,
+    CGPS_F_TAT_MODE,
+    CGPS_F_TAT_TRANSPARENT_MODE,
+    CGPS_F_TAT_TRANSPARENT_DATA
+/* + LMSQC06481 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+    ,CGPS_F_TAT_TRANSPARENT_GET_CN
+#endif
+/* - LMSQC06481 : Production test */
+};
+
+/*. Definition for messages  */
+/**
+* \def CGPS_FF_TAT_INIT_CNF
+* define the Function and the type of init message
+* 
+*/
+#define CGPS_FF_TAT_INIT_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_INIT,PCC_T_CNF)
+
+/**
+* \def CGPS_FF_TAT_ACTIVATION_REQ
+* define the Function and the type of activation request message
+* 
+*/
+#define CGPS_FF_TAT_ACTIVATION_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_ACTIVATION,PCC_T_REQ)
+
+/**
+* \def CGPS_FF_TAT_ACTIVATION_CNF
+* define the Function and the type of activation confirmation message
+* 
+*/
+#define CGPS_FF_TAT_ACTIVATION_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_ACTIVATION,PCC_T_CNF)
+
+/**
+* \def CGPS_FF_TAT_ACTIVATION_ERR
+* define the Function and the type of activation error message
+* 
+*/
+#define CGPS_FF_TAT_ACTIVATION_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_ACTIVATION,PCC_T_ERR)
+
+/**
+* \def CGPS_FF_TAT_GET_INFO_REQ
+* define the Function and the type of get information request message
+* 
+*/
+#define CGPS_FF_TAT_GET_INFO_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_GET_INFO,PCC_T_REQ)
+
+/**
+* \def CGPS_FF_TAT_GET_INFO_CNF
+* define the Function and the type of get information confirmation message
+* 
+*/
+#define CGPS_FF_TAT_GET_INFO_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_GET_INFO,PCC_T_CNF)
+
+/**
+* \def CGPS_FF_TAT_GET_INFO_ERR
+* define the Function and the type of get information error message
+* 
+*/
+#define CGPS_FF_TAT_GET_INFO_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_GET_INFO,PCC_T_ERR)
+
+/**
+* \def CGPS_FF_TAT_GET_LOCATION_REQ
+* define the Function and the type of get location request message
+* 
+*/
+#define CGPS_FF_TAT_GET_LOCATION_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_GET_LOCATION,PCC_T_REQ)
+
+/**
+* \def CGPS_FF_TAT_GET_LOCATION_CNF
+* define the Function and the type of get location Confirmation message
+* 
+*/
+#define CGPS_FF_TAT_GET_LOCATION_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_GET_LOCATION,PCC_T_CNF)
+
+/**
+* \def CGPS_FF_TAT_GET_LOCATION_ERR
+* define the Function and the type of get location error message
+* 
+*/
+#define CGPS_FF_TAT_GET_LOCATION_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_GET_LOCATION,PCC_T_ERR)
+
+/**
+* \def CGPS_FF_TAT_MODE_REQ
+* define the Function and the type of TAT mode request message
+* 
+*/
+#define CGPS_FF_TAT_MODE_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_MODE,PCC_T_REQ)
+
+/**
+* \def CGPS_FF_TAT_MODE_CNF
+* define the Function and the type of TAT mode confirmation message
+* 
+*/
+#define CGPS_FF_TAT_MODE_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_MODE,PCC_T_CNF)
+
+/**
+* \def CGPS_FF_TAT_TRANSPARENT_MODE_REQ
+* define the Function and the type of transparent mode request message
+* 
+*/
+#define CGPS_FF_TAT_TRANSPARENT_MODE_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_MODE,PCC_T_REQ)
+
+/**
+* \def CGPS_FF_TAT_TRANSPARENT_MODE_CNF
+* define the Function and the type of transparent mode confirmation message
+* 
+*/
+#define CGPS_FF_TAT_TRANSPARENT_MODE_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_MODE,PCC_T_CNF)
+
+/**
+* \def CGPS_FF_TAT_TRANSPARENT_DATA_IND
+* define the Function and the type of transparent mode confirmation message
+* 
+*/
+#define CGPS_FF_TAT_TRANSPARENT_DATA_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_DATA,PCC_T_REQ)
+
+/**
+* \def CGPS_FF_TAT_TRANSPARENT_DATA_IND
+* define the Function and the type of transparent mode confirmation message
+* 
+*/
+#define CGPS_FF_TAT_TRANSPARENT_DATA_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_DATA,PCC_T_CNF)
+
+/**
+* \def CGPS_FF_TAT_TRANSPARENT_DATA_IND
+* define the Function and the type of transparent mode confirmation message
+* 
+*/
+#define CGPS_FF_TAT_TRANSPARENT_DATA_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_DATA,PCC_T_ERR)
+
+
+/**
+* \def CGPS_FF_TAT_TRANSPARENT_DATA_IND
+* define the Function and the type of transparent mode confirmation message
+* 
+*/
+#define CGPS_FF_TAT_TRANSPARENT_DATA_IND MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_DATA,PCC_T_IND)
+
+
+/* + LMSQC06481 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \def CGPS_FF_TAT_GET_CN_VALUE_REQ
+* define the Function and the type of CN value request message
+* 
+*/
+#define CGPS_FF_TAT_GET_CN_VALUE_REQ MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_GET_CN,PCC_T_REQ)
+
+/**
+* \def CGPS_FF_TAT_GET_CN_VALUE_CNF
+* define the Function and the type of CN value confirmation message
+* 
+*/
+#define CGPS_FF_TAT_GET_CN_VALUE_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_TAT_TRANSPARENT_GET_CN,PCC_T_CNF)
+
+#endif /* CGPS_CNO_VALUE_FTR */
+/* - LMSQC06481 : Production test */
+
+/**
+ * \}
+ */
+
+#endif /*__CGPSTAT_HEC__*/
+
+

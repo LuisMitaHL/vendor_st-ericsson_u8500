@@ -1,0 +1,65 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MMROOT)/video/makefiles/Make.std.config
+
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh h264dec
+
+VPATH = ./src/$(SVA_SUBSYSTEM) ./src ../main/src ../../../scheduler/src
+EXENAME = h264dec
+EXEOBJ = \
+           hamac_bitstream			\
+           hamac_concealment		\
+           hamac_block_info			\
+           hamac_deblocking			\
+           h264_hv_bitstream		\
+           hamac_cavlc				\
+           hamac_cavlc_lumalevel	\
+           hamac_cavlc_intra_ac		\
+           hamac_cavlc_intra_dc		\
+           hamac_cavlc_chroma_dc	\
+           hamac_cavlc_chroma_ac	\
+           hamac_sch				\
+           t1xhv_h264d				\
+           t1xhv_h264d_main			\
+           sm_h264d					\
+           sm_common				\
+           t1xhv_interrupt
+ifeq ($(SVA_SUBSYSTEM),ndk20)
+EXEOBJ +=							\
+           common_bitstream \
+           hamac_mb_decode
+endif
+ifeq ($(SVA_SUBSYSTEM),ndk8500_a0)
+EXEOBJ +=							\
+           hamac_slice_ib 
+else
+EXEOBJ +=							\
+           hamac_intra				\
+           hamac_inter
+endif
+ifeq ($(findstring 500_v2,$(PLATFORM)),500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT)
+CPPFLAGS += -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DT1XHV_TASK_DECODE -DSTANDALONE_VERSION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION)
+CPPFLAGS += -I$(MODULE)/../scheduler/inc -I./inc/$(SVA_SUBSYSTEM) -I./inc -I../main/inc -I../share/${SVA_SUBSYSTEM} -I../share/
+
+#ifeq ($(SVA_SUBSYSTEM), ndk20)
+MEMORYCFG = $(MMROOT)/video/components/common/memconfig/video.$(MEMCFG_EXT)
+#endif
+
+ACFLAGS += -forceesramfn
+
+STACK=500
+SSTACK=500
+#ACFLAGS += +k
+
+ifeq ($(SVA_SUBSYSTEM),ndk20)
+todo:
+else
+todo: exe
+endif
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

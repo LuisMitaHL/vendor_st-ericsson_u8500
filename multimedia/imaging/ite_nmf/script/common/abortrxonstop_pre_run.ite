@@ -1,0 +1,102 @@
+# NOTE : not able to test
+#
+#do $(IMAGING_PATH)/ite_nmf/script/common/abortrxonstop_pre_run
+
+# This test case tests abort-rx functionality provided by ISP FW through PE SystemSetup_e_Flag_abortRx_OnStop_Byte0
+# page element in pre-run case. i.e. frame SystemSetup_e_Flag_abortRx_OnStop_Byte0 is set before START command.
+# important : In abort-rx test case HOST can not know whether a SMIA-Rx abort was actually done or not done. So we are testing
+# that when ISP receives STOP command it processes it gracefully or not.
+
+
+# Initialisation
+#LogPE disable
+usagemode vf
+LR prepare
+# set g_SystemSetup.e_Flag_abortRx_OnStop to 1 (TRUE)
+set_abort_rx Save
+set_abort_rx Set
+LR start
+wait 2
+LR abort
+
+set_abort_rx Restore
+
+# Test for HR pipe
+usagemode video
+HR prepare
+HR start
+set_abort_rx Save
+set_abort_rx Set
+wait 2
+HR abort
+
+set_abort_rx Restore
+# Test for LRHR together
+LRHR prepare
+LRHR start
+set_abort_rx Save
+set_abort_rx Set
+wait 2
+LRHR abort
+
+set_abort_rx Restore
+
+setusecase LR VGA YUV422RI
+setusecase HR VGA YUV420MB_D
+setusecase BMS MODE0 RAW12
+bmsmode STILL
+bmsout BAYERSTORE2
+usagemode still
+bms prepare
+getusecase
+bms start
+set_abort_rx Save
+set_abort_rx Set
+wait 2
+bms abort
+
+set_abort_rx Restore
+
+## As last bms buffer is aborted, it may not be having data properly
+## Do a bml now, to simulate Openmax use case
+
+bmlin BAYERLOAD1
+getusecase
+bml prepare
+bml start
+set_abort_rx Save
+set_abort_rx Set
+wait 2
+bml stop
+
+set_abort_rx Restore
+
+# Test for LRHR together
+setusecase LR VGA YUV422RI
+setusecase HR VGA YUV420MB_D
+usagemode video
+LRHR prepare
+LRHR start
+wait 2
+set_abort_rx Save
+set_abort_rx Set
+wait 2
+## This time do STOP
+LRHR stop
+
+set_abort_rx Restore
+
+# Test for LRHR together
+LRHR prepare
+LRHR start
+set_abort_rx Save
+set_abort_rx Set
+wait 2
+## This time do ABORT
+LRHR abort
+
+set_abort_rx Restore
+
+LRHR free
+bms free
+bml free

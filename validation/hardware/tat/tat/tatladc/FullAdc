@@ -1,0 +1,56 @@
+#!/bin/sh
+case $1 in
+start) 
+	echo "FullAdc running with $1 seconds for cyclic read"
+	if [ -n "`lsmod | grep g_ether`" ]
+	then
+		echo "remove g_ether"
+		rmmod g_ether
+	fi
+	if [ -n "`lsmod | grep g_ether`" ]
+	then
+		echo -e "\r\033[31m Error g_ether is not remove, could you remove manualy g_ether \033[0m\n"
+		rmmod g_ether
+	else
+		nb=0;
+		filename="/usr/local/lib/tat/tatladc/adc$nb.csv"
+
+		while [ -f "$filename" ]
+		do
+			echo "$filename exists !"
+			nb=`expr $nb + 1`
+			filename="/usr/local/lib/tat/tatladc/adc$nb.csv"
+		done
+		echo "$filename created in /usr/local/lib/tat/tatladc"
+	
+		#check if dth9pserver is started
+		if [ -z "`ps | grep dth9pserver | grep -v grep`" ]
+		then
+			echo "run dth9pserver initialisation script"
+			/etc/init.d/dth9pserverd start
+		fi
+
+		# DTH ADC commands
+		# store the result file name in DTH element
+		cd /mnt/9p/DTH/ADC/Action/Action_CyclicRead/CyclicRead/FileStorage
+		echo -n $filename > value
+		# write header in the result file 
+		cd /mnt/9p/DTH/ADC/Action/Action_CyclicRead/CyclicRead
+		echo "Time; Sample; BatCtrl; BatTemp; VMain; AccDet1; AccDet2; AdcAux1; AdcAux2; VBat; VBus; IMain; IUSB; Vbub; DieTemp; USB_ID;"  > 		$filename
+				
+		while :
+		do
+			# write the date in the result file			
+			echo -n `date +%X`";" >> $filename
+			# execute DTH cyclic read action
+			cat value
+			sleep $2
+		done
+		
+	fi
+;;
+*)
+	echo -e "FullAdc start <n>\n\r n: tempo in seconds\n"
+;;
+esac
+	

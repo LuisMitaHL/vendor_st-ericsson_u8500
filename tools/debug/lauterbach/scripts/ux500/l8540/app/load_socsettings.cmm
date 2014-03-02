@@ -1,0 +1,48 @@
+; load symbol for soc-settings
+
+&REF=0
+&TARGET="l8540"
+&OPTION=""
+; &OPTION="_bb"
+&PATH="../../../boot/soc-settings/&TARGET/src"
+
+; soc-settings is loaded after xloader stack + 4
+; load_and_execute_mem_init ( 4 *u32 => 0x10 bytes)
+&LAST_ADDRESS=address.offset(linker_xloader_stack_top)+0x10
+
+print "============================================"
+print "load symbol for SOC SETTINGS &TARGET &OPTION"
+print "============================================"
+print %ERROR "WARNING : check the binary name and the order in Soc-Settings Makefile"
+
+; load each elf file in binary order
+; boot/soc-settings/&TARGET/Makefile
+; the next value are for SRCB_CCU
+
+GOSUB load_binary version
+GOSUB load_binary opp_init
+GOSUB load_binary ab8540_init
+GOSUB load_binary c2c_init
+GOSUB load_binary st-ericsson_config
+GOSUB load_binary imad
+GOSUB load_binary lpddr2_jedec_4x4gb_533Mhz
+GOSUB load_binary soc_settings_exec
+
+enddo
+
+;=============================================================
+load_binary:
+;-----------
+entry &BINARY
+&FIRST_ADDRESS=&LAST_ADDRESS
+
+data.load.elf &PATH/&(BINARY)_&(TARGET)&(OPTION).elf	&FIRST_ADDRESS	/NOCODE /NOCLEAR
+
+&LAST_ADDRESS=address.offset(y.end(\\&(BINARY)_&(TARGET)&(OPTION)))
+&REF=&REF+1
+
+print " + " %DECIMAL &REF," => &BINARY (&FIRST_ADDRESS .. &LAST_ADDRESS)"
+
+&LAST_ADDRESS=(&LAST_ADDRESS+3)&0xFFFFFFFC
+return
+

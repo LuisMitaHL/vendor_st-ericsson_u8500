@@ -1,0 +1,36 @@
+#include <samplefreq.idt>
+#include <armnmf_buffer.idt>
+
+typedef struct {
+  t_uint32 id;
+  t_bool enabled;
+} alsasink_pcmprobe_config_t;
+
+typedef struct {
+  t_uint32 sample_rate;
+  t_uint16 nof_channels;
+  t_uint16 nof_bits_per_sample;
+  t_uint16 block_size;
+  t_bool endian_little;
+  t_bool interleaved;
+  t_bool numerical_data_signed;
+  alsasink_pcmprobe_config_t pcmprobe_cfg[2];
+} alsasink_config_t;
+
+typedef enum {
+  SINK_RESET_REASON_STOP,
+  SINK_RESET_REASON_EOS,
+  SINK_RESET_REASON_FLUSH,
+  SINK_RESET_REASON_COUNT // Last value
+} t_alsasink_reset_reason;
+
+typedef struct {
+  OMX_BUFFERHEADERTYPE_p buf_hdr;
+} t_alsasink_process_params;
+
+interface alsasink.nmfil.host.sink {
+  t_bool open(const alsasink_config_t *config);
+  void reset(t_alsasink_reset_reason reason);
+  t_bool process(t_alsasink_process_params* params);
+  void close(void);
+}

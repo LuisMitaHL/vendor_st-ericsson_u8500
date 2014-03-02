@@ -1,0 +1,120 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+#PLATFORM=x86-linux
+
+export MODULE
+MODULE = ../..
+
+CPPFLAGS += $(FIXED_CXXFLAGS)
+COMPONENT_TOP_DIR=../..
+CORE=arm
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+# to create a lib
+NMFCONFC +=--cpp 
+
+
+CFLAGS += -g
+ifeq ($(SELECTED_CONF),_stub) 
+CPPFLAGS +=  -DNO_HAMAC
+endif
+
+CPPFLAGS += $(EXTRA_CPPFLAGS)
+CPPFLAGS += -D_CACHE_OPT_
+
+ifeq ($(SELECTED_CONF),_gcc) 
+CPPFLAGS +=  -DNO_HAMAC -x c++ 
+CPPFLAGS +=  -D__X86COMPILE__ 
+endif
+#Trace
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+OST_SRC_DIR = ../ddep/src ../encoder/src
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_ARM)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_arm
+INSTALL_DICO=$(OST_DICO_NAME).xml
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/inc/autogentraces
+
+ifeq ($(SELECTED_CONF),_stub) 
+COMPONENTS+= h264enc.arm_nmf.h264enc$(SELECTED_CONF)
+CONFFILES = h264enc/arm_nmf/h264enc$(SELECTED_CONF)/h264enc$(SELECTED_CONF).conf \
+			h264enc/arm_nmf/encoder_stub/encoder_stub.conf
+else
+COMPONENTS+= h264enc.arm_nmf.h264enc$(SELECTED_CONF) \
+			 h264enc.arm_nmf.h264enc_hdtv
+CONFFILES = h264enc/arm_nmf/h264enc$(SELECTED_CONF)/h264enc$(SELECTED_CONF).conf \
+			h264enc/arm_nmf/h264enc_hdtv/h264enc_hdtv.conf \
+			h264enc/arm_nmf/encoder/encoder.conf
+endif
+
+INSTALL_LIB =  h264enc$(SELECTED_CONF).lib
+ifneq ($(SELECTED_CONF),_stub) 
+INSTALL_LIB += h264enc_hdtv.lib
+endif
+
+CPPFLAGS += -D__H264ENC__
+CPPFLAGS+= -DNMF_BUILD -g  
+ifneq ($(findstring linux,$(PLATFORM)),linux)
+CPPFLAGS+= -I$(MMROOT)/shared/nmf/think/api
+endif
+CPPFLAGS+= -I$(MMROOT)/shared/nmf/osintegration/hostsrc/inc
+CPPFLAGS+= -I$(MMROOT)/video/include
+CPPFLAGS+= -I$(MMROOT)/shared/include
+CPPFLAGS+= -I$(MM_NMF_REPO_BOARD_DIR)
+CPPFLAGS+= -I$(MMROOT)/video/components/common/nmf/arm/inc
+CPPFLAGS+= -I$(TMPDIR)/h264enc_arm_nmf_h264enc$(SELECTED_CONF)/src/h264enc/arm_nmf/
+
+SRCPATH+= 	$(MM_IDT_DIR)
+SRCPATH+= 	$(MMROOT)/video/vfm/include
+#local idt files 
+SRCPATH+=	$(MMROOT)/video/components/h264enc/mpc/share/$(SVA_SUBSYSTEM)
+SRCPATH+=   $(MMROOT)/video/components/h264enc/mpc/share
+SRCPATH+=   $(MMROOT)/video/components/h264enc/arm_nmf/api
+SRCPATH+=   $(MMROOT)/shared/nmf/tools/api/mpcee
+#SRCPATH+= $(MMROOT)/shared/nmf/tools/api/smpee
+SRCPATH+= $(MMROOT)/video/idt
+SRCPATH+=   $(COMPONENT_TOP_DIR)/mpc/share/$(SVA_SUBSYSTEM)
+SRCPATH+=   $(COMPONENT_TOP_DIR)/mpc/share
+SRCPATH+=   $(COMPONENT_TOP_DIR)/arm_nmf/api
+SRCPATH+=   $(COMPONENT_TOP_DIR)/$(BASE_REPOSITORY)
+ifeq ($(findstring linux,$(PLATFORM)),linux)
+ifeq ($(findstring 5500,$(PLATFORM)),5500)
+CPPFLAGS+= -I$(MMROOT)/video/components/common/inc
+CPPFLAGS+= -I$(MMROOT)/video/components/hva_drv/inc
+CPPFLAGS+= -I$(MMROOT)/video/components/hva_drv/arm_nmf/hva/inc
+CPPFLAGS+= -I$(MMROOT)/video/components/hva_drv/arm_nmf/notifier/inc
+#CPPFLAGS+= -I$(MMROOT)/shared/nmf_repository/cortexA9-x-gnu-x
+#TMP_ALLOC_ESRAM should be replaced for alloc in ESRAM  !!!!!!
+#for traceObject.h + .idt
+CPPFLAGS += -I$(MMROOT)/shared/include
+CPPFLAGS += -I$(MMROOT)/shared/ens/nmf/host/nmf_repository/generated
+CPPFLAGS+= -DMALLOC_DEBUG -DTMP_ALLOC_ESRAM
+SRCPATH += $(MMROOT)/video/components/common/nmf/idt   # -> frameinfo.idt
+endif
+endif
+ifeq ($(findstring svp,$(PLATFORM)),svp)
+    CPPFLAGS += -DUSE_TLM
+endif
+
+ifeq ($(findstring svp,$(PLATFORM)),svp)
+CPPFLAGS+= -DUSE_TLM
+endif
+
+#ifneq ($(findstring dsp,$(TARGET)),dsp)
+#SRCPATH :=$(shell echo "$(SRCPATH)" | sed 's/mpcee/smpee/g')
+#endif
+
+ifeq ($(findstring svp8500_v2,$(PLATFORM)),svp8500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+ifeq ($(findstring u8500_v2,$(PLATFORM)),u8500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+ifeq ($(findstring mop500_v2,$(PLATFORM)),mop500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+
+first_target : $(CONFFILES) all
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+ 
+ 
+

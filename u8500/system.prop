@@ -1,0 +1,79 @@
+#
+# system.prop for U8500
+#
+rild.libpath=/system/lib/libu300-ril.so
+rild.libargs=-c UNIX -n 2 -p /dev/socket/at_core -s /dev/socket/at_core -i rmnet
+
+# Graphics related configurations
+ro.sf.lcd_density=240
+ro.sf.hwrotation=0
+
+# The OpenGL ES API level that is natively supported by this device.
+# This is a 16.16 fixed point number
+ro.opengles.version=131072
+
+# Enable RecoverySystem to emit "factory-reset" reset string
+# instead of "recovery" when doing a factory reset. This is
+# useful when implementing factory reset without the entire
+# recovery framework.
+ro.factoryresetwithoutrecovery=true
+
+# debug.sf.hw=0 Use b2r2 as compositor in SurfaceFlinger
+# debug.sf.hw=1 Use Mali as compositor in SurfaceFlinger
+debug.sf.hw=1
+
+# Android defaults EGL preserved swap behaviour
+# This gives bad performace for deferred renderers
+# such as Mali.
+hwui.render_dirty_regions=false
+
+# Set dalvik heapsize to 64MB
+dalvik.vm.heapsize=64m
+
+# STE: Low power audio - enable ULP mode
+ste.nmf.autoidle=1
+
+# STE: Address of DBus STE bus
+ste.dbus.bus.address=unix:path=/dev/socket/dbus_ste
+
+# STE: UNSOL_CALL_RING is only sent once from RIL.
+# Android needs to generate more rings if needed.
+ro.telephony.call_ring.multiple=false
+
+#usb mass storage
+persist.sys.usb.config=mass_storage,acm,adb
+
+# STE: Hardware video codecs configuration
+ste.video.dec.mpeg4.in.size=8192
+ste.video.enc.out.buffercnt=5
+ste.video.dec.recycle.delay=1
+#STE: Video Encoder Input Color Format Supported: yuv420mb for SVA based encoder
+ste.video.enc.fmt=yuv420mb
+
+#STE: Fast Dormancy Flag
+# Fast Dormancy based on USB Tether Events and Screen States
+ste.special_fast_dormancy=false
+
+# STE: camera orientation front & back
+ste.cam.front.orientation=270
+ste.cam.back.orientation=90
+
+# STE: Camera file path configuration
+ste.cam.ext.cfg.path.secondary=/system/usr/share/camera/config_file/aptina_mt9v113.dat
+
+# STE: Default trace configuration
+ste.omx.ctx=0
+
+# STE: H264Dec Profile level configuration
+ste.video.decoder.h264.max.lev=5.1
+ste.video.decoder.h264.def.lev=4.2
+
+# STE: Disable hw accelerated canvas in the browser
+ste.webkit.accelerated_canvas=false
+
+# STE: neven configuration
+# Available configuration: std, speed, prec
+neven.config=prec
+
+# Nutshell: Disable on-screen navigation bar
+qemu.hw.mainkeys=1

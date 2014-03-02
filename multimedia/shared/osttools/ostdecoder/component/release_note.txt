@@ -1,0 +1,387 @@
+
+------------------------------------------------------
+ostdecoder v2.4.0                          08-Mar-2012
+Hugo Hars                                    CPT/IDTEC
+Serge De Paoli                               CPT/IDTEC
+
+
+------------------------------------------------------
+How to use:
+- Examples provided in package (sh/bat command files
+   and test directory).
+- Help available with "-h" or "--help" option.
+- Launching OSTViewer:
+    o Use "ostviewer.bat" to launch the GUI under windows.
+    o Use "ostviewer.sh" to launch the GUI under linux.
+    o Use "ostviewer.bat --ostdecoder [options]" to launch the GUI and start decoding under windows.
+    o Use "ostviewer.sh  --ostdecoder [options]" to launch the GUI and start decoding under linux.
+- Provide input to NMFAT 4.0.0:
+    o Use ostdecoder with the "--nmfdec-output=</your/output/file.nmfdec>" option.
+    o Or type "--nmfdec-output=</your/output/file.nmfdec>" in the "Manual Options" field of OSTViewer launch dialog box.
+    o Example: ostdecoder --nmfdec-output=C:\TMP\mytrace.nmfdec C:\TMP\mytrace.bin
+- Connection to STMProbe (beta):
+    o Requirements:
+      - Install the STMProbe on your host machine (driver provided in the bin directory):
+        * Win32: The driver files are in the bin directory (CyUSB.inf, CyUSB.sys).
+        * RHEL : Please refer to the howto-stmprobe.txt file.
+      - Install the USB library:
+        * Win32: The "libusb-win32-1.2.4.0" is recommended, you will also need to add a filter for the STMProbe with this version.
+	         If you already have a libusb installed or if you just added a filter for the STMProbe with "libusb-win32-1.2.4.0", run the "Test Program" and check that the device "04B4/8613" is present, it should be ok then.
+        * RHEL : Please refer to the howto-stmprobe.txt file.
+    o OSTViewer: connect to the Trace Server in STMPROBE mode.
+    o ostdecoder: use the trace server option with STMPROBE value: "--trace-server-input=STMPROBE" (no other input required).
+
+
+------------------------------------------------------
+Release version - v2.4.0
+- Supported hosts:
+  * WinXP
+  * Linux RHEL3/4/5
+
+
+------------------------------------------------------
+Features:
+- Takes either Combiprobe or Other files as input
+  * Automatic recognition of the file format.
+  * Support both MIPI OST & ST-E dictionaries.
+- First version integrating the TraceServer (allowing STMProbe connection)
+
+
+------------------------------------------------------
+ChangeLog version v2.4.0:
+
+# RnDCT00011774/CR401701 [ENH] Add a filtering feature to OSTViewer
+# RnDCT00011772/CR401991 [ENH] Support float/double data in OST dictionaries
+# RnDCT00010126          [BUG] Wrong options are not managed correctly in ostdecoder
+
+# Engineering logs:
+  o 2.4.0.I:
+    - Added new btrace fields in details/search/filter
+    - Fixed float/double support in OST dictionaries
+    - Support 0x1C header in Other decoded format
+  o 2.4.0.H:
+    - RnDCT00011774/CR401701 [ENH] Add a filtering feature to OSTViewer
+    - Fixed search for OST types ("NOT" was not working)
+    - Added workspace selection at launch time to avoid unwritable workspaces
+    - Added auto-completion feature to the "Manual Options" text field available by pressing "CTRL+SPACE" or when typing ' ' or '-' in the text field
+    - RnDCT00011772/CR401991 [ENH] Support float/double data in OST dictionaries
+    - RnDCT00010126          [BUG] Wrong options are not managed correctly in ostdecoder
+      * Do not allow partial options names anymore
+      * Standardized error messages from command line parser
+  o 2.4.0.G:
+    - Fixed issue with channel display for MTT frames (with --mtt-dev-trace-meta option)
+  o 2.4.0.F:
+    - Emit a warning and fix component names and version strings if they are not ok (non-printable characters and/or no '\0' at the end)
+    - Enhanced MTT command types management:
+      * CMD_RAW frames are decoded by the MTT/RAW decoder
+      * CMD_TRACE frames are decoded by specific components decoders (MTT/KPT, MTT/OS21, MTT base decoder, ...)
+      * Other commands are decoded by the MTT/Command decoder, even the unknown one.
+        In order to debug those commands you can use "--filter-off=MTT_CMD --mtt-dev-trace-verbose"
+        Options to decode these frames with the verbose mode of the MTT base decoder
+    - Added filter option for MTT/Command decoder
+    - Fixed MTT/KPTrace text format: added IRQ number to 'I' events
+    - Cleaned-up MTT traces print: removed type, now only prints the decoded payload
+    - Fixed RAW frames payload size VS type info
+    - Fixed an exception that could be raised when closing OSTViewer during data collection
+    - Fixed an issue with decoded MMT/RAW packets sent by ostdecoder
+    - Enhanced search dialog (new search parameters and added the possibility to invert the search on each parameter)
+    - Fixed Java MTT packet scan to be more flexible with MTT alignment errors
+    - Fixed issue with socket address from java: using '127.0.0.1' by default (if an error occurs)
+    - Fixed export to CSV in details view
+  o 2.4.0.E:
+    - Added new columns for BTrace frames
+    - Enhanced search engine
+  o 2.4.0.D:
+    - MTT API update
+    - Support of GET_CNAME command
+    - Fixes at OSTViewer's level (some messages could be skipped)
+  o 2.4.0.C:
+    - MTT API update
+    - Added 3 options for mtt development
+      * Display master/channel for MTT frames (--mtt-dev-trace-meta, off by default)
+      * Verbose mode for MTT textual frames (--mtt-dev-trace-verbose, off by default, activated in previous versions)
+      * Scan MTT frames byte per byte instead of integer per integer (--mtt-dev-scan-bytes, off by default)
+  o 2.4.0.B:
+    - Fixes in MTT decoder alignment on 32 bit
+    - Display skipped bytes in MTT decoder stats
+  o 2.4.0.A:
+    - Using MTT as native protocol for socket communication between ostdecoder and OSTViewer
+    - Added TraceServer new file input and address options
+    - Added OS21 skeleton decoder
+    - Added MTT/RAW decoder and opiotns
+
+
+------------------------------------------------------
+ChangeLog version v2.3.0:
+
+# MTT decoder fixed & enhanced prints for debug purposes
+# MTT decoder updated to mtt_api_000005.h, mtt_dataprotocol2.h
+# Native MTT decoding support (file/pipe)
+# TraceServer endianness fixes, added --stmprobe-swap option
+
+
+------------------------------------------------------
+ChangeLog version v2.2.0:
+
+# RnDCT00009991  [ENH] Add options for STMProbe
+# RnDCT00009990  [ENH] Manage STMProbe TraceServer messages as CBOX messages
+# RnDCT00009980  [ENH] Save the details view in csv format (all pages)
+# RnDCT00009970  [BUG] KPT decoded frames are sometimes displayed on 2 lines
+
+
+------------------------------------------------------
+ChangeLog version v2.1.0:
+
+# RnDCT00009777  [ENH] Integrate TraceServer 1.0-Build18 to enable Orly connection and STP timestamps
+# RnDCT00009769  [BUG] STMProbe home not set when using the stmprobe dir option in OSTViewer.
+                       Note that you also need to have this path in your PATH environment varibale in order to make it work.
+
+
+------------------------------------------------------
+ChangeLog version v2.0.0:
+
+# RnDCT00009753  [BUG] Issue when decoding NMF USER data
+# RnDCT00001088  [BUG] When two formats are one after the other they are not decoded properly (ex: "Myresult=%08x%08x")
+# RnDCT00001087  [BUG] When %s is followed by another %{smthg}, the line is not decoded properly
+# RnDCT00000928  [BUG] Issue in decoded trace using OSTViewer 1.6.0
+# RnDCT00000788  [ENH] Terminate ostdecoder properly instead of killing it from OSTViewer
+# RnDCT00000787  [ENH] Integrate TraceServer in ostdecoder and OSTVIewer
+
+
+------------------------------------------------------
+ChangeLog version v1.6.0:
+
+# RnDCT00000783  [ENH] Add an option to limit console output
+# RnDCT00000782  [ENH] Add an option to dump NMF payload in a "STP" format (--nmfdec-output=<file>)
+
+
+------------------------------------------------------
+ChangeLog version v1.5.0:
+
+# RnDCT00000251         [ENH] Multiple time format choice
+# RnDCT00000250         [ENH] Add an option to hide warning messages coming from the capture boxes
+# RnDCT00000247         [ENH] Better management of combiprobe errors and overflows
+# RnDCT00000242         [BUG] Decoder crash with this NMF trace file
+# RnDCT00000238         [ENH] Move tests to test folder in delivered package
+# RnDCT00000237         [BUG] If ostviewer is installed in a path with blanks it may encounter issues
+# RnDCT00000236         [ENH] Performance issue in ost to dico text decoding
+# RnDCT00000218/137135  [BUG] Decoder crash when throughput too high
+# RnDCT00000214         [ENH] Always turn on the -r option
+# RnDCT00000213         [BUG] OST ASCII packets not handled properly (header: 0x08 0x05 0x-- 0x02)
+# RnDCT00000212         [BUG] Support multi-part mode in OST frames
+# RnDCT00000209         [ENH] Add a terminal view to connect to the board through COM1
+
+
+------------------------------------------------------
+ChangeLog version v1.4.0:
+
+# RnDCT00000204/134101  [BUG] %p format handled differently on linux and windows
+# RnDCT00000203/134094  [BUG] %hhd and %hhu format not handled properly on windows
+# RnDCT00000202/133485  [BUG] ASCII frames have the wrong endianness
+# RnDCT00000200/133484  [BUG] Outputs statistics about discarded frames
+# RnDCT00000199/133483  [BUG] Other traces are not decoded correctly
+
+
+------------------------------------------------------
+ChangeLog version v1.3.0:
+
+# RnDCT00000198/131361  [BUG] Wrong CPU names displayed in NMF traces
+# RnDCT00000184/131380  [BUG] Align format of NMF decoded file from OSTviewer and format from command line
+# RnDCT00000182/131358  [ENH] Add a raw timestamp display mode (ns) in OSTViewer
+# RnDCT00000181/130486  [BUG] Support for OST frame with extended length
+# RnDCT00000180/130466  [BUG] Decoding failed when PRCMU traces are found in the trace file
+# RnDCT00000179/130350  [BUG] Fail to decode given other trace capture
+# RnDCT00000175         [ENH] Change missing component message level to warning and avoid repetitions of the same message
+# RnDCT00000174         [BUG] Dictionary list is incomplete when a dictionary failed to parse
+# RnDCT00000173         [ENH] Better management of dictionary parser errors (decoders)
+# RnDCT00000172         [ENH] Better management of dictionary parser errors
+# RnDCT00000171         [BUG] Other markers and exceptions messages are not handled
+# RnDCT00000170         [BUG] Memory leaks can occur when payload is maxed
+
+
+------------------------------------------------------
+ChangeLog version v1.2.0:
+
+# RnDCT00000168  [ENH] Optimize viewer speed
+# RnDCT00000167  [ENH] Migration of ostdecoder to Visual Studio 2008
+
+
+------------------------------------------------------
+ChangeLog version v1.1.0:
+
+# 123547  [ENH] Add color preferences for the frame displaying in OSTViewer view and Details view
+# 122960  [BUG] Not able to generate ost traces from bin file
+# 122877  [ENH] Display ascii traces
+
+
+------------------------------------------------------
+ChangeLog version v1.0.0:
+
+# Updated version number for official 1.0.0 release
+
+
+------------------------------------------------------
+ChangeLog version v0.10.0:
+
+# 119411  [BUG] Issue with installation under windows with path > 255 characters
+# 119173  [ENH] Add a "not live" mode in order to parse the trace faster
+# 117150  [ENH] Trace file for mp3 example
+# 116943  [ENH] Manage large trace in OSTViewer
+
+
+------------------------------------------------------
+ChangeLog version v0.9.0:
+
+# 117889  [BUG] Unkown NMF domain/component/method should be displayed by its address
+# 117796  [BUG] Template names are cut to 32 characters, they can be 128 max
+# 117490  [BUG] Accumulation of all NMF instances
+# 116942  [BUG] Crash with a large nmf trace
+# 116910  [BUG] With -o option, the string ": " is missing between the timesatmp and the cpu/channel string in non-hms mode
+# 116908  [BUG] MM and SS format for minutes and seconds
+# 116803  [BUG] Open dialog's Help button does not work on Linux
+
+Limitations of version v0.9.0:
+
+* In OSTViewer trace files have to be < 100MB to be sure ostviewer memory is not overflowed.
+* If you want to parse a bigger trace file either use only ostdecoder
+  (command-line tool) or try increasing the ostviewer/ostviewer.ini -Xmx***m value.
+
+
+------------------------------------------------------
+ChangeLog version v0.8.0:
+
+# 116702  [ENH] Add documentation for OSTViewer command-line mode
+# 116688  [BUG] NMF frames are not decoded properly from other packets
+
+
+------------------------------------------------------
+ChangeLog version v0.7.0:
+
+# 115985  [ENH] Add documentation in OSTViewer help menu
+# 115932  [BUG] Closing OSTViewer while ostdecoder is active should kill it
+# 115859  [ENH] Dictionaries lists file extension should be set to ".txt" instead of unused ".dicoxp"
+# 115858  [BUG] Launching from command-line should keep the working directory
+# 115846  [LIM] OSTViewer needs a 32bit jvm to run
+# 115746  [BUG] Random closure of socket connection between OSTViewer and ostdecoder
+# 115508  [BUG] Browsing working directory can have strange efefcts on some versions of gtk
+# 115507  [BUG] Trace decoder 0.6.0 is late
+# 115497  [BUG] When launched in command-line, arguments should be visible in the open dialog
+
+
+------------------------------------------------------
+ChangeLog version v0.6.0:
+
+# 113164  [ENH] Show source file action in OSTViewer
+               --> When double clicking on a trace line, 
+                  the corresponding source code is dislpayed in an editor. 
+
+# 113307  [BUG] Last frame might not be decoded
+               --> OST Frame size was not properly defined (last frame was never complete)
+
+# 114364  [BUG] Support for "%d %{intx[]} "%d" string format
+               --> In order to keep compatible test suites with previous versions,
+                  a check is performed on the 4 first bytes of the table,
+                  and the following rule is applied:
+                   - Support of new format: If those bytes correspond to the amount of bytes in the trace,
+                   it is assumed to be the size of the table. It is then not displayed.
+                   - Support of previous versions: Else: the 4 bytes are displayed as elements of the table.
+                   Restriction:
+                   - If by chance, the 4 first bytes of a old trace reflects the size of the buffer, they wont be displayed.
+                   - If there are 2 tables in the print, they wont be recognized as 2 tables.
+                   NOTE:
+                   - This implementation is a temporary fix in order to keep test suite alive,
+                     although old traces are obsolete.
+                     It will be definitely fixed when test suites will be fully updated.
+
+# 114365  [ENH] Display dictionary name in literal instead of decimal value in the decoded window
+               --> Fixed both in UI and command line:
+                   UI: Preferences allow to choose how to display.
+                   CMDline: 2 options are added (by default, they are disabled)
+                    -h to display time in HH:MM:SS:mmm format instead of raw ns
+                    -a to display Cpu0:component:group:class::method in text format rather than simple MA:CH CMP:TRC:CL values.
+
+# 115205  [ENH] Display NMF decoded frames in OSTViewer and ostdecoder outputs
+
+# 115267  [BUG] Dictionaries data with special characters(&gt; &lt; ...) are not parsed properly
+
+# 115328  [ENH] Format display like Carbide Text output
+               --> In order to display the OMX ID like Carbide, formats of 32 bits data "0x%x" are displayed as "0x%08x"
+                   * Restriction: All  32 bits data "0x%x" are interpreted as "0x%08x"
+               --> The fix should be in the dictionnaries.
+
+
+------------------------------------------------------
+ChangeLog version v0.5.0:
+
+# 113165  [ENH] Add a "Save..." button to OSTViewer
+# 113166  [ENH] Launch OSTViewer from command line:
+  - Use "ostviewer.bat --ostdecoder [options]" under win32.
+  - Use "ostviewer.sh  --ostdecoder [options]" under linux.
+# 113167  [BUG] Open file dialog text filter paths
+# 113170  [BUG] Killing "ostdecoder -P [...]" blocks the pipe
+# 113171  [ENH] Add an option to dump the binary trace when -P is enabled
+# 113227  [ENH] Throw an error if named pipe is not of the form "\\.\pipe\<name>" on windows
+
+
+------------------------------------------------------
+ChangeLog version v0.4.0:
+
+# 111135 [BUG] type %{int8[]} and type %{int16[]} not supported
+  - Integer decoding extended to int16 & int8
+# 111137 [ENH] Support for combiprobe TS in NS
+# 112703 [BUG] Support of type %{ASCII}
+  - ASCII/String is a special type as it is not a vector, but data has to be considered as a vector
+# 112714 [BUG] Support of type %hhx
+  - Was interpreted as ascii data
+# OSTViewer enhancements
+
+Limitations of version v0.4.0:
+
+* In case an OST message is formated as follows 0x%{hex[]},
+  All values of the vector are displayed in hex format, but the '0x' prefix is printed only for the 1st value.
+
+
+----------------------------------------------------
+ChangeLog version v0.3.0:
+
+# First version of ostdecoderUI based on eclipse
+# More tests with different data
+# 103698 [BUG] Wrong OST buffer length:
+  When a suprious length is detected, it is aligned to the buffer size
+# 108411 [BUG] Failure of decoding
+  A side effect of #103698 (wrong buffers were allocated)
+# 108413 [ENH] Use filename to specify list of dictionaries (rather than explicitely describing them as arguments)
+
+Limitations of version v0.3.0:
+
+* Some mismatch are detected between the formated prints and the traces
+  - In case of trace data larger that expected data in the formated string: additional bytes are ignored
+  - In case of trace data smaler than expected, a [?] is displayed
+
+
+----------------------------------------------------
+ChangeLog version v0.2.0:
+
+- Inputs: 
+  * Support pipes & sockets as IOs.
+  * Enhanded printed messages
+
+
+----------------------------------------------------
+Limitations of version v0.1.0:
+
+- Standalone decoder 
+  * No dependency on Trace Toolset.
+  * Not tested with trace toolset.
+- Inputs: 
+  * Files only (pipes not supported yet).
+- Output:
+  * ST decoded messages only (unrecognized messages
+     are skipped).
+- Dictionary:
+  * "options" markups are not taken into account.
+- OST decoding:
+  * Print tested only with provided examples (only 
+     32 bits data & vectors) in hex/dec formats.
+  * Printing full data structures not supported yet.
+

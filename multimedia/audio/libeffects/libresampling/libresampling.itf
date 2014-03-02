@@ -1,0 +1,60 @@
+#include <libeffects/libresampling/include/resample.h>
+#include <buffer.idt>
+#include <stdbool.h>
+
+
+
+interface libeffects.libresampling.libresampling unmanaged 
+{
+
+    
+    int resample_x_process_fixin_fixout          (ResampleContext *ctx,
+                                                  int             *in,
+                                                  int             stride,
+                                                  int             *nbSamples,
+                                                  int             *output,
+                                                  int             *nbOut,
+                                                  int             *flush);
+                                       
+    int resample_calc_heap_size_fixin_fixout     (int             Inrate,
+                                                  int             Outrate,
+                                                  int             src_quality,
+                                                  int             *heapsiz, 
+                                                  unsigned        int blocksiz,
+                                                  unsigned        int channel_nb);
+                                                                  
+    int resample_calc_max_heap_size_fixin_fixout (int             Inrate,
+                                                  int             Outrate,
+                                                  int             src_quality,
+                                                  int             *heapsiz, 
+                                                  unsigned        int blocksiz,
+                                                  unsigned        int channel_nb,
+                                                  unsigned        int conversion_type);
+                                                                  
+    int resample_x_init_ctx_low_mips_fixin_fixout(char            *heap,
+                                                  int             size_heap,
+                                                  ResampleContext *ctx, 
+                                                  int             Inrate,
+                                                  int             Outrate,
+                                                  int             src_quality,
+                                                  unsigned int    channel_nb, 
+                                                  unsigned int    blocksiz);
+						 
+    int resample_x_init_ctx_low_mips_fixin_fixout_sample16(char *heap,
+							   int 	size_heap,
+                                          		   ResampleContext *ctx, 
+							   int 	Inrate,
+							   int 	Outrate,
+							   int 	src_quality,
+                                          		   unsigned int channel_nb, 
+							   unsigned int blocksiz);
+
+
+    void resample_process ( 
+        ResampleContext *resampleContext,
+        Buffer_p inputBuf,
+        Buffer_p outputBuf,
+        int channels,
+        bool *needInputBuf,
+        bool *filledOutputBuf);
+}

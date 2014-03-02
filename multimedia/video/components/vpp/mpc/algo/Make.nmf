@@ -1,0 +1,54 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+export MODULE
+MODULE=../..
+MODULE_NAME:=vpp
+include $(MMROOT)/video/makefiles/Make.nmf.config
+ITF_PREFIX := video_$(MODULE_NAME)
+
+COMPONENTS += $(MODULE_NAME)
+
+CONFFILES =	$(MODULE_NAME)/mpc/$(MODULE_NAME)/$(MODULE_NAME).conf		\
+			$(MODULE_NAME)/mpc/algo/algo.conf
+
+SRCPATH+= \
+	$(MM_IDT_DIR) \
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share	\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc \
+    $(MMROOT)/video/components/resource_manager/idt
+
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc		\
+	-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/common/inc								\
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/mpc/algo/inc/$(SVA_SUBSYSTEM)\
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/mpc/algo/inc
+
+USER2MPCITFS +=	
+
+MPC2USERITFS +=	$(MODULE_NAME).mpc.api.end_algo
+
+ASYNCITFS +=  $(MODULE_NAME).mpc.api.algo $(MODULE_NAME).mpc.api.end_algo
+
+PREBUILD_COMPONENTS = conf-check $(CONFFILES) link_hardware
+
+link_hardware: 	
+
+
+GROUP_PATH = $(MMROOT)/video/components/vpp
+GROUP_NAME = $(SYMBIAN_VARIANT_NAME)/group
+SYMBIAN_PRJNAME = vpp
+
+elf4nmf_EXPORT_DIR = nmf
+
+tmp: symb-prj
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+include $(MMROOT)/shared/makefiles/Make.symbian.rules
+
+.PHONY: link_hardware
+
+

@@ -1,0 +1,124 @@
+# This script tests the CS-Call tunneled to capturer and renderer (both UL and DL).
+#
+# Audio Network Description:
+# 
+#   +--------------+     +--------------+     +--------------+
+#   |      CS_UL_IN| <-- |0   MixerUL  1| <-- |0  Capturer   |
+#   |              |     +--------------+     +--------------+
+#   |   CS-Call    |
+#   |              |     +--------------+     +--------------+
+#   |     CS_DL_OUT| --> |1   MixerDL  0| --> |0  Renderer   |
+#   +--------------+     +--------------+     +--------------+
+#
+# Script's arguments:
+#   $1: capture medium
+#   $2: render medium
+
+
+test_start cscall_ul_dl_std_mixer
+
+#I/Os parameters
+alias SAMPLING_RATE                 8000
+alias SAMPLING_RATE_AUDIOCODEC      48000
+
+alias NB_CHANNELS                   1
+alias NB_CHANNELS_AUDIOCODEC        2
+
+#Input Buffer parameters
+alias INPUT_BUFFERCOUNT         nBufferCountActual=2
+
+#Output Buffer parameters
+alias OUTPUT_BUFFERCOUNT        nBufferCountActual=2
+
+# port indexes
+alias CS_UL_IN  1
+alias CS_DL_OUT 0
+
+#start test
+OMX_GetHandle    CSCALL  OMX.ST.AFM.cscall
+OMX_SendCommand  CSCALL  OMX_CommandPortDisable 2
+OMX_SetParameter CSCALL  OMX_IndexParamPortDefinition nPortIndex=$(CS_UL_IN) INPUT_BUFFERCOUNT
+OMX_SetParameter CSCALL  OMX_IndexParamPortDefinition nPortIndex=$(CS_DL_OUT) OUTPUT_BUFFERCOUNT
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(CS_UL_IN) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE)
+OMX_SetParameter CSCALL OMX_IndexParamAudioPcm nPortIndex=$(CS_DL_OUT) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE)
+
+OMX_GetHandle    renderer $2
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=$(NB_CHANNELS_AUDIOCODEC) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_AUDIOCODEC)
+OMX_SetParameter renderer AFM_IndexParamMspNbChannel nNbChannel=2
+
+OMX_GetHandle    capturer $1
+OMX_SetParameter capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=$(NB_CHANNELS_AUDIOCODEC) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_AUDIOCODEC)
+OMX_SetParameter capturer AFM_IndexParamMspNbChannel nNbChannel=2
+
+OMX_GetHandle   mixerUL OMX.ST.AFM.mixer
+
+OMX_SetParameter mixerUL OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixerUL OMX_CommandPortDisable 2
+OMX_SendCommand mixerUL OMX_CommandPortDisable 3
+OMX_SendCommand mixerUL OMX_CommandPortDisable 4
+OMX_SendCommand mixerUL OMX_CommandPortDisable 5
+OMX_SendCommand mixerUL OMX_CommandPortDisable 6
+OMX_SendCommand mixerUL OMX_CommandPortDisable 7
+OMX_SendCommand mixerUL OMX_CommandPortDisable 8
+
+OMX_GetHandle   mixerDL OMX.ST.AFM.mixer
+
+OMX_SetParameter mixerDL OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixerDL OMX_CommandPortDisable 2
+OMX_SendCommand mixerDL OMX_CommandPortDisable 3
+OMX_SendCommand mixerDL OMX_CommandPortDisable 4
+OMX_SendCommand mixerDL OMX_CommandPortDisable 5
+OMX_SendCommand mixerDL OMX_CommandPortDisable 6
+OMX_SendCommand mixerDL OMX_CommandPortDisable 7
+OMX_SendCommand mixerDL OMX_CommandPortDisable 8
+
+# disable clock port
+OMX_SendCommand capturer OMX_CommandPortDisable 1
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+
+MMTE_PropagateSettings CSCALL CS_UL_IN mixerUL 0 OMX_IndexParamAudioPcm
+MMTE_PropagateSettings capturer 0 mixerUL 1 OMX_IndexParamAudioPcm
+
+MMTE_PropagateSettings CSCALL CS_DL_OUT mixerDL 1 OMX_IndexParamAudioPcm
+MMTE_PropagateSettings renderer 0 mixerDL 0 OMX_IndexParamAudioPcm
+
+OMX_SetupTunnel  CSCALL CS_DL_OUT mixerDL 1 
+OMX_SetupTunnel mixerDL 0 renderer 0
+
+OMX_SetupTunnel capturer 0 mixerUL 1
+OMX_SetupTunnel mixerUL  0 CSCALL CS_UL_IN
+
+MMTE_DispatchState OMX_StateIdle capturer mixerUL CSCALL mixerDL renderer
+
+MMTE_NMF_ListComponent
+
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=30 
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100 
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+#Start CS-CALL
+MMTE_DispatchState OMX_StateExecuting capturer mixerUL CSCALL mixerDL renderer
+
+#Wait for callback when speech codec is enabled : CALL_START!
+MMTE_WaitEvent CSCALL OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigAudioCodecEnabled
+
+#############################
+# CALL ONGOING..............#
+#############################
+
+#Wait for callback when speech codec is disabled : CALL END!
+MMTE_WaitEvent CSCALL OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigAudioCodecDisabled
+
+MMTE_DispatchState OMX_StateIdle renderer mixerDL CSCALL
+
+MMTE_DispatchState OMX_StateLoaded renderer mixerDL CSCALL
+
+OMX_FreeHandle CSCALL
+OMX_FreeHandle renderer
+OMX_FreeHandle mixerDL

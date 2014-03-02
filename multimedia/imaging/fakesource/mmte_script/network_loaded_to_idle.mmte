@@ -1,0 +1,12 @@
+if BUFFER_SUPPLY_WAY == output
+OMX_SendCommand	my_sink_1			OMX_CommandStateSet		OMX_StateIdle
+OMX_SendCommand	tested_component	OMX_CommandStateSet		OMX_StateIdle
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+endif
+if BUFFER_SUPPLY_WAY == input
+OMX_SendCommand	tested_component	OMX_CommandStateSet		OMX_StateIdle
+OMX_SendCommand	my_sink_1			OMX_CommandStateSet		OMX_StateIdle
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+endif

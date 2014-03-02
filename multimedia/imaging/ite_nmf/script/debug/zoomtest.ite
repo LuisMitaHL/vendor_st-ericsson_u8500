@@ -1,0 +1,88 @@
+alias MAXDZ $1
+alias MAXFPS 15
+###################### pour essai
+setusecase HR VGA YUV420MB_D
+manualfps 2
+HR prepare
+zoominit MAXDZ
+#######display LR
+HR start
+HR stop
+manualfps MAXFPS
+HR start
+#######display LR
+wait 1
+zoomtestfullrange HR MAXDZ
+HR stop
+HR free
+setusecase HR VGA YUV420MB_D
+manualfps 2
+HR prepare
+zoominit MAXDZ
+#######display LR
+HR start
+HR stop
+manualfps MAXFPS
+HR start
+#######display HR
+wait 1
+zoomtestfullrange HR MAXDZ
+HR stop
+HR free
+setusecase HR HD YUV420RP_I420
+manualfps 2
+HR prepare
+zoominit MAXDZ
+#######display LR
+HR start
+HR stop
+manualfps MAXFPS
+HR start
+#######display LR
+wait 1
+zoomtestfullrange HR MAXDZ
+HR stop
+# Initialisation
+setusecase LR VGA YUV422RI
+manualfps 2
+LR prepare
+zoominit MAXDZ
+#######display LR
+LR start
+LR stop
+manualfps MAXFPS
+LR start
+#######display LR
+wait 1
+zoomtestfullrange LR MAXDZ
+LR stop
+LR free
+setusecase LR VGAPLUS RGB565
+manualfps 2
+LR prepare
+zoominit MAXDZ
+#######display LR
+LR start
+LR stop
+manualfps MAXFPS
+LR start
+#######display LR
+wait 1
+zoomtestfullrange LR MAXDZ
+LR stop
+LR free
+setusecase LR XGA RGB565
+manualfps 2
+LR prepare
+zoominit MAXDZ
+#######display LR
+LR start
+LR stop
+manualfps MAXFPS
+LR start
+#######display LR
+wait 1
+zoomtestfullrange LR MAXDZ
+LR stop
+LR free
+stopenv

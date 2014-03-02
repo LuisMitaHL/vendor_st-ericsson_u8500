@@ -1,0 +1,26 @@
+# set full-speed (maybe "ondemand" for linux management)
+echo "performance" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+
+# ./busybox taskset <mask> : mask=1 for CPU 0 only, mask=2 for CPU 1 only, mask=3 for CPU 0 or CPU 1
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_stereo_48k"      "../../../streams/mdrc/streams/stereo_48k.pcm"      "FIR_stereo_48k_CA9_linux.pcm"      2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_IIR_stereo_48k"      "../../../streams/mdrc/streams/stereo_48k.pcm"      "IIR_stereo_48k_CA9_linux.pcm"      2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_stereo_48k_rms"  "../../../streams/mdrc/streams/stereo_48k.pcm"      "FIR_stereo_48k_rms_CA9_linux.pcm"  2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_48k"  "../../../streams/mdrc/streams/freq_sweep_48k.pcm"  "FIR_freq_sweep_48k_CA9_linux.pcm"  2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_44k"  "../../../streams/mdrc/streams/freq_sweep_44k.pcm"  "FIR_freq_sweep_44k_CA9_linux.pcm"  2 44100 441
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_32k"  "../../../streams/mdrc/streams/freq_sweep_32k.pcm"  "FIR_freq_sweep_32k_CA9_linux.pcm"  2 32000 320
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_24k"  "../../../streams/mdrc/streams/freq_sweep_24k.pcm"  "FIR_freq_sweep_24k_CA9_linux.pcm"  2 24000 240
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_22k"  "../../../streams/mdrc/streams/freq_sweep_22k.pcm"  "FIR_freq_sweep_22k_CA9_linux.pcm"  2 22050 220
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_16k"  "../../../streams/mdrc/streams/freq_sweep_16k.pcm"  "FIR_freq_sweep_16k_CA9_linux.pcm"  2 16000 160
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_12k"  "../../../streams/mdrc/streams/freq_sweep_12k.pcm"  "FIR_freq_sweep_12k_CA9_linux.pcm"  2 12000 120
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_11k"  "../../../streams/mdrc/streams/freq_sweep_11k.pcm"  "FIR_freq_sweep_11k_CA9_linux.pcm"  2 11025 110
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_freq_sweep_8k"   "../../../streams/mdrc/streams/freq_sweep_8k.pcm"   "FIR_freq_sweep_8k_CA9_linux.pcm"   2 8000  80 
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_IIR_sin1k_stereo_48k"  "../../../streams/mdrc/streams/sin1k_48k_stereo.pcm"    "IIR_sin1k_stereo_48k_CA9_linux.pcm"  2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_IIR_sin1k_mono_48k"  "../../../streams/mdrc/streams/sin1k_48k.pcm"           "IIR_sin1k_mono_48k_CA9_linux.pcm"  1 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_sin1k_stereo_48k"  "../../../streams/mdrc/streams/sin1k_48k_stereo.pcm"  "FIR_sin1k_stereo_48k_CA9_linux.pcm" 2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_sin1k_mono_48k"  "../../../streams/mdrc/streams/sin1k_48k.pcm"           "FIR_sin1k_mono_48k_CA9_linux.pcm"   1 48000 480                                    
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_mozart_mono_48k" "../../../streams/mdrc/streams/mozart_48k_mono.pcm" "FIR_mozart_mono_48k_CA9_linux.pcm"       1 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_mozart_stereo_48k" "../../../streams/mdrc/streams/mozart_48k_stereo.pcm" "FIR_mozart_stereo_48k_CA9_linux.pcm" 2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_IIR_mozart_mono_48k" "../../../streams/mdrc/streams/mozart_48k_mono.pcm" "IIR_mozart_mono_48k_CA9_linux.pcm" 1 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_IIR_mozart_stereo_48k" "../../../streams/mdrc/streams/mozart_48k_stereo.pcm" "IIR_mozart_stereo_48k_CA9_linux.pcm" 2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_IIR_mult_ampl_sweep_stereo_48k"  "../../../streams/mdrc/streams/multitone_ampl_sweep_48k.pcm"    "IIR_mult_ampl_sweep_stereo_48k_CA9_linux.pcm"  2 48000 480
+./busybox taskset 1 ./mdrc5b_CA9_linux "../../../streams/mdrc/streams/params_FIR_stereo_48k_1band"  "../../../streams/mdrc/streams/stereo_48k.pcm"    "FIR_stereo_48k_1band_CA9_linux.pcm"  2 48000 480

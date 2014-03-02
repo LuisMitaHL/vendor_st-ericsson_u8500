@@ -1,0 +1,40 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/vf_vr_still_sleep_stress.ite
+## Startenv – boot, stream VF & Video, stop, BMS-> BML, stop, sleep, wakeup, VF & Video, stop, BMS-> BML, stop, sleep -stopenv for N iterations ##
+
+alias LOOP_TESTS $1
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+loop LOOP_TESTS
+
+LR prepare
+LR start
+LR stop
+LR free
+
+LRHR prepare
+LRHR start
+LRHR stop
+LRHR free
+
+bms prepare
+bms start
+bms stop
+
+
+bml prepare
+LR prepare
+bml start
+
+
+bml stop
+bml free
+LR free
+bms free
+
+gen_random_val int 0 4
+sleepmode RANDOM_GENERATED_VALUE
+
+endloop
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite
+

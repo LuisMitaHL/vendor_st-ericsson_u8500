@@ -1,0 +1,23 @@
+/* used to provide the projection curve address mapping (physical as reported by DSP,
+   logical as used by stab). As stab uses a pair of buffers for ping-pong, it 
+   will automatically calculate offset of second buffers from size 
+   
+*/
+
+#include <ext_grabctl_types.idt>
+#include <ext_grab_types.idt>
+
+void informBuffers(t_uint32 hCurvePhysical, t_sint32 * hCurveLogical, 
+                   t_uint32 vCurvePhysical, t_sint32 * vCurveLogical, 
+                   t_uint32 x_size, t_uint32 y_size);
+
+/* used to enable/disable stab. Calling this function
+   will also reinitialize stab algorithm
+*/
+void activateStab(t_bool enable);
+
+void setConfig(enum e_grabctlPortID port_idx, t_uint8 capture_started);
+
+void setParams(struct s_grabParams GrabParams, t_uint32 input_port);
+
+

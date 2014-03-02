@@ -1,0 +1,24 @@
+#include <libeffects/libmdrc5b/include/mdrc5b.h>
+
+interface libeffects.libmdrc5b.libmdrc5b unmanaged
+{
+    void mdrc5b_main                   (MDRC5B_LOCAL_STRUCT_T *Heap, void *inbuf, void *outbuf, int size);
+
+    void mdrc5b_init                   (MDRC5B_LOCAL_STRUCT_T *Heap);
+
+    void mdrc5b_reset                  (MDRC5B_LOCAL_STRUCT_T *Heap);
+
+    void mdrc5b_reset_subband_data     (MDRC5B_LOCAL_STRUCT_T *Heap);
+
+    void mdrc5b_compute_subband_filters(MDRC5B_LOCAL_STRUCT_T *Heap);
+
+    int  applyEffectConfig             (MDRC5B_LOCAL_STRUCT_T *Heap, Mdrc5bAlgoConfig_t *pConfig);
+
+    void mdrc_filter_default_config    (t_mdrc_filters        *p_mdrc_filters);
+
+    int  get_mdrc_filter_config        (t_mdrc_filters        *p_mdrc_filters,
+                                        MdrcFiltersConfig_t   *p_mdrc_filters_config,
+                                        t_mdrc_filter_kind    param_mdrc_filter_kind,
+                                        t_biquad_kind         param_biquad_kind,
+                                        t_FIR_kind            param_FIR_kind);
+}

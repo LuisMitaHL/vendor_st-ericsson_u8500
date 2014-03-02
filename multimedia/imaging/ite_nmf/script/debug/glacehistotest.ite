@@ -1,0 +1,134 @@
+# --------------init for pipe LR if needed
+setusecase LR VGA YUV422RI
+# --------------init for pipe HR if needed
+setusecase HR VGA YUV420MB_D
+# ------------------------------------------------
+# -------------- first test with COLORBAR --------
+# ------------------------------------------------
+manualfps 2
+# --------------set HSizeFraction VSizeFraction HROIFraction VROIFraction
+# --------------for example 100% 100% 0% 0%
+glaceblock 100 100 0 0
+# --------------for example 100% 100% 0% 0%
+histoblock 100 100 0 0
+# --------------set Gride size H and V
+glacegridsize 72 54
+# --------------set R G B saturation level
+glacesat 128 128 128
+# --------------set R G B manual gain
+statwbgain 1.0 1.0 1.0
+# start streamming
+HR prepare
+HR start
+HR stop
+manualfps 15
+HR start
+#sensormode COLORBAR
+# -------------------------
+createstatbuff 
+glace update
+histo update
+histo null
+# request glace stat using "glace ctrl PE"
+glace req
+getfps HR
+# --------------dump R G B Sat into file
+glacedump
+checkhisto
+# 
+createstatbuff 
+glace update
+histo update
+histo null
+# request glace stat using "gain update"
+updategain req
+getfps HR
+# --------------dump R G B Sat into file
+glacedump
+checkhisto
+# 
+createstatbuff 
+glace update
+histo update
+histo null
+# request glace stat using "glace and histo ctrl PE"
+glacehisto req
+getfps HR
+# --------------dump R G B Sat into file
+glacedump
+checkhisto
+# --------------stop Glace test (and free buffers)
+glace freebuff
+# -----------
+createstatbuff 
+glace update
+histo update
+glace null
+# request histo stat using "histo ctrl PE"
+histo req
+getfps HR
+# --------------dump R G B Sat into file
+histodump
+checkhisto
+#
+createstatbuff 
+glace update
+histo update
+glace null
+# request histo stat using "gain update"
+updategain req
+getfps HR
+# --------------dump R G B Sat into file
+histodump
+checkhisto
+#
+createstatbuff 
+glace update
+histo update
+glace null
+# request histo stat using "glace and histo ctrl PE"
+glacehisto req
+getfps HR
+# --------------dump R G B Sat into file
+histodump
+checkhisto
+# -----------
+createstatbuff 
+glace update
+histo update
+# request glace and histo stat using "glace and histo ctrl PE"
+glacehisto req
+getfps HR
+# --------------dump R G B Sat into file
+histodump
+checkhisto
+glacedump
+createstatbuff 
+glace update
+histo update
+# request histo stat using "gain update"
+updategain req
+getfps HR
+# --------------dump R G B Sat into file
+histodump
+checkhisto
+glacedump
+# kind of robustness test
+getfps HR
+updategain req 1500
+# -----------------------
+createstatbuff 
+glace update
+histo update
+# request histo stat using "glace and histo ctrl PE"
+glacehisto req
+# --------------dump R G B Sat into file
+histodump
+checkhisto
+glacedump
+# -----------
+
+HR stop
+HR free
+histo freebuff
+stopenv

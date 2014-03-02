@@ -1,0 +1,158 @@
+;------------------------------------------------------------
+; Load.cmm
+;------------------------------------------------------------
+; Startup file to select and setup target
+;
+; 091207 - KM Initial version
+; 110526 - KM Adaption to fit CPT environment
+;-----------------------------------------------------------
+
+local &core
+local &debug_config
+local &config
+
+screen.off
+
+reset		; Problem with a.af without this command
+
+;Check if there are settings for this target
+if os.file(&UsrPath/T32_settings.txt)
+(
+	do readsettings.cmm
+
+	if "&TrgExist"=="FALSE"
+	(
+		dialog.ok "No default settings found for &Target target! " \
+		          "Use EMP target setup dialog to setup target"
+		do startup.cmm
+	)
+)
+else
+(
+	dialog.ok "No default settings found (&UsrPath/T32_settings.txt missing)! " \
+	          "Use EMP target setup dialog to setup target"
+	do startup.cmm
+	enddo
+)
+
+
+; Convert settings
+gosub ConvertSettings
+
+do tronchip_settings
+
+;Check version of chip from CLTAP (V1 or V2)
+do chip_version
+
+;Update variables between debuggers
+if "&AccStarted"=="True"
+(
+	intercom.execute &icAcc do update_variable &chip_version &PRCMUDebug
+	wait 100ms
+	intercom.execute &icAcc do writesettings
+	wait 500ms				;Necessary to wait longer to make sure that we don't run write settings in acc and ceva debugger at the same time
+)
+if "&CevaStarted"=="True"
+(
+	intercom.execute &icCeva do update_variable &chip_version &PRCMUDebug
+	wait 100ms
+	intercom.execute &icCeva do writesettings
+	wait 100ms
+)
+
+
+
+
+
+	
+;Call CPT scripts
+do init_5500 &chip_version EVB &debug_config &core &config
+
+;do etm_settings	;This should be done manually by using U5500/trace/use PTM
+
+if (("&AccStarted"=="True")||("&CevaStarted"=="True"))
+(
+	do db5500_init_modem	; Make it possible to connect to modem CPU:s
+)
+
+
+
+do onchip_break_setup.cmm
+do syncronize_targets.cmm
+if "&LinuxDebug"=="TRUE"
+(
+	y.reset
+	sys.o mmuspaces on
+
+)
+else
+(
+	y.reset
+	sys.o mmuspaces off
+	
+)
+
+do load_code
+
+do default_pc_set 
+if "&UseBrk"=="TRUE"
+  do default_break
+
+;Open some default windows
+if "&UseWin"=="TRUE"
+	do default_windows
+
+do post_load
+
+
+;Functionality for Linux debugging
+if "&LinuxDebug"=="TRUE"
+(
+  do linux
+)
+
+if "&UsrCmm"!=""
+(
+  do &UsrCmm
+)
+
+;Print target setup information, viewable in the AREA window
+print
+print "Target       : &Target"
+print "Memory       : &ExeMem"
+print "Load Options : &LOption &LOptionVM"
+print "Load File    : &ElfFile"
+print "Source Path  : &SrcPath"
+print
+print "Target setup done, ready to debug..."
+
+
+screen.on
+
+
+enddo
+
+ConvertSettings:
+	if "&SmpDebug"=="TRUE"
+		&core="smp"
+	else
+		&core="cpu0"
+
+	if "&UseAttach"=="TRUE"
+	(
+		&debug_config="attach"
+		&config="noconfig"
+	)
+	else
+	(
+		&debug_config="up+dbg_thr_reset"
+		if "&ExeMem"=="RAM"
+			&config="default"
+	)
+	
+	if "&PRCMUDebug"=="TRUE"
+	(
+		&prcmu="+prcmu"
+		&debug_config="&debug_config&prcmu"
+	)
+return

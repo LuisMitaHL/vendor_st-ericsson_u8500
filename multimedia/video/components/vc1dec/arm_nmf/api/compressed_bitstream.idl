@@ -1,0 +1,14 @@
+#include <vc1dec/arm_nmf/api/nmftype.idt>
+
+interface vc1dec.arm_nmf.api.compressed_bitstream {
+
+void frame(
+	t_bit_buffer	*p_bitstream,	/**< Input buffer */
+	void 		*sei, 		
+	t_uint32 nTimeStampH, t_uint32 nTimeStampL, /**< TimeStamp */
+	t_uint32 	nFlags		/**< Openmax flags (end of stream, ...) */
+	);
+
+void input_decoder_command(t_command_type command_type);
+
+}

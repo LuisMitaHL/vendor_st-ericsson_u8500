@@ -1,0 +1,17 @@
+alias P_ADDRESS $1
+
+alias REGISTER REGISTER_$(P_ADDRESS)
+
+#old interface
+OMX_SetConfig camera IFM_IndexConfigCommonReadPe nPEList[0]=P_ADDRESS nPEList[1]=0 
+
+#OMX_SetConfig camera IFM_IndexConfigCommonReadPe nPEToRead=1 nPEList_addr[0]=P_ADDRESS
+
+MMTE_WaitEvent camera OMX_EventIndexSettingChanged OMX_ALL IFM_IndexConfigCommonReadPe
+
+OMX_GetConfig ConfigGet camera IFM_IndexConfigCommonReadPe
+
+#write result
+#ite_omx_MMTEST_Result IFM_IndexConfigCommonReadPe_Result configGet 
+
+echo File_saved

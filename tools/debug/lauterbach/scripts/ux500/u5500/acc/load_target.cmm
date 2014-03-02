@@ -1,0 +1,119 @@
+;------------------------------------------------------------
+; Load.cmm
+;------------------------------------------------------------
+; Startup file to select and setup target
+;
+; 091207 - KM Initial version
+; 110526 - KM Adaption to fit CPT environment
+;-----------------------------------------------------------
+
+local &core
+local &debug_config
+
+
+screen.off
+
+
+;Check if there are settings for this target
+if os.file(&UsrPath/T32_settings.txt)
+(
+	do readsettings.cmm
+
+	if "&TrgExist"=="FALSE"
+	(
+		dialog.ok "No default settings found for &Target target! " \
+		          "Use EMP target setup dialog to setup target"
+		do startup.cmm
+	)
+)
+else
+(
+	dialog.ok "No default settings found (&UsrPath/T32_settings.txt missing)! " \
+	          "Use EMP target setup dialog to setup target"
+	do startup.cmm
+	enddo
+)
+
+
+; Convert settings
+gosub ConvertSettings
+
+
+;APP debugger must be up and running, otherwise it is not possible to attach
+if "&AppStarted"=="True"
+(
+	intercom.evaluate &icApp system.up()
+	if EVAL()==0
+	(
+		print "APP debugger must be started and connected to target"
+		end
+	)
+)
+else
+(
+	print "APP debugger must be started and connected to target"
+	end
+)
+
+
+do tronchip_settings
+
+	
+;Call CPT scripts
+do init_5500_ModemSS &chip_version EVB &debug_config &core
+
+do etm_settings
+
+do onchip_break_setup.cmm
+do syncronize_targets.cmm
+
+do load_code
+
+do default_pc_set 
+if "&UseBrk"=="TRUE"
+  do default_break
+
+;Open some default windows
+if "&UseWin"=="TRUE"
+	do default_windows
+
+do post_load
+
+
+
+if "&UsrCmm"!=""
+(
+  do &UsrCmm
+)
+
+;Print target setup information, viewable in the AREA window
+print
+print "Target       : &Target"
+print "Memory       : &ExeMem"
+print "Load Options : &LOption &LOptionVM"
+print "Load File    : &ElfFile"
+print "Source Path  : &SrcPath"
+print
+print "Target setup done, ready to debug..."
+
+
+screen.on
+
+
+enddo
+
+ConvertSettings:
+	&core="arm9"
+
+	if "&UseAttach"=="TRUE"
+		&debug_config="attach"
+	else
+		&debug_config="up"
+		
+	if "&PRCMUDebug"=="TRUE"
+	(
+		&prcmu="+prcmu"
+		&debug_config="&debug_config&prcmu"
+	)
+	
+return

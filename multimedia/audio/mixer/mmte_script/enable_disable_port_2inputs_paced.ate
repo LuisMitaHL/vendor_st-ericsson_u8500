@@ -1,0 +1,236 @@
+# disable / re-enable ports in loaded state
+OMX_SetConfig $1 ENS_IndexConfigTraceSetting nTraceEnable=65535 nParentHandle=1
+OMX_SendCommand $1 OMX_CommandPortDisable 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SendCommand $1 OMX_CommandPortEnable  0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand $1 OMX_CommandPortDisable 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+OMX_SendCommand $1 OMX_CommandPortEnable  1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand $1 OMX_CommandPortEnable  2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable  ports in loaded state
+OMX_SendCommand $1 OMX_CommandPortDisable 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand $1 OMX_CommandPortDisable 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Idle with both ports disabled
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# re-enable ports
+OMX_SendCommand $1 OMX_CommandPortEnable  0
+MMTE_AllocateBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand $1 OMX_CommandPortEnable  1
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+OMX_SendCommand $1 OMX_CommandPortEnable  2
+MMTE_AllocateBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable / re-enable ports in Idle
+
+OMX_SendCommand $1 OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers $1 0
+MMTE_FreeBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand $1 OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers $1 1
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+MMTE_wait_nontunneled_buffers $1 2
+MMTE_FreeBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SendCommand $1 OMX_CommandPortEnable  0
+MMTE_AllocateBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand $1 OMX_CommandPortEnable  1
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+OMX_SendCommand $1 OMX_CommandPortEnable  2
+MMTE_AllocateBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable ports
+
+OMX_SendCommand $1 OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers $1 0
+MMTE_FreeBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand $1 OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers $1 1
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+MMTE_wait_nontunneled_buffers $1 2
+MMTE_FreeBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Pause with ports disabled
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# enable ports
+
+OMX_SendCommand $1 OMX_CommandPortEnable  0
+MMTE_AllocateBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand $1 OMX_CommandPortEnable  1
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+OMX_SendCommand $1 OMX_CommandPortEnable  2
+MMTE_AllocateBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+mmte_sleep 1000
+
+# Go to Executing
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent $1 OMX_EventBufferFlag 1 0
+MMTE_WaitEvent $1 OMX_EventBufferFlag 2 0
+MMTE_WaitEvent $1 OMX_EventBufferFlag 0 0
+
+# disable ports in Executing
+
+OMX_SendCommand $1 OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers $1 0
+MMTE_FreeBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand $1 OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers $1 1
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+MMTE_wait_nontunneled_buffers $1 2
+MMTE_FreeBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Pause with ports disabled
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# re-enable ports
+OMX_SendCommand $1 OMX_CommandPortEnable  0
+MMTE_AllocateBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand $1 OMX_CommandPortEnable  1
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+OMX_SendCommand $1 OMX_CommandPortEnable  2
+MMTE_AllocateBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable / re-enable ports in Pause
+
+OMX_SendCommand $1 OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers $1 0
+MMTE_FreeBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand $1 OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers $1 1
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+MMTE_wait_nontunneled_buffers $1 2
+MMTE_FreeBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SendCommand $1 OMX_CommandPortEnable  0
+MMTE_AllocateBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand $1 OMX_CommandPortEnable  1
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+OMX_SendCommand $1 OMX_CommandPortEnable  2
+MMTE_AllocateBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# disable ports
+
+OMX_SendCommand $1 OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers $1 0
+MMTE_FreeBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand $1 OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers $1 1
+MMTE_FreeBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+MMTE_wait_nontunneled_buffers $1 2
+MMTE_FreeBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# Go to Idle with ports disabled
+OMX_SendCommand $1  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand $1 OMX_CommandPortEnable  0
+MMTE_AllocateBuffers $1 0
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+OMX_SendCommand $1 OMX_CommandPortEnable  1
+MMTE_AllocateBuffers $1 1
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+OMX_SendCommand $1 OMX_CommandPortEnable  2
+MMTE_AllocateBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandPortEnable 2
+
+# Go to Loaded with ports disabled
+OMX_SendCommand $1 OMX_CommandStateSet OMX_StateLoaded
+MMTE_wait_nontunneled_buffers $1 0
+MMTE_wait_nontunneled_buffers $1 1
+MMTE_wait_nontunneled_buffers $1 2
+MMTE_FreeBuffers $1 0
+MMTE_FreeBuffers $1 1
+MMTE_FreeBuffers $1 2
+MMTE_WaitEvent $1 OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle $1
+
+MMTE_CheckMemoryStatus
+
+file_comp OUTPUT_FILE REF_FILE
+

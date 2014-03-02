@@ -1,0 +1,47 @@
+entry &val &param
+
+if run()
+(
+	dialog.yesno "Stop the execution to dump registers?"
+	entry &yn
+	if &yn
+		break
+	else
+		enddo
+)
+
+&script=""
+if "&val"=="ALL"
+(
+	&script="all"
+)
+else if "&val"=="AB"
+(
+	&script="ab"
+)
+else if "&val"=="DB"
+(
+	&script="db"
+	if "&param"==""
+		&param="PRMCU"
+)
+else
+(
+	print "dump_regs_dialog : unknown parameter=&val"
+	enddo
+)
+&script="dump_&(script)_regs"
+
+local &filename
+dialog.filew *.txt
+entry %line &filename
+if OS.FILE.NAME(&filename)==""
+(
+	print "use default filename : &script.txt"
+	&filename=OS.FILE.PATH(&filename)+"/&script&param.txt"
+)
+
+do &script &param &filename
+
+print OS.FILE.NAME(&filename) " saved"
+enddo

@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_audio/speech_enhancement=bin
+NO_STD_BUILD_audio/speech_enhancement=1
+BUILD_MMDSP_NMF_audio/speech_enhancement=bin
+BUILD_ARM_PROC_audio/speech_enhancement=bin
+BUILD_ARM_CODE_audio/speech_enhancement=bin
+BUILD_ARM_NMF_audio/speech_enhancement=bin
+BUILD_XP70_SIA_CODE_audio/speech_enhancement=false

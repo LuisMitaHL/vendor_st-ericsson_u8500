@@ -1,0 +1,20 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+composite fileio_wrp
+{
+   contains fileio as iFileIo priority=io
+
+   provides fileio.api.request as request
+   binds this.request to iFileIo.request
+
+   provides fileio.api.error as error
+   binds this.error to iFileIo.error
+
+   requires fileio.api.response as response
+   binds iFileIo.response to this.response
+}

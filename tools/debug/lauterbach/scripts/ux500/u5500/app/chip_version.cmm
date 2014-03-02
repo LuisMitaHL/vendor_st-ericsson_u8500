@@ -1,0 +1,51 @@
+;------------------------------------------------------------
+; chip_version.cmm
+;------------------------------------------------------------
+; Script that reads out chip version from CLTAP of U5500
+;
+; 110526 - KM Initial version
+;-----------------------------------------------------------
+
+local &idcode_addr
+local &up
+
+&up="TRUE"
+if !system.up()
+(
+	if "&SmpDebug"=="TRUE"
+		sys.cpu DB5500
+	else
+		sys.cpu DB5500APE-CORE0
+
+	sys.config cfgconnect 0x3
+	sys.config.multitap stcltap2
+	sys.o enreset off
+	sys.mode prepare
+	&up="FALSE"
+)
+
+
+&idcode_addr=0x50000600
+if version.build()<26058.
+	&idcode_addr=0x30000600
+
+if data.long(edbg:&idcode_addr)==0x12273041
+(
+	print "Version v1 detected"
+	&chip_version="v1"
+)
+else if data.long(edbg:&idcode_addr)==0x22273041
+(
+	print "Version v2 detected"
+	&chip_version="v2"
+)
+else
+(
+	print "Can't detect chip version, default is v1"
+	&chip_version="v1"
+)
+
+if "&up"=="FALSE"
+	sys.down
+
+enddo

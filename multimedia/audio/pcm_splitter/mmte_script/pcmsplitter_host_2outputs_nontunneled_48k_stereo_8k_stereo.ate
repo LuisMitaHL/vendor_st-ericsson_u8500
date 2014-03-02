@@ -1,0 +1,68 @@
+test_start PCM_SPL_HOST_051
+test_property TEST_NAME pcmsplitter_2outputs_nontunneled_8k_stereo
+
+alias TIMEOUT 0
+alias REF_FILE   $(AUDIO_STREAMS)/pcm_splitter/streams/BassISO_stereo_test151.ref.out
+OMX_GetHandle    pcmsplitter OMX.ST.AFM.pcmsplitter_host
+
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+ate_attach_io       pcmsplitter 0 MEM $(AUDIO_STREAMS)/samplerateconv/streams/BassISO_48k_stereo.pcm 0 0 0
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+alias OUTPUT_FILE1  $(OUTPUT_DIR)/pcm_host_output_8k_stereo_1.out
+ate_attach_io       pcmsplitter 1 MEM $(OUTPUT_FILE1) 4000000 0 0
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=2 nChannels=2 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+alias OUTPUT_FILE2  $(OUTPUT_DIR)/pcm_host_output_8k_stereo_2.out
+ate_attach_io       pcmsplitter 2 MEM $(OUTPUT_FILE2) 4000000 0 0
+
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers pcmsplitter 0
+MMTE_AllocateAndUseBuffers pcmsplitter 1
+MMTE_AllocateAndUseBuffers pcmsplitter 2
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Start in Paused in order to send buffers in each pcmsplitter input port
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+mmte_sleep 100
+
+#Go in Executing
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent pcmsplitter OMX_EventBufferFlag 1 TIMEOUT
+MMTE_WaitEvent pcmsplitter OMX_EventBufferFlag 2 TIMEOUT
+
+#Stop
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers pcmsplitter 0
+MMTE_FreeBuffers pcmsplitter 1
+MMTE_FreeBuffers pcmsplitter 2
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE1 REF_FILE
+file_comp OUTPUT_FILE2 REF_FILE
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE1
+unalias OUTPUT_FILE2
+unalias REF_FILE 
+unalias TIMEOUT
+test_end

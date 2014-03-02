@@ -1,0 +1,12 @@
+file ../standalone/bin/mmdsp_8500/vsrc1.elf
+set args insig.bin outsig.bin 48048
+
+enable profile 
+break exit
+run
+info stacklimit
+profile -duration  1000   -o vsrc1.prf
+cont
+
+
+

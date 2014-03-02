@@ -1,0 +1,223 @@
+;------------------------------------------------------------
+; synch_setup.cmm
+;------------------------------------------------------------
+; Create dialog for configuration of sync between cores
+;
+; 090507 - KM Initial version
+;-----------------------------------------------------------
+
+
+dialog
+(&
+	header "Synchronization"
+
+	pos 0. 0. 18. 5.
+	box "synch break and go"
+
+	pos 2. 1. 10. 1.
+App:	checkbox "APP " "gosub SynchApp"
+	pos 2. 2. 10. 1.
+MmdspSia:	checkbox "Mmdsp Sia " "gosub SynchMmdspSia"
+	pos 2. 3. 10. 1.
+MmdspSva:	checkbox "Mmdsp Sva " "gosub SynchMmdspSva"
+	pos 1. 5. 5. 1.
+Button "Save" "gosub ButtonSave"
+	pos 8. 5. 9. 1.
+Button "Save and Close" "gosub ButtonSaveClose"
+	CLOSE "goto winclose"
+)
+
+;What cores are we debugging?
+if ("&AppStarted"=="")
+(
+if INTERCOM.PING(&icApp)
+	&AppStarted="True"
+else
+	&AppStarted="False"
+)
+
+if ("&MmdspSiaStarted"=="")
+(
+if INTERCOM.PING(&icMmdspSia)
+	&MmdspSiaStarted="True"
+else
+	&MmdspSiaStarted="False"
+)
+
+if ("&MmdspSvaStarted"=="")
+(
+if INTERCOM.PING(&icMmdspSva)
+	&MmdspSvaStarted="True"
+else
+	&MmdspSvaStarted="False"
+)
+
+
+
+do readcurrentconfig
+gosub InitVariables
+gosub InitDialog
+
+stop
+
+winclose:
+	dialog.end
+	enddo
+
+
+InitVariables:
+	if "&SynchApp"==""
+		&SynchApp="True"
+
+	if "&SynchMmdspSia"==""
+	(
+		&SynchMmdspSia="False"
+		if ("&MmdspSiaStarted"=="True")
+		(
+			intercom.execute &icMmdspSia do synch_update_variables True
+			wait 1s
+			&SynchMmdspSia="True"
+		)
+		else
+		(
+		  dialog.disable MmdspSia
+		)
+	)
+	if "&SynchMmdspSva"==""
+	(
+		&SynchMmdspSva="False"
+		if ("&CMmdspSvaStarted"=="True")
+		(
+			intercom.execute &icMmdspSva do synch_update_variables True
+			wait 1s
+		  &SynchMmdspSva="True"
+		)
+		else
+		(
+		  dialog.disable MmdspSva
+		)
+	)
+	Return
+
+InitDialog:
+	if "&SynchApp"=="True"
+		dialog.set App "ON"
+	else
+		dialog.set App "OFF"
+
+	if ("&MmdspSiaStarted"=="False")
+		  dialog.disable MmdspSia
+
+	if "&SynchMmdspSia"=="True"
+		dialog.set MmdspSia "ON"
+	else
+		dialog.set MmdspSia "OFF"
+
+	if ("&MmdspSvaStarted"=="False")
+		  dialog.disable MmdspSva
+
+	if "&SynchMmdspSva"=="True"
+		dialog.set MmdspSva "ON"
+	else
+		dialog.set MmdspSva "OFF"
+
+	Return
+
+SynchApp:
+	if dialog.boolean(App)
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp synch.on
+		)
+		&SynchApp="True"
+	)
+	else
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp synch.off
+		)
+		&SynchApp="False"
+	)
+	Return
+
+SynchMmdspSia:
+	if dialog.boolean(MmdspSia)
+	(
+		if ("&MmdspSiaStarted"=="True")
+		(
+			intercom.execute &icMmdspSia synch.on
+			intercom.execute &icMmdspSia do synch_update_variables True
+			wait 1s
+		)
+		&SynchMmdspSia="True"
+	)
+	else
+	(
+		if ("&MmdspSiaStarted"=="True")
+		(
+			intercom.execute &icMmdspSia synch.off
+			intercom.execute &icMmdspSia do synch_update_variables False
+			wait 1s
+		)
+		&SynchMmdspSia="False"
+	)
+	Return
+
+SynchMmdspSva:
+	if dialog.boolean(MmdspSva)
+	(
+		if ("&MmdspSvaStarted"=="True")
+		(
+			intercom.execute &icMmdspSva synch.on
+			intercom.execute &icMmdspSva do synch_update_variables True
+			wait 1s
+		)
+		&SynchMmdspSva="True"
+	)
+	else
+	(
+		if ("&MmdspSvaStarted"=="True")
+		(
+			intercom.execute &icMmdspSva synch.off
+			intercom.execute &icMmdspSva do synch_update_variables False
+			wait 1s
+		)
+		&SynchMmdspSva="False"
+	)
+	Return
+
+ButtonSave:
+	if ("&MmdspSiaStarted"=="True")
+	(
+		intercom.execute &icMmdspSia do writesettings
+		intercom.wait &icMmdspSia
+		wait 1s
+	)
+	if ("&MmdspSvaStarted"=="True")
+	(
+		intercom.execute &icMmdspSva do writesettings
+		intercom.wait &icMmdspSva
+		wait 1s
+	)
+	do writesettings.cmm
+
+	RETURN
+
+ButtonSaveClose:
+	if ("&MmdspSiaStarted"=="True")
+	(
+		intercom.execute &icMmdspSia do writesettings
+		intercom.wait &icMmdspSia
+		wait 1s
+	)
+	if ("&MmdspSvaStarted"=="True")
+	(
+		intercom.execute &icMmdspSva do writesettings
+		intercom.wait &icMmdspSva
+		wait 1s
+	)
+	do writesettings.cmm
+	goto winclose
+

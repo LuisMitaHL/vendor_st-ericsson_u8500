@@ -1,0 +1,57 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENTS += 	h264enc.mpc.hamac
+
+CONFFILES =     h264enc/mpc/h264enc/h264enc.conf	\
+				h264enc/mpc/algo/algo.conf			\
+				h264enc/mpc/ddep/ddep.conf			\
+				h264enc/mpc/adapter/adapter.conf	\
+				resource_manager/allocator/allocator.conf	\
+				resource_manager/interrupt/interrupt.conf	\
+				resource_manager/buffers/buffers.conf		\
+				resource_manager/mtf/mtf.conf				\
+				resource_manager/resource_manager.conf		\
+				h264enc/mpc/hamac/hamac.conf
+
+SRCPATH+= \
+	$(MMROOT)/shared/ens/components 								\
+	$(MMROOT)/shared/ens/components/common 							\
+	$(MM_IDT_DIR)								\
+	$(MMROOT)/video/idt/$(MMDSPPROCESSOR)							\
+	$(MMROOT)/video/idt												\
+	$(MMROOT)/video/vfm/common										\
+	$(MMROOT)/video/components/h264enc/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/h264enc/mpc/share
+
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc		\
+	-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/common/inc
+
+USER2MPCITFS += h264enc.mpc.ddep.api.start_codec
+
+MPC2USERITFS += h264enc.mpc.ddep.api.end_codec debug.mpc.api.msg
+
+ASYNCITFS += 	h264enc.mpc.ddep.api.log_event	\
+				h264enc.mpc.api.algo			\
+				resource_manager.api.resource		
+
+$(MODULE)/../resource_manager/buffers/src/$(SVA_SUBSYSTEM)/%.c: $(MODULE)/../hardware/src/$(SVA_SUBSYSTEM)/%.c
+	@echo "Creating link from $< to $@"
+	@mkdir -p $(dir $@)
+ifeq ($(UNAME),Linux)
+	@ln -fs ../$< $@
+else
+	@cp -f $< $@ 
+endif
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+.PHONY: link_hardware
+

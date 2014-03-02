@@ -1,0 +1,33 @@
+
+do $(IMG_SCRIPT)/unitary/features/cam_stop_record.ite SINK_PORT_INPUT
+
+alias TEMP_VF_SAVE_ACTIVATION OMX_TRUE
+if VF_SAVE_ACTIVATION == OMX_FALSE
+	alias TEMP_VF_SAVE_ACTIVATION OMX_FALSE
+endif
+
+if VF_SAVE_RESOLUTION_LR == OMX_FALSE
+	alias TEMP_VF_SAVE_ACTIVATION OMX_FALSE
+endif
+
+if VF_DISPLAY_ACTIVATION == OMX_TRUE
+	OMX_SetConfig my_sink_VPB0 IFM_IndexParamFakesinkPathname contentURI=RAMDISK_PATH_VF_LR
+	OMX_SetConfig my_sink_VPB0 IFM_IndexConfigIqtCaptureMode nSaveMode=NORMAL_SAVE_MODE bSaveFrameCount=VF_SAVE_FRAME_COUNT nSaveFirstFrame=VF_SAVE_FIRST_FRAME bSaveFrameByFrame=SAVING_FRAME_BY_FRAME nFrameSkippingNumber=VF_FRAME_SKIPPING_NUMBER nInstanceNumber=FAKESINK_VF_INSTANCE_0 nAcknowledge=OMX_FALSE
+	OMX_SetConfig my_sink_VPB0 OMX_IndexConfigCaptureMode bContinuous=0 bFrameLimited=0 nFrameLimit=0
+	OMX_SetConfig my_sink_VPB0  OMX_IndexConfigCapturing bEnabled=VF_DISPLAY_ACTIVATION
+	OMX_SetConfig my_sink_VPB2 OMX_IndexConfigCapturing bEnabled=OMX_FALSE
+else
+
+	OMX_SetConfig my_sink_VPB0 IFM_IndexParamFakesinkPathname contentURI=RAMDISK_PATH_VF_LR
+	OMX_SetConfig my_sink_VPB0 IFM_IndexConfigIqtCaptureMode nSaveMode=VF_SAVE_MODE bSaveFrameCount=VF_SAVE_FRAME_COUNT nSaveFirstFrame=VF_SAVE_FIRST_FRAME bSaveFrameByFrame=SAVING_FRAME_BY_FRAME nFrameSkippingNumber=VF_FRAME_SKIPPING_NUMBER nInstanceNumber=FAKESINK_VF_INSTANCE_0 nAcknowledge=OMX_FALSE
+	OMX_SetConfig my_sink_VPB0 OMX_IndexConfigCaptureMode bContinuous=0 bFrameLimited=0 nFrameLimit=0
+	OMX_SetConfig my_sink_VPB0 OMX_IndexConfigCapturing bEnabled=TEMP_VF_SAVE_ACTIVATION
+	OMX_SetConfig my_sink_VPB2 OMX_IndexConfigCapturing bEnabled=OMX_FALSE
+
+endif
+
+mmte_sleep 1000
+
+echo File_saved
+
+

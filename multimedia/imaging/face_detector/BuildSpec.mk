@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_imaging/face_detector=bin
+NO_STD_BUILD_imaging/face_detector=1
+BUILD_MMDSP_NMF_imaging/face_detector=bin
+BUILD_ARM_PROC_imaging/face_detector=bin
+BUILD_ARM_CODE_imaging/face_detector=bin
+BUILD_ARM_NMF_imaging/face_detector=bin
+BUILD_XP70_SIA_CODE_imaging/face_detector=false

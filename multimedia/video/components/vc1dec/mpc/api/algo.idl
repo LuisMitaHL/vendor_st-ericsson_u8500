@@ -1,0 +1,155 @@
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_vc1.idt>
+#include <vc1dec/arm_nmf/api/nmftype.idt>
+
+interface vc1dec.mpc.api.algo { 
+
+/* This file specifies methods included inside provided interface named iAlgo
+          i.e. :          - initAlgo
+          		  - configureAlgo
+                          - controlAlgo
+                          - updateAlgo
+                          - setDebug
+*/
+
+		
+		
+/** @addtogroup vc1decInitAlgoGroup initAlgo
+ *  @ingroup vc1decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Initialize a specific NMF algo component with input parameters (sequence parameters)
+ \param[in]  param_in       sequence parameters structure (i.e. t_param_in)
+                            \n(Alignment : Multiple of 16).
+
+ *
+ * 
+ * \Note Usage of this interface
+ * \n  
+ *
+ */ 
+
+void initAlgo( t_uint32 param_in );
+
+ /** @} */ // end of vc1decInitAlgoGroup
+ 
+ 
+ 
+ 
+/** @addtogroup vc1decConfigureAlgoGroup configureAlgo
+ *  @ingroup vc1decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+ \param[in]  cb							call back pointer
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_internal_buffer       "Internal buffer" structure address (i.e. ts_t1xhv_vdc_internal_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_bitstream_buffer  "Output bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_frame_parameters   "Input In/Out parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_parameters  "Output In/Out parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vc1decConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+ *
+ */ 
+
+void configureAlgo(	
+					vc1dec.mpc.api.end_algo *cb,
+					t_uint32 addr_in_frame_buffer,
+					t_uint32 addr_out_frame_buffer,
+					t_uint32 addr_internal_buffer,
+					t_uint32 addr_in_bitstream_buffer,
+					t_uint32 addr_out_bitstream_buffer,
+					t_uint32 addr_in_parameters,
+					t_uint32 addr_out_parameters,
+					t_uint32 addr_in_frame_parameters,
+					t_uint32 addr_out_frame_parameters);
+
+ /** @} */ // end of vc1decConfigureAlgoGroup
+
+
+
+/** @addtogroup vc1decControlAlgoGroup controlAlgo
+ *  @ingroup vc1decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  param    The parameter associated to the command composed as following :
+             \n PPE[1:0] Post-processing enable (to be applied at the end of the subtask)
+             \n ...0 = no post-processing is performed
+             \n ...1 = deblocking/deringing filter parameters are computed in the deblocking parameter buffer for 
+             out-of-loop post-processing in a display task (only used if algoId is ID_VDC_vc1 or ID_VDC_H263)
+             \n ...2 = H263 annex J deblocking filter in the decode loop (only used if algoId is ID_VDC_H263)
+             \n ...3 = H263 annex J deblocking filter in the decode loop and deringing filter parameters are computed 
+             in the deblocking parameter buffer for out-of-loop post-processing in a display task (only used if algoId is ID_VDC_H263)
+             \n XXX[15:2] : Reserved for future use.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vc1decConfigurationGroup
+ * 
+ * \note Usage of this interface
+ * \n  
+ */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 param);
+
+/** @} */ // end of vc1decControlAlgoGroup
+
+
+
+/** @addtogroup vc1decUpdateAlgoGroup updateAlgo
+ *  @ingroup vc1decProvidedInterfaceGroup
+ *  @{
+ */
+/*!
+ Description : (Not yet implemented) Update the configuration of a specific NMF algo component.
+ *   
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vc1decConfigurationGroup
+ */ 
+ //+ change for ER 336257 
+void updateAlgo(t_t1xhv_command Command);
+//- change for ER 336257 
+/** @} */ // end of vc1decUpdateAlgoGroup
+
+
+
+/** @addtogroup vc1decSetDebugAlgoGroup setDebug
+ *  @ingroup vc1decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint16 param1, t_uint16 param2);
+
+/** @} */ // end of vc1decSetDebugAlgoGroup
+
+} // interface vc1dec.mpc.api.algo

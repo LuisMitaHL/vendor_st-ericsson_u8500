@@ -1,0 +1,75 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/rxtestpattern_stream_lrhr.ite
+
+
+##############################################################################################################
+# The Use case will test Rx Test Pattern in LR Pipe and HR Pipe (Run Time)
+# Pre Requisite :- Set Use Case for LR and HR with Resoultion and Format.
+#  1. Set Required Color Format 
+#  2. Prepare and Start LR and HR pipe
+#  3. Once LR, HR Pipe are sync with frames, write HR and LR data into sdcard for verification.
+#  
+##############################################################################################################
+# This Use case can configure Following Rx Test Patterns
+# 1. Color Bar
+# 2. Fade 2 Color Bar
+# 3. Horizontal, Veritical and Diagnoal Grey Scale Modes
+# 4. PN9
+# 5. Solid Color with Different R,G1,G2,B Combinations
+# 6. Cursor Position Configuration.
+##############################################################################################################
+
+LRHR prepare
+LRHR start
+
+SetCursorPosition 0 0 0 0
+SetRXTestPattern COLORBAR
+writebmp LR LR1_RX_S_COLORBAR 0
+writebmp HR HR1_RX_S_COLORBAR 0
+
+
+SetRXTestPattern NORMAL_MODE
+writebmp LR LR1_RX_S_NORMAL_MODE 0
+writebmp HR HR1_RX_S_NORMAL_MODE 0
+
+
+SetRXTestPattern FADETOGREY_COLORBAR
+writebmp LR LR1_RX_S_FADETOGREY_COLORBAR 0
+writebmp HR HR1_RX_S_FADETOGREY_COLORBAR 0
+
+
+SetRXTestPattern DIAGONAL_GREY_SCALE
+writebmp LR LR1_RX_S_DIAGONAL_GREY_SCALE 0
+writebmp HR HR1_RX_S_DIAGONAL_GREY_SCALE 0
+
+
+SetRXTestPattern PN9
+writebmp LR LR1_RX_S_PN9 0
+writebmp HR HR1_RX_S_PN9 0
+
+
+SetRXTestPattern HORIZ_GREY_SCALE
+writebmp LR LR1_RX_S_HORIZ_GREY_SCALE 0
+writebmp HR HR1_RX_S_HORIZ_GREY_SCALE 0
+
+
+SetRXTestPattern VERT_GREY_SCALE
+writebmp LR LR1_RX_S_VERT_GREY_SCALE 0
+writebmp HR HR1_RX_S_VERT_GREY_SCALE 0
+
+
+SetRXTestPattern NORMAL_MODE
+SetCursorPosition 50 100 50 150
+writebmp LR LR1_RX_S_NORMAL_MODE_CURSOR 0
+writebmp HR HR1_RX_S_NORMAL_MODE_CURSOR 0
+
+
+SetCursorPosition 0 0 0 0
+SetRXTestPattern SOLIDBAR 4095 4095 0 4095
+writebmp LR LR1_RX_S_SOLIDBAR_YELLOW 0
+writebmp HR HR1_RX_S_SOLIDBAR_YELLOW 0
+
+LRHR stop
+LRHR free
+ 
+ 
+

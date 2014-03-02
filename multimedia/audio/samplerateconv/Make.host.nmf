@@ -1,0 +1,18 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE -DUNIX -DARM
+
+CXXFLAGS+=-g
+
+ITFS_HEADER+= samplerateconv.nmfil.host.effect.configure
+
+COMPONENTS= samplerateconv.nmfil.host.effect
+
+INSTALL_NMF_COMP_SRC_HOSTEE += nmfil/host/effect/
+INSTALL_NMF_COMP_SRC_HOSTEE_PREFIX = samplerateconv/
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

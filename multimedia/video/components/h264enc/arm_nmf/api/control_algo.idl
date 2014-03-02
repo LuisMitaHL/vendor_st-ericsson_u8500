@@ -1,0 +1,51 @@
+#include <t1xhv_vec_h264.idt>
+#include <t1xhv_common.idt>
+
+/** @addtogroup vecH264ControlAlgoGroup controlAlgo
+ *  @ingroup vecH264ProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  channelNumber  The channel (i.e. instance number) the algo is linked to
+ \param[in]  param    (Not yet implemented) The parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecH264ConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Normal sequence of a encode
+ *   
+ * \msc
+    h264_encoder_data_dep,h264_encoder_algo,resource_manager;
+    h264_encoder_data_dep=>h264_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    h264_encoder_data_dep<<h264_encoder_algo;
+    h264_encoder_algo=>resource_manager [label="...."];
+    h264_encoder_algo<<resource_manager;
+    h264_encoder_data_dep<<=h264_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE)"];
+  \endmsc
+  \n
+ * Abnormal sequence of a encode (error while encoding the bitstream)
+ *  
+ * \msc
+    h264_encoder_data_dep,h264_encoder_algo;
+    h264_encoder_data_dep=>h264_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    h264_encoder_data_dep<=h264_encoder_algo [label="endAlgo(STATUS_JOB_ABORTED, VEC_ERT_BITSTREAM_ERR"];
+  \endmsc
+  \n
+ * Abnormal sequence of a encode (incorrect configuration parameter)
+ *  
+ * \msc
+    h264_encoder_data_dep,h264_encoder_algo;
+    h264_encoder_data_dep=>h264_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    h264_encoder_data_dep<=h264_encoder_algo [label="endAlgo(STATUS_JOB_ABORTED, [error code])"];
+  \endmsc
+ *\n 
+ * @} */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 channelNumber, t_uint16 param);
+
+ /** @} */ // end of vecH264ControlAlgoGroup

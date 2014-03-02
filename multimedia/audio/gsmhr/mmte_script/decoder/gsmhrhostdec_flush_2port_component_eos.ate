@@ -1,0 +1,16 @@
+test_start GSMHR_012 
+test_property  TEST_NAME  gsmhrhostdec_flush_2port_component_eos
+
+# instantiate and configure GSMHR decoder
+do $(NOMADIK)/gsmhr/mmte_script/decoder/gsmhr_dec_short_reformatted_payload_host.ate gsmhr input_reference output_reference
+
+do $(NOMADIK)/afm/mmte_script/flush_2port_component_eos.ate gsmhr
+
+unalias INPUT_FILE
+unalias INPUT_SIZE
+unalias OUTPUT_FILE
+unalias OUTPUT_SIZE
+unalias REF_FILE
+unalias REF_DIGEST
+
+test_end

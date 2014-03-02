@@ -1,0 +1,41 @@
+test_start SINKS_207 Playback IHF with feedback port
+
+alias TIMEOUT 0
+OMX_GetHandle   renderer OMX.ST.AFM.IHF
+
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+ate_attach_io    renderer 0 MEM $(NOMADIK)/audio_valid/streams/48k_stereo_ok_le.pcm 0 0 0
+ate_attach_io    renderer 1 MEM $(OUTPUT_DIR)/feedback_48k_stereo.pcm.out 2000000 0 0
+
+MMTE_DispatchState OMX_StateIdle renderer
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+
+MMTE_NMF_ListComponent
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+
+
+#Stop
+
+MMTE_DispatchState OMX_StateIdle renderer
+MMTE_DispatchState OMX_StateLoaded renderer
+
+MMTE_PrintMemoryStatus
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+file_comp $(NOMADIK)/audio_valid/streams/48k_stereo_ok_le.pcm $(OUTPUT_DIR)/feedback_48k_stereo.pcm.out
+unalias TIMEOUT
+
+test_end
+
+

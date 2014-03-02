@@ -1,0 +1,231 @@
+;*****************************************************************************
+;*  ST-Ericsson                                                              *
+;*  Reproduction and Communication of this document is strictly prohibited   *
+;*  unless specifically authorized in writing by ST-Ericsson.                *
+;*---------------------------------------------------------------------------*/
+
+;**********************************************************************************************
+;* Author        : Emmanuel EDDI
+;* Description   : This Code/Script is for Folllowing Board Configuration:
+;*
+;*                 Boards		:	EVB (Maja Electrical Validation Board),
+;*						B5500 (Maja Platform Big Board),
+;'						S5500 (Maja Platform Small Board).
+;*                 SoC			:	DB5500V1 (Maja)
+;*                 Code/Script for	:	Lauterbach / Trace32
+;*                 Version		:	V1.3
+;*
+;*
+;* File Name     : DB5500_init_modem.cmm
+;*--------------------------------------------------------------------------------------------*/
+
+;break
+
+;if &pfw_prcmu_fw_version>0x8
+;(
+	; Release Access Subsystem Resets, PRCM_MOD_RESETN_SET
+	d.s eahb:0x801571FC %L 0x7 
+	wait 1s
+	
+	; Wake Up Access Subsystem, PRCM_HOSTACCESS_REQ
+	d.s eahb:0x80157334 %L 0x1
+	
+		
+	;d.in A:0x801575A8 /L
+	;d.in A:0x80157314 /L
+	;d.in A:0x80157498 /L
+	;d.in A:0x8015749C /L
+	
+	; release the ARM926 reset
+	;d.s AZ:0xBFFF00BC %L 0x1
+	
+	
+	;Test syscon test reg
+	D.S  eahb:0xBFFD8000 %LONG 0x07700008
+	;Clk, reset and power syscon
+	D.S  eahb:0xBFFD8004 %LONG 0xFFFFFFFF
+	D.S  eahb:0xBFFD8008 %LONG 0xFFFFFFFF
+	D.S  eahb:0xBFFD8034 %LONG 0x00000012 ;sys_acc_0_clk
+	D.S  eahb:0xBFFD80BC %LONG 0x00000000 ;release reset
+	
+	;Modem subsys, Toggle reset and enable clock
+	;D.S  A:0xB1005000 %LONG 0xFFFF0000
+	;D.S  A:0xB1005000 %LONG 0xFFFFFFFF
+	;D.S  A:0xB1005000 %LONG 0xFFFF0000
+	;D.S  A:0xB1005004 %LONG 0xFFFFFFFF
+	
+	;CFPP0
+	;Enable mailbox, intcon.  Toggle reset then enable clock
+	;D.S  AZ:0xBFFD0240 %LE %LONG 0
+	;D.S  AZ:0xBFFD0240 %LE %LONG 1
+	;D.S  AZ:0xBFFD0240 %LE %LONG 0
+	;D.S  AZ:0xBFFD0100 %LE %LONG 1
+	;D.S  AZ:0xBFFD0200 %LE %LONG 1
+	;D.S  AZ:0xBFFD0630 %LE %LONG 0
+	;D.S  AZ:0xBFFD0630 %LE %LONG 1
+	;D.S  AZ:0xBFFD0630 %LE %LONG 0
+	;D.S  AZ:0xBFFD0300 %LE %LONG 1
+	;D.S  AZ:0xBFFD0400 %LE %LONG 1
+	;D.S  AZ:0xBFFD0500 %LE %LONG 1
+	;D.S  AZ:0xBFFD0600 %LE %LONG 1
+	;D.S  AZ:0xBFFD0900 %LE %LONG 1
+	
+	
+	;CFPP1
+	;Enable WB_INT, GPRS, UART0, PCM_I2S0, SIMIF. Toggle reset then enable clock
+	;D.S  AZ:0xBFFE010C %LE %LONG 0
+	;D.S  AZ:0xBFFE010C %LE %LONG 1
+	;D.S  AZ:0xBFFE010C %LE %LONG 0
+	;D.S  AZ:0xBFFE0100 %LE %LONG 1
+	
+	;D.S  AZ:0xBFFE020C %LE %LONG 0
+	;D.S  AZ:0xBFFE020C %LE %LONG 1
+	;D.S  AZ:0xBFFE020C %LE %LONG 0
+	;D.S  AZ:0xBFFE0200 %LE %LONG 1
+	
+	;D.S  AZ:0xBFFE030C %LE %LONG 0
+	;D.S  AZ:0xBFFE030C %LE %LONG 1
+	;D.S  AZ:0xBFFE030C %LE %LONG 0
+	;D.S  AZ:0xBFFE0300 %LE %LONG 1
+	
+	;D.S  AZ:0xBFFE040C %LE %LONG 0
+	;D.S  AZ:0xBFFE040C %LE %LONG 1
+	;D.S  AZ:0xBFFE040C %LE %LONG 0
+	;D.S  AZ:0xBFFE0400 %LE %LONG 1
+	
+	;D.S  AZ:0xBFFE050C %LE %LONG 0
+	;D.S  AZ:0xBFFE050C %LE %LONG 1
+	;D.S  AZ:0xBFFE050C %LE %LONG 0
+	;D.S  AZ:0xBFFE0500 %LE %LONG 1
+	
+	;data.set AZ:0xBFFF00BC %long 1
+		
+	;Set related status bits
+	;D.S AZSD:0x80157254 %LE %LONG 40
+;)
+;go
+
+print "Modem Initialization has NOW been done..."
+
+enddo
+
+else
+(
+	; Release Access Subsystem Resets, PRCM_MOD_RESETN_SET
+	d.s A:0x801571FC %L 0x7 
+	
+	; Wake Up Access Subsystem, PRCM_HOSTACCESS_REQ
+	d.s A:0x80157334 %L 0x7
+	
+	; Power_ack for ASS, PRCM_MOD_PWR_OK
+	d.s A:0x80157498 %L 0x1
+	 
+	; APE_ack, PRCM_MOD_APE_ACK
+	d.s A:0x8015749C %L 0x1
+	
+	; PRCM_MOD_MEM_REQ
+	d.s A:0x801575A4 %L 0x1
+	
+	; Assert DDR_ACK, PRCM_MOD_MEM_ACK
+	d.s A:0x801575A8 %L 0x1
+	
+	; Assert SYSCLKOK, PRCM_MODEM_SYSCLKOK
+	d.s A:0x80157314 %L 0x2
+	
+	d.in A:0x801575A8 /L
+	d.in A:0x80157314 /L
+	d.in A:0x80157498 /L
+	d.in A:0x8015749C /L
+	
+	; release the ARM926 reset
+	d.s A:0xBFFF00BC %L 0x1
+	
+	;;Done in ca9_ptm_cfg.cmm !!!
+	; release the SOC_NRESETDBG
+	;d.s eahb:0x801572A0 %l d.l(eahb:0x801572A0)|0x10000
+	
+	
+	;Test syscon test reg
+	D.S  A:0xBFFD8000 %LONG 0x07700008
+	;Clk, reset and power syscon
+	D.S  A:0xBFFD8004 %LONG 0xFFFFFFFF
+	D.S  A:0xBFFD8008 %LONG 0xFFFFFFFF
+	D.S  A:0xBFFD8034 %LONG 0x00000012 ;sys_acc_0_clk
+	D.S  A:0xBFFD80BC %LONG 0x00000000 ;release reset
+	
+	;Modem subsys, Toggle reset and enable clock
+	D.S  A:0xB1005000 %LONG 0xFFFF0000
+	D.S  A:0xB1005000 %LONG 0xFFFFFFFF
+	D.S  A:0xB1005000 %LONG 0xFFFF0000
+	D.S  A:0xB1005004 %LONG 0xFFFFFFFF
+	
+	;CFPP0
+	;Enable mailbox, intcon.  Toggle reset then enable clock
+	D.S  A:0xBFFD0240 %LE %LONG 0
+	D.S  A:0xBFFD0240 %LE %LONG 1
+	D.S  A:0xBFFD0240 %LE %LONG 0
+	D.S  A:0xBFFD0100 %LE %LONG 1
+	D.S  A:0xBFFD0200 %LE %LONG 1
+	D.S  A:0xBFFD0630 %LE %LONG 0
+	D.S  A:0xBFFD0630 %LE %LONG 1
+	D.S  A:0xBFFD0630 %LE %LONG 0
+	D.S  A:0xBFFD0300 %LE %LONG 1
+	D.S  A:0xBFFD0400 %LE %LONG 1
+	D.S  A:0xBFFD0500 %LE %LONG 1
+	D.S  A:0xBFFD0600 %LE %LONG 1
+	D.S  A:0xBFFD0900 %LE %LONG 1
+	
+	
+	;CFPP1
+	;Enable WB_INT, GPRS, UART0, PCM_I2S0, SIMIF. Toggle reset then enable clock
+	D.S  A:0xBFFE010C %LE %LONG 0
+	D.S  A:0xBFFE010C %LE %LONG 1
+	D.S  A:0xBFFE010C %LE %LONG 0
+	D.S  A:0xBFFE0100 %LE %LONG 1
+	
+	D.S  A:0xBFFE020C %LE %LONG 0
+	D.S  A:0xBFFE020C %LE %LONG 1
+	D.S  A:0xBFFE020C %LE %LONG 0
+	D.S  A:0xBFFE0200 %LE %LONG 1
+	
+	D.S  A:0xBFFE030C %LE %LONG 0
+	D.S  A:0xBFFE030C %LE %LONG 1
+	D.S  A:0xBFFE030C %LE %LONG 0
+	D.S  A:0xBFFE0300 %LE %LONG 1
+	
+	D.S  A:0xBFFE040C %LE %LONG 0
+	D.S  A:0xBFFE040C %LE %LONG 1
+	D.S  A:0xBFFE040C %LE %LONG 0
+	D.S  A:0xBFFE0400 %LE %LONG 1
+	
+	D.S  A:0xBFFE050C %LE %LONG 0
+	D.S  A:0xBFFE050C %LE %LONG 1
+	D.S  A:0xBFFE050C %LE %LONG 0
+	D.S  A:0xBFFE0500 %LE %LONG 1
+	
+	data.set 0xBFFF00BC %long 1
+	
+	;Set up power for Acc Sub Sys
+	D.S A:0x80157410 %LE %LONG 0e0001
+	
+	;Release ESRAM bank0 sleep
+	D.S AZSD:0x80158030 %LE %LONG 0
+	
+	;Release ESRAM bank1 and 2 sleep
+	data.set A:0x80157304 %LE %LONG d.l.le(A:0x80157304)&0xffebffff
+	
+	;Release Acc SS sleep
+	data.set A:0x80157304 %LE %LONG d.l.le(A:0x80157304)&0xfffffcff
+	
+	;Set related status bits
+	D.S AZSD:0x80157254 %LE %LONG 40
+)
+
+print "Modem Initialization has NOW been done..."
+
+go
+
+
+
+
+

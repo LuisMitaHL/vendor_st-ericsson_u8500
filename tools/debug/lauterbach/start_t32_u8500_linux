@@ -1,0 +1,150 @@
+#!/bin/bash
+
+out_error()
+{
+	echo ""
+	echo -e "\033[1;31mOption not or not yet available\033[0m"
+	exit
+}
+
+export SCRIPTPATH="./scripts"
+export CONFIGPATH=$SCRIPTPATH/ux500/u8500
+
+# Check if all eviroment variables is set before running script
+if [ "$T32SYS" == '' ] || [ "$T32TMP" == '' ] || [ "$(which t32marm)" == '' ]; then
+	echo
+	echo "You need to set the following enviroment variables:"
+	echo -e "\033[1m\$T32SYS:\033[0m To point to the install directory for Trace32"
+	echo -e "\033[1m\$T32TMP:\033[0m To a directory where you have write access"
+	echo -e "\033[1m\$PATH:\033[0m    Add the path to t32marm"
+	echo
+	echo "More info can be found in the README file"
+	echo
+	exit
+fi
+
+# Check if License file is specified using $T32LICENSE, replace in all config files.
+if [ "$T32LICENSE" != "" ]; then
+	for f in $CONFIGPATH/config*.t32; do
+		if ! grep -q LICENSE=$T32LICENSE $f; then
+			#delete old LICENSE Line
+			perl -i -nle 'print if !/^LICENSE\b/' $f
+			#add LICENSE line
+			echo LICENSE=$T32LICENSE >> $f
+		fi
+	done
+fi
+
+# What to debug?
+if [[ $1 -ge 1 ]] && [ $1 -le 3 ]; then
+	choice=$1
+else
+	echo "Please select platform:"
+	echo -e "\033[1m#   Chip          Comment\033[0m"
+	echo -e "\033[1m1\033[0m:  U8500_V2      V2"
+	echo -e "\033[1m2\033[0m:  U8500_V1      V1.0 & V1.1"
+	echo -e "\033[1m3\033[0m:  U8500_ED      Early Drop"
+
+	# read user input
+	read choice
+fi
+
+if [[ $2 -ge 1 ]] && [ $2 -le 2 ]; then
+	simu=$2
+else
+	echo "Please select mode:"
+	echo -e "\033[1m#   Mode\033[0m"
+	echo -e "\033[1m1\033[0m:  ICD"
+	echo -e "\033[1m2\033[0m:  Simulator"
+
+	# read user input
+	read simu
+fi
+
+if [[ $# -ge 3 ]] && [ $3 -ge 0 ] && [ $3 -le 3 ]; then
+	modem=$3
+elif [[ $# -eq 2 ]]; then
+	modem=0
+else
+	echo "Debug modem:"
+	echo -e "\033[1m0\033[0m:  No"
+	echo -e "\033[1m1\033[0m:  Only L2 core"
+	echo -e "\033[1m2\033[0m:  Both L2 and L1 cores"
+
+	# read user input
+	read modem
+fi
+
+if [[ $# -ge 4 ]] && [ $4 -ge 0 ] && [ $4 -le 3 ]; then
+	sxa=$4
+elif [[ $# -eq 2 ]]; then
+	sxa=0
+else
+	echo "Debug SXA:"
+	echo -e "\033[1m0\033[0m:  No"
+	echo -e "\033[1m1\033[0m:  SIA"
+	echo -e "\033[1m2\033[0m:  SVA"
+	echo -e "\033[1m3\033[0m:  SIA + SVA"
+
+	# read user input
+	read sxa
+fi
+
+
+if [[ $simu = 1 ]] ; then
+	SIM=""
+elif [[ $simu = 2 ]] ; then
+	SIM="_sim"
+else
+	SIM=""
+fi
+
+export T32PORT1="30000"
+export T32PORT2="30001"
+export T32PORT3="30002"
+export T32PORT4="30003"
+
+
+# Start t32marm and call config and init script.
+if [[ $choice = 1 ]] ; then
+	echo "Debugging: [U8500-V2_APP]"
+  cpu="U8500-V2"
+	t32marm -c $CONFIGPATH/config_U8500-V2$SIM.t32,$SCRIPTPATH/init.cmm [U8500-V2_APP] &
+elif [[ $choice = 2 ]] ; then
+	echo "Debugging: [U8500-V1_APP]"
+  cpu="U8500-V1"
+	t32marm -c $CONFIGPATH/config_U8500-V1$SIM.t32,$SCRIPTPATH/init.cmm [U8500-V1_APP] &
+elif [[ $choice = 3 ]] ; then
+	echo "Debugging: [U8500-ED_APP]"
+  cpu="U8500-ED"
+	t32marm -c $CONFIGPATH/config_U8500-ED$SIM.t32,$SCRIPTPATH/init.cmm [U8500-ED_APP] &
+else
+	echo "Debugging: Default platform [U8500-V2_APP]"
+  cpu="U8500-V2"
+	t32marm -c $CONFIGPATH/config_U8500-V2$SIM.t32,$SCRIPTPATH/init.cmm [U8500-V2_APP] &
+fi
+
+
+if [[ $modem != 0 ]] ; then
+	sleep 6
+	echo "Debugging: [U8500-MODEM_CORE_L2]"
+	t32marm -c $CONFIGPATH/config_modem1$SIM.t32 &
+
+	if [[ $modem = 2 ]] ; then
+		sleep 6
+		echo "Debugging: [U8500-MODEM_CORE_L1]"
+		t32marm -c $CONFIGPATH/config_modem2$SIM.t32 &
+	fi
+fi
+
+
+# Start t32mmdsp and call config and init script.
+if [[ $sxa = 1 ]] || [[ $sxa = 3 ]]; then
+	sleep 8
+	echo "Debugging: [${cpu}_MMDSP] SIA"
+	t32mmdsp -c $CONFIGPATH/config_sia$SIM.t32,$SCRIPTPATH/init.cmm [${cpu}_MMDSP] &
+elif [[ $sxa = 2 ]] || [[ $sxa = 3 ]]; then
+	sleep 8
+	echo "Debugging: [${cpu}_MMDSP] SVA"
+	t32mmdsp -c $CONFIGPATH/config_sva$SIM.t32,$SCRIPTPATH/init.cmm [${cpu}_MMDSP] &
+fi

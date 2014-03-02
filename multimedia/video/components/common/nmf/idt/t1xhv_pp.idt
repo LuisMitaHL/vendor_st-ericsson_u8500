@@ -1,0 +1,104 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    
+* \brief   Common data structure and/or definition for all NMF ALGO decoder 
+*          components 
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#ifndef	_t1xhv_pp_idt
+#define _t1xhv_pp_idt
+
+#include <t1xhv_retarget.idt>
+
+/* ****************************** Enumerates ******************************** */
+
+/** @ingroup ppAlgoAPIGroup
+ *  Kind of type an ALGO component will be assigned
+ *  @{ 
+ */
+
+typedef enum {
+
+  /**  Job complete with No error (provided with a status STATUS_JOB_COMPLETE)   */
+  PP_ERT_NONE,
+  
+  /**  All error codes following PP_ERT are provided with a status STATUS_JOB_ABORTED */
+  PP_ERT,
+
+  /**  The requested feature is not supported */
+  PP_ERT_NOT_SUPPORTED,                
+
+  /**  One of the input parameter is wrong */
+  PP_ERT_BAD_PARAMETER,
+  
+  /** addr_source_buffer is not a multiple of 256  */
+  PP_ERT_BAD_ADD_SOURCE_BUFFER,
+
+  /** addr_deblocking_param_buffer is not a multiple of 256  */
+  PP_ERT_BAD_ADD_DEBLOCKING_PARAM_BUFFER,
+
+  /** addr_dest_buffer is not a multiple of 256  */
+  PP_ERT_BAD_ADD_DEST_BUFFER,
+  
+  /** frame_width is not a multiple of 16   */ 
+  PP_ERT_BAD_FRAME_WIDTH,
+
+  /** frame_height is not a multiple of 16  */ 
+  PP_ERT_BAD_FRAME_HEIGHT, 
+  
+  /** One of the buffer is too small        */
+  PP_ERT_END_OF_FRAME_REACHED
+
+} t_t1xhv_post_process_info;
+
+/** \brief This structure defines a Post Process input frame buffers. */
+typedef struct {
+    t_ahb_address  addr_source_buffer;
+    t_ahb_address  addr_deblocking_param_buffer;
+    t_ulong_value reserved_1;
+    t_ulong_value reserved_2;
+} ts_t1xhv_pp_frame_buf_in;
+
+/*!
+* \typedef ts_t1xhv_pp_frame_buf_in *tps_t1xhv_pp_frame_buf_in;
+*/
+typedef ts_t1xhv_pp_frame_buf_in *tps_t1xhv_pp_frame_buf_in;
+
+/** \brief This structure defines a Post Process Output frame buffer. */
+typedef struct {
+    t_ahb_address  addr_dest_buffer;
+    t_ulong_value reserved_1;
+    t_ulong_value reserved_2;
+    t_ulong_value reserved_3;
+} ts_t1xhv_pp_frame_buf_out;
+
+/*!
+* \typedef ts_t1xhv_pp_frame_buf_out *tps_t1xhv_pp_frame_buf_out;
+*/
+typedef ts_t1xhv_pp_frame_buf_out *tps_t1xhv_pp_frame_buf_out;
+
+/** \brief This structure defines a Post Process internal buffer. */
+typedef struct {
+
+    t_ulong_value reserved_1;        /**<\brief reserved 32                      */
+    t_ulong_value reserved_2;        /**<\brief reserved 32                      */
+    t_ulong_value reserved_3;        /**<\brief reserved 32                      */
+    t_ulong_value reserved_4;        /**<\brief reserved 32                      */
+
+} ts_t1xhv_pp_internal_buf;
+
+/*!
+* \typedef ts_t1xhv_pp_internal_buf *tps_t1xhv_pp_internal_buf;
+*/
+typedef ts_t1xhv_pp_internal_buf *tps_t1xhv_pp_internal_buf;
+
+/** @} */ // end of ppAlgoAPIGroup
+
+#endif /* _t1xhv_pp_idt */

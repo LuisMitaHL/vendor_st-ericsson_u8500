@@ -1,0 +1,11 @@
+#include <libeffects/libspl/include/spl_algo.h>
+
+interface libeffects.libspl.libspl unmanaged
+{
+    void spl_main           (MMshort *inbuf, MMshort *outbuf, short size, SPL_LOCAL_STRUCT_T *Heap);
+    int spl_init            (SPL_LOCAL_STRUCT_T * Heap, SplParam_t *pParam, SplStream_t *pStream, SplTuning_t *pTuning);
+    void spl_reset          (SPL_LOCAL_STRUCT_T * Heap);
+    int spl_set_parameter   (SPL_LOCAL_STRUCT_T * Heap, SplParam_t *pParam, SplStream_t *pStream, SplTuning_t *pTuning);
+    int spl_set_stream_param(SPL_LOCAL_STRUCT_T * Heap, SplStream_t *pStream);
+    int spl_set_config      (SPL_LOCAL_STRUCT_T * Heap, SplConfig_t *Config);
+}

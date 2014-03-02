@@ -1,0 +1,72 @@
+; Loads symbols for sections of all dynamic objects
+;
+; Usage: do loadalldo <path>
+;
+; where <path>, if present, must contain the trailing directory separator "/" (or "\")
+;
+;
+; 11-Dec-2009/MWi retain main image TCM symbols
+; 10-Dec-2009/MWi doesn't use /reloc but symbol.relocate.shift
+; 09-Nov-2009/MWi updated to match DO_VITALS v3
+;
+
+local &current_do &doname &section &sectname &sectaddr &sectoffs &sectsize &sectborig &secteorig &vitals_version &do_flags
+entry &path
+
+&current_do=mexe.getlong(0,0)
+print "&current_do"
+
+if &current_do>0
+(
+  &vitals_version=mexe.getlong(&current_do,0xc)&0xFF
+  if &vitals_version>2
+  (
+    &do_flags=(mexe.getlong(&current_do,0xc)>>8)&0xFF
+    if (&do_flags&2)!=0
+     (
+;; Flag.0 (0x1) : Is relocated
+;; Flag.1 (0x2) : Is main executable
+        if (&do_flags&1)==0
+          (
+              &current_do=mexe.getlong(&current_do, 0)
+          )
+     )
+  )
+)
+
+symbol.relocate.shift 0xC0000000 0x00000000--0x0001FFFF
+
+while 0!=&current_do
+ (
+    &doname=mexe.getstring(mexe.getlong(&current_do, 4))
+
+    data.load.elf &path&doname /nocode /noclear
+
+    print "moving symbols of &path&doname"
+
+    &section=mexe.getlong(&current_do, 8)
+
+    while 0!=&section
+      (
+        &sectoffs=mexe.getlong(&section, 0x8)
+        if &sectoffs!=0
+          (
+            &sectname=mexe.getstring(mexe.getlong(&section, 4))
+            &sectaddr=mexe.getlong(&section, 0xc)
+            &sectsize=mexe.getlong(&section, 0x10)
+
+            &sectborig=(&sectaddr-&sectoffs)&0xFFFFFFFF
+            &secteorig=(&sectborig+&sectsize-1)&0xFFFFFFFF
+
+            print "symbol.relocate.shift &sectoffs &sectborig--&secteorig"
+
+            symbol.relocate.shift &sectoffs &sectborig--&secteorig
+          )
+        &section=mexe.getlong(&section, 0)
+      )
+    &current_do=mexe.getlong(&current_do, 0)
+ )
+
+symbol.relocate.shift 0x40000000 0xC0000000--0xC001FFFF
+
+enddo

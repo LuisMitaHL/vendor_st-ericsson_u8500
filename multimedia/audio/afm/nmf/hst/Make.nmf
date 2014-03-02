@@ -1,0 +1,80 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+
+OST_COMPONENT_ID = $(shell expr $(OST_MODULE_ID) + 2 )
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_hst
+OST_SRC_DIR = decoders bindings misc
+INSTALL_DICO=$(OST_DICO_NAME).xml
+
+CPPFLAGS+=-I$(COMPONENT_TOP_DIR)/nmf/hst/misc/audiocontroller
+CPPFLAGS+=-I$(COMPONENT_TOP_DIR)/nmf/hst/bindings/optim
+CPPFLAGS+=-I$(COMPONENT_TOP_DIR)/proxy/include
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+SRCPATH+=$(COMPONENT_TOP_DIR)/nmf/hst/common
+SRCPATH += $(COMPONENT_TOP_DIR)/nmf
+ITF_PREFIX = afm
+
+CPPFLAGS+=-DNVERBOSE 
+
+ifeq (u5500,$(filter u5500%,$(STE_PLATFORM)))
+  CPPFLAGS+=-DSTE_PLATFORM_U5500
+endif
+
+ITFS_HEADER=hst.common.pcmsettings\
+	hst.common.displaymemorypreset\
+	hst.decoders.framealigned.configure\
+	hst.encoders.framealigned.configure\
+	hst.bindings.shm.configure\
+	hst.bindings.shmpcm.configure\
+	hst.bindings.pcmadapter.configure\
+	hst.misc.afmcontroller.configure\
+	hst.decoders.decoder\
+	hst.encoders.encoder\
+	hst.pcmprocessings.wrapper.configure \
+	hst.decoders.streamed.configure
+
+
+misc = hst.composite.controller
+
+wrappers = hst.composite.dec_fa_wrp \
+	   hst.composite.enc_fa_wrp \
+	   hst.composite.pp_wrp	\
+	   hst.composite.dec_st_wrp
+
+
+bindings = \
+	hst.composite.shmin \
+	hst.composite.shmout \
+	hst.composite.shmpcmout \
+	hst.composite.shmpcmin \
+        hst.bindings.pcmadapter
+
+
+COMPONENTS= $(misc) $(wrappers) $(bindings) $(pcmprocessings)
+
+INSTALL_NMF_COMP_SRC_HOSTEE +=  pcmprocessings/effectconfig.idt \
+				pcmprocessings/effect.itf \
+				decoders/decoder.itf \
+				encoders/encoder.itf \
+				common/* \
+				pcmprocessings/wrapper/* \
+				pcmprocessings/wrapper/src/* \
+				pcmprocessings/wrapper/inc/* \
+                                misc/audiocontroller/*
+
+INSTALL_NMF_COMP_SRC_HOSTEE_PREFIX = afm/hst/
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk
+
+
+TESTLISTS = testlist.lst
+DATABASE  = hst
+TEST_TAG  = $(PLATFORM)
+include $(MM_MAKEFILES_DIR)/AudioTest.mk

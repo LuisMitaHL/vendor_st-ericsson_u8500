@@ -1,0 +1,46 @@
+; This script is provided by STE
+; The author is Abhishek NIRAJ.
+
+///  PLL freq settings
+;--------------------------------------------------------------------> 
+d.s 0x80068058 %l 0x123				;PRCM_C2CCLK_MGT[31:0] = 0x123 
+d.s 0x8006805C %l 0x20130			;PRCM_PLLSOC_FREQ[31:0] = 0x20130
+d.s 0x80068078 %l 0x20152			;PRCM_PLLDDR_FREQ[31:0] = 0x20152
+d.s 0x80068060 %l 0x1				;PRCM_PLLSOC_ENABLE[31:0] = 0x1
+d.s 0x800680BC %l 0x300007			;PRCM_CLKACTIV[31:0] = 0x300007
+d.s 0x800680B0 %l 0x4				;set PRCM_MODECLK_SET[31:0] = 0x4
+d.s 0x800680B4 %l 0x2				; set PRCM_MODECLK_CLR[31:0] = 0x2
+
+;--------------------------------------------------------------------> 
+
+
+data.set az:0x80068200 %l 0xEF4E7FFC   
+data.set az:0x8006820C %l 0x00000003   
+data.set az:0x80068218 %l 0x0003FFFF   
+data.set az:0x80069E40 %l 0x00000FFF   
+data.set az:0x80068018 %l 0x00000126 
+  
+
+;--------------------------------------------------------------------> 
+; ## asicSCU->SCU_FEAR = 0x3FFFFFFF;
+d.s az:0xa0000044 %l 0x3FFFFFFF
+; ## asicSCU->SCU_FSAR = 0x00000000;
+d.s az:0xa0000040 %l 0x00000000
+; ## asicpl310->AddrFilterEnd = 0x40000000;
+d.s az:0xA0002C04 %l 0x40000000
+print "address filtering L2 end = 0x", %hex d.l(az:0xA0002C04)
+; ## asicpl310->AddrFilterStart = 0x00000001;
+d.s az:0xA0002C00 %l 0x00000001
+print "address filtering L2 start = 0x", %hex d.l(az:0xA0002C00)
+; disable the SCU filtering
+d.s az:0xA0000000 %l d.l(a:0xA0000000)&~2
+print "SCU_CR = 0x", %hex d.l(az:0xA0000000)
+;--------------------------------------------------------------------->
+
+	
+data.set az:0x80068920 %l d.l(az:0x80068920)|0x1
+data.set az:0x80068200 %l d.l(az:0x80068200)|0x1	
+data.set az:0x80068200 %l 0x2 	
+
+
+

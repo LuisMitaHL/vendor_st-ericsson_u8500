@@ -1,0 +1,37 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   nmf method declaration
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <ext_ispctl_types.idt>
+
+/**
+ * performs one-time configuration of the component, pertaining to
+ * physical sensor inputs in its control.
+ * Althouth the ISP controls most of its hardware functions, it does not
+ * control the mux that selects which input it recieves, nor does it have
+ * the controls to configure CSI2 input settings. These controls are thus
+ * in the ISPCTL component, which snoops page-elements to the ISP to
+ * transparently set these inputs correctly. 
+ * 
+ * \param mapping a structure mapping the ISP's logical inputs (Sensor_0 
+ * and Sensor_1) to the hardware's physical inputs
+ * \param client_id, the index in the sia_rm.alert[] interface collection 
+ * that this component is bound to
+ * \param csi2Config parameters for the CSI2 input, To Be Determined
+ *
+ * \todo find specific CSI2 parameters that will be needed (will be finalized
+ * in 8820 CutB)
+ */
+//void staticConfig(struct s_SiaSensorMapping mapping, t_uint16 client_id, struct s_csiConfig csiConfig);
+void Primary_Interface_Configuration(struct s_CsiConfig Primary_Csi_Config);
+void Secondary_Interface_Configuration(t_SensorType_e Interface_Type, struct s_CsiConfig Primary_Csi_Config, struct s_CcpConfig Secondary_Ccp_Config);
+void Reset_Camera_DataPipe(t_uint16 CsiBitrateMbps);
+

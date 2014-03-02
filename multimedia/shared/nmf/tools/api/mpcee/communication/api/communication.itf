@@ -1,0 +1,27 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <communication/api/descriptor.idt>
+
+typedef t_uint16 __SHARED16* t_nmf_fifo;
+
+typedef t_uint16 __SHARED16 * t_shared_addr;
+
+/*
+ * 	Stub API
+ */
+interface communication.api.communication
+{
+    t_event_params_handle AllocEvent(t_nmf_fifo fifoId);
+    void PushEvent(t_nmf_fifo fifoId, t_event_params_handle h, t_uword id);
+    void AcknowledgeEvent(t_nmf_fifo fifoId);
+
+    t_shared_addr fifo_getNextElemToWritePointer(t_nmf_fifo fifoId);
+    t_shared_addr fifo_getNextElemToReadPointer(t_nmf_fifo fifoId);
+    t_uint16 fifo_acknowledgeRead(t_nmf_fifo fifoId);
+    t_uint16 fifo_acknowledgeWrite(t_nmf_fifo fifoId);
+}

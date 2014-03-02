@@ -1,0 +1,23 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/vr_stress.ite
+
+## VR: Start environment -> Start LR -> Stop LR -> Start LRHR -> Stop LRHR -> Stop environment ##
+
+alias LOOP_TESTS $1
+
+loop LOOP_TESTS
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+LR prepare
+LR start
+LR stop
+LR free
+
+LRHR prepare
+LRHR start
+LRHR stop
+LRHR free
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite
+
+endloop

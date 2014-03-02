@@ -1,0 +1,146 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 0.8.8)      *
+**********************************************************
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World's, Training, Mandelbrot, User Fifo)
+ 		Hello world and mp3 Eclipse project delivered
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+	- STn8815 SAA & SVA Cut A0/B0/C0
+	
+Supported environments:
+	- nmf_bare: based on Nomadik HCL/services libraries
+	- nmf_ee: 	based on internal component-based OS
+	- nmf_os21: based on ARM OS21
+
+Changes:
+--------
+[CM]
+	- Add start reference counter in order to really start(stop) on first(last) call to 
+ 	  CM_Start(stop)Component CM API.
+ 	- Add internal service for flushing destroyed component that have been acknowledge 
+ 	  by MPC, this service is called when instantiating a new component or getting 
+ 	  memory status. Nevertheless, since acknowledge can take time, it could be useful to
+ 	  wait a little before getting status.  
+	 
+[MPC Executive Engine]
+	- Disable interrupt during xti access in order to not interleave trace.
+	
+[Execution Environment]
+	- PATCH configuration type to don't fall in incompatibility between RVD and GCC on 2D array.
+	- Add generated C host binding component for Symbian integration in delivery.
+	- Fix compilation flags issue in order to provide compatibility between RVCT and GCC.
+		Nevertheless, some issue will stay until HCL/Services compiled with correct flags.
+	  
+[Tools] 
+	- Limit Tools resource consumptions when compiling
+	- Use ANSI_COLORS_DISABLED to disable use of colors
+ 
+[Programming model]
+
+
+Bug fixes:
+----------
+ - Allow MMDSP elf section mem10 to be loaded
+ - [Bug 187] Bad behavior of NMFCONF2C utility
+ - Correct problem of same file present multiple times in source package
+ - Correct problem of sign extension in pointer marshaling.
+ - [ Defect #29910 ] [Tools] Method with pointer in returned type is not supported (IDL)
+ - [ Defect #30157 ] [CM] no check on coreId of fifo pusher/poper in CM_CreateUserFifo
+ 		Add checks against pusherId and popperId
+ - [ Defect #33625 ] [CM] erroneous memory status when doing CM_AddSdramMemorySegment
+ 		There was a table overflow due to a bad assertion check.
+		Assertion has been remove and replace by a return of CM_OUT_OF_LIMITS error.
+ - [ Defect #33695 ] [CM] CM_ConnectMpcAsFifoPoper: bind must not be done in case of error 
+ 				     on notify interface
+ - [ Defect #33699 ] [Tools] Empty Prefix possible in a conf. file
+		Check added.
+ - [ Defect #33947 ] [CM] Bad return code whith interface name like "out[]" and incorrects 
+ 	                 warnings
+ - [ Defect #33950 ] [CM] interface names not strict enough
+ 		Add checking
+ - [ Defect #34112 ] Wrong binding can occur when interface name is too long
+ - [ Defect #34218 ] [CM] CM_UNKNOWN_MEMORY_HANDLE not returned by CM_Free in case of invalid handle
+ 		Check null parameter.
+ - [ Defect #34227 ] [CM] CM_UNKNOWN_MEMORY_HANDLE not returned by CM_GetSystemAddress in case of
+   					 invalid handle
+ - [ Defect #34234 ] [CM] CM_InstantiateComponent crashes if mpc memory is full
+ - [ Defect #34251 ] [CM] CM_COMPONENT_NOT_UNBINDED: 'target' interface still binded
+ 
+ 
+Notes:
+------
+    - Communication scheme uses active polling when overflow on communication fifos
+			Active polling will be removed in next delivery
+
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested 
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one memory segment only
+		
+	- MP3 example supported only on nmf_bare environment.
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+		Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+	- Mandelbrot example supported only on nmf_bare and nmf_ee environment (not included in Nomadik
+	 	Toolset delivery).
+	- Some link issue with GNU toolchain could occur in examples until HCL/Services compiled with 
+		correct flags. 
+                
+Pre-requires:
+-------------
+	- At least Nomadik Toolset 1.0.0 Alpha Service Pack 1
+		- Patched with MMGDB debugger 3.9.2 for debugging MMDSP 
+			Available at https://codex.cro.st.com/file/showfiles.php?group_id=310
+		- Patched with ST ARM GCC 1.0.7.
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		MPC: SAA & SVA
+		Execution Engine: Synchronous, Hybrid
+		Nomadik Toolset 1.0.0: 1.0.0 Alpha SP1
+		ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593, st-armgcc (gcc version 4.1.1)
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-MPC
+			asynchronous intra-MPC
+			ARM -> MPC
+			MPC -> ARM
+			inter MPCs (asynchronous)
+			MPC -> MPC (on 8815B0)
+			error management
+		* Memory 
+			Alloc and free
+		* User Fifo 
+		* Programming Language
+			IDL
+			ADL
+		* Collection :
+			Behavior with binds between primitives component
+			Behavior with binds between composites component
+			Behavior with binds defined in composites components (conf. files)
+		* Network introspection
+			Components (primitives or composites)
+			Interfaces with and without collections (size and index usage)
+      		Attributes
+      		Properties	
+		* Panic :
+			Behavior upon each Panic (reason) detection and after the detection.

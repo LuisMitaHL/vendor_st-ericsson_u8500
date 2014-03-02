@@ -1,0 +1,207 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use File::Basename;
+use Getopt::Long;
+use File::Spec;
+use File::Find;
+use File::Compare;
+use Cwd 'abs_path';
+use Term::ANSIColor qw(:constants);
+
+$Term::ANSIColor::AUTORESET = 1;
+
+my $directory = 0;
+my $verbose = 0;
+my $remove = 0;
+my $force = 1;
+my $quiet = 0;
+my $extension = "";
+my $color = 0;
+my $prefix = "--MMINSTALL--";
+my $useinstall = 0;
+my @no_install = ();
+
+GetOptions (
+	    'd'=> \$directory,
+	    'e=s'=> \$extension,
+	    'n=s'=> \@no_install,
+	    'v'=> \$verbose,
+	    'q'=> \$quiet,
+	    'i'=> \$useinstall,
+	    'f'=> \$force,
+	    'r'=> \$remove,
+	    'c'=> \$color
+	   );
+
+my $src = shift;
+my $dst = shift;
+
+if (!defined $src or !defined $dst) {
+  print "Usage: mminstall [-v] [-d] [-r] <source> <dest>\n";
+  exit(-1);
+}
+
+if(($verbose == 0) && (defined $ENV{VERBOSE})) {
+  $verbose = $ENV{VERBOSE} if (! $ENV{VERBOSE} eq "");
+}
+
+if($color == 0) {
+  $ENV{ANSI_COLORS_DISABLED} = 1;
+}
+
+if (! -t STDOUT) {
+  $ENV{ANSI_COLORS_DISABLED} = 1;
+}
+
+if (defined $ENV{MMINSTALL_USES_INSTALL} && ("$ENV{MMINSTALL_USES_INSTALL}" eq "yes")) {
+  $useinstall = 1;
+}
+
+################################################################################
+
+my $abs_dst = abs_path($dst) || $dst;
+my $abs_src = abs_path($src) || $src;
+
+if($verbose >= 2) {
+  if (-e $abs_src) {
+    print DARK GREEN BOLD "$prefix EXISTING     ";
+  } else {
+    print DARK GREEN BOLD "$prefix NON-EXISTING ";
+  }
+  print DARK GREEN BOLD "SRC $abs_src\n";
+  if (-e $abs_dst) {
+    print DARK GREEN BOLD "$prefix EXISTING     ";
+  } else {
+    print DARK GREEN BOLD "$prefix NON-EXISTING ";
+  }
+  print DARK GREEN BOLD "DST $abs_dst\n";
+}
+
+## Return without error if directory mode and file does not exist
+if ($directory && ( ! -e $abs_src)) {
+  exit 0;
+}
+
+if (-d $abs_src) {
+  File::Find::find({ wanted => \&wanted ,
+		     no_chdir => 1 #Does not chdir() to each directory as it recurses.
+		   } => $abs_src);
+} else {
+    $quiet = 1;
+    create_link($abs_src, $abs_dst)
+}
+
+exit 0;
+
+################################################################################
+
+sub wanted {
+
+  my $file = $File::Find::name;
+
+  #print DARK GREEN BOLD "$prefix wanted processing $file\n";
+
+  # Don't care about directories
+  return if (-d $file);
+
+  # Don't care if we are in a subpath of a .svn
+  return if ($file =~ /\/.svn\//);
+
+  # Don't care if we are in a subpath of a .git
+  return if ($file =~ /\/.git\//);
+
+  if ($extension ne "") {
+    my ($name,$path,$suffix) = fileparse($File::Find::name,qr/\.[^.]*/);
+    if($suffix ne ".$extension") {
+      print BLUE BOLD "$prefix ignoring because not matching extension $file\n" if $verbose;
+      return;
+    }
+  }
+
+  $file = substr($file, length($abs_src));
+
+  print BLUE BOLD "$prefix considering $file\n" if $verbose;
+
+  if (grep {${file} =~ /$_/} @no_install) {
+      print BLUE BOLD "$prefix ignoring ${abs_src}/$file\n" if $verbose;
+      return;
+  }
+
+  create_link("${abs_src}/${file}", "${abs_dst}/${file}");
+}
+
+sub create_link {
+  my ($src, $dst) = @_;
+
+  if ($src eq $dst) {
+    return;
+  }
+
+  if (! -e $src) {
+    print RED BOLD "$prefix Error source $src does not exist\n";
+    exit(-1);
+  }
+
+  if (-e $dst) {
+    if (compare($dst,$src) == 0) {
+      # Already installed so nothing more needed if not removing
+      if (! $remove) {
+	return 0;
+      }
+    } else {
+      if ($useinstall == 0) {
+        my $curr_dst = `readlink -f $dst`;
+        print RED BOLD "$prefix Error: existing destination $dst\n".
+            "pointing to $curr_dst\n".
+            "and is different from requested source $src\n";
+        exit(-1);
+      }
+    }
+    print BLUE BOLD "$prefix rm -f $dst\n" if $verbose;
+    system ("rm -f $dst");
+  }
+
+  # Create leading directories
+  my $dirname = dirname($dst);
+  if (! -d $dirname && ! $remove) {
+    print BLUE BOLD "$prefix mkdir -p $dirname\n"  if $verbose;
+    system("mkdir -p $dirname");
+  }
+
+  # As we may have some other relative links, we recompute abs dst now that directory is created
+  $dst = abs_path($dst) || $dst;
+  $dirname = dirname($dst);
+
+  # If not removing then create link or install
+  if (! $remove) {
+    my $rel_src = $src;
+    $rel_src =~ s/(.*)\/multimedia\///g;
+    $rel_src =~ s/\/\/*/\//g;
+    print "  mminstall $rel_src\n" if ! $quiet;
+
+    if($useinstall) {
+      print BLUE BOLD "$prefix install -p -D $src $dst\n"  if $verbose;
+      system("install -p -D $src $dst");
+    } else {
+
+      ## Get the relative path for link creation
+      $src = File::Spec->abs2rel($src, $dirname);
+
+      print BLUE BOLD "$prefix ln -fs $src $dst\n"  if $verbose;
+      system("ln -fs $src $dst");
+    }
+  } else {
+      if (-e $dst) {
+          print BLUE BOLD "$prefix rm -f $dst\n"  if $verbose;
+          system("rm -f $dst");
+      }
+  }
+
+  ## Remove any empty directory
+  while (rmdir($dirname)) {
+    $dirname = dirname($dirname);
+  }
+}
+

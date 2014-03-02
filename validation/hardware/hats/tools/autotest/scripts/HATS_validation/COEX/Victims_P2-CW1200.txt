@@ -1,0 +1,56 @@
+#DTH script
+#Author: Guillaume Camus
+
+
+
+#> CW12000 ACTIVATION
+WRITE /COEX/CW1200/StartCW1200 0
+EXEC /COEX/CW1200/StartCW1200
+READ /COEX/CW1200/StartCW1200/Out_State 1
+READ /COEX/CW1200/StartCW1200/Out_Error
+WAIT 5
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE StartWLANRX
+BEGIN WLAN_Rx
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand 2
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN 6
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/Errors 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PER 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX 0
+EXEC /DTH/COEX/Victims/WLAN/StartWLANRX
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand 2
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN 6
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Errors
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/PER
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_State 1
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_Error
+
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ModeBand 2
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/ChannelWLAN 6
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktExp 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PktRx 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/Errors 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/CrcErrors 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX/PER 0
+WRITE /DTH/COEX/Victims/WLAN/StartWLANRX 1
+EXEC /DTH/COEX/Victims/WLAN/StartWLANRX
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_State 0
+READ /DTH/COEX/Victims/WLAN/StartWLANRX/Out_Error
+END WLAN_Rx
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> CW12000 DEACTIVATION
+WRITE /COEX/CW1200/StartCW1200 1
+EXEC /COEX/CW1200/StartCW1200
+READ /COEX/CW1200/StartCW1200/Out_State 0
+READ /COEX/CW1200/StartCW1200/Out_Error
+

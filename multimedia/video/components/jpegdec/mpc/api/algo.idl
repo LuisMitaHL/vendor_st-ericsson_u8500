@@ -1,0 +1,121 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_jpeg.idt>
+
+interface jpegdec.mpc.api.algo { 
+
+
+/* This file specifies methods included inside provided interface named iAlgo
+          i.e. :          - configureAlgo
+                          - controlAlgo
+                          - updateAlgo
+                          - setDebug
+*/
+ 
+ /** @addtogroup sdcJpegControlAlgoGroup controlAlgo
+ *  @ingroup sdcJpegProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  channelNumber  The channel (i.e. instance number) the algo is linked to
+ \param[in]  param    The parameter associated to the command composed as following :
+             \n ALGO_ID[0] JPEG DECODER ALGO ID 
+             \n ...0 = No Slice Mode
+             \n ...1 = Slice Mode 
+             \n XXX[15:1] : Reserved for future use.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref sdcJpegConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Normal sequence of a decode
+ *   
+ * \msc
+    jpeg_decoder_data_dep,jpeg_decoder_algo,resource_manager;
+    jpeg_decoder_data_dep=>jpeg_decoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    jpeg_decoder_data_dep<<jpeg_decoder_algo;
+    jpeg_decoder_algo=>resource_manager [label="...."];
+    jpeg_decoder_algo<<resource_manager;
+    jpeg_decoder_data_dep<<=jpeg_decoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VDC_ERT_NONE)"];
+  \endmsc
+  \n
+ * Abnormal sequence of a decode (error while decoding the bitstream)
+ *  
+ * \msc
+    jpeg_decoder_data_dep,jpeg_decoder_algo;
+    jpeg_decoder_data_dep=>jpeg_decoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    jpeg_decoder_data_dep<=jpeg_decoder_algo [label="endAlgo(STATUS_JOB_ABORTED, VDC_ERT_BITSTREAM_ERR"];
+  \endmsc
+  \n
+ * Abnormal sequence of a decode (incorrect configuration parameter)
+ *  
+ * \msc
+    jpeg_decoder_data_dep,jpeg_decoder_algo;
+    jpeg_decoder_data_dep=>jpeg_decoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    jpeg_decoder_data_dep<=jpeg_decoder_algo [label="endAlgo(STATUS_JOB_ABORTED, [error code])"];
+  \endmsc
+ *\n 
+ * @} */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 channelNumber, t_uint16 param);
+
+/** @} */ // end of sdcJpegControlAlgoGroup
+/** @addtogroup sdcJpegSetDebugAlgoGroup setDebug
+ *  @ingroup sdcJpegProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref sdcJpegConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Example of normal usage of debug mode. In this particular case, the "VDC_Jpeg" NMF Algo component will copy 
+ * the content of the input bitstream buffer into the ouput image buffer (see \ref sdcJpegConfigureAlgoGroup for details).
+ * As soon as the copy will be finished, the interface signaling the end of algo will be called.
+ * 
+ * 
+ * \msc
+    Jpeg_decoder_data_dep,Jpeg_decoder_algo;
+    Jpeg_decoder_data_dep=>Jpeg_decoder_algo [label="setDebug(DBG_MODE_PATTERN, 0x00, 0x00)"];
+    Jpeg_decoder_data_dep<<Jpeg_decoder_algo;
+    Jpeg_decoder_data_dep=>Jpeg_decoder_algo [label="configureAlgo(VDC_Jpeg, ...)"];
+    Jpeg_decoder_data_dep<<Jpeg_decoder_algo;
+    Jpeg_decoder_data_dep=>Jpeg_decoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    Jpeg_decoder_data_dep<=Jpeg_decoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VDC_ERT_NONE"];
+    Jpeg_decoder_data_dep,Jpeg_decoder_algo;
+    Jpeg_decoder_data_dep=>Jpeg_decoder_algo [label="setDebug(DBG_MODE_NORMAL, 0x00, 0x00)"];
+  \endmsc
+  \n
+ * Another exemple of normal usage of debug mode. In this case, the NMF algo component will only
+ * acknowledge the CMD_START command by calling the endAlgo interface.
+ *  
+ * \msc
+    Jpeg_decoder_data_dep,Jpeg_decoder_algo;
+    Jpeg_decoder_data_dep=>Jpeg_decoder_algo [label="setDebug(DBG_MODE_NO_HW, 0x00, 0x00)"];
+    Jpeg_decoder_data_dep<=Jpeg_decoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VDC_ERT_NONE"];
+  \endmsc
+  \n
+ * @} */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint32 param1, t_uint32 param2);
+
+ /** @} */ // end of secJpegSetDebugAlgoGroup 
+
+} // interface jpegdec.mpc.api.algo
+

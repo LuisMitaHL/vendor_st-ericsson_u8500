@@ -1,0 +1,78 @@
+
+if STILL_MODE  != STILL_SINGLE_MODE
+	OMX_SetConfig camera OMX_IndexAutoPauseAfterCapture bEnabled=OMX_FALSE
+	alias S_AS_QUICK_AS_POSSIBLE OMX_TRUE
+else
+	#OMX_SetConfig imgfilter IFM_IndexConfigCommonSaveImage nPortIndex=IMGFILTER_PORT_INPUT_2 Index=0
+	OMX_SetConfig imgfilter IFM_IndexConfigCommonSaveImage nPortIndex=IMGFILTER_PORT_INPUT_VPB1_1 Index=0
+endif
+
+OMX_SetConfig my_sink_VPB1_1 OMX_IndexParamFakesinkPathname contentURI=FAKE_SINK_PATH_BACKUP_IMAGE
+OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigIqtCaptureMode nSaveMode=STILL_SAVE_MODE bSaveFrameCount=STILL_SAVE_FRAME_COUNT nSaveFirstFrame=STILL_SAVE_FIRST_FRAME bSaveFrameByFrame=SAVING_FRAME_BY_FRAME
+
+if STILL_SAVE_ACTIVATION == OMX_TRUE
+	OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigCapturing bEnabled=STILL_SAVE_RESOLUTION_RAW
+
+	if STILL_SAVE_RESOLUTION_LR == OMX_TRUE
+		echo LR resolution for STILL not yet available
+	endif
+	if STILL_SAVE_RESOLUTION_HR == OMX_TRUE
+		echo HR resolution for STILL not yet available
+	endif
+
+else
+	OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigCapturing bEnabled=STILL_SAVE_ACTIVATION
+endif
+
+if STILL_MODE  != STILL_SINGLE_MODE
+	if STILL_MODE  == STILL_CONTINUOUS_MODE
+		alias S_IS_LIMIT OMX_FALSE
+	endif
+	if STILL_MODE  == STILL_BURST_MODE
+		alias S_IS_LIMIT OMX_TRUE
+	endif
+
+	do $(IMG_SCRIPT)/unitary/features/cam_burstpicture.ite S_AS_QUICK_AS_POSSIBLE S_IS_LIMIT STILL_BURST_FRAME_COUNT
+	mmte_sleep IMG_WAIT
+	OMX_SetConfig camera IFM_IndexExtConfigCapturing bEnabled=OMX_TRUE nPortIndex=CAM_PORT_VPB1
+
+	mmte_sleep IMG_WAIT_LONG
+	OMX_GetConfig configGet camera IFM_IndexConfigCommonOpMode_Check 
+
+	alias COUNTER 1
+	if STILL_SAVE_MODE == FIRST_FRAMES_SAVE_MODE
+		alias STILL_BURST_FRAME_COUNT_ACK STILL_SAVE_FRAME_COUNT  
+	else
+		alias STILL_BURST_FRAME_COUNT_ACK STILL_BURST_FRAME_COUNT
+		arithmeticalias STILL_BURST_FRAME_COUNT_ACK+ 1
+		arithmeticalias STILL_BURST_FRAME_COUNT_ACK- STILL_SAVE_FIRST_FRAME 
+	endif
+
+	if STILL_SAVE_ACTIVATION == OMX_TRUE
+		if STILL_SAVE_RESOLUTION_RAW == OMX_TRUE
+			if STILL_MODE  == STILL_BURST_MODE
+				loop STILL_BURST_FRAME_COUNT_ACK
+					EventExpected /tmp/Raw_Saved_N$(COUNTER) 20
+					arithmeticalias COUNTER+ 1
+				endloop
+			endif
+		endif
+	endif
+
+else
+	do $(IMG_SCRIPT)/unitary/features/cam_stillpicture.ite OMX_FALSE SINK_PORT_INPUT SINK_PORT_INPUT
+	EventExpected /tmp/Bmp_Saved 20
+
+	if STILL_SAVE_ACTIVATION == OMX_TRUE
+		if STILL_SAVE_RESOLUTION_RAW == OMX_TRUE
+			EventExpected /tmp/Raw_Saved_N1 20
+		endif
+	endif
+endif
+
+echo File_saved
+
+
+
+
+

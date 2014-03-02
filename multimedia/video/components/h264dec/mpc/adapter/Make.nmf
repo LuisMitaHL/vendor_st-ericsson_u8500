@@ -1,0 +1,21 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+ITF_PREFIX := video_h264dec_adapter
+
+COMPONENTS+= h264dec.mpc.adapter
+
+CONFFILES = h264dec/mpc/adapter/adapter.conf
+
+SRCPATH+= \
+	$(MM_IDT_DIR)							\
+	$(MMROOT)/video/idt												\
+	$(MMROOT)/video/components/h264dec/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/h264dec/mpc/share
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+

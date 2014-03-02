@@ -1,0 +1,78 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+MODULE_NAME:=mpeg2dec
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+ITF_PREFIX=video_mpeg2dec
+
+COMPONENTS+= $(MODULE_NAME).mpc.ddep
+
+CPPPATH += -I$(MMROOT)/shared/ens/nmf/common
+CONFFILES = $(MODULE_NAME)/mpc/ddep/ddep.conf
+CPPFLAGS+=-D__$(MYMMBOARD)__
+
+# OST trace capability
+include ../../make.ost_conf
+OST_SRC_DIR = src 
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_DSP)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_dsp
+CPPFLAGS  += -I$(MMROOT)/video/components/mpeg2dec/inc/autogentraces
+CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/mpc/fsm/generic/include
+CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/common
+
+
+ITFLIST += 	$(MODULE_NAME)/mpc/api/algo.itf							\
+			$(MODULE_NAME)/mpc/api/end_algo.itf						\
+			$(MODULE_NAME)/mpc/api/ddep.itf              \
+			$(MODULE_NAME)/mpc/api/emptythisheader.itf	\
+			$(MODULE_NAME)/mpc/api/fillthisheader.itf	\
+			$(MODULE_NAME)/mpc/api/log_event.itf	\
+			$(MODULE_NAME)/mpc/api/configure_algo.itf	\
+			$(MODULE_NAME)/mpc/api/update_algo.itf
+			
+SRCPATH+=
+SRCPATH+= \
+	$(MM_IDT_DIR)									\
+	$(MMROOT)/shared/ens/nmf/mpc \
+	$(MMROOT)/shared/ens/nmf/mpc/common \
+	$(MMROOT)/shared/ens/nmf/common	\
+        $(MMROOT)/video/components/common/nmf/idt \
+	$(MMROOT)/video/vfm/common									\
+	$(MMROOT)/video/components/resource_manager/share			\
+    $(MMROOT)/video/components/vpp/mpc/share			\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share	\
+	$(MMROOT)/video/components	\
+	$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc	\
+	$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	$(MMROOT)/video/components/common/inc
+
+
+
+USER2MPCITFS_CPP += $(MODULE_NAME).mpc.api.ddep	\
+			$(MODULE_NAME).mpc.api.emptythisheader	\
+			$(MODULE_NAME).mpc.api.fillthisheader	\
+			shared_emptythisbuffer\
+			shared_fillthisbuffer\
+			sendcommand \
+			fsminit
+
+
+MPC2USERITFS_CPP += $(MODULE_NAME).mpc.api.ddep	\
+			$(MODULE_NAME).mpc.api.emptythisheader	\
+			$(MODULE_NAME).mpc.api.fillthisheader	\
+			shared_emptythisbuffer	\
+			shared_fillthisbuffer	\
+			eventhandler
+
+
+ASYNCITFS += $(MODULE_NAME).mpc.api.log_event
+
+$(MODULE_NAME).mpc.ddep: $(CONFFILES)
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+.PHONY: $(MODULE_NAME).mpc.ddep
+

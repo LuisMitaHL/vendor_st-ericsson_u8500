@@ -1,0 +1,79 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_resource_manager.idt>
+
+interface resource_manager.api.intsleep { 
+
+/* This file specifies methods included inside provided interface named iIntSleep (This is accessed only internally by RM sub-component "allocator")
+          i.e. :          - allowInternalSleep
+                          - preventInternalSleep
+                          - statusInternalSleep
+*/
+
+
+
+/** @addtogroup rmAllowInternalSleepGroup allowInternalSleep
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface for internal use of RM.
+ 
+ Note : 	This interface is called by allocator sub-component internally by RM. 
+ Used to allow sleep if any resource is not allocated.
+   
+ */
+
+void allowInternalSleep();
+
+/** @} */ // end of rmSleepGroup
+
+
+
+/** @addtogroup rmPreventInternalSleepGroup preventInternalSleep
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface for internal use of RM.
+ 
+ Note : 	This interface is called by allocator sub-component internally by RM. 
+ Used to prevent sleep if any resource is allocated (it is assumed that if ddep has 
+ allocated it, it is in use).
+   
+ */
+
+void preventInternalSleep();
+
+/** @} */ // end of rmSleepGroup
+
+
+
+/** @addtogroup rmStatusInternalSleepGroup statusInternalSleep
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface for internal use of RM.
+ 
+ Note : 	This interface is called by allocator sub-component internally by RM. 
+ Used to optimize hw-re-init. in case sleep was not entered it does not reset hwInit flag FALSE.
+   
+ */
+
+void statusInternalSleep();
+
+/** @} */ // end of rmSleepGroup
+
+} // interface resource_manager.api.intsleep

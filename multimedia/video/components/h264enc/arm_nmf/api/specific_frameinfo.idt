@@ -1,0 +1,83 @@
+#ifndef SPECIFIC_FRAMEINFO_IDT
+#define SPECIFIC_FRAMEINFO_IDT
+
+enum t_h264enc_state
+{
+    StateUnloaded = 0,
+    StateInitPhase1,
+    StateInitPhase2,
+    StateInitPhase3,
+    StateLoaded,
+    StateLoadedSpsPpsRequest,
+    StateLoadedSpsPpsReady
+};
+
+typedef struct
+{
+    t_uint16 size;
+    t_uint8 data[80];
+} t_sps_pps;
+
+typedef struct
+{
+    t_uint16 sfw;
+    t_uint16 sfh;
+    t_uint16 sho;
+    t_uint16 svo;
+    t_uint16 n;
+    t_uint16 algo;
+    t_uint16 OutFileMode;
+    t_uint16 IDRIntraEnable;
+    t_uint16 IntraPeriod;
+    t_uint16 SliceMode;
+    t_uint16 MbSliceSize;
+    t_uint16 ByteSliceSize;
+    t_uint16 UseConstrainedIntraPred;
+    t_uint16 QPISlice;
+    t_uint16 QPPSlice;
+    t_uint16 PicOrderCntType;
+    t_uint16 BrcType;
+    t_uint32 Bitrate;
+    t_uint32 VBRConfig;
+    t_uint32 FrameRate;
+    //t_uint16 InitialQP;
+    t_uint16 disableH4D;
+    t_uint16 SearchWindow;
+    t_uint16 EncoderComplexity;
+    t_uint16 LowComplexity;
+    t_uint16 ProfileIDC;
+    t_uint16 TransformMode;
+    t_uint16 IntraRefreshType;
+    t_uint16 AirMbNum;
+    t_uint16 CirMbNum;
+    t_uint16 SamplingMode;
+    t_uint16 ForceIntraPredMode;
+    t_uint16 SliceLossFirstMb[8];
+    t_uint16 SliceLossMbNum[8];
+    t_uint16 HrdSendMessages;
+    t_uint16 HeaderDataChanging;
+    t_uint16 video_full_range_flag;
+    t_uint16 colour_primaries;
+    t_uint16 frame_cropping_flag;
+    t_uint16 frame_cropping_rect_left_offset;
+    t_uint16 frame_cropping_rect_right_offset;
+    t_uint16 frame_cropping_rect_top_offset;
+    t_uint16 frame_cropping_rect_bottom_offset;
+    //+ code change for CR 361667
+    t_uint16 ForceIntra;
+    //- code change for CR 361667
+    //+ code for CR 332873    
+    t_uint16 CBR_simplified_algo;
+    t_uint16 CBR_clipped;
+    t_uint16 CBR_clipped_min_QP;
+    t_uint16 CBR_clipped_max_QP;
+    t_uint32 CpbBufferSize;    
+    //- code for CR 332873
+    /* + change for CR 343589 to support rotation */
+    t_sint32 nRotation;
+    /* - change for CR 343589 to support rotation */
+    t_uint32 EncoderLevel; //for 400650
+} t_specific_frameinfo;
+
+#endif
+

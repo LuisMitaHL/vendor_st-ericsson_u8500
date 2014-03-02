@@ -1,0 +1,244 @@
+; This script is used for Trace32 debug configuration on 8500.
+; Crated by HED/CSP/CPT/ACT on 2009-04-01
+; Contact jingyi-xiaoyan.lu@st.com
+; 2009-10-21: new syntax; support 8500 v1
+; 2009-11-20: support new cpu names for U8500; removed all "STn"
+; 2010-03-03: added build number 20817 detection for the new cpu name.
+;             workaround of cross-triggering setting missing.
+; 2010-07-21: 1)some clean-up; 2)new sys.config command for cjtag star-2 support in Trace32. 3)JtagClock boost (40Mhz) for ARM debug cable. 4) set JtagClock 13Mhz for cJTAG star-2 mode.
+; 2010-07-29: JTAG clock to be 35Mhz.
+
+GLOBAL &r4core
+
+ENTRY &8500_ver &platform &dbg_config &core
+&8500_ver=string.upr("&8500_ver")
+&platform=string.upr("&platform")
+&core=string.upr("&core")
+
+&r4core="&core"
+
+; Add button for symbols loading
+menu.rp
+(
+	add
+	toolbar
+	(
+		toolitem "Load modem symbols" "do loadFiles.cmm"
+[
+GGGGGGGGGGGGGGGG
+GRRRRGGGGGGGGGGG
+GGRRRGGGGGGGGGGG
+GGGRRRGGGGGGGGGG
+GGGGRRRGGGGGGGGG
+GGGGGRRRGGGGGGGG
+GGGGGGRRRGGGGGGG
+GGGRRRRRRRGGGGGG
+GGGRRRRRRRRGGGGG
+GGGGRRRGGGGGGGGG
+GGGGGRRRGGGGGGGG
+GGRRRGGRRGGRRRGG
+GGGGRRRRRRRRRGGG
+GGGGGGGRRRRGGGGG
+GGGGGGGGGGGGGGGG
+]
+	)
+
+	add
+	menu
+	(
+		popup "Debug Modem"
+		(
+			popup "[:practice]Shared Memory"
+			(
+				;Shared Memory
+				separator
+				menuitem "[:dump]Analysis"
+				(
+					do &ModemScriptsPath/U8500_Modem_AnalyzeSharedMemory.cmm
+				)
+			)
+			popup "[:practice]Other"
+			(
+				;Other
+				menuitem "[:map]TBD"
+				(
+					; TBD
+				)
+			)
+		)
+	)
+)
+
+
+;---- extract the dbg_config parameters
+
+&attach=0
+&up=0
+&mod=0
+while string.len("&dbg_config")!=0
+(
+	&plus_idx=STRING.SCAN("&dbg_config","+",0)
+	if &plus_idx==0
+	(
+		print "Invalid parameter: &dbg_config !"
+		enddo
+	)
+	if &plus_idx==-1 // there is not any "+", i.e. &dbg_config contains only 1 word
+		&plus_idx=string.len("&dbg_config")
+
+	// extract the first parameter
+	&temp=string.mid("&dbg_config",0,&plus_idx)
+	&param=string.lwr("&temp")
+
+	// check the extraited paramter's validity
+	if "&param"!="attach"&&"&param"!="up"&&"&param"!="mod"
+	(
+		print "Invalid configuration parameter: &temp !"
+		enddo
+	)
+
+	&&(param)=1
+
+	// cut off the first parameter and the "+"
+	&dbg_config=string.cut("&dbg_config",&plus_idx+1)
+)
+
+
+
+;---- CS components bases addresses
+&corebase1=0x80007000
+&corebase2=0x8000A000
+&ctibase1=0x80009000
+&ctibase2=0x8000C000
+&etbbase=0x80001000
+&tpiubase=0x80003000
+&funnelbase=0x80004000
+&etmbase1=0x80008000
+&etmbase2=0x8000B000
+&ctimpssbase=0x8000D000
+
+;---- reset everything
+sys.reset
+
+;---- cpu setting
+if version.build()<20302.||version.build()==20817.||"&8500_ver"=="ED"
+(
+	sys.cpu CortexR4
+)
+else
+(
+	if "&core"=="CPU1"
+		sys.cpu DB8500MODCORE1
+	else
+		sys.cpu DB8500MODCORE2
+)
+
+
+;---- jtag clock
+;if combiprobe()
+;	sys.jc 35Mhz
+;else
+;	sys.jc ctck 35Mhz
+
+sys.o.enreset off
+
+;---- configure the JTAG, TAPs topology and the TAP position
+sys.config.multitap stcltap2
+sys.config.cfgconnect 0x03
+
+;---- configure the CS components bases addresses
+&corebase=0x0
+if string.upr("&core")=="CPU1"
+(
+	sys.config.corebase &corebase1
+	&corebase=&corebase1
+	sys.config.ctibase APB:&ctibase1
+	sys.config.etmbase APB:&etmbase1
+	sys.config.etmfunnelport 0
+)
+else
+(
+	sys.config.corebase &corebase2
+	&corebase=&corebase2
+	sys.config.ctibase APB:&ctibase2
+	sys.config.etmbase APB:&etmbase2
+	sys.config.etmfunnelport 1
+)
+sys.config.cticonfig cortexV1
+sys.config.tpiubase APB:&tpiubase
+sys.config.etbbase APB:&etbbase
+sys.config.funnelbase APB:&funnelbase
+
+//give PMU config here
+
+;---- connection
+connection:
+if "&8500_ver"=="ED"
+	sys.o.pwrcheck off
+else
+	sys.o.pwrcheck on
+sys.o.enreset off
+sys.o.resBreak off
+sys.o.waitReset off
+if &up==1
+(
+	if system.up()
+		sys.down
+	on ERROR goto lab1
+	sys.up
+	if system.up()
+		print "SYS.UP OK!"
+	on ERROR NOTHING
+)
+else
+(
+	if system.up()
+		sys.down
+	on ERROR goto lab5
+	sys.m.attach
+	if system.up()
+		print "SYS.M.ATTACH OK!"
+	on ERROR NOTHING
+)
+
+; --- enabling the cross triggering now. No more needed to do here when LTB fix the ctibase setting bug.
+if version.build()<21831.
+(
+	if "&core"=="CPU1"
+	(
+		sys.config.ctibase 0
+		sys.config.ctibase APB:&ctibase1
+	)
+	else
+	(
+		sys.config.ctibase 0
+		sys.config.ctibase APB:&ctibase2
+	)
+)
+
+; enable the Trace2XClkEn
+if string.upr("&hot_attach")=="N"
+(
+	data.set 0x17C40044 %long 0x100
+	data.set c15:05a7 1
+)
+
+
+enddo
+
+lab1:
+	if system.up()
+		DIALOG.OK "Error occured after SYS.UP!"
+	else
+	(
+		if !system.up()
+			DIALOG.OK "SYS.UP FAILED"
+	)
+	enddo
+
+lab5:
+	if system.up()
+		DIALOG.OK "Error occured after SYS.M.ATTACH!"
+	else
+		DIALOG.OK "SYS.M.ATTACH failed!"
+	enddo

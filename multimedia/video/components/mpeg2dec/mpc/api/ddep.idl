@@ -1,0 +1,20 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#include <vfm_common.idt>
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_mpeg2.idt>
+#include <omxcommand.idt>
+
+interface mpeg2dec.mpc.api.ddep {
+void setConfig(t_uint16 channelId, t_uint8 outputPortBufferCountActual,t_uint8 errorMapFlag);
+void setParameter(t_uint16 channelId, t_t1xhv_algo_id algoId, ts_ddep_buffer_descriptor ddep_vdc_mpeg2_param_desc);
+void setNeeds(t_uint16 channelId,ts_ddep_buffer_descriptor bbm_desc, ts_ddep_buffer_descriptor debugBuffer_desc);
+// Added to maintain sequence of sendcommand between parser & ddep. Parser should execute sendcommand first to avoid
+// trapping of buffers in data dependency. Refer to multiple seek issue in mpeg4 decoder.
+void sendCommand_sequential(OMX_COMMANDTYPE cmd, t_uword param);
+void disableFWCodeexection(t_bool value);
+}

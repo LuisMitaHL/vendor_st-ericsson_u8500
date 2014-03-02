@@ -1,0 +1,52 @@
+composite jpegdec.arm_nmf.jpegdec_sw {
+		  contains jpegdec.arm_nmf.parser_arm as jpegdecParser urgent
+		  contains jpegdec.arm_nmf.algo  as  algo
+
+		  //interfaces for input port
+		  provides     armnmf_emptythisbuffer         as      emptythisbuffer
+		  requires     armnmf_fillthisbuffer          as      inputport
+
+		  //interfaces for output port
+		  provides     armnmf_fillthisbuffer          as      fillthisbuffer
+		  requires     armnmf_emptythisbuffer         as      outputport
+
+		  requires jpegdec.arm_nmf.api.portSettings    as      changePortSettingsSignal
+		  
+		  // exposed component interfaces
+		provides    sendcommand             as      sendcommand
+		  provides    fsminit                 as      fsminit
+		  requires    eventhandler            as      proxy		   	
+		  
+		   //Set param interface
+		   provides jpegdec.arm_nmf.api.setParam          as setParam
+
+		   
+		   //set config interface
+		   provides jpegdec.arm_nmf.api.setConfig          as setConfig
+
+		  //bindings from composite shell to primitive component
+
+		  binds        this.emptythisbuffer         to    jpegdecParser.emptythisbuffer
+		  binds        jpegdecParser.inputport  to    this.inputport
+
+		  binds        this.fillthisbuffer          to    jpegdecParser.fillthisbuffer
+		  binds        jpegdecParser.outputport   to    this.outputport
+
+  		  binds       this.sendcommand             to    jpegdecParser.sendcommand
+		  binds       this.fsminit                 to    jpegdecParser.fsminit
+		  
+		  binds       jpegdecParser.changePortSettingsSignal                 to    this.changePortSettingsSignal
+		  binds       jpegdecParser.proxy            to    this.proxy		   
+		  
+		  /* loopback bind on postEvent */
+		  binds       jpegdecParser.me               to    jpegdecParser.postevent asynchronous fifo=1
+		  binds	      jpegdecParser.iAlgo          to    algo.iAlgo
+                  binds       algo.oEndAlgo                 to    jpegdecParser.iEndAlgo
+		
+		   // binding of setParam
+	           binds       this.setParam                 to    jpegdecParser.setParam asynchronous fifo=1
+	           binds       this.setConfig                 to   jpegdecParser.setConfig asynchronous fifo=1
+	           
+		   provides jpegdec.arm_nmf.api.memoryRequirements as iMemoryRequirements
+		   binds this.iMemoryRequirements 		   to jpegdecParser.iMemoryRequirements	asynchronous fifo=2           
+}

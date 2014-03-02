@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/**" />
+    <include name="Make*" />
+    <include name="make.ost_conf" />    
+    <include name="inc/autogentraces/*.xml" />
+  </fileset>
+  
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+        <include name="proxy/inc/**" />
+        <include name="proxy/Make**" />
+        <include name="proxy/lib/**" />
+    </fileset>
+  </package>
+  
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="proxy/inc/*.h" />
+      <include name="proxy/src/*.cpp" />
+      <include name="proxy/Make**" />
+    </fileset>
+  </package>
+  
+  <package name="arm-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+        <include name="arm_nmf/**"/>
+        <include name="arm_nmf/lib/**"/>
+        <include name="common/**" />
+        <exclude name="common/**.c"/>
+        <exclude name="common/**.cpp"/>
+  	<exclude name="arm_nmf/**.c"/>
+  	<exclude name="arm_nmf/**.cpp"/>
+        <exclude name="arm_nmf/algo/src/NEON/**"/>
+        <exclude name="arm_nmf/algo/src/**"/>
+	<exclude name="arm_nmf/test/**"/>
+	<include name="nmf_repository/cortexA9-**"/>
+    </fileset>
+  </package>
+  
+  <package name="arm-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+       <include name="arm_nmf/**"/>
+        <include name="arm_nmf/lib/**"/>
+       <include name="common/src/*" />
+       <include name="common/inc/**" />
+        <exclude name="arm_nmf/algo/src/NEON/**"/>
+        <exclude name="arm_nmf/algo/src/**"/>
+       <exclude name="arm_nmf/test/**"/>
+        <exclude name="nmf_repository/cortexA9-**"/>
+        <include name="arm_nmf/algo/src/algo.cpp"/>
+    </fileset>
+  </package>
+
+  
+  <package name="mmdsp-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="mpc/**"/>
+      <exclude name="mpc/**.c"/>
+      <exclude name="mpc/**.cpp"/>
+      <exclude name="mpc/algo/inc/**"/>
+      <exclude name="mpc/algo/src/**"/>    
+      <include name="nmf_repository/mmdsp_**"/>
+    </fileset>
+  </package>
+  
+</packages>

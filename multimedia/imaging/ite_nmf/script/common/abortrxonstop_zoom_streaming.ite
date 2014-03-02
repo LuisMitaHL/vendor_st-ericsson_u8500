@@ -1,0 +1,71 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/abortrxonstop_zoom_streaming.ite
+
+LogPE disable
+#startenv grab_vpip_display_01_01 _LRHRoutVGA_HRoutVGA_SENSOR0 
+
+## test for VGA
+##
+usagemode video
+setusecase LRHR VGA YUV422RI 
+
+set_abort_rx 1
+LRHR prepare
+LRHR start
+wait 2
+
+zoomset 4
+wait 2
+
+zoomset 3
+wait 2
+
+zoomset 2
+wait 2
+
+zoomset 1
+wait 2
+
+LRHR abort
+
+## test for HD
+##
+
+usagemode videohq
+setusecase LRHR HD YUV422RI 
+
+LRHR start
+wait 2
+
+zoomset 4
+wait 2
+
+zoomset 3
+wait 2
+
+zoomset 2
+wait 2
+
+zoomset 1
+wait 2
+
+LRHR abort
+
+setusecase LRHR FULLHD YUV422RI 
+
+LRHR start
+wait 2
+
+zoomset 4
+wait 2
+
+zoomset 3
+wait 2
+
+zoomset 2
+wait 2
+
+zoomset 1
+wait 2
+
+LRHR abort
+

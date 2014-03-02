@@ -1,0 +1,17 @@
+#!/bin/sh
+case $1 in
+start)
+        echo "Starting Modem permission"
+        chmod 777 /system/hats/bin/busybox
+        MODE_M=`/usr/bin/modem_config -M`;
+        /system/hats/bin/busybox chown -R 1000.1001 /modemfs/$MODE_M/Phone_FS
+        /system/hats/bin/busybox chmod -R 770 /modemfs/$MODE_M/Phone_FS
+        sync
+;;
+stop)
+        echo "Stopping Modem permission..."
+        ;;
+esac
+
+exit
+

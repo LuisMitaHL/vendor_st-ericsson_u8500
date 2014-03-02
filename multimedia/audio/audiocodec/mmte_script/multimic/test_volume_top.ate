@@ -1,0 +1,11 @@
+test_start SOURCES_004 Test Volume Multimic
+
+alias VOLUME_TOP 1
+loop 99
+     do $(NOMADIK)/audiocodec/mmte_script/multimic/test_volume.ate VOLUME_TOP
+     arithmeticalias VOLUME_TOP+1
+endloop
+
+unalias VOLUME_TOP
+
+test_end

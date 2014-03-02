@@ -1,0 +1,437 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatladc">
+  <argument path="/DTH/ADC/config/menus/menu_03adc.xml" type="FILE" user_data="ACT_ADC_MENU_CONFIG_FILE">
+  <info>Automatic Procedure\nFilepath=/var/local/tat/tatladc/config/menus\nFilename=menu_03adc.xml</info> 
+  </argument>
+  <argument path="/DTH/ADC/config/panels/panel_adc.xml" type="FILE" user_data="ACT_ADC_PANEL_FILE">
+  <info>Automatic Procedure\nFilepath=/var/local/tat/tatladc/config/panels\nFilename=panel_adc.xml</info> 
+  </argument>
+  <argument path="/DTH/ADC/config/panels/panel_gas_gauge.xml" type="FILE" user_data="ACT_GAS_GAUGE_PANEL_FILE">
+  <info>Automatic Procedure\nFilepath=/var/local/tat/tatladc/config/panels\nFilename=panel_gas_gauge.xml</info> 
+  </argument>
+    <action path="/DTH/ADC/Action/Action_TEST/TEST" type="STRING" user_data="ACT_TEST" exec="Dth_ActTEST_exec">
+      <info>Label Action:used to test performance of 9PDTH\ntest:Performance\n</info>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_1" type="U8" user_data="IO_TEST1" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_2" type="U8" user_data="IO_TEST2" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_3" type="U8" user_data="IO_TEST3" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_4" type="U8" user_data="IO_TEST4" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_5" type="U8" user_data="IO_TEST5" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_6" type="U8" user_data="IO_TEST6" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_7" type="U8" user_data="IO_TEST7" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_8" type="U8" user_data="IO_TEST8" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_9" type="U8" user_data="IO_TEST9" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TEST/TEST/IO_10" type="U8" user_data="IO_TEST10" get="Dth_ActTESTParam_Get" set="Dth_ActTESTParam_Set">
+        <range min="0" max="255"/>
+        <info>test:Performance\n</info>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead" type="STRING" user_data="ACT_CYCLICREAD:15" exec="Dth_ActADC_exec">
+      <info>Label Action:Read ADC\n Cyclic:1\n ElementPerLine:6\n</info>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/FileStorage" type="STRING" user_data="IN_FILESTORAGE" get="Dth_ActADCParam_Get" set="Dth_ActADCParam_Set">
+        <info>/var/local/tat/tatladc/adc.txt</info>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_VBat" type="U32" user_data="OUT_ADCSWSEL_VBATA:23" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_TBat_C" type="S32" user_data="OUT_ADCSWSEL_BATTEMP:17" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_IUSBCh" type="U32" user_data="OUT_ADCSWSEL_USBCHCUR:26" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_VBus" type="U32" user_data="OUT_ADCSWSEL_VBUS:24" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_VBatCtrl_mV" type="U32" user_data="OUT_ADCSWSEL_BATCTRL:16" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_VBackBat" type="U32" user_data="OUT_ADCSWSEL_BACKUPBAT:27" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_ADCAUX1" type="U32" user_data="OUT_ADCSWSEL_ADCAUX1:21" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_ADCAUX2" type="U32" user_data="OUT_ADCSWSEL_ADCAUX2:22" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_ACCdet1" type="U32" user_data="OUT_ADCSWSEL_ACCDET1:19" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CyclicRead/CyclicRead/Out_ACCdet2" type="U32" user_data="OUT_ADCSWSEL_ACCDET2:20" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value" type="STRING" user_data="ACT_GETOTPVAL" exec="Dth_ActADC_exec">
+      <info>Label Action:Get_OTP_value\n ElementPerLine:6</info>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_VTEMPH" type="U32" user_data="OUT_VTEMPH" get="Dth_ActADCParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_VTEMPL" type="U32" user_data="OUT_VTEMPL" get="Dth_ActADCParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_VBATH" type="U32" user_data="OUT_VBATH" get="Dth_ActADCParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_VBATL" type="U32" user_data="OUT_VBATL" get="Dth_ActADCParam_Get">
+        <range min="0" max="4294967295"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_GTEMP" type="FLOAT" user_data="GAINADC_TEMP" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_OTEMP" type="FLOAT" user_data="OFFSETADC_TEMP" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_GVBAT" type="FLOAT" user_data="GAINADC_VBAT" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_Get_OTP_value/Get_OTP_value/Out_OVBAT" type="FLOAT" user_data="OFFSETADC_VBAT" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_VBatCtrl/VBatCtrl" type="STRING" user_data="ADCSWSEL_BATCTRL:1" exec="Dth_ActADC_exec">
+		<info>Label Action:VBatCtrl </info>
+		<argument path="/DTH/ADC/Action/Action_VBatCtrl/VBatCtrl/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBatCtrl/VBatCtrl/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBatCtrl/VBatCtrl/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBatCtrl/VBatCtrl/Out_valcalibconv_mV" type="U32" user_data="OUT_VALCALIB" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action> 
+    <action path="/DTH/ADC/Action/Action_TBat/TBat" type="STRING" user_data="ADCSWSEL_BATTEMP:2" exec="Dth_ActADC_exec">
+		<info>Label Action:TBat </info>
+	  <argument path="/DTH/ADC/Action/Action_TBat/TBat/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TBat/TBat/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TBat/TBat/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TBat/TBat/Out_valcalibconv_mV" type="U32" user_data="OUT_VALCALIB" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_TBat/TBat/Out_valcalibconv_degC" type="FLOAT" user_data="OUT_VALCALIBDEG" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_RAccdetect1/RAccdetect1" type="STRING" user_data="ADCSWSEL_ACCDET1:4" exec="Dth_ActADC_exec">
+		<info>Label Action:RAccdetect1 </info>
+		<argument path="/DTH/ADC/Action/Action_RAccdetect1/RAccdetect1/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RAccdetect1/RAccdetect1/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RAccdetect1/RAccdetect1/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RAccdetect1/RAccdetect1/Out_valcalibconv_mV" type="U32" user_data="OUT_VALCALIB" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_RAccdetect2/RAccdetect2" type="STRING" user_data="ADCSWSEL_ACCDET2:5" exec="Dth_ActADC_exec">
+		<info>Label Action:RAccdetect2 </info>
+		<argument path="/DTH/ADC/Action/Action_RAccdetect2/RAccdetect2/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RAccdetect2/RAccdetect2/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RAccdetect2/RAccdetect2/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RAccdetect2/RAccdetect2/Out_valcalibconv_mV" type="U32" user_data="OUT_VALCALIB" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_ADCAux1/ADCAux1" type="STRING" user_data="ADCSWSEL_ADCAUX1:6" exec="Dth_ActADC_exec">
+		<info>Label Action:ADCAux1 </info>
+		<argument path="/DTH/ADC/Action/Action_ADCAux1/ADCAux1/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_ADCAux1/ADCAux1/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_ADCAux1/ADCAux1/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_ADCAux1/ADCAux1/Out_valcalibconv_mV" type="U32" user_data="OUT_VALCALIB" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_ADCAux2/ADCAux2" type="STRING" user_data="ADCSWSEL_ADCAUX2:7" exec="Dth_ActADC_exec">
+		<info>Label Action:ADCAux2 </info>
+		<argument path="/DTH/ADC/Action/Action_ADCAux2/ADCAux2/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_ADCAux2/ADCAux2/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_ADCAux2/ADCAux2/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_ADCAux2/ADCAux2/Out_valcalibconv_mV" type="U32" user_data="OUT_VALCALIB" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_VBat/VBat" type="STRING" user_data="ADCSWSEL_VBATA:8" exec="Dth_ActADC_exec">
+		<info>Label Action:VBat </info>
+		<argument path="/DTH/ADC/Action/Action_VBat/VBat/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBat/VBat/In_trigburst" type="U8" user_data="IN_TRIGBURST" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">disable</enum_item>
+          <enum_item value="1">enable</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBat/VBat/In_trigtimer" type="U8" user_data="IN_TRIGTIMER" set="Dth_ActADCParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBat/VBat/In_trigedge" type="U8" user_data="IN_TRIGEDGE" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">rising_edge</enum_item>
+          <enum_item value="1">falling_edge</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBat/VBat/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBat/VBat/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBat/VBat/Out_valcalibconv_mV" type="U32" user_data="OUT_VALCALIB" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_VBus/VBus" type="STRING" user_data="ADCSWSEL_VBUS:9" exec="Dth_ActADC_exec">
+		<info>Label Action:VBus </info>
+		<argument path="/DTH/ADC/Action/Action_VBus/VBus/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBus/VBus/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBus/VBus/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_IUSBcharger/IUSBcharger" type="STRING" user_data="ADCSWSEL_USBCHCUR:11" exec="Dth_ActADC_exec">
+		<info>Label Action:IUSBcharger </info>
+		<argument path="/DTH/ADC/Action/Action_IUSBcharger/IUSBcharger/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_IUSBcharger/IUSBcharger/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_IUSBcharger/IUSBcharger/Out_valconv_mA" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_VBackupBat/VBackupBat" type="STRING" user_data="ADCSWSEL_BACKUPBAT:12" exec="Dth_ActADC_exec">
+		<info>Label Action:VBackupBat </info>
+		<argument path="/DTH/ADC/Action/Action_VBackupBat/VBackupBat/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBackupBat/VBackupBat/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_VBackupBat/VBackupBat/Out_valconv_mV" type="FLOAT" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_RBatCtrl/RBatCtrl" type="STRING" user_data="ADCSWSEL_RBATCTRL:13" exec="Dth_ActADC_exec">
+	    <info>Label Action:RBatCtrl </info>
+		<argument path="/DTH/ADC/Action/Action_RBatCtrl/RBatCtrl/In_average" type="U8" user_data="IN_AVG" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">1</enum_item>
+          <enum_item value="1">4</enum_item>
+          <enum_item value="2">8</enum_item>
+          <enum_item value="3">16</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RBatCtrl/RBatCtrl/Out_val" type="U16" user_data="OUT_VAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="65535"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_RBatCtrl/RBatCtrl/Out_valconv_mV" type="U32" user_data="OUT_VALCONV" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+  </action>
+    <action path="/DTH/ADC/Action/Action_Init/Init_Gas_Gauge" type="STRING" user_data="ACTGG_INIT_CC" exec="Dth_ActADC_exec">
+      <argument path="/DTH/ADC/Action/Action_Init/Init_Gas_Gauge/In_CCPwrUpEna" type="U8" user_data="IN_CCPWRUPENA" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">Disable</enum_item>
+          <enum_item value="1">Enable</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_CALAUTO/Internal_Calib_AutoOffset" type="STRING" user_data="ACTGG_CALAUTO" exec="Dth_ActADC_exec">
+      <argument path="/DTH/ADC/Action/Action_CALAUTO/Internal_Calib_AutoOffset/In_CCintNAvg" type="U8" user_data="IN_CCINTAVGOFF" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">16</enum_item>
+          <enum_item value="1">8</enum_item>
+          <enum_item value="2">4</enum_item>
+        </enum>
+        <range min="0" max="2"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_CALAUTO/Internal_Calib_AutoOffset/Out_CCCounterAvgOffset_Reg" type="U8" user_data="OUT_CCINTAVGOFFREG" get="Dth_ActADCParam_Get">
+        <range min="0" max="255"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_CALMANUAL/Software_Calib_ManualOffset" type="STRING" user_data="ACTGG_CALMANUAL" exec="Dth_ActADC_exec">
+      <argument path="/DTH/ADC/Action/Action_CALMANUAL/Software_Calib_ManualOffset/Out_CCSampleConv_Reg" type="S16" user_data="OUT_CCSVAL" get="Dth_ActADCParam_Get">
+        <range min="-32767" max="32767"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_WCCCounOffREG/Wte_CCCountOffREG_ManualOffset" type="STRING" user_data="ACTGG_WCCCOUNOFFREG" exec="Dth_ActADC_exec">
+      <argument path="/DTH/ADC/Action/Action_WCCCounOffREG/Wte_CCCountOffREG_ManualOffset/In_CCCountOff_Reg" type="U8" user_data="IN_CCCOUNTOFFREG" set="Dth_ActADCParam_Set">
+        <range min="0" max="255"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE" type="STRING" user_data="ACTGG_CCSAMPLE" exec="Dth_ActADC_exec">
+      <argument path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/In_RstAccuSampleCounter" type="U8" user_data="IN_RESETCC" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">Inactive</enum_item>
+          <enum_item value="1">Reset</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/In_CCMuxOffset" type="U8" user_data="IN_CCMUX" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">Manual_offset</enum_item>
+          <enum_item value="1">Internal_Offset</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_CCSampleConv_Reg" type="U32" user_data="OUT_CCSVAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_CCSampleConv_calib" type="S32" user_data="OUT_CCSVALCALIB" get="Dth_ActADCParam_Get">
+        <range min="-2147483647" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_CCSampleConv_calibconv_uAh" type="S32" user_data="OUT_CCSVALCALIBCONV" get="Dth_ActADCParam_Get">
+        <range min="-2147483647" max="2147483647"/>
+	  </argument>
+	  <argument path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_NConvAccu_Reg" type="U32" user_data="OUT_CCNCONVACCU" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_NConvAccu_conv_uAh" type="S32" user_data="OUT_CCNCONVACCUCONV" get="Dth_ActADCParam_Get">
+        <range min="-2147483647" max="2147483647"/>
+      </argument>
+    </action>
+    <action path="/DTH/ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples" type="STRING" user_data="ACTGG_CCNCONVACCU" exec="Dth_ActADC_exec">
+      <info>Cyclic:1\n</info>
+      <argument path="/DTH/ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/In_RstNconvAccu" type="U8" user_data="IN_RESETACC" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">Inactive</enum_item>
+          <enum_item value="1">Reset</enum_item>
+        </enum>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/In_CCMuxOffset" type="U8" user_data="IN_CCMUXACC" set="Dth_ActADCParam_Set">
+        <enum>
+          <enum_item value="0">Manual_offset</enum_item>
+          <enum_item value="1">Internal_Offset</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/In_nSamples" type="U8" user_data="IN_NCONVACCU" set="Dth_ActADCParam_Set">
+		  <range min="1" max="255"/>
+	  </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg" type="U32" user_data="OUT_ACCVAL" get="Dth_ActADCParam_Get">
+        <range min="0" max="2147483647"/>
+      </argument>
+      <argument path="/DTH/ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh" type="S32" user_data="OUT_ACCVALCONV" get="Dth_ActADCParam_Get">
+        <range min="-2147483647" max="2147483647"/>
+      </argument>
+    </action>
+  </module>
+</dthapi>

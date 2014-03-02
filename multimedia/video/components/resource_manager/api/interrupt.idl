@@ -1,0 +1,57 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+#include <t1xhv_common.idt>
+
+interface resource_manager.api.interrupt { 
+
+/*
+  Remark: Interrupt numbers are hard coded for more efficiency and performance improvement (less
+  switch/case in code). It may be upgraded in the future (no be discussed).
+  
+  NB : Interrupt number description in file interrupt.c
+*/
+
+
+
+/** @addtogroup rmSubscribeInterruptGroup subscribeInterrupt
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface to subscribe to an interrupt.
+
+ \param[in]  interrupt interrupt number
+ \param[in]  cb  	   call back pointer to client interface inform_resource_status.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref rmConfigurationGroup
+ */
+void subscribeInterrupt(t_uint16 interrupt, resource_manager.api.signal *cb);
+
+/** @} */ // end of rmSubscribeInterruptGroup
+
+
+/** @addtogroup rmUnsubscribeInterruptGroup unsubscribeInterrupt
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface to unsubscribe to an interrupt.
+
+ \param[in]  interrupt interrupt number
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref rmConfigurationGroup
+ */
+void unsubscribeInterrupt(t_uint16 interrupt);
+
+/** @} */ // end of rmUnsubscribeInterruptGroup
+
+}

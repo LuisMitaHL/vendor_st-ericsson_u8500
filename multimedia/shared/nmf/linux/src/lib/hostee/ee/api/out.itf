@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <nmf/inc/channel_type.h>
+#include <nmf/inc/service_type.h>
+#include <ee/api/ee_type.h>
+
+interface ee.api.out unmanaged {
+    void EE_GetVersion(t_uint32 *version);
+    t_nmf_error EE_SetMode(t_ee_cmd_id aCmdID, t_sint32 aParam);
+
+    IMPORT_SHARED t_nmf_error EE_CreateChannel(t_nmf_channel_flag flags, t_nmf_channel *channel);
+    IMPORT_SHARED t_nmf_error EE_FlushChannel(t_nmf_channel channel, t_bool *isFlushMessageGenerated);
+    IMPORT_SHARED t_nmf_error EE_CloseChannel(t_nmf_channel channel);
+    IMPORT_SHARED t_nmf_error EE_RegisterService(t_nmf_channel channel, t_nmf_serviceCallback handler, void *contextHandler);
+    IMPORT_SHARED t_nmf_error EE_UnregisterService(t_nmf_channel channel, t_nmf_serviceCallback handler, void *contextHandler);
+    IMPORT_SHARED t_nmf_error EE_RegisterNotify(t_nmf_channel channel, t_nmf_notify notify, void *contextHandler);
+    IMPORT_SHARED t_nmf_error EE_GetMessage(t_nmf_channel channel, void **clientContext, char **message, t_bool blockable);
+    IMPORT_SHARED void EE_ExecuteMessage(void *itfref, char *message);
+}
+

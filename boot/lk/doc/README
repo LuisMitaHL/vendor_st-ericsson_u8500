@@ -1,0 +1,509 @@
+README
+
+2012-04-05
+
+Notes on how to configure, build and run Little Kernel on ST-Ericsson
+HREF500/CCU9540 boards.
+These instructions are valid until LK has been properly integrated in
+Android forest.
+
+SI 5.69 has been used for testing.
+
+
+1. Source code
+1.1. Code base
+1.2. Code structure
+2. Build
+2.1. Toolchain
+2.2. Build
+2.3. Build options
+3. LK environment variables
+3.1. Configuration file format
+3.1.1. memargs
+3.1.2. blkdevparts
+3.1.3. uib_id
+3.2. envcreate tool
+3.3. Using custom configuration
+4. Flash and test
+4.1. Configure FlashKit
+4.2. Flashing using flashkit
+5. Security
+5.1. Functionality
+5.2. libbassapp
+6. HATS
+7. Anti Roll Back
+
+
+1. Source code
+1.1. Code base
+
+    Source is found in:
+    /vendor/st-ericsson/boot/lk
+
+    To get LK only, clone from here:
+    $git clone ssh://$USER@gerrit.lud.stericsson.com:29418/boot/lk
+
+    Code resides on branch ste-dev-master:
+    $git checkout ste-dev-master
+
+
+1.2. Code structure
+
+    |-- app
+    |   |-- env                     // Environment creation tool
+    |   `-- steboot                 // Main app, linux startup, fastboot
+    |-- dev                         // Physical drivers
+    |   |-- usb
+    |   |-- prcmu
+    |   |-- i2c
+    |   |-- mmc
+    |   |-- keys
+    |   |-- display
+    |   `-- uart
+    |-- platform
+    |   |-- ste
+    |   |   |-- x500                // Platform specifics (clocks, AB, etc)
+    |   |   |-- shared              // Common to all STE platforms
+    |-- project
+    |   |-- ccu9540.mk
+    |   `-- href500.mk
+    |-- doc                         // Documentation
+    `-- target
+        `-- ste
+            |-- href500
+            |   |-- target_config.h // Peripheral address mapping etc
+            `-- ccu9540
+                |-- target_config.h // Peripheral address mapping etc
+
+
+2. Build
+2.1. Toolchain
+
+    toolchain is defined in Android.mk.
+    toolchain used from u8500/l9540 SI forest, e.g.
+    /toolchain/arm-2009q3/bin
+
+
+2.2. Build
+
+    Two options to build lk binaries:
+    Whether in lk root directory:
+    $mm
+
+    or in forest root directory:
+    $make lk.bin
+    $make lk_env.bin
+
+    LK will be built during Android complete build if lk.bin and lk_env.bin
+    are added in vendor/st-ericsson/products/ste_uxxxx.mk (done for ste_u9540.mk).
+
+    The desired target (currently href500 or ccu9540), is selected in
+    vendor/st-ericsson/uxxxx/BoardConfig.mk (BUILD_LK_TARGET)
+    target is built from ./project/<target>.mk
+
+    This will build Little Kernel binary and default environment binary.
+    Resulting binaries are written to:
+    <forest root>/out/target/product/uxxxx/obj/lk/
+    Little Kernel binary and default environment binary also available in:
+    <forest root>/out/target/product/uxxxx/
+
+2.3. Build options
+
+    Build options are defined in Android.mk.
+    OPTIMIZED_TIME=1
+                : UART baudrate is set to 921600
+                  display is deactivated
+                  DEBUG option is not forced to 0 to be able to print traces.
+    DEBUG=x     : x = debuglevel (1,2)
+                  1: dprintf(INFO, ...) will be printed
+                  2: dprintf(SPEW, ...) will also be printed
+    EMMC_BOOT=1 : Boot from eMMC, only valid option for now.
+    BUILD_ENV=1 : Create environment binary, see following chapter for
+                  details.
+    BUILD_LK_ENV_IMG_INPUT=<path>/<config_file>
+                : see following chapter for details.
+    BUILD_LK_ENV_IMG_OUTPUT=[<path>]/<binary_file>
+                : see following chapter for details.
+
+
+3. LK environment variables
+3.1. Configuration file format
+
+    Little Kernel environment is a simple <variable>=<value> list.
+    All variable-value pairs will end up on kernel command line "as is"
+    with a few exceptions clarified below.
+
+    The default configuration is contained in
+    vendor/st-ericsson/uxxxx/lk_envparameters_android.cfg
+
+    Sample lk_envparameters_android.cfg:
+    memargs256=mem=96M@0 mem_modem=32M@96M mem=32M@128M hwmem=22M@160M pmem_hwb=42M@182M mem_mali=32@224M
+    memargs512=mem=96M@0 mem_mtrace=15M@96M mem_mshared=1M@111M mem_modem=16M@112M mali.mali_mem=32M@128M mem=56M@160M hwmem=167M@216M mem_issw=1M@383M mem=128M@384M
+    memargs768=mem=96M@0 mem_mtrace=15M@96M mem_mshared=1M@111M mem_modem=16M@112M mali.mali_mem=32M@128M mem=56M@160M hwmem=167M@216M mem_issw=1M@383M mem=384M@384M vmalloc=256M
+    memargs1024=mem=96M@0 mem_mtrace=15M@96M mem_mshared=1M@111M mem_modem=16M@112M mali.mali_mem=32M@128M mem=56M@160M hwmem=167M@216M mem_issw=1M@383M mem=640M@384M vmalloc=256M
+    cachepolicy=writealloc noinitrd
+    rdinit=init
+    init=init
+    board_id=1
+    crashkernel=1M@0x5600000
+    logo=logo.nologo
+    startup_graphics=1
+    mpcore_wdt.mpcore_margin=359
+    androidboot.console=ttyAMA2
+    root=/dev/ram0 rw
+    console=ttyAMA2,115200n8
+    blkdevparts=mmcblk0:16384@147456,516096@163840,2048@1024,262144@679936,385024@942080,8@81912 rootwait
+
+    Note that there is no command line argument describing root fs. That
+    information is extracted from boot image header and passed to kernel
+    in an ATAG.
+
+    The above sample configuration will yield the following command line
+    on HREF_V20_V60 board:
+    cachepolicy=writealloc noinitrd rdinit=init init=init board_id=1
+    crashkernel=1M@0x5600000 logo=logo.nologo startup_graphics=1
+    mpcore_wdt.mpcore_margin=359 androidboot.console=ttyAMA2 root=/dev/ram0 rw
+    console=ttyAMA2,115200n8
+    blkdevparts=mmcblk0:16384@147456,516096@163840,2048@1024,262144@679936,385024@942080,
+    8@81912 rootwait
+    mem=96M@0 mem_mtrace=15M@96M mem_mshared=1M@111M mem_modem=16M@112M mali.mali_mem=32M@128M
+    mem=56M@160M hwmem=167M@216M mem_issw=1M@383M mem=128M@384M
+
+
+3.1.1. memargs
+
+    memargs* will be replaced at run time by one line
+    memargs=<args>
+    <args> will be selected dynamically from one of memargs*, depending
+    on settings in DMC.
+
+
+3.1.2. blkdevparts
+
+    This variable is used to describe the various file system images to the
+    kernel.
+
+    Sample u8500 SI 5.30:
+    blkdevparts=mmcblk0:16384@147456,688128@163840,2048@1024,262144@851968,385024@1114112,8@81912
+
+    This describes the following images. Order must be maintained:
+    blkdevparts=mmcblk0:MODEMFS,SYSTEMFS,CSPSA0,CACHEFS,DATAFS,MISC
+
+    Format is:
+    blkdevparts=mmcblk0:<size_in_blocks>@<start_adress_in_blocks>,<...
+
+    size and adresses are given in number of 512 byte blocks. They are derived
+    from flashlayout.txt. Values are decimal.
+    size = (End - Start) / 512
+    start = Start / 512
+
+
+3.1.3. uib_id
+
+    This variable is used to identify the UIB on which LK is running and
+    to configure UIB-dependent hardware accordingly.
+
+    There are 3 different UIB IDs are supported:
+    uib_id=st_uib
+    uib_id=u8500_r1_uib
+    uib_id=u8500_r3_uib
+
+    If variable is not set, the u8500_r1_uib is assumed.
+
+    Usage of this variable is a temporary solution, which will be replaced
+    with run-time UIB ID detection.
+
+
+3.2. envcreate tool
+
+    envcreate tool is built and executed when BUILD_ENV=1 is given on
+    make commandline.
+    The source code is located here:
+    <root>/app/env
+
+
+3.3. Using custom configuration
+
+    If you don't want to use (or modify)the default configuration contained in
+    vendor/st-ericsson/uxxxx/lk_envparameters_android.cfg, input and output files
+    can be changed in vendor/st-ericsson/uxxxx/BoardConfig.mk.
+    Default binary file is lk_env.bin.
+
+    BUILD_LK_ENV_IMG_INPUT=<path>/<config_file>
+    BUILD_LK_ENV_IMG_OUTPUT=[<path>]/<binary_file>
+
+
+4. Flash and test
+4.1. Configure FlashKit
+
+    Apply this chapter only for u8500 as LK is default bootloader on u9540 starting
+    from SI tag l9540-android-4.0_v3.3.
+    The following changes needs to be implemented in FlashKit configuration,
+    compared to SI (where u-boot is used):
+    a. Replace KERNEL and INITRD images with single boot.img
+    b. Replace u-boot with Little Kernel
+    c. Replace UBOOT_ENV with new env binary and new name (BOOT_ENV)
+    d. Add recovery partition
+    e. Additionaly, names of SUBTOC items has been changed to match Android names.
+        "MISC"      => "misc"
+        "BOOT"      => "boot"
+        "RECOVERY"  => "recovery"
+        "MODEMFS"   => "modemfs"
+        "SYSTEMFS"  => "system"
+        "CACHEFS"   => "cache"
+        "DATAFS"    => "userdata"
+    f. Sign configuration
+
+    Details of modifications:
+
+    flasharchive.xml:
+        a.
+        Remove KERNEL and INITRD, i.e.
+        <!-- Comment out or remove
+        <bax:entry name="kernel.bin" type="x-empflash/image">
+            <bax:source>uImage</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/KERNEL, 0x00000000</bax:attribute>
+            <bax:attribute name="TOC-ID">KERNEL</bax:attribute>
+            <bax:attribute name="TOC-LoadAddress">0x00007FC0</bax:attribute>
+        </bax:entry>
+        <bax:entry name="ramdisk.img" type="x-empflash/image">
+            <bax:source>ramdisk.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/INITRD, 0x00000000</bax:attribute>
+            <bax:attribute name="TOC-ID">INITRD</bax:attribute>
+            <bax:attribute name="TOC-LoadAddress">0x02E00000</bax:attribute>
+        </bax:entry>
+        -->
+
+        Add BOOT:
+        <bax:entry name="boot.img" type="x-empflash/image">
+            <bax:source>boot.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/boot, 0x00000000</bax:attribute>
+            <bax:attribute name="TOC-ID">boot</bax:attribute>
+        </bax:entry>
+
+        b.
+        Modify NORMAL entry
+        <bax:entry name="normal.bin" type="x-empflash/image">
+            <bax:source>normal.bin</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/NORMAL, 0x00000000</bax:attribute>
+            <bax:attribute name="TOC-ID">NORMAL</bax:attribute>
+            <bax:attribute name="TOC-LoadAddress">0x05608000</bax:attribute>
+            <bax:attribute name="TOC-EntryPoint">0x00000000</bax:attribute>
+        </bax:entry>
+
+        c.
+        Rename UBOOT_ENV to BOOT_ENV
+        <bax:entry name="boot-env.bin" type="x-empflash/image">
+            <bax:source>boot-env.bin</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/BOOT_ENV, 0x00000000</bax:attribute>
+            <bax:attribute name="TOC-ID">BOOT_ENV</bax:attribute>
+        </bax:entry>
+
+        d.
+        Add RECOVERY partition
+        <bax:entry name="recovery.img" type="x-empflash/image">
+            <bax:source>recovery.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/recovery, 0x00000000</bax:attribute>
+            <bax:attribute name="TOC-ID">recovery</bax:attribute>
+        </bax:entry>
+
+        e. Rename SUBTOC entries to match Android
+        "MISC"
+        <bax:entry name="misc.img" type="x-empflash/image">
+            <bax:source>misc.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/misc, 0x00000000 </bax:attribute>
+            <bax:attribute name="TOC-ID">misc</bax:attribute>
+        </bax:entry>
+
+        "MODEMFS"
+        <bax:entry name="modemfs.img" type="x-empflash/image">
+            <bax:source>modemfs.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/modemfs, 0x00000000 </bax:attribute>
+            <bax:attribute name="TOC-ID">modemfs</bax:attribute>
+        </bax:entry>
+
+        "SYSTEMFS"
+        <bax:entry name="system.img" type="x-empflash/image">
+            <bax:source>system.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/system, 0x00000000 </bax:attribute>
+            <bax:attribute name="TOC-ID">system</bax:attribute>
+        </bax:entry>
+
+        "CACHEFS"
+        <bax:entry name="cache.img" type="x-empflash/image">
+            <bax:source>cache.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/cache, 0x00000000 </bax:attribute>
+            <bax:attribute name="TOC-ID">cache</bax:attribute>
+        </bax:entry>
+
+        "DATAFS"
+        <bax:entry name="userdata.img" type="x-empflash/image">
+            <bax:source>userdata.img</bax:source>
+            <bax:attribute name="Target">/flash0/TOC/SUBTOC/userdata, 0x00000000 </bax:attribute>
+            <bax:attribute name="TOC-ID">userdata</bax:attribute>
+        </bax:entry>
+
+
+    _filelist_complete.txt:
+        flashlayout = ./flashlayout.txt
+        # a. Single boot.img replace kernel and ramfs
+        boot.img = ./boot.img
+
+        # b. LK as NORMAL
+        normal.bin = ./lk.bin
+
+        # c. boot environment
+        boot-env.bin = ./lk_env.bin
+
+        splash = ./splash.bin
+
+        # a. remove ramdisk
+        #ramdisk.img = ./ramdisk.img
+
+        system.img = ./system.img
+        userdata.img = ./userdata.img
+        cache.img = ./cache.img
+        misc.img = ./misc.img
+        modemfs.img = ./modemfs.img
+
+        # a. remove kernel
+        #uImage = ./uImage
+
+        # d. Add recovery
+        recovery.img=./recovery.img
+
+
+    flashlayout.txt:
+        When modifying layout, make sure not to create memory overlaps
+        with other entries!
+
+        a. Remove KERNEL and INITRD entries, replace with BOOT.
+            Path: /flash0/TOC/SUBTOC/boot
+            Description: Linux boot image
+            Content-Type: x-empflash/TOC-Partition
+            Start: <desired start address>
+            End: <desired end address>
+
+        b. LK as NORMAL
+            Path: /flash0/TOC/NORMAL
+            Description: Little Kernel
+            Content-Type: x-empflash/TOC-Partition
+            Start: <desired start address>
+            End: <desired end address>
+
+        c. BOOT_ENV
+            Path: /flash0/TOC/BOOT_ENV
+            Description: Little Kernel environment variables
+            Content-Type: x-empflash/TOC-Partition
+            Start: <desired start address>
+            End: <desired end address>
+
+        d. RECOVERY image
+            Path: /flash0/TOC/SUBTOC/recovery
+            Description: Linux recovery image
+            Content-Type: x-empflash/TOC-Partition
+            Start: <desired start address>
+            End: <desired end address>
+
+        e. Rename SUBTOC entries to match Android
+            "MISC":
+            Path: /flash0/TOC/SUBTOC/misc
+            ...
+            "MODEMFS":
+            Path: /flash0/TOC/SUBTOC/modemfs
+            ...
+            "SYSTEMFS"
+            Path: /flash0/TOC/SUBTOC/system
+            ...
+            "CACHEFS":
+            Path: /flash0/TOC/SUBTOC/cache
+            ...
+            "DATAFS"
+            Path: /flash0/TOC/SUBTOC/userdata
+
+    - sw_type_map*.txt
+        f. Sign configuration
+        See FlashKit documentation for details on sign configuration files.
+
+        The following entries are needed. Set sign condition as appropriate
+        to your system.
+
+            normal.bin [osloader | NA]
+            boot-env.bin [ape_normal | NA]
+            boot.img [ape_normal | NA]
+            recovery.img [ape_normal | NA]
+
+
+4.2. Flashing using flashkit
+
+    - Flash complete image using flasher tool:
+    $./flasher -t<hw> -L -e -e /flash0/TOC/CSPSA0 -e -c
+
+    - Subsequent flashing, when you only want to flash a new lk.bin:
+    $./flasher -t<hw> -L -w/flash0/TOC/SUBTOC/NORMAL=new_lk.bin
+
+    - Subsequent flashing, when you only want to flash a new env.bin:
+    $./flasher -t<hw> -L -w/flash0/TOC/BOOT_ENV=new_env.bin
+
+
+5. Security
+5.1. Functionality
+
+    2012-04-04
+    - LK accepts signed boot.img. Validation of signature is handled via
+      bass_app. bass_app verification API is called at all times.
+      At present, the following execution flow is implemented:
+
+      RnD      : Accept unsigned sw and incorrectly signed sw.
+                 Yields success for correct header and unsigned sw.
+      Secure HW: Only return success for correctly signed sw. If verification
+                 fails, execution is halted
+
+    - Signed BOOT_ENV implemented
+    - Signed u8500 IPL and MODEM implemented
+
+    This is subject to change when UCDS is updated.
+
+
+5.2. libbassapp
+
+    Security functionality is imported by using os-free bass_app library
+    from Security.
+
+
+6. HATS
+
+    To boot HATS instead of Android, the boot environment needs to be changed.
+    This is done from LK command line with commamnds below.
+
+    droid         : Setup to start Android
+                    - Set variable rdinit=init
+                    - Restore console settings, if previously set for HATS
+
+                    Syntax: droid [save] [noboot]
+
+                    save   : save envirnonment for next boot (optional)
+                    noboot : No auto boot after command (optional)
+
+
+    hats          : Set to start HATS
+                    Set variable rdinit=init.hats.rc
+
+                    Syntax: hats [save] [noboot] [uart]
+
+                    save   : save envirnonment for next boot (optional)
+                    noboot : No auto boot after command (optional)
+                    uart   : Reserve UART for HATS (optional)
+                             console=/dev/null
+                             hwtoolonuart=1,<console settings>
+
+
+7. Anti Roll Back
+
+    Anti Roll Back, ARB, is now supported in LK. LK calls security API
+    to determine if ARB tables need to be updated and acts accordingly.
+
+    If LK is used as bootloader, handling of ARB update in Android COPS
+    should be disabled by disabling flag COPS_ENABLE_ARB_UPDATE.
+
+

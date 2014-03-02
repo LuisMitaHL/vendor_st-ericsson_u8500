@@ -1,0 +1,309 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+Author:         Jean-Philippe Fassino & NMF Team
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.4.0 "La goudale"
+Date:           January 25th, 2010
+
+*** Warning ***
+Think has been deprecated and will be replace by Linux for OSI development.
+It will been supported on 8500 V1 board till end of March'2010.
+Please switch to this new environment as soon as possible.
+
+*** Deprecated ***
+SAA_CORE_ID is deprecated and will be removed in 2.5 version.
+    -> Be careful to use MACRO instead of value. 
+
+
+1.2 Board configuration:
+
+    Successfully tested configuration:
+        - STn8500 SVA & SIA
+            * PEPS 8500
+                PEPS SIA with an ED mapping + MMDSP V1
+            * MOP500-ED & HREF-ED V1.0
+                Only flash board without normal application in flash image
+                    (use -Normal_Appli 0 on command line flasher)
+                Flash with NPT referenced in nmf/workstation.txt
+            * MOP500 V1 & HREF V1
+                Only flash board without normal application in flash image
+                    (use -Normal_Appli 0 on command line flasher)
+                Flash with NPT referenced in nmf/workstation.txt
+
+    Not 100% successfully tested configuration:
+        - STn8500 SVA & SIA
+            * SVP 3.2.0
+                Issue in MMDSP simulator where code execution in ESRAM failed
+
+    Not (or no more) supported configuration:
+        - STn8820 SAA & SVA & SIA
+            * Cut A0
+        - STn8500 SVA & SIA
+            * SVP 2.0 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                STM IP trace not available
+            * SVP 2.2 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                Argc/Argv not supported
+            * SVP 2.3 (No more tested)
+            * SVP 2.4 (No more tested)
+            * MOP500-ED & HREF-ED V1.0 (No more tested)
+                Board not flash or flash with normal application in flash image
+
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version:
+        - RVCT 2.2-sp1-593 for 8815 & 8820
+        - RVCT 4.0_build529 for 8500
+
+    MMDSP compiler version
+        - MMDSP Toolset 4.3.0
+
+    - Lauterbach trace32 ref_patch_p20090717
+
+    - Java SE Runtime Environment
+        http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - RODOS
+        http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+    - Week delivery
+        Ready to use components.txt for Linux & Think environments (com.stericsson.nmf/components.txt)
+            # RODOS components.txt
+            include rod+package://com.stericsson.nmf:{year MMD delivery}.{week MMD delivery}.{patch}/component.txt
+
+
+3   RELEASE CONTENT
+
+    See tools/doc/file_hierarchies.txt about file tree organization !
+
+    - Toolbox
+
+    - Component Manager
+
+    - Execution Engine
+
+    - Think
+
+    - LOS
+
+
+3.1 Component Manager
+
+    - Add power management of ESRAM and SDRAM.
+    
+    - Add power management of MPC HardWare IP resources
+        When starting a component that need such IP, you have to declare such property in your component:
+            property hardware = all
+        Thus, when starting and stopping the component, the Component Manager will also clock on and off
+        the hardware IP associated with the MPC.
+        Note that the property must be declared in the top level component.
+    
+    - Remove useless OSAL.
+    
+    - Remove sub priority from API.
+    
+    - Registering one stub/skel of an interface in C and C++ is now fully supported
+    
+    - Added migration API
+        CM_Migrate(), CM_Unmigrate()
+        The basic functionnality is working ok.
+        It is a stateful API: only one migrate() allowed, unmigrate() is its counterpart
+        More complex use-case will be done when all depending features will be available (prcmu, nmf-ulp, ...)
+
+3.2 MPC Execution Engine
+
+	- Remove sub priority implementation from scheduler.
+	
+
+3.3 Host Execution Engine
+
+    - VI 24840   Warning in generated code in hostee
+    
+    - Add EE_GetVersion API
+    
+    - In order to not export whole class method outside DLL boundary in Symbian,
+        declare class as NONSHARABLE_CLASS.
+        
+    - Declare composite class destructor as protected in order to force developer to use
+        compositeDestroy(instance) method to delete its component.
+    
+    - compositeDestroy(instance) take a reference as parameter in order to set instance 
+      to null.
+      
+    - Add EE_SetMode API in order to control trace behavior:
+        EE_SetMode(EE_CMD_TRACE_ON, 0);     // Enable STM tracing and force network resetting and dumping
+        EE_SetMode(EE_CMD_TRACE_OFF, 0);    // Disable STM tracing
+    
+
+3.4 OS integration guidelines
+
+    - OSAL_DisablePwrRessource & OSAL_EnablePwrRessource API have been enhanced.
+        Parameter conventions are described in t_nmf_power_resourceDescription.
+        See Slides for more information.
+        Note: ESRAM/SDRAM OSAL implementation is able to manage power chunk by chunk.
+            In real implementation you can either just do global memory count or
+            bank by bank count according your underlying Power Resource Manager !!
+        Note: At the beginning, the CM assume that resource was off.
+    
+    - Remove useless OSAL. It concern OSAL_DisableInterrupt(), OSAL_EnableInterrupt(),
+      OSAL_LockScheduler() and OSAL_UnlockScheduler().
+    
+    - Remove nomadikSocId (no more used since one compilation by target -> define instead).
+    
+    - Remove comDomainId from CM_ENGINE_ConfigureMediaProcessorCore
+        -> It has been merged with eeDomaindId
+        
+    - eeDomainId depend on MMDSP base and must be defined like that:
+        eeDomain.coreId = ...;
+        eeDomain.sdramCode.offset  = 0x0;
+        eeDomain.sdramData.offset  = 0x0;
+        eeDomain.sdramCode.size    = 0x8000;
+        eeDomain.sdramData.size    = 0x40000;
+        eeDomain.esramCode.size    = 0x4000;
+        eeDomain.esramData.size    = 0x40000;
+        
+        This is a maximum value due to HW constraint (shift 3) !!!!!!!
+        
+    - In HostEE OS integration wrapper add such code:
+        EXPORT_SHARED void EE_GetVersion(t_uint32 *version) {
+            out.EE_GetVersion(version);
+        }
+
+        EXPORT_SHARED t_nmf_error EE_SetMode(t_ee_cmd_id aCmdID, t_sint32 aParam) {
+            return out.EE_SetMode(aCmdID, aParam);
+        }
+    
+    - Add CM_OS_Migrate() and CM_OS_Unmigrate() wrappers
+
+3.5 Tools
+
+    -  VI 24840   Warning in generated code in hostee
+        Null interface generate code that cast NULL pointer to the right method signature
+
+    - Reduce generated file pathname size by:
+        - Changing fully qualified name used for distinguish composite compilation by last name.
+            -> Thus unicity is compute only on that last name and potential conflict could appear if
+               several fully name finish by same last name, this must be checked by user.
+            -> This feature could be disabled by using --longpath option
+                nmfconfc --longpath ...
+        - Remove double "src/" in generated path file name.
+        
+
+    - Remove NMF version & date in header of generated files in order to do comparison between
+      delivery.
+      
+
+3.6 Programming model
+
+    - Pass argument by reference in IDL for C++ is supported.
+
+3.7 Think
+    
+    - Enable alignment checks to correct vi 25753
+    
+
+3.8 Linux & Symbian
+
+3.9 Examples
+
+3.10 Packaging
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    23344   dynamic unbind of ARM-composite interface is not working properly
+    24840   Warning in generated code in hostee
+    25753   Think should set the Cortex A9 MMU SCTLR.U to 0 (disable unaligned memory access)
+    25487   Registering two stub/ske with the same interface name results in unexpected behavior
+
+    Fix issue when ARM composite interface collection directly bound to MPC component interface.
+         
+    
+4.2 Active defect list
+
+    24428   auto-generated wrapper component does not consider extended components
+    23488   Assert in mmte_testStart when leading '/' in logdir
+    23121   setConfig argument passing by pointer instead of structure
+    22408   resetting/stopping mmdsp core on mop500 stop mtu timers
+    22218   provided interface are not inside the code, no problem at compilation ????
+    22182   test api: flush of results before test_end
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+
+    For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+    - Component manager
+        All warnings and errors removed.
+
+
+6.2 Code Static analysis result
+
+    - Component manager
+        Coverity done (each remaining issue could be explained).
+
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Done.
+
+6.4 Confidentiality safe
+
+    Done.
+
+7   DOCUMENTS
+
+    Test report available at:
+        http://gnx2487:9000/

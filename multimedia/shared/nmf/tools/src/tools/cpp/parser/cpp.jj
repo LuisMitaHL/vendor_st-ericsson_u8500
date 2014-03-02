@@ -1,0 +1,101 @@
+options {
+  //OUTPUT_DIRECTORY = "tools/cpp/parser";
+  JAVA_UNICODE_ESCAPE = false; // True break tokenizer since we don't handle unicode
+  STATIC=false;
+  JDK_VERSION="1.6"; 
+}
+/*****************************************************
+ Main class 
+ *****************************************************/
+
+PARSER_BEGIN(CPPParser)
+
+package tools.cpp.parser;
+
+import java.util.ArrayList;
+
+public class CPPParser {
+     void addAbsolute(ArrayList<String> includeAbsolutes, String line) {
+        includeAbsolutes.add(line.substring(line.indexOf("<") + 1, line.indexOf(">")));
+    }
+	void addRelative(ArrayList<String> includeRelatives, String line) {
+        includeRelatives.add(line.substring(line.indexOf("\"") + 1, line.lastIndexOf("\"")));
+    }
+}
+
+PARSER_END(CPPParser)
+
+/*****************************************************
+ TOKENS
+ *****************************************************/
+SKIP :
+{
+  " "
+|
+  "\t"
+|
+  "\r\n"
+|
+  "\n"
+}
+
+<DEFAULT> TOKEN : {
+	<POUND_INCLUDE: "#" "include"> : PREPROCESSOR_OUTPUT
+}
+<DEFAULT> TOKEN : { 
+	< TEXT : ~[] > 
+}
+ 
+<PREPROCESSOR_OUTPUT>
+ SKIP :
+{
+  " "
+|
+  "\t"
+}
+
+<PREPROCESSOR_OUTPUT>
+TOKEN :
+{
+	<ABS_INCLUDE: "<"  (~[">"])*  ">"  >
+|	<REL_INCLUDE: "\"" (~["\""])* "\"" > 
+|   <ENDINCLUDE:  ("\n"|"\r"|"\r\n")?  > : DEFAULT
+}
+
+/*
+<PREPROCESSOR_OUTPUT>
+MORE :
+{
+  < ~[] >
+}
+*/
+/*****************************************************
+ CPP Grammars
+ *****************************************************/
+
+void Parse(ArrayList<String> includeAbsolutes, ArrayList<String> includeRelatives):
+{
+	Token t;
+}
+{
+    text()
+    ( 
+    	t = <POUND_INCLUDE> { /*System.out.println("++++++++" + t.image + "++++++++++");*/ } 
+    	(
+    		t = <ABS_INCLUDE> { /*System.out.println(">>>" + t.image);*/ addAbsolute(includeAbsolutes, t.image);} |
+    		t = <REL_INCLUDE> { /*System.out.println(">>>" + t.image);*/ addRelative(includeRelatives, t.image); } 
+    	)
+    	t = <ENDINCLUDE>
+    	text() 
+    )*
+    < EOF >
+}
+
+void text() : 
+{
+	Token t;
+} 
+{ 
+	( t = <TEXT> /* { System.out.println(t.image); }*/ )* 
+}
+

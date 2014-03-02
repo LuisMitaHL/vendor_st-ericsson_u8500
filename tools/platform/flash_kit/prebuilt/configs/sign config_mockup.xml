@@ -1,0 +1,100 @@
+﻿<?xml version="1.0"?>
+<!-- The following DTD must not be included in every configuration file. It is only used when   -->
+<!-- validating the XML document                                                                -->
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                    	(bax:flash_archive?, bax:ram_image?)>
+    <!ELEMENT bax:source                              	(#PCDATA)>  
+    <!ELEMENT bax:flash_archive                       	(bax:entry*)>
+	<!ELEMENT bax:ram_image								(bax:entry*)>
+    <!ELEMENT bax:entry                               	(bax:source,bax:attribute*)>
+    <!ELEMENT bax:attribute                         	(#PCDATA)>
+    
+    <!ATTLIST target_configuration      xmlns:bax       CDATA                                   	#FIXED "TBD">
+    <!ATTLIST bax:entry                 name      		CDATA                         				#REQUIRED>
+    <!ATTLIST bax:entry                 type      		CDATA										#REQUIRED>
+    <!ATTLIST bax:attribute             name      		CDATA                         				#REQUIRED>
+]>
+
+<target_configuration>
+	<bax:flash_archive>
+		
+		<bax:entry name="flashlayout.txt" type="x-empflash/flash-layout">
+			<bax:source>flashlayout</bax:source>
+		</bax:entry>
+		
+		<bax:entry name="boot_image.bin" type="x-empflash/bootimage">
+			<bax:source>boot_image</bax:source>
+			<bax:attribute name="Target">/flash0/boot0, 0x00000000</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="mem_init.bin" type="x-empflash/image">
+			<bax:source>mem_init</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/MEM_INIT, 0x00000000</bax:attribute>
+			<bax:attribute name="TOC-ID">MEM_INIT</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="power_management.bin" type="x-empflash/image">
+			<bax:source>power_management</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/PWR_MGT, 0x00000000</bax:attribute>
+			<bax:attribute name="TOC-ID">PWR_MGT</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="ipl.bin" type="x-empflash/image">
+			<bax:source>ipl</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/IPL, 0x00000000</bax:attribute>
+			<bax:attribute name="TOC-ID">IPL</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="modem.bin" type="x-empflash/image">
+			<bax:source>modem</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/MODEM, 0x00000000</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x06000000</bax:attribute>
+			<bax:attribute name="TOC-ID">MODEM</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="normal.bin" type="x-empflash/image">
+			<bax:source>u-boot.bin</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/NORMAL, 0x00000000</bax:attribute>
+			<bax:attribute name="TOC-ID">NORMAL</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x00000000</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x00000000</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="kernel.bin" type="x-empflash/image">
+			<bax:source>uImage</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/KERNEL, 0x00000000</bax:attribute>
+			<bax:attribute name="TOC-ID">KERNEL</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x00100000</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="rootfs.img" type="x-empflash/image">
+			<bax:source>rootfs.img</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/ROOTFS, 0x00000000 </bax:attribute>
+			<bax:attribute name="TOC-ID">ROOTFS</bax:attribute>
+		</bax:entry>
+
+		<bax:entry name="cspsa.bin" type="x-empflash/initilized-area">
+			<bax:source>cspsa.bin</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/CSPSA0, 0x00000000 </bax:attribute>
+			<bax:attribute name="TOC-ID">CSPSA0</bax:attribute>
+		</bax:entry>
+<!--
+		<bax:entry name="cspsa1.bin" type="x-empflash/initilized-area">
+			<bax:source>cspsa1.bin</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/CSPSA1, 0x00000000 </bax:attribute>
+			<bax:attribute name="TOC-ID">CSPSA1</bax:attribute>
+		</bax:entry>
+		
+		<bax:entry name="cspsa2.bin" type="x-empflash/initilized-area">
+			<bax:source>cspsa2.bin</bax:source>
+			<bax:attribute name="Target">/flash0/TOC/CSPSA2, 0x00000000 </bax:attribute>
+			<bax:attribute name="TOC-ID">CSPSA2</bax:attribute>
+		</bax:entry>
+-->
+	</bax:flash_archive>
+	
+</target_configuration>
+

@@ -1,0 +1,36 @@
+;------------------------------------------------------------
+; general_path_settings.cmm
+;------------------------------------------------------------
+; Override of cpt path settings
+;
+; 110526 - KM Initial version
+; 111011 - PDE adapt for 9540
+;-----------------------------------------------------------
+
+GLOBAL &general_path_settings
+
+; PATH should be updated only one time
+if ("&general_path_settings"!="DONE")
+(
+print "override cpt path setting"
+
+; copied from CPT delivery : add subdirectory in PATH
+
+local &cur_dir
+&cur_dir=os.ppd()
+&cur_dir="&(cur_dir)/cpt"
+
+&mmdsp_dir="&(cur_dir)/mmdsp"
+&mem_init_dir="&(cur_dir)/mem_init"
+&trace_config_dir="&(cur_dir)/trace_config"
+&palladium_dir="&(cur_dir)/palladium"
+
+path + &mmdsp_dir
+path + &mem_init_dir
+path + &trace_config_dir
+path + &palladium_dir
+
+&general_path_settings="DONE"
+)
+
+enddo

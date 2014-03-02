@@ -1,0 +1,21 @@
+;------------------------------------------------------------
+; etb_settings.cmm
+;------------------------------------------------------------
+; Startup file to setup etb settings
+;
+;-----------------------------------------------------------
+
+etm.reset
+
+; use trace onchip (ETB) by default
+trace.method onchip
+
+if "&LinuxDebug"=="TRUE"
+(
+	; Enable tracing of the context id
+	; to track memory spaces of Linux.
+	ETM.ContextID 32
+)
+
+t.init
+t.arm

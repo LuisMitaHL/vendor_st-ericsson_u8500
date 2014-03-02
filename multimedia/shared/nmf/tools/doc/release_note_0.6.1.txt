@@ -1,0 +1,97 @@
+*****************************
+* Nomadik Kernel 0.6.1      *
+*****************************
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World, User Guide, MP3, User Fifo)
+ 	- Documentations (User guide, programming model, CM API, DSP API)
+
+Supported target:
+	- STn8815 SAA & SVA
+
+Changes:
+--------
+- [Tools] NKDEBUG environment variable replace by NMF_DEBUG and possible value totally changed
+- [Tools] (Requirement #19652) CFLAGS management
+	option CFLAGS would allow to define OVERRIDABLE CFLAGS values
+	option FIXED_CFLAGS would allow to define UNOVERRIDABLE CFLAGS value.
+- [Tools] (Requirement #19701) Properties was declared in the C wrapper (.nk) as a macro for 
+                               access them from DSP C source code
+- [Examples] Examples makefiles have been updated to allow DSP, EE type and debug link selection (see examples/readme file)
+- [CM] t_cm_error enumerate has been updated to provide more understandable errors
+        discriminate binding component loading error from the "standard" component one
+        discriminate CM_NO_SUCH_INTERFACE error between provided ones and required ones
+- [EE] default stack size of both Executive Engine have been updated:
+        synchronous EE: stack size = 4096 -> 512
+        hybrid EE: stack size = 4096 -> 1536
+
+Bug fixes:
+----------
+- (Defect #19558) Overriding the CFLAGS make variable from command line
+- (Defect #19614) Corrected execution engine path pass to mmgdb in the dsp makefile
+- (Defect #19723) no way to specify sources in the current directory in .conf file
+
+Notes:
+------
+	- MMDSP debugger not component aware in MMDSP toolset 3.0.1
+
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested and allowed only in composite 
+		component not though Component manager API (will be available in M2 Milestone)
+	- Inter-DSP distribution not supported due to hardware limitation
+		Will be fixed in STn8815B0
+	- Only the 24bits mode supported on DSP
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one segment only
+		
+	- Unbind and destroy component not fully implemented (unsafe reconfiguration)
+		Safe reconfiguration will be available in M2 Milestone
+	- Memory allocator don't manage alignement 
+		Must be done manually (alignement will be available in M2 Milestone)
+		
+	- Trace visualizer debug tool
+		Not yet released (will be release in Engineering release)
+		
+	- MP3 example
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectonics
+
+Pre-requires:
+-------------
+	- At least MMDSP toolset 3.0.1 must be used (http://gnx1227.gnb.st.com:8080/releases/release_list.php)
+		MMDSP debugger not component aware
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 
+		(also installed by the MMDSP toolset 3.x)
+		(also available for downloading on https://codex.cro.st.com/projects/nomadikkernel/)
+   	- Gnu tools, 
+		* On Linux, installed by default
+		* On Windows, you must install either:
+			+ CygWin
+			+ MinGW/MSYS (http://www.mingw.org)
+				MSYS-1.0.10.exe (at least)
+				MinGW-4.1.0.exe (at least)
+				(also available for downloading on https://codex.cro.st.com/projects/nomadikkernel/)
+        
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		DSP: SAA & SVA
+		Execution Engine: Synchronous, Hybrid
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-DSP
+			asynchronous intra-DSP
+			ARM -> DSP
+			DSP -> ARM
+			error management
+

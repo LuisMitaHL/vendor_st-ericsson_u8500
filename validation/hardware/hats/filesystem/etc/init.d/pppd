@@ -1,0 +1,89 @@
+#!/bin/sh
+
+LOG_FILE_NAME="pppd_"
+LOG_FILE_ROOT="/var/log"
+tmpfile=`ls -x ${LOG_FILE_ROOT}/${LOG_FILE_NAME}[0-9]*.log 2> /dev/null`
+if [ -z "$tmpfile" ]
+then
+	tmpfile="${LOG_FILE_NAME}0.log"
+else
+	tmpfile=`echo $tmpfile | sed 's/.*\/\([^\/]*\)/\1/'`
+	tmpfile="`echo $tmpfile | sed \"s/.* *\(${LOG_FILE_NAME}[0-9]*\.log\)$/\1/\"`"
+fi
+LOC_LOG_FILE="${LOG_FILE_ROOT}/${tmpfile}"
+touch $LOC_LOG_FILE
+
+case $1 in
+    start)
+	LOC_LOG_FILE="${LOG_FILE_ROOT}/${LOG_FILE_NAME}`echo $tmpfile | sed \"s/.* *${LOG_FILE_NAME}\([0-9]*\)\.log$/\1/\" | xargs expr 1 + | sed 's/.*\([0-9]\{3\}\)/\1/g'`.log"
+	touch $LOC_LOG_FILE
+	tail -f $LOC_LOG_FILE &
+	tailpid=$!
+	echo "Starting pppd..." >> $LOC_LOG_FILE
+	hwtoolparam=`cat /proc/cmdline | grep hwtoolonuart | sed 's/.* hwtoolonuart=\(\S*\).*/\1/'`
+	if [ -z "$hwtoolparam" ] || [ "$hwtoolparam" = "0" ]
+	then
+		kill $tailpid
+		echo "... not needed" >> $LOC_LOG_FILE
+		tail -n 1 $LOC_LOG_FILE
+		sync
+	else
+		hwtooldev=`echo $hwtoolparam | sed 's/[0|1],\([^,]*\).*/\1/'`
+		hwtoolbaud=`echo $hwtoolparam | sed 's/[0|1],[^,]*[,]*\([0-9]*\).*/\1/'`
+		if [ -z "$hwtooldev" ]
+		then
+			kill $tailpid
+			echo "... ERROR: no device specified [$hwtoolparam]" >> $LOC_LOG_FILE
+			tail -n 1 $LOC_LOG_FILE
+			sync
+			exit 1
+		elif [ ! -e "$hwtooldev" ]
+		then
+			if [ -e "/dev/$hwtooldev" ]
+			then
+				hwtooldev="/dev/$hwtooldev"
+			else
+				kill $tailpid
+				echo "... ERROR: unknown specified device [$hwtooldev]" >> $LOC_LOG_FILE
+				tail -n 1 $LOC_LOG_FILE
+				sync
+				exit 1
+			fi
+		fi
+		if [ -z "$hwtoolbaud" ]
+		then
+			hwtoolbaud="115200"
+			echo "WARNING: no baud rate specified, using default [$hwtoolbaud]!" >> $LOC_LOG_FILE
+		fi
+		if [ ! -e /dev/ppp ]
+		then
+			echo "WARNING: /dev/ppp does not exist, verify if CONFIG_PPP & CONFIG_PPP_ASYNC are build in your kernel!" >> $LOC_LOG_FILE
+		fi
+		mkdir -p /var/run
+		echo "Launching: pppd $hwtooldev noauth $hwtoolbaud noipdefault local" >> $LOC_LOG_FILE
+		pppd $hwtooldev noauth $hwtoolbaud noipdefault local >> $LOC_LOG_FILE 2>&1
+		## To use debug mode, comment above line and uncomment the below one
+		# pppd $hwtooldev noauth $hwtoolbaud noipdefault local debug logfile $LOC_LOG_FILE  >> $LOC_LOG_FILE 2>&1
+		echo "... done on $hwtooldev at $hwtoolbaud" >> $LOC_LOG_FILE
+		sync
+	fi
+    ;;
+    stop)
+	tailpid=`ps | grep "tail -f /var/log/pppd" | grep -v grep | sed 's/ *\([0-9]*\).*/\1/'`
+	if [ -n "$tailpid" ]
+	then
+		kill $tailpid
+	fi
+	echo "Stopping pppd..." >> $LOC_LOG_FILE
+	killall pppd >> $LOC_LOG_FILE
+	echo "...done" >> $LOC_LOG_FILE
+	tail -n 3 $LOC_LOG_FILE
+    ;;
+    *)
+	echo "Usage:" >> $LOC_LOG_FILE
+	echo -e "\t$0 start" >> $LOC_LOG_FILE
+	echo -e "\t$0 stop" >> $LOC_LOG_FILE
+	tail -n 3 $LOC_LOG_FILE
+    ;;
+esac
+exit

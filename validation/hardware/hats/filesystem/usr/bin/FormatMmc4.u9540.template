@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# Copyright (c) ST-Ericsson, 2010
+# Author: Gerald Lejeune <gerald.lejeune@stericsson.com>
+#
+answer="n"
+case "$1" in
+    "-f" | "--force")
+    answer="y"
+    ;;
+    "")
+    fdiskOutput=`fdisk -l /dev/mmcblk0 2>&1`
+    fdisk -l /dev/mmcblk0
+    if [ -z "`echo $fdiskOutput | grep "^fdisk:"`" ]
+	then
+	echo -e "\nAssuming that /dev/mmcblk0 is MC4."
+	echo "All data on /dev/mmcblk0p8 and p9 will be lost, do you want to continue? (y/[n])"
+	read -s -n 1 answer
+    fi
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0" >&2
+    echo -e "\t$0 -f" >&2
+    echo -e "\t$0 --force" >&2
+    ;;
+esac
+if [ "$answer" == "y" ]
+    then
+    mke2fs -vm0 -L "UserFS1" /dev/mmcblk0p8
+    mkdosfs -F 32 -n "UserFS2" /dev/mmcblk0p9
+    mount -t ext2 /dev/mmcblk0p8 /mnt/UserFS1
+    mount -t vfat /dev/mmcblk0p9 /mnt/UserFS2
+    echo "Remove this file to reformat partitions" > /mnt/UserFS1/.ufs1
+    echo "Remove this file to reformat partitions" > /mnt/UserFS2/.ufs2
+    umount /mnt/UserFS1
+    umount /mnt/UserFS2
+    echo "done"
+else
+    echo "aborted"
+fi
+exit

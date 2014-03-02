@@ -1,0 +1,21 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+CPPFLAGS+=-DNVERBOSE 
+
+USER2MPCITFS_CPP=amr.nmfil.decoder.configure \
+                 amr.nmfil.encoder.configure
+
+             
+
+COMPONENTS= amr.codec.libamrcommon \
+			amr.codec.libamrdec \
+			amr.codec.libamrenc \
+			amr.codec.libamrdec24 \
+			amr.codec.libamrenc24 \
+            amr.nmfil.decoder \
+            amr.nmfil.encoder
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

@@ -1,0 +1,20 @@
+OMX_GetHandle    $1 OMX.ST.AFM.mixer_host
+
+OMX_SetParameter    $1 OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand $1 OMX_CommandPortDisable 2
+OMX_SendCommand $1 OMX_CommandPortDisable 3
+OMX_SendCommand $1 OMX_CommandPortDisable 4
+OMX_SendCommand $1 OMX_CommandPortDisable 5
+OMX_SendCommand $1 OMX_CommandPortDisable 6
+OMX_SendCommand $1 OMX_CommandPortDisable 7
+OMX_SendCommand $1 OMX_CommandPortDisable 8
+
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 8

@@ -1,0 +1,189 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+#-------------------------------
+# Default Config
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.config
+include $(MMROOT)/video/makefiles/Make.config
+
+TARGET=rvct
+COMPONENT_TOP_DIR=..
+
+#----------------------------
+#     Entry for Make.rules
+#
+#VPATH    : Search Path for prerequisites.(see default value in Make.rules)
+#CFLAGS   : Extra flags to give to the C compiler. (see default value in Make.rules)
+#CXXFLAGS : Extra flags to give to the C++ compiler. (see default value in Make.rules)
+#CPPFLAGS : Extra flags to give to the C preprocessor.(see default value in Make.rules)
+#
+#DEP_DEP  : Dependencies of dependency files.
+#           (for example generated header file before generating *.d)
+#TOBECLEAN: List of files you want to delete on realclean target.
+#
+#LIBNAME  : Name of the library without the prefix lib.
+#LIBOBJ   : List of object file to put in the lib
+#
+#EXENAME  : Name of executable
+#EXEOBJ   : List of object file needed to build executable
+#         For multiple executable, suffix these to variable with _1, _2 ...
+#
+#LOCALLIBS: list of local libraries to be linked with executable
+#
+#----------------------------
+
+ifdef NO_HAMAC
+CPPFLAGS   += -DNO_HAMAC
+SUFFIX      = _stub
+else
+SUFFIX      =
+endif
+
+#Trace
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+OST_SRC_DIR = src 
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_HOST)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_host
+INSTALL_DICO = $(OST_DICO_NAME).xml
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/inc/autogentraces
+CPPFLAGS  += -Iinc
+CPPFLAGS  += -I$(MMROOT)/video/components
+CPPFLAGS  += -I$(MM_IDT_DIR)
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/nmf_repository/$(MMPLATFORM)
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/nmf_repository/$(MMDSPCORE)
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/arm_nmf
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/arm_nmf/inc
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/arm_nmf/api
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/mpc/share/$(SVA_SUBSYSTEM)
+CPPFLAGS  += -I$(MMROOT)/video/components/common/nmf/arm/inc
+CPPFLAGS  += -I$(BUILD_INTERMEDIATES_DIR)/../$(NMF_REPO_DIR)/$(MMPLATFORM)
+
+ifeq ($(MYMMSYSTEM),symbian)
+#CPPFLAGS  += -I$(MMROOT)/video/components
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/../common/inc 
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/../common/nmf/arm/inc
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/mpc/share/$(SVA_SUBSYSTEM)
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/nmf_repository/$(MMPLATFORM)
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/nmf_repository/$(MMPLATFORM)
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/nmf_repository/generated/proxynmf$(SUFFIX)/src
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/nmf_repository/generated/proxynmf_hdtv/src
+CPPFLAGS  += -I$(COMPONENT_TOP_DIR)/nmf_repository/$(MMDSPPROCESSOR)
+CPPFLAGS  += -I../..
+endif
+
+CPPFLAGS += $(EXTRA_CPPFLAGS)
+
+CPPFLAGS += -DNMF_BUILD
+CPPFLAGS += -D_CACHE_OPT_
+
+LIBOBJ   = \
+		H264Enc_Proxy \
+		H264Enc_ParamAndConfig \
+		H264Enc_Port \
+		H264Enc_NmfHost_ProcessingComponent \
+
+# Stubs and Skeletons
+VPATH  += ../nmf_repository/$(MMDSPPROCESSOR)/host
+ifndef NO_HAMAC
+ifneq ($(findstring 5500,$(PLATFORM)),5500)
+LIBOBJ += video_h264enc_ddep_cpp-mpc2user-skels
+LIBOBJ += video_h264enc_ddep_cpp-user2mpc-stubs
+LIBOBJ += video_h264enc_algo-mpc2user-skels
+ifdef DEBUG_TRACES
+VPATH  += $(MMROOT)/video/nmf_repository/$(MMDSPPROCESSOR)/host
+LIBOBJ += video_debug_dsp_printf_cpp-mpc2user-skels
+endif
+endif
+endif
+
+OBJ_EXT     = o$(SUFFIX)
+CPPFLAGS   += -O3
+CPPFLAGS   += -I$(MMROOT)/video/components/h264enc/nmf_repository/$(MMPLATFORM)/h264enc_arm_nmf_h264enc$(SUFFIX)/src
+ifeq ($(PLATFORM),svp5500_v1-linux)
+    CPPFLAGS += -D__ndk5500_a0__
+endif
+LIBNAME     = st_h264enc_ddep$(SUFFIX)
+INSTALL_LIB = libst_h264enc_ddep$(SUFFIX).a
+LIBTOADD    =  $(MMROOT)/video/nmf_repository/$(MMPLATFORM)/h264enc/arm_nmf/proxynmf$(SUFFIX).a
+ifndef NO_HAMAC
+LIBTOADD2   += $(MMROOT)/video/nmf_repository/$(MMPLATFORM)/h264enc/arm_nmf/proxynmf_hdtv.a
+endif
+
+
+HEADER=
+
+#-------------------------------
+# Symbian makefile generation
+#-------------------------------
+GROUP_PATH = $(MMROOT)/video/components/h264enc
+ifdef NO_HAMAC
+GROUP_NAME = $(SYMBIAN_VARIANT_NAME)/group/stub
+SYMBIAN_PRJNAME = h264stubencoder
+SYMBIAN_BLD_EXTRA_MMP += "h264enc_proxynmf_stub_$(SYMBIAN_VARIANT_NAME).mmp"
+SYMBIAN_SYSTEMSTATICLIB += h264enc_proxynmf_stub_$(SYMBIAN_VARIANT_NAME).lib
+SYMBIAN_EXTRA_MMP_FLAG += "deffile ../../../eabi/h264stubencoder_$(SYMBIAN_VARIANT_NAME).def"
+#elf4nmf_EXPORT_DIR =    # Define empty because nothing to export
+else
+GROUP_NAME = $(SYMBIAN_VARIANT_NAME)/group/hw
+SYMBIAN_PRJNAME = h264hwencoder
+SYMBIAN_BLD_EXTRA_MMP += "h264enc_proxynmf_$(SYMBIAN_VARIANT_NAME).mmp"
+SYMBIAN_BLD_EXTRA_MMP += "h264enc_proxynmf_hdtv_$(SYMBIAN_VARIANT_NAME).mmp"
+SYMBIAN_SYSTEMSTATICLIB += h264enc_proxynmf_$(SYMBIAN_VARIANT_NAME).lib
+SYMBIAN_SYSTEMSTATICLIB += h264enc_proxynmf_hdtv_$(SYMBIAN_VARIANT_NAME).lib
+SYMBIAN_EXTRA_MMP_FLAG += "deffile ../../../eabi/h264hwencoder_$(SYMBIAN_VARIANT_NAME).def"
+elf4nmf_EXPORT_DIR = nmf
+endif
+SYMBIAN_EXTRA_MMP_FLAG += "EPOCALLOWDLLDATA"
+SYMBIAN_EXTRA_MMP_FLAG += "SMPSAFE"
+SYMBIAN_EXTRA_MMP_FLAG += "OPTION armcc --cpp"
+SYMBIAN_SYSTEMINCLUDE +=/epoc32/include/assp/nomadik/nmf/share
+SYMBIAN_SYSTEMINCLUDE +=/epoc32/include/osi/shared
+SYMBIAN_SYSTEMINCLUDE +=/epoc32/include/osi/shared/nmf
+SYMBIAN_SYSTEMINCLUDE +=/epoc32/include/osi/shared/host
+SYMBIAN_SYSTEMINCLUDE +=/epoc32/include/osi/video
+SYMBIAN_USERINCLUDE_EXTRA += "../../../arm_nmf/api"
+SYMBIAN_SYSTEMLIB += omxilenswrapper.lib
+SYMBIAN_SYSTEMLIB += omxilmmhwbuffer.lib
+SYMBIAN_SYSTEMLIB += hostee.lib
+SYMBIAN_SYSTEMLIB += st_vfm.lib
+SYMBIAN_SYSTEMLIB += st_ens.lib
+SYMBIAN_SYSTEMLIB += cm_user_api.lib
+SYMBIAN_SYSTEMLIB += euser.lib
+SYMBIAN_SYSTEMLIB += stuutils.lib
+SYMBIAN_SYSTEMSTATICLIB += omxilensservices.lib
+SYMBIAN_SYSTEMSTATICLIB += omxilosalservices.lib
+video_EXPORTDIR = inc
+
+
+SYMBIAN_ALL=symb-prj
+ifeq ($(MYMMSYSTEM),symbian)
+todo: lib SYMBIAN_ALL
+else
+#EXTRA_ALL=merge
+todo: lib merge
+endif
+
+
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.rules
+include $(MMROOT)/video/makefiles/Make.symbian.rules
+
+#-------------------------------
+# local Rules
+#-------------------------------
+#todo: lib
+#   @echo Merging codec and proxy in the same library
+#   $(VERCHAR)$(AR) $(AR_OPTION) $(LIBRARY) $(LIBRARY) $(LIBTOADD)
+
+merge:
+	@echo Merging codec and proxy in the same library
+	\rm -rf libtmp;mkdir libtmp;cd libtmp;$(AR) -x $(LIBTOADD)
+	$(VERCHAR)$(AR) $(AR_OPTION) $(LIBRARY)  libtmp/*;\rm -rf libtmp
+	@echo Merging codec and proxy in the same library
+	\rm -rf libtmp_hdtv;mkdir libtmp_hdtv;cd libtmp_hdtv;$(AR) -x $(LIBTOADD2)
+	$(VERCHAR)$(AR) $(AR_OPTION) $(LIBRARY)  libtmp_hdtv/*;\rm -rf libtmp_hdtv

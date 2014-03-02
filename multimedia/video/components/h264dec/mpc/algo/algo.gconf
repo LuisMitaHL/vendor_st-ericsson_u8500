@@ -1,0 +1,104 @@
+//
+//       Configuration file for      algo (H264 decoder)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive h264dec.mpc.algo extends debug.mpc.printf_type singleton
+{
+
+provides lifecycle.constructor								as constructor
+//
+// Provided interfaces to a h264_decoder_ddep component
+provides h264dec.mpc.api.algo								as iAlgo
+//
+// Provided interfaces to a resource_manager component
+provides resource_manager.api.signal                        as iSignal referenced
+
+
+
+// Required interfaces to a resource_manager component
+requires resource_manager.api.buffer						as iBuffer
+requires resource_manager.api.mtf							as iMtf
+//requires resource_manager.api.tcm_mem_alloc					as iTcmAlloc
+
+//      --------------
+//      - Source files
+
+#ifdef __ndk8500_ed__
+	sources src/hamac_bitstream.c
+	sources src/hamac_concealment.c
+	sources src/hamac_block_info.c
+	sources src/hamac_deblocking.c
+	sources src/t1xhv_h264d.c
+#else
+	sources src/SVA_SUBSYSTEM/hamac_bitstream.c
+	sources src/SVA_SUBSYSTEM/hamac_concealment.c
+	sources src/SVA_SUBSYSTEM/hamac_block_info.c
+	sources src/SVA_SUBSYSTEM/hamac_deblocking.c
+	sources src/SVA_SUBSYSTEM/t1xhv_h264d.c
+#endif
+#ifdef __ndk20__
+	sources src/SVA_SUBSYSTEM/common_bitstream.c
+	sources src/SVA_SUBSYSTEM/hamac_mb_decode.c
+	sources src/SVA_SUBSYSTEM/h264_hv_bitstream.c
+	sources src/SVA_SUBSYSTEM/hamac_cavlc.c
+	sources src/SVA_SUBSYSTEM/hamac_cavlc_lumalevel.c
+	sources src/SVA_SUBSYSTEM/hamac_cavlc_intra_ac.c
+	sources src/SVA_SUBSYSTEM/hamac_cavlc_intra_dc.c
+	sources src/SVA_SUBSYSTEM/hamac_cavlc_chroma_dc.c
+	sources src/SVA_SUBSYSTEM/hamac_cavlc_chroma_ac.c
+	sources src/SVA_SUBSYSTEM/hamac_sch.c
+#else
+	sources src/h264_hv_bitstream.c
+	sources src/hamac_cavlc.c
+	sources src/hamac_cavlc_lumalevel.c
+	sources src/hamac_cavlc_intra_ac.c
+	sources src/hamac_cavlc_intra_dc.c
+	sources src/hamac_cavlc_chroma_dc.c
+	sources src/hamac_cavlc_chroma_ac.c
+	sources src/hamac_sch.c
+#endif
+	sources src/algo.c
+//	sources src/t1xhv_h264d_main.c
+//	sources src/sm_h264d.c
+//	sources src/sm_common.c
+//	sources src/t1xhv_interrupt.c
+#ifdef __ndk8500_a0__
+	sources src/SVA_SUBSYSTEM/hamac_slice_ib.c
+#else
+	#ifdef __ndk8500_ed__
+	sources src/hamac_intra.c
+	sources src/hamac_inter.c
+	#else
+	sources src/SVA_SUBSYSTEM/hamac_intra.c
+	sources src/SVA_SUBSYSTEM/hamac_inter.c
+	#endif
+#endif
+	sources src/SVA_SUBSYSTEM/mtf_api.c
+
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+option CPPFLAGS "	-ICONF_ROOT/inc/SVA_SUBSYSTEM		\
+					-ICONF_ROOT/inc						\
+					-DMMDSP								\
+					-D__T1XHV_NMF_ENV=1					\
+					-D__LITTLE_ENDIAN_BITFIELD 			\
+					-D_MMDSP -DNOMADIK_VERSION 			\
+					-DFINAL_IMPLEMENTATION 				\
+					-D_FW_IMPLEMENTATION_ 				\
+					-DT1XHV_TASK_DECODE 				\
+					-DSTANDALONE_VERSION 				\
+					-DT1XHV_IDN_FW=COMPONENT_VERSION 	\
+					-DT1XHV_IDN_HW=HW_VERSION"
+
+//option CFLAGS "-O3 -g -mode16 -forceesramfn"
+option CFLAGS "-O3 -g -mode16 "
+
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+
+}

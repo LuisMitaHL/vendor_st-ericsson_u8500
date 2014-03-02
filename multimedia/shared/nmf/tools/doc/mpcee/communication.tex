@@ -1,0 +1,348 @@
+\chapter{Communications}
+In this chapter we will describe intra MMDSP and inter MMDSP communications.
+In both case it will result in the insertion of an element in the
+scheduler fifo by a call to Sched\_Event() function.
+
+Communication is handle by NMF generate code. NMF toolset will generate so
+called stub code which wrapped client side communication and skeleton code which
+wrapped server side communication.
+
+
+\section{Inter MMDSP communications}
+\subsection{Low level primitive}
+\subsubsection{Fifo}
+Fifo are the low level object use to insure NMF inter communications. These fifo
+are deployed by CM driver code and consist of a physically continuous memory
+which is shared by both side. Fifo consist of two part, a header that contain
+metadata need by communications primitive and a payload of an unknow content.
+Payload consist of n elements of the same size.
+
+Header is describe by the t\_nmf\_fifo\_desc c structure (Listing
+\ref{tnmffifodesc})
+\begin{lstlisting}[caption=fifo header structure, label=tnmffifodesc]
+typedef struct {
+    t_semaphore_id semId;   // semaphore index to use
+    t_uint16 elemSize;      // Size in 16 bits size of a fifo elem
+    t_uint16 fifoFullValue; // nb of elem request by user
+    t_uint16 readIndex;     // Current read index
+    t_uint16 writeIndex;    // Current write index
+    t_uint16 wrappingValue; // nb of elem plus one request by user
+    t_uint32 extendedField; // pointer to memory for which role vary
+                            // according to context
+    } t_nmf_fifo_desc;
+\end{lstlisting}
+
+Payload then follow header and are composed of n+1 elements (we allocate one
+more element to distinguish fifo empty case from fifo full case) of elemSize*2
+bytes.
+
+Fifo object offer following methods for manipulation :
+\begin{itemize}
+\item fifo\_getAndAckNextElemToWritePointer() : get next fifo element for
+write access and advance writeIndex pointer.
+\item fifo\_getAndAckNextElemToReadPointer() : get next fifo element for
+read access and advance readIndex pointer.
+\item fifo\_getNextElemToWritePointer() : get next fifo element for
+write access without advance of the writeIndex pointer.
+\item fifo\_getNextElemToReadPointer() : get next fifo element for
+read access without advance of the readIndex pointer.
+\item fifo\_acknowledgeRead() : increment readIndex pointer. This has for effect
+to free an element which can then be use for write.
+\item fifo\_acknowledgeWrite() : increment writeIndex pointer. This has for
+effect to add and element which can be use for read.
+\item fifo\_coms\_acknowledgeWriteAndInterruptGeneration() : same as
+fifo\_acknowledgeWrite() but also generate an interrupt.
+\end{itemize}
+
+\subsubsection{Signaling a new message}
+To signal a receiver we use HSEM hardware ip to generate an interruption. HSEM
+ip had 32 semaphores and each of them can generate an irq toward arm and MMDSP
+cores.
+We use a unique semaphore for each communication channel (coreA to CoreB) which
+allow reveiver to know which core want to communicate and so in which com fifo
+it had to look for new message.
+
+\subsection{High level}
+To insure communication between coreA and coreB there is the instantiations of
+two called coms fifo, one insure communication between coreA and coreB and the
+other one between coreB and coreA. These fifos are deployed by the CM driver
+when a MMDSP is power on. Number of element in these fifo have a fixed size set
+in CM driver code. Carried payload consist of information needed to retriewe
+which interface, method and parameters need to be executed.
+
+Then we have the so called params fifo. These fifo are deployed by the CM driver
+each time we bind an interface between host and MMDSP or between two MMDSP.
+There goal is to carry fonctions parameters. Number of element in these fifo are
+given by the user when he request a binding.
+
+To finish CM driver also deployed a stack of elements that will be push into the
+scheduler to execute the remote function call.
+\subsubsection{Coms fifo}
+Coms fifo are fifo of ARM\_DSP\_EVENT\_FIFO\_SIZE (128 is the current value)
+without extendedSharedFields.
+
+Payload carry by a com fifo can be describe by the following c structure:
+\begin{lstlisting}[caption=com fifo payload description, label=comPayload]
+typedef struct {
+    t_uint32 methodIndex; // index of the method to execute
+    t_uint32 paramIndex; // pointer to the param fifo elem that carry parameters
+    t_uint32 extFieldPointer; // pointer to the extented field of interface
+} com_fifo_payload;
+\end{lstlisting}
+
+\subsubsection{Params fifo}
+Param fifo size is the number of element request by user during interface
+binding.
+
+For MMDSP to MMDSP or host to MMDSP communications ExtendedSharedFields is used
+to :
+\begin{itemize}
+  \item to store address of TOP attribute which is the head of event link list.
+  \item to store address of methods provide by the interface.
+\end{itemize}
+So in this case ExtendedSharedFields has NumberOfMethodsProvideByInterface+1
+elements.
+
+For MMDSP to host communication ExtendedSharedFields has two elements :
+\begin{itemize}
+  \item a pointer to an opaque context structure.
+  \item size in bytes of a fifo element.
+\end{itemize}
+
+Payload carry marshalled function parameters. Size of an element size is given
+by the max of the parameters size (in bytes) of all the method of an interface.
+
+\subsubsection{Event link list}
+For Host to MMPDSP or MMDSP to MMDSP communications CM driver create an event
+link list of element that will be use to be push into scheduler. It also had the
+same number of elements that the corresponding param fifo. The link list head
+pointer is define by TOP attribute in the skeleton component. Initial value of
+the TOP attribute also indicate size in bytes that a param fifo element must
+have. Element of this link list are of struct TEvent type (Listing
+\ref{structTevent}).
+
+\begin{lstlisting}[caption=struct TEvent description, label=structTevent]
+struct TEvent {
+    struct TEvent* next; // pointer to next element or NULL if last.
+    void* reaction;      // address of the method to execute
+    void* THIS;          // component this.
+    t_uword priority;    // priority of the component.
+};
+\end{lstlisting}
+
+\subsubsection{Communication primitive api}
+Using fifo primitive and coms and params fifo we implement high level primitive
+which are then use by stub and skeleton component for communications :
+\begin{itemize}
+  \item AllocEvent() : Allocate a new element from a fifo to write message.
+  \item PushEvent() : send a previously allocated element to a remote core.
+  \item AcknowledgeEvent() : Acknoledge element reception so it be reuse for
+  future communication.
+  \item irqHandler() : each core implement an interrupt handler to receive
+  message and then post a scheduler event (or a tasklet for CM driver). On the
+  MMDSP side IT11() is the irq handler.
+\end{itemize}
+
+\subsection{How everything fit together}
+Since we now have described all the basic element we will nows describe the flow
+of call that occured. For that we will use api.call interface (Listing
+\ref{apicall}) as an example.
+\begin{lstlisting}[caption=api.call interface declaration, label=apicall]
+interface api.call {
+    void call(t_uint32 param);
+}
+\end{lstlisting}
+
+\subsubsection{Host to MMDSP}
+Host side sequence:
+\begin{itemize}
+  \item user call an interface using NMFCALL(itf, call)(1) which will call
+  generated method st\_api\_call\_call(itf, 1) (Listing \ref{sthostgenerated}).
+  \item st\_api\_call\_call() will marshal parameters on the stack and then call
+  CM\_INTERNAL\_PushEventWithSize().
+  \item CM\_INTERNAL\_PushEventWithSize() call CM\_OS\_PushEventWithSize() with
+  the same exact parameters.
+  \item According to target os, user call will end into kernel and will be split
+  into CM\_ENGINE\_AllocEvent() to allocate an event into param fifo and then a
+  call to CM\_ENGINE\_PushEvent() that will allocate an element from the com
+  fifo and generate an interrupt to MMDSP.
+\end{itemize}
+MMDSP side sequence:
+\begin{itemize}
+  \item Interrupt is handle by IT11() function. This function will then perform
+  the following actions:
+  \begin{itemize}
+    \item find the core responsible for the interrupt by calling
+    sem\_GetFromCoreIdFromIrqSrc().
+    \item Read element in com fifo associated with source core by calling
+    fifo\_getNextElemToReadPointer().
+    \item get the extendedField pointer which is located at offset
+    EVENT\_ELEM\_EXTFIELD\_IDX inside fifo com element.
+    \item get the head of event link list address which is located at offset
+    EXTENDED\_FIELD\_BCTHIS\_OR\_TOP inside the extendedField table.
+    \item Read the first element of the event link list address \verb#pEvent#
+    (\verb#pEvent = *ppEventFifo;#).
+    \item event link list cannot be empty since it has the same number of
+    element as the corresponding param fifo. So if we detect an empty link list
+    it means we got memory corruption and so we generate an internal panic.
+    \item get the method index which is located at offset
+    EVENT\_ELEM\_METHOD\_IDX inside fifo com element.
+    \item set param address where marshal data are located of \verb#pEvent#
+    located at offset EVENT\_ELEM\_PARAM\_IDX into com fifo.
+    \item set method address to call which is located at offset
+    EXTENDED\_FIELD\_BCDESC + idx into extendedField table.
+    \item pop event from link list (\verb#(*ppEventFifo) = pEvent->event.next;#)
+    \item mast all interrupts to avoid reentrency problem inside the scheduler
+    and push event using Sched\_Event() call, then reenable interrupts.
+  \end{itemize}
+  \item later on method will be elected for running and ScheduleEvent() call
+  with previously push event.
+  \item skeleton method is call (Listing \ref{skmmdspgenerated}) and implement
+  following steps:
+  \begin{itemize}
+    \item parameters located in param fifo are marshal.
+    \item event is the push into original link list
+    (\verb#_xyuv_event->event.next = ATTR(TOP);# and
+    \verb#ATTR(TOP) = _xyuv_event;#)
+    \item unmask all interrupts.
+    \item call AcknowledgeEvent() to allow param fifo elem for new usage.
+    \item call user method with correct parameters
+    (\verb#target.call(call_param);#)
+  \end{itemize}
+\end{itemize}
+\begin{lstlisting}[caption=st\_api\_call\_call() generated host code,
+label=sthostgenerated]
+static t_cm_error st_api_call_call(void* THIS, t_uint32 param) {
+  t_cm_bf_host2mpc_handle host2mpcId = (t_cm_bf_host2mpc_handle )THIS;
+  t_uint16 _xyuv_data[2];
+    /* param <t_uint32> marshalling */
+  _xyuv_data[0] = (t_uint16)param;
+  _xyuv_data[0+1] = (t_uint16)(param >> 16);
+  /* Event sending */
+  return CM_INTERNAL_PushEventWithSize(host2mpcId, _xyuv_data, 2*2, 0);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption=MMDSP call() skeleton ,label=skmmdspgenerated]
+void METH(call)(t_remote_event *_xyuv_event) {
+  t_event_params_handle _xyuv_data = _xyuv_event->data;
+  t_uint32 call_param;
+    /* param <t_uint32> marshalling */
+  call_param = (t_uint32)ext16to32((t_uint32)_xyuv_data[0+1], (t_uint32)_xyuv_data[0]);
+  /* Server calling */
+  _xyuv_event->event.next = ATTR(TOP);
+  ATTR(TOP) = _xyuv_event;
+  UNMASK_ALL_ITS();
+  AcknowledgeEvent(ATTR(FIFO));
+  nmfTraceActivity(TRACE_ACTIVITY_START, (t_uint24)target.THIS, (t_uint24)target.call);
+  target.call(call_param);
+  nmfTraceActivity(TRACE_ACTIVITY_END, (t_uint24)target.THIS, (t_uint24)target.call);
+}
+\end{lstlisting}
+
+\subsubsection{MMDSP to host}
+MMDSP side sequence:
+\begin{itemize}
+  \item user call an interface using NMFCALL(itf, call)(1) which will call
+  generated method METH(call)(1) (Listing \ref{stmmdspgenerated}).
+  \item stub call AllocEvent() that alloc an element from corresponding param
+  fifo.
+  \item paramaters are marshalled into param fifo element.
+  \item stub call PushEvent().
+  \begin{itemize}
+    \item get an elem from the com fifo.
+    \begin{itemize}
+      \item fill it with method index.
+      \item fill it with address of the param element.
+      \item fill it with extented field address.
+    \end{itemize}
+    \item allow com element fifo usage and generate interrupt to host.
+  \end{itemize}
+\end{itemize}
+HOST side sequence:
+\begin{itemize}
+  \item CM\_ProcessMpcEvent() CM driver will then handle this communication. See
+  CM driver specification for more detail.
+\end{itemize}
+
+\begin{lstlisting}[caption=MMDSP call() stub ,label=stmmdspgenerated]
+void METH(call)(t_uint32 param) {
+  ENTER_CRITICAL_SECTION;
+  {
+    t_event_params_handle _xyuv_data = AllocEvent(ATTR(FIFO));
+    /* param <t_uint32> marshalling */
+    _xyuv_data[0] = (t_uint16)param;
+    _xyuv_data[0+1] = (t_uint16)(param >> 16);
+    /* Event sending */
+    PushEvent(ATTR(FIFO), _xyuv_data, 0);
+  }
+  EXIT_CRITICAL_SECTION;
+}
+\end{lstlisting}
+
+\section{Intra MMDSP communications}
+In that case no param or com fifo are use but only a link list of event will be
+use. In that case events will also carry marshal parameters.
+
+So we will follow path of an asynchronous call.
+\begin{itemize}
+  \item user call an interface using NMFCALL(itf, call)(1) which will call
+  generated method METH(call)(1) (Listing \ref{stasyncgenerated}).
+  \item an event of struct EVENTapi\_call (Listing \ref{EVENTapicall}) is pop
+  from event fifo list. This type is specific to an interface and define into
+  generated code. It carry a struct TEvent and an union which is use for
+  function parameters marshalling.
+  \item we setup a reaction address to execute into event.
+  \item function parameters are copy into dedicated space into event.
+  \item event is push into scheduler by a Sched\_Event() call.
+  \item later on event is elected by the scheduler for execution and a call to
+  ScheduleEvent()id done.
+  \item skeleton method is then call (Listing \ref{skasyncgenerated})
+  \item function parameters are marshalled and put into the stack.
+  \item event is push back into original fifo.
+  \item user function is call with correct parameters.
+\end{itemize}
+
+\begin{lstlisting}[caption=MMDSP call() asynchronous stub
+,label=stasyncgenerated]
+void METH(call)(t_uint32 param) {
+  ENTER_CRITICAL_SECTION; // OK, if only user emit event
+  {
+    struct EVENTapi_call* _xyuv_event = (struct EVENTapi_call*)ATTR(TOP);
+    if(_xyuv_event == 0) Panic(EVENT_FIFO_OVERFLOW, 0);
+    ATTR(TOP) = _xyuv_event->event.next;
+    _xyuv_event->event.reaction = (void*)REACcall;
+    _xyuv_event->data.call.param = param;
+    nmfTraceActivity(TRACE_ACTIVITY_POST, (t_uint24)target.THIS, (t_uint24)target.call);
+    Sched_Event(&_xyuv_event->event);
+  }
+  EXIT_CRITICAL_SECTION;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption=struct EVENTapi\_call, label=EVENTapicall]
+struct EVENTapi_call {
+  struct TEvent event;
+  union {
+    struct {
+      t_uint32 param;
+    } call;
+  } data;
+};
+\end{lstlisting}
+
+\begin{lstlisting}[caption=MMDSP call() asynchronous skeleton
+,label=skasyncgenerated]
+static void REACcall(struct EVENTapi_call* _xyuv_event) {
+  // Declare parameters on stack or registers
+  t_uint32 param;
+  // Copy parameters
+  param = _xyuv_event->data.call.param;
+  _xyuv_event->event.next = ATTR(TOP);
+  ATTR(TOP) = &_xyuv_event->event;
+  UNMASK_ALL_ITS();
+  nmfTraceActivity(TRACE_ACTIVITY_START, (t_uint24)target.THIS, (t_uint24)target.call);
+  target.call(param);
+  nmfTraceActivity(TRACE_ACTIVITY_END, (t_uint24)target.THIS, (t_uint24)target.call);
+}
+\end{lstlisting}

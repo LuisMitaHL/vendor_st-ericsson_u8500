@@ -1,0 +1,55 @@
+make CORE=mmdsp -f makefile_vsrc1a
+
+../../tools/bin/Linux/functgen --amp=1.9 --numfreq=2 --fc=1000 --fstop=19000 --fs=48000 --nbytes=3 insig.bin
+../../tools/bin/Linux/evdist --nbytes=3 --fs=48000 --thdtarget=.00001 insig.bin
+
+
+bin/x86/vsrc1a.exe insig.bin outsig.bin 48048
+
+
+../../tools/bin/Linux/evdist --nbytes=3 --fs=48048 --thdtarget=.1 outsig.bin
+../../tools/bin/Linux/convrt outsig.bin outsig.pcm -it b -ot b -iend b -oend b -inb 24 -onb 16
+../../tools/bin/Linux/convrt outsig.bin outsig.txt -it b -ot f -iend b  -inb 24
+echo
+../../tools/bin/Linux/diffmaxb --maxdiff=0 --nbytes=3 outsig.bin outsigrefa.bin
+echo
+
+\rm -f outsig.pcm
+\rm -f outsig.bin
+
+
+
+bin/x86_mmdsp/vsrc1a.exe insig.bin outsig.bin 48048
+
+../../tools/bin/Linux/evdist --nbytes=3 --fs=48048 --thdtarget=.1 outsig.bin
+../../tools/bin/Linux/convrt outsig.bin outsig.pcm -it b -ot b -iend b -oend b -inb 24 -onb 16
+../../tools/bin/Linux/convrt outsig.bin outsig.txt -it b -ot f -iend b  -inb 24
+echo
+../../tools/bin/Linux/diffmaxb --maxdiff=6 --nbytes=3 outsig.bin outsigrefa.bin
+echo
+
+
+
+mmdspsim -c cmd_mmdspsim_vsrc1a
+
+../../tools/bin/Linux/evdist --nbytes=3 --fs=48048 --thdtarget=.1 outsig.bin
+../../tools/bin/Linux/convrt outsig.bin outsig.pcm -it b -ot b -iend b -oend b -inb 24 -onb 16
+../../tools/bin/Linux/convrt outsig.bin outsig.txt -it b -ot f -iend b  -inb 24
+echo
+../../tools/bin/Linux/diffmaxb --maxdiff=6 --nbytes=3 outsig.bin outsigrefa.bin
+echo
+
+
+
+
+
+\rm -f insig.bin
+\rm -f outsig.bin
+\rm -f outsig.pcm
+
+mv outsig.txt ../matlab/.
+
+
+
+
+

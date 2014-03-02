@@ -1,0 +1,46 @@
+ alias TIMEOUT 0
+ 
+OMX_GetHandle   renderer_ihf OMX.ST.AFM.IHF
+OMX_GetHandle   renderer_hs OMX.ST.AFM.NOKIA_AV_SINK
+
+
+ 
+
+OMX_SetParameter    renderer_ihf OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter    renderer_hs OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer_ihf 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/gossip.pcm 0 0 
+ate_attach_io       renderer_hs 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 0 
+
+ 
+MMTE_DispatchState OMX_StateIdle renderer_ihf
+MMTE_DispatchState OMX_StateIdle renderer_hs
+
+OMX_SetConfig renderer_ihf OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50 
+OMX_SetConfig renderer_ihf OMX_IndexConfigAudioMute bMute=OMX_FALSE
+ 
+OMX_SetConfig renderer_hs OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig renderer_hs OMX_IndexConfigAudioMute bMute=OMX_FALSE
+ 
+mmte_sleep 1000
+MMTE_NMF_ListComponent
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer_ihf
+MMTE_DispatchState OMX_StateExecuting renderer_hs
+
+ 
+ 
+#Wait EOS
+MMTE_WaitEvent renderer_ihf OMX_EventBufferFlag 0 TIMEOUT
+MMTE_WaitEvent renderer_hs OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer_ihf
+MMTE_DispatchState OMX_StateIdle renderer_hs
+
+ 
+MMTE_DispatchState OMX_StateLoaded renderer_ihf
+MMTE_DispatchState OMX_StateLoaded renderer_hs
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+unalias TIMEOUT

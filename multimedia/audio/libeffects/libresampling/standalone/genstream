@@ -1,0 +1,17 @@
+../../tools/bin/Linux/functgen --fs=44100 --fc=440    --amp=.2 --nbytes=3 --nch=8 --chno=0 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+../../tools/bin/Linux/functgen --fs=44100 --fc=523.25 --amp=.2 --nbytes=3 --nch=8 --chno=1 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+../../tools/bin/Linux/functgen --fs=44100 --fc=659.25 --amp=.2 --nbytes=3 --nch=8 --chno=2 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+../../tools/bin/Linux/functgen --fs=44100 --fc=880    --amp=.2 --nbytes=3 --nch=8 --chno=3 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+../../tools/bin/Linux/functgen --fs=44100 --fc=1046.5 --amp=.2 --nbytes=3 --nch=8 --chno=4 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+../../tools/bin/Linux/functgen --fs=44100 --fc=1318.5 --amp=.2 --nbytes=3 --nch=8 --chno=5 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+../../tools/bin/Linux/functgen --fs=44100 --fc=1760   --amp=.2 --nbytes=3 --nch=8 --chno=6 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+../../tools/bin/Linux/functgen --fs=44100 --fc=2093   --amp=.2 --nbytes=3 --nch=8 --chno=7 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+
+../../tools/bin/Linux/evdist --fs=44100 --thdtarget=.1 --nbytes=3 --nch=8 ../../../streams/samplerateconv/streams/multi44_24b.pcm
+
+bin/x86/SrcMultiChannel.exe ../../../streams/samplerateconv/streams/multi44_24b.pcm ../../../streams/samplerateconv/streams/refmulti48_24b.pcm 44 48 H
+
+../../tools/bin/Linux/evdist --fs=48000 --thdtarget=.1 --nbytes=3 --nch=8 ../../../streams/samplerateconv/streams/refmulti48_24b.pcm
+
+
+

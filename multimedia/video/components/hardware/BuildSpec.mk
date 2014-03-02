@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_video/components/hardware=bin
+NO_STD_BUILD_video/components/hardware=1
+BUILD_MMDSP_NMF_video/components/hardware=bin
+BUILD_ARM_PROC_video/components/hardware=bin
+BUILD_ARM_CODE_video/components/hardware=src
+BUILD_ARM_NMF_video/components/hardware=bin
+BUILD_XP70_SIA_CODE_video/components/hardware=false

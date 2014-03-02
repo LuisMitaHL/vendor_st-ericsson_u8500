@@ -1,0 +1,36 @@
+if os.file(&CMM_PATH_BASE/Etc/osed.t32)
+(	
+	task.config &CMM_PATH_BASE/Etc/osed.t32
+)
+else if os.file(~~/demo/arm/kernel/osedelta/osed.t32)
+(
+	task.config ~~/demo/arm/kernel/osedelta/osed.t32
+)
+else if os.file(C:/T32/demo/arm/kernel/osedelta/osed.t32)
+(
+	task.config C:/T32/demo/arm/kernel/osedelta/osed.t32
+)
+
+;Changes in the if statement below must also be changed in toggle_clockless_sleep.cmm
+if os.file(&CMM_PATH_BASE/Etc/osed.men)
+(
+  menu.reprogram &CMM_PATH_BASE/Etc/osed.men	
+)
+else if os.file(~~/demo/arm/kernel/osedelta/osed.men)
+(
+	menu.reprogram ~~/demo/arm/kernel/osedelta/osed.men
+)
+else if os.file(C:/T32/demo/arm/kernel/osedelta/osed.men)
+(
+menu.reprogram C:/T32/demo/arm/kernel/osedelta/osed.men
+)
+
+if version.build()>=18000.
+(
+        ; Access OSE data with MMU on etc..
+	task.access d:
+)
+
+&KernelAwarenessLoaded="True"
+
+enddo

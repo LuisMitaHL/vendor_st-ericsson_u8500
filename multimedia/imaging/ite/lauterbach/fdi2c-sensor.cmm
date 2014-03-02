@@ -1,0 +1,361 @@
+//=========================================================================
+// A script to read/write I2C registers of the sensor
+//=========================================================================
+local &deviceid
+&deviceid=0x20
+
+if run()
+   Break
+
+//-----------------------------------------------------
+// Dialog
+//-----------------------------------------------------
+DIALOG
+(
+	HEADER "Sensor I2C"
+	POS 0. 0.
+	LINE "Index"
+	POS 12. 0.
+INDEX:	EDIT "0x0" ""
+
+	POS 0. 1.
+	LINE "value"
+	POS 12. 1.
+VALUE:	EDIT "" ""
+
+	POS 0. 2.
+UNIT: PULLDOWN "byte,word,long" ""
+
+	POS 0. 3.
+XP70RESTART: CHECKBOX "auto restart XP70" ""
+
+	POS 12. 2.
+BT_READ: BUTTON "Read"
+	(
+		GOSUB UiReadI2C
+	)
+BT_WRITE: BUTTON "Write"
+	(
+		GOSUB UiWriteI2C
+	)
+BT_DUMP: BUTTON "Dump all"
+	(
+		GOSUB DumpAll
+	)
+BT_XP70: BUTTON "Restart XP70"
+	(
+		GOSUB RestartXP70
+	)
+)
+dialog.disable BT_XP70
+dialog.set XP70RESTART (0==0)
+dialog.set UNIT "word"
+stop
+enddo
+
+//-----------------------------------------------------
+HwReadI2C:
+//-----------------------------------------------------
+	local &index &unit &restartXp70
+	ENTRY &index &unit &restartXp70
+	local &value &control &busy &error &retries
+
+	//.............................................
+	// Stop XP70
+	//.............................................
+	PER.S A:0xA02521E4 %WORD 0		//PERIPH_CTRL_CTRL (no prefetch)
+
+	//.............................................
+	// Program I2C
+	//.............................................
+	PER.S A:0xA025204C %WORD 0		//MASTER_CCI_ERR_MGMT (reset errors)
+	PER.S A:0xA0252010 %WORD 0x00		//MASTER_CCI_STATUS (clr_error should clear itself but it doesn't)
+	PER.S A:0xA0252010 %WORD 0x80		//                  (reset error bit)
+	PER.S A:0xA0252004 %WORD &deviceid	//MASTER_CCI_DEVICE_ID
+	PER.S A:0xA0252048 %WORD 1		//MASTER_CCI_TRANSFER (device_id_valid)
+	PER.S A:0xA0252008 %WORD &index		//MASTER_CCI_INDEX
+
+	&control=0x0006				// write+repeated_start=read
+	if "&unit"=="byte"
+		&control=&control+0x0008	// data_count=1
+	else if "&unit"=="word"
+		&control=&control+0x0010	// data_count=2
+	else if "&unit"=="long"
+		&control=&control+0x0020	// data_count=4
+	else
+		error unit is not valid
+	&control=&control+0x0200		// single_byte_device_id
+	PER.S A:0xA025200C %WORD &control	//MASTER_CCI_CONTROL
+
+	PER.S A:0xA0252048 %WORD 2		//MASTER_CCI_TRANSFER (start_transfer)
+
+
+	//.............................................
+	// Wait for MASTER_CCI_STATUS / busy=0
+	//.............................................
+	&retries=10.
+	REPEAT
+	(
+		&busy=d.w(A:0xA0252010)		//MASTER_CCI_STATUS
+		//print "busy=&busy"
+		&error=&busy&0x08		//error bit
+		&busy=&busy&0x01		//busy bit
+		&retries=&retries-1
+	)
+	WHILE (&busy==1)&&(&retries>0)
+
+	//.............................................
+	// Read and format value
+	//.............................................
+	if (&retries==0)
+	(
+		&value="timeout"
+	)
+	else if (&error==0x08)
+	(
+		&value="error"
+	)
+	else
+	(
+		&value=d.l(A:0xA0252024)
+		//print "value-le=&value"
+		if "&unit"=="byte"
+			&value=&value&0xFF
+		else if "&unit"=="word"
+			&value=((&value&0xFF)<<8)+((&value&0xFF00)>>8)
+		else if "&unit"=="long"
+			&value=((&value&0xFF)<<24)+((&value&0xFF00)<<8)+((&value&0xFF0000)>>8)+((&value&0xFF000000)>>24)
+		else
+			error unit is not valid
+		//print "value-be=&value"
+	)
+
+	//.............................................
+	// Restart XP70
+	//.............................................
+	if &restartXp70
+		PER.S A:0xA02521E4 %WORD 3	//PERIPH_CTRL_CTRL (prefetch)
+	else
+		dialog.enable BT_XP70
+
+	RETURN &value
+
+
+
+//-----------------------------------------------------
+HwWriteI2C:
+//-----------------------------------------------------
+	local &index &value &unit &restartXp70
+	ENTRY &index &value &unit &restartXp70
+	local &control &busy &error
+
+	//.............................................
+	// Stop XP70
+	//.............................................
+	PER.S A:0xA02521E4 %WORD 0		//PERIPH_CTRL_CTRL (no prefetch)
+
+	//.............................................
+	// Write I2C
+	//.............................................
+	PER.S A:0xA025204C %WORD 0		//MASTER_CCI_ERR_MGMT (reset errors)
+	PER.S A:0xA0252010 %WORD 0x00		//MASTER_CCI_STATUS (clr_error should clear itself but it doesn't)
+	PER.S A:0xA0252010 %WORD 0x80		//                  (reset error bit)
+	PER.S A:0xA0252004 %WORD &deviceid	//MASTER_CCI_DEVICE_ID
+	PER.S A:0xA0252048 %WORD 1		//MASTER_CCI_TRANSFER (device_id_valid)
+	PER.S A:0xA0252008 %WORD &index		//MASTER_CCI_INDEX
+
+	&control=0x0001				// write
+	if "&unit"=="byte"
+		&control=&control+0x0008	// data_count=1
+	else if "&unit"=="word"
+		&control=&control+0x0010	// data_count=2
+	else if "&unit"=="long"
+		&control=&control+0x0020	// data_count=4
+	else
+		error unit is not valid
+	&control=&control+0x0200		// single_byte_device_id
+	print "control=&control"
+	PER.S A:0xA025200C %WORD &control	//MASTER_CCI_CONTROL
+
+	//print "value-be=&value"
+	if "&unit"=="byte"
+		&value=&value&0xFF
+	else if "&unit"=="word"
+		&value=((&value&0xFF)<<8)+((&value&0xFF00)>>8)
+	else if "&unit"=="long"
+		&value=((&value&0xFF)<<24)+((&value&0xFF00)<<8)+((&value&0xFF0000)>>8)+((&value&0xFF000000)>>24)
+	else
+		error unit is not valid
+	//print "value-le=&value"
+	PER.S A:0xA0252014 %LONG &value		//MASTER_CCI_WRITE_DATA0
+	PER.S A:0xA0252048 %WORD 4		//MASTER_CCI_TRANSFER (fifo_wr_fill)
+	
+	PER.S A:0xA0252048 %WORD 2		//MASTER_CCI_TRANSFER (start_transfer)
+
+	//.............................................
+	//Wait for MASTER_CCI_STATUS / busy=0
+	//.............................................
+	&retries=10.
+	REPEAT
+	(
+		&busy=d.w(A:0xA0252010)		//MASTER_CCI_STATUS
+		//print "busy=&busy"
+		&error=&busy&0x08		//error bit
+		&busy=&busy&0x01		//busy bit
+		&retries=&retries-1
+	)
+	WHILE ((&busy==1)&&(&retries>0))
+
+	//.............................................
+	// Check errors
+	//.............................................
+	if (&retries==0)
+		&error="timeout"
+	else if (&error==0x08)
+		&error="error"
+	else
+		&error=""
+
+	//.............................................
+	// restart XP70
+	//.............................................
+	if &restartXp70
+		PER.S A:0xA02521E4 %WORD 3	//PERIPH_CTRL_CTRL (prefetch)
+	else
+		dialog.enable BT_XP70
+
+	RETURN &error
+
+
+//-----------------------------------------------------
+UiReadI2C:
+//-----------------------------------------------------
+	local &index &unit &restartXp70
+	&index=dialog.string(INDEX)
+	&unit=dialog.string(UNIT)
+	&restartXp70=dialog.boolean(XP70RESTART)
+
+	local &value
+	GOSUB HwReadI2C &index &unit &restartXp70
+	ENTRY &value
+	dialog.set VALUE "&value"
+
+	RETURN
+
+
+//-----------------------------------------------------
+UiWriteI2C:
+//-----------------------------------------------------
+	local &index &value &unit &restartXp70
+	&index=dialog.string(INDEX)
+	&value=dialog.string(VALUE)
+	&unit=dialog.string(UNIT)
+	&restartXp70=dialog.boolean(XP70RESTART)
+
+	local &result
+	GOSUB HwWriteI2C &index &value &unit &restartXp70
+	ENTRY &result
+
+	if ("&result"!="")
+		dialog.set VALUE "&result"
+
+	RETURN
+
+
+//-----------------------------------------------------
+RestartXP70:
+//-----------------------------------------------------
+	PER.S A:0xA02521E4 %WORD 3		//PERIPH_CTRL_CTRL (prefetch)
+	RETURN
+
+
+//-----------------------------------------------------
+DumpAll: 
+//-----------------------------------------------------
+	local &filename
+	&filename=OS.PTD()+"\i2c-sensor.txt"
+
+	//.............................................
+	// Open file
+	//.............................................
+	OPEN #1 &filename /Create
+	WRITE #1 CLOCK.DATE() "  " CLOCK.TIME()
+ 	WRITE #1 ""
+
+	//.............................................
+	// Read registers
+	//.............................................
+	GOSUB ReadRange 0x0000 0x001F "General Status"
+
+	GOSUB ReadRange 0x0100 0x0107 "General Set-up"
+	GOSUB ReadRange 0x0110 0x011F "Output Set-up"
+	GOSUB ReadRange 0x0130 0x0135 "Operating voltage"
+	GOSUB ReadRange 0x0120 0x0121 "Integration Time and Gain Set-up"
+	GOSUB ReadRange 0x0130 0x0135 "Operating voltage"
+	GOSUB ReadRange 0x0200 0x0203 "Integration Time"
+	GOSUB ReadRange 0x0204 0x020D "Analogue Gain"
+	GOSUB ReadRange 0x020E 0x0215 "Digital Gain"
+
+	GOSUB ReadRange 0x0300 0x030B "Clock Set-up"
+	GOSUB ReadRange 0x0340 0x0343 "Frame Timing"
+	GOSUB ReadRange 0x0344 0x034F "Frame Timing - Image Size"
+	GOSUB ReadRange 0x0380 0x0387 "Sub-Sampling"
+
+	GOSUB ReadRange 0x0400 0x040B "Image Scaling"
+	GOSUB ReadRange 0x0500 0x0501 "Image Compression"
+	GOSUB ReadRange 0x0600 0x0611 "Test Pattern"
+	GOSUB ReadRange 0x0700 0x0701 "FIFO Configuration"
+	GOSUB ReadRange 0x0800 0x0807 "CSI-2 Configuration"
+	GOSUB ReadRange 0x0900 0x0903 "Binning Configuration"
+
+	;GOSUB ReadRange 0x0A00 0x0A87 "Data Upload/Download Configuration"
+
+	GOSUB ReadRange 0x0B00 0x0B0E "Ideal Raw"
+	GOSUB ReadRange 0x0B80 0x0B8B "EDoF Configuration"
+	GOSUB ReadRange 0x0B8C 0x0B96 "Colour Temperature Feedback"
+	GOSUB ReadRange 0x0BC0 0x0BCB "EDOF Estimation Zone Control"
+	GOSUB ReadRange 0x0C00 0x0C26 "Mechanical  shutter,  flash  and  special  actuator  control"
+	GOSUB ReadRange 0x0C80 0x0C8F "Low-level AF Interface"
+	
+	;GOSUB ReadRange 0x0D00 0x0D07 "Mechanical Shutter, ND Filter and Iris Control"
+	GOSUB ReadRange 0x0D80 0x0D89 "AF Control"
+
+	//.............................................
+	// restart XP70 if needed
+	//.............................................
+	if dialog.boolean(XP70RESTART)
+		PER.S A:0xA02521E4 %WORD 3	//PERIPH_CTRL_CTRL (prefetch)
+
+	//.............................................
+	// Close and edit
+	//.............................................
+	CLOSE #1
+	EDIT &filename
+	RETURN
+
+
+//-----------------------------------------------------
+ReadRange:
+//-----------------------------------------------------
+	local &index &min &max &title
+ 	ENTRY &min &max &title
+ 	WRITE #1 "==================================================="
+ 	WRITE #1 "&min -- &max &title" 
+ 	WRITE #1 "==================================================="
+ 	
+ 	&index=&min
+ 	WHILE &index<&max
+ 	(
+ 		local &hex &dec
+ 		GOSUB HwReadI2C &index word (0==1)	//restartXp70=false
+ 		ENTRY &hex
+		&dec=FORMAT.DECIMAL(0,&hex)+"."
+ 		print "&index = &hex"	
+		WRITE #1 "&index = &hex	&dec"
+
+ 		&index=&index+2
+ 	)
+ 	WRITE #1 ""
+
+ 	RETURN
+

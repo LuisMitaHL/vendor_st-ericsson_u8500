@@ -1,0 +1,25 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+#include $(MMROOT)/audio/transducer_equalizer/make.ost_conf
+#OST_COMPONENT_ID = $(KUidDicStAudioTransducerEqualizerNmfHost)
+#OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmfil_host
+#OST_SRC_DIR = nmfil/host
+#CPPFLAGS+= -I$(OST_COMPONENT_INC)/autogentraces
+#INSTALL_DICO = $(OST_DICO_NAME).xml
+
+
+CPPFLAGS+=-DNVERBOSE -DUNIX
+CPPFLAGS+= -I$(MM_NMF_COMP_SRC_COMMON_DIR)
+#CPPFLAGS+=-I$(MM_HEADER_DIR)/afm
+CXXFLAGS+=-g
+
+ITFS_HEADER+= transducer_equalizer.nmfil.host.effect.configure
+
+COMPONENTS= transducer_equalizer.nmfil.host.effect transducer_equalizer.nmfil.host.composite.effect
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

@@ -1,0 +1,39 @@
+#!/bin/sh
+LOG_FILE=/var/log/disableSleep.log
+DEEP_PATH=/sys/kernel/debug/cpuidle/deepest_state
+case $1 in
+    start)
+        if [ -f $DEEP_PATH ]; then
+			echo "Disabling sleep mode..."
+			cat $DEEP_PATH > $LOG_FILE
+			echo 0  > $DEEP_PATH
+			echo -e "\033[31mWARNING: SLEEP MODE HAS BEEN DISABLED!\033[0m"
+			echo -e "\033[34mTo restore it call: '/etc/init.d/disableSleep stop'\033[0m"
+			echo "... done"
+		else
+			echo -e "\033[31mWarning: sleep mode could not be disabled!\033[0m"
+		fi
+		;;
+	stop)
+        if [ -f $DEEP_PATH ]; then
+			echo "Enabling sleep mode..."
+			#default value
+			DEEP_VALUE=3
+			#Restore previous sleep mode if exist
+			if [ -f $LOG_FILE ]; then
+				DEEP_VALUE_TMP=`echo $LOG_FILE| awk '{print $NF}'`
+				if [[ $DEEP_VALUE_TMP == [0-9]+ ]]; then
+					DEEP_VALUE=$DEEP_VALUE_TMP
+				fi
+			fi
+			echo $DEEP_VALUE > $DEEP_PATH
+			echo "... done"
+		fi
+		;;
+	*)
+		echo "Usage:" >&2
+		echo -e "\t$0 start" >&2
+		echo -e "\t$0 stop" >&2
+		;;
+esac
+

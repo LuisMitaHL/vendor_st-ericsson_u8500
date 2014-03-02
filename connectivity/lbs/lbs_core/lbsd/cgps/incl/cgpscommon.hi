@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPCOMMON_HI__
+#define __CGPCOMMON_HI__
+/**
+* \file cgpscommon.hi
+* \date 07/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> include file include by all CGPS c file .\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 07.07.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __RTK_E__
+#define ACCESS_RIGHTS_ALL
+/*RTK type definition*/
+#include "master.h"
+#undef ACCESS_RIGHTS_ALL
+#endif /*__RTK_E__*/
+
+#ifdef __RTK_E__
+#include "../../../incl/agpsversion.h"
+#else
+#include "agpsversion.h"
+#endif
+
+#include "lbsosatrace.h"
+
+/* include cgps header */
+#include "cgps.h"
+
+/* include halgps header */
+#include "halgps.h"
+
+/* include GPS libraries interface */
+#include "GN_GPS_api.h"
+
+#if defined( AGPS_FTR ) || defined( AGPS_UP_FTR ) || defined (AGPS_HISTORICAL_DATA_FTR)
+#include "GN_AGPS_api.h"
+#endif /* AGPS_FTR || AGPS_UP_FTR || AGPS_HISTORICAL_DATA_FTR */
+
+#ifdef LBS_GLONASS
+#include "GN_AGLON_api.h"
+#endif
+#ifdef AGPS_UP_FTR
+#include "GN_SUPL_api.h"
+#endif /* AGPS_UP_FTR */
+
+/* include adp interface */
+#define ACCESS_RIGHTS_CGPS
+#if defined(AGPS_UP_FTR)
+#include "lsimup.h"
+#endif /* AGPS_UP_FTR */
+#if defined(AGPS_FTR)
+#include "lsimcp.h"
+#endif /* AGPS_FTR */
+#include "lsimee.h"
+#undef ACCESS_RIGHTS_CGPS
+
+#include "cgpsmain.hic"
+#include "cgpsmain.hit"
+#include "cgpsmain.hip"
+#include "cgpsmain.him"
+#include "cgpsmain.hiv"
+
+#endif /*__CGPCOMMON_HI__*/

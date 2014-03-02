@@ -1,0 +1,119 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: dbg_through_reset.cmm           #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script performs the "debug through reset" sequence.
+; Created by HED/CSP/CPT/ACT on 2011-02-22
+; Contact: Jingyi-xiaoyan.lu@st.com
+
+entry &sequence
+
+if (string.mid(cpu(),0,6)!="DB9540")&&(string.mid(cpu(),0,5)!="A9540")
+(
+	print "Unknown cpu name: ", cpu()
+	enddo
+)
+
+if (string.upr(cpu())!="DB9540"&&string.upr(cpu())!="DB9540APE-CORE0"&&string.upr(cpu())!="DB9540APE-CORE1")&&(string.upr(cpu())!="A9540"&&string.upr(cpu())!="A9540APE-CORE0"&&string.upr(cpu())!="A9540APE-CORE1")
+(
+	print "This script can only be run on a debugger connected to DB9540-A9SS!"
+	enddo
+)
+&reset_core=string.upr(cpu())
+
+if "&sequence"==""
+	&sequence="core_reset"
+else if (string.upr("&sequence")!="DBGREQ")
+(
+	print "Unknown sequence! &sequence"
+	enddo
+)
+
+print "Performing the debug through reset for the cpu: &reset_core, using &sequence."
+&sequence=string.upr("&sequence")
+
+&exectl_addr=0x50003A10
+
+sys.down
+sys.o.enreset off
+sys.m.prepare
+if "&sequence"=="DBGREQ"
+(
+	; --- assert dbg req
+	if "&reset_core"=="DB9540"||"&reset_core"=="A9540"
+		d.s edbg:&exectl_addr %l 0x60
+	else if "&reset_core"=="DB9540APE-CORE0"||"&reset_core"=="A9540APE-CORE0"
+		d.s edbg:&exectl_addr %l 0x20
+	else //"&reset_core"=="DB9540APE-CORE1"||"&reset_core"=="A9540APE-CORE1"
+		d.s edbg:&exectl_addr %l 0x40
+)
+else
+(
+	; --- assert the core reset
+	d.s edbg:&exectl_addr %l 0x1
+)
+
+; --- assert PORn
+jtag.pin nreset 0
+
+; --- deassert the PORn
+jtag.pin nreset 1
+wait 0.13s
+
+if "&sequence"=="CORE_RESET"
+(
+	; --- program the DRCR 
+	&a9ss_base_addr=0x801A0000
+	&drcr0_addr=&a9ss_base_addr+0x8090
+	&drcr1_addr=&a9ss_base_addr+0xA090
+
+	if "&reset_core"=="DB9540APE-CORE0"||"&reset_core"=="A9540APE-CORE0"
+		d.s edap:&drcr0_addr %l d.l(edap:&drcr0_addr)|1
+	else if "&reset_core"=="DB9540APE-CORE1"||"&reset_core"=="A9540APE-CORE1"
+		d.s edap:&drcr1_addr %l d.l(edap:&drcr1_addr)|1
+	else if "&reset_core"=="DB9540"||"&reset_core"=="A9540"
+	(
+		d.s edap:&drcr0_addr %l d.l(edap:&drcr0_addr)|1
+		d.s edap:&drcr1_addr %l d.l(edap:&drcr1_addr)|1
+	)
+)
+
+; --- deassert the core reset and dbg_req signals
+d.s edbg:&exectl_addr %l 0
+
+sys.down
+tronchip.set.reset off
+sys.m.a
+
+
+;--- check the PC
+&reset_addr=0
+if (d.l(c15:1)>>13.&1)==1
+	&reset_addr=0xFFFF0000
+&current_core=0
+if "&reset_core"=="DB9540"||"&reset_core"=="A9540"
+(
+	&current_core=core()
+	&failed=0
+	core 0
+	if run()||r(pc)!=&reset_addr
+	(
+		print "FAILED! The CORE0 did not stop at reset address!"
+		&failed=1
+	)
+	core 1
+	if run()||r(pc)!=&reset_addr
+	(
+		print "FAILED! The CORE1 did not stop at reset address!"
+	)
+	core &current_core
+	if &failed==1
+		enddo
+)
+else if run()||r(pc)!=&reset_addr
+(
+	print "FAILED! The core did not stop at reset address!"
+	enddo
+)
+print "DONE."
+enddo

@@ -1,0 +1,49 @@
+**********************************************************
+* Think Test Environment (version 1.4.0)                 *
+**********************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Light ARM component-based environment configured for NMF test and development 
+        This environment is based on Think open source component-based OS.
+    - Light Operating System services API specification
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Supported target:
+    - STn8815 Cut A0/B0/C0
+    - STn8820 Cut A0/A2
+    
+Changes:
+--------
+[NMF Think]
+    - ILOS api change
+        Plugin struct t_ilos_vfs_desc change
+        Add ILOS_set_stdin(), ILOS_set_stdout() and ILOS_set_stderr() api that allow to redirect
+        respectively stdin, stdout and stderr on choose file system.
+    - Detect stack overflow using unmapped page. A stack overflow will trigger a data abort exception
+    - Revert to arm v5 mmu page for 8820 to avoid alignment fault on unaligned access when memory
+    	is not cache (See trm r0p7 section 4.2.6).
+    - [vi 20794] : Add shift in logical address compare to physical address. This concern heap, esram and mpc
+    	mappings. This behaviour can be suppress by including in one of your c files the following
+    	declaration : 'int __think_configuration_flat_mapping'
+
+Bug fixes:
+---------
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+    
+    
+Pre-requires:
+-------------
+    - Compatible with RVCT 2.2-sp1-616 and 3.2-sp1-688
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+

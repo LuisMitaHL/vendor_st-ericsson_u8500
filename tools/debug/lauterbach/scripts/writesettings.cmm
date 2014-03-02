@@ -1,0 +1,222 @@
+;------------------------------------------------------------
+; writesettings.cmm
+;------------------------------------------------------------
+; Cmm-file used to write target settings to T32_Settings.txt
+;
+; 061025 - PH Initial version
+; 070405 - PH Adaption to fit new startup.cmm
+; 070907 - KM Added functionality for multiple configurations
+; 071019 - KM Added support for Linux
+; 071212 - DE Change so we use conf. name in file
+; 071217 - DE Added busmon
+; 090421 - KM Added useattachrunning for Sara and dualram option for Linux debugging
+; 090428 - KM Added Ramdisk
+; 101011 - KM Added etm portzize used by U5500
+; 101129 - KM Added support for Jenny SVP
+; 110511 - KM Added support for Jenny
+; 110516 - KM STM padmux support for Jenny
+;-----------------------------------------------------------
+
+local &configFile
+local &pos
+local &pos@
+local &targetFile
+
+local &settingsLine
+local &settingsName
+local &settingsValue
+
+; create current file if it dosn't exist
+
+if !os.file(&UsrPath/T32_settings.txt)
+(
+	if OS.VERSION(0)!=0x1X
+	(
+		if !os.dir(&UsrPath\..)
+		(
+			mkdir "&UsrPath\..\..\T32"
+		)
+		if !os.dir(&UsrPath)
+		(
+			mkdir "&UsrPath"
+		)
+	)
+	else
+	(
+		if !os.dir(~/.t32)
+		(
+			mkdir ~/.t32
+		)
+		if !os.dir(~/.t32/Settings)
+		(
+			mkdir ~/.t32/Settings
+		)
+	)
+	open #1 "&UsrPath"/T32_settings.txt /create
+	write #1 "<EOF>"
+	close #1
+)
+
+if os.file(&UsrPath/T32_settings.txt)
+(
+	open #1 "&UsrPath"/T32_settings.txt /read
+	open #2 "&UsrPath"/T32_settings.tmp /create
+
+	; Save current config
+	write #2 "&CurConfig"
+	gosub WriteSetting Current             "TRUE"
+	gosub WriteSetting ExecutionMemory     "&ExeMem"
+	gosub WriteSetting LoadOption          "&LOption"
+	gosub WriteSetting LoadOptionVM        "&LOptionVM"
+	gosub WriteSetting LoadOptionStrip     "&LOptionStrip"
+	gosub WriteSetting LoadFile            "&ElfFile"
+	gosub WriteSetting SourcePath          "&SrcPath"
+	gosub WriteSetting UseRecursePath      "&RSrcPath"
+	gosub WriteSetting LoadMod             "&LoadModPath"
+	gosub WriteSetting RamiskFile          "&RamdiskFile"
+	gosub WriteSetting UseLinuxDebug       "&LinuxDebug"
+	gosub WriteSetting UseLinuxDualRam     "&LinuxDualRam"
+	gosub WriteSetting UseDefaultWin       "&UseWin"
+	gosub WriteSetting UseDefaultBrk       "&UseBrk"
+	gosub WriteSetting UseAttachRunning    "&UseAttach"
+	gosub WriteSetting UserCmmFile         "&UsrCmm"
+	gosub WriteSetting BusmonTracedataDir  "&BUSMON_TRACEDATA_DIR"
+	gosub WriteSetting Perl                "&PERL"
+	gosub WriteSetting UseSynchApp         "&SynchApp"
+	gosub WriteSetting UseSynchDat         "&SynchDat"
+	gosub WriteSetting UseSynchAcc         "&SynchAcc"
+	gosub WriteSetting UseSynchAud         "&SynchAud"
+	gosub WriteSetting UseSynchLte         "&SynchLte"
+	gosub WriteSetting UseSynchCeva        "&SynchCeva"
+	gosub WriteSetting UseSynchApe         "&SynchApe"
+	gosub WriteSetting UseSynchCpuA        "&SynchCpuA"
+	gosub WriteSetting UseSynchCpuB        "&SynchCpuB"
+	gosub WriteSetting UseEtmApp           "&EtmApp"
+	gosub WriteSetting UseEtmDat           "&EtmDat"
+	gosub WriteSetting UseEtmAcc           "&EtmAcc"
+	gosub WriteSetting UseEtmAud           "&EtmAud"
+	gosub WriteSetting UseEtmLte           "&EtmLte"
+	gosub WriteSetting UseEtmCeva          "&EtmCeva"
+	gosub WriteSetting UseEtmApe           "&EtmApe"
+	gosub WriteSetting UseEtmCpuA          "&EtmCpuA"
+	gosub WriteSetting UseEtmCpuB          "&EtmCpuB"
+	gosub WriteSetting UseStmApe           "&StmApe"
+	gosub WriteSetting UseAppDataTrace     "&AppDataTrace"
+	gosub WriteSetting UseDatDataTrace     "&DatDataTrace"
+	gosub WriteSetting UseAccDataTrace     "&AccDataTrace"
+	gosub WriteSetting UseAudDataTrace     "&AudDataTrace"
+	gosub WriteSetting UseLteDataTrace     "&LteDataTrace"
+	gosub WriteSetting UseCevaDataTrace    "&CevaDataTrace"
+	gosub WriteSetting UseCpuADataTrace    "&CpuADataTrace"
+	gosub WriteSetting UseCpuBDataTrace    "&CpuBDataTrace"
+	gosub WriteSetting EtmPortSize         "&EtmPortSize"
+	gosub WriteSetting EtmTraceClk         "&EtmTraceClk"
+	gosub WriteSetting UseSmpDebug         "&SmpDebug"
+	gosub WriteSetting ModemTapEnabled     "&ModemTapEnabled"
+	gosub WriteSetting RamdumpPath         "&RamdumpPath"
+	gosub WriteSetting PORStop             "&PORStop"
+	gosub WriteSetting PRCMUDebug          "&PRCMUDebug"
+	gosub WriteSetting BusmonParseScript   "&BUSMON_PARSE_SCRIPT"
+	gosub WriteSetting BusmonPerlInclude   "&BUSMON_PERL_INCLUDE"
+	write #2 "<EOB>"
+
+	&TrgExist="TRUE"
+
+	; Copy rest of configs, except current config
+	repeat
+	(
+		read #1 %line &configFile
+		&pos@=string.scan("&configFile","@",0) ; [<target>@<config>]
+		if &pos@!=-1
+		(
+			&targetFile=string.cut("&configFile",&pos@-string.len("&configFile")) ; [<target>
+			&targetFile="&targetFile]" ; [<target>]
+
+			if "&configFile"=="&CurConfig" ; Skip current config
+			(
+				repeat
+				(
+					read #1 %line &settingsLine
+				)
+				while "&settingsLine"!="<EOB>"
+			)
+			else
+			(
+				write #2 "&configFile" ; write configuration
+				repeat
+				(
+					read #1 %line &settingsLine
+					&pos=string.scan("&settingsLine","=",0)
+					if &pos!=-1
+					(
+						&settingsValue=string.cut("&settingsLine",&pos+2)
+						&settingsName=string.cut("&settingsLine",&pos-string.len("&settingsLine"))
+						; strip spaces
+						&pos=string.scan("&settingsLine"," ",0)
+						if &pos>0
+							&settingsName=string.cut("&settingsLine",&pos-string.len("&settingsLine"))
+
+						if ("&settingsName"=="Current")&&("&targetFile"=="&Target") ; If same target set Current to FALSE
+							write #2 "Current = " "FALSE"
+						else
+							write #2 "&settingsLine" ; write settings row
+					)
+					else
+						write #2 "&settingsLine" ; write <EOB>
+				)
+				while "&settingsLine"!="<EOB>"
+			)
+		)
+		else
+			write #2 "&configFile" ; write <EOF>
+
+	if version.build()>=15499.
+		(
+		if eof()
+			(	
+				write #2 "<EOF>"
+				goto done 
+			)
+		)
+	)
+	while "&configFile"!="<EOF>"
+done:
+	close #2
+	close #1
+	del "&UsrPath"/T32_settings.txt
+	ren "&UsrPath"/T32_settings.tmp "&UsrPath"/T32_settings.txt
+)
+
+append "&UsrPath"/T32_settings.txt clock.date()
+append "&UsrPath"/T32_settings.txt clock.time()
+
+ENDDO
+
+WriteSetting:
+	ENTRY &Name &Value
+	
+	local &pos
+	local &tmp
+
+	;don't save setting cfg with unknown gloabal variable (Value is starting with '&')
+	&pos=string.scan("&Value","&",0)
+	if &pos==1
+	(
+	  &Value=""
+	)
+	; replace script PATH by global variable
+	&pos=string.scan("&Value","&CMM_PATH_BASE",0)
+	if &pos==0
+	(
+		&Value=string.mid("&Value",string.len("&CMM_PATH_BASE"),100)
+		&tmp="&"
+		&tmp2="CMM_PATH_BASE"
+		&Value="&tmp&tmp2&Value"
+	)
+	; don't save empty setting
+	if ("&Value"!="")&&("&Value"!="""""")
+	(
+	  write #2 "&Name = " &Value
+	)
+
+return

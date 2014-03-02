@@ -1,0 +1,311 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+ 
+Author:         Jean-Philippe Fassino & NMF Team    
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.0.0 "CH'TI Blonde"
+Date:           August 31th, 2009
+
+
+1.2 Board configuration supported:
+
+    - STn8815 SAA & SVA
+        * Cut A0
+            Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        * Cut B0
+        * Cut C0
+    - STn8820 SAA & SVA & SIA 
+        * Cut A0
+    - STn8500 SVA & SIA
+        * SVP 
+            2.2 (Argc/Argv not supported)
+            2.3.0
+            2.4.1
+        * PEPS 8500
+            PEPS SIA with an ED mapping + MMDSP V1
+        * MOP500-ED
+            Only flash board without normal application in flash image 
+              (use -Normal_Appli 0 on command line flasher)
+
+1.3 Board configuration unsupported:
+
+    - STn8500 SVA & SIA
+        * SVP 2.0 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+            STM IP trace not available          
+        * SVP 2.1 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+        * MOP500-ED
+            Board not flash or flash with normal application in flash image
+
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version: 
+        - RVCT 2.2-sp1-593 for 8815 & 8820 
+        - RVCT 4.0 for 8500
+    
+    MMDSP compiler version
+        - MMDSP Toolset 4.2.0 Patch 3
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+	- RODOS 
+		http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+	- Internal MMD dependencies (See nmf/workstation.txt RODOS dependencies for version)
+    	* Launcher
+    	* MMENV
+    	* Platform script
+    	
+       	# RODOS components.txt
+    	include rod+package://com.stericsson.nmf:2.0.0/workstation.txt
+    
+    - Lauterbach trace32 prod6.5.3_p20090527
+    
+    - Java SE Runtime Environment  
+    	http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)      
+
+
+3   RELEASE CONTENT
+
+	See nmf/doc/file_hierarchies.txt about file tree organisation !
+
+	- Toolbox
+	
+       	# RODOS components.txt
+    	include rod+package://com.stericsson.nmf:2.0.0/workstation.txt
+		com.stericsson.nmf								[ro::version=2.0.0,		path=nmf]
+		com.stericsson.nmf.tools						[ro::version=2.0.0,		path=tools]
+
+    - Component Manager
+
+    - Execution Engine
+
+    - Think
+    
+       	# RODOS components.txt
+		include rod+package://com.stericsson.nmf.think:2.0.0/components.txt
+	 	# Examples
+		com.stericsson.nmf.examples                     [ro::version=2.0.0,       path=examples]
+    
+
+    - LOS
+
+
+3.1 Component Manager
+
+    - CM API changes:
+        removed following functions:
+            CM_Alloc(), CM_Free(), CM_GetAllocStatus(), CM_GetSystemAddress()
+        added following functions:
+            CM_CreateMemoryDomain, CM_DestroyMemoryDomain(), CM_GetDefaultDomain()
+        changed signature of following functions:
+            CM_InstantiateComponent(), CM_AllocMpcMemory(), CM_GetMpcMemoryStatus(), CM_GetExecutiveEngineHandle()
+                - using t_cm_domain_id instead of core_id
+                - CM_INVALID_DOMAIN is returned if the domain id is invalid
+                - removed preferredBanks parameter from CM_AllocMpcMemory()
+                
+	- Print required interface which cause FIFO overflow.
+		  
+	- NMF_VERSION_API removed and replace by NMF_VERSION.
+
+	- A new api CM_DRV_TrigInterrupt() is available (in kernel space only for Symbian and Linux) to trig
+	  a virtual interrupt to the hostee from any external driver.
+	  
+	- Add mutual exclusion between COM and initializer. 
+	
+
+3.2 MPC Execution Engine
+
+	- Enhance preemption mechanism in order to be more reliable.
+	
+
+3.3 Host Execution Engine
+    
+3.4 OS integration guidelines
+
+    - CM OS API changes
+        removed following functions:
+            CM_OS_Alloc(), CM_OS_Free(), CM_OS_GetAllocStatus(), CM_OS_GetSystemAddress()
+        added following functions:
+            CM_OS_CreateMemoryDomain, CM_OS_DestroyMemoryDomain(), CM_OS_GetDefaultDomain()
+        changed signature of following functions:
+            CM_OS_InstantiateComponent(), CM_OS_AllocMpcMemory(), CM_OS_GetMpcMemoryStatus(), CM_OS_GetExecutiveEngineHandle()
+        new error types:
+            CM_INVALID_DOMAIN_DEFINITION
+            CM_INTERNAL_DOMAIN_OVERFLOW
+            CM_INVALID_DOMAIN_HANDLE
+
+    - CM_ConfigureSdramMpcSegment() replaced by CM_ENGINE_AddSdramSegment
+    
+    - CM_ENGINE_Init()
+        t_nmf_hw_mapping_desc structure changed
+            esramDesc now contains esram start adress and size
+        t_nmf_config_desc structure clean-up
+
+    - CM_ENGINE_ConfigureMediaProcessorCore() signature changed:
+        esramUsageDesc parameter removed
+        added:
+            t_cm_domain_id commDomain - identifier of the communication domain for the given core, CM internal
+            t_cm_domain_id eeDomain   - identifier of the EE domain for the given core, CM internal
+            t_cfg_allocator_id sdramCodeAllocId - identifier of the SDRAM code segment for the given core
+            t_cfg_allocator_id sdramDataAllocId - identifier of the SDRAM data segment for the given core
+        the commDomain and eeDomain domains must be created by calling CM_ENGINE_CreateMemoryDomain()
+        the sdramCodeAllocId and sdramDataAllocId are obtained by calling CM_ENGINE_AddSdramSegment()
+
+     - General init algo:
+        *) fill structures for CM_ENGINE_Init()
+        *) CM_ENGINE_Init()
+        *) create sdram segments
+            foreach segment in segment_list:
+                CM_ENGINE_AddSdramSegment()
+        *) configure media cores
+            foreach mpc in MPC_LIST;
+                CM_ENGINE_CreateMemoryDomain(commDomain)
+                CM_ENGINE_CreateMemoryDomain(eeDomain)
+                CM_ENGINE_ConfigureMediaProcessorCore() 
+                
+	- Some shared files used by Linux and potentially elsewhere delivery in los.osintegration RODOS component
+	  inside the "src" sub-directory.
+	  
+	- NMF_VERSION_API removed and replace by NMF_VERSION.
+	
+	- Reserve NMF_INTEGRATION_ERROR0 -> NMF_INTEGRATION_ERROR9 for OS integration error.
+	  Note: if using such error for CM purpose only please define it as CM_......
+
+     - CM_DRV_TrigInterrupt() api to be implemented on kernel side:
+       This API must triger a virtual interrupt, and propagate it through the channel to CM_GetMessage(),
+       but only on channels of new type NMF_CHANNEL_INTERNAL.
+       The channel of type NMF_CHANNEL_INTERNAL is a private channel (type NMF_CHANNEL_PRIVATE) created by
+       the hostee, and allowed to receive virtual interrupt.
+       A normal user must not use this type of channel.
+
+
+3.5 Tools
+
+3.6 Programming model
+
+	- API Break !!!!
+		Converge MMDSP C constructor with Host one in C++.
+		Thus, now the construct API in C return an t_nmf_error and must be implemented like this.
+		t_nmf_error METH(construct)(void)
+		{
+			...
+		    return NMF_OK;
+		}
+		
+	- NMF_NULL definition which is a nigthmare replace by NULL
+		
+
+3.7 Think
+
+    - removed docfg utility, a default configuration is precompiled in the think binary
+
+3.8 Linux & Symbian
+    
+3.9 Examples
+
+3.10 Packaging
+
+	- Switch to RODOS
+		All package renamed
+		mmtools package no more supported
+    
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    23480   Code deferencing channel after channel close can lead to crash
+    23374	clear message when using unsupported type in .itf
+    23920	FIFO OVERFLOW error should give the name of the interface
+    23919	Panic message give a codeAddr which is hardly usable
+    
+    - Fix potential race condition when loading component which do communication without being in 
+      mutual exclusion with communication path.
+      -> Create this mutual exclusion in service.
+
+4.2 Active defect list
+
+    23516	CM_ENGINE_SetMode() with CM_CMD_MPC_TRACE_xx or CM_CMD_MPC_PRINT_xx crash if ee not started
+    23488	Assert in mmte_testStart when leading '/' in logdir
+    23483	smpe ee scheduler can modify targetInUse component variable whereas component has been destroy leading to potential crash
+    23121	setConfig argument passing by pointer instead of structure
+    22408	resetting/stopping mmdsp core on mop500 stop mtu timers
+    22218	provided interface are not inside the code, no problem at compilation ????
+    22182	test api: flush of results before test_end
+    21851	Asynchronously bound composite component : trace contains corrupted 'this' addresses
+    20810	"#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440	No way to compile some files with specific options
+ 
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+    
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+    
+    For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+    
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+6.2 Code Static analysis result
+
+    Not done.
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Not done.
+
+6.4 Confidentiality safe
+
+
+7   DOCUMENTS
+    
+    Test report available at:
+        http://gnx2487:9000/
+
+    Source codes can be found in :
+        Clearcase
+            /vobs/nmf
+        Codex SVN site: 
+            http://codex.cro.st.com/svn/?group_id=598

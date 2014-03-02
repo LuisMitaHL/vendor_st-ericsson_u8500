@@ -1,0 +1,15 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+typedef enum {
+    PRCMU_MSG_GO_IN_RETENTION,
+    PRCMU_MSG_END_OF_BOOT
+} t_prcmu_msg_type;
+
+interface sleep.api.prcmu {
+    void sendMsg(t_prcmu_msg_type msg);
+}

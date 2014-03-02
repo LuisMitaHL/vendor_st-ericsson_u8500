@@ -1,0 +1,48 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+export MODULE
+MODULE=./
+
+include $(MMROOT)/video/makefiles/Make.std.config
+
+VPATH = $(COMPONENT_TOP_DIR)/mpc/algo/src/$(SVA_SUBSYSTEM) $(COMPONENT_TOP_DIR)/mpc/main/src 
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh jpegenc
+
+VPATH = ./mpc/algo/src/$(SVA_SUBSYSTEM) ./mpc/main/src ../scheduler/src/
+EXENAME = jpegenc
+EXEOBJ = \
+	jpeg_enc_420 	\
+	jpeg_enc_huffman\
+	jpeg_enc_pxp 	\
+	jpeg_encoder 	\
+	jpeg_enc_dma 	\
+	jpeg_enc_init 	\
+	jpeg_enc_quant 	\
+	jpeg_enc_header \
+	jpeg_enc_mcu 	\
+	jpeg_enc_save_blocks \
+	t1xhv_main_mje 	\
+	sm_encoder_jpeg\
+	sm_common 	\
+	t1xhv_interrupt
+	
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT)
+
+CPPFLAGS += -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DJPEG_ENCODER -DSLIM_JPEG_ENC -DT1XHV_TASK_ENCODE -DSTANDALONE_VERSION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION) -DCROP_ENABLE
+#CPPFLAGS +=  -DFW_TRACE -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DJPEG_ENCODER -DSLIM_JPEG_ENC -DT1XHV_TASK_ENCODE -DSTANDALONE_VERSION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION)
+CPPFLAGS += -I../scheduler/inc -I../common/inc -I../hardware/inc -I./mpc/algo/inc/$(SVA_SUBSYSTEM) -I./mpc/main/inc -I./mpc/share/$(SVA_SUBSYSTEM) -I./mpc/share
+
+MEMORYCFG = ../common/memconfig/video.$(MEMCFG_EXT)
+CPPFLAGS += -I$(COMPONENT_TOP_DIR)/mpc/algo/inc/$(SVA_SUBSYSTEM) \
+        -I$(COMPONENT_TOP_DIR)/mpc/main/inc                      \
+        -I$(COMPONENT_TOP_DIR)/mpc/share/$(SVA_SUBSYSTEM)        \
+        -I$(COMPONENT_TOP_DIR)/mpc/share
+STACK=1000
+SSTACK=1000
+ACFLAGS += -forceesramfn
+
+todo: exe
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

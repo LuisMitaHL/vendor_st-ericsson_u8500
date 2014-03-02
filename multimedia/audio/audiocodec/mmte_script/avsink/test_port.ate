@@ -1,0 +1,10 @@
+test_start SINKS_102 Avsink Test Port
+
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+do $(NOMADIK)/audiocodec/mmte_script/enable_disable_port_common_sink.ate renderer
+
+test_end

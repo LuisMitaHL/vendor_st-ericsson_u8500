@@ -1,0 +1,110 @@
+MMD Video Release note 
+ 
+
+Release number:     H264 Decoder for OSI Video W1044
+Status:             Component Delivery
+
+Organization:       MMD
+
+
+
+STEricsson Confidential.
+This document contains proprietary and confidential information of the STEricsson Group. This document is not to be copied in whole or part. 
+Information furnished is believed to be accurate and reliable. However, STEricsson assumes no responsibility for the consequences of use of such information nor for any infringement of patents or other rights of third parties, which may result from its use. No license is granted by implication or otherwise under any patent or patent rights of STEricsson. Specifications mentioned in this publication are subject to change without notice. This publication supersedes and replaces all information previously supplied. STEricsson products are not authorized for use as critical components in life support devices or systems without express written approval of STEricsson
+ Is a registered trademark of the STEricsson Group.
+? 2003 STEricsson - All Rights Reserved
+STEricsson GROUP OF COMPANIES
+Australia - Brazil - Canada - China - France - Germany - Italy - Japan - Korea - Malaysia - Malta - Morocco - The Netherlands - Singapore - Spain - Sweden - Switzerland - Taiwan - Thailand - United Kingdom - U.S.A.
+STEricsson Limited is a member of the STEricsson Group.
+
+
+
+1	GENERAL INFORMATION
+1.1	Release number
+1.2	Board configuration supported
+1.3	First level support contact
+1.4	Symbian baseport version
+1.5	Tools versioning
+2	Media component list versioning
+3	Release content
+3.1	Released Features
+3.2	New features
+3.3	Modified features
+3.4	Removed features
+3.5	Restrictions / Known issues
+4	Defect status
+4.1	Fixed defect list
+4.2	Active defect list
+5	Compilation rules
+5.1	Compilation procedure
+5.2	Compilation configurability
+6	QA check status
+6.1	Compilation warning / error
+6.2	Code Static analysis result
+6.3	Confidentiality safe
+7	documents
+
+
+
+WARNING !!!
+===========
+Only meaningful chapters for single component delivery are described herebelow.
+If chapter is not described, it means you need to refer to the associated Domain Delivery Release note
+
+
+3	RELEASE CONTENT
+3.1	Released Features :
+
+
+3.2	New features:
+	* Integrated 5500 modifications into mainstream
+    
+3.3	Modified features:
+	* Added soft reset before using HED HW block (txhv_h264d.c)
+	* Added 2 FW workarounds (hamac_main_slice.*) :
+		- WA for error on mvd badly raised by BDU 
+                  ( when the BDU detects an error during BDU/CUP link the FW will stop the parsing and perform it again without using BDU)
+		- WA for bad refidx resulting in green MB (error that was not detected by HED; refidx are checked after prediciton reading them from the CUP with refpic)
+    * error recovery implementation (in case of MPC panic, destroy and restart MPC network)
+    * split composite into separate ARM-DSP composites ==> need to update makefiles for Symbian target !!
+    * reported patches from wk40 on picture timing conformance
+    * some remaining printfs renamed to NMF_LOG
+    * OST: increased by 2 the custom IDs  
+    
+
+3.4	Removed features:
+        
+
+3.5	Restrictions / Known issues:
+        
+		
+
+3.6 Complete features of the component
+		Detailed list of the supported API can be found in the Application Note
+            https://codexstn.cro.st.com/plugins/docman/?group_id=779&action=show&id=341904
+
+
+5	COMPILATION RULES  	
+5.1	Compilation procedure
+		Only if special things to be known
+		Otherwise See Domain Delivery release note
+
+
+5.2	Compilation configurability		
+		List of the existing compilation flags to be known
+
+
+
+6	QA CHECK STATUS
+6.1	Compilation warning
+		Only if some are justified
+		Otherwise See Domain Delivery release note	
+
+
+7	DOCUMENTS
+		Please refer to embedded Application Note in Document folder (once available)
+
+
+8	Test Results 
+		Please refer to the codex links :
+		    https://codexstn.cro.st.com/plugins/docman/?group_id=757&action=show&id=352338 from Validation team

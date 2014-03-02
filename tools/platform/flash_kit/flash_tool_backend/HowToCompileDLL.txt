@@ -1,0 +1,28 @@
+How to compile a dynamic library on windows
+-------------------------------------------
+
+Precondition
+1.) Install 'Windows SDK for Windows 7 and .NET Framework 3.5 SP1' (You can download from http://msdn.microsoft.com/en-us/windows/ff851942)
+2.) Install 'Windows Driver Kit Version 7.1.0' (You can download from http://www.microsoft.com/download/en/confirmation.aspx?id=11800)
+
+How to compile LibUSB x86/x64
+1.) Download SRC from the top of gerrit. It should be stored at './windows-usb-driver/libusb-win32-src-1.2.2.5.zip
+2.) Unpack it to work (your tmp)directory.
+3.) Run console for target platform x86/x64. It's can be founded at WDK startup menu.
+4.) Go to 'ddk_make' directory.
+5.) Example:
+  a)For x86 architecture
+    'cmd /c make.cmd "arch=x86" "outdir=./x86"'
+  b)For x64 architecture
+    'cmd /c make.cmd "arch=x64" "outdir=./x64"'
+
+How to compile JNI libraries x86/x64
+1.) Run console for target platform x86/x64. It should be placed at 'VC\bin\' directory.
+  a) for x86 you might use 'Visual Studio 2008 Command Prompt.lnk'.
+  b) for x64 you might use 'Visual Studio 2008 x64 Win64 Command Prompt.lnk'.
+2.) Go to selected JNI directory (for lc_jni, usb_jni, uart_jni)
+3.) Manually modify 'compile.bat'.
+  a) Replace java_include variable with specific path for your system.
+  b) Replace libusb_path variable with specific path to 'libusb.lib'. (see How to compile LibUSB x86/x64)
+4.) Run 'Compile.bat'
+5.) Beware, All compiled library must be placed to specific bundles manually!

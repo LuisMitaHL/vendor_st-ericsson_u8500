@@ -1,0 +1,39 @@
+;------------------------------------------------------------
+; busmon_save_state.cmm
+;------------------------------------------------------------
+; Save busmon powerintegrator buffer
+;
+; 071217 - DE Initial version
+;-----------------------------------------------------------
+
+; Save powerintegrator / busmon recording
+if powerintegrator()
+(
+	WRITE #1 "; Restore powerintegrator"
+	; Store data
+	i.save "powerintegrator_&CurConfig.ad
+	WRITE #1 "t.load powerintegrator_&CurConfig.ad"
+
+	; Store names
+	store "names_&CurConfig" name
+	WRITE #1 "do names_&CurConfig"
+
+	; Have we a busmon recording
+	if "&BUSMON_DATA"!=""
+	(
+		WRITE #1 "; Add a menu to show busmon decode"
+		WRITE #1 "MENU.rp"
+		WRITE #1 "("
+		WRITE #1 "	add"
+		WRITE #1 "	menu"
+		WRITE #1 "	("
+		WRITE #1 "		POPUP ""Busmon"""
+		WRITE #1 "		("
+		WRITE #1 "			menuitem ""Show"" ""i.proto """"&BUSMON_PROTO_DLL"""" &BUSMON_IFID &BUSMON_OWERFLOW &BUSMON_DATA """"&BUSMON_PLATFORM"""" """"&PERL"""" """"&BUSMON_PARSE_SCRIPT"""" """"&BUSMON_PERL_INCLUDE"""" """"&BUSMON_TRACEDATA_DIR"""" /track """
+		WRITE #1 "		)"
+		WRITE #1 "	)"
+		WRITE #1 ")"
+	)
+)
+
+ENDDO

@@ -1,0 +1,62 @@
+#include <t1xhv_vec_h264.idt>
+#include <t1xhv_common.idt>
+
+/** @addtogroup vecH264ConfigureAlgoGroup configureAlgo
+ *  @ingroup vecH264ProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+
+ \param[in]  algoId                     Algo Identifier of the ALGO Component.
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vec_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vec_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_internal_buffer       "Internal buffer" structure address (i.e. ts_t1xhv_vec_internal_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_header_buffer      "Input Header buffer" structure address (i.e. ts_t1xhv_vec_header_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_bitstream_buffer  "Output bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_frame_parameters   "Input In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_parameters  "Output In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecH264ConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+
+ * \msc
+    h264_encoder_data_dep,h264_encoder_algo;
+    h264_encoder_data_dep=>h264_encoder_algo [label="configureAlgo()"];
+    h264_encoder_data_dep<<h264_encoder_algo;    
+  \endmsc
+  \n
+ *
+ */ 
+
+void configureAlgo(t_t1xhv_algo_id algoId,	
+					t_uint32 addr_in_frame_buffer,
+					t_uint32 addr_out_frame_buffer,
+					t_uint32 addr_internal_buffer,
+          				t_uint32 addr_in_header_buffer,
+					t_uint32 addr_in_bitstream_buffer,
+					t_uint32 addr_out_bitstream_buffer,
+					t_uint32 addr_in_parameters,
+					t_uint32 addr_out_parameters,
+					t_uint32 addr_in_frame_parameters,
+					t_uint32 addr_out_frame_parameters);
+
+ /** @} */ // end of vecH264ConfigureAlgoGroup

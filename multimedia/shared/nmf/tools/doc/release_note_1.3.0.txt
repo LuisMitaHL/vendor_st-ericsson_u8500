@@ -1,0 +1,236 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 1.3.0)      *
+**********************************************************
+    "Compilé, c'est gagné" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Component manager binary & api
+    - Synchronous & Hybrid execution engine binaries
+    - Component tool chain binary
+    - Light ARM component-based environment configured for NMF test and development 
+    	This environment is based on Think OS.
+    - Nomadik Multiprocessing Environment API specification
+    - Example source codes (Hello World's, Training, Mandelbrot's, mp3, Jpeg)
+        Hello world and mp3 Eclipse project file delivered
+        Jpeg fully based on Host local execution domain
+    - Documentations (User guide, programming model, CM API, MPC API)
+        User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+    - STn8815 SAA & SVA Cut A0/B0/C0
+    - STn8820 SAA & SVA & SIA Cut A0
+    
+Supported environments:
+    - nmf_Bare:     based on Nomadik HCL/services libraries (only on STn8815 board)
+        Based on label HCL/services NOI_BASE_V6.16.1
+        This environment is deprecated and will be removed as soon as CSD/Audio 
+        team switch to another environment. Please don't use it any more.
+    - nmf_Think:    based on Think open source component-based OS
+
+
+Changes:
+--------
+[CM]
+    - Use OSAL semaphore API so that all functions are now synchronous and don't 
+      make active polling to synchronize Host execution with MPC.
+    - User fifo has been deprecated and is no more supported by NMF 1.3.x.
+    - Put component caller THIS reference in caller interface descriptor in order 
+      to get right information about faulting component during call to unbinded 
+      interface which generate Panic.
+
+[MPC Executive Engine]
+    
+[OS integration]
+    - Add to OSAL semaphore API (OSAL_CreateSemaphore(), OSAL_SemaphorePost(), 
+      OSAL_SemaphoreWaitTimed() and OSAL_DestroySemaphore()).
+    
+[NMF Think]
+	- Update file system management for handling repository and virtual file 
+	  system mount point.
+	- Update file system to support write on semihosting CVS.
+	- Component malloc protected through mutex.
+    - Update NME_remap API and add mapping mode as parameter.
+    - Allow user2mpc binding generator to be used with Think.
+    - NME API renamed LOS API for 'Ligth Operating System'.
+    
+[Tools] 
+    - Add Host local execution domain allowing:
+    	* develop host code with NMF component programming model,
+    	* generate library containing a statically deployed components network 
+    	  linkable with standard host application
+    	* automatic generation of distributed network deployment code (a.k.a CM calls).
+    
+[Programming model]
+    - Change definition of NULL from ((void *)0) to 0 for mmdsp compiler.
+    - Add IS_NULL_INTERFACE(itf, method) to trap unbinded interface.
+    	Warning: previously THIS could be used, but this is no more true.
+    	
+
+Bug fixes:
+---------
+	- Hybrid Execution Engine fixes in context switch:
+	    * MMDSP AdCtl register was not correctly during context switch
+    	* Interrupt state not correctly restored during resuming of preempted task
+    	* Interrupt not correctly disabled in scheduler loop. 
+    - Fixes many memory leak in CM Engine and CM proxy. Now memory leaks are detected
+      during NMF test suite (either during error test) in order to decrease it.
+      
+  	- [ Defect #31967 ] [CM] Memory leak on OSAL_MALLOC when error during API Call
+  		Many memory leak as been fixed and now these defect are checked in test suite.
+  	- [ Defect #35047 ] The event sent to host when the stack becomes overflow doesn't 
+  	  provide a correct 'this'
+  	- [ Defect #35133 ] [CM] Panic reason INTERFACE_NOT_BINDED
+  	- [ Defect #35134 ] [Tools] tool for harddisk.o causes wrong path display
+  		Now Repository path when using RAM file system is all prefixed by RAM:.
+  	- [ Defect #36284 ] Optional interface
+  		Done by providing IS_NULL_INTERFACE(itf, method).
+  	- [ Defect #38213 ] THIS field for optional interface is not set in case of .arch
+  		Use IS_NULL_INTERFACE(itf, method) to test null interface.
+  	- [ Defect #39197 ] [CM] loadmap is not freed when an empty component is destroyed
+  	- [ Defect #40736 ] [CM] host power mask does not return in initial state after 
+  	  destroy
+  	- [ Defect #40751 ] [EE] power issue when allocate/free CM_MM_MPC_TCM16_X
+  	- [ Defect #40757 ] [Power] mpc/hsem still powered on after a allocate/intantiate/
+  	  destroy/free sequence
+  	- [ Defect #40810 ] [Power] bad power status when allocate/free is done on 2mpcs in 
+  	  TCM Y
+  	- [ Defect #40899 ] [EE] ee destruction needs clarification
+  	- [ Defect #40908 ] [EE] ee, power and panic
+  	- [ Defect #40945 ] [EE] ee not destroyed if CM_COMPONENT_NOT_FOUND is returned
+  	- [ Defect #40965 ] [EE] power on if CM_NO_MORE_MEMORY is encountered
+  	- [ Defect #40996 ] [Power] different behavior between think and os21
+  	- [ Defect #41008 ] [Power] power on after singleton network destruction
+  	- [ Defect #41075 ] Wrong id of faulting component in panic on 8820
+  	- [ Defect #41232 ] [power] power remains on after bizarre composite instance/
+  	  destroy
+  	- [ Defect #42563 ] Bug in CM_INTERNAL_RegisterXXX2YYYInterfaces
+  	- [ Defect #42589 ] Protection against NULL pointer in cm_checkValidBinding needed
+  		Some sanity checks has been added
+  	- [ Defect #44097 ] Memory leaks in CM_UnbindComponentToHost function
+  	- [ Defect #44632 ] user2mpc bindings do not work in nmf_think env
+  	- [ Defect #44709 ] Unbinding not possible on optional required interface
+  	- [ Defect #44362 ] Collection of required interfaces not binded statically
+
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+    - Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        
+    - MP3 example supported only on nmf_bare environment.
+        This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+        Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+    - Some link issue with GNU toolchain could occur in examples until HCL/Services compiled with 
+        correct flags. 
+
+    - Due to unavailability of HCL for STn8820, nmf_Bare runs only on STn8815.
+
+	- Licenses updated
+    
+Pre-requires:
+-------------
+    - At least Nomadik Toolset 1.0.0 final release.
+        Patched with MMDSP Binutils compiler.
+        At least MMDSP Debugger 4.0.0.
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment :
+------------------
+    - Environments:
+        Board: 
+            NDK15 Cut B0
+            NDK20 Cut A0
+        MPC: 
+            SAA & SVA on NDK15
+            SAA & SVA & SIA on NDK20
+        Execution Engine: Synchronous, Hybrid
+        Semaphores: local, hardware
+        Environment: bare, think, tlm
+        Nomadik Toolset 1.0.0 final release
+        ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593, st-armgcc (gcc version 4.1.1)
+
+    - Tests:
+        * 'ADL' class
+            check 'Architecture Description Language' features from programming model
+            test limit of some ADL features (name length, collection size,...)
+            check error codes returned by ADL tool
+
+        * 'Attribute' class
+            operations on attributes inside component (mpc side)
+            check attribute api on host side
+            api error management
+
+        * 'Binding' class
+            synchronous/asynchronous intra-MPC communication
+            ARM -> MPC
+            MPC -> ARM
+            inter MPCs (asynchronous)
+            MPC -> MPC (on 8815B0)
+            Static intra-MPC optimized binding
+            interruption
+            error management
+
+        * 'Collection' class :
+            Behavior with binds between primitives component using collections interfaces
+            Primitive collections interface introspection
+
+        * 'Composite' class:
+            Behavior with binds between composites component using collections interfaces
+            Behavior with binds defined in composites components (conf. files) using collections interfaces
+            Composite collections interfaces introspection
+
+        * 'Dynamic loading' class: 
+            segment loading (RO, RW, ZI)
+                Mono-instance
+                Multi-instances on same DSP
+                Multi-instances on both DSP
+            error management
+
+        * 'Fifo' class
+            creation/destruction of network with fifo use
+            fifo connectivity (host side and mpc side)
+            check flush/status/notify features
+            api error management
+
+        * 'IDL' class
+            check 'Interface Description Language' features from programming model
+            check error codes returned by ADL tool
+
+        * 'Interface' class
+            interfaces introspection for primitives and composites components (except collections interfaces)
+
+        * 'Lifecycle' class
+            check the behavior using the lifecycle API
+
+        * 'Memory' class
+            allocate/free api management for SDRAM and MPC memories
+            check address/status features
+            api error management
+
+        * 'Misc' class
+            'singleton' features (network construction/destruction)
+            communication stressing (mandelbrot applications)
+            multiple instantiation to fill memory
+            component priority inside network
+
+        * 'Network' class
+            components (primitives or composites) introspection (without interfaces)
+
+        * 'Panic' class
+            Behavior upon each Panic (reason) detection and after the detection.
+
+        * 'Properties' class
+            Get property information in component network (primitive/composite)
+            api error management
+
+        * 'Stack' class
+            check the MPC stack evolution combined with the TCM_X MPC dynamic allocation
+

@@ -1,0 +1,57 @@
+#!/bin/bash
+
+USAGE="usage: $0 BUILD_SYSTEM=[android|stelp] PRODUCT=[u8500|u5500]"
+
+#Sanity check of arguments
+if [ $# != 2 ]; then
+    echo $USAGE
+    exit
+fi
+
+# split key=value into two separate key and value parameters
+until [ -z $1  ]; do
+  OPTLEN=`expr length "$1"`
+  KEYPOS=`expr index "$1" =`
+  KEY=`expr substr "$1" 1 $((KEYPOS - 1))`
+  VALUE=`expr substr "$1" $((KEYPOS + 1)) $OPTLEN`
+  shift
+
+  case $KEY in
+    BUILD_SYSTEM )
+      BUILD_SYSTEM=$VALUE ;;
+    PRODUCT )
+      PRODUCT=$VALUE ;;
+  esac
+done
+
+#At present no support for stelp in MAL_CLIENT
+case $BUILD_SYSTEM in
+  stelp )
+    echo "LibStageFrightHw doesnot support stelp."
+    exit
+    ;;
+esac
+
+
+MODULE_NAME="libstagefrighthw"
+
+test -d ../prebuilt/$MODULE_NAME || mkdir -p ../prebuilt/$MODULE_NAME
+
+#Copy the header files
+#cp -v -t ../prebuilt/${MODULE_NAME}/ STECodecsPlugin.h 
+#cp -v -t ../prebuilt/${MODULE_NAME}/ STEVideoRenderer.h
+
+#copy top level makefiles
+cp -v Android_prebuilt.mk ../prebuilt/${MODULE_NAME}/Android.mk
+
+PRODUCT_DIR="../../../../out/target/product/${PRODUCT}"
+
+LIBS="${PRODUCT_DIR}/obj/SHARED_LIBRARIES/${MODULE_NAME}_intermediates/LINKED/*.so"
+cp -v ${LIBS} ../prebuilt/${MODULE_NAME}/
+
+# Clean up all built versions of the lib
+OUT_LIB_DIR="${PRODUCT_DIR}/obj/SHARED_LIBRARIES/${MODULE_NAME}_intermediates/"
+rm -v -rf ${OUT_LIB_DIR}
+rm -v ${PRODUCT_DIR}/system/lib/libstagefrighthw.so
+
+

@@ -1,0 +1,501 @@
+%%
+%% $Header: /usr/lib/texmf/tex/eus/RCS/eusdoc.sty,v 1.6 1995/09/13 17:36:08 mullis Exp mullis $
+%% 
+%% EUS Memo style for LaTeX2e.  Since we are now Ericsson and not
+%% Ericsson-GE, the header now just includes the Ericsson logo without
+%% the GE logo.  In all other repects, this produces a header the
+%% approximately matches the header in egememo.doc for Microsoft Word.
+%% See the memo T/R 94:0048 for samples.
+%% 
+%% Written by Raymond Toy (toy@rtp.ericsson.se)
+%%
+%% This version derived from egememo2e.sty,v:
+%% Revision 1.5  1994/10/27  22:27:31  toy
+%%
+%% $Log: eusdoc.sty,v $
+%% Revision 1.6  1995/09/13  17:36:08  mullis
+%% Added cclist environment, as well as automatic dating of form: YYMMDD.
+%%
+%% Revision 1.5  1995/09/13  17:28:57  mullis
+%% Original revision was 1.5, so keep it to remain consistent
+%%
+%% Revision 1.5  1995/04/07  14:45:06  toy
+%% Some random changes (from Karl?).  Bold-face doc title.
+%%
+%% Revision 1.4  1995/02/01  21:51:53  molnar
+%% Attempt to make infolist and distlist align and not overrun page width.
+%%
+%% Revision 1.3  1995/02/01  19:28:28  toy
+%% Renamed all \docxxx to \eusdocxxx to prevent name clash (with
+%% times.sty).  The footer uses sans serif font now.
+%%
+%% Revision 1.2  1995/01/05  23:41:23  toy
+%% Rename \EUSHeaderSimple to \EUSHeaderPlain.
+%%
+%% Revision 1.1  1995/01/05  21:01:02  toy
+%% Initial revision
+%%
+
+\NeedsTeXFormat{LaTeX2e}
+
+\message{Document Style Option `eusdoc2' 10 Jun 1999}
+
+\RequirePackage{lastpage} %% Need this to get reference to last page
+\RequirePackage{graphicx} %% For the Ericsson logo
+\RequirePackage{ifpdf}    %% For deciding whether PDF-version of logo is needed
+
+\DeclareOption{mmo}{%
+  \renewcommand{\EUSmmo}{\hspace*{7mm}\begin{tabular}[b]{@{}c@{}}\textsf{\textit{\textbf{mannesmann}}}\\ \hline 
+                                                    \textsf{\textit{mobilfunk}}\end{tabular}}
+
+}
+
+\newcommand{\EUSmmo}{}
+\ProcessOptions
+
+\newcommand\eussmall{%
+   \@setfontsize\small\@xipt{13.6}%
+   \abovedisplayskip 11\p@ \@plus3\p@ \@minus6\p@
+   \abovedisplayshortskip \z@ \@plus3\p@
+   \belowdisplayshortskip 6.5\p@ \@plus3.5\p@ \@minus3\p@
+   \def\@listi{\leftmargin\leftmargini
+               \topsep 9\p@ \@plus3\p@ \@minus5\p@
+               \parsep 4.5\p@ \@plus2\p@ \@minus\p@
+               \itemsep \parsep}%
+   \belowdisplayskip \abovedisplayskip
+}
+
+\newcommand\eustiny{\@setfontsize\eustiny\@vipt\@viipt}
+
+
+
+%% Need these to produce the logos, so load them if we don't
+%% have them yet
+%%\@ifundefined{Ericlogo}{\input ericlogo.sty}{}
+
+%% Need this to produce the document header, so load them if we don't
+%% have them yet
+% Old package, replaced by fancyhdr:
+%\RequirePackage{fancyheadings}
+\RequirePackage{fancyhdr}
+\RequirePackage{array}
+
+% Increase the penalty for widow and orphan lines. 10000 is the max.
+\widowpenalty=10000             % No widow line at bottom of page
+\displaywidowpenalty=10000       % Same for displayed text
+\clubpenalty=10000              % No orphan at top of page.
+
+%% Set margins appropriate for the paper
+%% 1.25 inches for all margins
+%\setlength{\oddsidemargin}{.25truein}
+%\setlength{\evensidemargin}{.25truein}
+% eedaro: reset to 0.86in for balanced margins.
+\setlength{\oddsidemargin}{-.14truein}
+\setlength{\evensidemargin}{.14truein}
+
+%% Set the heading sizes
+\setlength{\topmargin}{-.5truein}               % top margin is 0.5 in
+\setlength{\headheight}{12ex}
+\renewcommand{\headrulewidth}{0pt}                 % With no separator
+                                                % line 
+%\setlength{\footrulewidth}{.5pt}                % but a separator for
+                                                % the bottom
+%% 8.5 in paper = 2*1.25 + 6 in of text
+%\setlength{\textwidth}{6.0truein}
+%\setlength{\textwidth}{17truecm}
+%\setlength{\textheight}{7.7truein}              % 7.7in of text on
+                                                % each page. 
+
+%% We want paragraphs and subparagraphs to get numbers, and we want
+%% them to show up in the table of contents
+\setcounter{secnumdepth}{5}
+\setcounter{tocdepth}{5}
+
+%% EGE:  Bold face Figure and Table
+\renewcommand\figurename{\bfseries Figure}
+\renewcommand\tablename{\bfseries Table}
+
+%% ARO: flexible headers for cclist and infolist
+\def\ccname{Distribution:}
+\def\distname{Information:}
+
+%% A new today command:  Print date like YYYY-MM-DD (ISO format?)
+%\def\today{\number\year--%
+%  \ifnum 10>\month 0\fi\number\month--%
+%  \ifnum 10>\day 0\fi\number\day}
+
+%% Redefinition of reference-list,
+%% so that Refs obtain a section number. taken from article.cls.
+%%
+
+% \ifpdf
+% \renewenvironment{thebibliography}[1]
+%      {\addcontentsline{toc}{section}{\refname}\section*{\refname
+%         \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}}%
+%       \list{\@biblabel{\@arabic\c@enumiv}}%
+%            {\settowidth\labelwidth{\@biblabel{#1}}%
+%             \leftmargin\labelwidth
+%             \advance\leftmargin\labelsep
+%             \@openbib@code
+%             \usecounter{enumiv}%
+%             \let\p@enumiv\@empty
+%             \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+%       \sloppy
+%       \clubpenalty4000
+%       \@clubpenalty \clubpenalty
+%       \widowpenalty4000%
+%       \sfcode`\.\@m}
+%      {\def\@noitemerr
+%        {\@latex@warning{Empty `thebibliography' environment}}%
+%       \endlist}
+% \else
+%   \renewenvironment{thebibliography}[1]
+% %     {\addcontentsline{toc}{section}{\refname}\section*{\refname
+%      {\addtocontents{toc}{\protect\numberline{9}{\refname}}
+%        \section*{\refname
+%         \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}}%
+%       \list{\@biblabel{\@arabic\c@enumiv}}%
+%            {\settowidth\labelwidth{\@biblabel{#1}}%
+%             \leftmargin\labelwidth
+%             \advance\leftmargin\labelsep
+%             \@openbib@code
+%             \usecounter{enumiv}%
+%             \let\p@enumiv\@empty
+%             \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+%       \sloppy
+%       \clubpenalty4000
+%       \@clubpenalty \clubpenalty
+%       \widowpenalty4000%
+%       \sfcode`\.\@m}
+%      {\def\@noitemerr
+%        {\@latex@warning{Empty `thebibliography' environment}}%
+%       \endlist}
+% \fi
+\renewenvironment{thebibliography}[1]
+     {%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+
+\newcounter{ttemp}%
+\setcounter{ttemp}{\year}%
+\addtocounter{ttemp}{-1900}%
+\ifnum \year>1999 \addtocounter{ttemp}{-100}\fi% kludge until 2100 :-)
+
+\def\today{%
+  \ifnum \year>1999 0\fi\thettemp% mh... kludge until 2010 :-)
+  -\ifnum 10>\month 0\fi\number\month%
+  -\ifnum 10>\day 0\fi\number\day}
+
+%% The document header has several parts:
+%%  1.  Author (Prepared by)
+%%  2.  Date
+%%  3.  Doc No.
+%%  4.  Phone No.
+%%  5.  Approved by
+%%  6.  Revision
+%%  7.  File
+%%  8.  Doc title
+
+\def\doc@author{}
+\def\doc@date{\today}           % Use today for default
+\def\doc@no{}
+\def\doc@phone{}
+\def\doc@approve{}
+\def\doc@rev{PA1}         % Default revision is PA1
+\def\doc@file{\jobname.tex}     % Default file name is the jobname
+\def\doc@loc{}
+\def\doc@title{Interface Description}
+
+\def\eusdocauthor#1{\gdef\doc@author{#1}}
+\def\eusdocdate#1{\gdef\doc@date{#1}}
+\def\eusdocno#1{\gdef\doc@no{#1}}
+\def\eusdocphone#1{\gdef\doc@phone{#1}}
+\def\eusdocapprove#1{\gdef\doc@approve{#1}}
+\def\eusdocrev#1{\gdef\doc@rev{#1}}
+\def\eusdocfile#1{\gdef\doc@file{#1}}
+\def\eusdocloc#1{\gdef\doc@loc{#1}}
+\def\eusdoctitle#1{\gdef\doc@title{\textbf{#1}}}
+
+\def\distlist#1{\gdef\@distlist{#1}}
+\def\infolist#1{\gdef\@infolist{#1}}
+\def\cclist#1{\gdef\@cclist{#1}}
+
+\if@titlepage
+  \renewcommand\maketitle{\begin{titlepage}%
+  \let\footnotesize\small
+  \let\footnoterule\relax
+  \null\vfil
+  \vskip 60\p@
+  \begin{center}%
+    {\LARGE \@title \par}%
+    %\vskip 3em%
+    %{\large
+    % \lineskip .75em%
+    %  \begin{tabular}[t]{c}%
+    %    \@author
+    %  \end{tabular}\par}%
+    %  %\vskip 1.5em%
+    %{\large \@date \par}%       % Set date in \large size.
+  \end{center}\par
+  %\@thanks
+  %\vfil\null
+  \end{titlepage}%
+  \setcounter{footnote}{0}%
+  \let\thanks\relax\let\maketitle\relax
+  \gdef\@thanks{}\gdef\@author{}\gdef\@title{}}
+\else
+\renewcommand\maketitle{\par
+  \begingroup
+    \renewcommand\thefootnote{\fnsymbol{footnote}}%
+    \def\@makefnmark{\hbox to\z@{$\m@th^{\@thefnmark}$\hss}}%
+    \long\def\@makefntext##1{\parindent 1em\noindent
+            \hbox to1.8em{\hss$\m@th^{\@thefnmark}$}##1}%
+    \if@twocolumn
+      \ifnum \col@number=\@ne
+        \@maketitle
+      \else
+        \twocolumn[\@maketitle]%
+      \fi
+    \else
+%     \newpage
+      \global\@topnum\z@   % Prevents figures from going at top of page.
+      \@maketitle
+    \fi
+    \thispagestyle{plain}\@thanks
+  \endgroup
+  \setcounter{footnote}{0}%
+  \let\thanks\relax
+  \let\maketitle\relax\let\@maketitle\relax
+%% EGE
+%%  \gdef\@thanks{}\gdef\@author{}\gdef\@title{}}
+  \gdef\@thanks{}\gdef\@author{}\gdef\@infolist{}\gdef\@distlist{}\gdef\@cclist{}\gdef\@title{}}
+\def\@maketitle{%
+%  \newpage
+  \null
+  %% EGE:  display information list if needed
+  \@ifundefined{@infolist}{}{{\bfseries \noindent Information
+      List:\par}%
+    \noindent%
+    \begin{center}
+      \begin{tabular*}{\textwidth}{p{1.3in}@{\hspace{0.15in}}p{1.3in}@{\extracolsep{\fill}}p{1.3in}@{\extracolsep{0in}\hspace{0.15in}}p{1.3in}}
+        \@infolist
+      \end{tabular*}\par
+    \end{center}
+    \vskip 2em%
+    }
+%   %% EGE:  display distribution list
+%   \@ifundefined{@distlist}{}{{\bfseries \noindent Distribution List:\par}%
+%     \noindent%
+%     \begin{center}
+%       \begin{tabular*}{\textwidth}{p{1.3in}@{\hspace{0.15in}}p{1.3in}@{\extracolsep{\fill}}p{1.3in}@{\extracolsep{0in}\hspace{0.15in}}p{1.3in}}
+%         \@distlist
+%       \end{tabular*}\par
+%     \end{center}
+%     \vskip 2em%
+%   }
+
+%   %% EGE:  display CC list
+%   \@ifundefined{@cclist}{}{{\bfseries \noindent CC:\par}%
+%     \noindent%
+%     \begin{center}
+%       \begin{tabular*}{\textwidth}{p{1.3in}@{\hspace{0.15in}}p{1.3in}@{\extracolsep{\fill}}p{1.3in}@{\extracolsep{0in}\hspace{0.15in}}p{1.3in}}
+%         \@cclist
+%       \end{tabular*}\par
+%     \end{center}
+%     \vskip 2em%
+%    }
+
+  %% ARO:  display distribution list
+%\noindent\begin{tabular}{@{}l@{}r@{}}
+  \@ifundefined{@cclist}{}{%{\bfseries \noindent CC:\par}%
+    \noindent%
+      \begin{tabularx}{0.5\textwidth}[t]{@{}l@{\hspace{0.25in}}X}
+        \multicolumn{2}{@{}l}{\textbf{\ccname}}\\
+        \@cclist
+      \end{tabularx}
+   }
+  \@ifundefined{@distlist}{}{%
+    \noindent%
+      \begin{tabularx}{0.5\textwidth}[t]{@{}l@{\hspace{0.25in}}X}
+        \multicolumn{2}{@{}l}{\textbf{\distname}}\\
+        \@distlist
+      \end{tabularx}
+  }
+%\end{tabular}\par
+    \vskip 2em%
+
+  \begin{center}%
+    {\LARGE\bfseries \@title \par}%
+    \vskip 1.5em%
+    {\large
+      \lineskip .5em%
+      \begin{tabular}[t]{c}%
+        \@author
+      \end{tabular}\par}%
+    \vskip 1em%
+%%    {\large \@date}%
+  \end{center}%
+  \par
+  \vskip 1.5em}
+\fi
+\newlength{\doc@length}
+
+\ifpdf
+  \newcommand{\Drawlogo}{\hspace{2mm}\includegraphics[width=3.3cm]{elogo.pdf}\EUSmmo{}}
+\else
+  \newcommand{\Drawlogo}{\hspace{2mm}\includegraphics[width=3.3cm]{elogo.eps}\EUSmmo{}}
+\fi
+\newcommand{\@logoandtitle}%
+{%
+  \setlength{\arrayrulewidth}{.9pt}
+  \setlength{\tabcolsep}{0mm}
+%  \begin{tabular*}{\textwidth}{p{3.3cm}@{\extracolsep{\fill}}p{3in}@{\extracolsep{\fill}}r}
+  \begin{tabular*}{\textwidth}{|p{12\doc@length}|@{\extracolsep{\fill}}p{11\doc@length}@{\extracolsep{\fill}}r}
+    \Drawlogo%%\hspace{2mm}\Ericlogo{0.45}{0}{27}
+    &  \doc@file
+    & \thepage\ (\pageref{LastPage})
+    \\
+    %%\cline{1-2}
+  \end{tabular*}%
+  }
+%%
+%% Full document header with author, date, rev, docno, approved, and
+%% file fields
+%%
+\newcommand{\@bigdocheader}%
+{%
+  \eussmall
+%  \fontsize{\@xipt}{1.5}\selectfont
+  \setlength{\doc@length}{0.04\textwidth}%24in}
+%  \@logoandtitle
+%  \vskip 0.5em
+  \setlength{\arrayrulewidth}{.6pt}
+  \setlength{\tabcolsep}{1mm}
+  \begin{tabular}{*{23}{|m{\doc@length}}@{extracolsep{\fill}}l|}
+% logo/title
+    \multicolumn{12}{m{12\doc@length}}{\hspace*{-2mm}\Drawlogo}
+    & \multicolumn{10}{m{10\doc@length}}{\parbox{10\doc@length}{\eusfont\doc@file}}
+    & \multicolumn{2}{m{2\doc@length}}{\hfill\eusfont\thepage\ (\pageref{LastPage})}
+    \\
+    \hline
+% line 1 - headings: prepared / no / / 
+    \multicolumn{12}{|m{12\doc@length}}{\eustiny\textsf{Uppgjord - \textsl{Prepared}}}
+    & \multicolumn{3}{|m{3\doc@length}}{\eustiny\textsf{Datum - \textsl{Date}}}
+    & \multicolumn{2}{|m{2\doc@length}}{\eustiny\textsf{Rev}}
+    & \multicolumn{6}{|m{6\doc@length}}{\eustiny\textsf{Dokumentnr - \textsl{Document no.}}}
+    &
+    \\
+% line 1 - entries:  <authname - phone> / <doc no>
+    \multicolumn{12}{|m{12\doc@length}}{\textsf{\doc@author \hfill \doc@phone}}
+    & \multicolumn{3}{|m{3\doc@length}}{\textsf{\doc@date}}
+    & \multicolumn{2}{m{2\doc@length}}{\centering\textsf{ \doc@rev}}
+    & \multicolumn{6}{|m{6\doc@length}}{\textsf{\doc@loc}}
+    &
+    \\
+% line 2 - headings
+    \hline
+    \multicolumn{8}{|m{8\doc@length}}{\eustiny\textsf{Godk\"and - \textsl{Approved}}}
+    & \multicolumn{4}{|m{4\doc@length}}{\eustiny\textsf{Kontr - \textsl{Checked}}}
+    & \multicolumn{3}{|m{3\doc@length}}{}
+    & \multicolumn{2}{m{2\doc@length}}{}
+    & \multicolumn{6}{|m{6\doc@length}}{\eustiny\textsf{Tillh\"or/Referens - \textsl{File/Reference}}}
+    &
+    \\
+% line 2 - entries
+    \multicolumn{8}{|m{8\doc@length}}{\textsf{\makebox[8\doc@length][l]{\doc@approve}}}
+    & \multicolumn{4}{m{4\doc@length}}{}
+    & \multicolumn{11}{|m{11\doc@length}}{\textsf{\doc@no}}
+    &
+    \\ \hline
+  \end{tabular}
+}
+%%
+%%
+%% Short doc header with just date, rev, and docno (and logo, of course).
+\newcommand{\@smalldocheader}%
+{%
+  \eussmall
+  \setlength{\doc@length}{0.04\textwidth}
+%  \@logoandtitle
+%  \vskip 0.5em
+  \setlength{\arrayrulewidth}{.6pt}
+  \setlength{\tabcolsep}{1mm}
+  \begin{tabular}{*{23}{|m{\doc@length}}@{extracolsep{\fill}}l|}
+% logo/title
+    \multicolumn{12}{m{12\doc@length}}{\hspace*{-2mm}\Drawlogo}
+    & \multicolumn{10}{m{10\doc@length}}{\parbox{10\doc@length}{\eusfont\doc@file}}
+    & \multicolumn{2}{m{2\doc@length}}{\hfill\eusfont\thepage\ (\pageref{LastPage})}
+    \\
+    \cline{13-24}
+% line 1 - headings: prepared / no / / 
+    \multicolumn{12}{m{12\doc@length}}{}
+    & \multicolumn{3}{|m{3\doc@length}}{\eustiny\textsf{Datum - \textsl{Date}}}
+    & \multicolumn{2}{|m{2\doc@length}}{\eustiny\textsf{Rev}}
+    & \multicolumn{6}{|m{6\doc@length}}{\eustiny\textsf{Dokumentnr - \textsl{Document no.}}}
+    &
+    \\
+% line 1 - entries:  <authname - phone> / <doc no>
+    \multicolumn{12}{m{12\doc@length}}{}
+    & \multicolumn{3}{|m{3\doc@length}}{\eusfont\doc@date}
+    & \multicolumn{2}{m{2\doc@length}}{\centering\eusfont\doc@rev}
+    & \multicolumn{6}{|m{6\doc@length}}{\eusfont\doc@loc}
+    &
+    \\
+    \cline{13-24}
+% line 2 - headings
+    \multicolumn{8}{m{8\doc@length}}{}
+    & \multicolumn{4}{m{4\doc@length}}{}
+    & \multicolumn{3}{m{3\doc@length}}{}
+    & \multicolumn{2}{m{2\doc@length}}{}
+    & \multicolumn{6}{m{6\doc@length}}{}
+    & \multicolumn{1}{c}{}
+    \\
+% line 2 - entries
+    \multicolumn{8}{m{8\doc@length}}{}
+    & \multicolumn{4}{m{4\doc@length}}{}
+    & \multicolumn{11}{m{11\doc@length}}{}
+    & \multicolumn{1}{c}{}
+    \\
+  \end{tabular}
+}
+
+%% Set the headings
+\lhead{}
+\rhead{}
+\chead{\ifnum 1=\thepage\@bigdocheader\else\@smalldocheader\fi}
+\lfoot{}
+\rfoot{}
+\cfoot{}
+%\fancyhead{\ifnum 1=\thepage\@bigdocheader\else\@smalldocheader\fi}
+\newcommand{\EUSHeaderFancy}{\chead{\@bigdocheader}}
+\newcommand{\EUSHeaderPlain}{\chead{\fancyplain{\@bigdocheader}{\@smalldocheader}}}
+%\newcommand{\EUSHeaderPlain}{\chead{\@smalldocheader}}
+\newcommand{\EUSHeaderNone}{%
+  \setlength{\headheight}{1.5cm}
+  \lhead{\Drawlogo}%
+  \chead{\doc@file}%
+  \rhead{\thepage\ (\pageref{LastPage})}%
+  }
+
+\newcommand{\eusfont}{\sffamily}
+  
+\pagestyle{fancyplain}
+
+%% Local Variables: 
+%% mode: latex
+%% TeX-master: "eusdoc.sty"
+%% End: 

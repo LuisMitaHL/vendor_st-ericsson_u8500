@@ -1,0 +1,32 @@
+primitive mpeg4enc.arm_nmf.parser extends fsm.component.armnmf_component
+{
+
+	// Constructor
+	provides lifecycle.constructor   as constructor
+
+	// input port
+	provides armnmf_emptythisbuffer   as      emptythisbuffer
+	requires armnmf_fillthisbuffer    as      inputport
+	
+	// output port
+	requires armnmf_emptythisbuffer    as      outputport
+	provides armnmf_fillthisbuffer     as      fillthisbuffer
+
+	// Provided interfaces to algo component
+	requires mpeg4enc.arm_nmf.api.algo            as iAlgo
+	provides mpeg4enc.arm_nmf.api.end_algo        as iEndAlgo
+	
+        provides mpeg4enc.arm_nmf.api.setParam	as setParam
+
+	requires mpeg4enc.arm_nmf.api.log_event       as iSendLogEvent
+	provides mpeg4enc.arm_nmf.api.log_event       as iGetLogEvent	
+	provides mpeg4enc.arm_nmf.api.setCropForStab  as iSetCropForStab
+    requires mpeg4enc.arm_nmf.api.brc             as iBrc
+
+	sources src/parser.cpp    
+    
+	option memories EMB24RAM|EMB16RAM|XROM|EXT24RAM|EXT16RAM	
+   
+
+}
+

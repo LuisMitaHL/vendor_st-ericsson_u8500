@@ -1,0 +1,55 @@
+;------------------------------------------------------------
+; ose_menu.men
+;------------------------------------------------------------
+; OSE specific memu
+;
+; 111208 - PDE Initial version : created from startup.cmm
+;-----------------------------------------------------------
+; NOTE! separate file needed to be abble to ADD 2 menu in startup.cmm
+;-----------------------------------------------------------
+add
+menu
+(
+	; ST-Ericsson Menu system
+	popup "ST-Ericsson"
+	(
+		popup "Polling speed"
+		(
+			menuitem "No polling (Not recomended)" "sys.polling off"
+			menuitem "Polling slow (default at ST-Ericsson)" "sys.polling slow"
+			menuitem "Polling default" "sys.polling default"
+			menuitem "Polling fast (Not recomended)" "sys.polling fast"
+			menuitem "Polling continuous (Not recomended)" "sys.polling cont"
+		)
+		menuitem "View psringbuffer" "do psringbuffer"
+		menuitem "View lmconf" "do lmconf"
+		menuitem "View ramlog" "do ramlog"
+		menuitem "View BoardParam" "do boardparam"
+		menuitem "View CHIPSELECTINFO" "var.ADDWATCH CHIPSELECTINFO"
+	        menuitem "OSE Whatstrings" "do ose_whatstring"
+		menuitem "OSE FAM FlashInstances" "v.watch %OPEN %RECURSIVE FlashInstanceTable_p"
+		menuitem "OSE Awareness" "do osedelta"
+		menuitem "OSE Manuals" "os.hidden explorer http://emp.ericsson.se/ose/ "
+		menuitem "Analyse Error" "do ose_error"
+		menuitem "Enable Singlestep Interrupt"
+		(
+			setup.imaskasm off
+			setup.imaskhll off
+		)
+		menuitem "Disable Singlestep Interrupt"
+		(
+			setup.imaskasm on
+			setup.imaskhll on
+		)
+		menuitem "Clear ramlog" "d.set RAMLOG$$Base--RAMLOG$$Limit"
+		separator
+		menuitem "Syncronize Targets Anja" "do anja_syncronize_targets.cmm"
+		menuitem "Reset Syncronize Targets" "do syncronize_reset.cmm"
+		menuitem "Show Sync Setup" "sy.state"
+		menuitem "Show trigger Setup" "trigger.view"
+		separator
+	        menuitem "List \\eseldna003\bmtpapps\BmtpTools\UTIL\Debuggers\Lauterbach" "dir \\eseldna003\bmtpapps\BmtpTools\UTIL\Debuggers\Lauterbach"
+	        menuitem "List g:\t32" "dir g:\t32"
+		separator
+	)
+)

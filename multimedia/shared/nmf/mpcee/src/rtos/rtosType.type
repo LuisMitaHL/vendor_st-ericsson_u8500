@@ -1,0 +1,11 @@
+type rtos.rtosType {
+	
+	provides rtos.api.ee 			as ee
+	provides rtos.api.helper		as helper
+	provides rtos.api.panic			as panic
+	provides ee.api.debug			as debug
+	provides rtos.api.sched         as sched
+	
+	requires exception.handler as it[32] optional
+	requires sleep.api.ulp             as ulp
+}

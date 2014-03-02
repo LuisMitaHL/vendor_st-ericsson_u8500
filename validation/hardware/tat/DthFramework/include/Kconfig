@@ -1,0 +1,33 @@
+#
+# Dthframework-include configuration
+#
+
+menuconfig DTHFRAMEWORK-INCLUDE
+	bool "Dthframework-include"
+	help
+	  
+if DTHFRAMEWORK-INCLUDE
+
+config DTHFRAMEWORK-INCLUDE_DIR
+	string
+	default ../tat/DthFramework/include
+
+config DTHFRAMEWORK-INCLUDE_DEPS
+	string
+	default ""
+
+config DTHFRAMEWORK-INCLUDE_STRIP_DISABLED
+	bool "Disable strip"
+	depends on DTHFRAMEWORK-INCLUDE
+	default n
+	help
+	  This will disable strip for this module
+
+config DTHFRAMEWORK-INCLUDE_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on DTHFRAMEWORK-INCLUDE
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # DTHFRAMEWORK-INCLUDE

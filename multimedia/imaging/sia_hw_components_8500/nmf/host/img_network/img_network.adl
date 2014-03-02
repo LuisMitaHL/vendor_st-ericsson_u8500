@@ -1,0 +1,136 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file
+* \brief   This file describes the img_network ARM+DSP NMF composite (only way
+*          to get ARM+DSP NMF composites to communicate with each other)
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+composite img_network {
+	contains imgcontroller as imgcontroller
+	contains stab as stab
+	contains nmf.host.shared_bufout as host_shared_bufout0
+	contains nmf.host.shared_bufout as host_shared_bufout1
+    contains nmf.host.shared_bufout as host_shared_bufout2
+	contains nmf.mpc.shared_bufout as mpc_shared_bufout0 domain
+	contains nmf.mpc.shared_bufout as mpc_shared_bufout1 domain
+	contains nmf.mpc.shared_bufout as mpc_shared_bufout2 domain
+	contains grabctl as grabctl domain
+	contains grab as grab domain
+	contains fsm.generic as genericfsm domain
+	contains fsm.component as componentfsm domain
+	contains osttrace.mmdsp as mmdsp_osttrace domain
+
+	
+	/* imgcontroller interfaces */
+	provides sendcommand                 as      sendcommand
+    provides fsminit                     as      fsminit
+	requires eventhandler                as      proxy
+
+    /* grabctl interfaces */
+    requires grabctl.api.acknowledges           as      grabctl_acknowledges
+    requires grabctl.api.error                  as      grabctl_error
+
+	/* stab interfaces */
+	provides armnmf_fillthisbuffer              as      fillthisbuffer[3]
+	requires armnmf_emptythisbuffer	            as      fillbufferdone[3]
+    
+    provides stab.api.configure                 as      stab_configure
+    /* grabctl interfaces */
+	provides grabctl.api.configure              as      grabctl_configure
+
+	/* grab interfaces */
+	provides grab.api.cmd			as	grab_command
+	requires grab.api.alert 		as	grab_alert	
+	
+    /* imgcontroller-top bindings */
+	binds this.sendcommand                      to      imgcontroller.sendcommand
+    binds this.fsminit                          to      imgcontroller.fsminit
+	binds imgcontroller.proxy                   to      this.proxy
+    
+	/* stab-top bindings */
+	binds this.fillthisbuffer[0]                to      stab.fillthisbuffer[0]
+	binds stab.fillbufferdone[0]                to      this.fillbufferdone[0]
+	binds this.fillthisbuffer[1]                to      stab.fillthisbuffer[1]
+	binds stab.fillbufferdone[1]                to      this.fillbufferdone[1]
+	binds this.fillthisbuffer[2]                to      stab.fillthisbuffer[2]
+	binds stab.fillbufferdone[2]                to      this.fillbufferdone[2]
+    binds this.stab_configure                   to      stab.configure
+
+	/* stab-imgctl bindings */
+	binds imgcontroller.stab                    to      stab.sendcommand asynchronous fifo=4
+    binds imgcontroller.stab_fsminit            to      stab.fsminit asynchronous fifo=1
+	binds stab.proxy                            to      imgcontroller.stab_handler asynchronous fifo=8
+	
+	/* grabctl-top bindings */
+	binds this.grabctl_configure                to      grabctl.configure 
+
+    /* grabctl-top bindings */
+    binds grabctl.acknowledges                  to      this.grabctl_acknowledges 
+    binds grabctl.alert_error                   to      this.grabctl_error 
+	
+	/* grab-top bindings */
+	binds this.grab_command			to      grab.iCommand 
+	binds grab.iAlert[3]			to	this.grab_alert 
+		
+	/* grabctl-imgctl bindings */
+	binds imgcontroller.grabctl                 to      grabctl.sendcommand asynchronous fifo=2
+    binds imgcontroller.grabctl_fsminit         to      grabctl.fsminit asynchronous fifo=2
+	binds grabctl.proxy                         to      imgcontroller.grabctl_handler asynchronous fifo=8
+
+	/* grabctl-mpc_shared_bufout bindings */
+	binds grabctl.fillbufferdone[0] to mpc_shared_bufout0.emptythisbuffer
+	binds grabctl.fillbufferdone[1] to mpc_shared_bufout1.emptythisbuffer
+	binds grabctl.fillbufferdone[2] to mpc_shared_bufout2.emptythisbuffer
+	binds mpc_shared_bufout0.mpc to grabctl.fillthisbuffer[0]
+	binds mpc_shared_bufout1.mpc to grabctl.fillthisbuffer[1]
+	binds mpc_shared_bufout2.mpc to grabctl.fillthisbuffer[2]
+
+	/* mpc_shared_bufout-host_shared_bufout bindings */
+	binds mpc_shared_bufout0.host to host_shared_bufout0.emptythisbuffer asynchronous fifo=16
+	binds mpc_shared_bufout1.host to host_shared_bufout1.emptythisbuffer asynchronous fifo=16
+	binds mpc_shared_bufout2.host to host_shared_bufout2.emptythisbuffer asynchronous fifo=16
+	binds host_shared_bufout0.mpc to mpc_shared_bufout0.fillthisbuffer asynchronous fifo=16
+	binds host_shared_bufout1.mpc to mpc_shared_bufout1.fillthisbuffer asynchronous fifo=16
+	binds host_shared_bufout2.mpc to mpc_shared_bufout2.fillthisbuffer asynchronous fifo=16
+
+	/* host_shared_bufout-stab bindings */
+	binds host_shared_bufout0.host to stab.emptythisbuffer[0]
+	binds host_shared_bufout1.host to stab.emptythisbuffer[1]
+	binds host_shared_bufout2.host to stab.emptythisbuffer[2]
+	binds stab.emptybufferdone[0] to host_shared_bufout0.fillthisbuffer
+	binds stab.emptybufferdone[1] to host_shared_bufout1.fillthisbuffer
+	binds stab.emptybufferdone[2] to host_shared_bufout2.fillthisbuffer
+	
+	/* grabctl-stab bindings */
+	binds grabctl.reportcurves to stab.reportcurves asynchronous fifo=4
+
+	/* grab-grabctl bindings */
+	binds grabctl.grab_interface to grab.iCommand
+	binds grab.iAlert[0] to grabctl.iGRABAlert
+
+	/* grabctl-fsm bindings */
+	binds grabctl.genericfsm to genericfsm.genericfsm
+	binds grabctl.componentfsm to componentfsm.componentfsm
+	binds componentfsm.genericfsm to genericfsm.genericfsm
+    
+    /* fsm-mmtrace bindings */
+    binds componentfsm.osttrace to mmdsp_osttrace.osttrace
+    
+	
+	
+	/* loopback bind on postevent */
+	binds stab.me to stab.postevent asynchronous fifo=2
+
+	/* loopback bind on grabctl postevent */
+	binds grabctl.me to grabctl.postevent asynchronous fifo=2
+	
+    /* loopback bind on grabctl returnbuffer */
+    binds grabctl.meReturn to grabctl.returnbuffer asynchronous fifo=4
+
+	option CFLAGS "-g"
+}

@@ -1,0 +1,28 @@
+#
+# Autotest configuration
+#
+
+menuconfig AUTOTEST
+	bool "Autotest Configuration"
+	depends on AB_APE
+	help
+	  Various scripts used by test teams
+
+if AUTOTEST
+
+config AUTOTEST_DIR
+	string
+	default ./tools/autotest
+
+config AUTOTEST_DEPS
+	string
+	default ""
+
+config AUTOTEST_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on AUTOTEST
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # AUTOTEST

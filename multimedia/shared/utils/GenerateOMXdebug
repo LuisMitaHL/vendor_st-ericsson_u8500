@@ -1,0 +1,748 @@
+#!/usr/bin/env perl
+#
+# Copyright (C) ST-Ericsson SA 2012. All rights reserved.
+# This code is ST-Ericsson proprietary and confidential.
+# Any use of the code for whatever purpose is subject to
+# specific written permission of ST-Ericsson SA.
+#
+
+# This script generates C/C++ code printing a binary OMX structure into a human readable output.
+# The script take as only input argument the file-name into which to generate the code.
+#
+# Internals:
+# Works in 4 phases:
+#  1) find_index_list:
+#     from the content of @index_type array, build the list of index we'll try to find a structure
+#     associated with:
+#       @index_type 0 is the name of the enum listing all the index.
+#       @index_type 1 is the header file to read the enum definition from
+#     For each enumeration constant we extract from the associated comment the name of the structure
+#     (defined using a type-def) the index is referring to.
+#     Each identified structure name is registered to $global_struct_hash HASH using the index name
+#     as key .
+# 2) parse_typedefs:
+#    All files in @typedef_files array are processed using a C scanner (not a parser, just a C/C++
+#    reader to get most of the C parsing done). In each file we look if a structure type is defined
+#    which names match the ones registered in $global_struct_hash HASH.  The structures are
+#    recursively processed in case they have not yet been processed.  We also look at all the
+#    enumerated types to generate the enumeration constant to value name.
+# 3) parse_struct: since parse_typedefs is not processing the structure definition not using a
+#    typedef, we need to process the few files in which we have such non type definitions.
+# 4) generate_OMXdebug:
+#    Dump the code.
+
+use File::Basename ;
+use File::Find;
+use strict;
+
+use FindBin;
+use File::Spec;
+use lib File::Spec->catfile($FindBin::Bin => qw(perllibs));
+use C::Scan;
+use Cwd;
+use Switch;
+
+if (scalar(@ARGV) != 1) {
+    print "Expecting destination file as argument\n";
+    exit (1);
+}
+
+my $output_file = @ARGV[0];
+
+die "MMROOT not defined" if (!defined $ENV{MMROOT});
+die "MMDSPCORE not defined" if (!defined $ENV{MMDSPCORE});
+die "MYMMSYSTEM not defined" if (!defined $ENV{MYMMSYSTEM});
+if ($ENV{MYMMSYSTEM} eq "android") {
+    die "ANDROID_BUILD_TOP not defined" if (!defined $ENV{ANDROID_BUILD_TOP});
+}
+
+# name of the index enum and file where it is defined
+my @index_type = (
+    ["OMX_INDEXTYPE",                         "$ENV{MMROOT}/shared/ens_interface/include/omxil/OMX_Index.h"],
+    ["OMX_INDEXEXTTYPE",                      "$ENV{MMROOT}/shared/ens_interface/include/omxil/OMX_IndexExt.h"],
+    ["ENS_INDEXTYPE",                         "$ENV{MMROOT}/shared/ens_interface/include/ENS_Index.h"],
+    ["OMX_MMHWBUFFER_INDEXTYPE",              "$ENV{MMROOT}/shared/mmhwbuffer_osi/include/mmhwbuffer_ext.h"],
+    ["CSA_AUDIOINDEXTYPE",                    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_chipset_api_index.h"],
+    ["CSA_VIDEOINDEXTYPE",                    "$ENV{MMROOT}/video/video_chipset_apis/video_chipset_api_index.h"],
+    ["AFM_INDEXTYPE",                         "$ENV{MMROOT}/audio/afm/proxy/include/AFM_Index.h"],
+    ["VSS_INDEXTYPE",                         "$ENV{MMROOT}/video/components/val_source_sink/proxy/inc/VSS_Index.h"],
+    ["VFM_INDEXTYPE",                         "$ENV{MMROOT}/video/vfm/include/VFM_Index.h"],
+    ["IFM_INDEXTYPE",                         "$ENV{MMROOT}/imaging/ifm/include/IFM_Index.h"],
+    ["OMX_3A_INDEXTYPE",                      "$ENV{MMROOT}/imaging/omx3a_camera_extension/include/OMX_3A_CameraIndexExt.h"],
+    ["OMX_COMFORT_NOISE_GENERATION_INDEXTYPE","$ENV{MMROOT}/audio/comfortnoise/proxy/OMX_CNGExt.h"],
+    ["OMX_STE_SPEECH_PROC_INDEX",             "$ENV{MMROOT}/audio/speech_proc_vcs/wrapper/inc/omx_ste_speech_proc.h"],
+    ["OMX_DRC_INDEXTYPE",                     "$ENV{MMROOT}/audio/drc/proxy/OMX_DRCExt.h"],
+    ["OMX_STE_TIMESCALE_INDEXTYPE",           "$ENV{MMROOT}/audio/timescale/proxy/OMX_STE_Timescale.h"],
+    ["OMX_STE_SPECTRUMANALYZER_INDEXTYPE",    "$ENV{MMROOT}/audio/spectrum_analyzer/proxy/OMX_STE_SpectrumAnalyzer.h"],
+    ["OMX_STE_VIRTUALSURROUND_INDEXTYPE",     "$ENV{MMROOT}/audio/virtual_surround/proxy/OMX_STE_VirtualSurroundExt.h"],
+    ["OMX_STE_CHANNELSYNTHESIS_INDEXTYPE",    "$ENV{MMROOT}/audio/channel_synthesis/proxy/OMX_STE_ChannelSynthesisExt.h"],
+    ["OMX_STE_AUDIOVISUALIZATION_INDEXTYPE",  "$ENV{MMROOT}/audio/audio_visualization/proxy/OMX_STE_AudioVisualizationExt.h"],
+    ["OMX_STE_AUDIOEFFECTS_INDEXTYPE",        "$ENV{MMROOT}/audio/afm/proxy/include/OMX_STE_AudioEffectsExt.h"],
+    ["OMX_STE_ALP_INDEXTYPE",                 "$ENV{MMROOT}/audio/alp/proxy/OMX_STE_AlpExt.h"],
+    ["OMX_SYMBIAN_INDEXTYPE",                 "$ENV{MMROOT}/shared/ste_shai/include/OMX_Symbian_CameraIndexExt_Ste.h"],
+    # below header file needs to be fixed to add a comment desribing the struct name the index is for
+    ["ADM_CORE_INDEXTYPE",                    "$ENV{MMROOT}/audio/adm/src/il_tool/ste_adm_omx_core.h"],
+    #["IFM_VALID_INDEXTYPE",                   "$ENV{MMROOT}/imaging/ite_omx_use_cases/proxy/include/IFM_valid_Index.h"],
+    );
+
+# headers files where are defined the parameter/config structures
+my @typedef_files = (
+    "$ENV{MMROOT}/shared/omxil/OMX_Other.h",
+    "$ENV{MMROOT}/shared/omxil/OMX_Core.h",
+    "$ENV{MMROOT}/shared/omxil/OMX_Audio.h",
+    "$ENV{MMROOT}/shared/omxil/OMX_Video.h",
+    "$ENV{MMROOT}/shared/omxil/OMX_Image.h",
+    "$ENV{MMROOT}/shared/omxil/OMX_Component.h",
+    "$ENV{MMROOT}/shared/mmhwbuffer_osi/include/mmhwbuffer_ext.h",
+    "$ENV{MMROOT}/shared/ens_interface/nmf/common/omxerror.idt", # OMX_DSP_ERRORTYPE
+    "$ENV{MMROOT}/shared/ens_interface/include/ENS_Index.h",
+    "$ENV{MMROOT}/shared/ens_interface/include/omxil/OMX_CoreExt.h",
+    "$ENV{MMROOT}/audio/drc/proxy/OMX_DRCExt.h",
+    "$ENV{MMROOT}/audio/comfortnoise/proxy/OMX_CNGExt.h",
+    "$ENV{MMROOT}/audio/afm/proxy/include/AFM_Index.h",
+    "$ENV{MMROOT}/audio/afm/proxy/include/AFM_Types.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_codec_type.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_codecs_chipset_api.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_hw_control_chipset_api.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_render_chipset_api.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_sourcesink_chipset_api.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_transducer_chipset_api.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/audio_av_sync_chipset_api.h",
+    "$ENV{MMROOT}/audio/audio_chipset_apis/haptics_chipset_api.h",
+    "$ENV{MMROOT}/audio/speech_proc_vcs/wrapper/inc/omx_ste_speech_proc.h",
+    "$ENV{MMROOT}/video/video_chipset_apis/video_generic_chipset_api.h",
+    "$ENV{MMROOT}/shared/ste_shai/include/OMX_Symbian_IVCommonExt_Ste.h",
+    "$ENV{MMROOT}/shared/ste_shai/include/OMX_Symbian_ExtensionNames_Ste.h",
+    "$ENV{MMROOT}/shared/ste_shai/include/OMX_Symbian_ComponentExt_Ste.h",
+    "$ENV{MMROOT}/shared/ste_shai/include/OMX_Symbian_CameraExt_Ste.h",
+    "$ENV{MMROOT}/shared/ste_shai/include/OMX_Symbian_AudioExt_Ste.h",
+    "$ENV{MMROOT}/video/vfm/include/VFM_Types.h",
+    "$ENV{MMROOT}/imaging/ifm/include/IFM_Types.h",
+    "$ENV{MMROOT}/imaging/omx3a_camera_extension/include/OMX_3A_CameraIndexExt.h",
+    "$ENV{MMROOT}/imaging/ite_omx_use_cases/proxy/include/IFM_valid_Types.h",
+    "$ENV{MMROOT}/video/components/val_source_sink/proxy/inc/VSS_Types.h",
+    "$ENV{MMROOT}/shared/omxil/OMX_CoreExt.h",
+    "$ENV{MMROOT}/audio/timescale/proxy/OMX_STE_Timescale.h",
+    "$ENV{MMROOT}/audio/spectrum_analyzer/proxy/OMX_STE_SpectrumAnalyzer.h",
+    "$ENV{MMROOT}/audio/virtual_surround/proxy/OMX_STE_VirtualSurroundExt.h",
+    "$ENV{MMROOT}/audio/channel_synthesis/proxy/OMX_STE_ChannelSynthesisExt.h",
+    "$ENV{MMROOT}/audio/audio_visualization/proxy/OMX_STE_AudioVisualizationExt.h",
+    "$ENV{MMROOT}/audio/afm/proxy/include/OMX_STE_AudioEffectsExt.h",
+    "$ENV{MMROOT}/audio/alp/proxy/OMX_STE_AlpExt.h",
+    );
+
+# Files not using typedef to define a structure
+my @struct_files = ();
+
+if ($ENV{MYMMSYSTEM} eq "android") {
+    @struct_files = (
+        "$ENV{ANDROID_BUILD_TOP}/frameworks/native/include/media/hardware/HardwareAPI.h",
+        "$ENV{ANDROID_BUILD_TOP}/frameworks/base/include/media/stagefright/HardwareAPI.h",
+        );
+}
+
+my $union_defs = {
+    OMX_PARAM_PORTDEFINITIONTYPE => { selector => 'eDomain',
+                                      union => 'format',
+                                      audio => 'OMX_PortDomainAudio',
+                                      video => 'OMX_PortDomainVideo',
+                                      image => 'OMX_PortDomainImage',
+                                      other => 'OMX_PortDomainOther',
+    },
+    OMX_AUDIO_CONFIG_EFFECTCONFIGURETYPE => {selector           => 'base.nEffectSpecificIndex',
+                                             union              => 'sConfig',
+                                             probe              => '(OMX_INDEXTYPE)AFM_IndexConfigPcmProbe',
+                                             volume             => 'OMX_IndexConfigAudioVolume',
+                                             spl                => '(OMX_INDEXTYPE)AFM_IndexParamSpl',
+                                             splLimit           => '(OMX_INDEXTYPE)OMX_IndexConfigSpllimit',
+                                             teq                => '(OMX_INDEXTYPE)AFM_IndexParamTransducerEqualizer',
+                                             teqConfig          => '(OMX_INDEXTYPE)AFM_IndexConfigTransducerEqualizer',
+                                             mdrc               => '(OMX_INDEXTYPE)AFM_IndexParamMdrc',
+                                             mdrcGlobalConfig   => '(OMX_INDEXTYPE)AFM_IndexGlobalConfigMdrc',
+                                             mdrcConfig         => '(OMX_INDEXTYPE)OMX_IndexConfigAudioMdrc',
+    },
+};
+
+my $ignore_index_name = [ "OMX_STE_IndexStartTimescaleExtensions", "OMX_STE_IndexStartSpectrumAnalyzerExtensions", "ADM_IndexStartExtensions" ];
+my $ignore_enum_elem_name = [ "OMX_STE_MeteringModeMax", "OMX_STE_ExposureControlMax", "OMX_STE_ImageFilterMax", "OMX_STE_WhiteBalControlMax", "OMX_STE_RoiObjectMax", "OMX_STE_Scene_Max", "OMX_STE_FocusRegion_Max", "OMX_STE_Lock_Max", "OMX_SYMBIAN_COLOR_FormatMax" ];
+
+# directories to find headers files
+my $include_dirs = [ ];
+my $file;
+foreach $file (@typedef_files) {
+    push(@{$include_dirs}, dirname($file));
+}
+foreach $file (@struct_files) {
+    push(@{$include_dirs}, dirname($file));
+}
+
+push(@{$include_dirs}, "$ENV{MMROOT}/shared/ens_interface/nmf/mpc/nmf_repository/$ENV{MMDSPCORE}");
+push(@{$include_dirs}, "$ENV{MMROOT}/shared/omxilosalservices_api");
+if ($ENV{MYMMSYSTEM} eq "android") {
+    push(@{$include_dirs}, "$ENV{ANDROID_BUILD_TOP}/hardware/libhardware/include");
+    push(@{$include_dirs}, "$ENV{ANDROID_BUILD_TOP}/frameworks/base/native/include");
+    push(@{$include_dirs}, "$ENV{ANDROID_BUILD_TOP}/frameworks/base/include");
+    push(@{$include_dirs}, "$ENV{ANDROID_BUILD_TOP}/bionic/libstdc++/include");
+    push(@{$include_dirs}, "$ENV{ANDROID_BUILD_TOP}/system/core/include");
+}
+my @exclude_fields = ("nSize","nVersion");
+
+my %global_struct_hash;
+my %global_enum_hash;
+my $verbose = 3;
+
+my $print_def="\n#define BUFFER \\\n".
+    "    prio, tag, (buffer + nb_char), ( size - nb_char > 0 ? size - nb_char : 0)\n\n".
+    "static int (*OMX_debug_log)\n".
+    "(int prio, const char *tag, char *buffer, size_t size, const char *fmt, ...);\n";
+my $print="nb_char += OMX_debug_log(BUFFER, ";
+
+my $tmp_buffer_size = 256;
+my $printprefix="%s  ---> ";
+my $printfieldprefix="%s  --->   +";
+my $hasprefix = "( prefix ? prefix : \"\")";
+
+# Record all index for strOMX_INDEXTYPE
+$global_enum_hash{"OMX_INDEXTYPE"} = [ ];
+
+# parse types listed in @index_type to find the list of index and
+# the structures associated
+&find_index_list();
+
+## C::Scan changes the input record separator without restorting it ...
+my $holdTerminator = $/;
+
+# Parse all typedef struct and typedef enum in @typedef_files
+&parse_typedefs();
+
+$/ = $holdTerminator;
+
+# Parse all struct in @struct_files
+&parse_struct();
+
+# Report index found but not the structure it refers to
+foreach my $struct (keys(%global_struct_hash)) {
+    if (!$global_struct_hash{$struct}->{processed}) {
+        print "Warning: no structure definition found for $struct\n";
+    }
+}
+
+# finally generate the parser
+&generate_OMXdebug();
+
+################################################################################
+
+sub ParamIsUriType {
+    my $name = shift;
+    return $name =~ /contentURI/;
+}
+
+sub getTabName {
+    my $name = shift;
+    my $ret;
+    if ($name =~ /(.*)\[\d+\]/) {
+        $ret = $1;
+    }
+    return $ret;
+}
+
+sub find_index_list {
+    my $type_ref;
+    my $type;
+    my $header_file;
+    my $line;
+    my $comment;
+    my $index;
+    my $struct;
+
+    foreach $type_ref (@index_type) {
+        ($type,$header_file) = @$type_ref;
+        next if(! -e $header_file);
+        open(HEADER, "$header_file") or die "Cannot open header file $header_file :$!";
+        print "Parsing $header_file for $type ... " if $verbose;
+        print "\n" if ($verbose > 1);
+
+        while ($line = <HEADER>) {
+            if ($line =~ /.*enum.*$type/) {
+                print "Found type $type \n" if ($verbose > 1);
+                while ($line = <HEADER>) {
+                    if ($line =~ /^\s*(\w+)\s*(=\s*\w+\s*)?,/) {
+                        $index  = $1;
+                        $comment = "$'";
+                        undef $struct;
+
+                        while (!$struct) {
+                            if ($comment =~ /\b(OMX_\w*)\b/ ) {
+                                $struct = $1;
+                                last;
+                            } elsif ($comment =~ /\b(ENS_\w*)\b/ ) {
+                                $struct = $1;
+                                last;
+                            } elsif ($comment =~ /\b(AFM_\w*)\b/ ) {
+                                $struct = $1;
+                                last;
+                            } elsif ($comment =~ /\b(VFM_\w*)\b/ ) {
+                                $struct = $1;
+                                last;
+                            } elsif ($comment =~ /\b(IFM_\w*)\b/ ) {
+                                $struct = $1;
+                                last;
+                            } elsif ($comment =~ /\b(VSS_\w*)\b/ ) {
+                                $struct = $1;
+                                last;
+                            } elsif ($comment =~ /\/\*\*< reference: \b(\w+)\b.*/ ) {
+                                $struct = $1;
+                                last;
+                            }
+                            if ($comment =~ /\*\// ||
+                                $comment =~ /\/\// ||
+                                $comment =~ /\W*/) {
+                                print("Cannot find associated structure in comment for $index\n");
+                                last;
+                            }
+                            # In case of multi lines comment get next line and look again
+                            $comment = <HEADER>;
+                            if (! $comment) {
+                                print ("Cannot find associated structure for $index\n");
+                                last;
+                            }
+                        }
+
+                        if (defined($struct)) {
+                            print "Found struct $struct for index $index\n" if ($verbose > 2);
+                            if (! $global_struct_hash{$struct}) {
+                                $global_struct_hash{$struct} = { index => [$index] };
+                            } else {
+                                # Same structure can be used by multiple index
+                                push(@{$global_struct_hash{$struct}->{index}}, $index);
+                            }
+                        } else {
+                            print("No reference to structure name found for $index\n");
+                        }
+
+                        # Register the index even if no structure found to generate strOMX_INDEXTYPE
+                        #  - Record only once and if not to be ignored
+                        if ((!grep{$_ eq $index} @{$global_enum_hash{"OMX_INDEXTYPE"}}) &&
+                            (!grep{$_ eq $index} @{$ignore_index_name})) {
+                            print "Register index $index\n";
+                            push(@{$global_enum_hash{"OMX_INDEXTYPE"}}, $index);
+                        }
+                    }
+
+                    if ( $line =~ /}/) {
+                        last;
+                    }
+                }
+                last;
+            }
+        }
+        close HEADER;
+        print "done searching index in $header_file\n" if $verbose;
+    }
+    print "done with index search\n" if $verbose;
+}
+
+################################################################################################
+
+sub parse_struct {
+    for my $file (@struct_files) {
+        next if(! -e $file);
+        open(MYFILE, "<", "$file") or die "Cannot open file $file :$!";
+        print "Parsing struct in $file ...\n" if $verbose;
+        while (my $line = <MYFILE>) {
+            if ($line =~ /^struct (\w+) {.*/) {
+                my $name = $1;
+                my $struct_name = "struct $name";
+                print "Found struct $name declaration\n";
+                if ($global_struct_hash{$name}) {
+                    # We have an index for this structure
+                    # but name is to be 'struct $name' so register this new name
+                    $global_struct_hash{$struct_name} = {
+                        index => $global_struct_hash{$name}->{index},
+                        processed => "yes"
+                    };
+                    # Read struct fields
+                    while ($line = <MYFILE>) {
+                        if ($line =~ /};/) {
+                            last;
+                        }
+                        if ($line =~ /\W*(\w+)\W*(\w+);/) {
+                            my $field_type = $1;
+                            my $field_name = $2;
+                            if (&is_excluded_field($field_name)) {
+                                next;
+                            }
+                            print "type = '$1' name = '$2'\n";
+                            if ($field_type eq "OMX_BUFFERHEADERTYPE") {
+                                $field_type = "OMX_PTR";
+                            }
+                            push (@{$global_struct_hash{$struct_name}->{field}},
+                                  [$field_name, $field_type, 0] );
+                        }
+                    }
+                }
+            }
+        }
+        close MYFILE;
+        print "Done parsing struct in $file\n" if $verbose;
+    }
+}
+
+sub parse_typedefs {
+
+    for my $file (@typedef_files) {
+
+        next if(! -e $file);
+
+        print "Parsing typedefs in $file ...\n" if $verbose;
+        my $c = new C::Scan(filename => "$file",
+                            add_cppflags => '-DFREQ_SCALING_ALLOWED -DANDROID',
+                            includeDirs => $include_dirs);
+
+        my $structs = $c->get('typedef_structs');
+        foreach my $struct (keys(%$structs)) {
+            # Process only structures we have identified
+            if ($global_struct_hash{$struct}) {
+                if (!$global_struct_hash{$struct}->{processed}) {
+                    &process_struct($structs, $struct, "", $struct, 0, 0);
+                    $global_struct_hash{$struct}->{processed} = "yes";
+                }
+            }
+        }
+        my $typedef = $c->get('typedef_texts');
+        foreach my $type (@$typedef) {
+            my @type_lines = split(/\n/,$type);
+            my $type_name = shift(@type_lines);
+            if ($type_name =~ /enum/) {
+                $type_name = @type_lines[-1];
+                $type_name =~ s/^.*}\s*//g;
+                if (!($type_name eq "OMX_INDEXTYPE") && ! $global_enum_hash{$type_name}) {
+                    print "register enum '$type_name'\n";
+                    $global_enum_hash{$type_name} = [ ];
+                    for my $val (@type_lines) {
+                        if ($val =~ /^\s*\b(\w+)\b.*/) {
+                            push(@{$global_enum_hash{$type_name}}, $1);
+                        }
+                    }
+                }
+                # Manage the extensions to agregate the extensions to the type name used in the structures
+                my $base_enum_name = undef;
+                if ($type_name =~ /OMX_STE_(\w+)_EXT/) {
+                    $base_enum_name = "OMX_$1" if ($global_enum_hash{"OMX_$1"});
+                    $base_enum_name = "OMX_SYMBIAN_$1" if ($global_enum_hash{"OMX_SYMBIAN_$1"});
+                }
+                # Manage the color format special case ...
+                if ($type_name eq "OMX_SYMBIAN_COLOR_FORMATTYPE") {
+                    $base_enum_name = "OMX_COLOR_FORMATTYPE";
+                }
+                if ($base_enum_name && $global_enum_hash{$base_enum_name}) {
+                    print "found $type_name extension to $base_enum_name\n";
+                    for my $val (@type_lines) {
+                        if ($val =~ /^\s*\b(\w+)\b.*/) {
+                            my $val_name = $1;
+                            if ((!grep{$_ eq $val_name} @{$ignore_enum_elem_name}) &&
+                                (!grep{$_ eq $val_name} @{$global_enum_hash{$base_enum_name}})) {
+                                print "adding $val_name to $base_enum_name\n";
+                                push(@{$global_enum_hash{$base_enum_name}}, $val_name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        print "Done parsing typedefs in $file\n" if $verbose;
+    }
+}
+
+sub process_struct {
+    my ($structs_ref, $struct_name, $prefix, $struct_name_top, $depth, $cond) = @_;
+    my @struct_array;
+    my @type_array;
+    my $elt;
+    my $i, my $j;
+
+    if (! $structs_ref->{$struct_name}) {
+        die "Error While parsing $struct_name\n";
+    }
+
+    for ($i = 0; $i < $depth; $i++) {  print " "; }
+    print "process_struct $struct_name\n";
+
+    @struct_array = @{$structs_ref->{$struct_name}};
+
+    for $elt (@struct_array) {
+        my $array_x_size = 0;
+        my $array_y_size = 0;
+        @type_array = @$elt;
+
+        my $field_type  = $type_array[0];
+        my $field_array = $type_array[1];
+        my $field_name  = $type_array[2];
+
+        if ($verbose > 1) {
+            for ($i = 0; $i < $depth; $i++) {  print " "; }
+            print "+ $field_type $field_array $field_name\n";
+        }
+
+        if (&is_excluded_field($field_name)) {
+            next;
+        }
+
+        if ($field_array =~ /\[(\d+)\]/) {
+            $array_x_size  = $1;
+        }
+
+        if ($field_array =~ /\[(\d+)\]\[(\d+)\]/) {
+            $array_x_size = $1;
+            $array_y_size = $2;
+        }
+
+        # Manage union case
+        if ($field_name eq $union_defs->{$struct_name}->{union}) {
+            print "found union field: $field_name - ".
+                "selector is $prefix$union_defs->{$struct_name}->{selector}\n";
+            die "Found union while condition already set\n" if ($cond);
+            foreach my $union_elem (@{$structs_ref->{$field_type}}) {
+                my $union_field_type  = @$union_elem[0];
+                my $union_field_array = @$union_elem[1];
+                my $union_field_name  = @$union_elem[2];
+                &process_struct($structs_ref, $union_field_type,
+                                "$prefix$field_name.$union_field_name.",
+                                $struct_name_top, $depth+2,
+                                "$prefix$union_defs->{$struct_name}->{selector} == ".
+                                "$union_defs->{$struct_name}->{$union_field_name}");
+            }
+        } else {
+            if (&is_sub_type($field_type, $structs_ref)) {
+                if (!$array_x_size) {
+                    &process_struct($structs_ref, $field_type,
+                                    $prefix.$field_name.".",
+                                    $struct_name_top, $depth+1, $cond);
+                } elsif (!$array_y_size) {
+                    for ($i = 0 ; $i < $array_x_size ; $i++) {
+                        &process_struct($structs_ref, $field_type,
+                                        $prefix.$field_name."[$i].",
+                                        $struct_name_top, $depth+1, $cond);
+                    }
+                } else {
+                    for ($i = 0 ; $i < $array_x_size ; $i++) {
+                        for ($j=0 ; $j < $array_y_size ; $j++) {
+                            &process_struct($structs_ref, $field_type,
+                                            $prefix.$field_name."[$i][$j]",
+                                            $struct_name_top, $depth+1, $cond);
+                        }
+                    }
+                }
+            } else {
+                if (($array_x_size == 128) && ($field_type eq "OMX_U8")) {
+                    # Assume we have a string
+                    push (@{$global_struct_hash{$struct_name_top}->{field}},
+                          [$prefix.$field_name, "OMX_U8_STR", $cond]);
+                } elsif (!$array_x_size) {
+                    for ($i = 0; $i < $depth; $i++) {  print " "; }
+                    print "=> $prefix$field_name $field_type $cond\n";
+                    push (@{$global_struct_hash{$struct_name_top}->{field}},
+                          [$prefix.$field_name, $field_type, $cond]);
+                } elsif (!$array_y_size) {
+                    for ($i = 0 ; $i < $array_x_size ; $i++) {
+                        push (@{$global_struct_hash{$struct_name_top}->{field}},
+                              [$prefix.$field_name."[$i]", $field_type, $cond]);
+                    }
+                } else {
+                    for ($i = 0 ; $i<$array_x_size ; $i++) {
+                        for ($j = 0 ; $j<$array_y_size ; $j++) {
+                            push (@{$global_struct_hash{$struct_name_top}->{field}},
+                                  [$prefix.$field_name."[$i][$j]", $field_type, $cond]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+sub is_sub_type {
+    my $struct_name = $_[0];
+    my $structs_ref = $_[1];
+
+    $structs_ref->{$struct_name};
+}
+
+
+sub is_excluded_field {
+    my $field_name = $_[0];
+    my $elt;
+
+    for $elt (@exclude_fields) {
+        if ($elt eq $field_name) {
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+################################################################################
+
+sub generate_OMXdebug {
+    my @array_structure;
+    my $struct_name;
+    my $struct_hash;
+    my $index;
+    my $tmp;
+    my $field_ref;
+    my $include;
+    my $type_ref;
+    my @tmp_array;
+
+    open (OMXDEBUG,">$output_file") or die "Cannot create $output_file : $!";
+
+    # print include
+    print OMXDEBUG "/*----------------------------------------------------------*/\n";
+    print OMXDEBUG "/*   File automatically generated by GenerateOMXdebug       */\n";
+    print OMXDEBUG "/*----------------------------------------------------------*/\n\n";
+
+    print OMXDEBUG "\n#include <stdio.h>\n";
+
+    foreach my $header (@index_type) {
+        print OMXDEBUG "#include \"$header->[1]\"\n" if (-e $header->[1]);
+    }
+    foreach my $header (@typedef_files) {
+        print OMXDEBUG "#include \"$header\"\n" if (-e $header);
+    }
+    foreach my $header (@struct_files) {
+        print OMXDEBUG "#include \"$header\"\n" if (-e $header);
+    }
+
+    print OMXDEBUG "#ifdef ANDROID\n";
+    print OMXDEBUG "using namespace android;\n";
+    print OMXDEBUG "#endif\n";
+
+    print OMXDEBUG "\n#include \"OMX_debug.h\"\n";
+
+    print OMXDEBUG "\nextern \"C\" {\n";
+
+    print OMXDEBUG $print_def;
+
+    ################################################
+    # Dumper of OMX enum
+    ################################################
+    foreach my $enum (keys(%global_enum_hash)) {
+        print OMXDEBUG "\n\nchar * str$enum($enum val, char *buffer, size_t size) {\n";
+        print OMXDEBUG "    switch (val) {\n";
+        foreach my $elem (@{$global_enum_hash{$enum}}) {
+            print OMXDEBUG "    case $elem: return (char *) \"$elem\";\n";
+        }
+        print OMXDEBUG "    default:\n";
+        print OMXDEBUG "        if (buffer) {\n";
+        print OMXDEBUG "            snprintf(buffer, size ,\"unknown $enum [ 0x%08x ]\", val);\n";
+        print OMXDEBUG "            return buffer;\n";
+        print OMXDEBUG "        } else {\n";
+        print OMXDEBUG "            return (char *) \"unknown $enum\";\n";
+        print OMXDEBUG "        }\n";
+        print OMXDEBUG "    }\n";
+        print OMXDEBUG "}\n";
+    }
+
+    ################################################
+    # Dumper of OMX parameter/config
+    ################################################
+    # print prototype
+    print OMXDEBUG "\n\n";
+    print OMXDEBUG "void strOMX_INDEXTYPE_struct(OMX_U32 index,\n";
+    print OMXDEBUG "                             OMX_PTR config,\n";
+    print OMXDEBUG "                             int level,\n";
+    print OMXDEBUG "                             int prio,\n";
+    print OMXDEBUG "                             const char *tag,\n";
+    print OMXDEBUG "                             const char *prefix,\n";
+    print OMXDEBUG "                             char *buffer,\n";
+    print OMXDEBUG "                             size_t size)\n{\n";
+
+    print OMXDEBUG "    if(level == 0) { return; }\n\n";
+    print OMXDEBUG "    OMX_debug_log = OMX_debug_sprintf;\n";
+    print OMXDEBUG "#ifdef ANDROID\n";
+    print OMXDEBUG "    if (tag != NULL) { OMX_debug_log = OMX_debug_android_log_print; }\n";
+    print OMXDEBUG "#endif\n";
+    print OMXDEBUG "    int nb_char = 0;\n\n";
+    print OMXDEBUG "    switch(index) {\n";
+
+    # process all structure
+    while (($struct_name, $struct_hash) = each(%global_struct_hash)) {
+        if (($struct_hash->{processed}) && ($struct_hash->{field})) {
+            # print all indexes
+            for $index (@{$struct_hash->{index}}) {
+                print OMXDEBUG "    case ((OMX_U32)$index):\n";
+            }
+
+            #start case
+            print OMXDEBUG "    {\n";
+            print OMXDEBUG "    $struct_name *pStruct = ($struct_name *)config;\n";
+            print OMXDEBUG "    $print\"". $printprefix . (@{$struct_hash->{index}})[0] . "\\n\", $hasprefix);\n";
+            # Dump details depending on verbosity level
+            print OMXDEBUG "    if(level > 1) {\n";
+
+            # print all fields of the structure
+            for $field_ref (@{$struct_hash->{field}}) {
+                my $field_name = $field_ref->[0];
+                my $field_type = $field_ref->[1];
+                my $field_cond = $field_ref->[2];
+
+                if ($field_cond) {
+                    print OMXDEBUG "      if (pStruct->$field_cond) {\n";
+                }
+                if (ParamIsUriType($field_name)) {
+                    print OMXDEBUG "        $print\"$printfieldprefix " . getTabName($field_name) .
+                        " : %s\\n\", $hasprefix, & (pStruct->$field_name));\n";
+                } else {
+                    if ($field_type =~ /OMX_STRING|OMX_BYTE/) {
+                        print OMXDEBUG "        $print\"$printfieldprefix $field_name : %s\\n\", ".
+                            "$hasprefix, pStruct->$field_name);\n";
+                    } elsif ($field_type =~ /OMX_U8_STR/) {
+                        print OMXDEBUG "        $print\"$printfieldprefix $field_name : %s\\n\", ".
+                            "$hasprefix, (char *) pStruct->$field_name);\n";
+                    } elsif ($field_type =~ /OMX_PTR/) {
+                        print OMXDEBUG "        $print\"$printfieldprefix $field_name : %p\\n\", ".
+                            "$hasprefix, (void *) pStruct->$field_name);\n";
+                    } elsif ($field_type =~ /OMX_BOOL/) {
+                        print OMXDEBUG "        $print\"$printfieldprefix $field_name : %s\\n\", ".
+                            "$hasprefix, (pStruct->$field_name ? \"OMX_TRUE\" : \"OMX_FALSE\"));\n";
+                    } elsif ($field_type =~ /OMX_S64|OMX_TICKS/) {
+                        print OMXDEBUG "        $print\"$printfieldprefix $field_name : %lld\\n\", ".
+                            "$hasprefix, pStruct->$field_name);\n";
+                    } elsif ($field_type =~ /float/) {
+                        print OMXDEBUG "        $print\"$printfieldprefix $field_name : %f\\n\", ".
+                            "$hasprefix, pStruct->$field_name);\n";
+                    } elsif ($field_type =~ /ANativeWindowBuffer/) {
+                        print OMXDEBUG "        $print\"$printfieldprefix $field_name : %p\\n\", ".
+                            "$hasprefix, (void *) pStruct->$field_name.get());\n";
+                    } else {
+                        if ($global_enum_hash{$field_type}) {
+                            print OMXDEBUG "        {\n";
+                            print OMXDEBUG "            char enum_buffer[$tmp_buffer_size];\n";
+                            print OMXDEBUG "            $print\"$printfieldprefix $field_name : %s\\n\", ".
+                                "$hasprefix, str$field_type(pStruct->$field_name, enum_buffer, $tmp_buffer_size));\n";
+                            print OMXDEBUG "        }\n";
+                        } else {
+                            print OMXDEBUG "        $print\"$printfieldprefix $field_name : %d [0x%08x]\\n\", ".
+                                "$hasprefix, (int) pStruct->$field_name, (unsigned int) pStruct->$field_name);\n";
+                        }
+                    }
+                }
+                if ($field_cond) {
+                    print OMXDEBUG "      }\n";
+                }
+            }
+            print OMXDEBUG "    }\n";
+            #end case
+            print OMXDEBUG "    break;\n    }\n\n";
+        }
+    }
+
+    # print default case for switch
+    print OMXDEBUG "    default : \n    $print\"" . $printprefix ."unknown index [0x%08x]\\n\", $hasprefix, (unsigned int) index);\n  }\n}\n";
+
+    print OMXDEBUG "} //extern \"C\"\n";
+
+}
+

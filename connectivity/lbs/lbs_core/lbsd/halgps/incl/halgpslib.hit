@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSLIB_HIT__
+#define __HALGPSLIB_HIT__
+/**
+* \file halgpslib.hit
+* \date 25/01/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all structure used by halgps1lib.c\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.01.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\struct s_RTC_Calib
+*\brief RTC calibration structure
+* 
+* this structure defined the data store in the calibration file
+* It's used to calibrate the time.
+*
+* /see GN_GPS_Read_UTC
+* /see GN_GPS_Write_UTC
+*/
+typedef struct RTC_Calib
+{
+   uint32_t CTime_Set;           /** 'C' Time when the RTC was last Set or Calibrated */
+   uint32_t SecureClock;         /** (UTC - RTC) calibration offset [s] */
+   uint32_t OSTime;                /** (UTC - RTC) calibration offset [ms] */
+   uint32_t Acc_Est_Set;         /** Time Accuracy Estimate when RTC was Set or Calibrated [ms] */
+   uint32_t checksum;            /** RTC Calibration File 32-bit checksum */
+} s_RTC_Calib;
+
+
+#endif /* __HALGPSLIB_HIT__ */

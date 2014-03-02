@@ -1,0 +1,14 @@
+#include <audiolibs/common/include/mp3hybrid.h>
+
+interface audiolibs.libmp3hybrid.libmp3hybrid unmanaged {
+
+    void MP3_hybrid_filterbank_init(Float *prevblck,
+			   Float **polysyn_fifo, int *polysyn_offset,
+			   int num_ch);
+
+    void MP3_hybrid_filterbank(Float *in, Float *prevblck,
+		      Float *polysyn_fifo, int *polysyn_offset,
+		      int sblim, int block_type,int maxsb,
+		      Float *scratch, int scratch_len,
+			  int headroom);
+}

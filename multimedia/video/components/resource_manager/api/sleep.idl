@@ -1,0 +1,87 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_resource_manager.idt>
+
+interface resource_manager.api.sleep { 
+
+/* This file specifies methods included inside provided interface named iSleep
+          i.e. :          - allowSleep
+                          - preventSleep
+                          - setDebug
+*/
+
+
+
+/** @addtogroup rmAllowSleepGroup allowSleep
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface to allow sleep by codec (ddep).
+ 
+ Note : 	This interface has to be called data dependency 
+ component is leaving "exe" state ie codec wants to let the system sleep.
+ 
+ \param[in]  cb  	   call back pointer to client interface inform_resource_status.
+ *
+ * \remarks	by default RM is allowing sleep (if nothing is in progress)
+ */
+
+void allowSleep(resource_manager.api.inform_resource_status *cb);
+
+/** @} */ // end of rmSleepGroup
+
+
+
+/** @addtogroup rmPreventSleepGroup preventSleep
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface to prevent sleep by codec (ddep).
+ 
+ Note : 	This interface has to be called data dependency 
+ component is entering "exe" state ie codec wants to prevent the system sleep to reduce latency.
+ 
+ \param[in]  cb  	   call back pointer to client interface inform_resource_status.
+ *
+ * \remarks	by default RM is allowing sleep (if nothing is in progress), preventSleep from 
+ * codec must be called to prevent SVA system sleep.
+ */
+
+void preventSleep(resource_manager.api.inform_resource_status *cb);
+
+/** @} */ // end of rmSleepGroup
+
+
+
+/** @addtogroup rmDebugSleepGroup setDebug
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface to enable capturing of RM printf for debugging (temporarily being used to know sleep functioning and status).
+ 
+ Note : 	This interface can be called by ddep OR from host see "trace" component's README file for details
+ 
+ \param[in]  mode  	   not used
+ \param[in]  param1    see "trace" component's README file
+ \param[in]  param2    see "trace" component's README file
+ */
+
+void setDebug(t_uint32 mode, t_uint32 param1, t_uint32 param2);
+
+/** @} */ // end of rmSleepGroup
+
+} // interface resource_manager.api.sleep

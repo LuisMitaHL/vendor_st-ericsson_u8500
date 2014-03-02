@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/component.xml" />
+    <include name="component/packaging.xml" />
+    <include name="Makefile" />
+  </fileset>
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="lib/cortexA9-android-android-*/*.a" />
+      <include name="nmx/include/*.h" />
+    </fileset>
+  </package>
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmx/**" />
+    </fileset>
+  </package>
+</packages>

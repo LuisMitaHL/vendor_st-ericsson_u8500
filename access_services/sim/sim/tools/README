@@ -1,0 +1,85 @@
+######################### -*- Mode: Text -*- ########################
+## Copyright (C) 2010, ST-Ericsson
+## 
+## File name       : README 
+## Description     : File describing content of sim/tools directory 
+## 
+## Author          : Steve Critchlow <steve.critchlow@stericsson.com> 
+## 
+###############################################################################
+
+This directory is for collecting any useful locally written tools that we might
+come up with.
+
+Instrumented Function Calls
+===========================
+
+There is a gcc compiler flag which allows function entry/exit to be traced.
+There is a file called ./libsimcom/func_trace.c which implements the required
+tracing functions.
+
+$ make clean
+$ make instrument_funcs
+
+Having done a build, perform some tests.
+
+For example, in 3 separate console windows:
+$ ./simd/simd -vvvv
+# wait a couple of seconds for TPDL to complete
+$ ./tcat/tcat passive
+$ ./tcat/tcat
+
+The result is a number of *func_ee.log files.  These contain the raw data of all
+the functions called.  The first part of the log filename is the basename of the
+executable file (eg simd) and the process ID it had when the test was run.
+This is especially useful for tcat, which is run twice with different command
+line parameters.
+
+The files typically look something like this
+$ head simd_7621_func_ee.log
+!:state:process:thread:mSecTime:this_fn:call_site
+@:Enter:simd:(NoThread):3113007:0804a061:0804a364
+@:Enter:simd:(NoThread):3113007:08049fd8:0804a0b4
+@:Leave:simd:(NoThread):3113007:08049fd8:0804a0b4
+@:Enter:simd:(NoThread):3113007:08049fd8:0804a0b4
+@:Leave:simd:(NoThread):3113007:08049fd8:0804a0b4
+
+Producing readable results
+--------------------------
+
+The first tool performs some basic checks on the log files.  It is a simple
+count of all the Enter and Leave calls.
+
+$ ./tools/countEnterLeave.pl simd_7621_func_ee.log
+Thread (NoThread) has 3 more Enter than Leave calls
+Thread catd_rd has 1 less Enter than Leave call
+Thread catd_ssim has 1 less Enter than Leave call
+Thread malcat has 1 less Enter than Leave call
+
+The second tool produces an annotated result, showing file:line:function
+information as well.
+$ ../tools/msc2.pl simd simd_7621_func_ee.log
+Address is mis-matched 321:@:Enter:simd:(NoThread):3113085:08053a32:b78714ff:??:0:?? -> ste_mal_cat.c:841:ste_mal_cat_i_thread_func_th (3)
+
+The result file looks something like this:
+$ head simd_7621.log
+!:state:process:thread:mSecTime:this_fn:call_site:file:line:function calls(->) file:line:function
+@:Enter:simd:(NoThread):3113007:0804a061:0804a364:simd.c:573:main -> simd.c:472:parse_options
+@:Enter:simd:(NoThread):3113007:08049fd8:0804a0b4:simd.c:485:parse_options -> simd.c:463:match
+@:Leave:simd:(NoThread):3113007:08049fd8:0804a0b4:simd.c:485:parse_options -> simd.c:463:match
+@:Enter:simd:(NoThread):3113007:08049fd8:0804a0b4:simd.c:485:parse_options -> simd.c:463:match
+@:Leave:simd:(NoThread):3113007:08049fd8:0804a0b4:simd.c:485:parse_options -> simd.c:463:match
+
+Future developments
+-------------------
+At the moment, it is possible to search for a function within the annotated
+results to get an overall impression of how it relates to functions which
+call it, and functions it calls.
+
+Future enhancements (or additional tools) should be able to turn these
+raw files into nice annotated Message Sequence Charts (much like say Doxygen).
+But these would represent an actual dynamic view of the system rather
+than the static relationships that Doxygen can determine.
+
+From a validation point of view, resolving mis-matched enter/leave counts is
+a useful thing in its own right.

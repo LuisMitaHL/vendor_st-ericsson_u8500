@@ -1,0 +1,10 @@
+## property needed in order to enable logcat debug and info messages for RME
+## setprop ste.omx.rme 1
+
+## RME documentation and unitary test framework are under iso/masterdev branch
+
+## to cleanup local git in order to have clean history
+# remove iso/gerrit-xxx tags, since git tag repository removal doesnot work so good (they keep coming back..)
+git tag -l | grep iso/gerrit | xargs  git tag -d
+# remote cpo/open branches (usually obsoleted)
+git branch -r | grep cpo | grep open | xargs git branch -d -r

@@ -1,0 +1,10 @@
+test_start SINKS_002 Test PORT Earpiece
+
+OMX_GetHandle    earpiece OMX.ST.AFM.EARPIECE
+
+OMX_SendCommand earpiece OMX_CommandPortDisable 1
+MMTE_WaitEvent  earpiece OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+do $(NOMADIK)/audiocodec/mmte_script/enable_disable_port_common_mono_sink.ate earpiece
+
+test_end

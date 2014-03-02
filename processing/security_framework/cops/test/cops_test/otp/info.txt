@@ -1,0 +1,60 @@
+Description for OTP test files.
+
+Files can be used both for read- and write tests, but the result may look abit strange for files that perform multiple operations on the same row.
+
+init_write.dat Sets a value for row 28 in redundancy mode
+    Write data to row 29 in ECC mode and perform lock.
+    Should return OK
+
+write28.dat will update content in OTP row 28.
+    Should return OK
+
+write_30-33.dat write values 1 - 4 on rows 30 - 33.
+    Should return OK
+
+write_30-33_continue.dat will update rows 30 - 33.
+    Values written are 5 - 8. Check that expected data is in OTP after write operation.
+    For example, where 8 (binary 1000) is written over 4 (binary 100).
+    The content should be 1100 after these two write operations.
+    Should return OK
+
+fill34_80.dat is a sequense with multiple write operations to the same row, 34.
+    Purpose is to test multiple writes without lock.
+    Should return OK
+
+read_customer_otp.dat should be used for read operations.
+    It reads entire customer area of OTP.
+    Should return OK
+
+bad_write.dat This write operation should not work proper.
+    It first tries to write data to row 36 in redundancy mode.
+    It will then continue with an ECC write operation at the same row.
+    Finally a permanent write lock is requested.
+    Switching between redundancy and ECC should not be ok and the operation
+    should return an error without writing data to the OTP.
+    Should return NOK
+
+protected_rows.dat can be used to test read- or write. The file will operate
+    on rows 5 - 15. Only row 15 is accessible for read or write.
+    Write_otp should not work at all. Read_otp should return data which is undefined
+    for rows 5 - 14. Output data in meta bits should looks like 0x0D008007
+    for row 14.
+    Correct value should be returned for row 15.
+
+lock_36_redundancy.dat Write data to row 36 and lock in redundancy mode.
+    Should return OK
+
+Writing to rows which are COMPLETELY_LOCKED by otp_permissions.c
+    Read should return OK, write should return NOK
+
+Rebuild TAF with a new set of rules in otp_permissions.c
+    Purpose is to test that changes will take effect.
+
+Write data in non auth mode to rows where authentication is required.
+    Should return NOK
+
+Write data to rows which are out of range. Should be blocked by software.
+    Should return NOK
+
+prod_fuse.dat Writing of root key hash, hardware unique key and some data in cust OTP area.
+    Should return OK.

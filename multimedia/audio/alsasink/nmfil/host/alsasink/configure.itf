@@ -1,0 +1,13 @@
+#include <samplefreq.idt>
+
+typedef struct {
+  t_uint32 latencyMs;
+  t_bool succeeded;
+} AlsasinkLatency_t;
+
+void setDeviceName(char deviceName[32]);
+void getDeviceName(char* deviceName, t_uint32 nMax);
+void setCodingType(t_uint32 codingtype);
+void getCodingType(t_uint32* codingType);
+void getLatency(AlsasinkLatency_t* latency);
+void setProcessCB(void*param);

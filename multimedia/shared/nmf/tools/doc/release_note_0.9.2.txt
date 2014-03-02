@@ -1,0 +1,194 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 0.9.2)      *
+**********************************************************
+	"Compilé, c'est gagné" (M. Guene)
+	"La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Nomadik Multiprocessing Environment API 
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World's, Training, Mandelbrot, mp3, User Fifo)
+ 		Hello world and mp3 Eclipse project file delivered
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+	- STn8815 SAA & SVA Cut A0/B0/C0
+	
+Supported environments:
+	- nmf_Bare: 	based on Nomadik HCL/services libraries
+	- nmf_Think:	based on Think component-based OS
+	- nmf_Os21: 	based on ARM OS21
+
+Changes:
+--------
+[CM]
+	- Increase size of service communication fifo for component life cycle management.
+		This will allow more simultaneous component life cycle changes.
+	 
+[MPC Executive Engine]
+    - Don't put stack at end of memory but at end of compiler stack in order
+      to be compatible with MMDSP simulator.
+    - Change hybrid software interrupt for preemption implementation in order
+      to be more safe in case of reentrancy.
+	
+[OS integration]
+	
+[Tools] 
+	- Add comment in generated header file in order human to read it.
+	- Pass stack size to ac compiler either for dynamic component in order to 
+	  bypass compiler check on stack variable length.
+	- Check that composite require interface really bound to sub-component.
+	
+[Programming model]
+
+
+Bug fixes:
+---------
+	- [ Defect #36624 ] [Tools] no error returned in case of fake option (nmfconfc)
+	- [ Defect #36382 ] The stack is not correctly resized in distributed network
+		Was due to a missing check in cm_getMaxStackValue() [instantiater.c] to see 
+		if component was on same mpc.
+	- [ Defect #36359 ] Stack computation in composite component
+	- [ Defect #36429 ] [TOOLS] In composite conf. files, binds with collection index 
+	  in Hexa or Octal does not work.
+	- [ Defect #36412 ] [TOOLS] Wrong error id for a composite with a prohibited 
+	  rebind of a required
+	- [ Defect #36283 ] Underscore character should be valid in prefix identifier
+	- [ Defect #36236 ] [Tools] '-nmf' option duplicated in ac command line
+	- [ Defect #36227 ] The stack size is always 128 words in case of arch file
+		This issue occur only on .arch simulation and not on dynamic deployment
+		through component manager.
+	- [ Defect #36052 ] [CM] Why no CM_NO_MORE_MEMORY return code from binding API
+		Add in API possibility to return CM_NO_MORE_MEMORY for CM_BindComponentFromHost() 
+		and CM_BindComponentToHost().
+	- [ Defect #36048 ] [CM] Incorrect values of TCM_X mem status after a component 
+	  instantiation with a very large stack
+	  	Correct problem in cm_DSP_setStackSize() [dsp.c]. Add check to see if stack 
+	  	is less than total xram memory available before continue execution else we 
+	  	return CM_NO_MORE_MEMORY error.
+	- [ Defect #36019 ] [EE] panic USER_STACK_OVERFLOW with priority in hybrid mode
+	- [ Defect #36015 ] [CM] Memory access violation when TCM_X is allocated before 
+	  any instantiating
+	  	When allocating memory in tcm x we make sure ee is load before using 
+	  	cm_CFG_CheckMpcStatus() api.
+	- [ Defect #35141 ] Hybrid scheduler context recover
+		Defect in THIS pointer store/restoring in hybrid has been identified and checked 
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested 
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one memory segment only. Split your component into two
+		sub components to achieve that.
+		
+	- MP3 example supported only on nmf_bare environment.
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+		Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+	- Some link issue with GNU toolchain could occur in examples until HCL/Services compiled with 
+		correct flags. 
+
+
+Pre-requires:
+-------------
+	- At least Nomadik Toolset 1.0.0 Beta
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		MPC: SAA & SVA
+		Execution Engine: Synchronous, Hybrid
+		Semaphores: local, hardware
+		Environment: bare, think, os21, tlm
+		Nomadik Toolset 1.0.0 Beta
+		ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593, st-armgcc (gcc version 4.1.1)
+
+	- Tests:
+		* 'ADL' class
+			check 'Architecture Description Language' features from programming model
+			test limit of some ADL features (name length, collection size,...)
+			check error codes returned by ADL tool
+
+		* 'Attribute' class
+			operations on attributes inside component (mpc side)
+			check attribute api on host side
+			api error management
+
+		* 'Binding' class
+			synchronous/asynchronous intra-MPC communication
+			ARM -> MPC
+			MPC -> ARM
+			inter MPCs (asynchronous)
+			MPC -> MPC (on 8815B0)
+			interruption
+			error management
+
+		* 'Collection' class :
+			Behavior with binds between primitives component using collections interfaces
+			Primitive collections interface introspection
+
+		* 'Composite' class:
+			Behavior with binds between composites component using collections interfaces
+			Behavior with binds defined in composites components (conf. files) using collections interfaces
+			Composite collections interfaces introspection
+
+		* 'Dynamic loading' class: 
+			segment loading (RO, RW, ZI)
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+
+		* 'Fifo' class
+			creation/destruction of network with fifo use
+			fifo connectivity (host side and mpc side)
+			check flush/status/notify features
+			api error management
+
+		* 'IDL' class
+			check 'Interface Description Language' features from programming model
+			check error codes returned by ADL tool
+
+		* 'Interface' class
+			interfaces introspection for primitives and composites components (except collections interfaces)
+
+		* 'Lifecycle' class
+			check the behavior using the lifecycle API
+
+		* 'Memory' class
+			allocate/free api management for SDRAM and MPC memories
+			check address/status features
+			api error management
+
+		* 'Misc' class
+			'singleton' features (network construction/destruction)
+			communication stressing (mandelbrot applications)
+			multiple instantiation to fill memory
+			component priority inside network
+
+		* 'Network' class
+			components (primitives or composites) introspection (without interfaces)
+
+		* 'Panic' class
+			Behavior upon each Panic (reason) detection and after the detection.
+
+		* 'Properties' class
+			Get property information in component network (primitive/composite)
+			api error management
+
+		* 'Stack' class
+			check the MPC stack evolution combined with the TCM_X MPC dynamic allocation
+

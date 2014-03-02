@@ -1,0 +1,18 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file
+* \brief   resource sharer "alert" interface type definition
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+interface resource_sharer.api.rs_alert {
+    void freed(void);
+	void pong(void);
+    void accepted(t_uint16 currentRequesterId, t_uint16 requesterId );
+	void denied(t_uint16 requesterId);
+	void released(t_uint16 requestedId);	
+}

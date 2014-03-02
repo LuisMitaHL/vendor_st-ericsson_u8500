@@ -1,0 +1,328 @@
+;------------------------------------------------------------
+; etm_select.cmm
+;------------------------------------------------------------
+; Create dialog for selectionof cores that should be traced
+;
+; 090507 - KM Initial version
+; 111011 - PDE Addapted to 9540
+;-----------------------------------------------------------
+
+
+if !analyzer()
+(
+  print "WARNING ETM : no analyzer hardware detected"
+)
+
+dialog
+(&
+	header "Etm Selection"
+
+	pos 0. 0. 19. 12.
+	box "ETM/DataTrace"
+
+	pos 1. 1. 6. 1.
+	text "En/Dis"
+
+	pos 8. 1. 10. 1.
+	text "Datatrace"
+	pos 1. 2. 6. 1.
+App:	checkbox "APP " "gosub EtmApp"
+	pos 8. 2. 10. 1.
+	text "none (PTM)"
+	pos 1. 4. 6. 1.
+MmdspSia:	checkbox "SIA " "gosub EtmMmdspSia"
+	pos 8. 4. 10. 1.
+MmdspSiaDataTrace: 	pulldown "OFF,ON,ReadAddress,WriteAddress,Address,ReadData,WriteData,Data,Read,Write" "gosub EtmDataMmdspSia"
+	pos 1. 6. 6. 1.
+MmdspSva:	checkbox "SVA " "gosub EtmMmdspSva"
+	pos 8. 6. 10. 1.
+MmdspSvaDataTrace: 	pulldown "OFF,ON,ReadAddress,WriteAddress,Address,ReadData,WriteData,Data,Read,Write" "gosub EtmDataMmdspSva"
+	pos 1. 8. 7. 1.
+	text "PortSize:"
+	pos 8. 8. 6. 1.
+EtmSize:	pulldown "8.,16.,24." "gosub EtmPortSize"
+
+	pos 1. 10. 5. 1.
+	text "EtmClk:"
+	pos 8. 10. 8. 1.
+EtmClk:	pulldown "Default,80MHz,133MHz,160MHz,200MHz" "gosub EtmTraceClk"
+
+	pos 1. 12. 5. 1.
+Button "Save" "gosub ButtonSave"
+	pos 7. 12. 9. 1.
+Button "Save and Close" "gosub ButtonSaveClose"
+	CLOSE "goto winclose"
+)
+
+;What cores are we debugging?
+if ("&MmdspSiaStarted"=="")
+(
+if INTERCOM.PING(&icMmdspSia)
+	&MmdspSiaStarted="True"
+else
+	&MmdspSiaStarted="False"
+)
+
+if ("&AppStarted"=="")
+(
+if INTERCOM.PING(&icApp)
+	&AppStarted="True"
+else
+	&Acpptarted="False"
+)
+
+if ("&MmdspSvaStarted"=="")
+(
+if INTERCOM.PING(&icMmdspSva)
+	&MmdspSvaStarted="True"
+else
+	&MmdspSvaStarted="False"
+)
+
+gosub InitVariables
+gosub InitDialog
+
+stop
+
+
+winclose:
+	dialog.end
+	enddo
+
+InitVariables:
+	if "&MmdspSiaDataTrace"==""
+	(
+		&MmdspSiaDataTrace="OFF"
+	)
+
+	if "&MmdspSvaDataTrace"==""
+	(
+		&MmdspSvaDataTrace="OFF"
+	)
+
+
+	if "&EtmApp"==""
+		&EtmApp="False"
+
+
+	if "&EtmMmdspSia"==""
+	(
+		&EtmMmdspSia="False"
+
+	)
+	if "&EtmMmdspSva"==""
+	(
+		&EtmMmdspSva="False"
+
+	)
+
+	if "&EtmPortSize"==""
+		&EtmPortSize="8."
+
+	if "&EtmTraceClk"==""
+		&EtmTraceClk="Default"
+
+	if ("&MmdspSiaStarted"=="True")
+	(
+		intercom.execute &icMmdspSia do etm_update_variables &EtmMmdspSia &MmdspSiaDataTrace &EtmPortSize
+		wait 1s
+	)
+	else
+	(
+		  dialog.disable MmdspSia
+		  dialog.disable MmdspSiaDataTrace
+	)
+
+	if ("&MmdspSvaStarted"=="True")
+	(
+		intercom.execute &icMmdspSva do etm_update_variables &EtmMmdspSva &MmdspSvaDataTrace &EtmPortSize
+		wait 1s
+	)
+	else
+	(
+		  dialog.disable MmdspSva
+		  dialog.disable MmdspSvaDataTrace
+	)
+
+	Return
+
+InitDialog:
+	if "&EtmApp"=="True"
+		dialog.set App "ON"
+	else
+		dialog.set App "OFF"
+
+	if "&EtmMmdspSia"=="True"
+		dialog.set MmdspSia "ON"
+	else
+		dialog.set MmdspSia "OFF"
+
+	if "&EtmMmdspSva"=="True"
+		dialog.set MmdspSva "ON"
+	else
+		dialog.set MmdspSva "OFF"
+
+	dialog.set MmdspSiaDataTrace "&MmdspSiaDataTrace"
+	dialog.set MmdspSvaDataTrace "&MmdspSvaDataTrace"
+	dialog.set EtmSize "&EtmPortSize"
+	dialog.set EtmClk "&EtmTraceClk"
+	Return
+
+EtmApp:
+	if dialog.boolean(App)
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp etm.on
+			wait 1s
+		)
+		&EtmApp="True"
+	)
+	else
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp etm.off
+			wait 1s
+		)
+		&EtmApp="False"
+	)
+	Return
+
+EtmMmdspSia:
+	if dialog.boolean(MmdspSia)
+	(
+		if ("&MmdspSiaStarted"=="True")
+		(
+			intercom.execute &icMmdspSia etm.on
+			intercom.execute &icMmdspSia do etm_update_variables True &MmdspSiaDataTrace
+			wait 1s
+		)
+		&EtmMmdspSia="True"
+	)
+	else
+	(
+		if ("&MmdspSiaStarted"=="True")
+		(
+			intercom.execute &icMmdspSia etm.off
+			intercom.execute &icMmdspSia do etm_update_variables False &MmdspSiaDataTrace
+			wait 1s
+		)
+		&EtmMmdspSia="False"
+	)
+	Return
+
+EtmMmdspSva:
+	if dialog.boolean(MmdspSva)
+	(
+		if ("&MmdspSvaStarted"=="True")
+		(
+			intercom.evaluate &icMmdspSva system.up()
+			if EVAL()!=0
+				intercom.execute &icMmdspSva etm.on
+			wait 1s
+			intercom.execute &icMmdspSva do etm_update_variables True &MmdspSvaDataTrace
+			wait 1s
+		)
+		&EtmMmdspSva="True"
+	)
+	else
+	(
+		if ("&MmdspSvaStarted"=="True")
+		(
+			intercom.evaluate &icMmdspSva system.up()
+			if EVAL()!=0
+				intercom.execute &icMmdspSva etm.off
+			wait 1s
+			intercom.execute &icMmdspSva do etm_update_variables False &MmdspSvaDataTrace
+			wait 1s
+		)
+		&EtmMmdspSva="False"
+	)
+	Return
+
+EtmDataMmdspSia:
+	&MmdspSiaDataTrace=dialog.string(MmdspSiaDataTrace)
+	if ("&MmdspSiaStarted"=="True")
+		(
+			intercom.execute &icMmdspSia do etm_update_variables &EtmMmdspSia &MmdspSiaDataTrace
+			wait 1s
+			intercom.execute &icMmdspSia etm.datatrace &MmdspSiaDataTrace
+		)
+	Return
+
+EtmDataMmdspSva:
+	&MmdspSvaDataTrace=dialog.string(MmdspSvaDataTrace)
+	if ("&MmdspSvaStarted"=="True")
+		(
+			intercom.execute &icMmdspSva do etm_update_variables &EtmMmdspSva &MmdspSvaDataTrace
+			wait 1s
+			intercom.evaluate &icMmdspSva system.up()
+			if EVAL()!=0
+				intercom.execute &icMmdspSva etm.datatrace &MmdspSvaDataTrace
+
+		)
+	Return
+
+EtmPortSize:
+	if ("&AppStarted"=="True")
+	(
+		&EtmPortSize=dialog.string(EtmSize)
+		intercom.execute &icApp etm.portsize &EtmPortSize
+	)
+	if ("&MmdspSiaStarted"=="True")
+	(
+		intercom.execute &icMmdspSia do etm_update_variables &EtmMmdspSia &MmdspSiaDataTrace &EtmPortSize
+		intercom.execute &icMmdspSia etm.portsize &EtmPortSize
+	)
+	if ("&MmdspSvaStarted"=="True")
+	(
+		intercom.execute &icMmdspSva do etm_update_variables &EtmMmdspSva &MmdspSvaDataTrace &EtmPortSize
+		wait 1s
+		intercom.evaluate &icMmdspSva system.up()
+		if EVAL()!=0
+			intercom.execute &icMmdspSva etm.portsize &EtmPortSize
+	)
+	print "Run Use PTM after changing the ETM Port Size"
+	Return
+
+EtmTraceClk:
+	&EtmTraceClk=dialog.string(EtmClk)
+	print "Run Use PTM after changing the ETM clock"
+	Return
+
+ButtonSave:
+	if ("&MmdspSiaStarted"=="True")
+	(
+		intercom.execute &icMmdspSia do writesettings
+		intercom.wait &icMmdspSia
+		wait 1s
+	)
+	if ("&MmdspSvaStarted"=="True")
+	(
+		intercom.execute &icMmdspSva do writesettings
+		intercom.wait &icMmdspSva
+		wait 1s
+	)
+	do writesettings.cmm
+	RETURN
+
+ButtonSaveClose:
+	if ("&MmdspSiaStarted"=="True")
+	(
+		intercom.execute &icMmdspSia do writesettings
+		intercom.wait &icMmdspSia
+		wait 1s
+	)
+	if ("&MmdspSvaStarted"=="True")
+	(
+		intercom.execute &icMmdspSva do writesettings
+		intercom.wait &icMmdspSva
+		wait 1s
+	)
+	do writesettings.cmm
+	goto winclose
+
+
+
+

@@ -1,0 +1,51 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_mpeg2.idt>
+
+interface mpeg2dec.mpc.api.configure_algo { 
+
+/** @addtogroup mpeg2decConfigureAlgoGroup configureAlgo
+ *  @ingroup mpeg2decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+ \param[in]  algoId                     Algo Identifier of the ALGO Component.
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vdc_mpeg2_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vdc_mpeg2_param_out)
+                                        \n(Alignment : Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks     For the corresponding ITF server name(s), please refer to \ref mpeg2decConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+ *
+ */ 
+
+void configureAlgo(mpeg2dec.mpc.api.end_algo *cb,
+                   t_uint32 addr_in_frame_buffer,
+                   t_uint32 addr_out_frame_buffer,
+                   t_uint32 addr_in_bitstream_buffer,
+                   t_uint32 addr_in_parameters,
+                   t_uint32 addr_out_parameters);
+
+ /** @} */ // end of mpeg2decConfigureAlgoGroup
+
+} // interface mpeg2dec.mpc.api.configure_algo
+

@@ -1,0 +1,89 @@
+//============================================================================
+// Lauterbach T32 Emulator script: backup_ram_debug.cmm
+//
+// Comments: Extract a subset of backupRAM parameters from DDR CoreDump
+//
+//
+// Written by: qriceve
+//
+// Creation date: 07/31/2012
+// Last Change:
+//
+//============================================================================
+
+&backup_ram_debug="backup_ram_debug.log"
+
+area.create A000
+area.select A000
+area.clear A000
+area.open A000 &backup_ram_debug
+area.view A000
+
+&db8500_dump_data=v.value(&db8500_dump)
+
+//Offsets
+&SOC_SETTINGS_AVS=0x30
+&FVR21_OFFSET=0x35C
+&FVR22_OFFSET=0x360
+&FVR4_OFFSET=0x370
+&FVR5_OFFSET=0x374
+&FVR6_OFFSET=0x378
+&SOC_SETTINGS=0x37C
+&DS_CPU0_PUBLIC_INFO=0x380
+&DS_CPU1_PUBLIC_INFO=0x3A0
+&PUBLIC_ID=0x3C0
+&CUT_ID=0x3D4
+&PUBLIC_BOOTROM_CPU0=0x3D8
+&EXTERNAL_STORAGE_ADDR=0x3DC
+&PUBLIC_BOOTROM_CPU1=0x3E0
+&DS_CONTEXT_SAVE=0x3E8
+&MAGIC_WAKEUP_CPU1=0x3F0
+&BOOTROM=0x3FC
+
+
+print "Search for public_backup_ram..."
+
+//Find backupRAM entry
+&ENTRY="((struct dbx500_dump_info*)&db8500_dump_data)"
+&idx=0
+&text=" "
+&name_p=v.value(&ENTRY[&idx]->name)
+while (data.string(d:&name_p)!="public_backup_ram")
+(
+	&name_p=v.value(&ENTRY[&idx]->name)
+	&text=data.string(d:&name_p)
+
+	print "name: &text"
+	&idx=&idx+1
+)
+
+&idx=&idx-1
+
+&publ_ram_addr=v.value(&ENTRY[&idx]->data)
+print "public BackupRAM copy in DDR: &publ_ram_addr"
+print " "
+print "Extracted info from dump:"
+print "========================="
+&data=data.long(D:&publ_ram_addr+&FVR21_OFFSET)
+print "FVR21: &data"
+
+&data=data.long(D:&publ_ram_addr+&FVR22_OFFSET)
+print "FVR22: &data"
+
+&data=data.long(D:&publ_ram_addr+&FVR4_OFFSET)
+print "FVR4: &data"
+
+&data=data.long(D:&publ_ram_addr+&FVR5_OFFSET)
+print "FVR5: &data"
+
+&data=data.long(D:&publ_ram_addr+&FVR6_OFFSET)
+print "FVR6: &data"
+
+&data=(data.long(D:&publ_ram_addr+&PUBLIC_ID+0x10)<<128)+(data.long(D:&publ_ram_addr+&PUBLIC_ID+0xc)<<96)+(data.long(D:&publ_ram_addr+&PUBLIC_ID+0x8)<<64)+(data.long(D:&publ_ram_addr+&PUBLIC_ID+0x4)<<32)+(data.long(D:&publ_ram_addr+&PUBLIC_ID))
+print "Public ID: &data"
+
+&data=data.long(D:&publ_ram_addr+&CUT_ID)
+print "CutID: &data"
+
+area.close A000
+area.select A000

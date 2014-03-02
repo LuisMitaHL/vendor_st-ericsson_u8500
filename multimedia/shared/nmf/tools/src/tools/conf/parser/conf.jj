@@ -1,0 +1,644 @@
+options {
+  //OUTPUT_DIRECTORY = "tools/conf/parser";
+  JAVA_UNICODE_ESCAPE = false; // True break tokenizer since we don't handle unicode
+  STATIC=false;
+  JDK_VERSION="1.6"; 
+}
+/*****************************************************
+ Main class 
+ *****************************************************/
+
+PARSER_BEGIN(Parser)
+
+package tools.conf.parser;
+
+import tools.conf.ast.*;
+import tools.common.compilerexception;
+import tools.common.util;
+import java.io.File;
+import tools.conf.graph.component.SchedPriority;
+
+public class Parser {
+	public File file;
+	public String foundedName;
+}
+
+PARSER_END(Parser)
+
+/* WHITE SPACE */
+/*****************************************************
+ WHITE SPACE & COMMENTS
+ *****************************************************/
+
+/* WHITE SPACE */
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+SPECIAL_TOKEN : 
+{
+    < SINGLE_LINE_COMMENT: "//"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? >
+} 
+
+MORE :
+{
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN  :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/*****************************************************
+ RESERVED WORDS AND LITERALS
+ *****************************************************/
+
+ TOKEN : {
+	<CONTINUE: "continue"> |
+	<VOLATILE: "volatile"> |
+	<REGISTER: "register"> |
+	<UNSIGNED: "unsigned"> |
+	<TYPEDEF: "typedef"> |
+	<DFLT: "default"> |
+	<DOUBLE: "double"> |
+	<SIZEOF: "sizeof"> |
+	<SWITCH: "switch"> |
+	<RETURN: "return"> |
+	<EXTERN: "extern"> |
+	<STRUCT: "struct"> |
+	<STATIC: "static"> |
+	<SIGNED: "signed"> |
+	<WHILE: "while"> |
+	<BREAK: "break"> |
+	<UNION: "union"> |
+	<CONST: "const"> |
+	<FLOAT: "float"> |
+	<SHORT: "short"> |
+	<ELSE: "else"> |
+	<CASE: "case"> |
+	<LONG: "long"> |
+	<ENUM: "enum"> |
+	<AUTO: "auto"> |
+	<VOID: "void"> |
+	<GOTO: "goto"> |
+	<FOR: "for"> |
+	<INT: "int"> |
+	<IF: "if"> |
+	<DO: "do">
+}
+
+TOKEN : {
+	<TUINT64: "t_uint64"> |
+	<TUINT56: "t_uint56"> |
+	<TUINT48: "t_uint48"> | 
+	<TUINT40: "t_uint40"> |
+	<TUINT32: "t_uint32"> | <TADDRESS: "t_physical_address"> | <TSHAREDREG: "t_shared_reg"> | <TSHAREDFIELD: "t_shared_field"> |
+	<TUINT24: "t_uint24"> | <TUWORD: "t_uword"> |
+	<TUINT16: "t_uint16"> |
+	<TUINT8: "t_uint8"> |
+	
+	<TSINT64: "t_sint64"> |
+	<TSINT56: "t_sint56"> |
+	<TSINT48: "t_sint48"> |
+	<TSINT40: "t_sint40"> |
+	<TSINT32: "t_sint32"> |
+	<TSINT24: "t_sint24"> | <TSWORD: "t_sword"> |
+	<TSINT16: "t_sint16"> |
+	<TSINT8: "t_sint8"> |
+	
+	<CHAR: "char"> |
+	<TBOOL: "t_bool">
+}
+TOKEN : {
+ 	<AS: "as">
+|	<OPTIONAL: "optional">
+|	<MANDATORY: "mandatory">
+|	<PRIMITIVE: "primitive">
+|	<COMPOSITE: "composite">
+|	<TYPE: "type">
+|	<EXTENDS: "extends" | ":">
+|	<THIS: "this">
+|	<BIND: "binds">
+|	<TO: "to">
+|	<PREFIX: "prefix">
+|   <UNAMBIGUOUS: "unambiguous">
+|	<REFERENCED: "referenced">
+|	<SINGLETON: "singleton">
+|	<TRACE: "trace"> 
+|       <INTERRUPT: "interrupt">
+|   <ASYNCHRONOUS: "asynchronous">
+|	<URGENT: "urgent"> 
+|	<NORMAL: "normal">
+|	<BACKGROUND: "background">
+|	<FIFO: "fifo">
+|   <SUBPRIORITY: "subpriority">
+|   <PRIORITY: "priority">
+|	<OPTION: "option">
+|   <ORDER: "order">
+
+	// Command declaration
+|	<ATTRIBUTES: "attributes">
+|	<CONTAINS: "contains">
+|	<REQUIRES: "requires">
+|	<SOURCES: "sources">
+|	<PROPERTY: "property">
+|	<PROVIDES: "provides">
+
+	//
+}
+/*****************************************************
+ IDENTIFIERS
+ *****************************************************/
+
+TOKEN : {
+ <IDENTIFIER: <LETTER> (<LETTER> | <DIGIT>)*>
+|  <#LETTER: ["A"-"Z","_","a"-"z"]>
+|  <#DIGIT: ["0"-"9"]>
+|<STRING_LITERAL:    "\"" ( (~["\"","\\","\n","\r"]) )* "\"">
+//|  <STRING_LITERAL: "\"" ( ~["\"","\\","\n","\r"] | "\\" ( ["n","t","b","r","f","\\","\'","\""] | ["0"-"7"] (["0"-"7"])?  | ["0"-"3"] ["0"-"7"] ["0"-"7"] | ( ["\n","\r"] | "\r\n")))* "\"">
+|<CHARACTER_LITERAL: "\'"   (~["\'","\\","\n","\r"] | "\\" (["n","t","b","r","f","\\","\'","\""] | ["0"-"7"] (["0"-"7"])? | ["0"-"3"] ["0"-"7"] ["0"-"7"])) "\'">
+|<INTEGER_LITERAL: <DECIMAL_LITERAL> (["l","L"])? | <HEX_LITERAL> (["l","L"])? | <OCTAL_LITERAL> (["l","L"])?>
+|  <#DECIMAL_LITERAL: (["1"-"9"] (["0"-"9"])*)>
+|  <#HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+>
+|  <#OCTAL_LITERAL: "0" (["0"-"7"])*>
+}
+
+
+/*****************************************************
+ ADL Grammars
+ *****************************************************/
+
+asttype ComponentDeclaration(String _fullyname, File directory) throws compilerexception :
+{
+  astcomposite composite;
+  astprimitive primitive;
+  asttype type;
+  astdefinition extend;
+}
+{ 
+  (
+	<COMPOSITE> foundedName=Name()
+  		{ composite = new astcomposite(file, _fullyname); }
+  	[ "<" TemplateParameterDeclaration(composite) ">" ]
+  	[ "(" AttributeParameterDeclaration(composite) ")" ]
+ 	[ <EXTENDS> extend = ComponentDefinition() 
+ 		{ composite.addExtend(extend);} 
+ 		("," extend = ComponentDefinition()
+ 			{ composite.addExtend(extend);} )*
+	]
+ 	[<SINGLETON> {composite.singleton = true;}] 
+ 	[ "{" ]
+  	( 
+  		InterfaceDeclaration(composite) |
+  		ContentDeclaration(composite) |
+  		BindingDeclaration(composite) |
+  		PropertyDeclaration(composite)
+  	) *
+     ( OptionDeclaration(composite) )*
+    [ "}" ]
+    <EOF>
+  		{ return composite; }
+  ) | (
+	[ <PRIMITIVE> foundedName=Name() ] 
+  		{ primitive = new astprimitive(file, _fullyname); }
+   	[ "(" AttributeParameterDeclaration(primitive) ")" ]
+ 	[ <EXTENDS> extend = ComponentDefinition() 
+ 		{ primitive.addExtend(extend);} 
+ 		("," extend = ComponentDefinition()
+ 			{ primitive.addExtend(extend);} )*
+	]
+ 	[<SINGLETON> {primitive.singleton = true;}]
+ 	[ "{" ]
+  	( 
+  		InterfaceDeclaration(primitive) |
+  	  	PropertyDeclaration(primitive) |
+  	  	AttributeDeclaration(primitive) )*
+    SourceDeclaration(primitive, directory)
+    ( OptionDeclaration(primitive) )*
+    [ "}" ]
+    <EOF>
+   		{ return primitive; }
+  ) | (
+  	<TYPE> foundedName=Name()
+		{ type = new asttype(file, _fullyname); }
+ 	[ <EXTENDS> extend = ComponentDefinition() 
+ 		{ type.addExtend(extend);} 
+ 		("," extend = ComponentDefinition()
+ 			{ type.addExtend(extend);} )*
+	]
+  	[ "{" ]
+  	( InterfaceDeclaration(type) |
+  	  PropertyDeclaration(type) )*
+    [ "}" ]
+    <EOF>
+  		{ return type; }
+  )
+}
+
+astcomposite CompositeDeclaration(String _fullyname) throws compilerexception :
+{
+  astcomposite composite;
+  astdefinition extend;
+}
+{ 
+	[ <COMPOSITE> foundedName=Name() ]
+		{ composite = new astcomposite(file, _fullyname); }
+  	[ "<" TemplateParameterDeclaration(composite) ">" ]
+  	[ "(" AttributeParameterDeclaration(composite) ")" ]
+ 	[ <EXTENDS> extend = ComponentDefinition() 
+ 		{ composite.addExtend(extend);} 
+ 		("," extend = ComponentDefinition()
+ 			{ composite.addExtend(extend);} )*
+	]
+  	[ "{" ]
+  	( 
+  		InterfaceDeclaration(composite) |
+  		ContentDeclaration(composite) |
+  		BindingDeclaration(composite) |
+  		PropertyDeclaration(composite)
+  	) *
+     ( OptionDeclaration(composite) )*
+     [ "}" ]
+    <EOF>
+  		{ return composite; }
+}
+
+astdefinition ComponentDefinition(): 
+{
+	astdefinition extend;
+	String type, impl, value;
+}
+{
+	type = Name() 
+		{ extend = new astdefinition(file, token.beginLine, token.beginColumn, type); }
+	 [ 
+	 	"<" 
+	 		impl = Name() { extend.templates.add(impl);} 
+ 			("," impl = Name() { extend.templates.add(impl);} )*
+ 		">"
+	]
+	[ 
+	  	"(" 
+	  		value=PropertyValue() { extend.attributes.add(value);} 
+ 			("," value = PropertyValue() { extend.attributes.add(value);} )*
+ 	  	")"
+	]
+	
+	{ return extend; }
+}
+
+void TemplateParameterDeclaration(astcomposite composite) throws compilerexception: 
+{
+	String type;
+	Token identifier;
+}
+{
+	identifier = <IDENTIFIER>
+	<EXTENDS> type = Name() 
+		{ composite.templateparameters.add(new astparameter(file, identifier.beginLine, identifier.beginColumn, 
+			type, identifier.image)); }
+	( "," 
+		identifier = <IDENTIFIER>
+ 		<EXTENDS> type = Name() 
+			{ composite.templateparameters.add(new astparameter(file, identifier.beginLine, identifier.beginColumn, 
+				type, identifier.image)); }
+ 	)*
+}
+
+void AttributeParameterDeclaration(astcomponent component) throws compilerexception: 
+{
+	String ctype, value = null;
+	Token identifier;
+}
+{
+	ctype=PrimitiveType() identifier=CIdentifier() [ "=" value=PropertyValue() ]
+		{ component.attributeparameters.add(new astparameter(file, identifier.beginLine, identifier.beginColumn, 
+			ctype, identifier.image, value)); }
+	( "," 
+		ctype=PrimitiveType() identifier=CIdentifier() [ "=" value=PropertyValue() ]
+			{ component.attributeparameters.add(new astparameter(file, identifier.beginLine, identifier.beginColumn, 
+				ctype, identifier.image, value)); }
+ 	)*
+}
+
+void InterfaceDeclaration(asttype component) throws compilerexception : 
+{
+  astrequire r;
+  astprovide p;
+}
+{
+ 	( p = ProvideDeclaration() { component.addProvide(p); } )
+ 	|
+ 	( r = RequireDeclaration() { component.addRequire(r); } )
+}
+
+void ContentDeclaration(astcomposite composite) :
+{
+  Token t;
+  astdefinition type;
+  Token name, mpc, order;
+  SchedPriority priority;
+  astcontent content;
+}
+{
+  	t = <CONTAINS> type=ComponentDefinition() 
+  	<AS> 
+  	name=CIdentifier() 
+        { content = new astcontent(file, t.beginLine, t.beginColumn, type, name.image); }
+  	[ 
+  	     LOOKAHEAD(3) mpc=<IDENTIFIER>
+  	         {  content.mpc = mpc.image; }
+  	] 
+  	[ 
+  	     priority = Priority()
+  	         { content.priority = priority; } 
+  	] 
+  	[
+  	     <ORDER> "=" order = <INTEGER_LITERAL> 
+  	         { content.order = (int)util.StringToUnsigned(order.image); }
+  	]	
+        { composite.addLocalContent(content); }
+}
+
+void BindingDeclaration(astcomposite composite) :
+{
+	Token t, size, n, subpriority;
+	astbind bind;
+ 	Token fromT, toT, ctoitfT, cfromitfT;
+ 	String from, to, ctoitf, cfromitf;
+}
+{
+	t = <BIND> (fromT=CIdentifier() { from = fromT.image; } | <THIS> {from = "this";} ) "." 
+		cfromitfT=CIdentifier() { cfromitf = cfromitfT.image; }
+			[ "[" n = <INTEGER_LITERAL> "]" { cfromitf = cfromitf + "[" + n.image + "]"; } ]
+	<TO> (toT=CIdentifier() { to = toT.image; } | <THIS>  {to = "this";} ) "." 
+ 		ctoitfT=CIdentifier() { ctoitf = ctoitfT.image; }
+ 			[ "[" n = <INTEGER_LITERAL> "]" { ctoitf = ctoitf + "[" + n.image + "]"; } ]
+ 		{ bind = new astbind(file, t.beginLine, t.beginColumn, from, cfromitf, to, ctoitf); }
+     [ <TRACE> { bind.trace = true; } ]
+     [ 
+        <ASYNCHRONOUS> { bind.asynchronous = true; } 
+     	<FIFO> "=" size = <INTEGER_LITERAL> { bind.size = (int)util.StringToUnsigned(size.image); }
+     	[
+     	  <SUBPRIORITY> "=" subpriority = <INTEGER_LITERAL> { bind.subpriority = new Integer((int)util.StringToUnsigned(subpriority.image)); }
+     	]
+     ]
+   	{ composite.addLocalBind(bind); }
+}
+
+SchedPriority Priority() :
+{
+	Token priority;
+}
+{
+    ( priority = <INTEGER_LITERAL> { return new SchedPriority(priority.image); } )
+|   ( 
+        <PRIORITY> "=" 
+        (
+            (priority = CIdentifier() { return new SchedPriority(priority.image); } ) 
+            |
+            (priority = <INTEGER_LITERAL> { return new SchedPriority(priority.image); } )
+         )
+    )
+|	( <URGENT> { return SchedPriority.Urgent; } )
+|	( <NORMAL> { return SchedPriority.Normal; } )
+|	( <BACKGROUND> { return SchedPriority.Background; } )
+}
+
+astprovide ProvideDeclaration() throws compilerexception:
+{
+  Token t, line, n;
+  String type;
+  Token name;
+  astprovide provide;
+}
+{
+  t = <PROVIDES> type=Name() <AS> name=CIdentifier()
+ 	{ provide = new astprovide(file, t.beginLine, t.beginColumn, type, name.image); }
+  [ "[" n = <INTEGER_LITERAL> "]" { provide.setCollection(n.image); } ]
+  [ <UNAMBIGUOUS> { provide.unambiguous = true; } ]
+  [ <PREFIX> name = CIdentifier()
+    { provide.setPrefix(name.image); } ]
+  [ <INTERRUPT> line=<INTEGER_LITERAL>
+      { provide.interrupt = true; provide.line = (int)util.StringToUnsigned(line.image); } |
+    <REFERENCED> 
+      { provide.referenced = true; }
+   ]   
+ { return provide; }
+}
+
+astrequire RequireDeclaration() :
+{
+  Token t, n;
+  String type;
+  Token name;
+  astrequire require;
+}
+{
+  t = <REQUIRES> type=Name() <AS> name=CIdentifier() 
+    { require = new astrequire(file, t.beginLine, t.beginColumn, type, name.image); }
+  [ "[" n = <INTEGER_LITERAL> "]" { require.setCollection(n.image); } ]
+  [ <OPTIONAL> { require.optional = true; } | 
+    <MANDATORY> |
+    <STATIC> { require.isStatic = true; } ]
+  { return require; }
+}
+
+void AttributeDeclaration(astprimitive primitive) throws compilerexception:
+{
+  Token t;
+  String value = null, ctype=null;
+  Token name;
+}
+{
+	t = <ATTRIBUTES> 
+	(
+		ctype=PrimitiveType() name=CIdentifier() [ "=" value=PropertyValue() ]
+		|
+		name=CIdentifier()
+	)
+    { primitive.addAttribute(new astattribute(file, t.beginLine, t.beginColumn, name.image, ctype, value)); }
+}
+
+void PropertyDeclaration(asttype component) throws compilerexception :
+{
+  Token t;
+  String value;
+  Token name;
+}
+{
+	t = <PROPERTY> name=CIdentifier() "=" value=PropertyValue()
+ 	{ component.addProperty(new astproperty(file, t, name.image, value)); }
+}
+
+String PropertyValue(): 
+{
+	Token value;
+	String sum = "";
+}
+{
+	(
+ 		[ "-" { sum = "-"; } | "+" ] value = <INTEGER_LITERAL> { sum = sum + value.image; }
+ 		{ return sum; }
+ 	) | (
+ 	  	value = <CHARACTER_LITERAL>
+ 		{ return value.image; }
+ 	) | (
+ 	  	value = <STRING_LITERAL>
+ 		{ return value.image; }
+ 	) | (
+ 		value = <IDENTIFIER>
+ 		{ return value.image; }
+ 	)
+}
+
+void OptionDeclaration(astcomponent component) throws compilerexception:
+{
+  Token t1, t2;
+  String name = null, targetorname, value; 
+}
+{
+  	<OPTION> t1=<IDENTIFIER> { targetorname = t1.image; } ["." t2=<IDENTIFIER> { name = t2.image; } ] ["="]
+  	value = OptionValue()
+ 	{ 
+ 		if(name != null)
+ 			component.setOption(new astoption(file, t1.beginLine, t1.beginColumn, targetorname, name, value)); 
+ 		else
+ 			component.setOption(new astoption(file, t1.beginLine, t1.beginColumn, targetorname, value)); 
+ 	}
+ }
+
+String OptionValue(): 
+{
+	Token value;
+	String sum = "";
+}
+{
+	(
+ 		value = <IDENTIFIER> { sum = value.image; }
+ 		( "|" value = <IDENTIFIER>  { sum = sum + "|" + value.image; } )*
+ 		{ return sum; }
+ 	) | (
+ 		[ "-" { sum = "-"; } | "+" ] value = <INTEGER_LITERAL> { sum = sum + value.image; }
+ 		{ return sum; }
+ 	) | (
+ 	  	value = <STRING_LITERAL> { sum = value.image.substring(1, value.image.length() - 1); }
+ 		{ return sum; }
+ 	)
+}
+
+void SourceDeclaration(astprimitive primitive, File directory) :
+{
+  Token t, ext, value;
+  String _file;
+  astsource source;
+}
+{
+  (
+  	(
+  		t=<SOURCES> _file=Path() "." ext = <IDENTIFIER>
+   			{ source = new astsource(file, t, new File(directory, _file + "." + ext.image)); } 
+   		[ value = <STRING_LITERAL> { source.CFLAGS = value.image.substring(1, value.image.length() - 1); } ]
+   		{ primitive.sources.add(source); }
+  	)
+   )*
+ }
+
+String Name():
+{
+	String name;
+	Token n;
+}
+{
+  n = CIdentifier() { name = n.image; }
+  (  "." n = CIdentifier() { name = name + "." + n.image; } )*
+  { return name; }
+}
+
+Token CIdentifier():
+/** 
+ * All Identifier plus NK Key words that is not reserved for C !
+ */
+{
+	Token t;
+}
+{
+  (
+   t = <IDENTIFIER>
+  | t = <PRIMITIVE>
+  | t = <COMPOSITE>
+  | t = <TYPE>
+  | t = <SINGLETON>
+  | t = <TRACE> 
+  | t = <INTERRUPT>
+  | t = <ASYNCHRONOUS>
+  | t = <URGENT> 
+  | t = <NORMAL>
+  | t = <BACKGROUND>
+  | t = <FIFO> 
+  | t = <PREFIX>
+  | t = <PRIORITY>
+  | t = <SUBPRIORITY>
+  | t = <ORDER>
+  )
+	{ return t;}
+}
+
+String PrimitiveType() :
+{
+	Token t;
+	String type;
+}
+{
+	(
+	t = <TUINT64> | 
+	t = <TUINT56> |
+	t = <TUINT48> |
+	t = <TUINT40> |
+	t = <TUINT32> | t = <TADDRESS> | t = <TSHAREDREG> | t= <TSHAREDFIELD> |
+	t = <TUINT24> | t = <TUWORD> |
+	t = <TUINT16> |
+	t = <TUINT8> |
+	t = <TSINT64> |
+	t = <TSINT56> |
+	t = <TSINT48> |
+	t = <TSINT40> |
+	t = <TSINT32> |
+	t = <TSINT24> | t = <TSWORD> |
+	t = <TSINT16> |
+	t = <TSINT8> |
+	t = <CHAR> |
+	t = <TBOOL>
+	)
+		{ type = t.image; }
+	[ "*" { type = type + "*"; } ]
+	{ return type; }
+}
+
+String Path():
+{
+	String name = "";
+	Token n;
+}
+{
+  (n = CIdentifier() | n = "..") { name = n.image; }
+  (  
+  	(n = "/" | n = "-" | n = CIdentifier()) 
+  	{ name = name + n.image; } 
+  )*
+  { return name; }
+}

@@ -1,0 +1,442 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSTAT_HET__
+#define __CGPSTAT_HET__
+/**
+* \file cgpstat.het
+* \date 31/03/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all structure used by External application 
+* to communicate with the CGPS module.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 31.03.08 </TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/* + LMSQC06481 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \struct t_CGPS_TATCnoLimits
+* \brief Operator requirements
+*/
+typedef struct
+{
+   uint16_t    v_AU;        /**< A,B,C,D,E,F upper limit */
+   uint16_t    v_SU;        /**< S upper limit */
+   uint16_t    v_SL;        /**< S lower limit */
+   uint16_t    v_E3U;        /**< E3 upper limit */
+   uint16_t    v_E8L1;        /**< E8 lower limit 1 */
+   uint16_t    v_E8U1;        /**< E8 upper limit 1 */
+   uint16_t    v_E8L2;        /**< E8 lower limit 2 */
+   uint16_t    v_E8U2;        /**< E8 upper limit 2 */
+   uint16_t    v_EAL;        /**< EA lower limit */
+   uint16_t    v_E9L;        /**< E9 lower limit */
+   uint8_t    v_TCXO;        /**< TCXO frequence MHz (16 or 26) */
+} t_CGPS_TATCnoLimits;
+#endif /* CGPS_CNO_VALUE_FTR */
+/* - LMSQC06481 : Production test */
+
+
+/**
+* \addtogroup Message 
+* Define all messages needed by TAT to communicate to GPS module
+* \ingroup CGPS_TAT
+*\{
+*/
+
+/*************************************************************************/
+/*                           TAT Interface                                 */
+/*                                                                       */
+/*************************************************************************/
+/**
+* \var CGPS_TAT_INIT_CNF
+* This message is sent by CGPS to CGPS, when the mobile start in TAT mode\n
+* no parameters in this message
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_CGPS, CGPS_TAT_INIT_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_INIT_CNF))
+
+/**
+*\struct t_CGPS_TatInitCnf 
+* Struct used in CGPS_TAT_INIT_CNF  message\n
+* This structure is empty.\n
+* \see CGPS_TAT_INIT_CNF
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatInitCnf)
+   MC_PCC_END_STRUC(t_CGPS_TatInitCnf)
+
+
+/**
+* \var CGPS_TAT_ACTIVATION_REQ
+* This message is sent by TAT  to activate or deactivate the GPS module\n
+* \param t_CGPS_TatActivationReq containig the state wanted to set
+* \see CGPS_TAT_ACTIVATION_CNF and CGPS_TAT_ACTIVATION_ERR
+*/
+MC_PCC_HEADER(PROCESS_MIS, PROCESS_CGPS, CGPS_TAT_ACTIVATION_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_ACTIVATION_REQ))
+
+/**
+*\struct t_CGPS_TatActivationReq 
+* Struct used in CGPS_TAT_ACTIVATION_REQ  message\n
+* \see CGPS_TAT_ACTIVATION_REQ
+*/        
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatActivationReq)
+   MC_PCC_FIELD( e_cgps_tat_state, v_State) /*!< activate or deactivate GPS module */
+   MC_PCC_END_STRUC(t_CGPS_TatActivationReq)
+   
+/**
+* \var CGPS_TAT_ACTIVATION_CNF
+* This message is sent by CGPS to TAT when the GPS sate was modified successfully\n
+* This is the succes answer of CGPS_TAT_ACTIVATION_REQ\n
+* \param t_CGPS_TatActivationCnf containing the current state of GPS module
+* \see CGPS_TAT_ACTIVATION_REQ
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS , CGPS_TAT_ACTIVATION_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_ACTIVATION_CNF))
+            
+/**
+*\struct t_CGPS_TatActivationCnf 
+* Struct used in CGPS_TAT_ACTIVATION_CNF  message\n
+* \see CGPS_TAT_ACTIVATION_CNF
+*/    
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatActivationCnf)
+   MC_PCC_FIELD( e_cgps_tat_state, v_State ) /*!< current state of GPS module */
+   MC_PCC_END_STRUC(t_CGPS_TatActivationCnf)
+
+
+/**
+* \var CGPS_TAT_ACTIVATION_ERR
+* This message is sent by CGPS to TAT when an error occurs during GPS module state modification\n
+* This is the error answer of CGPS_TAT_ACTIVATION_REQ\n
+* \param t_CGPS_TatActivationErr containing error number and current state of GPS module
+* \see CGPS_TAT_ACTIVATION_REQ
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS , CGPS_TAT_ACTIVATION_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_ACTIVATION_ERR))
+
+/**
+*\struct t_CGPS_TatActivationErr 
+* Struct used in CGPS_TAT_ACTIVATION_ERR  message\n
+* \see CGPS_TAT_ACTIVATION_ERR
+*/    
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatActivationErr)
+   MC_PCC_FIELD( e_cgps_tat_state, v_CurrentState )     /*!< current state of GPS module */
+   MC_PCC_FIELD( e_cgps_tat_error, v_ErrorNumber )      /*!< error number see e_cgps_tat_error */
+   MC_PCC_END_STRUC(t_CGPS_TatActivationErr)
+   
+/**
+* \var CGPS_TAT_GET_INFO_REQ
+* This message is sent by TAT to get some information from hardware layer like GPS firmware version\n
+* no param are needed
+* \see CGPS_TAT_GET_INFO_CNF and CGPS_TAT_GET_INFO_ERR
+*/
+MC_PCC_HEADER(PROCESS_MIS, PROCESS_CGPS, CGPS_TAT_GET_INFO_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_INFO_REQ))
+
+/**
+*\struct t_CGPS_TatGetInfoReq 
+* Struct used in CGPS_TAT_GET_INFO_REQ  message\n
+* This structure is empty.\n
+* \see CGPS_TAT_GET_INFO_REQ
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetInfoReq)
+   MC_PCC_END_STRUC(t_CGPS_TatGetInfoReq)
+   
+/**
+* \var CGPS_TAT_GET_INFO_CNF
+* This message is sent by CGPS to give information to TAT.\n
+* This is the success answer of the request CGPS_TAT_GET_INFO_REQ\n
+* \param t_CGPS_TatGetInfoCnf containing hardware information about GPS module
+* \see CGPS_TAT_GET_INFO_REQ
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_GET_INFO_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_INFO_CNF))
+
+/**
+*\struct t_CGPS_TatGetInfoCnf 
+* Struct used in CGPS_TAT_GET_INFO_CNF  message\n
+* \see CGPS_TAT_GET_INFO_CNF
+*/        
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetInfoCnf)
+   MC_PCC_FIELD( uint16_t, v_EmbeddedMinorVersion) /*!< Firmware Version     */
+   MC_PCC_FIELD( uint16_t, v_EmbeddedMajorVersion) /*!< Firmware Version     */
+   MC_PCC_FIELD( uint16_t, v_BBVersion)           /*!< GPS BaseBand Version   */
+   MC_PCC_FIELD( uint16_t, v_PatchVersion)           /*!< Patch Version             */
+   MC_PCC_END_STRUC(t_CGPS_TatGetInfoCnf)
+
+/**
+* \var CGPS_TAT_GET_INFO_ERR
+* This message is sent by CGPS when an error occurs during get information request\n
+* no parameter in this message
+* \see CGPS_TAT_GET_INFO_REQ
+*/
+MC_PCC_HEADER(PROCESS_MIS, PROCESS_CGPS, CGPS_TAT_GET_INFO_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_INFO_ERR))
+
+/**
+*\struct t_CGPS_TatGetInfoErr 
+* Struct used in CGPS_TAT_GET_INFO_ERR  message\n
+* This structure is empty.\n
+* \see CGPS_TAT_GET_INFO_ERR
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetInfoErr)
+   MC_PCC_END_STRUC(t_CGPS_TatGetInfoErr)
+   
+/**
+* \var CGPS_TAT_GET_LOCATION_REQ
+* This message is sent by TAT to get location information\n
+* no parameters are needed
+* \see CGPS_TAT_GET_LOCATION_CNF and CGPS_TAT_GET_LOCATION_ERR
+*/
+MC_PCC_HEADER(PROCESS_MIS, PROCESS_CGPS, CGPS_TAT_GET_LOCATION_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_LOCATION_REQ))
+
+/**
+*\struct t_CGPS_TatGetLocationReq 
+* Struct used in CGPS_TAT_GET_LOCATION_REQ  message\n
+* This structure is empty.\n
+* \see CGPS_TAT_GET_LOCATION_REQ
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetLocationReq)
+   MC_PCC_END_STRUC(t_CGPS_TatGetLocationReq)
+   
+/**
+* \var CGPS_TAT_GET_LOCATION_CNF
+* This message is sent by CGPS to give information information to TAT.\n
+* This is the success answer of the request CGPS_TAT_GET_LOCATION_REQ\n
+* \param t_CGPS_TatGetLocationCnf containing location information
+* \see CGPS_TAT_GET_LOCATION_REQ 
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_GET_LOCATION_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_LOCATION_CNF))
+
+/**
+*\struct t_CGPS_TatGetLocationCnf 
+* Struct used in CGPS_TAT_GET_LOCATION_CNF  message\n
+* Include GN_GPS_api.h to used this structure.\n
+* \see CGPS_TAT_GET_LOCATION_CNF
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetLocationCnf)
+    MC_PCC_FIELD( t_cgps_CStructNavData, v_NavData)   /*!<See [cgps.het] and [GN_GPS API] to get information about this structure */
+   MC_PCC_END_STRUC(t_CGPS_TatGetLocationCnf)
+
+/**
+* \var CGPS_TAT_GET_LOCATION_ERR
+* This message is sent by CGPS when an error occurs during CGPS_TAT_GET_LOCATION_REQ\n
+* \see CGPS_TAT_GET_LOCATION_REQ 
+*/
+MC_PCC_HEADER(PROCESS_MIS, PROCESS_CGPS, CGPS_TAT_GET_LOCATION_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_LOCATION_ERR))
+
+/**
+*\struct t_CGPS_TatGetLocationErr 
+* Struct used in CGPS_TAT_GET_LOCATION_ERR  message \n
+* This structure is empty.\n
+* \see CGPS_TAT_GET_LOCATION_ERR
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetLocationErr)
+   MC_PCC_END_STRUC(t_CGPS_TatGetLocationErr)
+
+/**
+* \var CGPS_TAT_MODE_REQ
+* This message is sent by TAT to changed GPS mode ( Normal, Sleep, Coma, deep coma, off)\n
+*\param t_CGPS_TatGPSModeReq containing the mode wanted
+*\see CGPS_TAT_MODE_CNF
+*/
+MC_PCC_HEADER(PROCESS_MIS, PROCESS_CGPS, CGPS_TAT_MODE_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_MODE_REQ))
+
+/**
+*\struct t_CGPS_TatGPSModeReq 
+* Struct used in CGPS_TAT_MODE_REQ  message \n
+* \see CGPS_TAT_MODE_REQ
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGPSModeReq)
+   MC_PCC_FIELD( e_cgps_tat_mode, v_ModeId ) /*!<define the mode that TAT want to set */
+   MC_PCC_END_STRUC(t_CGPS_TatGPSModeReq)
+
+/**
+* \var CGPS_TAT_MODE_CNF
+* This message is sent by CGPS to confirmed that the GPS mode was changed\n
+* This is the answer of the request CGPS_TAT_MODE_REQ\n
+* \see CGPS_TAT_MODE_REQ
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_MODE_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_MODE_CNF))
+
+/**
+*\struct t_CGPS_TatGPSModeCnf 
+* Struct used in CGPS_TAT_MODE_CNF  message \n
+* \see CGPS_TAT_MODE_CNF
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGPSModeCnf)
+   MC_PCC_FIELD( e_cgps_tat_mode, v_ModeId )  /*!<define the mode that TAT want to set */
+   MC_PCC_END_STRUC(t_CGPS_TatGPSModeCnf)
+   
+/**
+* \var CGPS_TAT_TRANSPARENT_MODE_REQ
+* This message is sent by TAT to set the transparent mode\n
+* \param t_CGPS_TatTransparentModeReq enable or disable transparent mode
+* \see CGPS_TAT_TRANSPARENT_MODE_CNF
+*/
+MC_PCC_HEADER(PROCESS_MIS, PROCESS_CGPS, CGPS_TAT_TRANSPARENT_MODE_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_TRANSPARENT_MODE_REQ))
+
+/**
+*\struct t_CGPS_TatTransparentModeReq 
+* Struct used in CGPS_TAT_TRANSPARENT_MODE_REQ  message \n
+* \see CGPS_TAT_TRANSPARENT_MODE_REQ
+*/            
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatTransparentModeReq)
+   MC_PCC_FIELD( uint32_t, v_EnableDisable ) /* boolean to activated or deactivated transparent mode*/
+   MC_PCC_END_STRUC(t_CGPS_TatTransparentModeReq)
+
+/**
+* \var CGPS_TAT_TRANSPARENT_MODE_CNF
+* This message is sent by CGPS to confirmed that the transparent mode has been set or unset\n
+*\param t_CGPS_TatTransparentModeCnf enable or disable transparent mode
+* \see CGPS_TAT_TRANSPARENT_MODE_REQ
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_TRANSPARENT_MODE_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_TRANSPARENT_MODE_CNF))
+/**
+*\struct t_CGPS_TatTransparentModeCnf 
+* Struct used in CGPS_TAT_TRANSPARENT_MODE_CNF  message \n
+* \see CGPS_TAT_TRANSPARENT_MODE_CNF
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatTransparentModeCnf)
+   MC_PCC_FIELD( uint32_t, v_EnableDisable ) /* boolean containing the tranparent mode state*/
+   MC_PCC_END_STRUC(t_CGPS_TatTransparentModeCnf)
+
+/**
+* \var CGPS_TAT_TRANSPARENT_DATA_REQ
+* This message is sent by TAT to send data in transparent mode\n
+*\param t_CGPS_TatTransparentDataReq containing data and data lenght
+* \see CGPS_TAT_TRANSPARENT_DATA_CNF and CGPS_TAT_TRANSPARENT_DATA_ERR
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_TRANSPARENT_DATA_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_TRANSPARENT_DATA_REQ))
+/**
+*\struct t_CGPS_TatTransparentDataReq 
+* Struct used in CGPS_TAT_TRANSPARENT_DATA_REQ  message \n
+* \see CGPS_TAT_TRANSPARENT_DATA_REQ
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatTransparentDataReq)
+   MC_PCC_FIELD( uint16_t, v_Lenght ) /* data lenght*/
+   MC_PCC_FILL_STRUCT2                        /*!< Padding to align on 32 */
+   MC_PCC_FIELD( uint8_t *, v_Data ) /* data */
+   MC_PCC_END_STRUC(t_CGPS_TatTransparentDataReq)
+
+/**
+* \var CGPS_TAT_TRANSPARENT_DATA_CNF
+* This message is sent by CGPS when data receive in  CGPS_TAT_TRANSPARENT_DATA_REQ are correctly send to GPS Chipset in transparent mode\n
+* no parameters in this message 
+* \see CGPS_TAT_TRANSPARENT_DATA_REQ
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_TRANSPARENT_DATA_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_TRANSPARENT_DATA_CNF))
+/**
+*\struct t_CGPS_TatTransparentDataCnf 
+* Struct used in CGPS_TAT_TRANSPARENT_DATA_CNF  message \n
+* \see CGPS_TAT_TRANSPARENT_DATA_CNF
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatTransparentDataCnf)
+   MC_PCC_END_STRUC(t_CGPS_TatTransparentDataCnf)
+
+/**
+* \var CGPS_TAT_TRANSPARENT_DATA_ERR
+* This message is sent by CGPS when data receive in  CGPS_TAT_TRANSPARENT_DATA_REQ are NOT correctly send to GPS Chip in transparent mode\n
+*\param t_CGPS_TatTransparentDataErr containing the lenght of data sent
+* \see  CGPS_TAT_TRANSPARENT_DATA_REQ
+
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_TRANSPARENT_DATA_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_TRANSPARENT_DATA_ERR))
+/**
+*\struct t_CGPS_TatTransparentDataErr 
+* Struct used in CGPS_TAT_TRANSPARENT_DATA_ERR  message \n
+* \see CGPS_TAT_TRANSPARENT_DATA_ERR
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatTransparentDataErr)
+   MC_PCC_FIELD( uint32_t, v_Lenght ) /* data lenght sent to the chipset*/
+   MC_PCC_END_STRUC(t_CGPS_TatTransparentDataErr)
+   
+/**
+* \var CGPS_TAT_TRANSPARENT_DATA_IND
+* This message is sent by CGPS to send data to TAT in transparent mode\n
+*\param t_CGPS_TatTransparentDataInd containing data from GPS module.
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_TRANSPARENT_DATA_IND,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_TRANSPARENT_DATA_IND))
+/**
+*\struct t_CGPS_TatTransparentDataInd 
+* Struct used in CGPS_TAT_TRANSPARENT_DATA_IND  message \n
+* \see CGPS_TAT_TRANSPARENT_DATA_IND
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatTransparentDataInd)
+   MC_PCC_FIELD( uint16_t, v_Lenght ) /* data lenght*/
+   MC_PCC_FILL_STRUCT2                        /*!< Padding to align on 32 */
+   MC_PCC_FIELD( uint8_t *, v_Data ) /* data */
+   MC_PCC_END_STRUC(t_CGPS_TatTransparentDataInd)
+
+
+/* + LMSQC06481 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \var CGPS_TAT_GET_CN_VALUE_REQ
+* This message is sent by TAT to request a Carrier/Noise ratio from the GPS chip\n
+* \see  CGPS_TAT_GET_CN_VALUE_CNF and CGPS_TAT_GET_CN_VALUE_ERR
+
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_GET_CN_VALUE_REQ,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_CN_VALUE_REQ))
+/**
+*\struct t_CGPS_TatGetCnValueReq 
+* Struct used in CGPS_TAT_GET_CN_VALUE_REQ  message \n
+* \see CGPS_TAT_GET_CN_VALUE_REQ
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetCnValueReq)
+   MC_PCC_FIELD( t_CGPS_TATCnoLimits, v_Limits )
+   MC_PCC_END_STRUC(t_CGPS_TatGetCnValueReq)
+
+/**
+* \var CGPS_TAT_GET_CN_VALUE_CNF
+* This message is sent by CGPS to return the CNO value to the TAT\n
+* \see  CGPS_TAT_GET_CN_VALUE_REQ and CGPS_TAT_GET_CN_VALUE_ERR
+
+*/
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_MIS, CGPS_TAT_GET_CN_VALUE_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_CGPS,CGPS_FF_TAT_GET_CN_VALUE_CNF))
+/**
+*\struct t_CGPS_TatGetCnValueCnf 
+* Struct used in CGPS_TAT_GET_CN_VALUE_CNF  message \n
+* \see CGPS_TAT_GET_CN_VALUE_CNF
+*/
+   MC_PCC_BEGIN_STRUC(t_CGPS_TatGetCnValueCnf)
+   MC_PCC_FIELD( uint16_t, v_CnValue ) /* value received from the chipset*/
+   MC_PCC_FIELD( bool, b_checkLimit ) /* TRUE if the CNO is correct regarding the limits */
+   MC_PCC_FILL_STRUCT1
+   MC_PCC_END_STRUC(t_CGPS_TatGetCnValueCnf)
+
+#endif /* CGPS_CNO_VALUE_FTR */
+/* - LMSQC06481 : Production test */
+   
+/**
+*\}
+*/
+   
+#endif /* __CGPS_HET__ */

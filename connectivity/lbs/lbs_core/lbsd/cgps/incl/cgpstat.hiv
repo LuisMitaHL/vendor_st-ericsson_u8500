@@ -1,0 +1,76 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSTAT_HIV__
+#define __CGPSTAT_HIV__
+/**
+* \file cgpstat.hiv
+* \date 23/06/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain variable internaly needed by CGPS for TAT management\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 23.06.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __CGPS6TAT_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS0MAIN_C__*/
+
+/**
+*\var gn_Tat_Status
+*
+* TAT link Status
+* \see  e_cgps_tat_state
+*/
+GLOBAL e_cgps_tat_state vg_Tat_Status;
+
+
+/**
+*\var gn_Tat_Status
+*
+* TAT State mode
+* \see  e_cgps_tat_state
+*/
+GLOBAL e_cgps_tat_mode vg_Tat_StateMode;
+
+
+/**
+*\var gn_Tat_previous_SUPL_State
+*
+* memorised the USPL state used by cgps in normal mode
+*/
+GLOBAL uint32_t gn_Tat_previous_SUPL_State;
+
+/**
+* see cgpsmain.hiv
+*/
+extern s_GN_GPS_Nav_Data vg_Nav_Data;
+
+/**
+*\var vg_TatTransparentMode
+* Activate or deactivate transparent mode
+*/
+GLOBAL uint32_t vg_TatTransparentMode
+#ifdef __CGPS6TAT_C__
+=0
+#endif
+;
+
+#undef GLOBAL
+#endif /*__CGPSTAT_HIV__*/

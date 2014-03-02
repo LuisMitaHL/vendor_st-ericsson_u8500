@@ -1,0 +1,26 @@
+#include <samplefreq.idt>
+#include <armnmf_buffer.idt>
+
+typedef struct {
+  t_sample_freq freq;
+  t_uint16 nof_channels;
+  t_uint16 nof_bits_per_sample;
+} t_source_config;
+
+typedef enum {
+  SOURCE_RESET_REASON_STOP,
+  SOURCE_RESET_REASON_EOS,
+  SOURCE_RESET_REASON_FLUSH,
+  SOURCE_RESET_REASON_COUNT // Last value
+} t_source_reset_reason;
+
+typedef struct {
+  OMX_BUFFERHEADERTYPE_p buf_hdr;
+} t_source_process_params;
+
+interface tonegen.nmfil.host.source {
+  t_bool open(const t_source_config* config);
+  void reset(t_source_reset_reason reason);
+  void process(t_source_process_params* params);
+  void close(void);
+}

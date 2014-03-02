@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# Init file for cspsa daemon
+
+### BEGIN INIT INFO
+# Provides: cspsa-server
+# Required-Start: $local_fs
+# Required-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop cspsa
+# Description: The CSPSA (Crash Safe Parameter Storage Area) module provides
+#              access to the CSPSA at the end of the flash/eMMC used for
+#              storing parameters.
+### END INIT INFO
+
+progname=cspsa-server
+execname=/usr/sbin/$progname
+lockfile=/var/lock/subsys/cspsa
+
+# Sanity check
+[ -x $execname ] || exit 5
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+start() {
+
+        echo -n "Starting $progname: "
+        daemon $execname
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && touch $lockfile
+        echo
+        return $RETVAL
+}
+
+stop() {
+        echo -n "Stopping $progname: "
+        killproc $progname
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && rm -f $lockfile
+        return $RETVAL
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  reload)
+  ;;
+  restart|force-reload)
+        stop
+        start
+        ;;
+  status)
+        status $progname
+        RETVAL=$?
+        ;;
+  try-restart)
+        if [ -f $lockfile ]; then
+            stop
+            start
+        fi
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|try-restart|reload|force-reload|status}"
+        RETVAL=$?
+esac
+
+exit $RETVAL

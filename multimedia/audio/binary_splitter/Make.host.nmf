@@ -1,0 +1,15 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+#include make.ost_conf
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE -DUNIX
+CXXFLAGS+=-g
+
+ITFS_HEADER+= binary_splitter.nmfil.host.wrapper.configure
+
+COMPONENTS= binary_splitter.nmfil.host.composite.pp_splitter
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

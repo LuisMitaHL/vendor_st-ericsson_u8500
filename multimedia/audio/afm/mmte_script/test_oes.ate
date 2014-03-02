@@ -1,0 +1,110 @@
+###################################################################
+## This test send datas to a component until EOS,                ##
+##     restart sending datas until new EOS                       ##
+##     send new configuration to component                       ##
+##     start sending datas again until EOS                       ##
+## A hash-exactness check is done at each EOS                    ##
+##                                                               ##
+## !!!    To be usefull, parameters sent to the component    !!! ##
+## !!!                       MUST NOT                        !!! ##
+## !!!                    be default ones                    !!! ##
+##                                                               ##
+##                                                               ##
+## Parameters :                                                  ##
+##     1: component handle                                       ##
+##         This component must have been correctly configured    ##
+##     2: input file name                                        ##
+##     3: input file size (0=whole file)                         ##
+##     4: output file name                                       ##
+##     5: output file size                                       ##
+##     6: configuration script                                   ##
+##         (to be executed after second EOS)                     ##
+##         Called using one parameter: component handle          ##
+##         Use $(NOMADIK)/afm/mmte_script/none.ate if unused     ##
+##     7: reference for the two first bit exactness check        ##
+##     8: reference for last bit exactness check                 ##
+###################################################################
+
+alias TEOS_CUT         $1
+alias TEOS_INPUT_NAME  $2
+alias TEOS_INPUT_SIZE  $3
+alias TEOS_OUTPUT_NAME $4
+alias TEOS_OUTPUT_SIZE $5
+alias TEOS_CONFIG_FILE $6
+alias TEOS_HASH1       $7
+alias TEOS_HASH2       $8
+alias TIMEOUT          0
+
+#Swith component to Idle
+OMX_SendCommand TEOS_CUT OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers TEOS_CUT 0
+MMTE_AllocateAndUseBuffers TEOS_CUT 1
+MMTE_WaitEvent TEOS_CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_attach_io TEOS_CUT 0 MEM TEOS_INPUT_NAME TEOS_INPUT_SIZE 0 0
+MMTE_attach_io TEOS_CUT 1 MEM $(OUTPUT_DIR)/first_$(TEOS_OUTPUT_NAME) TEOS_OUTPUT_SIZE 0 0
+
+#Start decoding
+OMX_SendCommand TEOS_CUT OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  TEOS_CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait for first EOS
+MMTE_WaitEvent TEOS_CUT OMX_EventBufferFlag 1 TIMEOUT
+
+# Wait for last buffers
+mmte_sleep 1000
+
+#Start again
+MMTE_detach_io TEOS_CUT 1
+MMTE_attach_io TEOS_CUT 1 MEM $(OUTPUT_DIR)/second_$(TEOS_OUTPUT_NAME) TEOS_OUTPUT_SIZE 0 0
+MMTE_attach_io TEOS_CUT 0 MEM TEOS_INPUT_NAME TEOS_INPUT_SIZE 0 0
+
+#Wait for second EOS
+MMTE_WaitEvent TEOS_CUT OMX_EventBufferFlag 1 TIMEOUT
+
+mmte_sleep 1000
+
+MMTE_detach_io TEOS_CUT 1
+MMTE_attach_io TEOS_CUT 1 MEM $(OUTPUT_DIR)/third_$(TEOS_OUTPUT_NAME) TEOS_OUTPUT_SIZE 0 0
+
+#Send new configuration
+do $(TEOS_CONFIG_FILE) TEOS_CUT
+
+#Start again
+MMTE_attach_io TEOS_CUT 0 MEM TEOS_INPUT_NAME TEOS_INPUT_SIZE 0 0
+
+#Wait for last EOS
+MMTE_WaitEvent TEOS_CUT OMX_EventBufferFlag 1 TIMEOUT
+
+#Stop component
+OMX_SendCommand TEOS_CUT OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  TEOS_CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand TEOS_CUT OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers TEOS_CUT 0
+MMTE_FreeBuffers TEOS_CUT 1
+
+MMTE_WaitEvent TEOS_CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+#hash_comp $(OUTPUT_DIR)/first_$(TEOS_OUTPUT_NAME) TEOS_HASH1
+file_comp $(OUTPUT_DIR)/first_$(TEOS_OUTPUT_NAME) TEOS_HASH1
+
+#hash_comp $(OUTPUT_DIR)/second_$(TEOS_OUTPUT_NAME) TEOS_HASH1
+file_comp $(OUTPUT_DIR)/second_$(TEOS_OUTPUT_NAME) TEOS_HASH1
+
+#hash_comp $(OUTPUT_DIR)/third_$(TEOS_OUTPUT_NAME) TEOS_HASH2
+file_comp $(OUTPUT_DIR)/third_$(TEOS_OUTPUT_NAME) TEOS_HASH2
+
+ens_network_destroy
+
+#MMTE_CheckMemoryStatus
+
+unalias TEOS_CUT
+unalias TEOS_INPUT_NAME
+unalias TEOS_INPUT_SIZE
+unalias TEOS_OUTPUT_NAME
+unalias TEOS_OUTPUT_SIZE
+unalias TEOS_CONFIG_FILE
+unalias TEOS_HASH1
+unalias TEOS_HASH2
+unalias TIMEOUT

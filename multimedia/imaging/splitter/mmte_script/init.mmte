@@ -1,0 +1,36 @@
+alias S_GENERATE_REPORT OMX_FALSE
+alias S_REPORT_PATH $(SHARED_PATH)/mmte/mmte_script/out
+
+alias S_SOURCE_LOOP_ON_INPUT_FILE OMX_TRUE
+
+# setting for frame rate (coded in Q16), 0 means "as quick as possible"
+alias S_FRAME_RATE 0x50000
+
+alias S_WIDTH_IN_0  320
+alias S_HEIGHT_IN_0 240
+alias S_COLOR_FORMAT_IN_0  OMX_COLOR_Format16bitRGB565
+#alias S_COLOR_FORMAT_IN_0  OMX_COLOR_FormatCbYCrY
+#alias S_COLOR_FORMAT_IN_0  OMX_COLOR_FormatYUV420Planar
+alias S_WIDTH_OUT_0  S_WIDTH_IN_0
+alias S_HEIGHT_OUT_0 S_HEIGHT_IN_0
+alias S_COLOR_FORMAT_OUT_0  S_COLOR_FORMAT_IN_0
+
+alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/saved_image__320_x_240__r_g_b_rgb565.gam
+#alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/saved_image__320_x_240__r_g_b_cbycry.gam
+#alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/saved_image__320_x_240__r_g_b_yuv420mb.gam
+
+alias FILE_NAME_OUTPUT	$(S_CURRENT_PATH)/output/output_tmp.dat
+
+alias S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY OMX_TRUE
+alias S_FAKE_SINK_SAVE_OUTPUT OMX_FALSE
+
+alias S_DISPLAY_WIDTH  640
+alias S_DISPLAY_HEIGHT 480
+
+if IMG_SPLITTER_CHANGE_PORT_NUMBER == yes
+	alias IMG_SPLITTER_NB_PORT_OUTPUT 4
+else
+	alias IMG_SPLITTER_NB_PORT_OUTPUT 2
+endif
+
+

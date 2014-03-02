@@ -1,0 +1,66 @@
+/** 
+ * \file vs_interface.doxy
+ * \brief Main documentation page
+ *
+ * \mainpage
+ * \section intro_sec Introduction
+ *
+ * Virtual Surround is multichannel to binaural converter with the purpose to position and enhance
+ * the multichannel audio in such a way that the user listening (through headphones) experiences an
+ * externalization and a spatial localization similar to listening to a 5.1 surround system.
+ *
+ * There are three different rendering modes of the virtual surround algorithm; each having a specific
+ * benefit over the others in terms of complexity or externalization and virtualization.
+ *
+ * The room simulation is an extra feature that adds an extra spatial sensation to the virtualized 
+ * audio while at the same time creating an audio scene where the listener can be part of a movie 
+ * audience, a crowd at a concert or at home in the living room. 
+ *
+ * The Virtual Surround Proxy realizes the OMXIL component interface and manages the Virtual Surround
+ * Processing Component that realizes the processing part by means of NMF. The PcmProc Wrapper is 
+ * common to all PCM Processors. It is associated with the actual algorithm, in this case the Virtual
+ * Surround PcmProc Algo component that implements the Virtual Surround algorithm. The processing 
+ * component is responsible for establishing this association. The figure shows the internal design
+ * in the ENS/NMF framework.
+ *
+ * This documentation aims to describe the interface to be implemented by one library in order to
+ * be used as processing library inside the ST-Ericsson OMX Virtual Surround component.
+ *
+ * \image html ste_vs.jpg
+ *
+ * \section tech_sec  Technical Solution
+ *
+ * The virtual surround consists of three main blocks, as displayed in the figure.
+ *
+ *   - <em>Virtualization Processing</em> is the selection of how the Virtual Surround component should
+ *         process the multichannel audio to produce either a stereo audio signal or a binaural audio signal.
+ *         The choice of rendering mode will affect the user experience and the computational load.
+ *
+ *   - <em>Room Simulation</em> is an extra feature that adds an extra spatial sensation to the virtualized.
+ *         audio while at the same time creating an audio scene where the listener can be part of a movie 
+ *         audience, a crowd at a concert or at home in the living room. Therefore it controls the optional
+ *         reverberation processing to simulate the room where audio is virtualized.
+ *
+ *   - <em>Multichannel mixer</em> will apply gain and mix the virtualized audio signals from the 
+ *         Virtualization Processing block. It also handles the down-mix without virtualization when
+ *         the Rendering Mode is such that Virtualization Processing block is inactive.\n\n
+ *
+ * \image html vs_algo.jpg
+ *
+ * \section cases_sec Use Case
+ *
+ *   - Virtual Surround
+ *   - Standar Downmix  (without left and right surround mixing)
+ *   - Surround Downmix (with left and right surround mixing)
+ *
+ * \section req_sec	Implementation Features
+ *
+ *   - 16-bit PCM audio streams
+ *   - Interleaved or non-interleaved signal processing
+ *   - Supported sample rate is 48 kHz
+ *   - 5.1 and 7.1 configurations are supported by the algorithm.
+ *   - Stereo output.
+ *   - Gains in the range of at least -78 to 12 dB.
+ *   - All parameters are changeable in runtime except system parameters (sample rate and frame size).
+ *
+ */ 

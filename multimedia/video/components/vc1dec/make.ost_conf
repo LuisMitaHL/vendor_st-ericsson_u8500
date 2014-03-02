@@ -1,0 +1,34 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+#
+
+MODULE_NAME = vc1dec
+OST_COMPILER = 1
+OST_COMPONENT_NAME = VC1DEC
+OST_COMPONENT_INC = $(COMPONENT_TOP_DIR)/inc
+#OST_DICO_NAME = $(OST_COMPONENT_NAME)
+MY_OST_COMPILER_OPTION = "--tgdf=$(COMPONENT_TOP_DIR)/test/ost/fixed_id.txt"
+#TRACECOMPILERDIR = $(MMROOT)/shared/osttools/osttc
+
+# from multimedia\video\uid\inc\st_video_uid.hrh
+# Module ID: #define KStUidVideoVc1Dec      KStUidVideoDefine027
+# Dicos  ID: #define KStUidVideoSpare048     KStUidVideoDefine048
+# Dicos  ID: #define KStUidVideoSpare049     KStUidVideoDefine049
+# Dicos  ID: #define KStUidVideoSpare050     KStUidVideoDefine050
+# Dicos  ID: #define KStUidVideoSpare054     KStUidVideoDefine054
+# from src\soc\core\hal\nomadikuid.hrh
+# Module ID: #define KStUidVideoDefine027  0x20024D8E = 537021838 
+# Dicos  ID: #define KStUidVideoDefine048  0x20024DA3 = 537021859
+# Dicos  ID: #define KStUidVideoDefine049  0x20024DA4 = 537021860
+# Dicos  ID: #define KStUidVideoDefine050  0x20024DA5 = 537021861
+# Dicos  ID: #define KStUidVideoDefine054  0x20038088 = 537100424
+
+OST_MODULE_ID = 537021838
+
+OST_COMPONENT_ID_HOST    	= 537021859 
+OST_COMPONENT_ID_NMF_ARM 	= 537021860 
+OST_COMPONENT_ID_NMF_DSP_DDEP 	= 537021861
+OST_COMPONENT_ID_NMF_DSP_ALGO   = 537100424
+
+OST_TOP_DICO_LIST = $(OST_COMPONENT_NAME)::$(OST_MODULE_ID)  
+

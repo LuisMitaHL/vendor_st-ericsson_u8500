@@ -1,0 +1,31 @@
+ifneq ($(MMPROCESSOR),x86)
+  ifeq ($(findstring rvct,$(MMCOMPILER)),rvct)  # current care for mop-linux and mop-android compilations
+#Compiling for ARM with rvct
+CFLAGS += -O3
+ifeq ($(MMPROCESSOR),cortexA9)
+#Specific flags for NEON
+CPPFLAGS+= -DTHUMB_OPT -DARM_DATA_PRELOAD 
+ifneq ($(NMF_ENV),linux)
+#CPPFLAGS+= -UNEON 
+CFLAGS+= -Otime
+endif
+CFLAGS+=--asm --min_array_alignment=8
+#--thumb // commented by mansor for gingerbread 7 Jan 11
+#Must suppress some wrong warnings
+#FIXED_CFLAGS+=--diag_suppress=2523 --diag_suppress=C3017
+else
+#For ARM9 and ARM11 (ndk15/20)
+CPPFLAGS+=-DRVDS_2_2
+endif
+else
+ifeq ($(findstring mmdsp,$(MMPROCESSOR)),mmdsp)
+#mmdsp
+CPPFLAGS+=-DMMDSP
+else
+#gcc
+CFLAGS+=-O3
+endif
+endif
+endif
+
+

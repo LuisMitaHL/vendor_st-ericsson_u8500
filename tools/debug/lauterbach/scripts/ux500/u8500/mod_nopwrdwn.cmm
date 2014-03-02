@@ -1,0 +1,28 @@
+; set/reset the MOD_DBGNOPWRDWN. Registered by the PRCMU within the CSYSPWRUPREQ/ACK sequence.
+; contact: jingyi-xiaoyan.lu@st.com
+
+entry &requested_val
+
+if "&requested_val"==""||("&requested_val"!="0"&&"&requested_val"!="1")
+(
+	print "Need parameter 0 or 1."
+	enddo
+)
+
+&PRCM_DBG_PWRCTL_addr=0x801574AC
+&MODNOPWRDN_bitpos=2
+if &requested_val==1
+	data.set eahb:&PRCM_DBG_PWRCTL_addr %long d.l(eahb:&PRCM_DBG_PWRCTL_addr)|1<<&MODNOPWRDN_bitpos
+else
+	data.set eahb:&PRCM_DBG_PWRCTL_addr %long d.l(eahb:&PRCM_DBG_PWRCTL_addr)&~(1<<&MODNOPWRDN_bitpos)
+
+//data.set eahb:0xB7D80260 %LE %LONG 187
+	
+sys.down
+sys.m.attach
+// read back
+if d.l(eahb:&PRCM_DBG_PWRCTL_addr)>>&MODNOPWRDN_bitpos!=&requested_val
+	print "Mod_NoPwrDwn.cmm FAILED!"
+else
+	print "Mod_NoPwrDwn DONE."
+enddo

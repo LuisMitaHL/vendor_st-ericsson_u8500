@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPS_TESTMODE_HEM__
+#define __CGPS_TESTMODE_HEM__
+
+/*
+* Copyright (C) ST-Ericsson 2009
+*
+* cgpsTestMode.he
+* Date: 07-09-2009
+* Author: Balaji Natakala
+* Email : balaji.natakala@stericsson.com
+*/
+
+#ifdef AGPS_TEST_MODE_FTR
+
+/* + RRR */
+#ifdef ATT_LOGGING_ENABLE
+/**
+* \def MC_CGPS_PSTENMEA_CB_REGISTER
+* registers PSTE callback for the user
+* \see CGPS9_02PsteCallbackRegistrationReq
+*/
+#define MC_CGPS_PSTENMEA_CB_REGISTER    CGPS9_02PsteCallbackRegistrationReq
+#endif  /*ATT_LOGGING_ENABLE*/
+/* - RRR */
+
+
+/* + LMSQC06481 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \def MC_CGPS_GET_CNO_VALUE
+* Request C/No value from the chip
+* \see CGPS9_03GetCnoValue
+*/
+#define MC_CGPS_GET_CNO_VALUE         CGPS9_03GetCnoValue  
+
+/**
+* \def MC_CGPS_PRODUCTION_TEST_CB_REGISTER
+* registers Production test callback for the application
+* \see CGPS9_06RegisterProductionTestCB
+*/
+#define MC_CGPS_PRODUCTION_TEST_CB_REGISTER    CGPS9_06RegisterProductionTestCB
+
+#endif /* CGPS_CNO_VALUE_FTR */
+/* - LMSQC06481 : Production test */
+
+#endif /*AGPS_TEST_MODE_FTR*/
+
+#endif /*__CGPS_TESTMODE_HEM__*/
+

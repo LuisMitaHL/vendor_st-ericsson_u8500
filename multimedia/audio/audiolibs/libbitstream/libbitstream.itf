@@ -1,0 +1,68 @@
+#include <audiolibs/common/include/bitstream_lib_proto.h>
+
+interface audiolibs.libbitstream.libbitstream unmanaged {
+    void bs_init(BS_STRUCT_T *bs_struct, 
+		unsigned int *buf_add, 
+		unsigned int buf_size, 
+		unsigned int word_size);
+    void bs_init_buffer(BS_STRUCT_T *bs_struct, 
+		unsigned int *buf_add, 
+		unsigned int buf_size, 
+		unsigned int word_size);
+    void bs_init_buffer_16(BS_STRUCT_T *bs_struct, 
+		unsigned int *buf_add, 
+		unsigned int buf_size, 
+		unsigned int word_size);
+    void bs_reset(BS_STRUCT_T *bs_struct);
+    unsigned int bs_read_bit_24b(BS_STRUCT_T *bs_struct, int nbit);
+    unsigned int bs_read_bit_32b(BS_STRUCT_T *bs_struct, int nbit);
+    unsigned int bs_read_byte_24b(BS_STRUCT_T *bs_struct);
+    unsigned int bs_read_byte_32b(BS_STRUCT_T *bs_struct);
+    unsigned int bs_read_byte_16(BS_STRUCT_T *bs_struct);
+    void bs_fast_move_bit_24b(BS_STRUCT_T *bs_struct, int nbit);
+    void bs_fast_move_bit_32b(BS_STRUCT_T *bs_struct, int nbit);
+    void bs_copy_bit_24b(BS_STRUCT_T *bs_struct1,
+		BS_STRUCT_T *bs_struct2,
+		int nbit);
+    void bs_copy_bit_32b(BS_STRUCT_T *bs_struct1,
+		BS_STRUCT_T *bs_struct2,
+		int nbit);
+    void bs_copy_byte_24b(BS_STRUCT_T *bs_struct1,
+		BS_STRUCT_T *bs_struct2,
+		int nbyte);
+    void bs_copy_byte_32b(BS_STRUCT_T *bs_struct1,
+		BS_STRUCT_T *bs_struct2,
+		int nbyte);
+    int bs_delta_bit(BS_STRUCT_T *bs_struct1, 
+		BS_STRUCT_T *bs_struct2);
+    int bs_delta_bit_16(
+	    BS_STRUCT_T *bs_struct1,
+	    BS_STRUCT_T *bs_struct2);
+    unsigned int bs_write_array_24b(BS_STRUCT_T *bs_struct, 
+		unsigned int *buffer, 
+		unsigned int *bitfield_length, 
+		unsigned int len,
+		unsigned int offset);
+    void bs_write_less_than_16_bit_24b(BS_STRUCT_T *bs_struct,unsigned int value, int nbit);
+    void bs_write_less_than_16_bit_32b(BS_STRUCT_T *bs_struct,unsigned int value, int nbit);
+    void bs_write_bit_24b(BS_STRUCT_T *bs_struct,unsigned int value, int nbit);
+    void bs_write_bit_32b(BS_STRUCT_T *bs_struct,unsigned int value, int nbit);
+    void bs_write_byte_24b(BS_STRUCT_T *bs_struct,unsigned int byte);
+    void bs_write_byte_32b(BS_STRUCT_T *bs_struct,unsigned int byte);
+    void bs_write_byte_16(BS_STRUCT_T *bs_struct,unsigned int val);
+    unsigned int *bs_get_buf_add (BS_STRUCT_T *bs_struct);
+    unsigned int bs_lookup_word_size_bit_24b(BS_STRUCT_T *bs_struct);
+    unsigned int bs_lookup_word_size_bit_32b(BS_STRUCT_T *bs_struct);
+    void bs_byte_align_24b(BS_STRUCT_T * bs_struct1, BS_STRUCT_T * bs_struct2);
+	void bs_write_bit_8b(BS_STRUCT_T *bs_struct, unsigned int value, int nbit);
+	unsigned int bs_read_bit_8b(BS_STRUCT_T *bs_struct, int nbit);	
+	void bs_reset_8b(BS_STRUCT_T *bs_struct);
+	void bs_init_buffer_8b(BS_STRUCT_T *bs_struct, unsigned int *buf_add, unsigned int buf_size, unsigned int word_size);
+	void bs_init_8b(BS_STRUCT_T *bs_struct, unsigned int *buf_add, unsigned int buf_size, unsigned int word_size);
+	void bs_write_byte_8b(BS_STRUCT_T *bs_struct, unsigned int byte);
+	unsigned int bs_read_byte_8b(BS_STRUCT_T *bs_struct);
+	void bs_fast_move_bit_8b(BS_STRUCT_T *bs_struct, int nbit);
+	int bs_delta_bit_8b(BS_STRUCT_T *bs_struct1, BS_STRUCT_T *bs_struct2);
+	void bs_copy_bit_8b(BS_STRUCT_T * bs_struct1,BS_STRUCT_T * bs_struct2,int nbit);
+}
+

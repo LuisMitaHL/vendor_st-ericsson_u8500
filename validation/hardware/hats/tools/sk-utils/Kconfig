@@ -1,0 +1,34 @@
+#
+# Sk-utils configuration
+#
+
+menuconfig SK-UTILS
+	bool "Sk-utils Configuration"
+	help
+	  This file provides utilities used by 'sk' shell script
+
+if SK-UTILS
+
+config SK-UTILS_DIR
+	string
+	default ./tools/sk-utils
+
+config SK-UTILS_DEPS
+	string
+	default ""
+
+config SK-UTILS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on SK-UTILS
+	default n
+	help
+	  This will disable strip for this module
+
+config SK-UTILS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on SK-UTILS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # SK-UTILS

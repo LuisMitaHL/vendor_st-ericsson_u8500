@@ -1,0 +1,37 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    vfm_dsp_common.h	
+* \brief   Internal common data definitions shared by multi-processors (HOST and MCP)
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+#ifndef _VFM_DSP_COMMON_H_
+#define _VFM_DSP_COMMON_H_
+
+#include "t1xhv_common.idt"
+
+typedef struct
+{
+	ts_t1xhv_vec_frame_buf_in		s_in_frame_buffer;
+	ts_t1xhv_vec_frame_buf_out      s_out_fram_buffer;
+	ts_t1xhv_vec_internal_buf       s_internal_buffer;
+    ts_t1xhv_vec_header_buf 		s_header_buf;
+	ts_t1xhv_bitstream_buf_pos      s_in_out_bitstream_buffer; 
+	ts_t1xhv_bitstream_buf_pos      s_out_bitstream_buffer;
+	ts_t1xhv_vdc_vc1_param_in     	s_in_parameters;       
+	ts_t1xhv_vdc_vc1_param_out    	s_out_parameters;      
+	ts_t1xhv_vdc_vc1_param_inout  	s_in_out_frame_parameters; 
+	ts_t1xhv_vdc_vc1_param_inout  	s_out_frame_parameters;
+} ts_ddep_sec_vdc_vc1_param_desc;
+
+typedef ts_ddep_sec_vdc_vc1_param_desc *tps_ddep_sec_vdc_vc1_param_desc;
+
+
+#endif // _VFM_COMMON_IDT_
+
+

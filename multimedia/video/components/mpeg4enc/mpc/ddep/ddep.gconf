@@ -1,0 +1,90 @@
+//
+//       Configuration file for mpeg4 encoder Data Dependancy     
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+
+// Connection to the Resource Manager 
+// two interfaces , one to alloc/free ressources
+// one to signal a state change in the ressources
+
+//primitive mpeg4enc.mpc.ddep
+//{
+primitive mpeg4enc.mpc.ddep extends fsm.component.component
+{
+
+property hardware=all
+
+//requires fsm.generic.generic        as genericfsm static 
+//requires fsm.component.component    as componentfsm static 
+requires resource_manager.api.resource  as iResource
+provides resource_manager.api.inform_resource_status	as iInformResourceStatus referenced
+
+// to send printf Messages
+//--requires debug.mpc.api.printf							as oPrintf optional
+
+
+// Connection to the Mpeg4 encoder algo part
+
+// Control of the encoder (parameter / conf / buffer adress )
+
+// coming from the host
+provides mpeg4enc.mpc.api.ddep                         as ddep   
+
+
+
+// transmit directly to the jpeg encoder
+requires mpeg4enc.mpc.api.algo                         as codec_algo
+requires mpeg4enc.mpc.api.update_algo                         as codec_update_algo
+
+// Feed back from  the Mpeg4 encoder
+
+//coming from the mpeg4enc
+provides mpeg4enc.mpc.api.end_algo                     as iEndAlgo referenced
+
+requires mpeg4enc.mpc.api.brc                         as iBrc
+
+//--requires rtos.api.panic									as panic static
+
+// Specific to the state machine implementation ...
+//requires    fsm.component.postevent           as      me
+//provides    fsm.component.postevent           as      postevent
+
+provides    lifecycle.starter         as      starter
+
+//provides    sendcommand             as      sendcommand
+//requires    eventhandler            as      proxy
+
+
+// input port
+provides  emptythisbuffer   as      emptythisbuffer
+requires  fillthisbuffer    as      inputport
+
+// output port
+requires emptythisbuffer    as      outputport
+provides fillthisbuffer     as      fillthisbuffer
+
+requires mpeg4enc.mpc.api.log_event as iSendLogEvent
+provides mpeg4enc.mpc.api.log_event as iGetLogEvent
+
+
+// Added for power management 
+requires resource_manager.api.sleep as iSleep
+requires ee.api.sleep as _sleep static
+
+// OST capability
+requires osttrace.api.osttrace	as osttrace static
+
+
+option memories EMB24RAM|EMB16RAM|EXT16ROM|EXT24RAM|EXT16RAM
+
+option incdir   "./inc"
+option CFLAGS "-O3 -D__T1XHV_NMF_ENV=1 -DMMDSP=1"
+//-D__DEBUG_TRACE_ENABLE
+
+option stack= 1024
+
+}
+

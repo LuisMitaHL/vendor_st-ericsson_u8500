@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+/*F(*************************************************************************** 
+* File name  : lsimccm.het
+* Module     : LSIMCCM
+*----------------------------------------------------------------------------* 
+*----------------------------------------------------------------------------* 
+*                             DESCRIPTION
+*  This file contains the internal structures used by the module.
+*
+* 
+*----------------------------------------------------------------------------* 
+***************************************************************************)F*/
+/* == HISTORY ===============================================================*/
+/*  Name     |    Date       |     Action                                    */
+/*---------------------------------------------------------------------------*/ 
+/*  Balaji   | 08-MAR-2010   | Creation                                      */
+/*---------------------------------------------------------------------------*/
+
+/**
+\file LSIMCC.het
+*/
+
+#ifndef LSIMCCM_HET
+#define LSIMCCM_HET
+
+#define LSIMCCM_FF_CLOCK_CAL_IND MC_PCC_FUNCTION_TYPE(LSIMCCM_F_CLOCK_CAL_IND,PCC_T_IND)
+
+MC_PCC_HEADER(PROCESS_LSIMCCM, PROCESS_CGPS, LSIMCCM_CLOCK_CAL_IND,
+              MC_RTK_PROCESS_OPERATION(PROCESS_LSIMCCM, LSIMCCM_FF_CLOCK_CAL_IND))
+MC_PCC_BEGIN_STRUC(t_lsimccm_ClockCalIndM)
+MC_PCC_FIELD( uint8_t,   v_Status)
+MC_PCC_FIELD( uint8_t,   v_FreqLockStatus)
+MC_PCC_FILL_STRUCT2
+MC_PCC_FIELD( uint32_t,  v_ErrorEstimateRMS)
+MC_PCC_FIELD( uint32_t,  v_Frequency)
+MC_PCC_END_STRUC(t_lsimccm_ClockCalIndM)
+
+
+
+#define LSIMCCM_FF_CLOCK_CAL_REQ MC_PCC_FUNCTION_TYPE(LSIMCCM_F_CLOCK_CAL_REQ,PCC_T_REQ)
+
+MC_PCC_HEADER(PROCESS_CGPS, PROCESS_LSIMCCM, LSIMCCM_CLOCK_CAL_REQ,
+              MC_RTK_PROCESS_OPERATION(PROCESS_LSIMCCM, LSIMCCM_FF_CLOCK_CAL_REQ))
+MC_PCC_BEGIN_STRUC(t_lsimccm_ClockCalReqM)
+MC_PCC_FIELD( uint8_t,   v_Command)
+MC_PCC_FILL_STRUCT3
+MC_PCC_FIELD(uint32_t,   v_Frequency)
+MC_PCC_FIELD(uint32_t,   v_Threshold)
+MC_PCC_END_STRUC(t_lsimccm_ClockCalReqM)
+
+
+#endif /* LSIMCCM_HET */
+

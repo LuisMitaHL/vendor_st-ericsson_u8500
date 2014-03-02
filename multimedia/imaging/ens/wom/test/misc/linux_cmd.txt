@@ -1,0 +1,72 @@
+build ramdisk and run:
+lmm -r BUILD_IMAGING=true BUILD_VALID_DATA=true FORCE_EXPORT_OF_SOURCES=1 DEBUG=1 
+../../../../../vendor/st-ericsson/svp_remote_tools/bin/launch_svp.sh
+or 
+lmm -r BUILD_IMAGING=true BUILD_VALID_DATA=true FORCE_EXPORT_OF_SOURCES=1 DEBUG=1 & ../../../../../vendor/st-ericsson/svp_remote_tools/bin/launch_svp.sh
+
+
+
+
+mmte_bellagio
+gdb mmte_bellagio
+do $(IMAGING_PATH)/img_valid_omx/omx_components/fakesink/mmte_script/ut_state_machine.mmte
+
+
+
+b myPushOutputMsg
+b WomReportCodeError
+b MyBreak
+b fakesinkFactoryMethod
+
+export  dbgt_processingthread_level=0xff
+export  dbgt_fakesink_level=0xFF
+
+ OMX_GetHandle sink OMX.ST.Fakesink
+ 
+ GLOBAL_IMGWRAPPER_VERSION
+ 
+ 
+ 
+ 
+Git cmd:
+ux600_img_wp_1.3
+ux600 (fetch) ssh://gnx10310.gnb.st.com:29418/multimedia/imaging/omx_sia 
+ux600 (push)  ssh://gerrit.lud.stericsson.com:29418/multimedia/imaging/omx_sia 
+
+git clone ssh://gerrit.lud.stericsson.com:29418/multimedia/imaging/ens -b iso/open/ux600_img_wp_1.3 ens
+git branch -l             -> liste les branches
+git checkout -b lr_imgens -> créé la branche et switch
+git branch lr_imgens      -> Créé la branche mais reste sur la current
+git fetch ux600           -> Resynchronize le local par rapport au server
+git remote add
+git remote -v             -> Liste les alias
+git rebase ux600/iso/open/ux600_img_wp_1.3
+
+get fetch --all
+git checkout -b ForMerge  ux600/iso/open/ux600_img_wp_1.3
+git merge --squash lr_imgens
+git push -u ux600 ForMerge:iso/open/ux600_img_wp_1.3
+WARNING: after this point you should remove the branch lr_imgens and recreate it from scratch
+
+
+ 
+repo cmd:
+ll  repo init -u ssh://$USER@gerrit.lud.stericsson.com:29418/manifests/ux600/hvsw.git -b refs/tags/SnW_HVSW_I_1.0.0
+  
+system cmd:
+ln -fs ../.manifests-multimedia/local_manifest.xml .repo/            
+
+lmm commands:
+lbp-all: base-all install-linux-headers mm-all lbp-ramdisk
+lbp-clean: base-clean clean-linux-headers mm-clean
+lbp-distclean: base-distclean mm-clean
+
+svn:
+svn switch --relocate file:///V:/baseport/svn_database/oldname   file:///home/regnier/baseport/svn_database/newname
+
+
+ 
+ 
+
+
+

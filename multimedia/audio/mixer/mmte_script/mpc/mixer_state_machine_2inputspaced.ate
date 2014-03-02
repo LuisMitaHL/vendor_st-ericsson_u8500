@@ -1,0 +1,171 @@
+test_start mix_0003
+
+# Test GetHandle-FreeHandle
+OMX_GetHandle   mixer OMX.ST.AFM.mixer
+OMX_FreeHandle  mixer
+
+# instantiate and configure mixer
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=2 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+#OMX_SetConfig   mixer ENS_IndexConfigTraceSetting nTraceEnable=65535
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/casta_8m.pcm 0 0 0
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=2 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+ate_attach_io       mixer 2 MEM $(AUDIO_STREAMS)/mixer/streams/BassISO_8m.pcm 0 0 0
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/mixer_pcm_output_8k_mono_mix003.out
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/mixer/streams/mixer_2inputs_8k_mono_mix003.ref.out
+
+
+
+# Basic OMX checks
+MMTE_CheckParameter mixer OMX_IndexParamAudioInit nPorts=9 nStartPortNumber=0
+MMTE_CheckParameter mixer OMX_IndexParamVideoInit nPorts=0
+MMTE_CheckParameter mixer OMX_IndexParamImageInit nPorts=0
+MMTE_CheckParameter mixer OMX_IndexParamOtherInit nPorts=0
+
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=0 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=1 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=2 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=3 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=4 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=5 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=6 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=7 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter mixer OMX_IndexParamAudioPortFormat nPortIndex=8 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+
+# test OMX state machine 
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_AllocateBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_FreeBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_AllocateBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Pause
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# Go to Pause
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 0
+MMTE_WaitEvent mixer OMX_EventBufferFlag 2 0
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 0
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_FreeBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/casta_8m.pcm 0 0 0
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=2 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+ate_attach_io       mixer 2 MEM $(AUDIO_STREAMS)/mixer/streams/BassISO_8m.pcm 0 0 0
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/mixer_pcm_output_8k_mono_mix003_2.out
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 2000000 0 0
+#alias REF_FILE      $(AUDIO_STREAMS)/mixer/streams/mixer_2inputs_8k_mono.ref.out
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_AllocateBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Pause
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 0
+MMTE_WaitEvent mixer OMX_EventBufferFlag 2 0
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 0
+
+# Go to Pause
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_FreeBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+
+MMTE_CheckMemoryStatus
+
+ens_network_destroy
+
+test_end

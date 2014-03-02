@@ -1,0 +1,132 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSSPI_HIV__
+#define __HALGPSSPI_HIV__
+/**
+* \file halgpsspi.hiv
+* \date 17/07/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all variables used by halgps6spi.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 17.07.08</TD><TD> M.COQUELIN </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#if defined __HALGPS6SPI_C__ || defined __HALGPS6SPILINUX_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__HALGPS6SPI_C__ || __HALGPS6SPILINUX_C__*/
+
+
+#ifdef __RTK_E__
+#ifdef __HALGPS6SPI_C__ 
+
+#if (defined(HALGPS_SPI_OPTIMIZATION))
+
+GLOBAL uint16_t vg_SavedGpioValue;
+#endif
+
+/**
+*\var vg_HALGPS_SPIInitData
+*\brief SPI driver initialisation
+* This varaible is used to parameters the SPI driver.
+* All SPI registers can be configured : Control, mask, address, Timer control, Timer count.
+*/
+const t_SPIInitData vg_HALGPS_SPIInitData = 
+{ /* SPI[0]  normal (DMA) mode -------------------------------------------------------------*/
+  /* Control reg.     */ 
+   (                                          0
+     | KID0_SetValue(SPI,con,uniDir,          SPI_UNIDIRECTIONAL )                               /* OK */
+     | KID0_SetValue(SPI,con,bHalt,           SPI_SBUSY_IGNORED_IN_MASTER_OPERATION )
+     | KID0_SetValue(SPI,con,bPol,            SPI_SBUSY_BPOL_ACTIVE_LOW )
+     | KID0_SetValue(SPI,con,shft,            SPI_NO_DATA_SHIFT )
+     | KID0_SetValue(SPI,con,msb,             SPI_MSB_FIRST )                                   /* OK */
+     | KID0_SetValue(SPI,con,ldIns,           SPI_LOAD_PULSE_NOT_INSERTED )
+     | KID0_SetValue(SPI,con,mode,            SPI_MODE_0 )                                      /* OK */
+     | KID0_SetValue(SPI,con,rxtx,            SPI_DATA_SHIFT_OUT_SPI_TX )
+     | KID0_SetValue(SPI,con,shiftOff,        SPI_ENABLE_SCLK_CLOCK_PULSES )
+     | KID0_SetValue(SPI,con,bitNum,          SPI_WORD_LENGTH_8BIT )
+     | KID0_SetValue(SPI,con,ms,              SPI_MASTER_MODE )                                 /* OK */
+     | KID0_SetValue(SPI,con,rate,            103 )                                              /* OK */
+   ),                                         /* sclk = pclk/(2*rate+2) = 156000/(2*103+2) = 750kbit/sec (103=0x67) */
+  /* mask reg.         */ 
+                                              0xFFFF,
+  /* address reg.         */ 
+                                              0,
+  /* Timer Control reg.        */ 
+   (                                          0
+     | KID0_SetValue(SPI,timerCtrl,tIrqEn,    SPI_TIMED_INTERRUPT_DISABLED )
+     | KID0_SetValue(SPI,timerCtrl,pIrqEn,    SPI_DATA_STATUS_INTERRUPT_DISABLED )
+     | KID0_SetValue(SPI,timerCtrl,mode,      SPI_DMA_TIMEOUT_MODE )
+   ),
+   /* Timed IRQ/DMA counter val */              
+                                              0// set to 50 ms
+};
+
+
+#endif
+
+/**
+* \var vg_WriteIndex
+* \brief Current write index in the write circular buffer
+*
+* vg_HALGPS_SpiReadTrameIndex is an index of vg_HALGPS_SpiTxBuffer table.
+* is the index of the current write.
+*/
+GLOBAL uint32_t vg_HALGPS_SpiWriteEndIndex;
+
+/**
+* \var vg_WriteLastFreeIndex
+* \brief last free buffer in the write circular buffer
+*
+* vg_WriteLastFreeIndex is an index of vg_HALGPS_SpiTxBuffer table.
+* is the index of the last free buffer.
+*/
+GLOBAL uint32_t vg_HALGPS_SpiWriteBeginIndex;
+
+
+#ifdef __HALGPS6SPI_C__ 
+/* declare buffers in NON CACHE memory area */
+/* see map.cmd file in psmaster module for section declaration */
+#ifdef __arm
+#pragma arm section zidata = "halgpsbuffers"
+#endif
+#endif
+
+/**
+* \var vg_HALGPS_SpiRxBuffer
+* \brief received circular data buffer
+*/
+GLOBAL uint8_t vg_HALGPS_SpiRxBuffer[sizeof(t_kidIORB)+HALGPS_RX_BUFFER_MAX_SIZE]; /* +64 --> sizeof(iorb) */
+
+/**
+* \var vg_HALGPS_SpiTxBuffer
+* \brief sent circular data buffer
+*
+*/
+GLOBAL uint8_t vg_HALGPS_SpiTxBuffer[HALGPS_TX_BUFFER_MAX_SIZE];
+
+#endif  /* __RTK_E__ */
+#if defined __HALGPS6SPI_C__ || defined __HALGPS6SPILINUX_C__
+#ifdef __arm
+#pragma arm section zidata
+#endif
+#endif
+
+#undef GLOBAL
+#endif // __HALGPSSPI_HIV__ || __HALGPS6SPILINUX_C__

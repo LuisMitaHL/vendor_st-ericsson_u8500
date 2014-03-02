@@ -1,0 +1,49 @@
+test_start playback Playback_vibra_Left_physical
+
+alias TIMEOUT 0
+
+OMX_GetHandle    vibral OMX.ST.HAPTICS_RENDERER.PCM.VIBL
+
+
+OMX_SetParameter vibral OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter vibral AFM_IndexParamDmaChannelType isPhysical=1
+
+OMX_GetParameter  vibral OMX_IndexParamAudioHapticsDriverProperties 
+
+
+
+ate_attach_io       vibral 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/vibra_stream.pcm 0 0 0
+
+
+
+OMX_SendCommand vibral OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers vibral 0
+MMTE_WaitEvent vibral OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+
+#Start Playback
+OMX_SendCommand vibral OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent vibral OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+#Wait EOS
+MMTE_WaitEvent vibral OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop Playback
+OMX_SendCommand vibral OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent vibral OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand vibral OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers vibral 0
+MMTE_WaitEvent vibral OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+check_test
+
+test_end

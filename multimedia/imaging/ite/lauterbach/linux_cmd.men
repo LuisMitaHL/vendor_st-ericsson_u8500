@@ -1,0 +1,112 @@
+add 
+menu 
+( 
+  popup "&Linux_prompt_cmd" 
+  ( 
+	popup "&SDCard Commandes"
+	(
+		menuitem "mount sdcard (blk1)"
+		(
+			do cmd "mount -t vfat /dev/block/mmcblk1p1 /sdcard "
+		)
+		menuitem "mount sdcard (blk2)" 
+		(
+			do cmd "mount -t vfat /dev/block/mmcblk2p1 /sdcard "
+		)
+		menuitem "umount sdcard" 
+		(
+			do cmd "umount /sdcard "
+		)
+	)
+	separator
+	menuitem "do app_debug mmte  " 
+	(
+		     do app_debug mmte 
+	)
+	separator
+	menuitem "task.y.load mmte " 
+	(
+		     task.y.load "mmte"
+	)
+	separator
+	menuitem "do segv " 
+	(
+		     do segv
+	)
+	separator
+	menuitem "d.l " 
+	(
+		     d.l
+	)
+	separator
+	menuitem "mmu.tablewalk " 
+	(
+		     mmu.tablewalk
+	)
+	separator
+	menuitem "Launch MMTE_BELLAGIO use scripts on board's filesystem" 
+	(
+		do cmd "mmte_bellagio -f /usr/share/mm-valid/imaging/ite_omx_use_cases/imaging_scripts/init.ite "
+	)
+	menuitem "Launch MMTE_BELLAGIO use scripts on SDCard" 
+	(
+		do cmd "mmte_bellagio -f /sdcard/ite_omx_use_cases/imaging_scripts/init_sdcard_use_scripts_on_card_linux.ite "
+	)
+	separator
+	menuitem "Launch MMTE use scripts on board's filesystem" 
+	(
+		do cmd "mmte -f /usr/share/mm-valid/imaging/ite_omx_use_cases/imaging_scripts/init.ite "
+	)
+	menuitem "Launch MMTE use scripts on SDCard" 
+	(
+		do cmd "mmte -f /sdcard/ite_omx_use_cases/imaging_scripts/init_sdcard_use_scripts_on_card_linux.ite "
+	)
+	separator
+	menuitem "Quit MMTE" 
+	(
+		do cmd "quit "
+	)
+	separator
+	menuitem "term.write term_out_omx.txt" 
+	(
+		term.write term_out_omx.txt
+	)
+	separator
+	menuitem "term.close" 
+	(
+		term.close
+	)
+ 	separator
+	separator
+	menuitem "rm -f /sdcard/ite_omx_use_cases/imaging_scripts/test_report/*.bmp" 
+	(
+		do cmd "rm -f /sdcard/ite_omx_use_cases/imaging_scripts/test_report/*.bmp "
+	)
+	separator
+	menuitem "rm -f /sdcard/ite_omx_use_cases/imaging_scripts/test_report/*.gam" 
+	(
+		do cmd "rm -f /sdcard/ite_omx_use_cases/imaging_scripts/test_report/*.gam "
+	)
+	separator
+	menuitem "rm -f /sdcard/ite_omx_use_cases/imaging_scripts/test_report/*.raw" 
+	(
+		do cmd "rm -f /sdcard/ite_omx_use_cases/imaging_scripts/test_report/*.raw "
+	)
+  	separator
+	separator
+	menuitem "rm -rf /sdcard/ite_omx_use_cases/imaging_scripts/test_report/lada/v2/*.out" 
+	(
+		do cmd "rm -rf /sdcard/ite_omx_use_cases/imaging_scripts/test_report/lada/v2/*.out "
+	)
+	separator
+	menuitem "rm -rf /sdcard/ite_omx_use_cases/imaging_scripts/test_report/558/v2/*.out" 
+	(
+		do cmd "rm -rf /sdcard/ite_omx_use_cases/imaging_scripts/test_report/558/v2/*.out "
+	)
+	separator
+	menuitem "rm -rf /sdcard/ite_omx_use_cases/imaging_scripts/test_report/kanna/v2/*.out" 
+	(
+		do cmd "rm -rf /sdcard/ite_omx_use_cases/imaging_scripts/test_report/kanna/v2/*.out "
+	)
+)
+)

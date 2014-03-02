@@ -1,0 +1,47 @@
+do /usr/share/mm-valid/imaging/init_iqt.ite
+
+do $(IMG_SCRIPT)/intern_usecases/set_vf_width.ite 320
+do $(IMG_SCRIPT)/intern_usecases/set_vf_height.ite 240
+do $(IMG_SCRIPT)/intern_usecases/set_vf_save_activation.ite 1
+do $(IMG_SCRIPT)/intern_usecases/set_vf_save_mode.ite 0
+do $(IMG_SCRIPT)/intern_usecases/set_vf_frame_count.ite 4
+do $(IMG_SCRIPT)/intern_usecases/set_vf_first_frame.ite 2
+do $(IMG_SCRIPT)/intern_usecases/set_vf_display_on_off.ite 1
+
+do $(IMG_SCRIPT)/intern_usecases/set_video_width.ite 640
+do $(IMG_SCRIPT)/intern_usecases/set_video_height.ite 480
+do $(IMG_SCRIPT)/intern_usecases/set_video_save_activation.ite 1
+do $(IMG_SCRIPT)/intern_usecases/set_video_save_mode.ite 0
+do $(IMG_SCRIPT)/intern_usecases/set_video_frame_count.ite 15
+do $(IMG_SCRIPT)/intern_usecases/set_video_first_frame.ite 1
+do $(IMG_SCRIPT)/intern_usecases/set_video_display_on_off.ite 1
+do $(IMG_SCRIPT)/intern_usecases/set_video_hr_encode.ite 0
+do $(IMG_SCRIPT)/intern_usecases/set_video_save_resolution.ite 2
+
+do $(IMG_SCRIPT)/intern_usecases/start_init_to_idle.ite
+do $(IMG_SCRIPT)/intern_usecases/start_running.ite
+
+
+mmte_sleep IMG_WAIT
+
+do $(IMG_SCRIPT)/intern_usecases/start_pause.ite
+
+mmte_sleep IMG_WAIT
+
+do $(IMG_SCRIPT)/intern_usecases/start_running.ite
+
+mmte_sleep IMG_WAIT
+
+do $(IMG_SCRIPT)/intern_usecases/start_record.ite
+
+mmte_sleep 1000
+
+do $(IMG_SCRIPT)/intern_usecases/stop_record.ite
+
+mmte_sleep IMG_WAIT
+
+do $(IMG_SCRIPT)/intern_usecases/start_executing_to_idle.ite
+
+do $(IMG_SCRIPT)/intern_usecases/start_idle_to_init.ite
+
+

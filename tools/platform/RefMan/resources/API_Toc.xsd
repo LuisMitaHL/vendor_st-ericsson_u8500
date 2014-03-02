@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.stericsson.com/refman/API_Toc.xsd" elementFormDefault="qualified" xmlns="http://www.stericsson.com/refman/API_Toc.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- The toc element-->
+  <xs:element name="toc">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="topic" minOccurs="0" maxOccurs="unbounded"/>
+<!--    <xs:element ref="stdtopic" minOccurs="0" maxOccurs="unbounded"/> -->
+      </xs:sequence>
+      <xs:attribute name="label" use="required" />
+      <xs:attribute name="href" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <!-- The topic element-->
+  <xs:element name="topic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="topic" minOccurs="1" maxOccurs="1">
+          <xs:complexType>
+            <xs:choice>
+              <xs:element name="topic" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="topic" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="label" use="required">
+                          <xs:simpleType>
+                            <xs:restriction base="xs:string">
+                              <xs:minLength value="1" />
+                            </xs:restriction>
+                          </xs:simpleType>
+                        </xs:attribute>
+                        <xs:attribute name="href" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="label" use="required">
+                    <xs:simpleType>
+                      <xs:restriction base="xs:string">
+                        <xs:minLength value="1" />
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:attribute>
+                  <xs:attribute name="href" use="optional" />
+                </xs:complexType>
+              </xs:element>
+
+              <xs:element ref="standardapi" minOccurs="0" maxOccurs="unbounded"/>
+
+            </xs:choice>
+            <xs:attribute name="label" use="required">
+              <xs:simpleType>
+                <xs:restriction base="xs:string">
+                  <xs:enumeration value="User space" />
+                  <xs:enumeration value="Kernel space" />
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:attribute>
+            <xs:attribute name="href" use="optional" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="label" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Access services" />
+            <xs:enumeration value="Multimedia" />
+            <xs:enumeration value="Connectivity" />
+            <xs:enumeration value="Base utilities" />
+            <xs:enumeration value="Storage" />
+            <xs:enumeration value="Processing" />
+            <xs:enumeration value="Linux standard functions" />
+            <xs:enumeration value="Android extensions" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="href" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The standardapi element-->
+  <xs:element name="standardapi">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="includedirectory" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="includefile" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="externalScript" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="modulename" use="required" />
+      <xs:attribute name="modulepath" use="optional" />
+      <xs:attribute name="documentation" use="required" />
+      <xs:attribute name="implementationpath" use="optional" />
+      <xs:attribute name="title" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The includedoc element-->
+  <xs:element name="includefile">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" />
+      <xs:attribute name="destination" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The includedirectory element-->
+  <xs:element name="includedirectory">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" />
+      <xs:attribute name="destination" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The script to run if documentation needs to be generated-->
+  <xs:element name="externalScript">
+    <xs:complexType>
+      <xs:attribute name="script" use="required" />
+      <xs:attribute name="startDir" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,49 @@
+**************************************************
+* Linux Environment (version 1.3.2)              *
+**************************************************
+
+The release comprises one .tgz file holding the following features:
+    - The needed files to develop NMF applications under Linux:
+      (libraries and header)
+    - The binaries to run NMF applications on the target.
+
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+    Revision 185
+
+Supported target:
+    - STn8815
+    - STn8820
+    
+Changes:
+--------
+[NMF Linux]
+     * Update the building of the Linux delivery.
+     * User libraries renamed:
+       - liblos -> liblos_gcc_linux_$TARGET
+       - libcm  -> libnmf_gcc_linux_$TARGET
+       with TARGET = 8815|8820
+     * Update to work with the new STLinux kernel 2.6.24_stm23_0022
+     * Add LOS_fseek(), LOS_ftell(), LOS_fwrite() implementation
+     * Remove user fifo.
+     * Provide support to have 'per client' components.
+     * Fix check of NMF Version between the library and the driver
+
+Bug fixes:
+---------
+[NMF Linux]
+     * Change and fix init and config of the CM driver on 8820.
+     * Fix the building of the shared libraries.
+
+
+Known Issues:
+-------------
+- XTI and STM traces not tested.
+
+Pre-requires:
+-------------
+    - Kernel linux 2.6.24_stm23_0020 or 2.6.24_stm23_0022 from
+      STLinux 2.3 distribution (package stlinux23-arm-kernel)
+      (2.6.24_stm23_0020 as the lastest has not been fully tested so far)
+    - Binaries (kernel module driver) are provided only for kernel 2.6.24_stm23_0022
+    - GCC ARM compiler 4.2.1 from STLinux 2.3 distribution

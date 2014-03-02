@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_imaging/stab=bin
+NO_STD_BUILD_imaging/stab=1
+BUILD_MMDSP_NMF_imaging/stab=bin
+BUILD_ARM_PROC_imaging/stab=bin
+BUILD_ARM_CODE_imaging/stab=bin
+BUILD_ARM_NMF_imaging/stab=bin
+BUILD_XP70_SIA_CODE_imaging/stab=false

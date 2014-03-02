@@ -1,0 +1,167 @@
+;------------------------------------------------------------
+; Load_coredump.cmm
+;------------------------------------------------------------
+; Load dsp coredump data
+;
+; 120213 - Initial version
+;-----------------------------------------------------------
+
+
+;; First determine the coredump path, and ask user if cannot find it.
+local &tmp_file
+local &coredump_path
+local &dsp
+
+if string.scan(os.ID(),"SVA",0)>-1
+	&dsp="SVA"
+else
+	&dsp="SIA"
+
+&tmp_file=os.pwd()+"/mem_tcm.data"
+if os.file("&tmp_file")
+(
+	&coredump_path=os.pwd
+)
+else if os.env("DSP_COREDUMP")!=""
+(
+	&tmp_file=os.env("DSP_COREDUMP")+"/mem_tcm.data";
+	if os.file("&tmp_file")
+	(
+		&coredump_path=os.env("DSP_COREDUMP")
+	)
+)
+
+
+if "&coredump_path"==""
+(
+	local &selected
+	gosub SelectCoredump
+
+	&selected=0
+	while &(selected)==0
+	(
+		 if "&coredump_path"==""
+			 enddo
+
+		 &tmp_file="&coredump_path"+"/mem_tcm.data"
+		 if !os.file("&tmp_file")
+		 (
+				dialog.yesno "Invalid coredump path specified" \
+				             "&coredump_path" \
+				             "Do you want to choose another one"
+				entry &result
+				if &result
+					gosub SelectCoredump
+				else
+					enddo
+		 )
+		 else
+		 (
+				&selected=1
+		 )
+	)
+)
+
+; remove trailing / if any
+if string.char("&coredump_path",string.len("&coredump_path")-1)=='/'
+	&coredump_path=string.cut("&coredump_path",-1)
+
+&tmp_file="&coredump_path"+"/mem_&(dsp)_code.mem"
+if !os.file("&tmp_file")
+(
+	 &tmp_file="&coredump_path"+"/metadata.txt"
+	 if !os.file("&tmp_file")
+	 (
+		 ;; generate dummy metadata.txt file
+		 open #1 "&tmp_file" /create
+
+		 write #1 "Panic &dsp"
+		 write #1 "Reason 0"
+		 write #1 "FaultingComponent 0x0"
+		 write #1 "Info1 0x0"
+		 write #1 "Info2 0x0"
+
+		 close #1
+	 )
+
+	print "Transforming coredump data, may take some time ..."
+	os.area python &(CMM_PATH_BASE)/Etc/mmdsp/transform.py &coredump_path
+	print "done"
+)
+
+;; load coredump data
+
+;code (ext)
+data.load.binary &coredump_path/mem_"&dsp"_code.mem p:0x0
+data.load.binary &coredump_path/mem_shared_esram_code.mem p:0x000e0000
+
+;data16 (ext)
+data.load.binary &coredump_path/mem_shared_esram_data16.mem x:0x00d80000
+data.load.binary &coredump_path/mem_"&dsp"_data16.mem x:0x00800000
+
+;data24 (ext)
+data.load.binary &coredump_path/mem_shared_esram_data24.mem x:0x00600000
+data.load.binary &coredump_path/mem_"&dsp"_data24.mem x:0x00010000
+
+;tcm
+data.load.binary &coredump_path/mem_"&dsp"_tcm.mem x:0x0
+
+;configure base registers to split @space
+B::PER.S DBG:0x1038 %QUAD 0x009ee000009e6000 ; PRG_BASE_ADR
+B::PER.S DBG:0x1050 %QUAD 0x00be800000be8000 ; DATA_STBUS_BASE
+B::PER.S DBG:0x1058 %QUAD 0x80100000801c0fff ; DATA_STBUS_TOP
+B::PER.S DBG:0x1068 %QUAD 0x00c2800000c28000 ; DATA_STBUS_BASE2
+B::PER.S DBG:0x1078 %QUAD 0x00dad88200616002 ; DATA2_1624_XA_BASE
+B::PER.S DBG:0x1090 %QUAD 0x0000000000000000 ; PRG_BASE_SEL
+B::PER.S DBG:0x1098 %QUAD 0x3820380000040001 ; PRG_BASE2_ACTIV
+B::PER.S DBG:0x10a0 %QUAD 0x00c27fff00c27fff ; DATA_STBUS_TOP_16_24
+B::PER.S DBG:0x10a8 %QUAD 0x013e7fff013e7fff ; DATA_STBUS_TOP2_16_24
+B::PER.S DBG:0x10b0 %QUAD 0x0000000000000001 ; DATA_TOP1624_CHK
+B::PER.S DBG:0x10b8 %QUAD 0x0000000000000001 ; DATA_BASE2_ACTIV
+B::PER.S DBG:0x10d0 %QUAD 0x4001400040010000 ; PRG_BASE34_ADR
+B::PER.S DBG:0x10d8 %QUAD 0x4001000040010000 ; DATA_STBUS_BASE3
+B::PER.S DBG:0x10e0 %QUAD 0x4005000040050000 ; DATA_STBUS_BASE4
+B::PER.S DBG:0x10e8 %QUAD 0x4004ffff4004ffff ; DATA_STBUS_TOP3_16_24
+B::PER.S DBG:0x10f0 %QUAD 0x4009ffff4009ffff ; DATA_STBUS_TOP4_16_24
+
+&tmp_file="&coredump_path/reg_&dsp.reg"
+if (os.file("&tmp_file"))
+(
+	;for unknow reason first register is not always correctly set
+	;adding dummy register set seems to fix this
+	r.s pc 0x0
+	do &tmp_file
+)
+else
+(
+	print "Warning, registers not available on coredump data."
+)
+
+enddo
+
+SelectCoredump:
+	dialog
+	(&
+		header "Choose your coredump directory"
+
+		pos 1. 0. 50. 1.
+		COREDUMP_PATH:	defedit "" ""
+
+		pos 1. 2. 8. 1.
+		button "Browse"
+		(
+			dialog.setdir COREDUMP_PATH "*"
+			continue
+		)
+
+		pos 9. 2. 8. 1.
+		button "OK" "continue"
+
+		pos 17. 2. 8. 1.
+		close "continue"
+	)
+	stop
+
+	&coredump_path=dialog.string(COREDUMP_PATH)
+	dialog.end
+	return

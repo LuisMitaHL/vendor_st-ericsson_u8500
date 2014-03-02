@@ -1,0 +1,94 @@
+**********************************************************
+* Nomadik Multiprocessing Framework Patch Release v0.7.1 *
+**********************************************************
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World, User Guide, MP3, User Fifo)
+ 	- Documentations (User guide, programming model, CM API, DSP API)
+ 		User guide not fully in line with delivery
+
+Supported target:
+	- Stn8810 SAA
+	- STn8815 cut A0 SAA & SVA
+
+Changes:
+--------
+- none
+
+Bug fixes:
+----------
+- Corrected issues into nmf_macros.h (NMF debugging macros for RVD debugger)
+          (load it examples/common/host/debug/rvd/nmf_macros.inc, and call nmf_help)
+- Corrected defect #25271
+- Corrected issue with filename into loadmap (erroneous end of string)
+- Corrected internal issue regarding physical to logical address conversion
+- Corrected internal issue on component initialisation CM controller
+- Corrected internal issue on Executive Engine initialisation in the CM part
+- Corrected internal issue regarding duplicated -nk ac compilation flags
+
+
+Notes:
+------
+	- MMDSP debugger not component aware in MMDSP toolset 3.1.x
+
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested and allowed only in composite 
+		component not though Component manager API (will be available in M2 Milestone)
+	- Inter-DSP distribution not supported due to hardware limitation
+		Will be fixed in STn8815B0
+	- Only the 24bits mode supported on DSP
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one segment only
+		
+	- Safe reconfiguration will be available in M2 Milestone
+	    User must check itself network activity before reconfigure it
+	- Memory allocator don't manage alignement 
+		Must be done manually (alignement will be available in M2 Milestone)
+		
+	- MP3 example
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectonics
+
+Pre-requires:
+-------------
+	- At least MMDSP toolset 3.1.0 must be used (http://gnx1227.gnb.st.com:8080/releases/release_list.php)
+		MMDSP debugger not component aware
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 
+		(also installed by the MMDSP toolset 3.x)
+		(also available for downloading on https://codex.cro.st.com/projects/nomadikkernel/)
+   	- Gnu tools, 
+		* On Linux, installed by default
+		* On Windows, you must install either:
+			+ CygWin
+			+ MinGW/MSYS (http://www.mingw.org)
+				MSYS-1.0.10.exe (at least)
+				MinGW-513.exe (at least)
+				(also available for downloading on https://codex.cro.st.com/projects/nomadikkernel/)
+        
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		DSP: SAA & SVA
+			* For NDK10 platform, ESRAM data are mapped to SDRAM segments as no ESRAM on 8810
+		Execution Engine: Synchronous, Hybrid
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-DSP
+			asynchronous intra-DSP
+			ARM -> DSP
+			DSP -> ARM
+			error management
+		* Memory 
+			Alloc and free
+		* Misc
+			Attributes and properties

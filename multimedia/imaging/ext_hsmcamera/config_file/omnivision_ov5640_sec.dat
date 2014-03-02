@@ -1,0 +1,3525 @@
+//=========================================================
+//Revision history
+//=========================================================
+
+// 0.1 Based on U33x camdriver //
+// 0.2 Modifing setting for Omnivsion //
+
+//=========================================================
+//Information section
+//=========================================================
+// --- OMNIVISION
+
+info_name =  OV5640_1DL;
+info_vendor = OmniVision; 
+info_major_ver = 2;
+info_minor_ver = 02;
+
+//=========================================================
+// Camera characteristics section
+//=========================================================
+
+cam_i2c_address = 78;  // "If the SADDR signal is driven LOW": 78 (write address) 79 (read address)
+
+//  cam_interface - 16bit number
+//  [Bit 0] = 0: Primary interface, 1: Secondry interface
+//  [Bit 1] = 0: CCP2 output, 1: CSI2 output
+//  [Bit 2:3] = Number of lanes (1= 1DL, 2 = 2DL, 3 = 3DL, 0 = 4DL)
+//  [Bit 4] = 0:v.81b DPHY spec, 1: v.90 DPHY spec
+//  [Bit 5] = 0:EOT_bypass disable , 1:EOT_bypass enable
+//  [Rest] = Unused
+cam_interface = 17;
+
+//CSI bit rate - Default value
+cam_csi_bitrate = FC; //252
+
+// Datatype 0 for preview and still config
+//    1 byte: [byte 0] datatype 0
+cam_csi_datatype0 = 1E;
+
+// Datatype 1 for non-image data
+//    1 byte: [byte 0] datatype 1
+cam_csi_datatype1 = 10;
+
+// Datatype 2 not used
+//    1 byte: [byte 0] datatype 2
+cam_csi_datatype2 = 10;
+
+// Pixwidth for datatype 0
+//    1 byte: [byte 0] pix width for datatype 0
+cam_csi_datatype0_pix_wd = 08;
+
+// Pixwidth for datatype 1
+//    1 byte: [byte 0] pix width for datatype 1
+cam_csi_datatype1_pix_wd = 08;
+
+// Pixwidth for datatype 2
+//    1 byte: [byte 0] pix width for datatype 2
+cam_csi_datatype2_pix_wd = 08;
+
+// Watchdog timeout in ms
+cam_watchdog_timeout = 1F4; //500 ms
+
+// Pipe configuration
+cam_pipe_number = 1;
+
+// Snap shot Frame skip value
+cam_ss_frame_skip= 0;
+
+// Viewfinder Frame skip value
+cam_vf_frame_skip= 5;
+
+// Camcorder Frame skip value
+cam_cc_frame_skip= 6;
+
+//Lens HORIZONTAL ANGLE OF VIEW  only put integer for Panorama
+cam_horizontal_angle = 4500;
+//Lens VERTICAL ANGLE OF VIEW  only put integer
+cam_vertical_angle = 5700;
+//focal length in 100s i.e if focal length is 3.33 then it is represented as 333
+cam_focal_length = 333;
+
+//=========================================================
+// Exif default settings section (for extradata only)
+//=========================================================
+exif_maker_note = MakerNote;
+exif_x_resolution = 48;  //72
+exif_y_resolution = 48;  //72
+exif_max_num_pixels_x = 0;
+exif_analog_gain = 0;
+exif_digital_gain = 0;
+
+//=========================================================
+// Supported resolutions
+//=========================================================
+sup_sizes =
+   0 [B0,  90,  0],    //  176x144 - QCIF
+   1 [B0,  90,  1],    //  176x144  
+   2 [B0,  90,  2],    //  176x144  
+   
+   3 [140, F0, 0],    //  320x240 - QVGA
+   4[140, F0,  1],    //  320x240 
+   5[140, F0,  2],    //  320x240 
+   
+   6 [160, 120, 0],    //  352x288 - CIF
+   7 [160, 120, 1],    //  352x288 
+   8 [160, 120, 2],    //  352x288 
+   
+   9[280, 1E0, 0],    //  640x480  - VGA
+   a [280, 1E0, 1],    //  640x480 
+   b [280, 1E0, 2],    //  640x480 
+   
+   c [2D0, 1E0, 1],    //  720x480 - SDTV(NTSC)
+   d [2D0, 1E0, 2],    //  720x480 
+   
+   e [2D0, 240, 1],    //  720x576 - SDTV(PAL)
+   f [2D0, 240, 2],    //  720x576 
+   
+   10 [320, 1E0, 1],    //  800x480 - WVGA
+   11 [320, 1E0, 2],    //  800x480
+   
+   12 [400, 300, 0],    //  1024x768 - 1M
+   
+   13 [500, 2D0, 1],    //  1280x720 - 720P
+   14 [500, 2D0, 2],    //  1280x720
+   
+   15 [500, 300, 0],    //  1280x768 - 1.4M 
+   
+  16 [500, 3C0, 1 ],    //  1280x960 - SXGA
+  17 [500, 3C0, 2 ],    //  1280x960
+  
+   18 [640, 4B0, 0],    //  1600x1200 - 2M
+   
+   19 [780, 438, 1 ],    //  1920x1080 - 1080P
+   1a [780, 438, 2 ],    //  1920x1080
+   
+   1b [800, 600, 0],    //  2048x1536 - 3.2M
+   
+   1c [A20, 798, 0],    //  2592x1944 - 5MP
+   1d [A20, 798, 1],    //  2592x1944 
+   1e [A20, 798, 2],    //  2592x1944 
+    
+   1f [140, c8, 0],     //  320x200 - CGA
+   20 [140, c8, 1],     //  320x200 - CGA
+   21 [140, c8, 2],     //  320x200 - CGA
+
+   22 [c8, 140, 0],     //  200x320 - CGAp
+   ;
+
+ //=========================================================
+// Suported properties
+//=========================================================
+sup_properties =
+  0[0,2,0],    // Exposure control.
+  1[0,7,0],    // AWB on
+  2[1,3,1],    // Auto flicker on
+  3[0,1,0],    // No vertical flip ( default)
+  4[0,1,0],    // No horizontal mirror ( default)
+  6[0,6,2],    // Focus mode (2=Auto)
+  7[0,1,0],    // Focus macro (0=Off, 1=On)
+  a[0,9,0],    // Image Effects (0= none, others, see below)
+  c[0,6,3],    // contrast
+  e[0,4,4],    // Brightness
+  10[0,c8,64], // Gamma
+  13[0,4,2],   // saturation
+  14[0,6,3],   // Exposure compensation
+  15[0,10,0],  // Scene mode
+  16[0,4,2],   // Sharpness
+  17[0,6,0],   // Iso
+  18[0,2,0],   // Metering exposure
+  19[0,5,0],   // Focus range
+  1a[0,1f,1f], //FPS
+  1b[0,4,0],   // Touch Focus
+  20[0,3,0],   // No rotation ( default)
+  21[0,5,0]    // Test Pattern (0= none, others, see below)
+;
+
+//=========================================================
+// Property descriptions:
+//=========================================================
+prop_description_0 = "Exposure Control";
+prop_description_0_0 = "ExposureControlOff";
+prop_description_0_1 = "ExposureControlAuto";
+prop_description_0_2 = "ExposureControlNight";
+
+prop_description_1 = "White Balance";
+prop_description_1_1 = "WhiteBalControlAuto";
+prop_description_1_2 = "WhiteBalControlSunLight";
+prop_description_1_3 = "WhiteBalControlCloudy";
+prop_description_1_6 = "WhiteBalControlFluorescent";
+prop_description_1_7 = "WhiteBalControlIncandescent";
+
+prop_description_2 = "Flicker Cancellation";
+prop_description_2_0 = "FlickerRemovalOff";
+prop_description_2_1 = "FlickerRemovalAuto";
+prop_description_2_2 = "FlickerRemoval50";
+prop_description_2_3 = "FlickerRemoval60";
+
+prop_description_a = "Image Effects";
+prop_description_a_0 = "None";
+prop_description_a_1 = "mono";
+prop_description_a_2 = "Negative";
+prop_description_a_3 = "Solarize";
+prop_description_a_4 = "Sepia";
+prop_description_a_5 = "Posterize";
+prop_description_a_6 = "Whiteboard";
+prop_description_a_7 = "Blackboard";
+prop_description_a_8 = "Aqua watercolor";
+
+prop_description_c = "Contrast test";
+prop_description_c_0 = "Min contrast";
+prop_description_c_3 = "Mid contrast";
+prop_description_c_6 = "Max contrast";
+
+prop_description_e = "Brightness test";
+prop_description_e_0 = "Min brightness";
+prop_description_e_2 = "Mid brightness";
+prop_description_e_4 = "Max brightness";
+
+prop_description_13 = "Saturation test";
+prop_description_13_0 = "Min Saturation";
+prop_description_13_2 = "Mid Saturation";
+prop_description_13_4 = "Max Saturation";
+
+prop_description_14 = "Exposure compensation test";
+prop_description_14_0 = "Min exposure compensation";
+prop_description_14_3 = "Mid exposure compensation";
+prop_description_14_6 = "Max exposure compensation";
+
+prop_description_15 = "Scene mode test";
+prop_description_15_0 = "SceneAuto";
+prop_description_15_1 = "ScenePortrait";
+prop_description_15_2 = "SceneLandscape";
+prop_description_15_3 = "SceneNight";
+prop_description_15_4 = "SceneNightPortrait";
+prop_description_15_5 = "SceneSport";
+prop_description_15_6 = "SceneBeach";
+prop_description_15_7 = "SceneSnow";
+prop_description_15_8 = "SceneParty";
+prop_description_15_9 = "SceneAction";
+prop_description_15_a = "SceneTheatre";
+prop_description_15_b = "SceneSunset";
+prop_description_15_c = "SceneSteadyPhoto";
+prop_description_15_d = "SceneFireworks";
+prop_description_15_e = "SceneCandleLight";
+prop_description_15_f = "SceneBarcode";
+
+prop_description_16 = "Sharpness test";
+prop_description_16_0 = "Min sharpness";
+prop_description_16_2 = "Mid sharpness";
+prop_description_16_4 = "Max sharpness";
+
+prop_description_17 = "Iso";
+prop_description_17_0 = "Auto";
+prop_description_17_1 = "100";
+prop_description_17_2 = "200";
+prop_description_17_3 = "400";
+prop_description_17_4 = "800";
+prop_description_17_5 = "1600";
+prop_description_17_6 = "3200";
+
+prop_description_18 = "Metering exposure";
+prop_description_18_0 = "MeteringModeAverage";
+prop_description_18_1 = "MeteringModeSpot";
+prop_description_18_2 = "MeteringModeMatrix";
+
+prop_description_19 = "Focus Range";
+prop_description_19_0 = "FocusRangeAuto";
+prop_description_19_1 = "FocusRangeHyperfocal";
+prop_description_19_2 = "FocusRangeNormal";
+prop_description_19_3 = "FocusRangeSupermacro";
+prop_description_19_4 = "FocusMacro";
+prop_description_19_5 = "FocusInfinity";
+
+prop_description_1a = "Frame Rate";
+prop_description_1a_0 = "Frame Rate Auto";
+prop_description_1a_a = "Frame Rate 10 FPS";
+prop_description_1a_f = "Frame Rate 15 FPS";
+prop_description_1a_14 = "Frame Rate 20 FPS";
+prop_description_1a_1e = "Frame Rate 30 FPS";
+prop_description_1a_1f = "Frame Rate 30 FPS";
+
+//=========================================================
+// Driver registers (for reference/housekeeping)
+//=========================================================
+// 0 - temporary and return value (GET_REG)
+// 1 - temporary and return value (GET_REG)
+// 2 - temporary and return value
+// 3 - temporary and return value
+// 4 - temporary loop register
+// 9 - camera module active state (size id)
+
+//=========================================================
+// Macro definition section
+//=========================================================
+///////////////////////////////////////////////////OMNIVISION/////////////////////////////////////////
+
+////////////////////////////
+GET_ID=
+  300A $r1 0 $f
+  300B $r1 1 $f
+;//GET_REG_OV5640_END
+
+////////////////////////////
+GET_REG=
+//  $"CAMDRIVER::GET_REG"
+  $f !0 $r2 1 0    // read 2 byte from cam reg !0 into internal 0 and 1
+;//GET_REG_OV5640_END
+
+////////////////////////////
+MODIFY_REG=
+//  $"CAMDRIVER::MODIFY_REG"
+  $f !0 $r2 1 0 $f           // Read from CamReg !0 (2 Bytes) to Internal Reg 1, 0
+  !1                         // Do !1 sequence
+  $f !0 $w1 $w0 $f           // Write to CamReg !0 (2 Bytes) from Internal Reg 1, 0
+;//MODIFY_REG_OV5640_END
+
+////////////////////////////
+PLL_CONTROL_OV5640 =
+  $">> CAMDRIVER::PLL control seq for OV5640 camera module"
+    3103 11 $f    //PLL
+    3008 82 $f
+    $d000a
+    3008 42 $f
+    $d000a
+    3103 03 $f
+    3017 00 $f
+    3018 00 $f
+    3034 18 $f
+    3035 12 $f
+    3036 3f $f
+    3037 13 $f
+    303b 19 $f
+//    303c 11 $f default value is already 11
+    303d 30 $f
+    3108 01 $f
+  $"<< CAMDRIVER::PLL control seq for OV5640 camera module"
+
+; // PLL_CONTROL_OV5640_END
+
+////////////////////////////
+MANUFACTURER_SETTING_OV5640 =
+  $">> CAMDRIVER::Manufacturer setting seq for OV5640 camera module"
+    3630 36 $f    //Manufacture settings
+    3631 0e $f
+    3632 e2 $f
+    3633 12 $f
+    3621 e0 $f
+    3704 a0 $f
+    3703 5a $f
+    3715 78 $f
+    3717 01 $f
+    370b 60 $f
+    3705 1a $f
+    3905 02 $f
+    3906 10 $f
+    3901 0a $f
+    3731 12 $f
+  $"<< CAMDRIVER::Manufacturer setting seq for OV5640 camera module"
+
+; // MANUFACTURER_SETTING_OV5640_END
+
+////////////////////////////
+VCM_CONTROL_OV5640 =
+  $">> CAMDRIVER::VCM driver control seq for OV5640 camera module"
+    3600 08 $f    //VCM Control
+    3601 33 $f
+  $"<< CAMDRIVER::VCM driver control seq for OV5640 camera module"
+
+; // VCM_CONTROL_OV5640_END
+
+////////////////////////////
+SYSTEM_CONTROL_OV5640 =
+  $">> CAMDRIVER::SYSTEM control seq for OV5640 camera module"
+  302d 60 $f
+  $"<< CAMDRIVER::SYSTEM control seq for OV5640 camera module"
+
+; // SYSTEM_CONTROL_OV5640_END
+
+////////////////////////////
+AEC_CONTROL_OV5640 =
+  $">> CAMDRIVER::Auto exposure control seq for OV5640 camera module"
+    3a13 43    $f    //AEC/AGC
+    3a18 00 $f
+    3a19 f8 $f
+  $"<< CAMDRIVER::Auto exposure control seq for OV5640 camera module"
+
+; // AEC_CONTROL_OV5640_END
+
+////////////////////////////
+HZ5060_DETECTOR_CONTROL_REGISTERS_OV5640 =
+  $">> CAMDRIVER::Detector control register seq for OV5640 camera module"
+    3c01 34 $f    // 5060 Hz detector registers
+    3c04 28 $f
+    3c05 98 $f
+    3c06 00 $f
+    3c07 08 $f
+    3c08 00 $f
+    3c09 1c $f
+    3c0a 9c $f
+    3c0b 40 $f
+  $"<< CAMDRIVER::Detector control register seq for OV5640 camera module"
+
+; // HZ5060_DETECTOR_CONTROL_REGISTERS_OV5640_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_VGA_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+    
+    3035 12 $f  //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+    
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 02 $f    //VGA
+    3809 80 $f
+    380a 01 $f
+    380b e0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+    
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+    
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+    
+    4001 02 $f    //BLC Control
+    4004 02 $f
+    
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+    
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for VGA OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_VGA_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_720P_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for 720 P OV5640 camera module"
+  
+    3035 12 $f  //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f  //changed for making 30 FPS
+    3c07 08 $f
+    
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 fa $f
+    3804 0a $f
+    3805 3f $f
+    3806 06 $f
+    3807 a9 $f
+    3808 05 $f    //720P
+    3809 00 $f
+    380a 02 $f
+    380b d0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+    
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+ $"<< CAMDRIVER::Image Windowing register control register seq for 720P OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_720P_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_720P_60FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for 720 P OV5640 camera module"
+    
+    3035 12 $f  //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f  //changed for making 60 FPS-Joseph
+
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 fa $f
+    3804 0a $f
+    3805 3f $f
+    3806 06 $f
+    3807 a9 $f
+    3808 05 $f    //720P
+    3809 00 $f
+    380a 02 $f
+    380b d0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+    
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+ $"<< CAMDRIVER::Image Windowing register control register seq for 720P OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_720P_60FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_QVGA_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f  //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+    
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 02 $f    //QVGA
+    3809 80 $f
+    380a 01 $f
+    380b e0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+    
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+    
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+    
+    4001 02 $f    //BLC Control
+    4004 02 $f
+    
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check
+    4827 32 $f    //Default value is put here
+    
+    3824 01 $f    //VFIFO control
+    
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+        
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for QVGA OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_QVGA_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_CIF_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+    
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 01 $f    //CIF
+    3809 60 $f
+    380a 01 $f
+    380b 20 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+    
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+    
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+    
+    4001 02 $f    //BLC Control
+    4004 02 $f
+    
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+    
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check
+    4827 32 $f    //Default value is put here
+    
+    3824 01 $f    //VFIFO control
+    
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+        
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+    
+  $"<< CAMDRIVER::Image Windowing register control register seq for CIF OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_CIF_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_QCIF_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+    
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 00 $f    //QCIF
+    3809 b0 $f
+    380a 00 $f
+    380b 90 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+    
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+    
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+    
+    4001 02 $f    //BLC Control
+    4004 02 $f
+    
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+    
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for QCIF OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_QCIF_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_WVGA_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for WVGA OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 02 $f
+    3801 50 $f
+    3802 01 $f
+    3803 b2 $f
+    3804 08 $f
+    3805 ef $f
+    3806 05 $f
+    3807 f2 $f
+    3808 03 $f    //WVGA
+    3809 20 $f
+    380a 01 $f
+    380b e0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for WVGA OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_WVGA_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_NTSC_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for 480P OV5640 camera module"
+
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 fa $f
+    3804 0a $f
+    3805 3f $f
+    3806 06 $f
+    3807 a9 $f
+    3808 02 $f    //SDTV NTSC
+    3809 d0 $f
+    380a 01 $f
+    380b e0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for 480P NTSC OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_NTSC_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_PAL_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for PAL OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 02 $f
+    3801 50 $f
+    3802 01 $f
+    3803 b2 $f
+    3804 08 $f
+    3805 ef $f
+    3806 05 $f
+    3807 f2 $f
+    3808 02 $f    //SDTV PAL
+    3809 d0 $f
+    380a 02 $f
+    380b 40 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for PAL OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_PAL_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_5MP_15FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3F $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 11 $f    //Image windowing registers
+    3815 11 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 00 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9f $f
+    3808 0a $f    //5MP
+    3809 20 $f
+    380a 07 $f
+    380b 98 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for 5MP OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_5MP_15FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_5MP =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 11 $f    //Image windowing registers
+    3815 11 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 00 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9f $f
+    3808 0a $f    // 5MP
+    3809 20 $f
+    380a 07 $f
+    380b 98 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+    
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for 5MP OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_5MP_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_1_4MP =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 05 $f    // 1.4MP
+    3809 00 $f
+    380a 03 $f
+    380b 00 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for 1_4 MP OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_1_4MP_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_1MP =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 04 $f    // 1MP
+    3809 00 $f
+    380a 03 $f
+    380b 00 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for OV5640 1 MP camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_1MP_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_2MP =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f  //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 11 $f    //Image windowing registers
+    3815 11 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 00 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9f $f
+    3808 06 $f    // 2MP
+    3809 40 $f
+    380a 04 $f
+    380b b0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for OV5640 2MP camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_2MP_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_3MP =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f  //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 11 $f    //Image windowing registers
+    3815 11 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 00 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9f $f
+    3808 08 $f    //3MP
+    3809 00 $f
+    380a 06 $f
+    380b 00 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for OV5640 3MP camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_3MP_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_VGA =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 02 $f    //VGA
+    3809 80 $f
+    380a 01 $f
+    380b e0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for OV5640 VGA camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_VGA_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_QVGA =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 01 $f    //QVGA
+    3809 40 $f
+    380a 00 $f
+    380b f0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for QVGA OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_QVGA_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_1080P_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for 1080 P OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 11 $f    //Image windowing registers
+    3815 11 $f
+    3800 01 $f
+    3801 50 $f
+    3802 01 $f
+    3803 b2 $f
+    3804 08 $f
+    3805 ef $f
+    3806 05 $f
+    3807 f2 $f
+    3808 07 $f    //1080
+    3809 80 $f
+    380a 04 $f
+    380b 38 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 04 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for 1080P OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_1080P_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_SXGA_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for SXGA OV5640 camera module"
+
+      3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase
+    3036 3f $f
+    3c07 08 $f
+    
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 05 $f    //SXGA
+    3809 00 $f
+    380a 03 $f
+    380b c0 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 1c $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 c3 $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control UYVY
+    501f 00 $f  //ISP top control
+    4713 03 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+ $"<< CAMDRIVER::Image Windowing register control register seq for SXGA OV5640 camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_SXGA_30FPS_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_CGA =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 01 $f    //CGA 320x200
+    3809 40 $f
+    380a 00 $f
+    380b c8 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for OV5640 CGA camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_CGA_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_CGAP =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f      //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+    3821 01 $f
+
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 00 $f    //CGAp 200x320
+    3809 c8 $f
+    380a 01 $f
+    380b 40 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+
+    4001 02 $f    //BLC Control
+    4004 02 $f
+
+    3000 00 $f    //System Reset00
+    3002 00 $f  //System Reset02
+    3004 ff $f  //Clock Enable00
+    3006 ff $f  //Clock Enable02
+    302e 08 $f
+
+    4300 32 $f    //Format Control
+    501f 00 $f  //ISP top control
+    4713 02 $f  //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+
+    4837 3f $f    //MIPI control PCLK period --need to check 
+    4827 32 $f    //Default value is put here
+
+    3824 01 $f    //VFIFO control
+
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+
+  $"<< CAMDRIVER::Image Windowing register control register seq for OV5640 CGAp camera module"
+
+; // IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_CGAP_END
+
+////////////////////////////
+IMAGE_WINDOWING_REGISTERS_OV5640_CGA_30FPS =
+  $">> CAMDRIVER::Image Windowing register control seq for OV5640 camera module"
+
+    3035 12 $f  //Reconfigure PLL and Light Meter depending on Usecase (changed to get exact 30fps)
+    3036 3f $f
+    3c07 08 $f
+
+    3820 47 $f    //mirror and flip registers
+
+    3821 01 $f
+    3814 31 $f    //Image windowing registers
+    3815 31 $f
+    3800 00 $f
+    3801 00 $f
+    3802 00 $f
+    3803 04 $f
+    3804 0a $f
+    3805 3f $f
+    3806 07 $f
+    3807 9b $f
+    3808 01 $f    //CGA 320x200
+    3809 40 $f
+    380a 00 $f
+    380b c8 $f
+    380c 08 $f
+    380d 50 $f
+    380e 03 $f
+    380f d8 $f
+    3810 00 $f
+    3811 10 $f
+    3812 00 $f
+    3813 06 $f
+    3618 00 $f    //Manufacture settings
+    3612 29 $f
+    3708 62 $f
+    3709 52 $f
+    370c 03 $f
+    3a02 03 $f    //AEC/AGC
+    3a03 d8 $f
+    3a08 01 $f
+    3a09 27 $f
+    3a0a 00 $f
+    3a0b f6 $f
+    3a0e 03 $f
+    3a0d 04 $f
+    3a14 03 $f
+    3a15 d8 $f
+    4001 02 $f    //BLC Control
+    4004 02 $f
+    3000 00 $f    //System Reset00
+    3002 1c $f    //System Reset02
+    3004 ff $f    //Clock Enable00
+    3006 c3 $f    //Clock Enable02
+    302e 08 $f
+    4300 32 $f    //Format Control
+    501f 00 $f    //ISP top control
+    4713 03 $f    //JPG Mode Select
+    4407 04 $f    //JPG control registers
+    440e 00 $f
+    460b 35 $f    //VFIFO control for compress data
+    460c 22 $f
+    4837 3f $f    //MIPI control PCLK period --need to check
+    4827 32 $f    //Default value is put here
+    3824 01 $f    //VFIFO control
+    5000 a7 $f    //ISP top control
+    5001 a3 $f
+    5025 00 $f
+
+    3a0f 30 $f    //AEC/AGC
+    3a10 28 $f
+    3a1b 30 $f
+    3a1e 26 $f
+    3a11 60 $f
+    3a1f 14 $f
+  $"<< CAMDRIVER::Image Windowing register control register seq for CGA OV5640 camera module"
+; // IMAGE_WINDOWING_REGISTERS_OV5640_CGA_30FPS
+////////////////////////////
+SET_FIXED_30FPS=  // Set fixed frame rate 30 fps
+
+  $">> CAMDRIVER::set_fixed_framerate 30"
+  //
+  $"<< CAMDRIVER::set_fixed_framerate 30"
+
+; //SET_FIXED_30FPS
+
+////////////////////////////
+SET_FIXED_20FPS=  // Set fixed frame rate 20 fps
+
+  $">> CAMDRIVER::set_fixed_framerate 20"
+  //
+  $"<< CAMDRIVER::set_fixed_framerate 20"
+
+; //SET_FIXED_20FPS
+
+////////////////////////////
+SET_FIXED_15FPS=  // Set fixed frame rate 15 fps
+
+  $">> CAMDRIVER::set_fixed_framerate 15"
+  //
+  $"<< CAMDRIVER::set_fixed_framerate 15"
+
+; //SET_FIXED_15FPS
+
+////////////////////////////
+SET_FIXED_10FPS=  // Set fixed frame rate 10 fps
+
+  $">> CAMDRIVER::set_fixed_framerate 10"
+  //
+  $"<< CAMDRIVER::set_fixed_framerate 10"
+
+; //SET_FIXED_10FPS
+
+////////////////////////////
+SET_VARABLE_FRAMERATE=  // Set variable frame rate
+
+  $">> CAMDRIVER::set_variable_framerate"
+  //
+  $"<< CAMDRIVER::set_variable_framerate"
+
+; //SET_VARABLE_FRAMERATE
+
+
+////////////////////////////
+AWB_CONTROL_OV5640 =
+  $">> CAMDRIVER::Auto white balance control seq for OV5640 camera module"
+    5180 ff    $f    //AWB control
+    5181 f2 $f
+    5182 00 $f
+    5183 14 $f
+    5184 25 $f
+    5185 24 $f
+    5186 09 $f
+    5187 09 $f
+    5188 09 $f
+    5189 75 $f
+    518a 54 $f
+    518b e0 $f
+    518c b2 $f
+    518d 42 $f
+    518e 3d $f
+    518f 56 $f
+    5190 46 $f
+    5191 f8 $f
+    5192 04 $f
+    5193 70 $f
+    5194 f0 $f
+    5195 f0 $f
+    5196 03 $f
+    5197 01 $f
+    5198 04 $f
+    5199 12 $f
+    519a 04 $f
+    519b 00 $f
+    519c 06 $f
+    519d 82 $f
+    519e 38 $f
+  $"<< CAMDRIVER::Auto white balance control seq seq for OV5640 camera module"
+
+; // AWB_CONTROL_OV5640_END
+
+////////////////////////////
+CMX_CONTROL_OV5640 =
+  $">> CAMDRIVER::color Matrix control seq for OV5640 camera module"
+    5381 1e    $f    //CMX control
+    5382 5b $f
+    5383 08 $f
+    5384 0a $f
+    5385 7e $f
+    5386 88 $f
+    5387 7c $f
+    5388 6c $f
+    5389 10 $f
+    538a 01 $f
+    538b 98 $f
+  $"<< CAMDRIVER::color Matrix control seq for OV5640 camera module"
+
+; // CMX_CONTROL_OV5640_END
+
+////////////////////////////
+CIP_CONTROL_OV5640 =
+  $">> CAMDRIVER::color interpolation control seq for OV5640 camera module"
+    5300 08    $f    //CIP control
+    5301 30 $f
+    5302 10 $f
+    5303 00 $f
+    5304 08 $f
+    5305 30 $f
+    5306 08 $f
+    5307 16 $f
+    5309 08 $f
+    530a 30 $f
+    530b 04 $f
+    530c 06 $f
+  $"<< CAMDRIVER::color interpolation seq for OV5640 camera module"
+
+; // CIP_CONTROL_OV5640
+
+////////////////////////////
+GAMMA_CONTROL_OV5640 =
+  $">> CAMDRIVER::Gamma control seq for OV5640 camera module"
+    5480 01    $f    //gamma control
+    5481 08 $f
+    5482 14 $f
+    5483 28 $f
+    5484 51 $f
+    5485 65 $f
+    5486 71 $f
+    5487 7d $f
+    5488 87 $f
+    5489 91 $f
+    548a 9a $f
+    548b aa $f
+    548c b8 $f
+    548d cd $f
+    548e dd $f
+    548f ea $f
+    5490 1d $f
+  $"<< CAMDRIVER::Gamma control seq for OV5640 camera module"
+
+; // GAMMA_CONTROL_OV5640
+
+////////////////////////////
+SDE_CONTROL_OV5640 =
+  $">> CAMDRIVER::Special digital effects control seq for OV5640 camera module"
+    5580 02    $f    //SDE control SPECIAL DIGITAL EFFECTS
+    5583 40 $f
+    5584 10 $f
+    5589 10 $f
+    558a 00 $f
+    558b f8 $f
+  $"<< CAMDRIVER::Special digital effects control seq for OV5640 camera module"
+
+; // SDE_CONTROL_OV5640
+
+////////////////////////////
+LENC_CONTROL_OV5640 =
+  $">> CAMDRIVER::lens correction control seq for OV5640 camera module"
+    5800 23    $f    //LENC control
+    5801 14 $f
+    5802 0f $f
+    5803 0f $f
+    5804 12 $f
+    5805 26 $f
+    5806 0c $f
+    5807 08 $f
+    5808 05 $f
+    5809 05 $f
+    580a 08 $f
+    580b 0d $f
+    580c 08 $f
+    580d 03 $f
+    580e 00 $f
+    580f 00 $f
+    5810 03 $f
+    5811 09 $f
+    5812 07 $f
+    5813 03 $f
+    5814 00 $f
+    5815 01 $f
+    5816 03 $f
+    5817 08 $f
+    5818 0d $f
+    5819 08 $f
+    581a 05 $f
+    581b 06 $f
+    581c 08 $f
+    581d 0e $f
+    581e 29 $f
+    581f 17 $f
+    5820 11 $f
+    5821 11 $f
+    5822 15 $f
+    5823 28 $f
+    5824 46 $f
+    5825 26 $f
+    5826 08 $f
+    5827 26 $f
+    5828 64 $f
+    5829 26 $f
+    582a 24 $f
+    582b 22 $f
+    582c 24 $f
+    582d 24 $f
+    582e 06 $f
+    582f 22 $f
+    5830 40 $f
+    5831 42 $f
+    5832 24 $f
+    5833 26 $f
+    5834 24 $f
+    5835 22 $f
+    5836 22 $f
+    5837 26 $f
+    5838 44 $f
+    5839 24 $f
+    583a 26 $f
+    583b 28 $f
+    583c 42 $f
+    583d ce $f
+  $"<< CAMDRIVER::lens correction control seq for OV5640 camera module"
+
+; // LENC_CONTROL_OV5640
+////////////////////////////
+
+// ==========================================================
+// Power on initialization required for OMNIVISION module
+// ==========================================================
+
+////////////////////////////
+RESET_PW_DOWN_OV5640 =
+  $">> CAMDRIVER::Power Down sequence for OV5640 camera module"
+      
+      300e 28 $f        // MIPI CONTR0L0 - MIPI Disable and Power Down
+      3103 11 $f        // SYSTEM CTRL1 - debug mode
+      3008 82 $f        // SYSTEM CTROL0 -  software power down
+      3008 42 $f        // SYSTEM CTROL0 -  software reset
+      3000 30 $f        // System Reset00
+      3001 08 $f        // System Reset01
+      3002 1c $f        // System Reset02
+      3003 00 $f        // System Reset03
+      3004 cf $f        // Clock Enable00
+      3005 f7 $f        // Clock Enable01
+      3006 e3 $f        // Clock Enable02
+      3007 ff $f        // Clock Enable03
+
+  $"<< CAMDRIVER::Power Down sequence for OV5640 camera module"
+; //RESET_PW_DOWN_OV5640
+
+SET_MIPI_CTRL =     
+    4800 04 $f
+    4202 00 $f
+    $"<< CAMDRIVER::SET OV5640 MIPI CTRL"
+; //SET_MIPI_CTRL
+
+RESET_MIPI_CTRL =     
+    4800 24 $f
+    4202 0f $f
+    $"<< CAMDRIVER::RESET OV5640 MIPI CTRL"
+; //RESET_MIPI_CTRL
+
+ENTER_MIPI_STANDBY = 
+    $">> CAMDRIVER::ENTER OV5640 MIPI STANDBY"
+
+    300e 28 $f        // MIPI CONTR0L0 - MIPI hw and software standby (1DL)
+
+    $"<< CAMDRIVER::ENTER OV5640 MIPI STANDBY"
+; //ENTER_MIPI_STANDBY_END
+
+EXIT_MIPI_STANDBY = 
+    $">> CAMDRIVER::EXIT OV5640 MIPI STANDBY"
+
+    300e 25 $f        // MIPI CONTR0L0 - OUT OF MIPI HW and software standby (1DL)
+    
+    $"<< CAMDRIVER::EXIT OV5640 MIPI STANDBY"
+; //EXIT_MIPI_STANDBY_END
+
+STOP_SENSOR_OV5640 =
+    $">> CAMDRIVER::STOP OV5640 camera module"
+
+    3008 42 $f        // SYSTEM CTROL0 -  software power down
+
+    $"<< CAMDRIVER::STOP OV5640 camera module"
+; //STOP_SENSOR_OV5640_END
+
+START_SENSOR_OV5640 =
+    $">> CAMDRIVER::START OV5640 camera module"
+
+    3008 02    $f    //System control , OUT OF RESET and STREAMING
+
+    $"<< CAMDRIVER::START OV5640 camera module"
+; //START_SENSOR_OV5640_END
+/////////////////OMNIVISION END//////////////////////////////
+
+INIT_SEQ_OV5640 =
+  $">> CAMDRIVER::Initialization seq for OV5640 camera module"
+    
+    #PLL_CONTROL_OV5640
+    #MANUFACTURER_SETTING_OV5640
+    #VCM_CONTROL_OV5640
+    #SYSTEM_CONTROL_OV5640
+
+    3620 52 $f    //Manufacture settings
+    371b 20 $f
+    471c 50 $f
+
+    #AEC_CONTROL_OV5640
+
+    3635 13 $f    //Manufacture settings
+    3636 03 $f
+    3634 40 $f
+    3622 01 $f
+
+    #HZ5060_DETECTOR_CONTROL_REGISTERS_OV5640
+  
+  $"<< CAMDRIVER::Initialization seq for OV5640 camera module"
+
+; // INIT_SEQ_OV5640_END
+
+
+
+// --- Effect MACROS for property a -------------------------
+
+//Default Normal
+
+////////////////////////////
+//@@ Normal 
+EFFECTS_NORMAL=  // Set Normal effects
+
+ $">> CAMDRIVER::Effects configured for NORMAL"
+5580 02 $f
+5583 40 $f
+5584 40 $f
+ $"<< CAMDRIVER::Effects configured for NORMAL"
+;
+
+
+//@@ B&W  
+EFFECTS_BW=  // Set B&W effects
+
+ $">> CAMDRIVER::Effects configured for B&W"
+5001 ab $f       //; SDE_En<2>
+5580 1a $f       //; fixu_en <4>, fixv_en <3>
+5583 80 $f           //; Ureg     
+5584 80 $f          //; Yreg
+ $"<< CAMDRIVER::Effects configured for B&W"
+;
+
+
+//@@ Sepia 
+EFFECTS_SEPIA=  // Set Sepia effects
+
+ $">> CAMDRIVER::Effects configured for SEPIA"
+5001 ab $f
+5580 1a $f
+5583 40 $f
+5584 a0 $f
+ $"<< CAMDRIVER::Effects configured for SEPIA"
+;
+
+//@@ Bluish
+EFFECTS_BLUISH=  // Set Bluish effects
+
+ $">> CAMDRIVER::Effects configured for BLUISH"
+5001 ab $f
+5580 1a $f
+5583 a0 $f
+5584 40 $f
+ $"<< CAMDRIVER::Effects configured for BLUISH"
+;
+
+//@@ Reddish
+EFFECTS_REDDISH=  // Set Reddish effects
+
+ $">> CAMDRIVER::Effects configured for REDDISH"
+5001 ab $f
+5580 1a $f
+5583 80 $f
+5584 c0 $f
+ $"<< CAMDRIVER::Effects configured for REDDISH"
+;
+
+
+//@@ Greenish
+EFFECTS_GREENISH=  // Set Greenish effects
+
+ $">> CAMDRIVER::Effects configured for GREENISH"
+5001 ab $f
+5580 1a $f
+5583 60 $f
+5584 60 $f
+ $"<< CAMDRIVER::Effects configured for GREENISH"
+;
+
+//@@ Negative
+EFFECTS_NEG=  // Set Negative effects
+
+ $">> CAMDRIVER::Effects configured for NEG"
+5001 ab $f
+5580 42 $f
+ $"<< CAMDRIVER::Effects configured for NEG"
+;
+
+
+
+
+//=========================================================
+// I2C sequence section
+//=========================================================
+seq_init =
+  $">> CAMDRIVER::seq_init"
+
+  // Do the one time initialization for OV5640
+  #INIT_SEQ_OV5640
+
+  #AWB_CONTROL_OV5640
+  #CMX_CONTROL_OV5640
+  #CIP_CONTROL_OV5640
+  #GAMMA_CONTROL_OV5640
+  #SDE_CONTROL_OV5640
+  #LENC_CONTROL_OV5640
+
+  #GET_ID
+
+  $"<< CAMDRIVER::seq_init"
+;
+
+cam_init_result = 56,40;
+
+////////////////////////////
+seq_ping =
+  $">> CAMDRIVER::seq_ping"
+
+    #GET_ID
+
+  $"<< CAMDRIVER::seq_ping"
+;
+
+cam_ping_result = 56,40;
+
+////////////////////////////
+seq_deinit = 
+
+  $">> CAMDRIVER::seq_deinit"
+    
+    #RESET_PW_DOWN_OV5640
+
+  $"<< CAMDRIVER::seq_deinit"
+;
+
+//=========================================================
+// VF Configuration
+//=========================================================
+////////////////////////////
+seq_vf_config_1 =
+  $">> CAMDRIVER::seq_vf_config_1 - preview"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_QCIF_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_1"
+;
+
+////////////////////////////
+
+seq_vf_config_2 =
+  $">> CAMDRIVER::seq_vf_config_2 - Video"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_QCIF_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_2"
+;
+
+
+////////////////////////////
+seq_vf_config_4 =
+  $">> CAMDRIVER::seq_vf_config_4 - preview"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_QVGA_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_4"
+;
+
+////////////////////////////
+seq_vf_config_5 =
+  $">> CAMDRIVER::seq_vf_config_5 - Video"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_QVGA_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_5"
+;
+
+////////////////////////////
+seq_vf_config_7 =
+  $">> CAMDRIVER::seq_vf_config_7 - preview"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_CIF_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_7"
+;
+
+////////////////////////////
+seq_vf_config_8 =
+  $">> CAMDRIVER::seq_vf_config_8 - Video"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_CIF_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_8"
+;
+
+////////////////////////////
+seq_vf_config_a =
+  $">> CAMDRIVER::seq_vf_config_a - preview"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_VGA_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_a"
+;
+
+////////////////////////////
+seq_vf_config_b =
+  $">> CAMDRIVER::seq_vf_config_b - Video"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_VGA_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_b"
+;
+
+////////////////////////////
+seq_vf_config_c =
+  $">> CAMDRIVER::seq_vf_config_c - preview"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_NTSC_30FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_c"
+;
+
+////////////////////////////
+seq_vf_config_d =
+  $">> CAMDRIVER::seq_vf_config_d - Video"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_NTSC_30FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_d"
+;
+
+////////////////////////////
+seq_vf_config_e =
+  $">> CAMDRIVER::seq_vf_config_e - preview"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_PAL_30FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_e"
+;
+
+////////////////////////////
+seq_vf_config_f =
+  $">> CAMDRIVER::seq_vf_config_f - Video"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_SDTV_PAL_30FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_f"
+;
+
+////////////////////////////
+seq_vf_config_10 =
+  $">> CAMDRIVER::seq_vf_config_10 - preview"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_WVGA_30FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_10"
+;
+
+////////////////////////////
+seq_vf_config_11 =
+  $">> CAMDRIVER::seq_vf_config_11 - Video"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_WVGA_30FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_11"
+;
+
+////////////////////////////
+seq_vf_config_13 =
+  $">> CAMDRIVER::seq_vf_config_13 - preview"
+
+       #IMAGE_WINDOWING_REGISTERS_OV5640_720P_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_13"
+;
+
+////////////////////////////
+seq_vf_config_14 =
+  $">> CAMDRIVER::seq_vf_config_14 - Video"
+
+       #IMAGE_WINDOWING_REGISTERS_OV5640_720P_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_14"
+;
+
+////////////////////////////
+seq_vf_config_16 =
+  $">> CAMDRIVER::seq_vf_config_16 - preview"
+    #IMAGE_WINDOWING_REGISTERS_OV5640_SXGA_30FPS
+  $"<< CAMDRIVER::seq_vf_config_16"
+;
+
+////////////////////////////
+seq_vf_config_17 =
+  $">> CAMDRIVER::seq_vf_config_17 - Video"
+    #IMAGE_WINDOWING_REGISTERS_OV5640_SXGA_30FPS
+  $"<< CAMDRIVER::seq_vf_config_17"
+;
+
+////////////////////////////
+seq_vf_config_19 =
+  $">> CAMDRIVER::seq_vf_config_19 - preview"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_1080P_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_19"
+;
+////////////////////////////
+seq_vf_config_1a =
+  $">> CAMDRIVER::seq_vf_config_1a - Video"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_1080P_30FPS
+
+  $"<< CAMDRIVER::seq_vf_config_1a"
+;
+
+////////////////////////////
+seq_vf_config_1d =
+  $">> CAMDRIVER::seq_vf_config_1d - preview"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_5MP_15FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_1d"
+;
+////////////////////////////
+seq_vf_config_1e =
+  $">> CAMDRIVER::seq_vf_config_1e - Video"
+  
+    #IMAGE_WINDOWING_REGISTERS_OV5640_5MP_15FPS
+    
+  $"<< CAMDRIVER::seq_vf_config_1e"
+;
+
+////////////////////////////
+seq_vf_config_20 =
+  $">> CAMDRIVER::seq_vf_config_20 - Preview"
+    #IMAGE_WINDOWING_REGISTERS_OV5640_CGA_30FPS
+  $"<< CAMDRIVER::seq_vf_config_20"
+;
+
+////////////////////////////
+seq_vf_config_21 =
+  $">> CAMDRIVER::seq_vf_config_21 - Video"
+    #IMAGE_WINDOWING_REGISTERS_OV5640_CGA_30FPS
+  $"<< CAMDRIVER::seq_vf_config_21"
+;
+
+seq_vf_config_33 =
+  $">> CAMDRIVER::seq_vf_config_33 (1280*720 - 60fps preview)"
+
+    #IMAGE_WINDOWING_REGISTERS_OV5640_720P_60FPS
+
+  $"<< CAMDRIVER::seq_vf_config_33"
+;
+
+////////////////////////////
+seq_vf_start =
+  $">> CAMDRIVER::seq_vf_start"
+
+  #SET_MIPI_CTRL
+  #EXIT_MIPI_STANDBY
+  #START_SENSOR_OV5640
+
+  $"<< CAMDRIVER::seq_vf_start"
+;
+
+////////////////////////////
+seq_vf_return =
+  $">> CAMDRIVER::seq_vf_return"
+
+  #SET_MIPI_CTRL
+  #EXIT_MIPI_STANDBY
+  #START_SENSOR_OV5640
+
+  $"<< CAMDRIVER::seq_vf_return"
+;
+
+////////////////////////////
+seq_vf_stop =
+  $">> CAMDRIVER::seq_vf_stop"
+
+  #RESET_MIPI_CTRL
+
+  $"<< CAMDRIVER::seq_vf_stop"
+;
+
+//=========================================================
+// SS Configuration
+//=========================================================
+////////////////////////////
+seq_ss_config_0 = 
+
+  $">> CAMDRIVER::seq_ss_config_0" 
+  #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_VGA
+  $"<< CAMDRIVER::seq_ss_config_0" 
+;
+
+////////////////////////////
+seq_ss_config_3 = 
+
+  $">> CAMDRIVER::seq_ss_config_3 (take QVGA picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_QVGA
+
+  $"<< CAMDRIVER::seq_ss_config_3" 
+;
+
+////////////////////////////
+seq_ss_config_6 = 
+
+  $">> CAMDRIVER::seq_ss_config_6" 
+  #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_VGA
+  $"<< CAMDRIVER::seq_ss_config_6" 
+;
+
+////////////////////////////
+seq_ss_config_9 = 
+
+  $">> CAMDRIVER::seq_ss_config_9 (take Jpeg VGA picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_VGA
+
+  $"<< CAMDRIVER::seq_ss_config_9" 
+;
+
+////////////////////////////
+seq_ss_config_12 = 
+
+  $">> CAMDRIVER::seq_ss_config_12 (take 1MP picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_1MP
+
+  $"<< CAMDRIVER::seq_ss_config_12" 
+;
+
+////////////////////////////
+seq_ss_config_15 = 
+
+  $">> CAMDRIVER::seq_ss_config_15 (take 1.4MP picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_1_4MP
+
+  $"<< CAMDRIVER::seq_ss_config_15" 
+;
+
+////////////////////////////
+seq_ss_config_18 = 
+
+  $">> CAMDRIVER::seq_ss_config_18 (take 2MP picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_2MP
+
+  $"<< CAMDRIVER::seq_ss_config_18" 
+;
+
+////////////////////////////
+seq_ss_config_1b = 
+
+  $">> CAMDRIVER::seq_ss_config_1b(take 3.2MP picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_3MP
+
+  $"<< CAMDRIVER::seq_ss_config_1b" 
+;
+
+////////////////////////////
+seq_ss_config_1c = 
+
+  $">> CAMDRIVER::seq_ss_config_1c (take 5MP picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_5MP
+
+  $"<< CAMDRIVER::seq_ss_config_1c" 
+;
+
+////////////////////////////
+seq_ss_config_1f = 
+
+  $">> CAMDRIVER::seq_ss_config_1f (take CGA picture)" 
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_CGA
+
+  $"<< CAMDRIVER::seq_ss_config_1f" 
+;
+
+////////////////////////////
+seq_ss_config_22 =
+
+  $">> CAMDRIVER::seq_ss_config_22 (take CGAp picture)"
+    
+      #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_CGAP
+
+  $"<< CAMDRIVER::seq_ss_config_22"
+;
+
+////////////////////////////
+seq_ss_config_316 = 
+
+  $">> CAMDRIVER::seq_ss_config_16" 
+  #IMAGE_WINDOWING_REGISTERS_OV5640_JPEG_VGA
+  $"<< CAMDRIVER::seq_ss_config_16" 
+;
+
+////////////////////////////
+
+seq_ss_start =
+  $">> CAMDRIVER::seq_ss_start"
+
+  #SET_MIPI_CTRL
+
+  $"<< CAMDRIVER::seq_ss_start"
+;
+
+////////////////////////////
+seq_ss_take =
+  $">> CAMDRIVER::seq_ss_take"
+
+  $"<< CAMDRIVER::seq_ss_take"
+;
+
+////////////////////////////
+seq_ss_stop =
+  $">> CAMDRIVER::seq_ss_stop"
+    
+  #RESET_MIPI_CTRL
+
+  $"<< CAMDRIVER::seq_ss_stop"
+;
+
+////////////////////////////
+seq_focus_status =
+
+  $">> CAMDRIVER::seq_focus_status"
+
+  //#GET_REG(300A)
+
+  $"<< CAMDRIVER::seq_focus_status"
+
+;
+
+cam_focus_result = 80,22;
+
+
+//=========================================================
+// start of properties
+//=========================================================
+
+// --- Exposure control property -------------------------
+seq_set_prop_0_0 = $"=== exposure test value 0 (Off), nothing is sent to camera ===";
+seq_set_prop_0_1 = $"=== exposure test value 1 (Auto), nothing is sent to camera ===";
+seq_set_prop_0_2 = $"=== exposure test value 2 (Night), nothing is sent to camera ===";
+seq_set_prop_0_3 = $"=== exposure test value 3 (Backlight), nothing is sent to camera ===";
+seq_set_prop_0_4 = $"=== exposure test value 4 (Spotlight), nothing is sent to camera ===";
+seq_set_prop_0_5 = $"=== exposure test value 5 (Sports), nothing is sent to camera ===";
+seq_set_prop_0_6 = $"=== exposure test value 6 (Snow), nothing is sent to camera ===";
+seq_set_prop_0_7 = $"=== exposure test value 7 (Beach), nothing is sent to camera ===";
+seq_set_prop_0_8 = $"=== exposure test value 8 (LargeAperture), nothing is sent to camera ===";
+seq_set_prop_0_9 = $"=== exposure test value 9 (SmallAperture), nothing is sent to camera ===";
+
+// --- White balance property -------------------------
+
+/* +ER336738 */
+seq_set_prop_1_1 =
+$"=== WB Auto ==="
+    3406 00 $f 
+    5180 ff $f 
+    5181 f2 $f 
+    5182 11 $f 
+    5183 14 $f 
+    5184 25 $f 
+    5185 24 $f 
+    5186 06 $f 
+    5187 09 $f 
+    5188 09 $f 
+    5189 7b $f 
+    518a 54 $f 
+    518b b8 $f 
+    518c b2 $f 
+    518d 42 $f 
+    518e 3d $f 
+    518f 56 $f 
+    5190 46 $f 
+    5191 f8 $f 
+    5192 04 $f 
+    5193 70 $f 
+    5194 f0 $f 
+    5195 f0 $f 
+    5196 03 $f 
+    5197 01 $f 
+    5198 05 $f 
+    5199 42 $f 
+    519a 04 $f 
+    519b 00 $f 
+    519c 07 $f 
+    519d 28 $f 
+    519e 38 $f
+;
+
+seq_set_prop_1_2 =
+$"=== WB Daylight ==="
+//
+//    $f 
+//    3406 $r1 0
+//    $s0.0 1 $f
+//    3406 $w0 $f
+    
+//#GET_REG(3406)      // read OV5640 Device ID number. 
+//    3406 01 $f        // Read and change to (value & 1)
+//    3400 06 $f
+//    3401 1c $f
+//    3402 04 $f
+//    3403 00 $f
+//    3404 04 $f
+//    3405 f3 $f
+
+    3406 01  $f        // Seq from Omnivision
+    3400 05  $f
+    3401 48 $f
+    3402 04  $f
+    3403 00 $f
+    3404 07  $f
+    3405 cf $f
+;
+
+seq_set_prop_1_3 =
+$"=== WB Cloudy ==="
+//    3406 01 $f    // Read and change to (value & 1)
+//    3400 06 $f
+//    3401 48 $f
+//    3402 04 $f
+//    3403 00 $f
+//    3404 04 $f
+//    3405 d3 $f
+
+    3406 01  $f        // Seq from Omnivision
+    3400 06  $f
+    3401 48 $f
+    3402 06  $f
+    3403 00 $f
+    3404 0a  $f
+    3405 d3 $f
+;
+
+seq_set_prop_1_6 =
+$"=== WB Fluorescent ==="
+    3406 01 $f        // Seq from Omnivision
+    3400 04 $f
+    3401 10 $f
+    3402 04 $f
+    3403 00 $f
+    3404 08 $f
+    3405 40 $f
+;
+
+seq_set_prop_1_7 =
+$"=== WB Incandescent ==="
+//    3406 01 $f    // Read and change to (value & 1)
+//    3400 04 $f
+//    3401 00 $f
+//    3402 04 $f
+//    3403 00 $f
+//    3404 04 $f
+//    3405 00 $f
+
+    3406 01 $f        // Seq from Omnivision
+    3400 06 $f     
+    3401 1c $f
+    3402 04 $f
+    3403 00 $f
+    3404 04 $f
+    3405 f3 $f
+;
+
+seq_set_prop_0_8 = $"=== exposure test value 8 (LargeAperture), nothing is sent to camera ===";
+seq_set_prop_0_9 = $"=== exposure test value 9 (SmallAperture), nothing is sent to camera ===";
+
+// --- Flicker cancellation property -------------------------
+seq_set_prop_2_0 = $"===  Flicker mode test value 0 (Off), nothing is sent to camera ===";
+seq_set_prop_2_1 = $"===  Flicker mode test value 1 (Auto), nothing is sent to camera ===";
+seq_set_prop_2_2 = $"===  Flicker mode test value 2 (50Hz), nothing is sent to camera ===";
+seq_set_prop_2_3 = $"===  Flicker mode test value 3 (60Hz), nothing is sent to camera ===";
+
+// ---- Focus Mode property 0xc -------------
+seq_set_prop_6_0 = $"=== Focus Mode test value OFF, nothing is sent to camera ===";
+seq_set_prop_6_1 = $"=== Focus Mode test value MANUAL, nothing is sent to camera ===";
+seq_set_prop_6_2 = $"=== Focus Mode test value AUTO, nothing is sent to camera ===";
+seq_set_prop_6_3 = $"=== Focus Mode test value AUTOLOCK, nothing is sent to camera ===";
+
+// ---- Focus Macro property 0xc -------------
+seq_set_prop_7_0 = $"=== Focus Macro test value OFF, nothing is sent to camera ===";
+seq_set_prop_7_1 = $"=== Focus Macro test value ON, nothing is sent to camera ===";
+
+// --- Effect property a -------------------------
+//  0 => normal,  1 => black & white,      2 => sepia 
+//  3 => Bluish, 4 => Reddish,   5 => Greenish
+//  6 => Negative
+//------------------------------------------------
+// NOTE: 
+/*------------------------------------------------------------*/
+seq_set_prop_a =   $"=== Effects setting  ===";            
+seq_set_prop_a_0 = #EFFECTS_NORMAL;        //OV5640 Normal
+seq_set_prop_a_1 = #EFFECTS_BW;            //OV5640 B & W
+seq_set_prop_a_2 = #EFFECTS_NEG;        //OV5640 Sepia
+seq_set_prop_a_3 = #EFFECTS_BLUISH;        //OV5640 Bluish
+seq_set_prop_a_4 = #EFFECTS_SEPIA;        //OV5640 Reddish
+seq_set_prop_a_5 = #EFFECTS_GREENISH;    //OV5640 Greenish
+seq_set_prop_a_6 = #EFFECTS_NEG;        //OV5640 Negative
+seq_set_prop_a_7 = #EFFECTS_NEG;        //OV5640 Negative
+seq_set_prop_a_8 = #EFFECTS_NEG;        //OV5640 Negative
+
+// ---- Contrast property 0xc -------------
+seq_set_prop_c_0 = $"=== Contrast test value 0, nothing is sent to camera ===";
+seq_set_prop_c_1 = $"=== Contrast test value 1, nothing is sent to camera ===";
+seq_set_prop_c_2 = $"=== Contrast test value 2, nothing is sent to camera ===";
+seq_set_prop_c_3 = $"=== Contrast test value 3, nothing is sent to camera ===";
+seq_set_prop_c_4 = $"=== Contrast test value 4, nothing is sent to camera ===";
+seq_set_prop_c_5 = $"=== Contrast test value 5, nothing is sent to camera ===";
+seq_set_prop_c_6 = $"=== Contrast test value 6, nothing is sent to camera ===";
+
+// ---- Brightness property 0xe -------------
+seq_set_prop_e_0 = $"=== Brightness test value 0, nothing is sent to camera ===";
+seq_set_prop_e_1 = $"=== Brightness test value 1, nothing is sent to camera ===";
+seq_set_prop_e_2 = $"=== Brightness test value 2, nothing is sent to camera ===";
+seq_set_prop_e_3 = $"=== Brightness test value 3, nothing is sent to camera ===";
+seq_set_prop_e_4 = $"=== Brightness test value 4, nothing is sent to camera ===";
+
+// ---- Gamma property 0x10 -------------
+seq_set_prop_10_0 = $"=== Gamma test value 0, nothing is sent to camera ===";
+seq_set_prop_10_64 = $"=== Gamma test value 64, nothing is sent to camera ===";
+seq_set_prop_10_c8 = $"=== Gamma test value c8, nothing is sent to camera ===";
+
+// ---- Saturation property 0x13 -------------
+seq_set_prop_13_0 = $"=== Saturation test value 0, nothing is sent to camera ===";
+seq_set_prop_13_1 = $"=== Saturation test value 1, nothing is sent to camera ===";
+seq_set_prop_13_2 = $"=== Saturation test value 2, nothing is sent to camera ===";
+seq_set_prop_13_3 = $"=== Saturation test value 3, nothing is sent to camera ===";
+seq_set_prop_13_4 = $"=== Saturation test value 4, nothing is sent to camera ===";
+
+// ---- Exposure compensation property 0x14 -------------
+seq_set_prop_14_0 = $"=== Exposure compensation test value 0, nothing is sent to camera ===";
+seq_set_prop_14_1 = $"=== Exposure compensation test value 1, nothing is sent to camera ===";
+seq_set_prop_14_2 = $"=== Exposure compensation test value 2, nothing is sent to camera ===";
+seq_set_prop_14_3 = $"=== Exposure compensation test value 3, nothing is sent to camera ===";
+seq_set_prop_14_4 = $"=== Exposure compensation test value 4, nothing is sent to camera ===";
+seq_set_prop_14_5 = $"=== Exposure compensation test value 5, nothing is sent to camera ===";
+seq_set_prop_14_6 = $"=== Exposure compensation test value 6, nothing is sent to camera ===";
+
+// ---- Scene mode property 0x15 -------------
+seq_set_prop_15_0 = $"=== Scene mode Auto, nothing is sent to camera ===";
+seq_set_prop_15_1 = $"=== Scene mode Portrait, nothing is sent to camera ===";
+seq_set_prop_15_2 = $"=== Scene mode Landscape, nothing is sent to camera ===";
+seq_set_prop_15_3 = $"=== Scene mode Night, nothing is sent to camera ===";
+seq_set_prop_15_4 = $"=== Scene mode Night Portrait, nothing is sent to camera ===";
+seq_set_prop_15_5 = $"=== Scene mode Sport, nothing is sent to camera ===";
+seq_set_prop_15_6 = $"=== Scene mode Beach, nothing is sent to camera ===";
+seq_set_prop_15_7 = $"=== Scene mode Snow, nothing is sent to camera ===";
+seq_set_prop_15_8 = $"=== Scene mode Party, nothing is sent to camera ===";
+seq_set_prop_15_9 = $"=== Scene mode Action, nothing is sent to camera ===";
+seq_set_prop_15_a = $"=== Scene mode theatre, nothing is sent to camera ===";
+seq_set_prop_15_b = $"=== Scene mode Sunset, nothing is sent to camera ===";
+seq_set_prop_15_c = $"=== Scene mode Steady photo, nothing is sent to camera ===";
+seq_set_prop_15_d = $"=== Scene mode Fireworks, nothing is sent to camera ===";
+seq_set_prop_15_e = $"=== Scene mode Candle Light, nothing is sent to camera ===";
+seq_set_prop_15_f = $"=== Scene mode Barcode, nothing is sent to camera ===";
+
+// ---- Sharpness property 0x16 -------------
+seq_set_prop_16_0 = $"=== Sharpness test value 0, nothing is sent to camera ===";
+seq_set_prop_16_1 = $"=== Sharpness test value 1, nothing is sent to camera ===";
+seq_set_prop_16_2 = $"=== Sharpness test value 2, nothing is sent to camera ===";
+seq_set_prop_16_3 = $"=== Sharpness test value 3, nothing is sent to camera ===";
+seq_set_prop_16_4 = $"=== Sharpness test value 4, nothing is sent to camera ===";
+
+// ---- iso property 0x17 -------------
+seq_set_prop_17_0 =
+$">> CAMDRIVER::seq_set_prop_17_0 (ISO AUTO)"
+$"=== iso test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_17_0";
+seq_set_prop_17_1 =
+$">> CAMDRIVER::seq_set_prop_17_1 (ISO 100)"
+$"=== iso test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_17_1";
+seq_set_prop_17_2 =
+$">> CAMDRIVER::seq_set_prop_17_2 (ISO 200)"
+$"=== iso test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_17_2";
+seq_set_prop_17_3 =
+$">> CAMDRIVER::seq_set_prop_17_3 (ISO 400)"
+$"=== iso test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_17_3";
+seq_set_prop_17_4 =
+$">> CAMDRIVER::seq_set_prop_17_4 (ISO 800)"
+$"=== iso test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_17_4";
+seq_set_prop_17_5 =
+$">> CAMDRIVER::seq_set_prop_17_5 (ISO 1600)"
+$"=== iso test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_17_5";
+seq_set_prop_17_6 =
+$">> CAMDRIVER::seq_set_prop_17_6 (ISO 3200)"
+$"=== iso test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_17_6";
+
+// ---- Metering mode property 0x18 -------------
+seq_set_prop_18_0 =
+$">> CAMDRIVER::seq_set_prop_18_0 (Metering Exposure Matrix)"
+$"=== Metering mode test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_18_0";
+seq_set_prop_18_1 =
+$">> CAMDRIVER::seq_set_prop_18_1 (Metering Exposure Spot)"
+$"=== Metering mode test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_18_1";
+seq_set_prop_18_2 =
+$">> CAMDRIVER::seq_set_prop_18_2 (Metering Exposure Average)"
+$"=== Metering mode test value, nothing is sent to camera ==="
+$"<< CAMDRIVER::seq_set_prop_18_2";
+
+
+// ---- Focus range property 0x19 -------------
+seq_set_prop_19_0 = $"=== Focusrange test value: Auto, nothing sent to camera ===";
+seq_set_prop_19_1 = $"=== Focusrange test value: Hyperfocal, nothing sent to camera ===";
+seq_set_prop_19_2 = $"=== Focusrange test value: Normal, nothing sent to camera ===";
+seq_set_prop_19_3 = $"=== Focusrange test value: Supermacro, nothing sent to camera ===";
+seq_set_prop_19_4 = $"=== Focusrange test value: Macro, nothing sent to camera ===";
+seq_set_prop_19_5 = $"=== Focusrange test value: Infinity, nothing sent to camera ===";
+
+
+// --- Frame Rate property 0x1a ----------------
+seq_set_prop_1a_0 =
+$" >> CAMDRIVER::seq_set_prop_1a_0 (Frame Rate auto) "
+#SET_VARABLE_FRAMERATE
+;
+seq_set_prop_1a_a =
+$" >> CAMDRIVER::seq_set_prop_1a_a (Frame Rate 10 FPS) "
+#SET_FIXED_10FPS
+;
+seq_set_prop_1a_f =
+$" >> CAMDRIVER::seq_set_prop_1a_f (Frame Rate 15 FPS) "
+#SET_FIXED_15FPS
+;
+seq_set_prop_1a_14 =
+$" >> CAMDRIVER::seq_set_prop_1a_14 (Frame Rate 20 FPS) "
+ #SET_FIXED_20FPS
+;
+seq_set_prop_1a_1e =
+$" >> CAMDRIVER::seq_set_prop_1a_1e (Frame Rate 30 FPS) "
+ #SET_FIXED_30FPS
+;
+seq_set_prop_1a_1f =
+$" >> CAMDRIVER::seq_set_prop_1a_1f (Frame Rate 30 FPS) "
+ #SET_FIXED_30FPS
+;
+
+seq_vf_zoom_0 =
+$"seq_vf_zoom_1.0"
+;
+
+seq_vf_zoom_1 =
+$"seq_vf_zoom_1.5"
+;
+
+seq_vf_zoom_2 =
+$"seq_vf_zoom_2.0"
+;
+
+seq_vf_zoom_3 =
+$"seq_vf_zoom_2.5"
+;
+
+seq_vf_zoom_4 =
+$"seq_vf_zoom_3.0"
+;
+
+seq_vf_zoom_5 =
+$"seq_vf_zoom_3.5"
+;
+
+seq_vf_zoom_6 =
+$"seq_vf_zoom_4.0"
+;
+

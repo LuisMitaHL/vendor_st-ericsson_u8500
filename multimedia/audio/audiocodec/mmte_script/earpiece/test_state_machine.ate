@@ -1,0 +1,13 @@
+test_start SINKS_003 Test State Machine Earpiece
+
+OMX_GetHandle    earpiece OMX.ST.AFM.EARPIECE
+
+OMX_SendCommand earpiece OMX_CommandPortDisable 1
+MMTE_WaitEvent  earpiece OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+do $(NOMADIK)/audiocodec/mmte_script/state_machine_mono.ate earpiece
+
+
+test_end
+

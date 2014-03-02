@@ -1,0 +1,31 @@
+ifneq ($(MMPROCESSOR),x86)
+  ifeq ($(findstring rvct,$(MMCOMPILER)),rvct)  # current care for mop compilations
+#Compiling for ARM with rvct
+#CFLAGS += -O3
+ifeq ($(MMPROCESSOR),cortexA9)
+#Specific flags for NEON
+CPPFLAGS+= -DTHUMB_OPT -DARM_DATA_PRELOAD 
+CFLAGS+= --asm --min_array_alignment=8 #--diag_suppress 3017
+# --thumb //commented by mansoor for gingerbread 7 Jan 11 
+ifeq ($(MMCOMPILER),rvct)
+CPPFLAGS+= -DBUILD_FIXED
+endif
+else
+#For ARM9 and ARM11 (ndk15/20)
+CPPFLAGS+=-DRVDS_2_2
+ifeq ($(MMCOMPILER),rvct)
+CPPFLAGS+= -DBUILD_FIXED
+endif
+endif
+else
+ifeq ($(findstring mmdsp,$(MMPROCESSOR)),mmdsp)
+#mmdsp
+CPPFLAGS+=-DMMDSP
+else
+#gcc
+CFLAGS+=-O3
+endif
+endif
+endif
+
+

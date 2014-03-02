@@ -1,0 +1,199 @@
+//=========================================================================
+// A script to capture a BMS while sensor is streaming
+//=========================================================================
+local &addr &witdh &height
+local &subfullwidth &fullwidth &fullheight
+local &addrh &addrl &imagesize
+local &idx &data &type &statusline
+
+if run()
+   Break
+
+//-----------------------------------------------------
+// Read Width and Height
+//-----------------------------------------------------
+&addr=0x1F70000
+
+//......................................................
+// read Image size
+//......................................................
+&width=d.w(A:0xa0252584)	//ISP_SMIARX_X_OUTPUT_SIZE
+&height=d.w(A:0xa0252588)	//ISP_SMIARX_Y_OUTPUT_SIZE
+
+//......................................................
+// Read Status lines
+//......................................................
+&idx=0
+&statusline=0
+WHILE &idx<8
+(
+	&data=d.w(A:0xa02525A0+2*&idx)	//ISP_SMIARX_DESCRIPTOR_X
+	&type=&data/0x1000
+	if (&type==1)
+	(
+		&statusline=&data%0x1000
+		&idx=8
+	)
+	&idx=&idx+1
+)
+print "statusline=&statusline"
+
+//......................................................
+// Compute full DMA width and height
+//......................................................
+&fullwidth=(((&width-1)/24)+1)*24
+&fullheight=&height+&statusline
+
+&fullwidth=FORMAT.UDECIMAL(0,&fullwidth)+"."
+&fullheight=FORMAT.UDECIMAL(0,&fullheight)+"."
+
+print "addr=&addr"
+print "width=&width height=&height"
+print "fullwidth=&fullwidth fullheight=&fullheight"
+
+ 
+//-----------------------------------------------------
+// Capture dialog
+//-----------------------------------------------------
+DIALOG
+(&
+	HEADER "BMS"
+	POS 0. 0.
+	LINE "addr"
+	POS 12. 0.
+ADDR:	EDIT "&addr" ""
+
+	POS 0. 1.
+	LINE "width"
+	POS 12. 1.
+WIDTH:	EDIT "&fullwidth" ""
+
+	POS 0. 2.
+	LINE "height"
+	POS 12. 2.
+HEIGHT:	EDIT "&fullheight" ""
+
+BT_GRAB: BUTTON "Grab"
+	(
+		GOSUB Grab
+	)
+BT_REST: BUTTON "Reset DMA"
+	(
+		GOSUB Reset
+	)
+BT_SAVE: BUTTON "Save to file"
+	(
+		GOSUB SaveTofile
+	)
+
+BT_DISP: BUTTON "Data.Image"
+	(
+		GOSUB Display
+	)
+BT_IMGV: BUTTON "Imageviewer"
+	(
+		GOSUB DisplayWithImageviewer
+	)
+)
+dialog.disable BT_SAVE
+dialog.disable BT_DISP
+dialog.disable BT_IMGV
+stop
+enddo
+
+
+//-----------------------------------------------------
+Grab:
+//-----------------------------------------------------
+
+	PER.S.F A:0xA0254010 %W 0x3 0x3				//SIA_CLK_ENABLE, enable clock for DMA+STBP
+
+	//.............................................
+	// Enable BMS0
+	//.............................................
+	local &opcode &transaction_id
+
+	// Disable interrupt (XP70->MMDSP)
+	PER.S A:0xA0252210 %LONG 2		//ITM_FW_EVENT0_EN_BCLR (disbale int)
+
+	// Write Page Element
+	PER.S A:0xa0252064 %WORD 302		//USER_IF_PAGE_ELEMENT (302=DataPathControl_e_Flag_BayerStore0Enable_Byte0)
+	PER.S A:0xa025206C %LONG 1		//USER_IF_WR_DATA (1=Flag_e_TRUE)
+
+	&opcode=d.w(A:0xa0252068)		//USER_IF_OPC
+	&transaction_id=&opcode/0x100
+	&transaction_id=(&transaction_id+1)%0x100
+	&opcode=(&transaction_id*0x100)+1	//opcode=write
+	print "opcode=&opcode"
+	PER.S A:0xa0252068 %WORD &opcode	//USER_IF_OPC
+
+	// Re-enable interrupt (XP70->MMDSP)
+	PER.S A:0xA0252208 %LONG 2		//ITM_FW_EVENT0_STATUS_BCLR (clear int)
+	PER.S A:0xA0252214 %LONG 2		//ITM_FW_EVENT0_EN_BSET (enable int)
+
+	//.............................................
+	// Grab
+	//.............................................
+ 	&addr=dialog.string(ADDR)
+	&fullwidth=dialog.string(WIDTH)
+	&fullheight=dialog.string(HEIGHT)
+
+	&subfullwidth=&fullwidth/8
+	&addrh=&addr/10000
+	&addrl=&addr%10000
+
+	print "addrh=&addrh addrl=&addrl"
+	print "fullheight=&fullheight subfullwidth=&subfullwidth"
+
+	PER.S A:0xA02544A0 %WORD &addrl				//DMA_IRP2_DRS_L
+	PER.S A:0xA02544A2 %WORD &addrh				//DMA_IRP2_DRS_H
+	PER.S.F A:0xA02544A4 %W 0xFFF8 &subfullwidth		//DMA_IRP2_DFW
+	PER.S.F A:0xA02544A6 %W 0xFFF8 &subfullwidth		//DMA_IRP2_DWW
+	PER.S.F A:0xA02544A8 %W 0xFFFF &fullheight		//DMA_IRP2_DWH
+	PER.S A:0xA0254400 %WORD 4000				//DMA_ENR
+
+	PER.S A:0xA025489E %WORD 1				//IPP_SD_BMS_FORMAT 1=BMS0, RAW8
+	PER.S A:0xA0254894 %WORD 1				//IPP_SD_BMS_ENABLE_SET
+
+	dialog.enable BT_SAVE
+	dialog.enable BT_DISP
+	dialog.enable BT_IMGV
+	RETURN
+
+
+//-----------------------------------------------------
+SaveTofile:
+//-----------------------------------------------------
+	local &filename
+	winpos ,,,,,, filebox normal "Save BMS to..."
+	dialog.fileW "*.raw"
+	entry &filename
+
+	&imagesize=&fullwidth*&fullheight
+	print "addr=&addr imagesize=&imagesize"
+	data.save.binary &filename A:&addr++&imagesize
+	RETURN
+
+//-----------------------------------------------------
+Display:
+//-----------------------------------------------------
+	data.image A:&addr &fullwidth &fullheight /GRAYSCALE8
+	RETURN
+
+//-----------------------------------------------------
+DisplayWithImageviewer:
+//-----------------------------------------------------
+	local &filename
+	&filename=OS.PTD()+"\image_"+FORMAT.DECIMAL(0,&fullwidth)+"_"+FORMAT.DECIMAL(0,&fullheight)+".raw"
+	
+	&imagesize=&fullwidth*&fullheight
+	data.save.binary &filename A:&addr++&imagesize
+	
+	os.area "start &filename"
+	RETURN
+
+//-----------------------------------------------------
+Reset:
+//-----------------------------------------------------
+	PER.S A:0xA0254430 %WORD 0x4000		//DMA_SOFT_RST, bit IRP2_PRA_W
+	RETURN

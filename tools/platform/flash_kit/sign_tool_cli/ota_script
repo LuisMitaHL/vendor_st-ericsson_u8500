@@ -1,0 +1,54 @@
+#!/bin/sh
+
+EPWD=`dirname $0`
+if [ -z $EPWD ]; then
+  EPWD=.
+fi
+
+EXECUTABLE=$EPWD/mkbootimgorig
+DOSIGN=n$LOCAL_SIGN_EXECUTABLE
+DOLOG=n$LOCAL_LOG_FILE
+
+if [ $DOLOG != "n" ]; then
+  LOGFILE=$LOCAL_LOG_FILE
+else
+  LOGFILE=`mktemp /tmp/mkbootimg-XXXXXXXXXX`
+fi
+
+if [ ! -f $EXECUTABLE ]; then
+  echo "Original executable file not found!" >> $LOGFILE
+  exit 1
+fi
+
+OUTPUT=`echo $* | sed -n -e 's/^.*--output \([-a-zA-Z0-9\_\/]*\).*$/\1/p'`
+
+$EXECUTABLE $* >> $LOGFILE 2>&1
+
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
+if [ $DOSIGN != "n" ]; then
+  if [ ! -d $LOCAL_SIGNPACKAGEROOT ]; then
+    echo "Sing package root is not set!" >> $LOGFILE
+    exit 1
+  fi
+  if [ ! -d $LOCAL_KEYROOT ]; then
+    echo "Sing key root is not set!" >> $LOGFILE
+    exit 1
+  fi
+
+  if [ -f $OUTPUT ]; then
+    FILETMP=`mktemp`
+    cat $OUTPUT > $FILETMP
+    $LOCAL_SIGN_EXECUTABLE -v --local -s ape_normal -p $LOCAL_SIGN_PACKAGE $OUTPUT $FILETMP >> $LOGFILE 2>&1
+    cat $FILETMP > $OUTPUT
+    rm $FILETMP
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
+  else
+    echo "Output file not exist!"
+    exit 1
+  fi
+fi

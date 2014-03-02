@@ -1,0 +1,29 @@
+#ifndef SPECIFIC_FRAMEINFO_IDT
+#define SPECIFIC_FRAMEINFO_IDT
+
+
+typedef struct
+{	
+    t_uint16 eProfile; 
+    t_uint16 eLevel; 
+
+	  // param out
+	  t_uint16 error_type;          /**<\brief Error status */
+    t_uint16 frame_interpolation_hint_enabled;  /**< \brief picture layer frame interpolation hint set (INTERPFRM)   */
+    t_uint16 range_reduction_frame_enabled;     /**< \brief picture layer frame rangered flag  (RANGEREDFRM)   */
+    t_uint16 b_fraction_numerator;              /**< \brief picture layer b fraction numerator (BFRACTION)  */
+    t_uint16 b_fraction_denominator;            /**< \brief picture layer b fraction denominatror (BFRACTION)  */
+    t_uint16 buffer_fullness;                   /**< \brief picture layer buffer fullness (BF)   */
+    t_uint16 picture_res;                       /**< \brief picture resolution: 1x1 == 0 2x1 == 1,1x2 == 2, 2x2 = 3  */
+    t_uint16 max_picture_width;                 /**< \brief maximum width of the picture (Annex J HORIZ_SIZE)   */
+    t_uint16 max_picture_height;                /**< \brief maximum height of the picture (Annex J VERT_SIZE)   */
+    t_uint16 picture_width;                     /**< \brief true width of the decoded picture (including res)   */
+    t_uint16 picture_height;                    /**< \brief true height of the decoded picture   */
+    t_uint16 picture_type;                      /**< \brief picture type: I==0, P==1,B==2,BI==3,SKIPPED==4   */
+    t_uint16 bImmediateRelease;                 // immediate release I frame
+} t_specific_frameinfo;
+
+
+
+#endif
+

@@ -1,0 +1,64 @@
+# do $(IMAGING_PATH)/ite_nmf/script/common/test_max_exposuretime_post_run.ite
+
+
+# test maximum exposure time value exported by FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 page element
+# in post-boot run. i.e. frame rate is set after giving START command, than ISP is STOPed and STARTed again.
+
+## Important : this test case tests exposure time on the basis of framerate exported by ISP FW in FrameParamStatus_u32_frameRate_x100_Byte0 page element.
+
+LRHR prepare
+
+# Test FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 for 5 fps
+LRHR start
+wait 2
+manualfps 5 NIL
+## toggle system coin and wait. As told by Atul use glace linked mechanism for checking coin toggle status.
+glacehistoexp req
+testMaxExposureTime
+LRHR stop
+
+# Test FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 for 10 fps
+
+LRHR start
+wait 2
+manualfps 10 NIL
+## toggle system coin and wait. As told by Atul use glace linked mechanism for checking coin toggle status.
+glacehistoexp req
+testMaxExposureTime
+LRHR stop
+
+# Test FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 for 15 fps
+LRHR start
+wait 2
+manualfps 15 NIL
+## toggle system coin and wait. As told by Atul use glace linked mechanism for checking coin toggle status.
+glacehistoexp req
+testMaxExposureTime
+LRHR stop
+
+# Test FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 for 20 fps
+LRHR start
+wait 2
+manualfps 20 NIL
+## toggle system coin and wait. As told by Atul use glace linked mechanism for checking coin toggle status.
+glacehistoexp req
+testMaxExposureTime
+LRHR stop
+
+# Test FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 for 25 fps
+LRHR start
+wait 2
+manualfps 25 NIL
+## toggle system coin and wait. As told by Atul use glace linked mechanism for checking coin toggle status.
+glacehistoexp req
+testMaxExposureTime
+LRHR stop
+
+# Test FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 for 30 fps
+LRHR start
+wait 2
+manualfps 30 NIL
+## toggle system coin and wait. As told by Atul use glace linked mechanism for checking coin toggle status.
+glacehistoexp req
+testMaxExposureTime
+LRHR stop

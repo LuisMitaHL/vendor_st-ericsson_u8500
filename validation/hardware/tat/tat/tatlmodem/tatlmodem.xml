@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlmodem">
+	  <argument path="/DTH/MODEM/config/menus/menu_06modem.xml" type="FILE" user_data="ACT_MODEM_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlmodem/config/menus\nFilename=menu_06modem.xml</info> 
+	  </argument>
+	  <argument path="/DTH/MODEM/config/panels/modem.xml" type="FILE" user_data="ACT_MODEM_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlmodem/config/panels\nFilename=modem.xml</info> 
+	  </argument>
+    <action path="/DTH/MODEM/Connection/OpenClose" type="U32" user_data="ACT_MODEM_CONNECTION" set="DthModem_set" exec="DthModem_exec">
+      <enum>
+        <enum_item value="MODEM_CLOSE_ISI">Close</enum_item>
+        <enum_item value="MODEM_OPEN_ISI">Open</enum_item>
+      </enum>
+      <info>Label Action:Modem link</info>
+	  <argument path="/DTH/MODEM/Connection/OpenClose/State" type="U32" user_data="ARG_MODEM_CONNECTION_STATE" get="DthModem_get">
+        <enum>
+          <enum_item value="MODEM_ISI_CLOSED">Closed</enum_item>
+          <enum_item value="MODEM_ISI_OPENED">Opened</enum_item>
+        </enum>
+        <info>Label Box:Result</info>
+      </argument>
+    </action>
+    <action path="/DTH/MODEM/Context/Update" type="U32" user_data="ACT_MODEM_CONTEXT" exec="DthModem_exec">
+      <info>Label Action:Infos</info>
+	  <argument path="/DTH/MODEM/Context/Update/Mode" type="U32" user_data="ARG_MODEM_MODE" get="DthModem_get">
+        <enum>
+          <enum_item value="MODEM_NORMAL_MODE">Normal</enum_item>
+          <enum_item value="MODEM_LOCAL_MODE">Local</enum_item>
+          <enum_item value="MODEM_UNAVAILABLE">Unavailable</enum_item>
+          <enum_item value="MODEM_IN_RESET">In Reset</enum_item>
+          <enum_item value="MODEM_IN_ERROR">Error State</enum_item>
+        </enum>
+        <info>Label Box:Mode</info>
+      </argument>
+	  <argument path="/DTH/MODEM/Context/Update/State" type="U32" user_data="ARG_MODEM_CONNECTION_STATE" get="DthModem_get">
+        <enum>
+          <enum_item value="MODEM_ISI_CLOSED">Closed</enum_item>
+          <enum_item value="MODEM_ISI_OPENED">Opened</enum_item>
+        </enum>
+        <info>Label Box:Status</info>
+      </argument>
+	  <argument path="/DTH/MODEM/Context/Update/Owner" type="STRING" user_data="ARG_MODEM_OWNER" get="DthModem_get">
+         <info>Label Box:Feature</info>
+      </argument>
+    </action>
+    <action path="/DTH/MODEM/Mode/SetMode" type="U32" user_data="ACT_MODEM_SET_MODE" set="DthModem_set" exec="DthModem_exec">
+      <enum>
+        <enum_item value="MODEM_NORMAL_MODE">Normal</enum_item>
+        <enum_item value="MODEM_LOCAL_MODE">Local</enum_item>
+      </enum>
+      <info>Label Action:Set mode</info>
+    </action>
+    <action path="/DTH/MODEM/PwrMode/ActDeactive" type="U32" user_data="ACT_MODEM_POWER_MODE" set="DthModem_set" exec="DthModem_exec">
+	    <enum>
+		    <enum_item value="MODEM_MODE_LP_DISABLE">LP_disable</enum_item>
+		    <enum_item value="MODEM_MODE_LP_ENABLE">LP_enable</enum_item>
+	    </enum>
+	    <range min="0" max="255"/>
+	    <info>Label Action:Modem Power Mode</info>
+	    <argument path="/DTH/MODEM/PwrMode/ActDeactive/State" type="U8" user_data="ARG_MODEM_POWER_MODE_STATE" get="DthModem_get">
+		    <enum>
+			    <enum_item value="0">INIT_VAL</enum_item>
+			    <enum_item value="1">ERR_FILE_ERROR</enum_item>
+			    <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+			    <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+			    <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+			    <enum_item value="5">AP_NORMAL_OK</enum_item>
+			    <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+			    <enum_item value="7">AP_EXECUTE_OK</enum_item>
+			    <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+			    <enum_item value="9">AP_RUNNING_OK</enum_item>
+			    <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+			    <enum_item value="11">AP_IDLE_OK</enum_item>
+			    <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+			    <enum_item value="13">AP_SLEEP_OK</enum_item>
+			    <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+			    <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+			    <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+			    <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+			    <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+			    <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+			    <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+			    <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+			    <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+			    <enum_item value="23">HWACC_MODE_OK</enum_item>
+			    <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+			    <enum_item value="25">ARM_OPP_OK</enum_item>
+			    <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+			    <enum_item value="27">APE_OPP_OK</enum_item>
+			    <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+			    <enum_item value="29">DDR_OPP_OK</enum_item>
+			    <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+			    <enum_item value="31">MODEM_OPP_OK</enum_item>
+			    <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+			    <enum_item value="33">MODEM_RESET_OK</enum_item>
+			    <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+			    <enum_item value="35">AP_RESET_OK</enum_item>
+			    <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+		    </enum>
+		    <info>Label Box:Status</info>
+	    </argument>
+    </action>
+    <!-- must NOT be first in file because TATRAD would use 'Debug' as feature name instead of 'MODEM'! -->
+    <argument path="/DTH/Debug/MODEM/TraceLevel" type="U32" user_data="ARG_MODEM_DEBUG_LEVEL" get="tatlmodem_get_debug" set="DthModem_setDebug">
+      <enum>
+        <enum_item>SYSTEM</enum_item>
+        <enum_item>ALERT</enum_item>
+        <enum_item>CRITICAL</enum_item>
+        <enum_item>ERROR</enum_item>
+        <enum_item>WARNING</enum_item>
+        <enum_item>NOTICE</enum_item>
+        <enum_item>INFO</enum_item>
+        <enum_item>DEBUG</enum_item>
+      </enum>
+      <info>Label Box:Debug tatlmodem\nDynamic Control:TRUE</info>
+    </argument>
+  </module>
+</dthapi>

@@ -1,0 +1,22 @@
+;------------------------------------------------------------
+; busmon_show.cmm
+;------------------------------------------------------------
+; Show the busmon protocol window
+;
+; 071217 - DE Initial version
+;-----------------------------------------------------------
+
+
+if "&BUSMON_DATA"!=""
+(
+	; Open the trace list window
+	i.list w.IFID w.OVERFLOW w.DATA /track
+
+	; Open the protocol analyse window
+	WINTABS 74. 
+	i.proto &BUSMON_PROTO_DLL &BUSMON_IFID &BUSMON_OWERFLOW &BUSMON_DATA "&BUSMON_PLATFORM" "&PERL" "&BUSMON_PARSE_SCRIPT" "&BUSMON_PERL_INCLUDE" "&BUSMON_TRACEDATA_DIR" /track
+)
+else
+	print %ERROR "Busmon: Setup not done"
+
+ENDDO

@@ -1,0 +1,58 @@
+; ******************************************************************************
+; * File name : U8500_Modem_AnalyzeSharedMemory.cmm (trace32 menu file)
+; * Project : COREDUMP
+; * Date : (US) 22/06/2011
+; * Version : 
+; * Compiler name and release(s) :
+; *----------------------------------------------------------------------------*
+; *----------------------------------------------------------------------------*
+; *                                DESCRIPTION
+; *
+; * Object : The aim of the script is to analyze shared memory provided 
+;*			 with coredump (on SD card)
+; *
+; *----------------------------------------------------------------------------*
+; *----------------------------------------------------------------------------* 
+; *                                    EVOLUTION
+; *----------------------------------------------------------------------------* 
+; * Date       | Author          | Arnb   | Description
+; *----------------------------------------------------------------------------* 
+; * 22/06/2011 | Y.Martiniault   |  V1.0  | Creation
+; *----------------------------------------------------------------------------* 
+; ******************************************************************************
+
+local &MsgIndex &AddressXFile &SizeXFile
+
+area.create taskdesc
+area.clear taskdesc
+area.select taskdesc
+area.view taskdesc
+
+; Address of XFile from APE
+&AddressXFile=0xEFC2080
+&SizeXFile=0xC000 ;(48*1024)
+
+print " SHARED MEMORY ANALYSIS..... please wait  "
+
+; Save XFile buffer
+&TargetFolderPath=os.pwd()
+&CheckXFileValid=data.long(d:&AddressXFile+8)
+
+if &CheckXFileValid!=0
+(
+	&XfileName=data.string(d:&AddressXFile+8)
+	print "   XFILE Name = &CheckXFileValid"
+	data.save.binary xfile_&XfileName.bin (&AddressXFile+0x18)--(&AddressXFile+&SizeXFile)
+	&CheckXFileValid=FORMAT.DECIMAL(8,data.long.BIGENDIAN(d:&AddressXFile+0x14))
+	print "   XFILE Length = &CheckXFileValid bytes"
+	print "   XFILE Buffer has been saved in &TargetFolderPath\xfile_&XfileName.bin"
+)
+else
+(
+	print "   XFILE has not been enabled on modem."
+)
+
+
+
+
+

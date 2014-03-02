@@ -1,0 +1,31 @@
+#DTH script
+#Powersaving v1.0
+#Author: Guillaume Camus
+
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ResetModem2-2
+BEGIN ResetModem2-2
+
+WRITE /PWS/Reset/ActionResetModem/ResetModem/In_ResetMode 1
+EXEC /PWS/Reset/ActionResetModem/ResetModem EXEC /DTH/PWS/Reset/ActionResetModem/ResetModem
+WAIT 1
+READ /PWS/Reset/ActionResetModem/ResetModem/Out_Status  33
+
+END ResetModem2-2
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Reset AP1/5
+FEATURE ResetAP
+BEGIN ResetAP1-5
+
+WRITE /PWS/Reset/ActionResetAP/ResetAP/In_ResetMode 0
+EXEC /PWS/Reset/ActionResetAP/ResetAP EXEC /DTH/PWS/Reset/ActionResetAP/ResetAP
+WAIT 1
+READ /PWS/Reset/ActionResetAP/ResetAP/Out_Status  35
+
+END ResetAP1-5
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////

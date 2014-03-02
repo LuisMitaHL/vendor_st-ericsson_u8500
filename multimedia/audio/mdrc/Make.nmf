@@ -1,0 +1,15 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+#include make.ost_conf
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE
+CPPFLAGS+=-I$(MM_NMF_COMP_SRC_COMMON_DIR)/libeffects/libmdrc5b/include/
+
+USER2MPCITFS_CPP=mdrc.nmfil.effect.configure
+
+
+COMPONENTS= mdrc.nmfil.effect
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

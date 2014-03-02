@@ -1,0 +1,35 @@
+#
+# Tatlhdmi configuration
+#
+
+menuconfig TATLHDMI
+	bool "Tatlhdmi"
+	depends on DTHSRVHELPER && TATTOOLS
+	help
+	  depends on DTHSRVHELPER and TATTOOLS
+
+if TATLHDMI
+
+config TATLHDMI_DIR
+	string
+	default ../tat/tat/tatlhdmi
+
+config TATLHDMI_DEPS
+	string
+	default "DTHSRVHELPER TATTOOLS"
+
+config TATLHDMI_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLHDMI
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLHDMI_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLHDMI
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLHDMI

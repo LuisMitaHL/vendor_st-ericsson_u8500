@@ -1,0 +1,326 @@
+/*****************************************************************************
+ *  ST-Ericsson GPS Technology
+ *  Copyright (C) 2009 ST-Ericsson.
+ *  All rights reserved
+ *  Date: 03-12-2009
+ *  Author: Rahul Ranade
+ *  Email : rahul.ranade@stericsson.com
+ *****************************************************************************/
+/*****************************************************************************/
+/*! \file lsimup.hec
+ *  \brief External constant definition
+ */
+#ifndef LSIMUP_HEC
+#define LSIMUP_HEC
+
+/*======================== Generic Constants ==================================*/
+
+/*!
+     \enum  e_lsimup_Error
+    \brief
+        List of constant used to indicate if current requested service is able to
+        be treated or not.
+*/
+typedef enum
+{
+    K_LSIMUP_NO_ERROR,                    /**< Used when service is correctly executed. */
+    K_LSIMUP_ERR_INVALID_PARAMETER,    /**< At least one parameter of the request is incorrect. */
+    K_LSIMUP_ERR_INCOHERENT_ORDER,        /**< Received request is incoherent in relation to the current state. */
+    K_LSIMUP_ERR_UNSUPPORTED_SERVICE    /**< Service not supported. */
+}e_lsimup_Error;
+
+/*!
+     \enum  e_lsimup_ErrorType
+    \brief
+        List of constant used to indicate that current requested service was no
+        treated successfully. Always in constant evolution.
+*/
+typedef enum
+{
+    K_LSIMUP_ERROR_TYPE_UNKNOWN,                /**< Used when the error type is unknown. */
+    K_LSIMUP_ERROR_TYPE_MEMORY_ALLOC,            /**< Memory allocation error occured. */
+    K_LSIMUP_ERROR_TYPE_TIME_OUT,                /**< Time out error occured. */
+    K_LSIMUP_ERROR_TYPE_BUSY,                    /**< Service is busy. */
+    K_LSIMUP_ERROR_TYPE_INVALID_SESSION,      /**< Session is invalid. */
+    K_LSIMUP_ERROR_TYPE_INVALID_CONNECTION,    /**< Connection is invalid. */
+    K_LSIMUP_ERROR_LSIMUP_UNABLE_TO_MANAGE_MSG, /* error encountered when LSIMUP has a bad state*/
+
+    /*error for init/deinit*/
+
+
+    /*error for Mobile and Network infos*/
+    K_LSIMUP_ALL_INFOS_UNAVAILABLE,
+
+    /*error for Control Plane Services*/
+    K_LSIMUP_WAIT_RRC_SEND_ALREADY_IN_PROGRESS,    /**< error WAIt until last RRC Data is really sended*/
+    K_LSIMUP_WAIT_RRLP_SEND_ALREADY_IN_PROGRESS, /**< error WAIt until last RRLP Data is really sended*/
+    K_LSIMUP_RRC_SEND_ERROR,    /**< error while Sending the RRC Data packet*/
+
+    /*error for SUPL services*/
+    K_LSIMUP_ERROR_BEARER_IMPOSSIBLE_TO_STOP,/**< error BEARER closing has failed*/
+    K_LSIMUP_ERROR_STILL_OTHER_CONNECTED_SESSION, /**< error Bearer not yet configured*/
+    K_LSIMUP_ERROR_BEARER_NOT_CONFIGURED, /**< error Bearer not yet configured*/
+    K_LSIMUP_ERROR_BEARER_CONFIGURATION_IN_PROGRESS, /**< error IP transaction already in progress*/
+    K_LSIMUP_ERROR_BEARER_ALREADY_CONFIGURED,/**< error IP transaction already active*/
+    K_LSIMUP_ERROR_BEARER_IMPOSSIBLE_TO_CONFIGURE,/**< error BEARER configuration has failed*/
+    K_LSIMUP_ERROR_TRANSACTION_NOT_STARTED,/**< error IP transaction not validated: Try later */
+    K_LSIMUP_ERROR_WAIT_FOR_HOST_TRY_LATER, /**< error Waiting for host name resolution: Try later */
+    K_LSIMUP_ERROR_NOT_ABLE_TO_GET_HOST_NAME, /**< error not able to solve the resolution name */
+    K_LSIMUP_ERROR_NOTEXISTED_CONN_OR_SESS, /**< error Connection or Session do not exist*/
+    K_LSIMUP_ERROR_UDP_RECVFROM, /**< error UDP reception */
+    K_LSIMUP_ERROR_TCP_RECV, /**< error TCP reception  */
+    K_LSIMUP_ERROR_HOST_UNREACH, /**< error host unreached  */
+    K_LSIMUP_ERROR_UDP_SENDTO_ERROR, /**< error while sending through the UDP socket  */
+    K_LSIMUP_ERROR_TCP_SEND_ERROR, /**< error while sending through the TCP socket  */
+    K_LSIMUP_ERROR_CONTROL_PLANE_NOT_SUPPORTED, /**< error while creating the socket  */
+    K_LSIMUP_ERROR_SOCK_CREATION, /**< error while creating the socket  */
+    K_LSIMUP_ERROR_CONNECT,          /**< error while connecting the TCP socket  */
+    K_LSIMUP_ERROR_NOTYET_SUPPORTED_ADDRESS_TYPE, /**< not yet available address type  */
+    K_LSIMUP_ERROR_NO_VALID_SOCK_TYPE,           /**< Invalid socket type  */
+    K_LSIMUP_ERROR_WAIT_FOR_IP_TRANSACTION,      /**< Already Waiting for transaction: try to connect later */
+    K_LSIMUP_ERROR_NO_STACK_UP, /**< IP Stack is not Useful. */
+    K_LSIMUP_ERROR_INVALID_PARAMETERS, /** Invalid parameters passed via message **/
+        K_LSIMUP_ERROR_CONNECTION_BEING_SHUTDOWN /** The connection is being shutdown and no further data transfer is possible */  
+#ifndef  LSIMUP_WO_TLS_IF_TLS_FAILS_FTR
+    ,K_LSIMUP_ERROR_TLS_CERT_NOT_LOADED /** TCP Secure connection not possible without TLS Certificate **/
+#endif
+    ,K_LSIMUP_ERROR_TLS_HANDSHAKE_FAILED
+}e_lsimup_ErrorType;
+
+/*!
+     \enum  e_lsimup_RejectionReason
+    \brief
+        List of constant used to indicate the reason why the indication was rejected.
+*/
+typedef enum
+{
+    K_LSIMUP_REJECTION_REASON_UNKNOWN,                    /**< Used when reason is unknown. */
+    K_LSIMUP_REJECTION_REASON_TCPIP_CONNECT_FAIL,        /**< TCP/IP connection failure. */
+    K_LSIMUP_REJECTION_REASON_TCPIP_DISCONNECT_FAIL,    /**< TCP/IP Disconnection failure. */
+    K_LSIMUP_REJECTION_REASON_RECEIVE_DATA_FAIL,        /**< Receive data failure. */
+    K_LSIMUP_REJECTION_REASON_MOBILE_INFO_FAIL,        /**< Mobile info failure. */
+    K_LSIMUP_REJECTION_REASON_SMS_PUSH_FAIL            /**< SMS push failure. */
+}e_lsimup_RejectionReason;
+
+typedef enum
+{
+    CGPS_F_LSIMUP_INIT = FIRST_LSIMUP_MSG_ENUM,
+    CGPS_F_LSIMUP_DEINIT,
+    CGPS_F_LSIMUP_MOBILE_INFO,
+    CGPS_F_LSIMUP_SMS_PUSH,
+    CGPS_F_LSIMUP_ESTABLISH_BEARER,
+    CGPS_F_LSIMUP_TCPIP_CONNECT,
+    CGPS_F_LSIMUP_TCPIP_DISCONNECT,
+    CGPS_F_LSIMUP_CLOSE_BEARER,
+    CGPS_F_LSIMUP_RECEIVE_DATA,
+    CGPS_F_LSIMUP_SEND_DATA,
+/* +LMSqc00845 RRR 14-Jul-2009 */    
+    CGPS_F_LSIMUP_CERTIFICATE
+/* -LMSqc00845 RRR 14-Jul-2009 */
+} t_lsimup_MessageIdentifier;
+
+
+
+/*=========================== Mobile and Network infos constants ====================================*/
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum length in bytes of array containing the Network
+    Measurement Results (NMR).
+*/
+#define K_LSIMUP_MAX_LEN_NMR 16
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum length in bytes of array containing the BCCH
+    Channel List.
+*/
+#define K_LSIMUP_MAX_LEN_BCCH_LIST 40
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum number of digits in a phone number including '+'
+    and '/0'.
+*/
+#define K_LSIMUP_MAX_LENGTH_PHONE_NUM 42
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum number of digits in an IMSI number.
+*/
+#define K_LSIMUP_MAX_LENGTH_IMSI_NUM 16
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum number of characters of an LCS client name.
+*/
+#define K_LSIMUP_LCS_CLIENT_NAME_MAX_LENGTH 0x20
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum number of characters of an LCS requestor Id.
+*/
+#define K_LSIMUP_LCS_REQUESTOR_ID_MAX_LENGTH 0x40
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum number of characters of an LCS codeword.
+*/
+#define K_LSIMUP_LCS_CODEWORD_MAX_LENGTH 0x40
+
+/*!
+     \enum  e_lsimup_CellInfoType
+    \brief
+        List of constant used to indicate The Cell Info type (2G/3G).
+*/
+typedef enum
+{
+    K_LSIMUP_GSM_CELL = 1,    /**< Used for to define GSM Cell type. */
+    K_LSIMUP_WCDMA_CELL = 2,    /**< Used for to define WCDMA Cell type. */
+    K_LSIMUP_TDSCDMA_CELL = 3  /**< Used for to define TDSCDMA Cell type. */ 
+}e_lsimup_CellInfoType;
+
+
+/*----------------------------------------------------------------------*/
+/*!
+ *  \enum   e_lsimup_AccessPointType
+ *  \brief  List of constant used to indicate The type of Wireless network used like WLAN and WIMAX
+ */
+typedef enum{
+    K_LSIMUP_WLAN                = 0,        /*!<To indicate access point information present is that of WLAN. */
+    K_LSIMUP_WIMAX               = 1,        /*!< To indicate access point information present is that of WIMAX. */
+    K_LSIMUP_WCDMA_UNKNWON_TYPE  = 0xFF      /*!< Unknown Wireless network type */
+} e_lsimup_AccessPointType;
+
+/*----------------------------------------------------------------------*/
+/*!
+ *  \enum   e_lsimup_AccessPointStatus
+ *  \brief  List of constant used to indicate The status of the Accesspoint connection
+ */
+typedef enum{
+    K_LSIMUP_ACCESSPOINT_STALE    = 0,        /*!<Access Point Information is Stale (Last Known Access Point Information)*/
+    K_LSIMUP_ACCESSPOINT_CURRENT  = 1,        /*!<Indicates the Access point information is of current serving access point */
+    K_LSIMUP_ACCESSPOINT_UNKNWON  = 0xFF      /*!< Indicates the Access point information validity is unknown */
+} e_lsimup_AccessPointStatus;
+
+/*----------------------------------------------------------------------*/
+/*!
+ *  \enum   e_lsimup_MobileInfoType
+ *  \brief  List of constant used to indicate type of network type
+ */
+typedef enum{
+    K_LSIMUP_CELLULAR_NETWORK    = (1<<0),        /*!<Cellular network is the current network type)*/
+    K_LSIMUP_WIRELESS_NETWORK    = (1<<1),        /*!<Wireless network is the current network type this may be either WLAN, or WiFi */
+} e_lsimup_MobileInfoType;
+
+typedef enum
+{
+    K_LSIMUP_MCC,        /* MCC field. */
+    K_LSIMUP_MNC,        /* MNC field. */
+    K_LSIMUP_LAC,        /* LAC field. */
+    K_LSIMUP_CID,        /* CellIdentity field. */
+    K_LSIMUP_RNC,        /* RNCId field. */
+    K_LSIMUP_NMR,        /* NMR field. */
+    K_LSIMUP_TA,        /* TA field. */
+    K_LSIMUP_MSISDN,    /* MSISDN field. */
+    K_LSIMUP_IMSI,        /* IMSI field. */
+    K_LSIMUP_WLAN_NW,      /*WIreless Network WLAN Info*/
+    KLSIMUP_WIMAX_NW       /*WIreless Network Wimax Info*/
+}e_Field;
+
+/*!
+     \enum  e_lsimup_ValidityField
+    \brief
+        List of constant used to define validity fields in \ref t_lsimup_MobileInfo and \ref t_lsimup_MobileInfoReqM.
+*/
+typedef enum
+{
+    K_LSIMUP_MCC_FIELD = (1<<K_LSIMUP_MCC),        /**< MCC field validity. */
+    K_LSIMUP_MNC_FIELD = (1<<K_LSIMUP_MNC),        /**< MNC field validity. */
+    K_LSIMUP_LAC_FIELD = (1<<K_LSIMUP_LAC),        /**< LAC field validity. */
+    K_LSIMUP_CID_FIELD = (1<<K_LSIMUP_CID),        /**< CellIdentity field validity. */
+    K_LSIMUP_RNC_FIELD = (1<<K_LSIMUP_RNC),        /**< RNCId field validity. */
+    K_LSIMUP_NMR_FIELD = (1<<K_LSIMUP_NMR),        /**< NMR field validity. */
+    K_LSIMUP_TA_FIELD = (1<<K_LSIMUP_TA),            /**< TA field validity. */
+    K_LSIMUP_MSISDN_FIELD = (1<<K_LSIMUP_MSISDN),    /**< MSISDN field validity. */
+    K_LSIMUP_IMSI_FIELD = (1<<K_LSIMUP_IMSI),        /**< IMSI field validity. */
+    K_LSIMUP_WLAN_FIELD = (1<<K_LSIMUP_WLAN_NW),        /*WLAN Field Validity*/
+    K_LSIMUP_WIMAX_FIELD = (1<<KLSIMUP_WIMAX_NW)        /*WIMAX Field Validity*/
+}e_lsimup_ValidityField;
+
+/*!
+     \enum  e_lsimup_RegistrationState
+    \brief
+        List of constant used to indicate a registration state.
+*/
+typedef enum
+{
+    K_LSIMUP_NO_CARRIER = 0x00,        /**< No carrier, no cell found. */
+    K_LSIMUP_EMERGENCY_IDLE = 0x01,    /**< Only emergency calls are allowed. */
+    K_LSIMUP_IDLE_UPDATE = 0x02,        /**< Calls, supplementary services, SMS, ... are allowed. */
+    K_LSIMUP_IDLE_NOT_UPDATED = 0x03,    /**< Calls, supplementary services, SMS, ... are allowed but require a Location Update procedure that may fail. */
+    K_LSIMUP_NO_REGIST_OFF = 0xFE        /**< The mobile radio is OFF. */
+}e_lsimup_RegistrationState;
+
+
+/*=============================== SMS =======================================*/
+
+/*!    \ingroup lsimup_interface
+    \brief Payload size in bytes.
+*/
+#define K_LSIMUP_MAX_DECODED_USER_DATA               0xA1   /* 0xA0 chars + '/0' */
+
+/*=============================== SUPL constants =======================================*/
+
+/*!    \ingroup lsimup_interface
+    \brief Maximum size in bytes of an IP Address.
+*/
+#define K_LSIMUP_MAX_IP_ADDRESS_LENGTH 16
+
+/*!
+     \enum  e_lsimup_BearerType
+    \brief
+        List of constant used to indicate the bearer type.
+*/
+typedef enum
+{
+    K_LSIMUP_GPRS_BEARER = 1,         /**< GPRS bearer. */
+    K_LSIMUP_CSD_BEARER = 2            /**< CSD bearer. */
+}e_lsimup_BearerType;
+
+/*!
+     \enum  e_lsimup_SelectedModem
+    \brief
+        List of constant used to indicate the bearer type.
+*/
+typedef enum
+{
+    K_LSIMUP_ANALOGIC_MODEM = 1,         /**< Analogic modem. */
+    K_LSIMUP_ISP_MODEM = 2            /**< Internet Service Provider Modem. */
+}e_lsimup_SelectedModem;
+
+
+/*!
+     \enum  e_lsimup_SocketType
+    \brief
+        List of constant used to indicate a socket type.
+*/
+typedef enum
+{
+    K_LSIMUP_SOCKET_TYPE_TCP = 1,    /**< Used for TCP socket type. */
+    K_LSIMUP_SOCKET_TYPE_TLS = 2    /**< Used for TLS socket type. */
+}e_lsimup_SocketType;
+
+/*!
+     \enum  e_lsimup_AddressType
+    \brief
+        List of constant used to indicate the address type.
+*/
+typedef enum
+{
+    K_LSIMUP_IPV4_ADDRESS = 1,    /**< Used for IPV4 address. */
+    K_LSIMUP_IPV6_ADDRESS = 2,    /**<  Used for IPV6 address. Not supported */
+    K_LSIMUP_URL_ADDRESS = 3,    /**< Used for UDP socket type. Not supported*/
+    K_LSIMUP_ADDRESS_IN_SIM    /**< Server IP address in the SIM card*/
+}e_lsimup_AddressType;
+
+/* Bit 0 - PathLoss valid, Bit 1  - EcNo valid , Bit 2- RSCP valid */
+
+#define K_LSIMUP_CELL_MEAS_PATHLOSS_VALID    0x01;
+#define K_LSIMUP_CELL_MEAS_EC_NO_VALID        0x02;
+#define K_LSIMUP_CELL_MEAS_RSCP_VALID        0x04;
+
+#endif /* LSIMUP_HEC */

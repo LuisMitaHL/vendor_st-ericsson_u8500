@@ -1,0 +1,87 @@
+#DTH script
+#Powersaving v1.0
+#Author: Guillaume Camus
+
+
+
+#-------------------------------------------------------------------------------------------------------------
+#DVFS Management
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#APE Operating Point
+BEGIN APEOperatingPoint
+
+WRITE /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/In_Opp 0
+EXEC /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/Out_Status  27
+WRITE /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/In_Opp 1
+EXEC /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/Out_Status  27
+WRITE /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/In_Opp 0
+EXEC /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/Out_Status  27
+
+END APEOperatingPoint
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ARM Operating Point
+BEGIN ARMOperatingPoint
+
+WRITE /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/In_Opp 1
+EXEC /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/Out_Status  25
+WRITE /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/In_Opp 2
+EXEC /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/Out_Status  25
+WRITE /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/In_Opp 0
+EXEC /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/Out_Status  25
+
+END ARMOperatingPoint
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#DDR Operating Point
+BEGIN DDROperatingPoint
+
+WRITE /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/In_Opp 1
+EXEC /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/Out_Status  29
+WRITE /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/In_Opp 2
+EXEC /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/Out_Status  29
+WRITE /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/In_Opp 0
+EXEC /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/Out_Status  29
+
+END DDROperatingPoint
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Modem Operating Point
+BEGIN ModemOperatingPoint
+
+WRITE /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/In_Opp 0
+EXEC /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/Out_Status  31
+WRITE /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/In_Opp 1
+EXEC /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/Out_Status  31
+WRITE /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/In_Opp 0
+EXEC /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint EXEC /DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint
+WAIT 1
+READ /PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/Out_Status  31
+
+END ModemOperatingPoint
+

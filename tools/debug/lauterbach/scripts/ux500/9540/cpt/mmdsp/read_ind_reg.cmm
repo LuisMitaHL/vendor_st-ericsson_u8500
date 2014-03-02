@@ -1,0 +1,73 @@
+; #####################################################################
+; # DB8500 debug & Trace script file: read_ind_reg.cmm                #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2009-03-05
+; Contact jingyi-xiaoyan.lu@st.com
+
+;-------------------------------------------------------------------------------------
+; This command, available in Trace32-MMDSP, reads a indirect MMDSP+ host register.
+;-------------------------------------------------------------------------------------
+
+&Usage="Usage: do read_ind_reg <ind_reg_addr>"
+
+ENTRY &ind_host_addr
+
+if (string.mid(cpu(),0,3)!="STN")&&(string.mid(cpu(),0,2)!="DB")
+(
+  print ""
+  print "This command is only available in Trace32 for MMDSP+ cores"
+  print "Nothing to do."
+  enddo
+)
+
+if "&ind_host_addr"==""
+(
+  print ""
+  print "&Usage"
+  enddo
+)
+
+&uaddrl=0x28
+&uaddrm=0x29
+&uaddrh=0x36
+&udata0=0x20
+&udata1=0x21
+&udata2=0x22
+&udata3=0x23
+&udata4=0x24
+&udata5=0x25
+&udata6=0x26
+&udata7=0x27
+&ucmd=0x2A
+&R_cmd=0x14
+
+;planning an access of the indirect host reg &ind_host_addr
+data.out dbg:&uaddrl &ind_host_addr&0xFF
+data.out dbg:&uaddrm (&ind_host_addr>>8)&0xFF
+data.out dbg:&uaddrh (&ind_host_addr>>16.)&0xFF
+
+;read access
+data.out dbg:&ucmd &R_cmd
+
+&ret_val=0x0
+&v_udata0=data.byte(dbg:&udata0)
+&v_udata1=data.byte(dbg:&udata1)
+&v_udata2=data.byte(dbg:&udata2)
+&v_udata3=data.byte(dbg:&udata3)
+&v_udata4=data.byte(dbg:&udata4)
+&v_udata5=data.byte(dbg:&udata5)
+&v_udata6=data.byte(dbg:&udata6)
+&v_udata7=data.byte(dbg:&udata7)
+
+&ret_val=&v_udata7
+&ret_val=(&ret_val<<8.)|&v_udata6
+&ret_val=(&ret_val<<8.)|&v_udata5
+&ret_val=(&ret_val<<8.)|&v_udata4
+&ret_val=(&ret_val<<8.)|&v_udata3
+&ret_val=(&ret_val<<8.)|&v_udata2
+&ret_val=(&ret_val<<8.)|&v_udata1
+&ret_val=(&ret_val<<8.)|&v_udata0
+
+print &ret_val
+enddo &ret_val

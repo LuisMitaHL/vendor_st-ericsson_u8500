@@ -1,0 +1,140 @@
+test_start mix_host_0069
+
+
+OMX_GetHandle    mixer OMX.ST.AFM.mixer_host
+#Disable all unused mixer ports
+
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+# We set input/output  pcm Port in loaded state (ports are enabled) -> Allowed
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+mmte_check_CBmessage
+
+
+OMX_GetHandle    mixer OMX.ST.AFM.mixer_host
+#Disable all unused mixer ports
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+# We set input/output  pcm Port in loaded state (port disabled) -> Allowed
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# We set input/output  pcm Port in idle state (port disabled) -> Allowed
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+mmte_check_CBmessage
+
+OMX_GetHandle    mixer OMX.ST.AFM.mixer_host
+#Disable all unused mixer ports
+
+
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_FreeBuffers mixer 0
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+# We set output  pcm Port in idle state (inport Enabled) -> Not Allowed
+#TEST_LAUNCHER_CMD: ignore OMX_ErrorInvalidState
+#TEST_LAUNCHER_CMD: ignore CMD_ERR_OMX
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+#TEST_LAUNCHER_CMD: consider OMX_ErrorInvalidState
+#TEST_LAUNCHER_CMD: consider CMD_ERR_OMX
+
+# We set output  pcm Port in idle state (inport disabled) -> Allowed
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+mmte_check_CBmessage
+
+
+
+
+test_end

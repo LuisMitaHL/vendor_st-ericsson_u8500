@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<commandspec>
+  <status>
+    <!--
+    * General Fatal 0-50
+    * General non-fatal 51-99
+    -->
+    <value number="0" name="E_SUCCESS" fatal="false" short="Operation successful.">Operation successful.</value>
+    <value number="1" name="E_GENERAL_FATAL_ERROR" fatal="true" short="General Failure.">General Failure. Unknown error.</value>
+    <value number="2" name="E_ALLOCATE_FAILED" fatal="true" short="Failed to allocate memory.">Failed to allocate memory. Try to reset the loader and if still exist the problem, report this error.</value>
+    
+    <value number="51" name="E_INVALID_INPUT_PARAMETERS" fatal="false" short="The expected value into the function was incorrect.">Check the input parameters in the command that you try to execute.</value>
+    <value number="52" name="E_INVALID_CURRDATE_STRING_LENGTH" fatal="false" short="Indicate that the currdate string array variable has invalid length.">Try to reset the loader and if still exist the problem, report this error.</value>
+    <value number="53" name="E_UNALIGNED_DATA" fatal="false" short="Indicate that a variable is not aligned.">Try to reset the loader and if still exist the problem, report this error.</value>
+
+    <!--
+    * IO Fatal 100-150
+    * IO non-fatal 151-199
+    -->
+    <value number="100" name="E_VECTOR_CREATE_FAIL" fatal="true">Failed to create vector in IO Layer.</value>
+    <value number="101" name="E_VECTOR_DESTROY_FAIL" fatal="true">Failed to destroy vector in IO Layer.</value>
+    <value number="151" name="E_GENERAL_IO_ERROR" fatal="false">Unknown IO error.</value>
+    <value number="152" name="E_IO_FAILED_TO_READ" fatal="false">IO failed to read from source.</value>
+    <value number="153" name="E_IO_FAILED_TO_WRITE" fatal="false">IO failed to write to destination.</value>
+    <value number="154" name="E_IO_FAILED_TO_CLOSE" fatal="false">IO failed to close media.</value>
+    <value number="155" name="E_IO_FAILED_TO_OPEN" fatal="false">IO failed to open media.</value>
+    <value number="156" name="E_IO_FAILED_TO_GET_LENGTH" fatal="false">IO failed to get length of media.</value>
+
+    <!--
+    * Communication Fatal 200-250
+    * Communication non-fatal 251-299
+    -->
+    <value number="200" name="E_GENERAL_COMMUNICATION_ERROR" fatal="false" short="General communication error.">Check the communication cable and restart the loader.</value>
+    <value number="201" name="E_FAILED_TO_START_BULK_SESSION" fatal="true" short="Failed to start bulk session.">Try to reset the loader and if still exist the problem, report this error.</value>
+    <value number="202" name="E_FAILED_TO_CLOSE_BULK_SESSION" fatal="true" short="Failed to initialize the transport layer.">Try to reset the loader and if still exist the problem, report this error.</value>
+    <value number="203" name="E_FAILED_TO_FIND_CHUNK_DATA_BLOCK" fatal="true" short="Failed to find chunk data block.">Try to reset the loader and if still exist the problem, report this error.</value>
+    <value number="204" name="E_FAILED_TO_INIT_COM_DEVICE" fatal="true" short="Failed to reinitialize communication device.">Try to reset the loader and if still exist the problem, report this error. Possible hardware problem.</value>
+    <value number="205" name="E_FAILED_TO_USE_COM_DEVICE" fatal="true" short="Failed to use communication device.">Communication device do not respond and try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="206" name="E_FAILED_TO_ALLOCATE_COMM_BUFFER" fatal="true" short="Failed to allocate communication buffer.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="207" name="E_FAILED_TO_FLUSH_RXFIFO" fatal="true" short="Failed to flush RX FIFO.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="208" name="E_RETRANSMITION_FAILED" fatal="true" short="Retransmission failed. After MAX_RESENDS attempt, failed to send packet.">Try to reset the loader. If the problem still exist, report this error.</value>  
+    <value number="209" name="E_COMMAND_NO_ERROR" fatal="true">Stopped command error sequence.</value>
+    <value number="210" name="E_FAILED_TO_RELEASE_COMM_BUFFER" fatal="true" short="Failed to release communication buffer.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="211" name="E_FAILED_TO_INTIALIZE_TIMER_FUNCTIONS" fatal="true" short="Failed to initialize timer functions.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="212" name="E_FAILED_TO_INTIALIZE_QUEUE_FUNCTIONS" fatal="true" short="Failed to initialize queue functions.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="251" name="E_INVALID_BULK_MODE" fatal="false" short="Invalid bulk mode.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="252" name="E_FAILED_TO_FIND_COMM_BUFFER" fatal="false" short="Failed to find communication buffer.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="253" name="E_INVALID_TYPE_OF_BUFFER" fatal="false" short="Invalid type of buffer.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="254" name="E_COM_DEVICE_BUSY" fatal="false">The communication device is busy with sending data.</value>
+    <value number="255" name="E_NOT_FOUND_ELEMENT_IN_RETRANSMISSION_LIST" fatal="false" short="The element in retransmission list is not found.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="256" name="E_FAILED_READING_FROM_BULK" fatal="false" short="Failed to read from bulk.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="257" name="E_FAILED_WRITING_TO_BULK" fatal="false" short="Failed to write to bulk.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="258" name="E_FAILED_TO_GET_UART_DESCRIPTOR" fatal="false" short="Failed to get UART descriptor.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="259" name="E_FAILED_TO_GET_USB_DESCRIPTOR" fatal="false" short="Failed to get USB descriptor.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="260" name="E_INVALID_BULK_SESSION_ID" fatal="false" short="Invalid bulk session ID is used.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="261" name="E_PREVIOUS_BULK_SESSION_IS_NOT_CLOSED" fatal="false" short="Previous bulk session not closed.">Try to reset the loader. If the problem still exist, report this error.</value>
+    <value number="262" name="E_INVALID_BULK_PROTOCOL_STATE" fatal="false" short="Invalid bulk protocol state.">Try to reset the loader. If the problem still exist, report this error.</value>
+
+       
+    <!--
+    * Signature Fatal 300-350
+    * Signature non-fatal 351-399
+    -->
+    <value number="351" name="E_UNKNWON_PROPERTY" fatal="false" short="Unknown property id.">Check the input value of the command that you try to execute.</value>
+
+    <!--
+    * Services Fatal 400-450
+    * Services non-fatal 451-499
+    -->
+    <value number="451" name="E_CYCLIC_GRAPH" fatal="false">Cyclic graph in services detected.</value>
+    <value number="452" name="E_SERVICE_NOT_SUPPORTED" fatal="false">The service is not supported.</value>
+    <value number="453" name="E_INCONSISTENCY_IN_SERVICES" fatal="false">Inconsistency in services is detected.</value>
+    <value number="454" name="E_SERVICE_IN_USE" fatal="false">The service is in use and can't be stopped.</value>
+    <value number="455" name="E_REGISTER_SERVICE_FAILED" fatal="false">Registering of Service failed.</value>
+    <value number="456" name="E_UNREGISTER_SERVICE_FAILED" fatal="false">Unregistering of Service failed.</value>
+    
+    <!--
+    * Zip Parser Fatal 500-550
+    * Zip Parser non-fatal 551-599
+    -->
+    <value number="551" name="E_GENERAL_ZIP_ERROR" fatal="false">Unknown IO error.</value>
+    <value number="552" name="E_ZIP_FAILED_TO_CREATE_CONTEXT" fatal="false">IO failed to read from source.</value>
+    <value number="553" name="E_ZIP_FAILED_TO_OPEN_FILE" fatal="false">IO failed to write to destination.</value>
+
+    <!--
+    * System Fatal 600-650
+    * System non-fatal 651-699
+    -->
+    <value number="600" name="E_FILESYS_APP_INIT_FAILURE" fatal="true">Failed to initialize the file system application.</value>
+    <value number="601" name="E_NO_FILESYSTEM_PROPERTY" fatal="true">Failed to start file system.</value>
+    <value number="602" name="E_UNDEFINED_AUTHENTICATION_TYPE" fatal="true">Undefined authentication type.</value>
+    <value number="651" name="E_RTC_TIME_NOT_ACCURATE" fatal="false">System Time is not properly set. Defoult system time is used.</value>
+    <value number="652" name="E_RTC_INTIALIZATION_FAILED" fatal="false">Hardware error ocure during initialization of RTC.</value>
+
+    <!--
+    * Flash Fatal 700-750
+    * Flash non-fatal 751-799
+    -->
+    <value number="751" name="E_DIFFERENT_FLASHLAYOUT" fatal="false" short="Different flashlayout.">You must erase the flash before flashing archive with different flashlayout.</value>
+    <value number="752" name="E_EMPTY_FILE_IN_ARCHIVE" fatal="false" short="Archive contain empty file.">Check files in flash archive. Empty files not allowed.</value>
+    <value number="753" name="E_UNKNOWN_COMM_DEVICE" fatal="false" short="Unknown communication device was detected.">Try to restart the loader and if still exist the problem, report this error.</value>
+    <value number="754" name="E_FLASH_APP_INTERNAL_ERROR" fatal="false" short="Internal during execution of flash commands.">Try to erase flash and restart the loader and if problem still exist, report it.</value>
+    <value number="755" name="E_DEVICE_NAME_TOO_LONG" fatal="false" short="Device name is too long.">Try to erase flash and restart the loader and if problem still exist, report it.</value>
+    <value number="756" name="E_FLASH_ARCHIVE_MISMATCH" fatal="false" short="Mismatch between archieve that is flashed and previosly flashed one.">During previous flashing some fail condition occurs. Reflash same archieve again before try a new one.</value>
+    <value number="757" name="E_UNSUPPORTED_FLASH_TYPE" fatal="false" short="Flash memory device type is not supported.">Try to use loaders with support for memory device attached to DBB. If loaders does not exist, fire CR in FIDO to get loaders that support that memory.</value>
+    <value number="758" name="E_FPD_NOT_CONFIGURED" fatal="false" short= "Flash physical driver is not configured.">Check MEMCONF settings in flash archive.</value>
+    <value number="759" name="E_INVALID_SIZE_IN_MEMCONF" fatal="false" short= "MEMCONF boot record contain invalid TotalSize field.">Check MEMCONF settings in flash archive. Very likely flash archive is built for ME with flash device with larger capacity</value>
+    <value number="760" name="E_ARCHIVE_TO_LARGE" fatal="false" short= "Flash archive larger than available space in BDM.">Check CABS settings in flash archive. Very likely flash archive is built for ME with flash device with larger capacity</value>
+    <value number="761" name="E_ENTRY_NOT_FOUND_IN_FLASHLAYOUT" fatal="false" short="Entry not found in flashlayout file.">Entry stated in manifest file is not found in flashlayout file. All entries in manifest must be defined in flashlayout file.</value>
+    <value number="762" name="E_INCOMPATIBLE_START_ADDRESS" fatal="false" short="Mismatch between manifest and flashlayout.">Entry start address in manifest and flashlayout are not equal.</value>
+    <value number="763" name="E_INVALID_SUBTOC_PARAMETERS" fatal="false" short="Mismatch between TOC and flashlayout.">SUBTOC start address or size in TOC and flashlayout are not equal.</value>
+    <value number="764" name="E_FAILED_TO_READ_SUBTOC" fatal="false" short="Reading SUBTOC from flash failed.">Reading SUBTOC from flash failed.</value>
+    <!--
+    * File management Fatal 900-950
+    * File management non-fatal 951-999
+    -->
+    <value number="951" name="E_PATH_NOT_EXISTS" fatal="false" short="Path not exist."> Check that supplied path is valid.</value>
+    <value number="952" name="E_CLOSE_FILE" fatal="false" short="Failed to close a file in the file system."> Repeat operation. If still doesn't work reset loader. If that does not resolve problem report it.</value>
+    <value number="953" name="E_INSUFFICENT_SPACE" fatal="false" short="Not enough memory space for desired operation."> Use Volume Properties command to check if enough memory space exists. Report problem in case of information mismatch.</value>
+    <value number="954" name="E_REMOVE_FILE" fatal="false" short="Failed to remove a file from the file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="955" name="E_RENAME_FILE" fatal="false" short="Failed to rename a file from the file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="956" name="E_CREATE_DIR" fatal="false" short="Failed to create a new directory in the file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="957" name="E_REMOVE_DIRECTORY" fatal="false" short="Failed to remove directory."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="958" name="E_FREE_SPACE" fatal="false" short="No free space left."> Use Volume Properties command to check if enough memory space exists. Report problem in case of information mismatch.</value>
+    <value number="959" name="E_ITEM_STAT" fatal="false" short="Failed to retrieve status data."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="960" name="E_CLOSE_DIRECTORY" fatal="false" short="Failed to close a directory in the file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="961" name="E_MOUNT_VOLUME" fatal="false" short="Failed to mount volume in the file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="962" name="E_READ_DIRECTORY" fatal="false" short="Failed to read directory in the file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="963" name="E_FS_IO" fatal="false" short="Input/output error."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="964" name="E_FS_ARGUMENT_LIST_2BIG" fatal="false" short="Argument list too long."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="965" name="E_FS_BAD_FILE_DESC" fatal="false" short="Bad file descriptor."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="966" name="E_FS_ACCESS" fatal="false" short="Permission denied."> In order to perform operation change file access permissions.</value>
+    <value number="967" name="E_FS_BAD_ADDRESS" fatal="false" short="Bad address."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="968" name="E_FS_FILE_EXIST" fatal="false" short="File exists."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="969" name="E_FS_NOT_DIR" fatal="false" short="Not a directory."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="970" name="E_FS_IS_DIR" fatal="false" short="Is a directory."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="971" name="E_FS_FILE_TOO_LARGE" fatal="false" short="File too large."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="972" name="E_FS_READ_ONLY_FS" fatal="false" short="Read-only file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="973" name="E_FS_OPER_NOT_SUPP" fatal="false" short="Operation not supported."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="974" name="E_FS_NAME_TOO_LONG" fatal="false" short="File name too long."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="975" name="E_FS_OPERATION_CANCELED" fatal="false" short="Operation canceled."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="976" name="E_FS_FAIL" fatal="false" short="Cannot start operation."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="977" name="E_FS_INTERNAL" fatal="false" short="Internal error."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="978" name="E_FS_NOT_MOUNTED" fatal="false" short="Volume not mounted."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="979" name="E_FS_NOT_PERMITED" fatal="false" short="Operation not permitted."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="980" name="E_FS_NO_SUCH_FILE_OR_DIR" fatal="false" short="No such file or directory."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="981" name="E_FS_NOT_EXIST" fatal="false" short="Specified FS does not exist."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="982" name="E_FS_UNKNOWN_ERROR" fatal="false" short="Error is unknown."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="983" name="E_FAILED_WRITING_TO_FILE" fatal="false" short="Failed to write to file."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="984" name="E_FAILED_READING_FROM_FILE" fatal="false" short="Failed to read from the specified file."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value>
+    <value number="985" name="E_ACCESS_DENIED" fatal="false" short="The access permission attributes do not allow operation."> </value>
+    <value number="986" name="E_CANNOT_OPEN_FILE" fatal="false" short="Can not open the specified file."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value> 
+    <value number="987" name="E_FAILED_TO_STOP_FS" fatal="false" short="Can not stop file system."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value> 
+    <value number="988" name="E_FILE_NAME_TOO_LONG" fatal="false" short="File name is too long."> Check input parameters. Repeat operation or reset loader. Report if problem still exist.</value> 
+    <value number="989" name="E_CONTENT_TYPE" fatal="false" short="Content type to long."> </value> 
+    <value number="990" name="E_DEVICE_TYPE" fatal="false" short="Device type to long."> </value> 
+    <value number="991" name="E_NUMBER_OF_TARGET_DEVICES" fatal="false" short="Number of target devices to big."> </value> 
+    <value number="992" name="E_DESCRIPTION_TOO_LONG" fatal="false" short="Description field too long."> </value> 
+    <value number="993" name="E_FAILED_TO_FIND_ELF_SECTION" fatal="false" short="Can not find elf section."> </value> 
+    <value number="994" name="E_MAX_NUMBER_OF_MOUNTED_VOLUMES_EXCEEDED" fatal="false" short="Unable to mount volume due to exceeding the maximum number of allowed volumes.">First check the defined number of volumes in the flasharchive. If it is lower than maximum allowed volumes repeat the operation or reset loader. Report if problem still exist </value>
+    <value number="995" name="E_NO_MOUNTED_DEVICES_ARE_FOUND" fatal="false" short="Information message that no mounted devices are found.">This message can be issued for example in case that it is detected that loader is trying to unmount zero mounted devices. </value>
+    <!--
+    * Command Auditing and execution Fatal 1000-1050
+    * Command Auditing and execution non-fatal 1051-1099
+    -->
+    <value number="1000" name="E_NOT_FREE_CMD_SPACE" fatal="true" short="Index for new command is not founded in execution queue."> Internal limitation. Wait some time and then try again.</value>
+    <value number="1001" name="E_INVALID_INPUT_PARAMETER" fatal="true" short="Invalid input parameter">. Reset loader. If problem still exist report it.</value>
+    <value number="1002" name="E_UNSUPPORTED_CMD" fatal="true" short="The loader does not support the requested command."> Check your authentication level. Some command need authentication.</value>
+    <value number="1003" name="E_UNSUPPORTED_GROUP" fatal="true" short="The loader does not support the requested group."> </value>
+    <value number="1051" name="E_INVALID_COMMAND_SIZE" fatal="false">The size of the command is invalid.</value>
+    <value number="1052" name="E_OVERLOAD_COMMAND_TABLE" fatal="false">When new command received, but execution queue is full.</value>
+    <value number="1053" name="E_COMMAND_ALREADY_REGISTERED" fatal="false">Command has already registered in execution queue.</value>
+    <value number="1054" name="E_AUDITING_FAILED" fatal="false" short=" Command auditing failed."> You should be authenticate with appropriate permission level in order to execute this command.</value>
+    
+    <!--
+    * Timers Fatal 1200-1250
+    * Timers non-fatal 1251-1299
+    -->
+    <value number="1251" name="E_NONEXIST_TIMER" fatal="false">Timer with the specified index does not exist.</value>
+    <value number="1252" name="E_FAILED_TO_SET_TIMER" fatal="false">Failed to start the timer.</value>
+    <value number="1253" name="E_TIMER_INIT_FAILED" fatal="false">Timer initialization failed.</value>
+    <value number="1254" name="E_TIMER_IRQ_CONF_FAILED" fatal="false">Timer interrupt configure failed.</value>
+
+    <!--
+    * Parameter Fatal 1300-1350
+    * Parameter non-fatal 1351-1399
+    -->
+    <value number="1351" name="E_GD_INVALID_UNIT_SIZE" fatal="false" short="Error in specifying GD unit size."> Check input parameters. Repeat command.</value> 
+    <value number="1352" name="E_GD_LL_ILLEGAL_SIZE" fatal="false" short="Size too large for the block. Internal error."> Check input parameters. Repeat command.</value>  
+    <value number="1353" name="E_GD_LL_WRITE_FAILED" fatal="false" short="FLASH device write failed."> Possible error in flash driver configuration. Try to reset the loader and if problem still exist, report it.</value>
+    <value number="1354" name="E_GD_LL_ERASE_FAILED" fatal="false" short="FLASH device erase failed."> Possible error in flash driver configuration. Try to reset the loader and if problem still exist, report it.</value>
+    <value number="1355" name="E_GD_LL_UNKNOWN_DEVICE" fatal="false" short="FLASH device unknown."> Possible error in flash driver configuration. Try to reset the loader and if problem still exist, report it.</value>
+    <value number="1356" name="E_GD_STARTUP_LOG_BLK_MISSING" fatal="false" short="Logical block not found during start-up scan."> Possible wrong configuration or memory corruption. Try to reset the loader and if problem still exist, report it.</value>
+    <value number="1357" name="E_GD_STARTUP_DUPLICATE_LOG_BLK" fatal="false" short="Duplicate instances of same logical block."> Internal error or memory corruption. Try to reset the loader and if problem still exist, report it.</value>
+    <value number="1358" name="E_GD_ERASE_ILLEGAL_BLK_NR" fatal="false" short="Attempt to erase non-existing physical block."> Internal error. Try to reset the loader and if problem still exist, report it.</value>
+    <value number="1359" name="E_GD_FG_UNIT_NOT_FOUND" fatal="false" short="Requested unit not found, probably never written or has been deleted."> Check input parameters. Retry operation. If problem still exist reset loader. Report if problem doesn't solved.</value>
+    <value number="1360" name="E_GD_FG_UNIT_SIZE_MISMATCH" fatal="false" short="Attempt to access a unit outside its beyond its end."> Check input parameters. Repeat command.</value>
+    <value number="1361" name="E_GD_FG_ILLEGAL_LOG_BLK_NR" fatal="false" short="Attempt to access a logical block that does not exist. (Hardware, fatal)."> Check input parameters. Restart loader and if problem doesn't solved, report it.</value>
+    <value number="1362" name="E_GD_FG_ILLEGAL_PHYS_BLK_NR" fatal="false" short="Attempt to access a physical block that does not exist (internal error)."> Reset loader. Report if problem doesn't solved.</value>
+    <value number="1363" name="E_GD_FG_BLK_FULL" fatal="false" short="Attempted to write more data to a block than could be fitted into one FLASH block."> Check input parameters. Reset loader and if problem doesn't solved reset loader.</value>
+    <value number="1364" name="E_GD_FG_NO_BLK_FREE" fatal="false" short="Internal error (no free blocks are available)."> There's no more space available. Check input parameters and try to repeat same operation. Report if problem does't solved.</value>
+    <value number="1365" name="E_GD_FG_UNIT_CHECKSUM" fatal="false" short="The checksum or a unit being read is wrong."> Internal error. Try to repeat command. Report if problem still exist.</value>
+    <value number="1366" name="E_GD_FG_NOT_DIRECT_BLOCK" fatal="false" short="Comment should be inserted."> </value>
+    <value number="1367" name="E_GD_FG_NOT_FREE_BLOCK" fatal="false" short="For some reason, a free block could not be properly erased."> Internal error. Try to repeat command and reset loader. Report if problem still exist.</value>
+    <value number="1368" name="E_GD_FG_ILLEGAL_SIZE" fatal="false" short="The size of a unit being written exceeds the maximum limit of a unit.">Internal error. Try to repeat command and reset loader. Report if problem still exist.</value>
+    <value number="1369" name="E_GD_E_FG_FREE_AREA_DIRTY" fatal="false" short="The startup check found non-FF bytes in unused range within a block."> Internal error. Try to repeat command and reset loader. Report if problem still exist.</value>
+    <value number="1370" name="E_GD_NOT_OPEN" fatal="false" short="Tried to access data although GD was in closed state."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1371" name="E_GD_NOT_ALLOWED" fatal="false" short="Operation not allowed in the current mode."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1372" name="E_GD_ALREADY_OPEN" fatal="false" short="Tried to open or format when GD was already opened."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1373" name="E_GD_FRONKENSTIENS_PATTERN_MISMATCH" fatal="false" short="The id mark of the GDVAR file does not match the data in the flash. Fatal and makes GD read only."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1374" name="E_GD_ILLEGAL_ALIGNMENT" fatal="false" short="Tried to erase at an address that was not aligned to a flash block boundary. Internal error."> Reset loader. If problem doesn't solved report it.</value> 
+    <value number="1375" name="E_GD_ILLEGAL_SIZE" fatal="false" short="The operation may not be performed with the specified size. Tried to write a to large unit."> Check input parameters. Retry command. If problem doesn't solved reset loader. Report this problem if this not help.</value>
+    <value number="1376" name="E_GD_ACCESS_DENIED" fatal="false" short="Operation not allowed. Flash device protected. Possible wrong flash driver configuration."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1377" name="E_GD_ILLEGAL_INDEX" fatal="false" short="Illegal gd index."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1378" name="E_GD_MEMORY_ALLOCATION_FAILED" fatal="false" short="Fatal. Failed to allocate dynamic memory."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1379" name="E_GD_MISSING_CONFIG" fatal="false" short="Missing configuration parameter."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1380" name="E_GD_ILLEGAL_CONFIG" fatal="false" short="Illegal configuration."> Reset loader. If problem doesn't solved report it.</value>
+    <value number="1381" name="E_GD_TRANSACTION_LOG_CORRUPT" fatal="false" short="The transaction log used for tracking updates to GD contents is corrupt and prevents roll-back from working properly."> Reset loader. If problem doesn't solved report it.</value>
+    
+    <value number="1399" name="E_GD_NO_DATA_TO_READ" fatal="false" short="No data to read."> Write something to GD before attempting to read from it. Report this problem if you are shore that GD is not empty.</value>
+    
+    <!--
+    * Block device Fatal 1400-1450
+    * Block device non-fatal 1451-1499
+    -->
+    <value number="1451" name="E_BDM_W_NO_MORE_GC_POSSIBLE" fatal="false">No more garbage collection is possible.</value>
+    <value number="1452" name="E_BDM_UNIT_STARTED" fatal="false">Unit has already been started.</value>
+    <value number="1453" name="E_BDM_UNIT_NOT_STARTED" fatal="false">Unit has not yet been started.</value>
+    <value number="1454" name="E_BDM_NOT_CONFIGURED" fatal="false">BDM has not been configured yet.</value>
+    <value number="1455" name="E_BDM_STARTUP_FAILED" fatal="false"> Startup of BDM failed.</value>
+    <value number="1456" name="E_BDM_SHUTDOWN_FAILED" fatal="false">Shutdown of BDM failed.</value>
+    <value number="1457" name="E_BDM_WRITE_FAILED" fatal="false">An error occurred while writing.</value>
+    <value number="1458" name="E_BDM_READ_FAILED" fatal="false">An error occurred while reading.</value>
+    <value number="1459" name="E_BDM_ERASE_FAILED" fatal="false">An error occurred while erasing. </value>
+    <value number="1460" name="E_BDM_JUNK_FAILED" fatal="false">An error occurred while junking.</value>
+    <value number="1461" name="E_BDM_GC_FAILED" fatal="false">An error occurred while garbage collecting.</value>
+    <value number="1462" name="E_BDM_GET_INFO_FAILED" fatal="false">An error occurred while retrieving info about a unit.</value>
+    <value number="1463" name="E_BDM_WRITE_NOT_SUPPORTED" fatal="false">Writing was attempted when compiled as read-only.</value>
+    <value number="1464" name="E_BDM_JUNK_NOT_SUPPORTED" fatal="false">Junking was attempted when compiled as read-only.</value>
+    <value number="1465" name="E_BDM_GC_NOT_SUPPORTED" fatal="false">Garbage collection was attempted when  compiled as read-only.</value> 
+    <value number="1466" name="E_BDM_SYNC_FAILED" fatal="false">Synchronize failed</value>
+    <value number="1467" name="E_BDM_NOT_SUPPORTED" fatal="false">Function not supported.</value>
+    <value number="1468" name="E_BDM_PAUSED" fatal="false">Error returned when using os-free code when calling any other method then resume or shutdown when BDM is in the paused state.</value>
+    <value number="1469" name="E_BDM_NOT_PAUSED" fatal="false">Returned when calling resume when BDM is not in the paused state (In the os-free case).</value>
+    <value number="1470" name="E_BDM_FINDING_BAM_BLOCKS" fatal="false">The BAM block count not be found.</value>
+    <value number="1471" name="E_BDM_BAD_PARAM" fatal="false">Argument invalid or out of range.</value>
+    <value number="1472" name="E_BDM_FORMAT_FAILED" fatal="false">Formatting of BDM failed.</value>
+    <value number="1473" name="E_BDM_INVALID_UNIT" fatal="false">The unit number is out of range.</value>
+    <value number="1474" name="E_BDM_INVALID_CONFIG" fatal="false">Some part of the configuration is invalid.</value>
+    <value number="1475" name="E_BDM_PRE_FLASH_FINISHED" fatal="false">No more preflash blocks can be fetched.</value>
+    <value number="1476" name="E_BDM_PRE_FLASH_TERMINATE_FAILED" fatal="false">Termination of preflash failed.</value> 
+    <value number="1477" name="E_BDM_OUT_OF_MEM" fatal="false">BDM could not allocate enough memory.</value>
+    
+    <value number="1481" name="E_BDM_XSR_CRITICAL_ERROR" fatal="false">XSR critical error.</value>
+    <value number="1482" name="E_BDM_XSR_INVALID_PARAMS" fatal="false">XSR invalid parameters.</value>
+    <value number="1483" name="E_BDM_XSR_PARTITION_NOT_OPENED" fatal="false">XSR could not open partition.</value>
+    <value number="1484" name="E_BDM_XSR_UNFORMATTED_FLASH" fatal="false">XSR unformatted flash.</value>
+    <value number="1485" name="E_BDM_XSR_ALLOCATION_ERROR" fatal="false"> XSR failed to allocate.</value>
+    <value number="1486" name="E_BDM_XSR_INVALID_PARTITION" fatal="false">XSR invalid partition.</value>
+    <value number="1487" name="E_BDM_XSR_READ_ERROR" fatal="false">XSR An error occurred while reading.</value>
+    <value number="1488" name="E_BDM_XSR_WRITE_ERROR" fatal="false">XSR An error occurred while writing.</value>
+    <value number="1489" name="E_BDM_XSR_ERASE_ERROR" fatal="false">XSR An error occurred while erasing. </value>
+    <value number="1490" name="E_BDM_XSR_DEVICE_ERROR" fatal="false">XSR device error.</value>
+    <value number="1491" name="E_BDM_XSR_GOODBLOCK" fatal="false">XSR good block.</value>
+    <value number="1492" name="E_BDM_XSR_BADBLOCK" fatal="false">XSR bad block.</value>
+    
+    <!--
+    * Boot area Fatal 1500-1550
+    * Boot area non-fatal 1551-1619
+    --> 
+    <value number="1551" name="E_BAM_NOT_CONFIGURED" fatal="false">Boot area manager is not configured.</value>   
+    <value number="1552" name="E_BAM_ERR_UNSUPPORTED_PAGE_SIZE" fatal="false">Page size specified is not supported by BAM implementation.</value>
+    <value number="1553" name="E_BAM_ERR_ERASING_BLOCK" fatal="false">If erase block could not be properly erased.</value>
+    <value number="1554" name="E_BAM_ERR_OUT_OF_MEMORY" fatal="false">Not enough free memory to serve request.</value>
+    <value number="1555" name="E_BAM_ERR_CHECKING_BADNESS" fatal="false">There was a problem checking if a block was bad or not.</value>
+    <value number="1556" name="E_BAM_ERR_FINDING_BLOCK" fatal="false">Reserved block could not be found.</value>
+    <value number="1557" name="E_BAM_ERR_READING_PAGE" fatal="false">An error occurred while reading a page in a block.</value>
+    <value number="1558" name="E_BAM_ERR_MARKING_BLOCK_BAD" fatal="false">A block went bad and BAM could not mark it as bad properly.</value>
+    <value number="1559" name="E_BAM_ERR_READING_OUTSIDE_BLOCK" fatal="false">Read would result in a read beyond end of reserved block.</value>
+    <value number="1560" name="E_BAM_ERR_UNCORRECTABLE_ERROR" fatal="false">An uncorrectable read error occurred while reading block.</value>
+    <value number="1561" name="E_BAM_ERR_WRITING_PAGE" fatal="false">An error occurred while writing a page to a reserved block.</value>
+    <value number="1562" name="E_BAM_ERR_WRITING_BLOCK" fatal="false">An error occurred while writing to a reserved block.</value>
+    <value number="1563" name="E_BAM_ERR_RESCUING_BLOCK" fatal="false">There was a problem rescuing a block that went bad during the request.</value>
+    <value number="1564" name="E_BAM_ERR_CONFIG_MISSING" fatal="false">No configuration was given.</value>
+    <value number="1565" name="E_BAM_ERR_ALREADY_STARTED" fatal="false">BAM has already been started.</value>
+    <value number="1566" name="E_BAM_ERR_NOT_STARTED" fatal="false">BAM has not been started yet.</value>
+    <value number="1567" name="E_BAM_ERR_UNSUPPORTED_OPERATION" fatal="false">The media BAM is configured to use does not support the requested operation.</value>
+    <value number="1568" name="E_BAM_ERR_CORRUPT_STATE" fatal="false">BAM internal state has been corrupted.</value>
+    <value number="1569" name="E_BAM_ERR_UNSUPPORTED_MEDIA" fatal="false">BAM does not support the configured media type.</value>
+    <value number="1570" name="E_BAM_ERR_UNSUPPORTED_REDUNDANT_AREA_SIZE" fatal="false">Redundant area size is not supported by BAM implementation.</value>
+    <value number="1571" name="E_BAM_ERR_READING_BLOCK" fatal="false">Reading block failed.</value>
+    <value number="1572" name="E_BAM_ERR_SHUTTING_DOWN" fatal="false">Shutting down failed.</value>
+    <value number="1573" name="E_BAM_ERR_UNINITIALIZING" fatal="false">An error occurred with uninitializing.</value>
+    <value number="1574" name="E_BAM_ERR_INVALID_OFFSET" fatal="false">Invalid offset.</value>
+    <value number="1575" name="E_BAM_ERR_INVALID_SIZE" fatal="false">Invalid size.</value>
+    <value number="1576" name="E_BAM_ERR_RETRIEVING_INFO" fatal="false">Retrieving info failed.</value>
+    <value number="1577" name="E_BAM_ERR_INVALID_CONFIG" fatal="false">Invalid configuration.</value>
+    <value number="1578" name="E_BAM_ERR_ERASING_ALL_BLOCKS" fatal="false">An error occurred while erasing all blocks.</value>
+    <value number="1579" name="E_BAM_ERR_BLOCK_MARKED_BAD" fatal="false">BAM has marked a block as bad while doing an operation.</value>
+    <value number="1580" name="E_BAM_ERR_VALIDATING_START_BLOCK" fatal="false">BAM can not assure that start block configuration refers to a block boundary.</value>
+    <value number="1581" name="E_BAM_ERR_FAILED_TO_GET_MEMORYTECHNOLOGY" fatal="false">Unable the query FAM about the memory technology used in the memory we are trying to initialize BAM on.</value>
+    <value number="1582" name="E_BAM_ERR_BLOCK_RESCUED" fatal="false">Block rescue failed.</value>
+    <value number="1583" name="E_BAM_ERR_DETERMINING_BBM" fatal="false">When BAM can not determine what BBM type configuration has been written to flash.</value>
+    <value number="1584" name="E_BAM_ERR_SET_ECC_LENGTH" fatal="false">BAM failed to set the length to use with HW ECC acceleration.</value> 
+    <value number="1585" name="E_BAM_ERR_INVALID_BBM_TYPE" fatal="false">BAM has been configured with an invalid BBM type.</value>
+    <value number="1586" name="E_BAM_ERR_BOOT_BDM_CONFIG_FAILED" fatal="false">Failed to configure boot block device management.</value>
+    <value number="1587" name="E_BAM_ERR_BOOT_BDM_STARTUP_FAILED" fatal="false">Failed to startup boot block device management.</value>
+    <value number="1588" name="E_BAM_ERR_BOOT_BDM_INSTANCE_NOT_FOUND" fatal="false">Boot block device management instance not found.</value>
+    <value number="1589" name="E_BAM_ERR_BOOT_BDM_BLOCKS_NOT_FOUND" fatal="false">Boot block device management blocks not found.</value>
+    <value number="1590" name="E_BAM_ERR_BOOT_BDM_NOT_STARTED" fatal="false">Boot block device management not started.</value>
+    <value number="1591" name="E_BAM_ERR_UNIT_OUT_OF_RANGE" fatal="false">Unit is out of range.</value>
+    <value number="1592" name="E_BAM_ERR_BDM_STARTUP_FAILED" fatal="false">Block device management startup failed.</value>
+    <value number="1593" name="E_BAM_ERR_BLOCK_NOT_ERASED" fatal="false">Block not erased.</value>
+
+    <value number="1601" name="E_BAM_ONLD_CRITICAL_ERROR" fatal="false">ONLD critical error.</value>
+    <value number="1602" name="E_BAM_ONLD_INVALID_PARAMS" fatal="false">ONLD invalid parameters.</value>
+    <value number="1603" name="E_BAM_ONLD_INITIALISATION_ERROR" fatal="false">ONLD Initialisation error.</value>
+    <value number="1604" name="E_BAM_ONLD_READ_ERROR" fatal="false">ONLD An error occurred while reading.</value>
+    <value number="1605" name="E_BAM_ONLD_WRITE_ERROR" fatal="false">ONLD An error occurred while writing.</value>
+    <value number="1606" name="E_BAM_ONLD_ERASE_ERROR" fatal="false">ONLD An error occurred while erasing.</value>
+    <value number="1607" name="E_BAM_ONLD_DEVICE_ERROR" fatal="false">ONLD device error.</value>
+    <value number="1608" name="E_BAM_ONLD_GOODBLOCK" fatal="false">ONLD good block.</value>
+    <value number="1609" name="E_BAM_ONLD_BADBLOCK" fatal="false">ONLD bad block.</value>
+     
+    <!--
+    * Cops data Fatal 1620-1650
+    * Cops data non-fatal 1651-1699
+    --> 
+    <value number="1651" name="E_COPS_MEMORY_ALLOC_FAILED" fatal="false">COPS memory allocation failed.</value>
+    <value number="1652" name="E_COPS_DATA_TAMPERED" fatal="false">COPS data is tempered.</value>
+    <value number="1653" name="E_COPS_IMEI_MISSMATCH" fatal="false">IMEI missmatch.</value>
+    <value number="1654" name="E_COPS_OTP_LOCKED" fatal="false">OTP is locked.</value>
+    <value number="1655" name="E_COPS_MAC_FUNCTION_LOCKED_DOWN" fatal="false">Function for calculating MAC is locked down.</value>
+    <value number="1656" name="E_COPS_AUTHENTICATION_FAILED" fatal="false">Authentication failed.</value>
+    <value number="1657" name="E_COPS_DATA_NOT_PRESENT" fatal="false">COPS data is not present.</value>
+    <value number="1658" name="E_COPS_IMEI_UPDATE_NOT_ALLOWED" fatal="false">IMEI update is not allowed.</value>
+    <value number="1659" name="E_COPS_LOCK_PERMANENTLY_DISABLED" fatal="false">Locking of SIMLocks is disabled.</value>
+    <value number="1660" name="E_COPS_NO_ATTEMPTS_LEFT" fatal="false">No more attempts for verification left.</value>
+    <value number="1661" name="E_COPS_INCORRECT_CONTROLKEY" fatal="false">Control key is not correct.</value>
+    <value number="1662" name="E_COPS_TOO_SHORT_CONTROLKEY" fatal="false">Control key is too short.</value>
+    <value number="1663" name="E_COPS_TOO_LONG_CONTROLKEY" fatal="false">Control key is too long.</value>
+    <value number="1664" name="E_COPS_INVALID_CONTROLKEY" fatal="false">Control key is not valid.</value>
+    <value number="1665" name="E_COPS_TIMER_RUNNING" fatal="false">Timer is running.</value>
+    <value number="1666" name="E_COPS_SIM_ERROR" fatal="false">SIM error.</value>
+    <value number="1667" name="E_COPS_LOCKING_FAILED" fatal="false">Locking failed.</value>
+    <value number="1668" name="E_COPS_OTA_UNLOCK_IMEI_MISMATCH" fatal="false">OTA unlock IMEI mismatch.</value>
+    <value number="1669" name="E_COPS_INCORRECT_IMSI" fatal="false">Incorrect IMSI.</value>
+    <value number="1670" name="E_COPS_PARAMETER_ERROR" fatal="false">Parameter error.</value>
+    <value number="1671" name="E_COPS_BUFFER_TOO_SMALL" fatal="false">Memory buffer is too small.</value>
+    <value number="1672" name="E_COPS_FORBIDDEN_PARAMETER_ID" fatal="false">Parameter is not allowed.</value>
+    <value number="1673" name="E_COPS_UNKNOWN_PARAMETER_ID" fatal="false">Parameter can not be recognised.</value>
+    <value number="1674" name="E_COPS_ARGUMENT_ERROR" fatal="false">Argument error! Please verify the input parameters.</value>
+    <value number="1698" name="E_COPS_VERIFY_FAILED" fatal="false">COPS failed to verify internal data.</value>
+    <value number="1699" name="E_COPS_UNDEFINED_ERROR" fatal="false">Undefined COPS error.</value>  
+    
+    <!--
+    * PD NAND Fatal 1700-1750
+    * PD NAND non-fatal 1751-1799
+    --> 
+    <value number="1751" name="E_PD_NAND_RESULT_BIT_ERROR_CORRECTED" fatal="false">A bit error was detected and corrected.</value>
+    <value number="1752" name="E_PD_NAND_RESULT_UNCORRECTABLE_BIT_ERROR" fatal="false">An uncorrectable bit error was detected.</value>
+    <value number="1753" name="E_PD_NAND_RESULT_BAD_PARAMETER" fatal="false">The function could not perform the requested operation due to a bad parameter.</value>
+    <value number="1754" name="E_PD_NAND_RESULT_HW_ERROR" fatal="false">A hardware error occurred.</value>
+    <value number="1755" name="E_PD_NAND_RESULT_INTERNAL_ERROR" fatal="false">A module internal error has occurred. The module has reach an unexpected state or request.</value>
+    <value number="1756" name="E_PD_NAND_RESULT_BUSY" fatal="false">If T_PD_NAND_CONFIG_FLAG_BLOCKING_MUTEX is not set, a call to NAND PD may return with this busy flag.</value>
+    <value number="1757" name="E_PD_NAND_RESULT_READING_ERASED_PAGE" fatal="false">Attempting to read erased page.</value>
+    <value number="1758" name="E_PD_NAND_RESULT_NUMBER_OF_ITEMS" fatal="false">Number of valid states of this type.</value>
+    <value number="1759" name="E_PD_NAND_RESULT_UNDEFINED" fatal="false">Represents an undefined value of this type.</value>
+    
+    <!--
+    * Trim Area non-fatal 1851-1899
+    -->
+    <value number="1851" name="E_GD_TA_BASE" fatal="false" short="Comment should be inserted."></value>
+    <value number="1852" name="E_GD_TA_UNKNOWN_PARTITION" fatal="false" short="Comment should be inserted."></value>
+    <value number="1853" name="E_GD_TA_UNKNOWN_CONFIG" fatal="false" short="Comment should be inserted."></value>
+    <value number="1854" name="E_GD_TA_ILLOGICAL_CONFIGURATION" fatal="false" short="Comment should be inserted."></value>
+    <value number="1855" name="E_GD_TA_UNKNOWN_MEMORY_TYPE" fatal="false" short="Comment should be inserted."></value>
+    <value number="1856" name="E_GD_TA_WRONG_PARAMETER" fatal="false" short="Comment should be inserted."></value>
+    <value number="1857" name="E_GD_TA_OUT_OF_MEMORY" fatal="false" short="Comment should be inserted."></value>
+    <value number="1858" name="E_GD_TA_INVALID_ADRESS" fatal="false" short="Comment should be inserted."></value>
+    <value number="1859" name="E_GD_TA_UNUSED_ADRESS" fatal="false" short="Comment should be inserted."></value>
+    <value number="1860" name="E_GD_TA_UNIT_NOT_FOUND" fatal="false" short="Comment should be inserted."></value>
+    <value number="1861" name="E_GD_TA_NOT_IMPLEMENTED" fatal="false" short="Comment should be inserted."></value>
+    <value number="1862" name="E_GD_TA_FAIL" fatal="false" short="Comment should be inserted."></value>
+
+    <value number="1863" name="E_GD_UNKNOWN_UNIT_NAME" fatal="false" short="Comment should be inserted."></value>
+    <value number="1864" name="E_GD_LAST" fatal="false" short="Last enumeration (last valid + 1)."> Reset loader. If problem doesn't solved report it.</value>
+
+
+    <!--
+    * Loader utilities Fatal 1900-1950
+    * Loader utilities non-fatal 1951-1999
+    -->
+    <value number="1900" name="E_FAILED_TO_STORE_IN_FIFO" fatal="true" short="Failed to store data in FIFO."> Reset loader.</value>
+    <value number="1951" name="E_FAILED_TO_SET_COMM_DEVICES" fatal="false" short="Failed to set parameters of communications devices."> Reset loader. If problem does'n solved report it.</value>
+    <value number="1952" name="E_FAILED_TO_STORE_IN_STACK" fatal="false" short="Failed to store in stack."> Reset loader. If problem does'n solved report it.</value>
+    <value number="1954" name="E_ZIP_PARSER_FILE_NOT_FOUND" fatal="false" short="The requested file is not found in the specified Zip archive."> Check ZIP archive. Reset loader. If problem doesn't solved, report it.</value>
+    <value number="1955" name="E_ELF_FILE_FORMAT" fatal="false" short="The requested file is not an elf file."> Check input parameters. Repeat operation with correct input.</value>
+    <value number="1956" name="E_ELF_OPEN_SECTION" fatal="false" short="Can not open elf section."> Possible damaged elf file. Retry operation and reset loader. If problem doesn't solved report it.</value>
+    <value number="1957" name="E_NAME_TOO_LONG" fatal="false" short="The name of parameter is too long."> Check input parameters. Retry operation.</value>
+    <value number="1958" name="E_BOOTRECORDS_MISMATCH" fatal="false" short="Error in boot records."> Some information in boot image doesn't agree. Check software that you flash.</value>
+    <value number="1959" name="E_BOOTRECORD_EMPTY" fatal="false" short="Boot record is empty and operation cannot be executed."> Internal error. Reset loader. If problem doesn't solved, report it.</value>
+    <value number="1960" name="E_INVALID_BOOTRECORD_IMAGE" fatal="false" short="Boot record image is not valid."> Invalid boot image. Check software that you flash.</value>
+    <value number="1961" name="E_BOOTRECORD_FULL" fatal="false" short="Boot record has no space to accept new boot record."> Internal limitation. Report his problem.</value>
+    <value number="1962" name="E_BOOTRECORD_NOT_EXIST" fatal="false" short="Boot record not exist."> The boot record with that ID is never written.</value>
+    <value number="1963" name="E_BOOTRECORD_WRITE_FAILED" fatal="false" short="Writing failed."> The boot record with that ID was not written.</value>
+    <value number="1964" name="E_BOOTRECORD_UNALIGNED_DATA" fatal="false" short="Boot record data is unaligned.">For successfully writing in flash boot record must be a multiple of four bytes.</value>
+    
+    <!--
+    * Loader ADBG Fatal 2000-2050
+    * Loader ADBG non-fatal 2051-2099
+    -->
+    <value number="2000" name="E_MODULE_NOT_FOUND" fatal="true" short="Testing this module currently not supported in ADbg."> Check the module number and try again.</value>
+    <value number="2001" name="E_MODULE_LIST_EMPTY" fatal="true" short="There isn't any module available for testing.">  Use List Cases command to see available modules for testing.</value>
+    <value number="2002" name="E_CASE_NOT_FOUND" fatal="true" short="Specified case can not be found."> Use List Cases command to see available test cases.</value>
+    <value number="2003" name="E_CASE_LIST_EMPTY" fatal="true" short="There isn't any test cases in specified module."> Use List Cases command to see available test cases.</value>
+    <value number="2004" name="E_INT_GROUP_NOT_FOUND" fatal="true" short="Specified internal group can not be found."> Use List Interface command to see available internal groups.</value>
+    <value number="2005" name="E_INT_GROUP_LIST_EMPTY" fatal="true" short="There isn't any internal group.">Use List Interface command to see if is any available internal group.</value>
+    <value number="2006" name="E_INT_FUNCTION_NOT_FOUND" fatal="true" short="Specified interface function cannot be found."> Use List Interface command to see if specified internal function exist.</value>
+    <value number="2007" name="E_INT_FUNCTION_LIST_EMPTY" fatal="true" short="There isn't any interface function in interface group."> Use List Interface command to see if there's any available internal function.</value>
+    <value number="2008" name="E_PRECONDITION_IS_ALREADY_SET" fatal="true" short="Request for setting precondition that is already set."> Precondition is already set. If you want to change it, recover precondition, and than set it again.</value>
+    <value number="2009" name="E_PRECONDITION_IS_NOT_SET" fatal="true" short="Request to recover condition that is not changed."> You cannot recover condition that is not set before. There's no need of any further activities in order to resolve this problem. Loader will work fine.</value>
+    
+    <!--
+    * OTP applications Fatal 2100-2150
+    * OTP applications non-fatal 2151-2199
+    -->
+    <value number="2100" name="E_INIT_OTP_PD_FAILED" fatal="true">Failed to initialize OTD driver.</value>
+    <value number="2101" name="E_READING_OTP_FAILED" fatal="true">Failed to read data from OTP.</value>
+    <value number="2102" name="E_WRITTING_OTP_FAILED" fatal="true">Failed to write data in OTP.</value>
+    <value number="2103" name="E_INVALID_CID_VALUE" fatal="true">Trying to write invalid CID in OTP.</value>
+    <value number="2104" name="E_INIT_OTP_LD_FAILED" fatal="true">Failed to initialize OTD logical driver.</value>
+    <value number="2105" name="E_OTP_AREA_LOCKED" fatal="true">Requested OTP area is already locked.</value>
+  
+    <!--
+    * Security applications Fatal 2200-2250
+    * Security applications non-fatal 2251-2299
+    -->
+    <value number="2251" name="E_SEC_APP_PROPERTY_NOT_FOUND" fatal="true" short="App property cannot be found.">If specified property cannot be found by COPS module.</value>
+    <value number="2252" name="E_SEC_APP_IMEI_NOT_CHANGABLE" fatal="true" short="IMEI not changeable.">If user try to change IMEI in COPS while IMEI is set as non - changeable in OTP area.</value>
+    <value number="2253" name="E_SEC_APP_OPERATION_DENIED" fatal="true" short="Security operation denied.">If some security operation cannot be accomplished due to various reasons.</value>
+    <value number="2254" name="E_SEC_APP_UNABLE_TO_READ_BS_PARAMETERS" fatal="true" short="Incorrect Boot Stage Parameter vector.">.</value>
+    <value number="2255" name="E_SEC_APP_ROM_ERROR_CRITICAL" fatal="true" short="Critical error in ROM has occurred.">.</value>
+    <value number="2256" name="E_SEC_APP_ROM_ERROR" fatal="true" short="Unexpected ROM error.">.</value>
+    <value number="2257" name="E_SEC_APP_PATCH_EXISTS" fatal="true" short="ROM Patch is already installed.">.</value>
+    <value number="2258" name="E_SEC_APP_PATCH_REINSTALLED" fatal="true" short="ROM Patch in Flash is reinstalled.">.</value>
+    <value number="2259" name="E_SEC_APP_ROOTKEY_EXISTS" fatal="true" short="ROM Patch is already installed.">.</value>
+    <value number="2260" name="E_SEC_APP_ROOTKEY_REINSTALLED" fatal="true" short="Root Key is reinstalled.">.</value>
+    
+    <!--
+    * Trim Area Fatal 2300-2350
+    * Trim Area non-fatal 2351-2499
+    -->
+    <value number="2351" name="E_TA_WRONG_PARTITION" fatal="false" short="Unknown partition."></value>
+    <value number="2352" name="E_TA_ILLOGICAL_CONFIGURATION" fatal="false" short="Configuration error."></value>
+    <value number="2353" name="E_TA_UNKNOWN_MEMORY_TYPE" fatal="false" short="Unsupported memory type."></value>
+    <value number="2354" name="E_TA_WRONG_PARAMETER" fatal="false" short="Wrong parameter."></value>
+    <value number="2355" name="E_TA_OUT_OF_MEMORY" fatal="false" short="No heap memory left."></value>
+    <value number="2356" name="E_TA_INVALID_ADRESS" fatal="false" short="Invalid address."></value>
+    <value number="2357" name="E_TA_UNUSED_ADRESS" fatal="false" short="Unused address."></value>
+    <value number="2358" name="E_TA_UNIT_NOT_FOUND" fatal="false" short="Unit was not found."></value>
+    <value number="2359" name="E_TA_WRONG_SIZE" fatal="false" short="Wrong size when reading unit."></value>
+    <value number="2360" name="E_TA_INSUFFICIANT_SPACE" fatal="false" short="Not enough space to flush the Trim Area."></value>
+    <value number="2361" name="E_TA_UNKNOWN_PARTITION" fatal="false" short="Unknown partition."></value>
+    <value number="2362" name="E_TA_FAIL" fatal="false" short="Fail."></value>
+    
+    <value number="2460" name="E_TA_MEDIA_ERROR" fatal="false" short="Media error."></value>
+    <value number="2461" name="E_TA_NOT_CONFIGURED" fatal="false" short="Error occurs during configuration."></value>
+    
+    <!--
+    * Recovery applications Fatal 2500-2550
+    * Recovery applications non-fatal 2551-2599
+     -->
+    <value number="2500" name="E_REQUEST_DENIED" fatal="true" short="Request for change operation denied.">Init request is twice called and state is changed. Should be sent Update request then can be used Init request again.</value> 
+    <value number="2501" name="E_UNDEFINED_CHANGE_OPERATION" fatal="true" short="Requested change operation is not supported.">Use the implemented change operation.</value> 
+  
+    <!--
+    * PD CFI Flash Fatal 2600-2650
+    * PD CFI Flash non-fatal 2651-2699
+     -->
+    <value number="2651" name="E_PD_CFI_IN_PROGRESS" fatal="false" short="The operation is in progress. Additional poll calls must be done."></value>
+    <value number="2652" name="E_PD_CFI_UNKNOWN_REQUEST" fatal="false" short="Type not recognized."></value>
+    <value number="2653" name="E_PD_CFI_HARDWARE_ERROR" fatal="false" short="Operation could not be completed because of a hardware malfunction.">It is possible that part of the operation has been carried out.</value>
+    <value number="2654" name="E_PD_CFI_NOT_SUPPORTED" fatal="false" short="The driver does not implement the requested function."></value>
+    <value number="2655" name="E_PD_CFI_PARAMETER_ERROR" fatal="false" short="Invalid parameter value."></value>
+    <value number="2656" name="E_PD_CFI_PROTECTED" fatal="false" short="The requested flash address is protected from the requested type of access."></value>
+    <value number="2657" name="E_PD_CFI_UNSUPPORTED_DEVICE" fatal="false" short="Flash devices not supported by this driver."></value>
+    <value number="2658" name="E_PD_CFI_OPERATION_COMPLETE" fatal="false" short="Requested operation was not suspended as it has completed."></value>
+
+    <!--
+    * Security Library Fatal 4000-4050
+    * Security Library non-fatal 4051-4250
+    -->
+    <value number="4000" name="E_LOADER_SEC_LIB_CHIP_ID_INVALID" fatal="true" short="Invalid input parameters.">The verification of ChipID list failed.</value>
+    <value number="4096" name="E_LOADER_SEC_LIB_INVALID_PARAMETER_TO_FUNC" fatal="true" short="Invalid input parameters.">The function that was called did not have correct parameters passed.</value>  
+    <value number="4120" name="E_LOADER_SEC_LIB_FAILURE" fatal="true" short="Failure.">.</value>
+    <value number="4121" name="E_LOADER_SEC_LIB_HASH_LIST_HASH_FAILURE" fatal="true" short="hash list verification failed.">The verification of hash list in Loader Security Library failed.</value>
+    <value number="4122" name="E_LOADER_SEC_LIB_HEADER_VERIFICATION_FAILURE" fatal="true" short="Header verification failed. ">The verification of the header has failed.</value>
+    <value number="4123" name="E_LOADER_SEC_LIB_HEADER_VERIFIED" fatal="true" short="Successful verification of the header">Successful verification of the header.</value>  
+    <value number="4124" name="E_LOADER_SEC_LIB_VERIFY_FAILURE" fatal="true" short="Unsuccessful verification.">.</value> 
+    <value number="4150" name="E_LOADER_SEC_LIB_INIT_CALLED_TWICE" fatal="true" short="The security library init function has been called 2 times.">Restart the loader.</value>
+    <value number="4180" name="E_LOADER_SEC_LIB_MEMORY_RELEASE_FAILED" fatal="true" short="Memory release failed.">Restart the loader.</value>
+    <value number="4181" name="E_LOADER_SEC_LIB_MEMORY_ALLOCATION_FAILED" fatal="true" short="Memory allocation failed.">Restart the loader.</value>
+    <value number="4182" name="E_LOADER_SEC_LIB_DATA_BLOCK_EXIST" fatal="true" short="Data block exist in the linked list.">.</value>
+    <value number="4183" name="E_LOADER_SEC_LIB_DATA_BLOCK_DO_NOT_EXIST" fatal="true" short="Data block do not exist in the linked list.">.</value>
+    <value number="4184" name="E_LOADER_SEC_LIB_INVALID_AUTHENTICATION_TYPE" fatal="true" short="Invalid authentication type."> Try to use the appropriate authentication type (control key or CA certificate).</value>
+    <value number="4185" name="E_LOADER_SEC_LIB_EXCEEDED_NUMBER_OF_AUTHENTICATION" fatal="true" short="Exceeded number of authentication. Loader will be shut downed.">Restart the laoder and use the correct control keys or CA certificate to authenticate.</value>
+    <value number="4186" name="E_LOADER_SEC_LIB_ESB_MAC_INIT_FAILED" fatal="true" short="Initialization of ESB block for MAC calculation failed.">.</value> 
+    <value number="4187" name="E_LOADER_SEC_LIB_ESB_MAC_UPDATE_FAILED" fatal="true" short="MAC update with ESB block failed.">.</value> 
+    <value number="4188" name="E_LOADER_SEC_LIB_ESB_MAC_FINAL_FAILED" fatal="true" short="MAC finalize with ESB block failed.">.</value>
+    <value number="4189" name="E_LOADER_SEC_LIB_ESB_MAC_NOT_VERIFIED" fatal="true" short="MAC verification with ESB block failed.">.</value>
+    <value number="4190" name="E_LOADER_SEC_LIB_ESB_DOWNLOCK_FAILED" fatal="true" short="ESB downlock failed.">.</value>
+    <value number="4191" name="E_LOADER_SEC_LIB_CONTROL_KEY_VERIFICATION_FAILURE" fatal="true" short="Control key verification failed.">.</value>
+    <value number="4192" name="E_LOADER_SEC_LIB_CA_CERTIFICATE_VERIFICATION_FAILURE" fatal="true" short="CA certificate verification failed.">.</value>
+    <value number="4193" name="E_LOADER_SEC_LIB_X509_ERROR_IN_CERTIFICATE" fatal="true" short="X509 certificate error.">.</value>
+    <value number="4194" name="E_LOADER_SEC_LIB_COPS_INIT_FAILED" fatal="true" short="COPS initialization failed.">.</value>
+    <value number="4195" name="E_LOADER_SEC_LIB_COPS_PROTECT_DATA_INIT_FAILED" fatal="true" short="COPS protect data initialization failed.">.</value>
+    <value number="4196" name="E_LOADER_SEC_LIB_COPS_DATA_READ_FAILED" fatal="true" short="COPS data read failed.">.</value>
+    <value number="4197" name="E_LOADER_SEC_LIB_COPS_DATA_WRITE_FAILED" fatal="true" short="COPS data write failed.">.</value>
+    <value number="4198" name="E_LOADER_SEC_LIB_READ_OTP_FAILED" fatal="true" short="Reading OTP data failed.">.</value>
+    <value number="4199" name="E_LOADER_SEC_LIB_WRITE_OTP_FAILED" fatal="true" short="Writing OTP data failed.">.</value>
+    <value number="4200" name="E_LOADER_SEC_LIB_LOCK_OTP_FAILED" fatal="true" short="Locking OTP data failed.">.</value>  
+    <value number="4201" name="E_LOADER_SEC_LIB_UNPACKING_IMEI_FAILED" fatal="true" short="Unpacking IMEI data failed.">.</value>
+    <value number="4202" name="E_LOADER_SEC_LIB_PACKING_IMEI_FAILED" fatal="true" short="Packing IMEI data failed.">.</value>
+    <value number="4203" name="E_LOADER_SEC_LIB_OTP_ALREADY_LOCKED" fatal="true" short="OTP is already locked.">.</value>
+    <value number="4204" name="E_LOADER_SEC_LIB_INVALID_CID_VALUE" fatal="true" short="CID value is out of range.">.</value>
+    <value number="4205" name="E_LOADER_SEC_LIB_OTP_LOCKBITS_MISSMATCH" fatal="true" short="OTP lock bits have different values.">.</value>
+    <value number="4206" name="E_LOADER_SEC_LIB_WRITING_BOOTRECORD_FAILED" fatal="true" short="Failed to write in boot records.">.</value> 
+    <value number="4207" name="E_LOADER_SEC_LIB_UNSUPPORTED_NO_DEBUG_HW" fatal="true" short="No debug hardware detected.">.</value> 
+    <value number="4208" name="E_LOADER_SEC_LIB_CHANGE_OPERATION_NOT_SUPPORTED" fatal="true" short="Requested change operation is not supported or not allowed.">.</value> 
+    <value number="4209" name="E_LOADER_SEC_LIB_INVALID_CHANGE_OPERATION" fatal="true" short="Invalid change operation.">.</value> 
+    <value number="4210" name="E_LOADER_SEC_LIB_RWIMEI_NOT_ALLOWED" fatal="true" short="Rewriteable IMEI is not allowed to change.">.</value> 
+    <value number="4211" name="E_LOADER_SEC_LIB_REQUEST_DENIED" fatal="true" short="Request for change operation is denied.">.</value> 
+    <value number="4212" name="E_LOADER_SEC_LIB_BOOT_BLOCK_DO_NOT_EXIST" fatal="true" short="Boot record do not exist.">If boot block is corrupted or do not exist, processFile command should be used to flash the new boot record or recovery domain data to generate the boot record template.</value> 
+    <value number="4213" name="E_LOADER_SEC_LIB_CORRUPTED_DOMAIN_DATA" fatal="true" short="Corrupted or do not exist domain data in boot block.">If domain data are corrupted or do not exist should be use the bind properties command or recover domain data to generate the new domain data.</value> 
+    <value number="4214" name="E_LOADER_SEC_LIB_INVALID_DOMAIN" fatal="true" short="Invalid domain.">Select appropriated domain.</value> 
+    
+    <!--
+    * Emulator Fatal 4300-4350
+    * Emulator non-fatal 4351-4399
+    -->
+    <value number="4300" name="E_FIFO_OVERFLOW" fatal="true">UART FIFO overflow.</value>
+    <value number="4301" name="E_FIFO_UNDERFLOW" fatal="true">UART FIFO underflow.</value>
+    <value number="4302" name="E_OBJECT_NULL" fatal="true">Null pointer to Object.</value>
+    <value number="4303" name="E_POINTER_NOT_NULL" fatal="true">Pointer is not NULL.</value>
+    <value number="4304" name="E_UNRECOGNIZED_STATE" fatal="true">The state in the State Machine is invalid.</value>
+    <value number="4305" name="E_UNKNOWN_MANUFACTURER_ID" fatal="true">The provided manufacturer ID is not valid.</value>
+    <value number="4306" name="E_UNKNOWN_DEVICE_ID" fatal="true">The provided device ID is not valid.</value>
+    <value number="4308" name="E_INVALID_A01_FORMAT" fatal="true">Something wrong with the A01 file containing the flash image.</value>
+    <value number="4309" name="E_A01_BUFFER_FULL" fatal="true">Buffer holding the data from the A01 file is full.</value>
+    <value number="4350" name="E_CONFIG_FILE_NOT_SPECIFIED" fatal="false">Configuration file for the emulator is not specified. The loader will start with the default settings.</value>
+    
+    <!--
+    * R13 and lower versions
+    * Error codes translation
+    -->
+    <value number="5000" name="A2_E_SUCCESS" fatal="true" short="Operation successful.">.</value>
+    <value number="5001" name="A2_E_PROP_NOT_SUPPORTED" fatal="true" short="The property is not supported.">The selected property is not supported by the loader.</value>
+    <value number="5002" name="A2_E_PROP_READ_ONLY" fatal="true" short="The property is read only.">.</value>
+    <value number="5003" name="A2_E_PROP_INVALID" fatal="true" short="The property value is invalid.">.Property value does not exist.</value>
+    <value number="5004" name="A2_E_AUTH_DECLINED" fatal="true" short="Authentication declined. The ME is automatically shut down after sending this.">.</value>
+    <value number="5005" name="A2_E_AUTH_UNSUPPORTED" fatal="true" short="The authentication type is not supported.">.</value>
+    <value number="5006" name="A2_E_ALLOCATE_FAILED" fatal="true" short="Failed to allocate memory.">Internal error. Reset loader. If problem doesn't solved, report it.</value>
+    <value number="5007" name="A2_E_INVALID_TIME" fatal="true" short="Invalid time specified.">Specify the correct time.</value>
+    <value number="5008" name="A2_E_UNKNWON_PROPERTY" fatal="true" short="Unknown property id.">Check if property id exists.</value>
+    <value number="5009" name="A2_E_START_AAIF_FAILED" fatal="true" short="Failed to start the AAIF in the loader on loader.">.</value>
+    <value number="5010" name="A2_E_UNSUPPORTED_CMD" fatal="true" short="Unsupported command.">This command is not supported.</value>
+    <value number="5011" name="A2_E_POINTER_NOT_ALIGNED" fatal="true" short="Pointer not aligned.">Internal error. Reset loader.</value>
+    <value number="5012" name="A2_E_ERROR_WRITING_BOOTRECORD" fatal="true" short="Writing of the boot record failed.">.</value>
+    <value number="5013" name="A2_E_INVALID_CURRDATE_STRING_LENGTH" fatal="true" short="String data length is invalid.">Check if input parameters are in the correct format.</value>
+    <value number="5014" name="A2_E_NO_COMMAND_GROUPS_DEFINED" fatal="true" short="Unknown command group.">The command group is not supported. Check the command documentation.</value>
+    <value number="5015" name="A2_E_READ_OTP_FAILED" fatal="true" short="Read OTP failed.">Reset loader. If problem doesn't solved, report it.</value>
+    <value number="5016" name="A2_E_COMMAND_IS_NOT_IMPLEMENTED" fatal="true" short="Specified command is not implemented.">.</value>
+    <value number="5017" name="A2_E_FAILED_TO_GET_ASIC_COPS_SETTINGS" fatal="true" short="Failed to get ASIC COPS setting.">.</value>
+    <value number="5018" name="A2_E_FAILED_TO_SET_PLAT_PROP" fatal="true" short="Failed to set platform properties.">Restart loader, if the problem still exists report it.</value>
+    <value number="5019" name="A2_E_MEMORY_FAILED" fatal="true" short="Memory fail.">Restart loader, if the problem still exists report it.</value>
+    <value number="5020" name="A2_E_JTAG_UNLOCK_FAILED" fatal="true" short="JTAG unlock fail.">.</value>
+    <value number="5021" name="A2_E_AUTOCONFIGURE_FLASH" fatal="true"></value>
+    <value number="5022" name="A2_E_E_GET_FIRST_FLASH_DEV" fatal="true"></value>
+    <value number="5023" name="A2_E_E_FAILED_INIT_COPS_LIB" fatal="true" short="Failed to initialize COPS library.">Restart loader, if the problem still exists report it.</value>
+    <value number="5024" name="A2_E_OTP_SECURITY_ERROR" fatal="true" short="OTP security error.">.</value>
+    <value number="5025" name="A2_E_I2C_BUS_SECURITY_ERROR" fatal="true" short="I2C bus security error.">.</value>
+    <value number="5026" name="A2_E_GET_STATIC_DATA_FAILED" fatal="true" short="Can't get static data.">.</value>
+    <value number="5027" name="A2_E_STORE_MAC_TO_BOOTIMAGE_FAILED" fatal="true" short="Failed to store MAC in boot image.">.</value>
+    <value number="5028" name="A2_E_SEC_GENERAL_COPS_LIB_ERROR" fatal="true" short="General COPS error.">.</value>
+    <value number="5029" name="A2_E_HASH_VERIFICATION_ERROR" fatal="true" short="Hash verification failed.">.</value>
+    <value number="5030" name="A2_E_READ_FLASH_FAILED" fatal="true" short="Failed to read hash.">.</value>
+    <value number="5031" name="A2_E_APP_HANDSHAKE_FAILED" fatal="true" short="Processors handshake failed.">.</value>
+    <value number="5032" name="A2_E_BOOTIMAGE_MEMCONF_INVALID" fatal="true" short="Invalid memconfig in boot image.">.</value>
+    <value number="5033" name="A2_E_BOOTIMAGE_SIGNATURE_FAILED" fatal="true" short="Boot image signature failed.">.</value>
+    <value number="5034" name="A2_E_BOOTIMAGE_FAILED_TO_READ_IMAGE" fatal="true" short="Failed to read image.">.</value>
+    <value number="5035" name="A2_E_BOOTIMAGE_FAILED_ALLOCATE_MEM" fatal="true" short="Failed to allocate memory.">.</value>
+    <value number="5036" name="A2_E_BOOTIMAGE_INVALID_PARAM" fatal="true" short="Boot image invalid parametars.">.</value>
+    <value number="5037" name="A2_E_BOOTIMAGE_INVALID_LENGTH" fatal="true" short="Boot image has invalid length.">.</value>
+    <value number="5038" name="A2_E_BOOTIMAGE_MACED_HEADER_SIZE_ZERO" fatal="true" short="Header size is zero.">.</value>
+    <value number="5039" name="A2_E_FLASH_RESULT_DEVICE_PROTECTED" fatal="true" short="The flash device was protected.">.</value>
+    <value number="5040" name="A2_E_FLASH_RESULT_WRITE_SUSPENDED" fatal="true" short="The last write process was suspended.">.</value>
+    <value number="5041" name="A2_E_FLASH_RESULT_VOLTAGE_RANGE_ERROR" fatal="true" short="The voltage range is invalid.">.</value>
+    <value number="5042" name="A2_E_FLASH_RESULT_PROGRAM_ERROR" fatal="true" short="Failed to write to the flash device.">.</value>
+    <value number="5043" name="A2_E_FLASH_RESULT_ERASE_ERROR" fatal="true" short="Failed to erase a block in the flash device.">.</value>
+    <value number="5044" name="A2_E_FLASH_RESULT_ERASE_SUSPENDED" fatal="true" short="The erase process was suspended.">.</value>
+    <value number="5045" name="A2_E_FLASH_RESULT_COMMAND_SEQUENCE_ERROR" fatal="true" short="The sequence of the flash commands was invalid.">.</value>
+    <value number="5046" name="A2_E_FLASH_RESULT_OPERATION_NOT_SUPPORTED" fatal="true" short="Operation was not supported in flashdriver.">.</value>
+    <value number="5047" name="A2_E_FLASH_RESULT_INVALID_PARAMETER" fatal="true" short="Invalid in-parameter specified when reading/writing to flash.">.</value>
+    <value number="5048" name="A2_E_FLASH_RESULT_NO_FLASH_DEVICE" fatal="true" short="No flash device was found on the physical address.">.</value>
+    <value number="5049" name="A2_E_FLASH_RESULT_CONFIGURATION_ERROR" fatal="true" short="Configuration error of flash device.">.</value>
+    <value number="5050" name="A2_E_FLASH_RESULT_INVALID_STARTADDRESS" fatal="true" short="Invalid start address of the parameter.">.</value>
+    <value number="5051" name="A2_E_FLASH_RESULT_INVALID_PHYSICAL_ADDRESS" fatal="true" short="Invalid physical address of the parameter.">.</value>
+    <value number="5052" name="A2_E_FLASH_RESULT_INVALID_DATALENGTH" fatal="true" short="The data length of the parameter is invalid.">.</value>
+    <value number="5053" name="A2_E_FLASH_RESULT_GETREGION_ERROR" fatal="true" short="Invalid flash region specified.">.</value>
+    <value number="5054" name="A2_E_FLASH_RESULT_NULL_POINTER_BUF" fatal="true" short="A buffer was NULL.">.</value>
+    <value number="5055" name="A2_E_FLASH_RESULT_NAND_READ_FAILED" fatal="true" short="Failed to read from the NAND flash.">.</value>
+    <value number="5056" name="A2_E_FLASH_RESULT_NAND_PAGE_SIZE_UNSUPPORTED" fatal="true" short="The nand page size is unsupported.">.</value>
+    <value number="5057" name="A2_E_FLASH_RESULT_WRITE_ERROR" fatal="true" short="Failed to write to the flash device.">.</value>
+    <value number="5058" name="A2_E_FLASH_RESULT_READ_ID_ERROR" fatal="true" short="Failed to read the device ID from the flash device.">.</value>
+    <value number="5059" name="A2_E_FLASH_RESULT_HARDWARE_ERROR" fatal="true" short="Hardware error in the flash status.">.</value>
+    <value number="5060" name="A2_E_FLASH_RESULT_READ_FROM_FLASH" fatal="true" short="Failed to read from the flash device.">.</value>
+    <value number="5061" name="A2_E_FLASH_RESULT_ADD_NEW_DEVICE" fatal="true" short="Failed to add a new instance of a flash device.">.</value>
+    <value number="5062" name="A2_E_FLASH_RESULT_OTP_UNSUPPORTED_IN_FLASH" fatal="true" short="OTP is not support in the current flash device.">.</value>
+    <value number="5063" name="A2_E_FLASH_RESULT_OTP_TOO_SMALL" fatal="true" short="The OTP size is to small for the length requested.">.</value>
+    <value number="5064" name="A2_E_FLASH_RESULT_OTP_READ_FAILED" fatal="true" short="Failed to read the OTP area in the flash device.">.</value>
+    <value number="5065" name="A2_E_FLASH_RESULT_INVALID_FLASH_TYPE" fatal="true" short="The flash type is unknown.">.</value>
+    <value number="5066" name="A2_E_FLASH_RESULT_NAND_FLUSH_ERROR" fatal="true" short="Failed to flush the NAND write buffer.">.</value>
+    <value number="5067" name="A2_E_FLASH_RESULT_NOR_FLUSH_ERROR" fatal="true" short="Failed to flush the NOR write buffer.">.</value>
+    <value number="5068" name="A2_E_INVALID_LOL_STATE" fatal="true" short="Invalid Loader on loader state.">.</value>
+    <value number="5069" name="A2_E_INVALID_STATUS_LOLSTATE" fatal="true" short="Invalid loader on loader status.">.</value>
+    <value number="5070" name="A2_E_WRITE_STATIC_DATA" fatal="true" short="Write static data failed.">.</value>
+    <value number="5071" name="A2_E_HEADER_NOT_VERIFIED_YET" fatal="true" short="Header is still not verified.">.</value>
+    <value number="5072" name="A2_E_ALL_BLOCKS_VERIFIED_FAILED" fatal="true" short="Blocks verification failed.">.</value>
+    <value number="5073" name="A2_E_HANDSHAKE_WITH_APP_SIDE" fatal="true" short="Handshake with App side failed.">.</value>
+    <value number="5074" name="A2_E_READ_STATIC_DATA" fatal="true" short="Failed to read static data.">.</value>
+    <value number="5075" name="A2_E_ENABLE_CLOCK_HARDWARE_FAILED" fatal="true" short="Failed to enable clock hardware.">.</value>
+    <value number="5076" name="A2_E_ENABLE_BLOCK_HARDWARE_FAILED" fatal="true" short="Failed to enable block hardware.">.</value>
+    <value number="5077" name="A2_E_NO_HEADER_TO_MAC_IN_BOOT" fatal="true" short="Indicates that the loader did not find any header in the bootimage records that could be MAC'ed.">.</value>
+    <value number="5078" name="A2_E_MMU_SETUP" fatal="true" short="MMU setup failed.">.</value>
+    <value number="5079" name="A2_E_INVALID_COMMAND_SIZE" fatal="true" short="Invalid command size.">.</value>
+    <value number="5080" name="A2_E_HASH_LIST_LENGTH_INVALID" fatal="true" short="Invalid hash list length.">.</value>
+    <value number="5081" name="A2_E_INVALID_INPUT_PARAMETERS" fatal="true" short="Invalid input parameters.">.</value>
+    <value number="5082" name="A2_E_FAILED_SETUP_MSL_DRIVER" fatal="true" short="MSL driver setup failed.">.</value>
+    <value number="5083" name="A2_E_REQUEST_DENIED" fatal="true" short="Request denied.">.</value>
+    <value number="5084" name="A2_E_ASIC_FUSES_INVALID" fatal="true" short="Fuses for the ASIC are invalid.">.</value>
+    <value number="5085" name="A2_E_STATIC_DATA_NOT_CHECKED" fatal="true" short="Static data is not checked.">.</value>
+    <value number="5086" name="A2_E_COPS_DATA_MAN_INIT" fatal="true" short="Failed to initialize the cops data man, this can be caused by an corrupt boot image. You probably just need to flash a platform software to get it work.">.</value>
+    <value number="5087" name="A2_E_UART_DRIVER_ERROR" fatal="true" short="UART driver error.">.</value>
+    <value number="5088" name="A2_E_INVALID_DOMAIN_FOR_LOADER_TYPE" fatal="true" short="Loader type is not compatible with this domain.">.</value>
+    <value number="5089" name="A2_E_FUNCTIONALITY_NOT_IN_PRODUCT" fatal="true" short="Functionality not supported.">.</value>
+    <value number="5090" name="A2_E_DEFALT_DATA_NOT_FOUND" fatal="true" short="Default data can not be found.">.</value>
+    <value number="5091" name="A2_E_FAILED_TO_MAC_HEADER" fatal="true" short="Failed to send the header to access side to be MAC'ed, could be something wrong with the header.">.</value>
+    <value number="5092" name="A2_E_APP_PRELOADER_NOT_STARTED" fatal="true" short="App preloader not started.">.</value>
+    <value number="5093" name="A2_E_INVALID_DEST_ADDRESS" fatal="true" short="Invalid destination address.">.</value>
+    <value number="5094" name="A2_E_SYS_APP_INIT_FAILURE" fatal="true" short="Failed to initialize the system application.">.</value>
+    <value number="5095" name="A2_E_FLASH_APP_INIT_FAILURE" fatal="true" short="Failed to initialize the flash application.">.</value>
+    <value number="5096" name="A2_E_SIGNATURE_APP_INIT_FAILURE" fatal="true" short="Failed to initialize the signature application.">.</value>
+    <value number="5097" name="A2_E_RESET_APP_INIT_FAILURE" fatal="true" short="Failed to initialize the reset application.">.</value>
+    <value number="5098" name="A2_E_INT_SEC_APP_INIT_FAILURE" fatal="true" short="Failed to initialize the internal security application.">.</value>
+    <value number="5099" name="A2_E_COPS_DATA_MAN_FORMAT" fatal="true" short="COPS data man Format.">.</value>
+    <value number="5100" name="A2_E_COPS_DATA_MAN_WRITE" fatal="true" short="COPS data man write.">.</value>
+    <value number="5101" name="A2_E_COPS_DATA_MAN_FLUSH" fatal="true" short="Failed to Flush the memory into the security partition.">.</value>
+    <value number="5102" name="A2_E_COPS_DATA_MAN_GETBLOCKSIZE" fatal="true" short="Failed to get the block size of a unit in the security partition.">.</value>
+    <value number="5103" name="A2_E_COPS_DATA_MAN_READBLOCK" fatal="true" short="Failed to read an index from the security partition.">.</value>
+    <value number="5104" name="A2_E_INVALID_FLASH_VAR_LENGTH" fatal="true" short="The bytes left to program should be less than a NAND page.">.</value>
+    <value number="5105" name="A2_E_BOOTIMAGE_TOO_BIG" fatal="true" short="Boot image is too big.">.</value>
+    <value number="5106" name="A2_E_GDFS_APP_INIT_FAILURE" fatal="true" short="App GD init failed.">.</value>
+    <value number="5107" name="A2_E_FILESYS_APP_INIT_FAILURE" fatal="true" short="Failed to initialize the file system.">.</value>
+    <value number="5108" name="A2_E_INVALID_SOURCE_DEST_ADDRESS" fatal="true" short="Invalid source or destination address.">.</value>
+    <value number="5109" name="A2_E_INVALID_RESPONSE_COMMAND" fatal="true" short="Invalid Response command number on the internal security command group, was expecting command 0xFF.">.</value>
+    <value number="5110" name="A2_E_INVALID_RESP_TO_CMD" fatal="true" short="The internal sec command response should have responded to another command.">.</value>
+    <value number="5111" name="A2_E_VERIFICATION_OF_WRITTEN_DATA_FAILED" fatal="true" short="The data programmed into flash was not the same as the data received!">.</value>
+    <value number="5112" name="A2_E_INVALID_NAND_PADMUX_SETTING" fatal="true" short="The PADMUX configuration has not been set.">.</value>
+    <value number="5113" name="A2_E_FLASH_DRIVER_FAILED_SET_BOOT_ADDR" fatal="true" short="Failed to set the start boot address, this address are used to read the static data.">.</value>
+    <value number="5114" name="A2_E_FLASH_BOOT_IS_NOT_EMPTY" fatal="true" short="if the static data was not found, the flash should be empty!">.</value>
+    <value number="5115" name="A2_E_BOOTIMAGE_PMC_NOT_NEEDED" fatal="true" short="This error code informs that found boot container holds information that is not PMC protected.">.</value>
+    <value number="5116" name="A2_E_UNSUPPORTED_PMC" fatal="true" short="The PMC ID is not supported.">.</value>
+    <value number="5117" name="A2_E_FSVN_VS_PMC" fatal="true" short="The PMC ID is not coordinated with FSVN.">.</value>
+    <value number="5118" name="A2_E_WRONG_PMC_START_COUNT" fatal="true" short="PMC start count to high or zero.">.</value>
+    <value number="5119" name="A2_E_UNSUITABLE_PMC_FOR_LOCATION" fatal="true" short="Unsuitable PMC for the location.">.</value>
+    <value number="5120" name="A2_E_PMC_MISSING" fatal="true" short="The PMC can not be found.">.</value>
+    <value number="5121" name="A2_E_VERSION_NOT_ACCEPTED" fatal="true" short="FSVN is too low.">.</value>
+    <value number="5122" name="A2_E_PMC_OVERFLOWN" fatal="true" short="All steps of the PMC are destroyed.">.</value>
+    <value number="5123" name="A2_E_PMC_ONCE_REQUIRED" fatal="true" short="New version of once protected module attempted to be loaded without ARB flag set.">.</value>
+    <value number="5124" name="A2_E_PMC_BAD_N_OF_STEPS" fatal="true" short="Unsuitable number of steps within PMC.">.</value>
+    <value number="5125" name="A2_E_UNIT_MISSING" fatal="true" short="Dynamyc variable is missing.">.</value>
+    <value number="5126" name="A2_E_UNIT_TO_BIG" fatal="true" short="Dynamyc variable found is to big.">.</value>
+    <value number="5127" name="A2_E_PARTMAN_READ_ERROR" fatal="true" short="Error reading partition manger status.">.</value>
+    <value number="5128" name="A2_E_PARTMAN_INIT_ERROR" fatal="true" short="Error initializing partition manger.">.</value>
+    <value number="5129" name="A2_E_BOOTIMAGE_INVALID_ALLIGNMENT" fatal="true" short="Boot container size is not word alligned.">.</value>
+    <value number="5130" name="A2_E_BOOTIMAGE_INSUFFICIENT_CONTAINERS" fatal="true" short="Not enough boot containers are allocated.">.</value>
+    <value number="5131" name="A2_E_BOOTIMAGE_INVALID_CONTAINER_TYPE" fatal="true" short="Invalid boot container type. At this position other type of container is expected.">.</value>
+    <value number="5132" name="A2_E_DATA_LENGTH_IS_NOT_ALIGNED" fatal="true" short="The data size must be aligned to 512 bytes when reading or writing pages to/from the NAND.">.</value>
+    <value number="5133" name="A2_E_LOADER_SWINIT_JTAG_UNLOCK_FAILED" fatal="true" short="TEST JTAG EANBLENODEBUG.">.</value>
+    <value number="5134" name="A2_E_BOOTIMAGE_RECORD_NOT_FOUND" fatal="true" short="Required record is not found in the boot containers.">.</value>
+    <value number="5135" name="A2_E_BUFFER_OVERFLOW" fatal="true" short="Buffer overflow.">Buffer is not big enough.</value>
+    <value number="5136" name="A2_E_BUFFER_NOT_ALLOCATED" fatal="true" short="Buffer has not been allocated.">.</value>
+    <value number="5137" name="A2_E_WRONG_DATA_SIZE" fatal="true" short="Size of data has an unexpected value.">.</value>
+    <value number="5138" name="A2_E_NO_STATIC_DATA_IN_BOOTIMAGE" fatal="true" short="Static data in boot record is corrupted.">.</value>
+    <value number="5139" name="A2_E_NOT_ALLOWED_TO_FLASH" fatal="true" short="Not allowed to flash this block.">.</value>
+    <value number="5140" name="A2_E_UNABLE_TO_CHANGE_MMU_SETTINGS" fatal="true" short="Unable to change MMU settings.">Error encountered when loader tried to change MMU setting.</value>
+    <value number="5141" name="A2_E_INVALID_HW_FOR_LOADER_SETTINGS" fatal="true" short="Loader settings are not compatible with loader settings.">Error encountered when loader tried to startup on invalid Hardware.</value>
+    <value number="5142" name="A2_E_CABS_START_FAILED" fatal="true"></value>
+    <value number="5143" name="A2_E_CABS_READ_ERROR" fatal="true"></value>
+    <value number="5144" name="A2_E_CABS_WRITE_ERROR" fatal="true"></value>
+    <value number="5145" name="A2_E_ELF_DECODE_GENERAL_ERROR" fatal="true"></value>
+    <value number="5146" name="A2_E_ELF_INVALID_PARAMETER" fatal="true"></value>
+    <value number="5147" name="A2_E_PARTMAN_INIT_FAILED" fatal="true"></value>
+    <value number="5148" name="A2_E_PARTMAN_WRITE_FAILED" fatal="true"></value>
+    <value number="5149" name="A2_E_PARTMAN_READ_FAILED" fatal="true"></value>
+    <value number="5150" name="A2_E_PARTMAN_ERASE_ERROR" fatal="true"></value>
+    <value number="5151" name="A2_E_MBBS_CONFIG_ERROR" fatal="true"></value>
+    <value number="5152" name="A2_E_MBBS_READ_ERROR" fatal="true"></value>
+    <value number="5153" name="A2_E_MBBS_WRITE_ERROR" fatal="true"></value>
+    <value number="5154" name="A2_E_MBBS_ERASE_ERROR" fatal="true"></value>
+    <value number="5155" name="A2_E_FLASH_HW_CONFIG" fatal="true"></value> 
+    <value number="5156" name="A2_E_VSP_IS_NOT_ALLOWED" fatal="true" short="Virtual security partition is not allowed in this configuration.">.</value>
+    <value number="5157" name="A2_E_VSP_WRITE_STATIC_DATA" fatal="true" short="Failed to write static data to virtual security partition.">.</value>
+    <value number="5158" name="A2_E_VSP_READ_STATIC_DATA" fatal="true" short="Failed to read static data from virtual security partition.">.</value>
+    <value number="5159" name="A2_E_VSP_NOT_FORMATED" fatal="true" short="Virtual security partition is not initialized.">.</value>
+    <value number="5160" name="A2_E_VSP_UNSUPPORTED_UNIT_TYPE" fatal="true" short="Unit type is out of range in virtual security partition.">.</value>
+    <value number="5161" name="A2_E_GET_DYNAMIC_DATA_FAILED" fatal="true" short="Could not get the dynamic data from the security library.">.</value>
+    <value number="5162" name="A2_E_FLASH_RESULT_PARTITION_TABLE_FLASHED" fatal="true" short="Partition table repaired!! Please load file again.">.</value>
+    <value number="5163" name="A2_E_FLASH_RESULT_PARTITION_TABLE_NOT_FLASHED" fatal="true" short="Partition table is damaged!">Loaded file does not contain a valid partition table. Please load a file containing partition table.</value>
+    <value number="5164" name="A2_E_FLASH_RESULT_READ_FROM_PARTITION_TABLE" fatal="true" short="Partition table is damaged.">.</value>
+    <value number="5165" name="A2_E_BOOTIMAGE_PARTITION_RECORD_NOT_FOUND" fatal="true" short="Partition table record is not found in the boot containers.">.</value>
+    <value number="5166" name="A2_E_CORRUPT_STATIC_DATA_IN_BOOT_BLOCK" fatal="true" short="Static data in boot block is corrupt.">.</value>
+    <value number="5167" name="A2_E_MBBS_BBM_TYPE_CONFLICT" fatal="true" short="MBBS and BBM type conflict.">.</value>
+    <value number="5168" name="A2_E_EXECUTION_NOT_PERMITTED" fatal="true" short="Execution of this command is not allowed in the current domain with current authentication state.">.</value>
+    <value number="5169" name="A2_E_EXECUTION_NOT_PERMITTED_WARNING" fatal="true" short="Execution of this command is not allowed in the current domain with current authentication state.">Non fatal error.</value>
+    <value number="5171" name="A2_E_UNABLE_TO_INITIALIZE_LCD" fatal="true" short="Error during initialization of LCD drivers.">.</value>
+    <value number="5172" name="A2_E_LCD_NOT_INITIALIZED" fatal="true" short="LCD is not initialized.">.</value>
+    <value number="5173" name="A2_E_UNABLE_TO_DISPLAY_DATA_ON_LCD" fatal="true" short="Unrecoverable error during BMP image is processed.">.</value>
+    <value number="5174" name="A2_E_NETWORK_BUFFER_CORRUPTED" fatal="true" short="The network buffer area is corrupted.">.</value>
+
+    <value number="5200" name="A2_E_TOO_MENY_FRAGMENTS" fatal="true"></value>
+    <value number="5201" name="A2_E_FAILED_TO_GET_APPLICATION" fatal="true"></value>
+
+    <value number="9096" name="A2_E_SECURITY_LIBRARY_ERROR_BEGIN" fatal="true"></value>
+    <value number="9300" name="A2_E_SECURITY_LIBRARY_ERROR_END" fatal="true"></value>
+
+    <!--
+    * FILE SYSTEM ERRORS
+    -->
+    <value number="5301" name="A2_E_UNSUPPORTED_PROPERTY" fatal="true" short="Unsupported file system property.">.</value>
+    <value number="5302" name="A2_E_READ_ONLY" fatal="true" short="The property is read only.">.</value>
+    <value number="5303" name="A2_E_INVALLID_PROPERTY_SPECIFIED" fatal="true" short="The specified property value was invalid.">.</value>
+    <value number="5304" name="A2_E_ACCESS_DENIED" fatal="true" short="The access permission attributes do not allow operation.">.</value>
+    <value number="5305" name="A2_E_FORMATTING_FS" fatal="true" short="The file system is formatting.">.</value>
+    <value number="5306" name="A2_E_PATH_NOT_EXISTS" fatal="true" short="The path does not exist.">.</value>
+    <value number="5307" name="A2_E_PATH_ALREADY_EXISTS" fatal="true" short="The path already exists.">.</value>
+    <value number="5308" name="A2_E_PATH_READ_ONLY" fatal="true" short="The path is read only.">.</value>
+    <value number="5309" name="A2_E_INSUFFICENT_SPACE" fatal="true" short="Insufficient space.">.</value>
+    <value number="5310" name="A2_E_DIRECTORY_NOT_EMPTY" fatal="true" short="The directory is not empty.">.</value>
+    <value number="5311" name="A2_E_INVALID_RESTRICTION_SPECIFIED" fatal="true" short="Invalid access restrictions specified.">.</value>
+    <value number="5312" name="A2_E_NO_FILESYSTEM_PROPERTY" fatal="true" short="No file system property.">.</value>
+    <value number="5313" name="A2_E_FILE_NOT_EXISTS" fatal="true" short="The file does not exist.">.</value>
+    <value number="5314" name="A2_E_CHANGE_DIR" fatal="true" short="Failed to change directory.">.</value>
+    <value number="5315" name="A2_E_CHMOD" fatal="true" short="Failed to set new CH mod.">.</value>
+    <value number="5316" name="A2_E_GWD" fatal="true" short="Failed to get the current directory.">.</value>
+    <value number="5317" name="A2_E_OPEN_FILE" fatal="true" short="Failed to open a file in the file system.">.</value>
+    <value number="5318" name="A2_E_ITEM_STAT" fatal="true" short="Failed to read the stat from file.">.</value>
+    <value number="5319" name="A2_E_LIST_VOL" fatal="true" short="Failed to list volumes.">.</value>
+    <value number="5320" name="A2_E_FREE_SPACE" fatal="true" short="No free space left.">.</value>
+    <value number="5321" name="A2_E_CLOSE_FILE" fatal="true" short="Failed to close a file in the filesystem.">.</value>
+    <value number="5322" name="A2_E_CLOSE_DIRECTORY" fatal="true" short="Failed to close the directory.">.</value>
+    <value number="5323" name="A2_E_REMOVE_FILE" fatal="true" short="Failed to remove a file from the filesystem.">.</value>
+    <value number="5324" name="A2_E_RENAME_FILE" fatal="true" short="Failed to rename a file in the filesystem.">.</value>
+    <value number="5325" name="A2_E_CREATE_DIR" fatal="true" short="Failed to create a new directory in the filesystem.">.</value>
+    <value number="5326" name="A2_E_REMOVE_DIRECTORY" fatal="true" short="Failed to remove a directory from the file system.">.</value>
+    <value number="5327" name="A2_E_WRITE_FILE" fatal="true" short="Failed to write a file to the file system.">.</value>
+    <value number="5328" name="A2_E_INVALID_SFA_STATE" fatal="true" short="The state of the SFA programming is incorrect.">.</value>
+    <value number="5329" name="A2_E_READ_FILE" fatal="true" short="Failed to read a file from the file system.">.</value>
+    <value number="61797" name="A2_E_CORE_SUPERV" fatal="true"></value>
+    <value number="66166" name="A2_E_MEM_ALLOC" fatal="true"></value>
+    
+    <!--
+    * GDFS Error codes
+    -->
+    <value number="5401" name="A2_E_GDFS_UNSUPPORTED_PROPERTY" fatal="true" short="Unsupported GDFS property.">.</value>
+    <value number="5402" name="A2_E_GDFS_READ_ONLY" fatal="true" short="The GDFS property is read only.">.</value>
+    <value number="5403" name="A2_E_GDFS_PROPERTY_VALUE_INVALID" fatal="true" short="The property value is invalid.">.</value>
+    <value number="5404" name="A2_E_GDFS_INVALID_START_PROPERTY" fatal="true" short="Invalid start property.">.</value>
+    <value number="5405" name="A2_E_GDFS_NOT_STARTED" fatal="true" short="GDFS has not been started yet.">.</value>
+    <value number="5406" name="A2_E_GDFS_FAILED_TO_FORMAT" fatal="true" short="Failed to format the GDFS area.">.</value>
+    <value number="5407" name="A2_E_GDFS_NOT_FORMATTED" fatal="true" short="GDFS is not formatted, as it should be.">.</value>
+    <value number="5408" name="A2_E_GDFS_INVALID_BLOCK_UNIT_SPECIFIED" fatal="true" short="Invalid Block unit number.">.</value>
+    <value number="5409" name="A2_E_GDFS_NO_CONFIGURATION_FOUND" fatal="true" short="Could not find any GDFS configuration from the platform software in flash.">.</value>
+    <value number="5410" name="A2_E_GDFS_CLOSE" fatal="true" short="Failed to close the GDFS area.">.</value>
+    <value number="5411" name="A2_E_GDFS_OPEN" fatal="true" short="Failed to open the GDFS area.">.</value>
+    <value number="5412" name="A2_E_GDFS_INVALID_UNIT_SIZE" fatal="true" short="Invalid GDFS UNIT size(size=0).">.</value>
+    <value number="5413" name="A2_E_GDFS_WRITE_TO_UNIT_FAILED" fatal="true" short="Failed to write to the specified unit.">.</value>
+    <value number="5414" name="A2_E_GDFS_FAILED_TO_READ_FROM_UNIT" fatal="true" short="Failed to read from the specified unit.">.</value>
+    <value number="5415" name="A2_E_GDFS_EMPTY" fatal="true" short="Failed read access on an empty GDFS.">.</value>
+
+    <value number="70535" name="A2_E_GENERAL_FATAL_ERROR" fatal="true"></value>
+
+    <value number="80009" name="E_DUMMY_CODE" fatal="true">Request for recovery condition for condition that is not changed.</value>
+  </status>
+</commandspec>

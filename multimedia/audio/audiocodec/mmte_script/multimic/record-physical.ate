@@ -1,0 +1,72 @@
+test_start SOURCE_003
+test_property TEST_NAME record_multimic_playback_avsink
+
+
+OMX_GetHandle   capturer OMX.ST.AFM.MULTI_MIC
+
+OMX_SetParameter    capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+OMX_SetParameter    capturer AFM_IndexParamDmaChannelType isPhysical=1
+
+
+ate_attach_io       capturer 0 MEM $(OUTPUT_DIR)/record_48k_stereo-phy.pcm.out 2000000 0 0
+MMTE_DispatchState OMX_StateIdle capturer:0
+
+
+MMTE_DispatchState OMX_StatePause capturer
+
+#Start
+MMTE_DispatchState OMX_StateExecuting capturer
+
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=90 
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+################
+#RECORD ONGOING#
+################
+
+mmte_sleep 5000
+#Stop
+MMTE_DispatchState OMX_StateIdle capturer
+MMTE_DispatchState OMX_StateLoaded capturer:0
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+
+## Playback of the recorded file
+
+alias TIMEOUT 0
+ 
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+#OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+ate_attach_io       renderer 0 MEM $(OUTPUT_DIR)/record_48k_stereo-phy.pcm.out 0 0 
+
+OMX_SetParameter    renderer AFM_IndexParamMspNbChannel nNbChannel=4
+
+ 
+MMTE_DispatchState OMX_StateIdle renderer:0
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=90
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+ 
+mmte_sleep 1000
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer
+ 
+MMTE_DispatchState OMX_StateLoaded renderer
+
+ens_network_destroy
+unalias TIMEOUT
+check_test
+test_end

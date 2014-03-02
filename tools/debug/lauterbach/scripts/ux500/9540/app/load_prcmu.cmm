@@ -1,0 +1,36 @@
+&prcmu_data_base=0x801B8000
+
+y.create.l PRCMU_TCDM &prcmu_data_base
+
+; mapping in defined in prcmufw/L9540/xp70_MemMap.h
+; t_nSecMap; // Total 556 bytes (=0x22C)
+;               end address = 0x2FFF (top of the TCDM)
+y.create.v PRCMU_TCDM &prcmu_data_base
+
+y.create.l      ModMaxWkUpTime		ad:&prcmu_data_base+0x2DD4	;(length = 4   bytes)
+y.create.l      GPIORstSettings		ad:&prcmu_data_base+0x2DD8	;(length = 4   bytes)
+y.create.l 	ShVar4			ad:&prcmu_data_base+0x2DDC	;(length = 4   bytes)
+y.create.l 	ShVar3			ad:&prcmu_data_base+0x2DE0	;(length = 4   bytes)
+y.create.l 	ShVar2			ad:&prcmu_data_base+0x2DE4	;(length = 8   bytes)
+y.create.l   	AckMb7			ad:&prcmu_data_base+0x2DEC	;(length = 4   bytes)
+y.create.l   	AckMb6			ad:&prcmu_data_base+0x2DF0	;(length = 4   bytes)
+y.create.l   	AckMb5			ad:&prcmu_data_base+0x2DF4	;(length = 4   bytes)
+y.create.l   	AckMb4			ad:&prcmu_data_base+0x2DF8	;(length = 4   bytes)
+y.create.l   	AckMb3			ad:&prcmu_data_base+0x2DFC	;(length = 4   bytes)
+y.create.l   	AckMb2			ad:&prcmu_data_base+0x2E00	;(length = 4   bytes)
+y.create.l   	ddrPasrData		ad:&prcmu_data_base+0x2E04	;(length = 4   bytes)
+y.create.l   	AckMb0			ad:&prcmu_data_base+0x2E08	;(length = 52  bytes)
+y.create.l   	ReqMb7			ad:&prcmu_data_base+0x2E3C	;(length = 4   bytes)
+y.create.l   	ReqMb6			ad:&prcmu_data_base+0x2E40	;(length = 4   bytes)
+y.create.l   	ReqMb5			ad:&prcmu_data_base+0x2E44	;(length = 4   bytes)
+y.create.l   	ReqMb4			ad:&prcmu_data_base+0x2E48	;(length = 4   bytes)
+y.create.l   	ReqMb3			ad:&prcmu_data_base+0x2E4C	;(length = 372 bytes)
+y.create.l   	ReqMb2			ad:&prcmu_data_base+0x2FC0	;(length = 16  bytes)
+y.create.l   	Unused2			ad:&prcmu_data_base+0x2FD0	;(length = 12  bytes)
+y.create.l   	ReqMb0			ad:&prcmu_data_base+0x2FDC	;(length = 12  bytes)
+y.create.l   	Header			ad:&prcmu_data_base+0x2FE8	;(length = 16  bytes)
+y.create.l   	Reserved_NVM		ad:&prcmu_data_base+0x2FF8	;(length = 4   bytes)
+y.create.l   	ShVar1			ad:&prcmu_data_base+0x2FFC	;(length = 4   bytes)
+
+y.create.done
+

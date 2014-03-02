@@ -1,0 +1,115 @@
+startenv grab_vpip_display_01_01 _BACKUPFW_LRoutQVGA_HRoutVGA_CCP0_NDK20A01
+# RGB888
+setusecase LR SUBQCIF RGB888
+preview still prepare
+display LR
+preview still start
+wait 1
+preview still stop
+writebmp LR LR_RGB888
+preview still free
+# RGB565
+setusecase LR QCIF RGB565
+preview still prepare
+display LR
+preview still start
+wait 1
+preview still stop
+writebmp LR LR_RGB565
+preview still free
+# ARGB4444
+setusecase LR CIF ARGB4444
+preview still prepare
+display LR
+preview still start
+wait 1
+preview still stop
+writebmp LR LR_ARGB4444
+preview still free
+# ARGB1555
+setusecase LR QQVGA ARGB1555
+preview still prepare
+display LR
+preview still start
+wait 1
+preview still stop
+writebmp LR LR_ARGB1555
+preview still free
+# ARGB8888
+setusecase LR QVGA ARGB8888
+preview still prepare
+display LR
+preview still start
+wait 1
+preview still stop
+writebmp LR LR_ARGB8888
+preview still free
+# YUV422RI
+setusecase LR VGA YUV422RI
+preview still prepare
+display LR
+preview still start
+wait 1
+preview still stop
+writebmp LR LR_YUV422RI
+preview still free
+# YUV420MB_D
+setusecase LR QVGA RGB565
+setusecase HR VGA YUV420MB_D
+preview video prepare
+display LR
+preview video start
+video prepare
+initlcdbuf VGA RGB565
+display HR
+video start 
+wait 1
+video stop
+writebmp HR HR_YUV420MB_D
+video free
+# YUV420MB_F
+setusecase HR VGA YUV420MB_F
+video prepare
+initlcdbuf VGA RGB565
+display HR
+video start
+wait 1
+video stop
+writebmp HR HR_YUV420MB_F
+video free
+# YUV422MB
+setusecase HR VGA YUV422MB
+video prepare
+initlcdbuf VGA RGB565
+display HR
+video start
+wait 1
+video stop
+writebmp HR HR_YUV422MB
+video free
+# YUV422RI
+setusecase HR CIF YUV422RI
+video prepare
+initlcdbuf CIF RGB565
+display HR
+video start
+wait 1
+video stop
+writebmp HR HR_YUV422RI
+video free
+# RGB30
+setusecase HR CIFPLUS RGB30
+video prepare
+initlcdbuf CIFPLUS RGB565
+display HR
+video start
+wait 1
+video stop
+writebmp HR HR_RGB30
+video free
+#YUV420RP_I420
+#YUV420RP_YU12
+# end of test
+preview video stop
+preview video free
+stopenv

@@ -1,0 +1,35 @@
+#
+# TatlRf configuration
+#
+
+menuconfig TATLRF
+	bool "TatlRf"
+	depends on DTHSRVHELPER && TATLMODEMSRV && TATTOOLS
+	help
+	  depends on DTHSRVHELPER, TATLMODEMSRV and TATTOOLS
+
+if TATLRF
+
+config TATLRF_DIR
+	string
+	default ../tat/tat/tatlrf
+
+config TATLRF_DEPS
+	string
+	default "DTHSRVHELPER TATLMODEMSRV TATTOOLS"
+
+config TATLRF_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLRF
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLRF_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLRF
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLRF

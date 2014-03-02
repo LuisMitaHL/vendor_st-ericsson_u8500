@@ -1,0 +1,39 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+#
+
+OST_COMPILER = 1
+MY_TOP_DIR = tmp
+
+MODULE_NAME = osttc
+OST_MODULE_ID = 0x5
+# Translate value to hexa one for tracecompiler
+OST_MODULE_ID_INT = `printf "%d\n" ${OST_MODULE_ID}`
+
+OST_COMPONENT_NAME = ST_TU_OSTTC
+OST_DICO_NAME = $(OST_COMPONENT_NAME)
+OST_COMPONENT_INC = $(MY_TOP_DIR)
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_HOST)
+
+INSTALL_DICO = $(OST_DICO_NAME).xml
+
+#Add support for fixed trace id group
+MY_OST_COMPILER_OPTION = --tgdf=fixed_id.txt --defines=module=$(MODULE_NAME)
+OST_SRC_DIR = tmp
+
+# List of all UID used. In this example we increment by 1  
+OST_COMPONENT_ID = $(shell expr ${OST_MODULE_ID_INT} + 0 )
+OST_COMPONENT_ID_TOP_1 = $(shell expr ${OST_MODULE_ID_INT} + 1)
+OST_COMPONENT_ID_TOP_2 = $(shell expr ${OST_MODULE_ID_INT} + 2 )
+
+#Top dictionary generation
+OST_TOP_DICO_NAME_1 = $(OST_COMPONENT_NAME)
+
+#Dummy 2nd top dictionary to test functionality
+OST_TOP_DICO_NAME_2 = toto
+
+# Fill up OST_TOP_DICO_LIST variable for top dictionary generation
+OST_TOP_DICO_LIST = $(OST_TOP_DICO_NAME_1)::$(OST_COMPONENT_ID_TOP_1)
+OST_TOP_DICO_LIST += $(OST_TOP_DICO_NAME_2)::$(OST_COMPONENT_ID_TOP_2)
+
+

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Preferences Overview</title>
+		<style>
+
+h1 {
+  font-family: sans-serif, verdana;
+  font-size: 16pt;
+  font-weight: normal;
+}
+
+h2 {
+  font-family: sans-serif, verdana;
+  font-size: 12pt;
+  font-weight: bold;
+}
+
+h3 {
+  font-family: sans-serif, verdana;
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+p {
+  font-family: sans-serif, verdnana;
+  font-size: 10pt;
+}
+
+		</style>
+	</head>
+	<body>
+		<h1>Flash Kit Preferences</h1>
+		<h2>Equipment Editor Preferences</h2>
+		<img src="../../images/equipment_editor_prefs.png"/>
+		<p>
+			<strong>Close editor when equipment is disconnected</strong><br/>
+			Select whether to close the equipment editor or not when the associated mobile equipment is disconnected.
+		</p>
+		
+		<h2>Flash Tool Backend Preferences</h2>
+		<img src="../../images/flash-tool_prefs.png"/>
+			<p> 
+			<strong>Configuration File</strong><br/>
+			The path to an external mesp configuration file. Configuration file should have .mesp extension (e.g. backend.mesp).
+		</p>
+		<p>
+			<strong>Profiles Path</strong><br/>
+			The path to where the flash tool backend profiles are stored. Profiles should have .prfl extension (e.g. profile-STE_DBX500_flashloader.prfl).
+		</p>
+		<p>
+			<strong>Loaders Path</strong><br/>
+			The path to where the flash and customization loaders are stored. Loaders should have .ldr extension (e.g. loader.ldr).
+		</p>
+		<p>
+			<strong>LCD Library</strong><br/>
+			The absolute path to the loader communication driver. Depending on operating system this can either be an .so file or 
+			a .dll file. This file is required to enable loader communication. To allow mobile equipment connections,
+			select 'Accept Connections' in the Flash Tool Backend submenu of the Connected Equipment View drop-down menu. 
+		</p>
+		<p>
+			<strong>LCM Library</strong><br/>
+			The absolute path to the loader communication module. Depending on operating system this can either be an .so file or 
+			a .dll file. This file is required to enable loader communication. To allow mobile equipment connections,
+			select 'Accept Connections' in the Flash Tool Backend submenu of the Connected Equipment View drop-down menu. 
+		</p>
+		<p>
+			<strong>Remote Connection Port</strong><br/>
+			This is the port to where remote clients (such as the Flash Tool CLI) will be allowed to connect. To allow remote connections,
+			select 'Accept Remote Clients' in the Flash Tool Backend submenu of the Connected Equipment View drop-down menu.
+		</p>
+		
+		<p>
+			<strong>Development mode</strong><br/>
+			Preferences are switched to development mode if the grey-out settings were defined during startup (e.g. as parameters in flashkit.ini).
+			If the flashkit.ini contains setup of configuration paths (e.g. path to backend.mesp, loaders, profiles), these may be altered
+			only within the flashkit.ini file. If these paths are removed from the flashkit.ini file, the development mode is turned off and
+			the use may define his own paths via Preference Page.
+		</p>
+		
+		<h2>Signing Preferences</h2>
+		<img src="../../images/signing_prefs2.png"/>
+		<p>
+			<strong>Use local signing</strong><br/>
+			Check this checkbox to enable usage of local sign packages and keys. Note that this will disable usage of a sign server.
+		</p>
+        <p>
+            <strong>Use common folder</strong><br/>
+            Check this checkbox to enable usage of common folder for sign packages and keys. Note that this will disable usage of a mirror structure for keys and packages.
+        </p>		
+		<p>
+			<strong>Sign server</strong><br/>
+			Specify the address to the sign server on the form &lt;host&gt;:&lt;port&gt;. Multiple sign servers can be separated by semicolons.
+			Note that the sign servers will be tested in the order that they are written. The first successful connection will be used. 
+		</p>
+		<p>
+			<strong>Sign package root (Linux only)</strong><br/>
+			To enable signing in a Linux environment you must mount the sign server's share on your local machine.
+			If the sign server packages are on a share called \\myShare\sharedFolder\signpackages\, then mount \\myShare\sharedFolder to 
+			a folder on your machine and specify this local folder as sign package root.
+		</p>
+		<p>
+			<strong>Local sign package root</strong><br/>
+			The path to the locally stored sign packages that will be used if local signing is enabled.
+		</p>
+		<p>
+			<strong>Local key root</strong><br/>
+			The path to the locally stored keys that will be used if local signing is enabled.
+		</p>
+        <p>
+            <strong>Local common folder for keys and packages root</strong><br/>
+            The path to the common folder where keys and packages are locally stored that will be used if local signing is enabled.
+        </p>		
+		<p>
+			<strong>Use default sign package</strong><br/>
+			Check this checkbox to enable the usage of a default sign package.
+		</p>
+		<p>
+			<strong>Default sign package</strong><br/>
+			When signing a file from the right-click menu, the sign package specified here will be used if the usage of a default sign package is enabled.
+			This sign package will also be preselected in the signing wizard.
+		</p>
+		
+		<h2>Dump Handling Preferences</h2>
+		<img src="../../images/handle_dump_pref.png"/>
+		<p>
+			<strong>Enable Automatic Download of Dump</strong><br/>
+			Check this checkbox to enable automatic download of core dump when a equipment is dumping.
+		</p>
+		<p> 
+			<strong>Download Path</strong><br/>
+			The path to a directory where automatic download of dump will store the core dump file.
+		</p>
+		<p>
+			<strong>Enable Automatic Delete of Dump After Download</strong><br/>
+			Check this checkbox to enable automatic delete of core dump file after automatic download of core dump happens.
+		</p>
+	
+	</body>
+</html>

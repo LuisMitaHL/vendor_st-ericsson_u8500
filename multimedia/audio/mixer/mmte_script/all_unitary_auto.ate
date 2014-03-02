@@ -1,0 +1,272 @@
+############# MPC mixer tests #######################
+do $(NOMADIK)/mixer/mmte_script/mpc/config.ate 
+
+# state machine tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_state_machine_1inputpaced.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_state_machine_2inputspaced.ate
+
+# enable / disable ports tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_enable_disable_port_1inputpaced.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_enable_disable_port_2inputspaced.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_add2ndinput_in_executing_state.ate
+
+# volctrl tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_44k_stereo_44k_stereo_nochange.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_44k_stereo_44k_stereo_dec_3dB.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_44k_stereo_44k_stereo_dec_12dB.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_mute.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_balance.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_balance_when_port_is_disabled.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_upmix.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_downmix.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_setVolumeConfigsInLoadedState.ate
+
+# SRC tests : upsampling
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_8k_mono_16k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_8k_mono_48k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_16k_mono_44k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_16k_mono_48k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_11k_mono_24k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_12k_mono_32k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_22k_mono_48k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_44k_48k.ate 
+
+# SRC tests : downsampling
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_48k_mono_8k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_48k_mono_16k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_nontunneled_44k_mono_22k_mono.ate
+
+# mixing tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_2inputs_nontunneled_8k_mono_8k_mono_8k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_2inputs_nontunneled_8k_stereo_8k_stereo_8k_stereo.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_2inputs_nontunneled_8k_mono_22k_mono_48k_mono.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_2inputs_nontunneled_48k_stereo_44k_stereo_16k_stereo.ate 
+
+# non synchronized port
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_nonsync_port2.ate
+
+# paused port
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_setconfig_pause.ate
+
+# setparam on disable port
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_setparameter_on_disable_port.ate 
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_setparameter_on_disable_output_port.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_setparameter_on_disable_port_sfreq.ate 
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_setparameter_on_disable_port_withoutchanging_sfreq.ate
+
+# Change output freq during playback
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_ouputfreq_during_playback.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_ouputfreq_during_playback_2.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_outfreq_during_playback_disableOutputPortOnly.ate
+
+# Change input freq during playback
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_infreq_during_playback.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_infreq_during_playback2.ate
+
+# Change nbchannels during playback
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_ouputNbCh_during_playback.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_ouputNbCh_during_playback_nosrc.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_ouputNbCh_during_playback2.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_ouputNbCh_during_playback2_disableInOut.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_change_inputNbCh_during_playback.ate
+
+#low latency test
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-48-8-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-8-48.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-16-48-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-16-48.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-16-48-stereo_withplayback.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-8-48-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-48-8.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-48-16-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-48-16.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-8-48-port-disable.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-8-8.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-16-16.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-16-16_stereo.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-8-8_stereo.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/low_latency_test-48s-16m.ate
+
+#Extension Index
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_extension_index.ate
+#Ramp test
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_1.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_2.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_3.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_4.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_5.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_6.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_7.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_8.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_9.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_10.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_11.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_volume_rampin_12.ate
+
+#FIDO test defects
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_FIDO_304327.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_FIDO_332596.ate
+
+#Audio Video sync tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_av_test1.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_av_test2.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_av_test3.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_av_test4.ate
+
+#SRC specific mode LOW_RIPPLE
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_44k_48k_srcmode.ate 
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_44k_48k_srcmode_sinus.ate 
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_1input_44k_48k_sinus.ate 
+
+# timestamp
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_ts.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_ts_2.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_ts_3.ate
+
+# Effect addition/removal tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_add_spl_on_port1_and_on_port0_inLoadedState.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_add_spl_on_port1_and_on_port0_inExecState.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_remove_spl_on_port1_inExecState.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_add_remove_spl_port1_port0_omxall.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_add_remove_3spl_port2_omxall.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_add_spl_atsameposition.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_teq_enableInputPortInExecState.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_add_remove_3spl_outputport.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_remove_spl_when_inputport_is_disabled.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_spl_disable_enable_inputport.ate
+
+# SPL effect tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_spl_48k_mono_inputport1.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_spl_48k_mono_dyn_inputport1.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_spl_48k_stereo_inputport2.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_spl_48k_stereo_outputport.ate
+
+# TEQ effects tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_teq_biquad_8k_mono_inputport1.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_teq_biquad_44k_stereo_bass_boost_inputport1.ate
+
+# MDRC effects tests
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_mdrc_FIR_stereo_48k_inputport2.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_mdrc_IIR_stereo_48k_inputport1.ate
+do $(NOMADIK)/mixer/mmte_script/mpc/mixer_test_mdrc_FIR_stereo_48k_enableInputPortInExecState.ate
+
+############# HOST mixer tests #######################
+#Last Index is mix_host_0076
+#AFM TESTS + mixer (paced/notPaced configs)
+do $(NOMADIK)/mixer/mmte_script/host/config.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_state_machine_1inputpaced_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_state_machine_2inputspaced_host.ate
+
+do $(NOMADIK)/mixer/mmte_script/host/mixer_enable_disable_port_1inputpaced_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_enable_disable_port_2inputspaced_host.ate
+
+# volctrl specific only
+#Stereo tests
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_stereo_nochange_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_stereo_dec_3dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_stereo_dec_12dB_host.ate  # balance not working
+# Mono tests
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_48km_48km_0dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_48km_48km_3dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_48km_48km_12dB_host.ate
+#Mono to stereo tests
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_48km_48ks_0dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_48km_8ks_0dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/2mixer_1input_48km_48ks_0dB_host.ate
+#Stereo to mono tests 
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_44k_mono_0dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_stereo_48k_mono_0dB_host.ate
+
+# Multichannel tests
+#DOWNMIX
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_downmix_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_downmix_host_nosrc.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_downmix_host_1in.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_remap_host.ate
+#Volume tests
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_5_1_48k_dec_0dB_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_5_1_48k_dec_3dB_host.ate
+#do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_5_1_48k_ramping_1channel_host.ate
+#do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_5_1_48k_ramping_all_host.ate
+
+#UPMIX
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_upmix_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_upmix_host_1in_nosrc.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_upmix_host_1in_src.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_upmix_host_1in_src_44_48.ate
+
+# samplerateconv specific only
+#low latency test
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-8-48-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-8-48.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-48-8-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-48-8.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-48-16-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-48-16.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-16-48-stereo.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-16-48.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-8-48-port-disable.ate 
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-16-48-stereo_withplayback.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-8-8.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-16-16_stereo.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-16-16.ate
+do $(NOMADIK)/mixer/mmte_script/host/low_latency_test-8-8_stereo.ate
+
+# upsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_44k_48k.ate 
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_16k_mono_44k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_11k_mono_24k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_12k_mono_32k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_22k_mono_48k_mono_host.ate
+# downsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_mono_22k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_nontunneled_44k_16k_stereo.ate
+
+
+# multichannel samplerateconv specific only
+# upsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_8k_5_1_16k_5_1_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_8k_22k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_8k_24k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_8k_32k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_8k_44k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_8k_48k_host.ate
+# downsampling
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_48k_5_1_8k_5_1_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_48k_44k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_48k_32k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_48k_24k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_48k_22k_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_multichannel_input_nontunneled_48k_16k_host.ate
+
+# mixer
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_8k_mono_8k_mono_8k_mono_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_8k_stereo_8k_stereo_8k_stereo_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_8k_mono_22k_mono_48k_mono_host.ate      
+do $(NOMADIK)/mixer/mmte_script/host/mixer_2inputs_nontunneled_48k_stereo_44k_stereo_16k_stereo_host.ate
+ 
+
+# non synchronized port
+#do $(NOMADIK)/mixer/mmte_script/host/mixer_test_nonsync_port_host.ate
+#do $(NOMADIK)/mixer/mmte_script/host/mixer_test_nonsync_port2_host.ate
+
+# setparam on disabled port
+do $(NOMADIK)/mixer/mmte_script/host/mixer_test_setparameter_on_disable_port_host.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_test_setparameter_on_disable_port_sfreq_host.ate 
+
+#test set pcm param
+do $(NOMADIK)/mixer/mmte_script/host/mixer_test_pcm_param.ate
+#Last Index is mix_host_0070
+
+# timestamp
+do $(NOMADIK)/mixer/mmte_script/host/mixer_host_test_ts.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_host_test_ts_2.ate
+do $(NOMADIK)/mixer/mmte_script/host/mixer_host_test_ts_3.ate
+
+#SRC specific mode LOW_RIPPLE
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_44k_48k_srcmode.ate 
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_44k_48k_srcmode_sinus.ate 
+do $(NOMADIK)/mixer/mmte_script/host/mixer_1input_44k_48k_sinus.ate 
+
+

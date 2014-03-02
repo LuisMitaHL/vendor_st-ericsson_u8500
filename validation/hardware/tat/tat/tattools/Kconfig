@@ -1,0 +1,34 @@
+#
+# TatTools configuration
+#
+
+menuconfig TATTOOLS
+	bool "TatTools"
+	help
+	  
+
+if TATTOOLS
+
+config TATTOOLS_DIR
+	string
+	default ../tat/tat/tattools
+
+config TATTOOLS_DEPS
+	string
+	default ""
+
+config TATTOOLS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATTOOLS
+	default n
+	help
+	  This will disable strip for this module
+
+config TATTOOLS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATTOOLS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATTOOLS

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+  <appender name="out" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.out"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+    </layout>
+     <filter class="org.apache.log4j.varia.LevelRangeFilter">
+                        <param name="levelMin" value="DEBUG" />
+                        <param name="levelMax" value="WARN" />
+     </filter>
+  </appender>
+  <appender name="err" class="org.apache.log4j.ConsoleAppender">
+    <param name="Target" value="System.err"/>
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+    </layout>
+     <filter class="org.apache.log4j.varia.LevelRangeFilter">
+                        <param name="levelMin" value="ERROR" />
+                        <param name="levelMax" value="FATAL" />
+     </filter>
+  </appender>
+
+  <appender name="LogTrackerAppender" class="com.stericsson.RefMan.Commons.log4j.LogTrackerAppender">
+     <filter class="org.apache.log4j.varia.LevelRangeFilter">
+                        <param name="levelMin" value="DEBUG" />
+                        <param name="levelMax" value="FATAL" />
+     </filter>
+  </appender>
+
+  <root>
+    <priority value ="debug" /> <!-- was Warn -->
+    <appender-ref ref="LogTrackerAppender" />
+    <appender-ref ref="out" />
+    <appender-ref ref="err" />
+  </root>
+
+</log4j:configuration>

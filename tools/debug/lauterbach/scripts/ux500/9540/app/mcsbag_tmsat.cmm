@@ -1,0 +1,160 @@
+; Script from MCSBAG Programming and Usage
+; Application Note AP9540 Specific V1.0
+; https://codexstn.cro.st.com/plugins/docman/?group_id=952&id=460118
+; Appendix A: CMM Scripts (TMSAT)
+; .\file: ap9540_mcsbag.cmm
+; This cmm script is used for configuring STM and initializing MCSBAG-TMSAT.
+;
+; updates:
+; - ARM access type change D: => ad: to avoid MMU problem
+; - activate Err in trace
+; - update MCSBAGMSG_TM_TRACE_CTRL_L & MCSBAGMSG_TM_TRACE_CTRL_M
+;   values according capabilities
+
+
+; asicSTM addresses
+&asicSTM_CR_L=8010f000;
+&asicSTM_TER_L=8010f010;
+
+; GPIO2 addresses
+&asicGPIO2_afsela=8000e020;
+&asicGPIO2_afselb=8000e024;
+&asicGPIO2_pdis=8000e00c;
+; PRCMU Addresses
+&asicPRCMU_PRCM_GPIOCR=80157138;
+
+;------------------------STM configuration ------------------------------
+&STMTER_LMask=0x23d;
+d.s ad:&asicSTM_TER_L %long d.l(ad:&asicSTM_TER_L)&~(&STMTER_LMask)
+
+; Enable GPIO 70 to 76 Alt C
+d.s ad:&asicGPIO2_afsela %long d.l(ad:&asicGPIO2_afsela)|(0x00001FC0)
+d.s ad:&asicGPIO2_afselb %long d.l(ad:&asicGPIO2_afselb)|(0x00001FC0)
+; Pull Up Disable
+d.s ad:&asicGPIO2_pdis %long data.long(ad:&asicGPIO2_pdis)|0x00001FC0
+
+&PRCMUPRCM_GPIOCRDBG_STM_MOD_CMD1=0x800
+d.s ad:&asicPRCMU_PRCM_GPIOCR %long d.l(ad:&asicPRCMU_PRCM_GPIOCR)&~(&PRCMUPRCM_GPIOCRDBG_STM_MOD_CMD1)
+
+&PRCMUPRCM_GPIOCRDBG_UARTMOD_CMD0=0x1
+d.s ad:&asicPRCMU_PRCM_GPIOCR %long d.l(ad:&asicPRCMU_PRCM_GPIOCR)&~(&PRCMUPRCM_GPIOCRDBG_UARTMOD_CMD0)
+
+&STMCR_LXCKDIV=0x1c0
+d.s ad:&asicSTM_CR_L %long d.l(ad:&asicSTM_CR_L)&~(&STMCR_LXCKDIV)
+
+; write in the XCKDIV bits field --> STM_clock
+&STMCR_LXCKDIVShift=0x6
+d.s ad:&asicSTM_CR_L %long d.l(ad:&asicSTM_CR_L)|(1<<&STMCR_LXCKDIVShift)
+
+; initialize to zero
+&STMCR_LDWNG=0x30
+d.s ad:&asicSTM_CR_L %long d.l(ad:&asicSTM_CR_L)&~(&STMCR_LDWNG)
+
+; write in the DwnG bits field
+&STMCR_LDWNGShift=0x4
+d.s ad:&asicSTM_CR_L %long d.l(ad:&asicSTM_CR_L)|(0<<&STMCR_LDWNGShift)
+
+; Enable Trace for MCSBAG
+&STMTER_LTE9=0x200
+d.s ad:&asicSTM_TER_L %long d.l(ad:&asicSTM_TER_L)|(&STMTER_LTE9)
+
+;----------------------------------------------------------------------
+; Clock Enable for TMSATs
+&asicCLK_RST6PRCC_PCKEN=0xa03cf000
+&asicCRMCSBAG_CLKEN_CR=0xa03c801c
+&asicPRCMUPRCM_PER6CLK_MGT=0x8015703C
+
+; Enable perif6 clock: bit[8]=1
+d.s ad:&asicPRCMUPRCM_PER6CLK_MGT %long d.l(ad:&asicPRCMUPRCM_PER6CLK_MGT)|(0x100)
+; Enable PRCC_CLKEN for CR: bit[5]=1
+d.s ad:&asicCLK_RST6PRCC_PCKEN %long d.l(ad:&asicCLK_RST6PRCC_PCKEN)|(0x20)
+; Enable CLK gate for MCSBAG TMSAT/PI/WPSAT
+d.s ad:&asicCRMCSBAG_CLKEN_CR %long d.l(ad:&asicCRMCSBAG_CLKEN_CR)|(0xFFFF)
+;-----------------------------------------------------------------------
+
+; asicMCSBAG address
+&asicMCSBAGBA_ENABLE=0xa0390000
+&asicMCSBAGBA_MODE=0xa0390004
+&asicMCSBAGMSG_REF_PACE=0xa0390400
+&asicMCSBAGMSG_REF_TRACE_CONTROL=0xa0390410
+&asicMCSBAGTMSAT_ENABLE=0xa0390040
+&asicMCSBAGTMSAT_PROG_MODE=0xa0390044
+&asicMCSBAGTMSAT_PROG_STATUS=0xa0390048
+&asicMCSBAGTMSAT_PROG_CLEAR=0xa039004c
+&asicMCSBAGTMSAT_READ_STATUS=0xa0390050
+&asicMCSBAGMSG_ERR_TRACE_CONTROL=0xa0390414
+&asicMCSBAGMSG_TM_ENABLE=0xa0390420
+&asicMCSBAGMSG_TM_TRACE_CTRL_L=0xa0390424
+&asicMCSBAGMSG_TM_TRACE_CTRL_M=0xa0390428
+&asicMCSBAGTMSAT0_REG1=0xa0390600
+&asicMCSBAGTMSAT0_REG2=0xa0390604
+
+; Disable the MCSBAG
+d.s ad:&asicMCSBAGBA_ENABLE %long 0x0
+
+; Set trace mode ; MCSBAG_TRACE_MODE=1;
+d.s ad:&asicMCSBAGBA_MODE %long 0x1
+
+; refresh rate
+&bus_cycles=0xFFFFFFFF
+d.s ad:&asicMCSBAGMSG_REF_PACE %long &bus_cycles
+
+; Enable Message reference trace control
+d.s ad:&asicMCSBAGMSG_REF_TRACE_CONTROL %long 0x80000000
+
+; Enable Error Messages
+d.s ad:&asicMCSBAGMSG_ERR_TRACE_CONTROL %long 0x80010301
+
+; Disable All TM, MSG Ports
+d.s ad:&asicMCSBAGTMSAT_ENABLE %long ~0x3FFF
+d.s ad:&asicMCSBAGMSG_TM_ENABLE %long ~0x3FFF
+
+; Enable ALL TM Metrics(port0 to port7)
+d.s ad:&asicMCSBAGMSG_TM_TRACE_CTRL_L %long 0xFFF99FF9
+
+; Enable ALL TM Metrics(port8 to port13)
+d.s ad:&asicMCSBAGMSG_TM_TRACE_CTRL_M %long 0x009FFFFF
+
+; Enable All TM, MSG ports
+d.s ad:&asicMCSBAGTMSAT_ENABLE %long 0x3FFF
+d.s ad:&asicMCSBAGMSG_TM_ENABLE %long 0x3FFF
+
+; MCSBAG Enable for T32 workaround
+d.s ad:&asicMCSBAGBA_ENABLE %long 0x1
+
+; MCSBAG Configuration for all the ports
+; Enable TM SAT Programming mode for all the ports
+d.s ad:&asicMCSBAGTMSAT_PROG_MODE %long 0x3FFF
+
+&port=0
+&address=0
+&offset=0
+while &port<0xe
+(
+	&offset=&port*0x00C
+
+	; TMSATi_REG1(iPort) = 0;
+	; (*((mcsbag_uint32 *)(MCSBAGBaseAddress+0x600+(i*0x00C))))
+	&address=&asicMCSBAGTMSAT0_REG1+&offset
+	data.set ad:&address %long 0x0
+
+	; TMSATi_REG2(iPort) = 0;
+	; (*((mcsbag_uint32 *)(MCSBAGBaseAddress+0x604+(i*0x00C))))
+	&address=&asicMCSBAGTMSAT0_REG2+&offset
+	data.set ad:&address %long 0x0
+
+	&port=&port+1
+)
+
+; Disable TM SAT Programming mode
+d.s ad:&asicMCSBAGTMSAT_PROG_CLEAR %long 0x1
+
+; MCSBAG Disable for T32 workaround
+d.s ad:&asicMCSBAGBA_ENABLE %long 0x0
+
+
+; refresh rate
+&bus_cycles=0x10000
+d.s ad:&asicMCSBAGMSG_REF_PACE %long &bus_cycles
+
+print "MCSBAG TMSAT Initialization done!"

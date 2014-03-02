@@ -1,0 +1,187 @@
+#!/bin/bash
+
+COPY="cp"
+GREP="grep"
+ELF4NMF=0
+VERBOSE=0
+ANDROID=0
+STRIP=""
+SYM_DIR=""
+PRODUCT=""
+VARIANT_DIR=""
+
+################################################################################
+
+function help()
+{
+    echo "Usage: mmcopy [ ARGS ] input-dir output-dir [symbols-dir]"
+    echo ""
+    echo "  Args are:"
+    echo "    -v         : verbose mode"
+    echo "    -L         : always follow symbolic links in SOURCE"
+    echo "    -N         : elf4nmf mode"
+    echo "    -A         : android mode - allow ony copy from /system and /data"
+    echo "    -S strip   : strip the installed file using this tool (no effect in elf4nmf mode)"
+    echo "    -V var-dir : variant directory to install from if file to install exist as variant"
+}
+
+################################################################################
+
+while true; do
+    case $1 in
+        -h)
+            help
+            exit 0
+            ;;
+        -v)
+            VERBOSE=1
+            ;;
+        -N)
+            ELF4NMF=1
+            ;;
+        -A)
+            ANDROID=1
+            ;;
+        -S)
+            shift
+            STRIP=$1
+            ;;
+        -V)
+            shift
+            VARIANT_DIR=$1
+            ;;
+        -L)
+            COPY="$COPY --dereference"
+            ;;
+        *)
+            break;;
+    esac
+    shift
+done
+
+if [ $# -eq 2 ] ; then
+    IN_DIR=$1
+    OUT_DIR=$2
+else
+    if [ $# -eq 3 ] ; then
+        IN_DIR=$1
+        OUT_DIR=$2
+        SYM_DIR=$3
+    else
+        echo "Error: invalid arguments"
+        help
+        exit 1
+    fi
+fi
+
+if [ $VERBOSE -eq 1 ] ; then
+    echo "mmcopy $*"
+fi
+
+################################################################################
+
+PREFIX_STRIP=""
+if [ ! -z $ANDROID_BUILD_TOP ] ; then
+    PREFIX_STRIP="$ANDROID_BUILD_TOP/"
+fi
+
+if [ ! -d $IN_DIR ] ; then
+    exit 0
+fi
+
+if [ $ELF4NMF -eq 1 ] ; then
+    GREP_ARGS=".*\.elf4nmf|preload_.*\.txt"
+    GREP_OPT="-E"
+    STRIP=""
+else
+    GREP_ARGS='.*\.a$|.*\.c$|.*\.h$|.*\.hpp$|.*\.cpp$|modules\..*|lib/modules/'
+    GREP_OPT="-Ev"
+fi
+
+if [ "${RAMDISK_COPY_MMVALID_SCRIPTS_TO_ANDROID:=false}" = "false" ] ; then
+    GREP_ARGS="$GREP_ARGS|.*\.ate"
+    GREP_ARGS="$GREP_ARGS|.*\.mmte"
+    GREP_ARGS="$GREP_ARGS|.*\.ite"
+    GREP_ARGS="$GREP_ARGS|.*\.vte"
+fi
+
+FILES_TO_COPY=`cd $IN_DIR ; find -L . -type f | $GREP $GREP_OPT $GREP_ARGS`
+
+for f in $FILES_TO_COPY ; do
+
+    NAME=`echo $f | sed 's,\./,,g'`
+    PRINT_NAME="$OUT_DIR/$NAME"
+    if [ ! -z $PREFIX_STRIP ] ; then
+        PRINT_NAME=`echo $PRINT_NAME | sed "s,$PREFIX_STRIP,,g"`
+    fi
+
+    if [ $ANDROID -eq 1 ] ; then
+        OK_TO_COPY=`echo $NAME | grep -E '^system|^data'`
+        if [ -z $OK_TO_COPY ] ; then
+            echo "Ignoring: $PRINT_NAME"
+            continue
+        fi
+    fi
+
+    IN_FILE=$IN_DIR/$f
+    VARIANT=""
+
+    # Check if requested file exist in variant dir if provided
+    if [ ! -z $VARIANT_DIR ] ; then
+        if [ -e $VARIANT_DIR/$f ] ; then
+            IN_FILE=$VARIANT_DIR/$f
+            VARIANT=" variant"
+        fi
+    fi
+
+    ### Get Time of last modification of input file
+    # %X: Access Time: This is the time that the file was last accessed, read or written to.
+    # %Y: Modify Time: This is the last time the actual contents of the file were last modified.
+    # %Z: Change Time: This is the time that the inode information (permissions, name, etc., the metadata, as it were) was last modified.
+    IN_TIME=`stat -L --printf=%Y $IN_FILE`
+
+    if [ ! -e $OUT_DIR/$f ] ; then
+        OUT_TIME=0
+    else
+        OUT_TIME=`stat -L --printf=%Y $OUT_DIR/$f`
+    fi
+
+    if [ $VERBOSE -eq 1 ] ; then
+        echo "IN_FILE: $IN_TIME $IN_FILE"
+        echo "OU_FILE: $OUT_TIME $OUT_DIR/$f"
+    fi        
+
+    # Do the work only in case file has changed
+    if test $IN_TIME -gt $OUT_TIME ; then
+
+        echo "Install$VARIANT: $PRINT_NAME"
+
+        # Symbols directory defined, copy input to it
+        if [ ! -z $SYM_DIR ] ; then
+            TMPDIR=$SYM_DIR/`dirname $f`
+            if [ ! -d $TMPDIR ] ; then
+                mkdir -p $TMPDIR
+            fi
+            $COPY $IN_FILE $SYM_DIR/$f
+        fi
+
+        # Copy input to requested output dir
+        TMPDIR=$OUT_DIR/`dirname $f`
+        if [ ! -d $TMPDIR ] ; then
+            mkdir -p $TMPDIR
+        fi
+        $COPY $IN_FILE $OUT_DIR/$f
+
+        # Strip if requested - but don't strip kernel modules !!
+        IS_KERNEL_MODULE=`echo $NAME | grep '.*\.ko$'`
+        if [ -z "$IS_KERNEL_MODULE" -a ! -z "$STRIP" ] ; then
+            CMD="$STRIP $OUT_DIR/$f"
+            if [ $VERBOSE -eq 1 ] ; then
+                echo $CMD
+            fi
+            $CMD 2>/dev/null
+        fi
+    fi
+done
+
+exit 0

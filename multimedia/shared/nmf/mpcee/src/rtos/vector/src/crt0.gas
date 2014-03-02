@@ -1,0 +1,176 @@
+
+    .weak   __startup
+    .extern _init_core
+    .extern _sleep_wakeup
+#ifdef HYBRID
+    .extern _IT2
+#endif
+    .extern _IT11
+    .extern _IT20
+    .extern _IT31
+    .extern _itDispatcher
+    .extern _isSleeping
+    .extern _Unbinded
+    .extern _S_stack_end
+
+#ifdef __binutils__
+    .section .interruptvect, "ax", @progbits
+#else /* __binutils */
+    .segment startup_code, memtype=0, locinc=1, abs=0, code
+#endif /* __binutils */
+
+__startup:
+.begin_bundle
+        nop
+.end_bundle
+.begin_bundle
+        brl _my_init_core
+.end_bundle
+.begin_bundle
+#ifdef HYBRID
+        brl _IT2
+#else
+        jsralign _itDispatcher
+#endif
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        brl _IT11
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        brl _IT20
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        jsralign _itDispatcher
+.end_bundle
+.begin_bundle
+        brl _IT31
+.end_bundle
+
+_my_init_core:
+.begin_bundle
+        ldx_f       _isSleeping,rl2
+.end_bundle
+.begin_bundle
+        or          rl2,rl2,rl2
+.end_bundle
+.begin_bundle
+        beq         L_init_core
+.end_bundle
+.begin_bundle
+        xmvi        _S_stack_end,sp0
+.end_bundle
+.begin_bundle
+        pushi_impl0 xsrczero
+.end_bundle
+.begin_bundle
+        pushi_impl0 xsrczero
+.end_bundle
+.begin_bundle
+        brl         _sleep_wakeup
+.end_bundle
+L_init_core:
+.begin_bundle
+        ldx_f       _isFirstBoot,rl2
+.end_bundle
+.begin_bundle
+        or          rl2,rl2,rl2
+.end_bundle
+.begin_bundle
+        beq         L_Unbinded 
+.end_bundle
+.begin_bundle
+        stx0_f      _isFirstBoot
+.end_bundle
+.begin_bundle
+        brl         _init_core
+.end_bundle
+L_Unbinded:
+.begin_bundle
+        xmv         sp0,ax1
+.end_bundle
+.begin_bundle
+        ldxi_f      ax1,ax1
+.end_bundle
+.begin_bundle
+        brl         _Unbinded
+.end_bundle
+
+.section .data, "aw" ,@progbits
+_isFirstBoot:
+    .data   1
+

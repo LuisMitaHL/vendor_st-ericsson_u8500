@@ -1,0 +1,43 @@
+#do $(IMAGING_PATH)/ite_nmf/script/debug/gnd_RXTestpattern_reg_Secondary.ite
+
+##############################################################################################################
+# The Use case will test ALL Rx Test Pattern FOR HR, LR and BMS
+#  1. Set Use case with Resoultion and Image format
+#  2. Then Run the Particular Test Pattern Ite file.
+#  
+##############################################################################################################
+
+
+setusecase HR VGA YUV420MB_D
+usagemode video
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_HR.ite
+
+setusecase LR QVGA YUV422RI
+usagemode vf
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_LR.ite
+
+setusecase BMS VGA RAW12
+usagemode still
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_BMS12.ite
+
+setusecase BMS VGA RAW8
+usagemode still
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_BMS8.ite
+
+setusecase HR VGA YUV420MB_D
+setusecase LR QVGA YUV422RI
+usagemode video
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_LRHR.ite
+
+setusecase HR VGA YUV420MB_D
+usagemode video
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_Stream_HR.ite
+
+setusecase LR QVGA YUV422RI
+usagemode vf
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_Stream_LR.ite
+
+setusecase HR VGA YUV420MB_D
+setusecase LR QVGA YUV422RI
+usagemode video
+do $(IMAGING_PATH)/ite_nmf/script/debug/RXTestpattern_Stream_LRHR.ite

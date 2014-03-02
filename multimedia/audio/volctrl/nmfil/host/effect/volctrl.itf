@@ -1,0 +1,11 @@
+#include <samplefreq.idt>
+#include <bool.idt>
+#include <common/channeltype.idt>
+
+void init (t_uint16 nChannelsIn, t_uint16 nChannelsOut, t_sample_freq freq, t_channel_type channel_type_in[MAXCHANNELS_SUPPORT], t_channel_type channel_type_out[MAXCHANNELS_SUPPORT]);
+void process(t_sword * inbuf, t_sword * outbuf, t_uint16 size);
+void process_16bits(t_sint16 *inbuf,t_sint16  *outbuf, t_uint16 size);
+void setMute(BOOL bMute);
+void setBalance(t_sint16 nBalance);
+void setVolume(t_sint16 nVolume);
+void setVolumeRamp(t_sint16 nStartVolume, t_sint16 nEndVolume, t_uint16 nRampChannels, t_uint24 nDuration, BOOL bTerminate);

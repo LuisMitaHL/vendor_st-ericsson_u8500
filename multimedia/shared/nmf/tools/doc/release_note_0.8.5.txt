@@ -1,0 +1,148 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 0.8.5)      *
+**********************************************************
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World, Training, MP3, User Fifo)
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+	- Stn8810 SAA
+	- STn8815 SAA & SVA Cut A0/B0
+
+Changes:
+--------
+[CM]
+	- NMF ready for user space operating system process:
+		+ Small update API which remove optimization allowing CM to export internal string
+		+ Clarification of Internal and integration API: CM API and CM Syscall API distinguished
+		+ CM split in several entities: MC engine, CM Kernel Proxy and CM user Proxy component
+	- Update documentation
+	- Support of new CM initialization API
+	- Added STn8820 support
+        - Added MMDSP+ debugger new loadmap support (require at least MMGDB debugger 3.9.2)
+
+[MPC Executive Engine]
+        - XTI support cleaning
+        - Added STn8820 support
+	
+[Execution Environment]
+	- Update bare machine in order to accept both user or kernel bindings.
+	- Add nmf_tlm environment for TLM
+		+ Added support into examples for natif gcc 32-bit mode (TLM)
+		+ Updated delivery(ies) target to deliver natif and 8820 target(s)
+		
+[Tools] 
+	- Update Tools to display better understandable help and put shell script to minimum by 
+	  handling option fully in Java.
+	- Add user binding component generator (can be activate through nmfiftc -user2mpc or nmfitfc -mpc2user)
+	
+[ Programming Model ]
+	- In order to limit issue and confusing on user side, don't rename declared type either for itf or idt file.
+	
+[ Examples ]
+	- Corrected erroneous mmgdb path
+
+Bug fixes:
+----------
+- [ Defect #28653 ] [CM] maximum value of fifo size parameter with binding operations
+		Size of fifo has been limited by MAX_COMMUNICATION_FIFO_SIZE defined to 256 in limits.h. 
+		Furthermore, CM_BindComponentAsynchronous and CM_BindComponentFromHost return out of memory 
+		in case of CM_NO_MORE_MEMORY.
+- [ Defect #28834 ] [Tools] multiple declaration of the same option for primitive component
+		Furthermore, toolset check that option was known by toolset.
+- [ Defect #28847 ] [Tools] no checking on option declaration
+- [ Defect #29801 ] [CM] Introspection API no error returned by CM_GetComponentRequiredInterfaceBinding 
+	when no bind exist
+		Return CM_INTERFACE_NOT_BINDED error if required interface not binded during unbind or 
+		CM_GetComponentRequiredInterfaceBinding
+- [ Defect #29966 ] [Examples] configuration with one mpc are not supported
+- [ Defect #29992 ] [CM] CM_GetComponentRequiredInterfaceBinding problem using an asynchronous bind between 
+	2 components instantiated on 2 different cores
+- [ Defect #30004 ] [CM] The fct. GetComponentRequiredInterfaceBinding behavior should be clarified when the 
+	server is the host.
+	NMF_HOST_COMPONENT is now returned
+- [ Defect #30014 ] [Tools] TARGET variable ignored by tools
+- [ Defect #30062 ] [Tools] Possibility to define a composite component with the same type and the same localName
+- [ Defect #30077 ] [Tools] A Java exception is generated at the compilation with a conf. file containing a large 
+	number for an interface collection size
+- [ Defect #30098 ] [Tools] Interface collection size usage with life-cycle interfaces
+		Tools now check that construction and print error.
+- [ Defect #30099 ] [Tools] Interfaces collection size with interrupt interfaces
+		Check that interrupt interface is not a collection and that interface type is rtos.itdispatcher.handler.
+- [ Defect #30300 ] [CM] fifo notify interface for writer does not work when fifo is flushed
+		A comment has been added into CM_FlushFifo to warn the user that the informPusher notify interface will 
+		not be called.
+- [ Defect #30354 ] [Tools] Naming conflict with the 'data' keyword in interface files (.itf)
+		Use _xyuv_data name for generated binding component.
+- [ Defect #30863 ] Stack size of execution engine is limited
+		Stack size have been set to 3Ko for synchronous execution engine.
+		This is only a patch, The stack management will really be fixed in NMF Beta.
+- [ Toolset Bug#: 131] Method events are missing in XTI Trace with Nmf 0.8.3 and 0.8.4
+- [ Defect #30107 ] [CM] CM_CreateUserFifo: no check on fifo size
+		nbElem must be in range ]01 .. MAX_COMMUNICATION_FIFO_SIZE] and
+		sizeElem must be greter that 0. 
+- [ Internal Defect]: [CM] Erroneous MPC Event Fifo alignment
+                      [CM] Loadmap cleaning
+
+Notes:
+------
+    - Communication scheme uses active polling when overflow on communication fifos
+			Active polling will be removed when Panic mechanism will be integrated (M2 Milestone)
+
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested 
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one segment only
+		
+	- Safe reconfiguration will be available in M2 Milestone
+	    User must check itself network activity before reconfigure it
+		
+	- MP3 example
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics
+                Today, this example only runs on STn8815a (due to APD HCL/Services packages issues)
+
+	- Mutual exclusion of concurrent CM API call not handled yet, will be available in 0.8.6 version.
+	
+Pre-requires:
+-------------
+	- At least Nomadik Toolset 1.0.0 Alpha Service Pack 1
+		- Patched with MMGDB debbuger 3.9.2 for debugging MMDSP 
+			Available at https://codex.cro.st.com/file/showfiles.php?group_id=310
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		MPC: SAA & SVA
+			* For NDK10 platform, ESRAM data are mapped to SDRAM segments as no ESRAM on 8810
+		Execution Engine: Synchronous, Hybrid
+		Nomadik Toolset 1.0.0: 1.0.0 Alpha
+		ARM: RVCT 3.0 SP1 Build 688 AND RVCT 2.2 Build 593
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-MPC
+			asynchronous intra-MPC
+			ARM -> MPC
+			MPC -> ARM
+			inter MPCs (asynchronous)
+			error management
+		* Memory 
+			Alloc and free
+		* Attributes and properties
+		* Network introspection
+		* User Fifo 

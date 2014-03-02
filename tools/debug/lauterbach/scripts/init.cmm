@@ -1,0 +1,300 @@
+;------------------------------------------------------------
+; init.cmm
+;------------------------------------------------------------
+; CMM-file to setup variables, path and defaults
+; This file should be called first...
+;
+; 061026 - PH Initial version
+; 070405 - PH Adaption to fit new startup.cmm
+; 070411 - PH Added functionallity to convert old T32_Settings.txt
+; 070907 - KM Added functionality for multiple configurations
+; 071017 - KM Added support for loaders.
+; 071019 - KM Added support for Linux
+; 071217 - DE Added busmon support
+; 071220 - DE Set CMM_PATH_BASE to dir where init.cmm is, new dir layout
+; 080806 - KM Added support for U3xx/Kylie
+; 080822 - KM Changes to support offline use
+; 081118 - NJ Added LOptionStrip when using Linux
+; 090403 - NJ Modified for U380
+; 090428 - KM Added Ramdisk
+; 090928 - KM Updates for PCSally and Sally
+;-----------------------------------------------------------
+
+global	&CMM_PATH_BASE
+; Set cmm base to path to init.cmm
+&CMM_PATH_BASE=os.ppd()
+
+; Uncomment this if you have copied this file to H:
+;&CMM_PATH_BASE="\\eseldna003\bmtpapps\bmtptools\UTIL\Debuggers\Lauterbach\scripts"
+
+global	&Target
+global	&TrgExist
+global	&UsrPath
+global	&ExeMem
+global	&LOption
+global	&LOptionVM
+global  &LOptionStrip
+global	&ElfFile
+global	&SrcPath
+global	&RSrcPath
+global  &LinuxDebug
+global  &LinuxAppDebug
+global  &LinuxAppPageLoad
+global  &LinuxDualRam
+global	&UseWin
+global	&UseBrk
+global	&UseAttach
+global	&UsrCmm
+global  &CurConfig
+global  &ConfigList
+global  &LoadModPath
+global  &RamdiskFile
+global  &SavePath
+global  &Sdram
+global  &Zip
+global	&Trace
+global	&Elf
+global	&Src
+global 	&RangeList
+global	&Range
+global  &SmpDebug
+global  &ModemTapEnabled
+global  &toolsPath
+global  &RamdumpPath
+global	&PORStop
+global  &PRCMUDebug
+
+;Set target
+ENTRY	&Target
+
+; We haven't created the LinuxAppDebug button yet
+&LinuxAppDebug="FALSE"
+
+; Setup user and cmm path, done from T32 shortcut
+
+if OS.VERSION(0)!=0x1X
+	PATH G:\T32 G:\T32\Settings H:\T32 H:\T32\Settings &CMM_PATH_BASE
+else
+	PATH ~/T32 ~/T32/Settings  &CMM_PATH_BASE
+
+; common busmon init
+do busmon_init
+
+if "&Target"=="[SIM]"
+  ENDDO
+
+
+;User Path
+if OS.VERSION(0)!=0x1X
+(
+	&user_profile=os.env("USERPROFILE")
+	if os.file(H:\T32\Settings\T32_settings.txt)
+		&UsrPath="H:\T32\Settings"
+	else if os.file(G:\T32\Settings\T32_settings.txt)
+		&UsrPath="G:\T32\Settings"
+	else if os.file(&CMM_PATH_BASE\..\Settings\T32_settings.txt) ;For nohau use
+		&UsrPath="&CMM_PATH_BASE\..\Settings"
+	else if os.file(&CMM_PATH_BASE\T32_settings.txt) ;For offline use
+		&UsrPath="&CMM_PATH_BASE"
+	else if os.file(&user_profile\T32\Settings\T32_settings.txt)
+		&UsrPath="&user_profile\T32\Settings"
+	else
+	(
+		dialog
+		(&
+			header "Choose userpath"
+			pos 1. 1. 40. 1.
+			text "Select where you would like to place your T32_Settings.txt file"
+			pos 2. 2. 20.
+		A.G:choosebox "Use G:\T32\Settings" ""
+			pos 2. 3. 20.
+		A.H:choosebox "Use H:\T32\Settings" ""
+			pos 2. 4. 30.
+		A.U:choosebox "Use &user_profile\T32\Settings" ""
+			pos 2. 5. 2.
+		A.X:choosebox "" ""
+			pos 4. 5. 34.
+		EditPath:	edit "" ""
+			pos 38. 5. 2.
+		ButtonPath:	button "..." "gosub SetPathDialog"
+			pos 1. 7. 12.
+		OK:	defbutton "OK" "continue"
+		)
+		gosub InitDialog
+		stop
+		if dialog.boolean(A.G)
+		(
+			&UsrPath="G:\T32\Settings"
+		)
+		else if dialog.boolean(A.H)
+		(
+			&UsrPath="H:\T32\Settings"
+		)
+		else if dialog.boolean(A.U)
+		(
+			&UsrPath="&user_profile\T32\Settings"
+		)
+		else if dialog.boolean(A.X)
+		(
+			&UsrPath=dialog.string(EditPath)
+
+		)
+		else
+		(
+			dialog.ok "Please select a location for your T32_Settings.txt file"
+			stop
+		)
+		dialog.end
+	)
+)
+else
+(
+	&UsrPath="~/.t32/Settings"
+)
+
+do emp_t32.cmm
+
+; Enlarge main window on Linux system to display menus correctly
+if OS.VERSION(0)==0x1X
+(
+	TOOLBAR ON
+	STATUSBAR ON
+	CMDPOS ,, 125. ,
+	WINPAGE.RESET
+
+	WINCLEAR
+	WINPAGE.SELECT P000
+)
+
+IF "&Target"!="[TIHW_PSS]"
+(
+   do generic_menu.cmm
+)
+
+IF "&Target"=="[Marika]"
+(
+  do marika_menu.cmm
+)
+else IF (("&Target"=="[Anja_ACC]")||("&Target"=="[Anja_ACC_Loader]"))
+(
+  do anja_acc_menu.cmm
+)
+else IF (("&Target"=="[Anja_APP]")||("&Target"=="[Anja_APP_Loader]"))
+(
+  do anja_app_menu.cmm
+)
+else IF "&Target"=="[Anja_CEVA]"
+(
+  ;do anja_ceva_menu.cmm
+)
+else IF (("&Target"=="[Kajsa_ACC]")||("&Target"=="[Kajsa_ACC_Loader]"))
+(
+  do kajsa_acc_menu.cmm
+)
+else IF (("&Target"=="[Kajsa_APP]")||("&Target"=="[Kajsa_APP_Loader]"))
+(
+  do kajsa_app_menu.cmm
+)
+else IF "&Target"=="[Kajsa_CEVA]"
+(
+  ;do kajsa_ceva_menu.cmm
+)
+else IF (("&Target"=="[Camilla_ACC]")||("&Target"=="[Camilla_ACC_Loader]"))
+(
+  do camilla_acc_menu.cmm
+)
+else IF (("&Target"=="[Camilla_APP]")||("&Target"=="[Camilla_APP_Loader]"))
+(
+  do camilla_app_menu.cmm
+)
+else IF "&Target"=="[Camilla_CEVA]"
+(
+  ;do camilla_ceva_menu.cmm
+)
+else IF (("&Target"=="[Carolina_ACC]")||("&Target"=="[Carolina_ACC_Loader]"))
+(
+  do carolina_acc_menu.cmm
+)
+else IF (("&Target"=="[Carolina_APP]")||("&Target"=="[Carolina_APP_Loader]"))
+(
+  do carolina_app_menu.cmm
+)
+else IF "&Target"=="[Carolina_CEVA]"
+(
+  ;do carolina_ceva_menu.cmm
+)
+else ; New layout
+(
+	if ((string.scan("&Target", "Miranda", 0)==1)||(string.scan("&Target", "EWA", 0)==1))
+	(
+		do &CMM_PATH_BASE/U5xx/init.cmm
+	)
+	else if (string.scan("&Target", "Sara", 0)==1)
+	(
+		do &CMM_PATH_BASE/U3xx/init.cmm
+	)
+	else if ((string.scan("&Target", "Sally", 0)==1)||(string.scan("&Target", "PCSally", 0)==1))
+	(
+		do &CMM_PATH_BASE/U7xx/init.cmm
+	)
+	else if ((string.scan("&Target", "U8500", 0)!=-1)||(string.scan("&Target", "U5500", 0)!=-1)||(string.scan("&Target", "9540", 0)!=-1)||(string.scan("&Target", "L8540", 0)!=-1))
+	(
+		do &CMM_PATH_BASE/ux500/init.cmm
+	)
+	else if ((string.scan("&Target", "TIHW", 0)!=-1)||(string.scan("&Target", "JENNY", 0)!=-1))
+	(
+		do &CMM_PATH_BASE/U7xxx/init.cmm
+	)
+	else
+	(
+		print %error "Unknown family &Target in "+os.ppd()+"/init.cmm"
+		enddo
+	)
+
+	do menu.cmm
+)
+
+; If no target settings exist, start target setup dialog.
+&TrgExist="FALSE"
+if os.file(&UsrPath/T32_settings.txt)
+(
+	;Added to convert Ewa to EWA in target name
+	if (string.scan("&Target", "EWA_APP", 0)!=-1)
+		do convertsettings4
+
+	; Read settings, TrgExist sets to true if this target exist in file
+	do readsettings.cmm
+)
+if "&TrgExist"=="FALSE"
+(
+	&tmp="@1]"
+	&CurConfig=string.cut("&Target",-1)
+	&CurConfig="&CurConfig&tmp"
+	&ConfigList="&CurConfig"
+	do startup.cmm
+)
+
+ENDDO
+
+
+
+
+SetPathDialog:
+	dialog.set A.X
+	&Temp_File=dialog.string(EditPath)
+	if ("&Temp_File"=="")
+	(
+		dialog.setdir EditPath *
+	)
+	else
+	(
+		&Temp_File=os.file.path(&Temp_File)
+		dialog.setdir EditPath "&Temp_File/*"
+	)
+	RETURN
+
+InitDialog:
+	dialog.set EditPath "&CMM_PATH_BASE"
+	dialog.set A.H
+	return
+

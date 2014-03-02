@@ -1,0 +1,30 @@
+#
+# Genext2fs configuration
+#
+
+menuconfig GENEXT2FS
+	bool "Genext2fs Configuration"
+	help
+	  What is genext2fs you ask? Simply, it generates an ext2 filesystem as
+	  a normal (i.e. non-root) user. It doesn't require you to mount the image
+	  file to copy files on it. It doesn't even require you to be the superuser
+	  to make device nodes or set group/user ids. 
+
+if GENEXT2FS
+
+config GENEXT2FS_DIR
+	string
+	default ./genext2fs
+
+config GENEXT2FS_DEPS
+	string
+	default ""
+
+config GENEXT2FS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on GENEXT2FS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # GENEXT2FS

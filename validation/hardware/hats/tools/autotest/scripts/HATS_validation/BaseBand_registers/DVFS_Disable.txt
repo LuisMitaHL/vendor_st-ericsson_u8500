@@ -1,0 +1,15 @@
+
+#FEATURE DVFS
+#BEGIN DVFS
+
+WRITE /DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/In_Opp 3
+EXEC /DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint
+READ /DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/Out_Status  25
+WRITE /DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/In_Opp 2
+EXEC /DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint
+READ /DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/Out_Status  30
+WRITE /DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/In_Opp 1
+EXEC /DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint
+READ /DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/Out_Status  31
+
+#END DVFS

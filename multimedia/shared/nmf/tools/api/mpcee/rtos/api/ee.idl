@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <rtos/api/descriptor.idt>
+#include <ee/api/panic.idt>
+#include <inc/nmf-tracedescription.h>
+
+/*!
+ * \internal
+ *
+ * \brief Execution Engine API
+ *
+ * Execution Engine API
+ */
+interface rtos.api.ee unmanaged
+{
+    /*!
+     * Sched_Event are used by event stub to post a event.
+     * These methods take in parameter the lifo and the first event in this lifo
+     * that has been filled with stub parameter before calling these methods.
+     * These method unmask interrupt and must be called with interrupt masked.
+     *
+     * This methods must be implemented by the scheduler.
+     */
+    void Sched_Event(struct TEvent* eventdata);
+
+    /*
+     * Trace API
+     */
+    void nmfTraceActivity(t_nmfTraceActivityCommandDescription command, t_uint24 this, t_uint24 address);
+    void nmfTraceCommunication(t_nmfTraceCommunicationCommandDescription command, t_uint24 remoteCoreId);
+    void nmfTracePanic(t_panic_reason reason, t_uint24 this, t_uint24 information1, t_uint24 information2);
+}

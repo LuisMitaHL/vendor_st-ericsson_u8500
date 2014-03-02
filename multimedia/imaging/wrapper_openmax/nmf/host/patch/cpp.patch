@@ -1,0 +1,52 @@
+--- orig/openmax_processor_wrp-nmf.cpp	2010-07-08 16:00:53.576019193 +0200
++++ fixed/openmax_processor_wrp-nmf.cpp	2010-07-08 15:57:36.136024865 +0200
+@@ -55,7 +55,7 @@
+   protected:
+        t_sint16 levelOfConstruction;
+        t_sint8 startNumber, constructedNumber;
+-    openmax_processor _xyuv_Processor;  // normal
++    openmax_processor &_xyuv_Processor;  // normal
+     _evl_postevent _xyuv_bc0; // Processor.me->Processor.postevent [10]
+     _evl_armnmf_emptythisbuffer _xybc_emptythisbuffer[10]; // Call
+     NMF::InterfaceReference *_xyitfc_emptythisbuffer[10]; // Call
+@@ -75,7 +75,7 @@
+     Iopenmax_processor_api_ToOMXComponent _xyitfcb_ToOMXComponent; // Callback
+ 
+   public:
+-    openmax_processor_wrpImpl(void);
++    openmax_processor_wrpImpl(openmax_processor *pComp);
+     virtual ~openmax_processor_wrpImpl(void);
+     virtual t_nmf_error construct(void);
+     virtual void start(void);
+@@ -104,8 +104,8 @@
+     static void dumpInstantiationJumper(void* _this);
+ };
+ 
+-EXPORT_SHARED openmax_processor_wrp* openmax_processor_wrpCreate(void) {
+-  return new openmax_processor_wrpImpl();
++EXPORT_SHARED openmax_processor_wrp* openmax_processor_wrpCreate(openmax_processor *pComp) {
++  return new openmax_processor_wrpImpl(pComp);
+ }
+ EXPORT_SHARED  void openmax_processor_wrpDestroy(openmax_processor_wrp*& instance) {
+   delete ((openmax_processor_wrpImpl*)instance);
+@@ -115,8 +115,10 @@
+ /*
+  *Declare primitive component instance and methods
+  */
+-openmax_processor_wrpImpl::openmax_processor_wrpImpl(): 
+-    startNumber(0){
++openmax_processor_wrpImpl::openmax_processor_wrpImpl(openmax_processor *pComp): 
++    startNumber(0),
++  _xyuv_Processor(pComp==NULL? *new openmax_processor : *pComp)
++{
+   levelOfConstruction = 0;
+   constructedNumber = 0;
+   _xyuv_Processor.name = "Processor";
+@@ -170,6 +172,7 @@
+ }
+ 
+ openmax_processor_wrpImpl::~openmax_processor_wrpImpl() { 
++        delete &_xyuv_Processor;
+ }
+ 
+ t_nmf_error openmax_processor_wrpImpl::construct(void) {

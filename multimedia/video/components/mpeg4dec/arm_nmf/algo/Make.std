@@ -1,0 +1,29 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MM_MAKEFILES_DIR)/SharedConfig.mk
+
+LIBNAME = mpeg4swcodec
+
+LIBOBJ = videocodecGmc videocodecAicModeDec videocodecConceal videocodecDeblockingFilter \
+videocodecDecode videocodecDecodeCoeff videocodecDecodeDCI \
+videocodecDecoderApi videocodecIdctInt videocodecInstreamBuffer videocodecMemHandle \
+videocodecMotionCompensation videocodecMotionCompensationQpel videocodecMpeg4IntraDec videocodecNewYUVImage \
+videocodecParseMpeg4 videocodecPostFilter videocodecReconstruct videocodecSMP videocodecSymbolDecH263 videocodecSymbolDecMpeg4 \
+videocodecSymbolDecSorenson
+
+INSTALL_HEADER    = t_basicdefinitions.h vid_codeclib.h videocodecAicModeDec.h videocodecConceal.h videocodecDeblockingFilter.h \
+videocodecDecApi.h videocodecDecInternal.h videocodecDecodeCoeff.h videocodecDecode.h videocodecDecZigzag.h videocodecGmc.h \
+videocodecIdctMb.h videocodecInstreamBuffer.h videocodecMemHandle.h videocodecMotionCompensation.h \
+videocodecMotionCompensationQpel.h videocodecMpeg4IntraDec.h videocodecNewYUVImg.h videocodecReconstruct.h \
+videocodecSMP.h videocodecSymbolDecCommon.h videocodecSymbolDecH263.h videocodecSymbolDecMpeg4.h videocodecSymbolDecSorenson.h \
+videocodecTablesAnnexT.h vidMalloc.h
+
+
+INSTALL_LIB = lib$(LIBNAME).a
+
+LIBS+=lib$(LIBNAME).a 
+
+todo: lib
+
+include $(MM_MAKEFILES_DIR)/SharedRules.mk

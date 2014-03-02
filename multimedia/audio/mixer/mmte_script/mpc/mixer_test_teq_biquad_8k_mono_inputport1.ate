@@ -1,0 +1,76 @@
+test_start Test_teq_biquad_8k_mono_inputport1
+
+
+OMX_GetHandle       mixer OMX.ST.AFM.mixer
+
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nBitPerSample=16 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+alias INPUT_FILE    $(AUDIO_STREAMS)/transducer_equalizer/streams/signals/bourm1_rx.pcm
+ate_attach_io       mixer 1 MEM INPUT_FILE 256000 0 0
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nBitPerSample=16 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/mix_teq_biquad_8k_mono_inputport1.out
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 6000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/transducer_equalizer/streams/reference/bourm1_rx_biquad_eq_nmf.pcm
+alias REF_DIGEST    $(AUDIO_STREAMS)/transducer_equalizer/streams/reference/bourm1_rx_biquad_eq_nmf.pcm.hash
+
+# Add/configure spl on input port1 at position 1
+OMX_SetConfig mixer OMX_IndexConfigAudioEffectAddPosition nPortIndex=1 nPositionIndex=1 cEffectName=audio_processor.pcm.trans_equalizer
+OMX_SetConfig mixer OMX_IndexConfigAudioEffectConfigure base.nPortIndex=1 base.nPositionIndex=1 base.nEffectSpecificIndex=AFM_IndexParamTransducerEqualizer sConfig.teq.stereo=0 sConfig.teq.nb_alloc_biquad_cells_per_channel=10 sConfig.teq.nb_alloc_FIR_coefs_per_channel=0
+OMX_SetConfig mixer OMX_IndexConfigAudioEffectConfigure base.nPortIndex=1 base.nPositionIndex=1 base.nEffectSpecificIndex=AFM_IndexConfigTransducerEqualizer sConfig.teqConfig.bEnable=OMX_TRUE sConfig.teqConfig.bAutomaticTransitionGain=OMX_FALSE sConfig.teqConfig.smoothing_delay_ms=0 sConfig.teqConfig.transition_gain_exp_l=1 sConfig.teqConfig.transition_gain_mant_l=0x40000000 sConfig.teqConfig.same_biquad_l_r=1 sConfig.teqConfig.same_FIR_l_r=1 sConfig.teqConfig.biquad_first=1 sConfig.teqConfig.nb_biquad_cells_per_channel=10 sConfig.teqConfig.nb_FIR_coefs_per_channel=0 sConfig.teqConfig.biquad_gain_exp_l=1 sConfig.teqConfig.biquad_gain_mant_l=0x40FB1491 sConfig.teqConfig.FIR_gain_exp_l=1 sConfig.teqConfig.FIR_gain_mant_l=0x40000000 sConfig.teqConfig.biquad_cell[0].b_exp=1 sConfig.teqConfig.biquad_cell[0].b0=0x391DA5B7 sConfig.teqConfig.biquad_cell[0].b1=0x5C406F62 sConfig.teqConfig.biquad_cell[0].b2=0x24A142B1 sConfig.teqConfig.biquad_cell[0].a1=0x6910B878 sConfig.teqConfig.biquad_cell[0].a2=0x551E6271 sConfig.teqConfig.biquad_cell[1].b_exp=0 sConfig.teqConfig.biquad_cell[1].b0=0x7DE6ACC8 sConfig.teqConfig.biquad_cell[1].b1=0x5A6B5A76 sConfig.teqConfig.biquad_cell[1].b2=0x264589AF sConfig.teqConfig.biquad_cell[1].a1=0x2426D9E1 sConfig.teqConfig.biquad_cell[1].a2=0x17754353 sConfig.teqConfig.biquad_cell[2].b_exp=1 sConfig.teqConfig.biquad_cell[2].b0=0x3ECD3481 sConfig.teqConfig.biquad_cell[2].b1=0x415E6C0E sConfig.teqConfig.biquad_cell[2].b2=0x25B79105 sConfig.teqConfig.biquad_cell[2].a1=0x40B51A43 sConfig.teqConfig.biquad_cell[2].a2=0x4A5C2EA0 sConfig.teqConfig.biquad_cell[3].b_exp=1 sConfig.teqConfig.biquad_cell[3].b0=0x4041BC4F sConfig.teqConfig.biquad_cell[3].b1=0xFD5299C5 sConfig.teqConfig.biquad_cell[3].b2=0x253033E5 sConfig.teqConfig.biquad_cell[3].a1=0xFD73F19C sConfig.teqConfig.biquad_cell[3].a2=0x4AA130BA sConfig.teqConfig.biquad_cell[4].b_exp=1 sConfig.teqConfig.biquad_cell[4].b0=0x2587A208 sConfig.teqConfig.biquad_cell[4].b1=0xB531A199 sConfig.teqConfig.biquad_cell[4].b2=0x257B2FF9 sConfig.teqConfig.biquad_cell[4].a1=0x941BDB08 sConfig.teqConfig.biquad_cell[4].a2=0x65495326 sConfig.teqConfig.biquad_cell[5].b_exp=1 sConfig.teqConfig.biquad_cell[5].b0=0x3E992809 sConfig.teqConfig.biquad_cell[5].b1=0xA19A97D5 sConfig.teqConfig.biquad_cell[5].b2=0x31B19F2A sConfig.teqConfig.biquad_cell[5].a1=0x9E9AC86C sConfig.teqConfig.biquad_cell[5].a2=0x675FA942 sConfig.teqConfig.biquad_cell[6].b_exp=1 sConfig.teqConfig.biquad_cell[6].b0=0x400BDB49 sConfig.teqConfig.biquad_cell[6].b1=0xFFEDF34F sConfig.teqConfig.biquad_cell[6].b2=0x35279098 sConfig.teqConfig.biquad_cell[6].a1=0xFFF0BD52 sConfig.teqConfig.biquad_cell[6].a2=0x6A617D6A sConfig.teqConfig.biquad_cell[7].b_exp=1 sConfig.teqConfig.biquad_cell[7].b0=0x3FC67295 sConfig.teqConfig.biquad_cell[7].b1=0x52306C47 sConfig.teqConfig.biquad_cell[7].b2=0x35BE404A sConfig.teqConfig.biquad_cell[7].a1=0x52266B99 sConfig.teqConfig.biquad_cell[7].a2=0x6B1D4045 sConfig.teqConfig.biquad_cell[8].b_exp=2 sConfig.teqConfig.biquad_cell[8].b0=0x263FA605 sConfig.teqConfig.biquad_cell[8].b1=0xBD02A17E sConfig.teqConfig.biquad_cell[8].b2=0x1FE4351E sConfig.teqConfig.biquad_cell[8].a1=0x8DB027A4 sConfig.teqConfig.biquad_cell[8].a2=0x6BC2408B sConfig.teqConfig.biquad_cell[9].b_exp=1 sConfig.teqConfig.biquad_cell[9].b0=0x3F259FE1 sConfig.teqConfig.biquad_cell[9].b1=0xAAD237E7 sConfig.teqConfig.biquad_cell[9].b2=0x35662512 sConfig.teqConfig.biquad_cell[9].a1=0xA98ADC51 sConfig.teqConfig.biquad_cell[9].a2=0x6BDC8C62
+OMX_SetConfig mixer OMX_IndexConfigAudioEffectCommit nPortIndex=1
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers mixer 0
+MMTE_AllocateAndUseBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+#Start
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand  mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent   mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+hash_comp OUTPUT_FILE REF_DIGEST
+
+mmte_check_CBmessage
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+
+test_end
+

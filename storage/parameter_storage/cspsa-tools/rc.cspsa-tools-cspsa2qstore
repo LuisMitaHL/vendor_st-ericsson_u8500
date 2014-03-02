@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# /etc/init.d/cspsa
+#
+case "$1" in
+    start)
+	if [ -e /usr/bin/cspsa2map ]; then
+	    if [ -e /usr/bin/map2q ]; then
+	    	echo "Starting conversion of calibration parameters to qstore"
+	    	cspsa2map -c CSPSA0 -o /tmp/temp.map -u 0xfffffffd:0 -f
+	    	map2q /tmp/temp.map /modemfs/sys/calibdata.q
+	    	rm /tmp/temp.map
+	    else
+	    	echo "File map2q not found"
+	    	exit 1
+	    fi
+	    ;;
+	else
+	    echo "File cspsa2map not found"
+		exit 1
+	fi
+	;;
+    stop)
+	;;
+esac

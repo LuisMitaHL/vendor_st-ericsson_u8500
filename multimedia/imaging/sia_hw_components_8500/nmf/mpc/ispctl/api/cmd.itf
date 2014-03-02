@@ -1,0 +1,38 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   nmf method declaration
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <ispctl_types.idt>
+#include <trace.idt>
+
+void initISP(t_uint8 client_id);
+
+void traceInit(TraceInfo_t trace_info, t_uint16 id);
+
+void readPageElement(t_uint16 addr, t_uint8 client_id);
+
+void WaitExpectedPeValue(t_uint16 addr, t_uint32 value_expected, t_uint32 polling_frequency, t_uint32 timeout, t_uint8 client_id);
+
+void readListPageElement(ts_PageElement tab_pe[ISPCTL_SIZE_TAB_PE], t_uint16 number_of_pe, t_uint8 client_id);
+
+void writePageElement(t_uint16 addr, t_uint32 value, t_uint8 client_id);
+
+void writeListPageElement(ts_PageElement tab_pe[ISPCTL_SIZE_TAB_PE], t_uint16 number_of_pe, t_uint8 client_id);
+
+void updateGridironTable(t_uint32 addr, t_uint16 size, t_uint8 client_id);
+
+void subscribeEvent(t_uint32 info_events, t_uint16 error_events, t_uint32 debug_events, t_uint8 client_id);
+
+void unsubscribeEvent(t_uint32 info_events, t_uint16 error_events, t_uint32 debug_events, t_uint8 client_id);
+
+void allowSleep(void);
+
+void preventSleep(void);

@@ -1,0 +1,21 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/test_max_exposuretime.ite
+
+## This test case checks value of PE FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 in pre-run and post-run case.
+
+## Important : this test case tests exposure time on the basis of framerate exported by ISP FW in FrameParamStatus_u32_frameRate_x100_Byte0 page element.
+
+LogPE disable
+setusecase default
+setusecase HR VGA YUV422RI 
+setusecase LR VGA YUV422RI 
+usagemode video
+# test maximum exposure time value exported by FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 page element
+# in pre-boot run. i.e. frame rate is set before giving START command.
+
+do $(IMAGING_PATH)/ite_nmf/script/common/test_max_exposuretime_pre_run.ite
+
+# test maximum exposure time value exported by FrameParamStatus_u32_SensorExposureTimeMax_us_Byte0 page element
+# in post-boot run. i.e. frame rate is set after giving START command, than ISP is STOPed and STARTed again.
+do $(IMAGING_PATH)/ite_nmf/script/common/test_max_exposuretime_post_run.ite
+
+LRHR free

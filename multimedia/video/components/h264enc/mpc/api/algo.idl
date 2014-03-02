@@ -1,0 +1,128 @@
+#include <t1xhv_common.idt>
+#include <t1xhv_vec_h264.idt>
+
+interface h264enc.mpc.api.algo { 
+
+/* This file specifies methods included inside provided interface named iAlgo
+          i.e. :          - configureAlgo
+                          - controlAlgo
+                          - updateAlgo
+                          - setDebug
+*/
+
+/** @addtogroup h264decConfigureAlgoGroup configureAlgo
+ *  @ingroup h264decProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+ \param[in]  cb							call back pointer
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_internal_buffer       "Internal buffer" structure address (i.e. ts_t1xhv_vdc_internal_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_bitstream_buffer  "Output bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_frame_parameters   "Input In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_parameters  "Output In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_h264_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref h264encConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+ *
+ */ 
+
+void configureAlgo(	
+					h264enc.mpc.api.end_algo *cb,
+					t_uint32 addr_in_frame_buffer,
+					t_uint32 addr_out_frame_buffer,
+					t_uint32 addr_internal_buffer,
+					t_uint32 addr_in_header_buffer,
+					t_uint32 addr_in_bitstream_buffer,
+					t_uint32 addr_out_bitstream_buffer,
+					t_uint32 addr_in_parameters,
+					t_uint32 addr_out_parameters,
+					t_uint32 addr_in_frame_parameters,
+					t_uint32 addr_out_frame_parameters);
+
+ /** @} */ // end of h264encConfigureAlgoGroup
+
+
+
+/** @addtogroup h264encControlAlgoGroup controlAlgo
+ *  @ingroup h264encProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  param    The parameter associated to the command composed as following :
+             \n PPE[1:0] Post-processing enable (to be applied at the end of the subtask)
+             \n ...0 = no post-processing is performed
+             \n ...1 = deblocking/deringing filter parameters are computed in the deblocking parameter buffer for 
+             out-of-loop post-processing in a display task (only used if algoId is ID_VDC_H264 or ID_VDC_H263)
+             \n ...2 = H263 annex J deblocking filter in the decode loop (only used if algoId is ID_VDC_H263)
+             \n ...3 = H263 annex J deblocking filter in the decode loop and deringing filter parameters are computed 
+             in the deblocking parameter buffer for out-of-loop post-processing in a display task (only used if algoId is ID_VDC_H263)
+             \n XXX[15:2] : Reserved for future use.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref h264encConfigurationGroup
+ * 
+ * \note Usage of this interface
+ * \n  
+ */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 param);
+
+/** @} */ // end of h264encControlAlgoGroup
+
+
+
+/** @addtogroup h264encUpdateAlgoGroup updateAlgo
+ *  @ingroup h264encProvidedInterfaceGroup
+ *  @{
+ */
+/*!
+ Description : (Not yet implemented) Update the configuration of a specific NMF algo component.
+ *   
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref h264encConfigurationGroup
+ */ 
+void updateAlgo(void);
+
+/** @} */ // end of h264encUpdateAlgoGroup
+
+
+
+/** @addtogroup h264encSetDebugAlgoGroup setDebug
+ *  @ingroup h264encProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint16 param1, t_uint16 param2);
+
+/** @} */ // end of h264encSetDebugAlgoGroup
+
+} // interface h264enc.mpc.api.algo

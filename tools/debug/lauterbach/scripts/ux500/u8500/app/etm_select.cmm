@@ -1,0 +1,82 @@
+;------------------------------------------------------------
+; etm_select.cmm
+;------------------------------------------------------------
+; Create dialog for selectionof cores that should be traced
+;
+; 090507 - KM Initial version
+;-----------------------------------------------------------
+
+
+
+if !analyzer()
+(
+  print "WARNING ETM : no analyzer hardware detected"
+)
+
+dialog
+(&
+	header "Etm Selection"
+	pos 0. 0. 7. 1.
+	text "PortSize:"
+	pos 8. 0. 6. 1.
+EtmSize:	pulldown "8.,16.,24." "gosub EtmPortSize"
+	
+	pos 0. 2. 5. 1.
+	text "EtmClk:"
+	pos 6. 2. 8. 1.
+EtmClk:	pulldown "80MHz,133MHz" "gosub EtmTraceClk"
+
+	pos 1. 4. 5. 1.
+Button "Save" "gosub ButtonSave"
+	pos 7. 4. 9. 1.
+Button "Save and Close" "gosub ButtonSaveClose"
+	CLOSE "goto winclose"
+)
+
+;What cores are we debugging?
+
+gosub InitVariables
+gosub InitDialog
+
+stop
+
+
+winclose:
+	dialog.end
+	enddo
+
+InitVariables:
+	
+	if "&EtmPortSize"==""
+		&EtmPortSize="8."
+	if "&EtmTraceClk"==""
+		&EtmTraceClk="80MHz"
+	
+
+	Return
+
+InitDialog:
+	dialog.set EtmSize "&EtmPortSize"
+	dialog.set EtmClk "&EtmTraceClk"
+	Return
+
+EtmPortSize:
+	&EtmPortSize=dialog.string(EtmSize)
+	etm.portsize &EtmPortSize
+	print "Run Use PTM after changing the ETM Port Size"
+	Return
+
+EtmTraceClk:
+	&EtmTraceClk=dialog.string(EtmClk)
+	print "Run Use PTM after changing the ETM clock"
+	Return
+	
+ButtonSave:
+	do writesettings.cmm
+	RETURN
+ButtonSaveClose:
+	do writesettings.cmm
+	goto winclose
+
+
+

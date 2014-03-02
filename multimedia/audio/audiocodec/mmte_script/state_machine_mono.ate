@@ -1,0 +1,91 @@
+
+alias CUT $1
+
+
+
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+# Go to Idle
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers CUT 0
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+ate_attach_io       CUT 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/test_mono_48k_1k.pcm 0 0 0
+
+
+OMX_SetConfig CUT OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100 
+OMX_SetConfig CUT OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+# Go to Loaded
+OMX_SendCommand CUT OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers CUT 0
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# Go to Idle
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers CUT 0
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Executing
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+mmte_sleep 2000
+
+# Go to Pause
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+mmte_sleep 4000
+
+# Go to Executing
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_NMF_ListComponent
+
+MMTE_WaitEvent CUT OMX_EventBufferFlag 0
+
+
+
+
+# Go to Idle
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand CUT OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers CUT 0
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+ate_attach_io       CUT 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/test_mono_48k_1k.pcm 0 0 0
+
+# Go to Idle
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers CUT 0
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Pause
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+mmte_sleep 4000
+
+# Go to Pause
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Idle
+OMX_SendCommand CUT  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand CUT OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers CUT 0
+MMTE_WaitEvent CUT OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle CUT
+
+MMTE_CheckMemoryStatus
+unalias CUT

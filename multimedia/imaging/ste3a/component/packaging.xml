@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/component.xml" />
+    <include name="component/packaging.xml" />
+    <include name="Makefile" />
+  </fileset>
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+        <include name="Makefile"/>
+        <include name="readme.txt"/>
+        <include name="nmxAawb/include/*.h"/>
+        <include name="STE3A/include/*.h"/>
+        <include name="STE3A/include_debug/*.h"/>
+        <include name="STE3A_CMAL_Reference/include/*.h"/>
+        <include name="STE3A_FGAL_Reference/include/*.h"/>
+        <include name="STE3A_PPAL_8500V2/include/*.h"/>
+        <include name="lib/cortexA9-android-android-*/*.a" />
+    </fileset>
+  </package>
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+        <include name="Makefile"/>
+        <include name="readme.txt"/>
+        <exclude name="Todo.txt"/>
+        <include name="doc/**"/>
+        <include name="nmxAawb/**"/>
+        <include name="STE3A/**"/>
+        <include name="STE3A_CMAL_Reference/**"/>
+        <include name="STE3A_FGAL_Reference/**"/>
+        <include name="STE3A_playback/**"/>
+        <include name="STE3A_PPAL_8500V2/**"/>
+        <include name="STE3A_test_app/**"/>
+    </fileset>
+  </package>
+</packages>

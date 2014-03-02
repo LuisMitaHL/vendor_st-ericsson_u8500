@@ -1,0 +1,95 @@
+%TODO : add a chapter on stack ?
+
+\chapter{Hybrid Scheduler}
+\section{Introduction}
+Hybrid Scheduler implement three level of priorities named BACKGROUND, NORMAL
+and URGENT and allow preemption between these priorities.
+Implementation use one queue of task to execute by priority.
+We will document how posting new reactions to these queues is done, how they are
+schedule and execute. We will also describe preemption code.
+\section{Globals data}
+\textbf{FirstEvent[]} and \textbf{LastEvent[]} tables contains respectively head
+and tail pointer for scheduler link list of event to execute. They contains 
+pointers to struct TEvent elements (Listing \ref{struct TEvent}).
+\begin{lstlisting}[caption=struct TEvent, label=struct TEvent]
+struct TEvent {
+  struct TEvent* next;
+  void* reaction;
+  void* THIS;
+  t_uword priority;
+};
+\end{lstlisting}
+
+\textbf{activePriority} contains the current running priority. When there is no
+more reactions to execute then it return to value -1.
+
+\textbf{switchOnGoing} is a boolean that indicates if a preemption is ongoing.
+\section{Posting new reactions}
+Posting a new reaction into scheduler queues is done using function
+Sched\_Event(). This can occur either between host and MMDSP communication, MDSP
+and MPDSP communication or during an asynchronous interface call.
+
+It consist to insert a new struct TEvent into the correct schduler queue
+according to priority and then perfom a preemption if active priority is lower
+than posted event priority and no current preemption is ongoing.
+\section{Scheduler loop}
+Each time there is premption Schedule() function will be run again in a fresh
+context. This function will call RawSchedule() from priority 2 down to previous
+activePriority value.
+
+RawSchedule() will execute event for a given priority until there are no more
+event available and then return to caller.
+
+\section{Preemption}
+Preemption implementation use interrupt 2 of MMDSP (the lower level so that
+others interrupts can still occur) to change current context by a new one that
+will call Schedule(). Following steps describe in details how this occur. Code
+that handle preemption is located in trampoline.c.
+
+Preemption entry code begin in IT2() (Listing \ref{IT2}).
+\begin{lstlisting}[caption=IT2(), label=IT2]
+#pragma nosaveregs
+_INTERRUPT void IT2(void) {
+    pushrl2();
+    deactivateIt();
+    poprl2();
+    switch_return();
+}
+\end{lstlisting}
+Goal of IT2() is to jump back into trampoline() method instead of preempted
+function. Buf before we must deactivate interrupts to avoid being interrupt in
+context switch sequence since it's not reentrant. We then call switch\_return().
+
+switch\_return() (Listing \ref{switchreturn}) is in charge to save current
+return address in info1 global and then modify return address by trampoline()
+address. So when we exit IT2() we start to execute trampoline().
+\begin{lstlisting}[caption=switch\_return(), label=switchreturn]
+asm void switch_return()
+{
+    stx_f       ax1, #_info2           // Memorise ax1
+    /*
+     * Change return address in system stack
+     */
+    ldxi_f      sp0, ax1                // read return address of IT2()
+    stx_f       ax1, #_info1            // Memorise it
+    ldx_f       #_trampolineptr, ax1    // Load new return address
+    stxi_f      ax1, sp0                // Set new return address of IT2()
+}
+\end{lstlisting}
+
+trampoline() will call trampoline\_0() where we will first change return address
+so we return to save return address in info1 instead of returning to
+trampoline(). We then call trampoline\_1() (Listing \ref{trampoline1}).
+\begin{lstlisting}[caption=trampoline\_1(), label=trampoline1]
+#pragma nosaveregs
+void trampoline_1() {
+    push_registers();
+    Schedule();
+    pop_registers();
+}
+\end{lstlisting}
+
+trampoline\_1() will first save needed MMDSP registers (those not save by
+callee) in push\_registers() before calling Schedule(). After Schedule() we will
+restore MMDSP registers in pop\_registers() before returning to trampoline\_0()
+and then into preempted code.

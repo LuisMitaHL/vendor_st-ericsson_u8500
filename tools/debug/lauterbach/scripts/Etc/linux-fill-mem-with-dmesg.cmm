@@ -1,0 +1,37 @@
+//============================================================================
+// Lauterbach T32 Emulator script: scripts/Etc/linux-fill-mem-with-dmesg.cmm
+//
+// Comments: Fill memory from the data given in dmesg
+//
+//
+// Written by: frq08728
+//
+// Creation date: 14/06/2012
+// Last Change: Thu Aug 09 09:00 2012 CEST
+//
+//============================================================================
+
+entry &dmesg_file
+if !os.file(&dmesg_file)
+(
+	print "Choose dmesg file"
+	dialog.file "*"
+	entry &dmesg_file
+)
+
+if os.file("dmesg.txt")
+(
+	print "file dmesg.txt already exists, a backup is done: dmesg.bak"
+	copy dmesg.txt dmesg.bak
+)
+if (os.file.path(&dmesg_file)!=os.pwd()||os.file.name(&dmesg_file)!="dmesg.txt")
+	copy &dmesg_file dmesg.txt
+
+print "os.area perl '&(toolsPath)/linux-fill-mem-with-dmesg.pl' 'dmesg.txt' 'fill_mem_with_dmesg.cmm'"
+os.area perl "&(toolsPath)/linux-fill-mem-with-dmesg.pl" "dmesg.txt" "fill_mem_with_dmesg.cmm"
+
+do fill_mem_with_dmesg.cmm
+
+do linux-bug-fill-register.cmm dmesg nodump
+
+enddo

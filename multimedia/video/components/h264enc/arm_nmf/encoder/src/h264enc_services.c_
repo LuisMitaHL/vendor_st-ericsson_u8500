@@ -1,0 +1,430 @@
+/*******************************************************************************
+ * C STMicroelectronics
+ * Reproduction and Communication of this document is strictly prohibited
+ * unless specifically authorized in writing by STMicroelectronics.
+ ******************************************************************************/
+
+#include <string.h>
+#include <stdlib.h>
+
+#include "vte_encoder.h"
+#include "h264enc_services.h"
+#include "h264enc_host_parset.h"
+#include "vte_sva_alloc.h"
+#include "vte_file_utils.h"
+
+t_uint8  g_MmtermOn = 0;
+t_uint32 g_vec_h264_delta;
+
+extern const t_uint32 LevelLimits[16][6];
+
+
+
+/* -----------------------------------------------------------------------
+FUNCTION : VAL_H264EncoderParamNal
+PURPOSE  :  Create PPS and SPS Nal
+------------------------------------------------------------------------ */
+t_uint32 VAL_H264EncoderParamNal(FILE *ap_h264_file, t_uint8 a_header)
+{
+    pic_parameter_set_rbsp_t active_pps;
+    seq_parameter_set_rbsp_t active_sps;
+    NALU_t *spsNAL;
+    NALU_t *ppsNAL;
+    char buffer[4]= {0x00, 0x00, 0x00, 0x01};
+
+    FillParameterSetStructures(&active_sps, &active_pps, h264_encode_par_in_nb[0]->level_idc);
+    spsNAL = GenerateSeq_parameter_set_NALU(&active_sps);
+    ppsNAL = GeneratePic_parameter_set_NALU(&active_pps);
+
+    if(a_header == 0){		/* Annex b */
+        Val_WriteFile((t_uint8 *)buffer, 4, ap_h264_file);
+        Val_WriteFile(spsNAL->buf, spsNAL->len, ap_h264_file);
+        Val_WriteFile((t_uint8 *)buffer, 4, ap_h264_file);
+        Val_WriteFile(ppsNAL->buf, ppsNAL->len, ap_h264_file);
+    }
+    else{ /* RTP */   }
+
+    return ((spsNAL->len + 4 + ppsNAL->len + 4) * 8);
+}
+
+/* -----------------------------------------------------------------------
+FUNCTION : VAL_Basename
+PURPOSE  :  return the basename without PATH
+------------------------------------------------------------------------ */
+char * VAL_Basename(char *ap_file_name){
+    char * file_return;
+
+    file_return = strrchr(ap_file_name, '/');
+    if(file_return == NULL){
+        return ap_file_name;
+    }
+
+    return (file_return + 1);
+}
+
+/* -----------------------------------------------------------------------
+FUNCTION : CeilLog2
+PURPOSE  : calculate Ceil(Log2(uiVal))
+------------------------------------------------------------------------ */
+t_uint32 CeilLog2( t_uint32 a_uiVal)
+{
+    t_uint32 uiTmp = a_uiVal-1;
+    t_uint32 uiRet = 0;
+
+    while( uiTmp != 0 )
+    {
+        uiTmp >>= 1;
+        uiRet++;
+    }
+    return uiRet;
+}
+
+/* -----------------------------------------------------------------------
+FUNCTION : Val_AddStuffingBit
+PURPOSE  : Add stuffing bit in NAL
+------------------------------------------------------------------------ */
+void Val_AddStuffingBit(t_uint32 a_toggle)
+{
+    t_uint8 stuffing_header[5]= {0x00, 0x00, 0x00, 0x01, 0x0C};
+    t_uint8 stuffing_bit[1]= {0xFF};
+    t_uint8 stuffing_end[1]= {0x80};
+    t_uint32 count;
+
+    t_uint8 *p_bitstream = NULL;
+
+    if(a_toggle == 0){
+        p_bitstream = (t_uint8 *)(vec_bitst_buf_position_nb[1]->addr_bitstream_start + (vec_bitst_buf_position_nb[1]->bitstream_offset / 8));
+
+        /* Header Stuffing Nal */
+        memcpy(  p_bitstream, 
+                stuffing_header,
+                sizeof(stuffing_header));
+        p_bitstream += 5;
+
+        /* Stuffing bit */
+        for(count = 0; count < h264_encode_par_inout_nb[1]->stuffing_bits / 8; count++){
+            memcpy(  p_bitstream,
+                    stuffing_bit,
+                    sizeof(stuffing_bit));
+            p_bitstream ++;
+        }
+
+        /* End Stuffing Nal */
+        memcpy(p_bitstream, stuffing_end, sizeof(stuffing_end));
+        p_bitstream ++;
+
+        vec_bitst_buf_position_nb[1]->addr_bitstream_start = (((t_uint32)p_bitstream / 128) *128);
+        vec_bitst_buf_position_nb[1]->bitstream_offset = (((t_uint32)p_bitstream % 128 ) * 8);
+    }else{
+        p_bitstream = (t_uint8 *)(vec_bitst_buf_position_nb[0]->addr_bitstream_start + (vec_bitst_buf_position_nb[0]->bitstream_offset / 8));
+        /* Header Stuffing Nal */
+        memcpy(  p_bitstream, 
+                stuffing_header,
+                sizeof(stuffing_header));
+        p_bitstream +=5;
+
+        /* Stuffing bit */
+        for(count = 0; count < h264_encode_par_inout_nb[0]->stuffing_bits / 8; count++){
+            memcpy(p_bitstream,
+                    stuffing_bit,
+                    sizeof(stuffing_bit));
+            p_bitstream ++;
+        }
+
+        /* End Stuffing Nal */
+        memcpy(p_bitstream, stuffing_end, sizeof(stuffing_end));
+        p_bitstream ++;
+
+        vec_bitst_buf_position_nb[0]->addr_bitstream_start = (((t_uint32)p_bitstream / 128) *128);
+        vec_bitst_buf_position_nb[0]->bitstream_offset = (((t_uint32)p_bitstream % 128 ) * 8);
+    }
+}
+
+/*!
+ ************************************************************************
+ * \brief
+ *    Set the image type for I,P and SP pictures (not B!)
+ ************************************************************************
+ */
+t_uint16 SetNextImageType(t_uint32 a_toggle, t_uint32 a_numb_intra_period)
+{
+    t_uint16 type_next_slice;
+
+    /* number of frames between two different I_SLICE, reset to zero after coding a single I_SLICE */
+    g_vec_h264_delta = g_vec_h264_delta + (h264_encode_par_in_nb[a_toggle]->timestamp - h264_encode_par_inout_nb[a_toggle]->timestamp_old);
+
+    if (g_vec_h264_delta >= a_numb_intra_period) {
+        type_next_slice = I_SLICE;
+        g_vec_h264_delta = 0;
+    }
+    else{
+        type_next_slice = P_SLICE;
+    }
+
+    if (h264_encode_par_inout_nb[a_toggle]->Skip_Current && (h264_encode_par_in_nb[a_toggle]->picture_coding_type == I_SLICE)) {
+        /* force to insert a intra picture */
+        /* img->picture_coding_type = I_SLICE; */
+        type_next_slice = I_SLICE;
+        g_vec_h264_delta = 0;
+    }
+
+    /* returns the type of the next frame to be coded */
+    return type_next_slice;
+}
+
+/*! 
+ *************************************************************************************
+ * \brief
+ *    t_uint32 ComputeMaxBitSizePerAU (void)
+ *
+ * \note
+ *    This function compute the max size of a whole AU 
+ *    (passed to the BRC in order to limit the size of pictures)
+ *
+ *************************************************************************************
+ */
+t_uint32 ComputeMaxBitSizePerAU (t_uint32 toggle, int number)
+{
+    t_uint32 MaxBitSizePerAU;
+    t_uint16 i;
+
+    i = getIndexFromLevel();
+
+    if (number == 0) {
+        MaxBitSizePerAU = (384 * (h264_encode_par_in_nb[toggle]->frame_width / 16) 
+                * (h264_encode_par_in_nb[toggle]->frame_height / 16)) / LevelLimits[i][5];
+    }
+    else {
+        MaxBitSizePerAU = 1000*(384 * LevelLimits[i][1] / ((t_uint32)(h264_encode_par_in_nb[toggle]->framerate / 1024 * (double)1000)) ) / LevelLimits[i][5];
+    }
+    return MaxBitSizePerAU<<3; /* NZ: in bits */
+}
+
+/*! 
+ *************************************************************************************
+ * \brief
+ *    t_uint8 AutomaticLevelDetection();
+ *
+ * \note
+ *    Use the size/bitrate to detect minimum level for coding
+ *
+ *************************************************************************************
+ */
+
+t_uint8 AutomaticLevelDetection(t_uint32 frame_rate, t_uint32 bit_rate)
+{
+    t_uint16 i = 0;
+    t_uint32 picture_size_in_MB; 
+    t_uint8 status = LEVEL_OK;
+
+    picture_size_in_MB = (h264_encode_par_in_nb[0]->frame_width/16) * (h264_encode_par_in_nb[0]->frame_height/16);
+
+    while (i<16) 
+    {
+        if (LevelLimits[i][2] >= picture_size_in_MB)
+            break;
+        else 
+            i++;
+    }
+
+    if (h264_encode_par_in_nb[0]->brc_type != 0)
+    {
+        while (i<16)
+        {
+            if ((t_sint32)LevelLimits[i][3]*1000 >= bit_rate) 
+                break;
+            else
+                i++;
+        }
+    }
+
+    while (i<16)
+    {
+        if (1024*LevelLimits[i][1] >= frame_rate * picture_size_in_MB)
+            break;
+        else
+            i++;
+    }
+
+    if (LevelLimits[i][0] > h264_encode_par_in_nb[0]->level_idc) {
+        status = i; 
+    }
+    return status;
+
+}
+
+/* -----------------------------------------------------------------------
+FUNCTION : VAL_SvaInitializeH264Encoder
+PURPOSE  :  Initialisation of h264 Encoder tasks
+------------------------------------------------------------------------ */
+void VAL_SvaInitializeH264Encoder(int  a_nb_task_encode,
+        int  a_xsize,
+        int  a_ysize,
+        int  a_quant)
+{
+    t_uint32  * p_next;
+    t_uint32    next;
+    int j, i;
+
+    next = (t_uint32)((t_physical_address)hamacv_buffer); 
+    p_next = &next;
+
+    for (j=0; j<a_nb_task_encode; j++)
+    {
+        VAL_SvaInitializeEncoderGenericParams(p_next, j);
+        h264_encode_par_in_nb[j] = (tps_t1xhv_vec_h264_param_in)((t_physical_address)(*p_next));
+        h264_encode_par_out_nb[j] = (tps_t1xhv_vec_h264_param_out)((t_physical_address)h264_encode_par_in_nb[j]+sizeof(ts_t1xhv_vec_h264_param_in));
+        h264_encode_par_inout_nb[j] = (tps_t1xhv_vec_h264_param_inout)((t_physical_address)h264_encode_par_out_nb[j]+sizeof(ts_t1xhv_vec_h264_param_out));
+    }
+    // to allow very big number of frames : no bitstream saved
+    //vec_dummy_bitst_buf_pos = (tps_t1xhv_bitstream_buf_pos)(next);
+    //next = (t_physical_address)vec_dummy_bitst_buf_pos + sizeof(ts_t1xhv_bitstream_buf_pos);	 
+
+    for (j=0; j<a_nb_task_encode; j++)
+    {
+        if (j<a_nb_task_encode-1) {
+            hv_vec_params_nb[j]->s_link.addr = HOST_TO_TLM(((t_ahb_address)hv_vec_params_nb[j+1])) | 0x1;
+        } else {
+            hv_vec_params_nb[j]->s_link.addr = HOST_TO_TLM(((t_ahb_address)hv_vec_params_nb[0])); 
+        }
+        hv_vec_params_nb[j]->s_link.type = 0x00008007 + (sizeof(ts_t1xhv_vec_subtask_param) << 18);
+        hv_vec_params_nb[j]->s_link.execution_time_stamp = 0x0000;
+        hv_vec_params_nb[j]->s_link.dependency = 0x0000;
+        hv_vec_params_nb[j]->addr_in_frame_buffer = HOST_TO_TLM((t_ahb_address)vec_in_frame_buf_nb[j]) | 0x1;     // video input frame
+        hv_vec_params_nb[j]->addr_out_frame_buffer = HOST_TO_TLM((t_ahb_address)vec_out_frame_buf_nb[j]) | 0x1;
+        hv_vec_params_nb[j]->addr_internal_buffer = HOST_TO_TLM((t_ahb_address)vec_internal_buf_nb[j]) | 0x1;
+        hv_vec_params_nb[j]->addr_in_header_buffer = HOST_TO_TLM((t_ahb_address)header_buf_nb[j]) | 0x1;
+        hv_vec_params_nb[j]->addr_in_bitstream_buffer = HOST_TO_TLM((t_ahb_address)vec_bitst_buf_position_nb[j]) | 0x1;
+        hv_vec_params_nb[j]->addr_in_parameters = HOST_TO_TLM((t_ahb_address)h264_encode_par_in_nb[j]) | 0x1;
+        hv_vec_params_nb[j]->addr_out_parameters = HOST_TO_TLM((t_ahb_address)h264_encode_par_out_nb[0])| 0x1;
+        hv_vec_params_nb[j]->addr_in_frame_parameters = HOST_TO_TLM((t_ahb_address)h264_encode_par_inout_nb[j]) | 0x1;
+        if (j<a_nb_task_encode-1) {
+            hv_vec_params_nb[j]->addr_out_bitstream_buffer = HOST_TO_TLM((t_ahb_address)vec_bitst_buf_position_nb[j+1]) | 0x1;
+            hv_vec_params_nb[j]->addr_out_frame_parameters = HOST_TO_TLM((t_ahb_address)h264_encode_par_inout_nb[j+1]) | 0x1;
+        } else {
+            hv_vec_params_nb[j]->addr_out_bitstream_buffer = HOST_TO_TLM((t_ahb_address)vec_bitst_buf_position_nb[0]) | 0x1;
+            hv_vec_params_nb[j]->addr_out_frame_parameters = HOST_TO_TLM((t_ahb_address)h264_encode_par_inout_nb[0]) | 0x1;
+        }
+
+        /*  constant params */
+        h264_encode_par_in_nb[j]->level_idc = LEVEL_IDC;
+        h264_encode_par_in_nb[j]->picture_coding_type = I_SLICE;
+        h264_encode_par_in_nb[j]->frame_width = a_xsize;
+        h264_encode_par_in_nb[j]->frame_height = (a_ysize / 16) *16;
+        h264_encode_par_in_nb[j]->window_width = a_xsize;
+        h264_encode_par_in_nb[j]->window_height = (a_ysize / 16) *16;
+        h264_encode_par_in_nb[j]->window_horizontal_offset = 0;
+        h264_encode_par_in_nb[j]->window_vertical_offset = 0;
+        h264_encode_par_in_nb[j]->CodedPictureCounter = 0;
+        h264_encode_par_in_nb[j]->frame_poc = 0;
+        h264_encode_par_in_nb[j]->frame_num = 0;
+        h264_encode_par_in_nb[j]->init_me = 0x0001;
+
+        /* the following are from the configuration file */
+        h264_encode_par_in_nb[j]->me_type = 0x0000;
+        h264_encode_par_in_nb[j]->rounding_type = 0x0000;
+        h264_encode_par_in_nb[j]->annexb = 0x0000;   /* 0 : Annexb ON, 1 : RTP */
+        h264_encode_par_in_nb[j]->use_constrained_intra_flag = 0x0000;
+        h264_encode_par_in_nb[j]->slice_size_type = 0x0001;
+        h264_encode_par_in_nb[j]->slice_byte_size = 800;   /* number of MBs / bytes by Slice */
+        h264_encode_par_in_nb[j]->slice_mb_size = 20;
+        h264_encode_par_in_nb[j]->intra_disable = 0x0000;
+        h264_encode_par_in_nb[j]->intra_refresh_type = 0x0000;
+
+        h264_encode_par_in_nb[j]->air_mb_num = 0x0000;
+        for (i=0; i<8; i++)
+            h264_encode_par_in_nb[j]->slice_loss_first_mb[i] = 0x0000;
+
+        for (i=0; i<8; i++)
+            h264_encode_par_in_nb[j]->slice_loss_mb_num[i] = 0x0000;
+
+        h264_encode_par_in_nb[j]->MaxSumNumBitsInNALU = 0;
+        h264_encode_par_in_nb[j]->algo_config = 0;
+        /* the following are used to encode the Slice Header */
+        h264_encode_par_in_nb[j]->idr_flag = 0x0001;
+        h264_encode_par_in_nb[j]->pic_order_cnt_type = 0x0002;
+        h264_encode_par_in_nb[j]->log2_max_frame_num_minus4 = 0x0000;
+        h264_encode_par_in_nb[j]->log2_max_pic_order_cnt_lsb_minus4 = 0x0001;
+
+        /* the following parameters are for future use */
+        h264_encode_par_in_nb[j]->disable_deblocking_filter_idc = 0x0000;
+
+        h264_encode_par_in_nb[j]->slice_alpha_c0_offset_div2 = 0;
+        h264_encode_par_in_nb[j]->slice_beta_offset_div2 = 0; 
+
+        /* the following are specific for use with the rate-controller */
+        h264_encode_par_in_nb[j]->brc_type = 0;
+        h264_encode_par_in_nb[j]->lastBPAUts = 0;
+        h264_encode_par_in_nb[j]->CpbBufferSize = 0;
+        h264_encode_par_in_nb[j]->bit_rate = 64000;
+        h264_encode_par_in_nb[j]->SeinitialQP = a_quant;
+        h264_encode_par_in_nb[j]->framerate = 30;
+        h264_encode_par_in_nb[j]->timestamp = 0x00;
+        h264_encode_par_in_nb[j]->NonVCLNALUSize = 0;
+        h264_encode_par_in_nb[j]->NALfinal_arrival_time = 0;
+        h264_encode_par_inout_nb[j]->quant = a_quant;
+        h264_encode_par_inout_nb[j]->bitstream_size = 0x0000;
+        h264_encode_par_inout_nb[j]->stuffing_bits = 0x0000;
+        h264_encode_par_inout_nb[j]->I_Qp = a_quant;
+        // h264_encode_par_inout_nb[j]->P_Qp = a_quant;
+        h264_encode_par_inout_nb[j]->last_I_Size = 0x0000;
+        h264_encode_par_inout_nb[j]->comp_SUM = 0x0000;
+        h264_encode_par_inout_nb[j]->comp_count = 0x0000;                   
+
+        h264_encode_par_inout_nb[j]->Skip_Current = 0x0000;
+        h264_encode_par_inout_nb[j]->Skip_Next = 0x00;
+
+        h264_encode_par_inout_nb[j]->Cprev = 0x0000;
+
+        h264_encode_par_inout_nb[j]->PictQpSum = 0x0000;
+        h264_encode_par_inout_nb[j]->S_overhead = 0x0000;
+
+        h264_encode_par_inout_nb[j]->prev_pict_Qp = 0x00;
+        h264_encode_par_inout_nb[j]->bits_enc_buffer = 0x00;
+        h264_encode_par_inout_nb[j]->bits_dec_buffer = 0x00;
+
+        /* VBR */
+        h264_encode_par_inout_nb[j]->last_size = 0;       /**<\brief Size of previous picture   */
+        h264_encode_par_inout_nb[j]->last_was_I = 0;	    /**<\brief Previous INTRA picture flag   */
+
+        /* TIMESTAMPS */
+        h264_encode_par_inout_nb[j]->timestamp_old = -1;
+        h264_encode_par_inout_nb[j]->removal_time = 0x00;
+
+        /* dynamic options */
+        h264_encode_par_inout_nb[j]->old_framerate = 0;    /**<\brief framerate value of previous picture (used for dynamic framerate change) */
+        h264_encode_par_inout_nb[j]->old_bit_rate = 0;
+        h264_encode_par_inout_nb[j]->previous_MB_MV_num = 0x00;  /**<\brief DF: check for Level 3.1 constraints (number of MV across MBs) */
+        h264_encode_par_inout_nb[j]->CC_modulation = 0x00;       /**< Parameter for the modulation of the thresholds in case of low/middle-low motion */ /* Used in CDME8815 */
+        h264_encode_par_inout_nb[j]->refreshed_mbs = 0;
+
+        // Moved to DDR to allow big resolutions
+        gp_deblocking_buffer = VAL_AllocDdramBuffer((a_xsize/16)*(a_ysize/16)*4*8, 256, ALLOC_IN_ANY_DDRAM_BANK);
+        vec_out_frame_buf_nb[j]->addr_deblocking_param_buffer = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)(gp_deblocking_buffer)));  
+        // search window size for +/-32 pixel in vertical 
+        /* search window allocation moved to use case (one buffer is enough)
+           gp_search_window_buffer = VAL_AllocEsramBuffer(6*16*a_xsize, 256);
+           vec_internal_buf_nb[j]->addr_search_window_buffer = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)gp_search_window_buffer));  
+           vec_internal_buf_nb[j]->addr_search_window_end = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)(gp_search_window_buffer + 6*16*a_xsize)));  
+           vec_internal_buf_nb[j]->addr_jpeg_run_level_buffer = ARM_TO_AHB_ADDR((t_physical_address)(NULL));
+           */
+
+        // Moved to DDR to allow big resolutions
+        gp_h264e_H4D_buffer = VAL_AllocDdramBuffer(((a_xsize/16+2)*(a_ysize/16+2)* 4 * 4 +15), 256, ALLOC_IN_ANY_DDRAM_BANK);
+        vec_internal_buf_nb[j]->addr_h264e_H4D_buffer=  HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)gp_h264e_H4D_buffer));
+
+        gp_encode_header_buffer = VAL_AllocDdramBuffer(HEADER_SIZE_IN_BYTES, 256, ALLOC_IN_ANY_DDRAM_BANK);
+        header_buf_nb[j]->addr_header_buffer = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)(gp_encode_header_buffer)));
+        header_buf_nb[j]->header_size = HEADER_SIZE_IN_BYTES;
+
+        vec_bitst_buf_position_nb[j]->addr_bitstream_buf_struct = HOST_TO_TLM(((t_ahb_address)vec_bitst_buf_nb[j])) | 0x1;
+        vec_bitst_buf_position_nb[j]->addr_bitstream_start =  HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)gp_bitstream));
+        vec_bitst_buf_position_nb[j]->bitstream_offset = (t_ulong_value)(0x0000);
+
+        vec_bitst_buf_nb[j]->addr_buffer_start = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)gp_bitstream));    
+        vec_bitst_buf_nb[j]->addr_buffer_end = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)gp_bitstream + g_bitstream_size));
+        vec_bitst_buf_nb[j]->addr_window_start = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)gp_bitstream)); 
+        vec_bitst_buf_nb[j]->addr_window_end = HOST_TO_TLM(ARM_TO_AHB_ADDR((t_physical_address)gp_bitstream + g_bitstream_size));
+    }
+}
+

@@ -1,0 +1,82 @@
+;------------------------------------------------------------
+; readsettings.cmm
+;------------------------------------------------------------
+; Cmm-file used for reading stored settings from T32_Settings.txt
+;
+; 061025 - PH Initial version
+; 070405 - PH Adaption to fit new startup.cmm
+; 070907 - KM Added functionality for multiple configurations
+; 071019 - KM Added support for Linux
+; 071212 - DE Change to only update ConfigList and sets CurConfig. Calls readcurrentconfig to read configuration
+;-----------------------------------------------------------
+
+local &configFile
+local &pos
+local &pos@
+local &targetFile
+
+local &settingsLine
+local &settingsName
+local &settingsValue
+
+
+
+&ConfigList=""
+&CurConfig=""
+
+
+if os.file(&UsrPath/T32_settings.txt)
+(
+	open #1 "&UsrPath"/T32_settings.txt /read
+	repeat
+	(
+		read #1 %line &configFile ; [<target>@<config>]
+		&pos@=string.scan("&configFile","@",0) ; Find @
+		if &pos@!=-1
+		(
+			&targetFile=string.cut("&configFile",&pos@-string.len("&configFile")) ; [<target>
+			&targetFile="&targetFile]" ; [<target>]
+			if "&targetFile"=="&Target"
+			(
+				if string.len("&ConfigList")==0
+					&ConfigList="&configFile"
+				else
+					&ConfigList="&ConfigList,&configFile"
+				repeat
+				(
+					read #1 %line &settingsLine
+					&pos=string.scan("&settingsLine","=",0)
+					if &pos!=-1
+					(
+						&settingsValue=string.cut("&settingsLine",&pos+2)
+						&settingsName=string.cut("&settingsLine",&pos-string.len("&settingsLine"))
+						; strip spaces
+						&pos=string.scan("&settingsLine"," ",0)
+						if &pos>0
+							&settingsName=string.cut("&settingsLine",&pos-string.len("&settingsLine"))
+
+						if ("&settingsName"=="Current")&&("&settingsValue"=="TRUE") 
+							&CurConfig="&configFile"
+					)
+				)
+				while "&settingsLine"!="<EOB>"
+			)
+		)
+	if version.build()>=15499.
+		(
+		if eof()	
+		 	goto done 			
+		)
+	)
+	while "&configFile"!="<EOF>"
+)
+
+done:
+close #1
+do readcurrentconfig
+
+ENDDO
+
+
+
+

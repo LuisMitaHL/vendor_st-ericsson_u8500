@@ -1,0 +1,102 @@
+;------------------------------------------------------------
+; Load.cmm
+;------------------------------------------------------------
+; Startup file to select and setup target
+;
+; 091207 - KM Initial version
+;-----------------------------------------------------------
+
+
+screen.off
+
+;Check if there are settings for this target
+if os.file(&UsrPath/T32_settings.txt)
+(
+	do readsettings.cmm
+
+	if "&TrgExist"=="FALSE"
+	(
+		dialog.ok "No default settings found for &Target target! " \
+		          "Use EMP target setup dialog to setup target"
+		do startup.cmm
+	)
+)
+else
+(
+	dialog.ok "No default settings found (&UsrPath/T32_settings.txt missing)! " \
+	          "Use EMP target setup dialog to setup target"
+	do startup.cmm
+	enddo
+)
+
+do tronchip_settings
+
+do system_settings.cmm
+if (("&UseAttach"!="TRUE")&&(!simulator()))
+	do target_setup.cmm
+
+do onchip_break_setup.cmm
+do memorymap.cmm
+do syncronize_targets.cmm
+if "&LinuxDebug"=="TRUE"
+(
+	y.reset
+	sys.o mmuspaces on
+)
+else
+(
+	y.reset
+	sys.o mmuspaces off
+)
+
+do load_code
+
+do default_pc_set
+if "&UseBrk"=="TRUE"
+  do default_break
+
+;Open some default windows
+if "&UseWin"=="TRUE"
+	do default_windows
+
+do post_load
+
+;Functionality for Linux debugging
+if "&LinuxDebug"=="TRUE"
+(
+  do linux
+)
+
+if "&UsrCmm"!=""
+(
+  do &UsrCmm
+)
+
+;Print target setup information, viewable in the AREA window
+print
+print "Target       : &Target"
+print "Memory       : &ExeMem"
+print "Load Options : &LOption &LOptionVM"
+print "Load File    : &ElfFile"
+print "Source Path  : &SrcPath"
+print
+print "Target setup done, ready to debug..."
+
+screen.on
+
+if ((!run())&&("&UseAttach"=="FALSE")&&(!simulator()))
+(
+	if "&LinuxDebug"=="TRUE"
+	(
+		print "Starting Linux"
+		go
+	)
+)
+
+if simulator()
+(
+	do load_trace_and_dump
+)
+
+
+ENDDO

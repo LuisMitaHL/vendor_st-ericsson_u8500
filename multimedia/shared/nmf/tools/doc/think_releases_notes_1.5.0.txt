@@ -1,0 +1,44 @@
+**********************************************************
+* Think Test Environment (version 1.5.0)                 *
+**********************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Light ARM component-based environment configured for NMF test and development 
+        This environment is based on Think open source component-based OS.
+    - Light Operating System services API specification
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Supported target:
+    - STn8815 SAA & SVA 
+    	* Cut A0/B0/C0
+    - STn8820 SAA & SVA & SIA 
+    	* Cut A0/A2
+    - STn8500 SVA & SIA
+    	* SVP 2.0
+    
+Changes:
+--------
+[NMF Think]
+    - Move LOS_GetPhysicalAddress() from los to ilos. And so rename LOS_GetPhysicalAddress()
+      into ILOS_GetPhysicalAddress(). You need to include ilos_api.h to use ILOS_GetPhysicalAddress()
+      (and of course rename your call to LOS_GetPhysicalAddress into ILOS_GetPhysicalAddress).
+    - Add trace output for 8500 for tlm.
+
+Bug fixes:
+---------
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+    
+    
+Pre-requires:
+-------------
+    - Compatible with RVCT 2.2-sp1-616 and 3.2-sp1-688

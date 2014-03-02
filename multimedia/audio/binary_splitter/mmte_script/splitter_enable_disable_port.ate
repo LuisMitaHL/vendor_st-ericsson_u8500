@@ -1,0 +1,28 @@
+test_start BIN_SPL_003
+test_property TEST_NAME binary_splitter_enable_disable_port
+
+# instantiate and configure splitter
+OMX_GetHandle splitter OMX.ST.AFM.binary_splitter
+
+# Disable output port 2
+OMX_SendCommand splitter OMX_CommandPortDisable 2
+
+OMX_SetParameter    splitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+MMTE_CheckParameter splitter OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+alias INPUT_FILE    $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+MMTE_attach_io      splitter 0 MEM $(INPUT_FILE) 0 0 0
+test_property       input_file $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/splitter_pcm.out
+alias OUTPUT_SIZE   500000
+MMTE_attach_io      splitter 1 MEM $(OUTPUT_FILE) $(OUTPUT_SIZE) 0 0
+test_property       output_file $(OUTPUT_DIR)/splitter_pcm.out
+alias REF_FILE      $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+test_property       ref_file $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+alias REF_DIGEST    $(AUDIO_STREAMS)/binary_splitter/streams/Machado_digest.hash
+
+# test OMX state machine 
+do $(NOMADIK)/afm/mmte_script/enable_disable_port.ate splitter
+
+test_end

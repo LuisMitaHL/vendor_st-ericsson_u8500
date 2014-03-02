@@ -1,0 +1,17 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+struct str_sleepNotifyCallback {
+    struct str_sleepNotifyCallback *pNext;
+    ee.api.sleepNotify interfaceCallback;
+};
+typedef struct str_sleepNotifyCallback t_sleepNotifyCallback;
+
+interface ee.api.sleepRegister {
+    void registerForSleep(t_sleepNotifyCallback *pCallback);
+    void unregisterForSleep(t_sleepNotifyCallback *pCallback);
+}

@@ -1,0 +1,13 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+MY_PATH=/usr/share/dthservices
+
+RES_FILE=$MY_PATH/resmidlistener.txt
+
+touch $RES_FILE
+
+echo "00:00:00: off (file)" > $RES_FILE
+lifecycle -l $RES_FILE
+
+exit
+

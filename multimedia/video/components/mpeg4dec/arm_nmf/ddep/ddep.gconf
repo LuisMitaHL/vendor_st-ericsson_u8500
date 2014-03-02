@@ -1,0 +1,53 @@
+primitive mpeg4dec.arm_nmf.ddep extends fsm.component.armnmf_component
+{
+
+provides lifecycle.constructor  as constructor
+
+// coming from the host
+provides mpeg4dec.arm_nmf.api.ddep                         as iDdep   
+requires mpeg4dec.arm_nmf.api.Copy 			   as iCopy
+
+// transmit directly to the mpeg4 decoder
+requires mpeg4dec.arm_nmf.api.algo                         as iCodecAlgo
+//requires mpeg4dec.arm_nmf.api.update_algo                         as iCodecUpdateAlgo
+
+// Feed back from  the Mpeg4 decoder
+//coming from the mpeg4dec
+provides mpeg4dec.arm_nmf.api.end_algo                     as iEndAlgo 
+
+#ifndef __ndk5500_a0__
+//+ER344943
+requires mpeg4dec.mpc.api.algo_deblock                  as iAlgoDeblock
+provides mpeg4dec.mpc.api.end_algodeblock               as iEndAlgoDeblock 
+//-ER344943
+#else
+//+ER344943
+requires mpeg4dec.arm_nmf.api.algo_deblock                  as iAlgoDeblock
+provides mpeg4dec.arm_nmf.api.end_algodeblock               as iEndAlgoDeblock 
+//-ER344943
+#endif
+
+//+ER 354962
+requires mpeg4dec.arm_nmf.api.cmd_ack    as      iCommandAck
+//-ER 354962
+
+// input port
+provides  armnmf_emptythisbuffer   as      emptythisbuffer
+requires  armnmf_fillthisbuffer    as      inputport
+
+// input header port
+provides  mpeg4dec.arm_nmf.api.emptythisheader   as      emptythisheader
+requires  mpeg4dec.arm_nmf.api.fillthisheader    as      headerport
+
+// output port
+requires armnmf_emptythisbuffer    as      outputport
+provides armnmf_fillthisbuffer     as      fillthisbuffer
+
+provides mpeg4dec.arm_nmf.api.log_event as iGetLogEvent
+requires mpeg4dec.arm_nmf.api.log_event as iSendLogEvent
+
+option CFLAGS "-O3  "
+//option CFLAGS "-g -O0  "
+option stack= 2048
+
+}

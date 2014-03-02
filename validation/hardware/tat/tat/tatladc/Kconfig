@@ -1,0 +1,35 @@
+#
+# Tatladc configuration
+#
+
+menuconfig TATLADC
+	bool "Tatladc"
+	depends on DTHSRVHELPER && TATTOOLS && LIBAB && AB_APE
+	help
+	  depends on DTHSRVHELPER, TATTOOLS, LIBAB and AB_APE
+
+if TATLADC
+
+config TATLADC_DIR
+	string
+	default ../tat/tat/tatladc
+
+config TATLADC_DEPS
+	string
+	default "DTHSRVHELPER TATTOOLS LIBAB AB_APE"
+
+config TATLADC_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLADC
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLADC_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLADC
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLADC

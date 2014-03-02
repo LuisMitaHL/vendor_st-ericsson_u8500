@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<project name="signing" basedir="." default="signing.RELEASE">
+
+	<!-- Check if out folder for interim files is set correctly. -->
+	<available property="interim_out_dir" file="${TARGET_OUT_INTERMEDIATES}" type="dir"/>
+
+	<condition property="signing.BUILD_FOLDER" value="${TARGET_OUT_INTERMEDIATES}/build" else="./build">
+	    <isset property="interim_out_dir"/>
+	</condition>
+
+	<property name="signing.WORKSPACE_DIR" value="${basedir}/../" />
+	<property name="signing.TARGET_DEPENDENCIES_DIR" value="${signing.WORKSPACE_DIR}/com.stericsson.sdk.backend.build/dependencies" />
+	<property name="signing.TARGET_CONFIGURATION_DIR" value="${signing.WORKSPACE_DIR}/com.stericsson.sdk.backend.build/configuration" />
+	<property name="signing.SOURCE_FOLDER" value="./src" />
+	<!--property name="signing.BUILD_FOLDER" value="./build" /-->
+	<property name="signing.CLASSES_FOLDER" value="${signing.BUILD_FOLDER}/classes" />
+	<property name="signing.TEST_CLASSES_FOLDER" value="${signing.BUILD_FOLDER}/tests" />
+	<property name="signing.JAR_FOLDER" value="${signing.BUILD_FOLDER}/jar" />
+	<property name="signing.RELEASE_FOLDER" value="${signing.BUILD_FOLDER}/release" />
+	<property name="signing.JAR_NAME" value="com.stericsson.sdk.signing.jar" />
+	<property name="signing.TEST_FOLDER" value="${signing.WORKSPACE_DIR}/com.stericsson.sdk.signing.test" />
+	<property name="signing.TEST_SOURCE_FOLDER" value="${signing.TEST_FOLDER}/src" />
+	<property name="signing.LIB_FOLDER" value="${signing.TEST_FOLDER}/lib" />
+	<property name="signing.TEST_REPORTS_FOLDER" value="${signing.BUILD_FOLDER}/reports" />
+	<property name="signing.COBERTURA_FOLDER" value="${signing.TARGET_DEPENDENCIES_DIR}/cobertura" />
+	<property name="signing.INSTRUMENTED_CLASSES_FOLDER" value="${signing.BUILD_FOLDER}/instrumented" />
+	<property name="signing.CHECKSTYLE_CONFIGURATION_FOLDER" value="${signing.TARGET_CONFIGURATION_DIR}/checkstyle" />
+	<property name="signing.CHECKSTYLE_DEPENDENCIES_FOLDER" value="${signing.TARGET_DEPENDENCIES_DIR}/checkstyle" />
+	<property name="libs_jar" value="${signing.WORKSPACE_DIR}/com.stericsson.sdk.common/build/jar/com.stericsson.sdk.common.jar" />
+	<property name="libs_build" value="${signing.WORKSPACE_DIR}/com.stericsson.sdk.common"/>
+	<property name="signing.LOG4J" value="${signing.WORKSPACE_DIR}/com.stericsson.sdk.common.log4j/lib/org.apache.log4j.jar" />
+
+	<path id="signing.DEPENDENCIES_CLASSPATH">
+		<pathelement location="${signing.TARGET_DEPENDENCIES_DIR}/osgi/plugins/org.eclipse.equinox.signing_3.5.1.jar" />
+		<pathelement location="${signing.TARGET_DEPENDENCIES_DIR}/osgi/plugins/org.eclipse.osgi_3.5.0.jar" />
+		<pathelement location="${signing.LOG4J}" />
+		<pathelement location="lib/bcprov-ext-jdk15-143.jar" />
+		<pathelement location="${libs_jar}" />
+	</path>
+
+	<path id="common.TEST_CLASSPATH">
+		<pathelement location="${signing.LIB_FOLDER}/junit-4.6.jar" />
+		<path refid="signing.DEPENDENCIES_CLASSPATH" />
+		<pathelement path="${signing.CLASSES_FOLDER}" />
+	</path>
+
+	<target name="signing.RELEASE" depends="signing.JAR">
+		<!-- copy libraries produced by this project -->
+		<copy file="${signing.JAR_FOLDER}/${signing.JAR_NAME}" todir="${signing.RELEASE_FOLDER}" />
+	</target>
+
+	<target name="signing.JAR" depends="signing.COMPILE">
+		<!-- create jar of compiled files -->
+		<jar destfile="${signing.JAR_FOLDER}/${signing.JAR_NAME}" basedir="${signing.CLASSES_FOLDER}" />
+	</target>
+
+	<target name="signing.COMPILE" depends="signing.INIT">
+		<ant antfile="${libs_build}/build-release.xml" inheritAll="false"/>
+		<!-- compile java sources -->
+		<javac srcdir="${signing.SOURCE_FOLDER}" destdir="${signing.CLASSES_FOLDER}" debug="true" classpathref="signing.DEPENDENCIES_CLASSPATH" />
+	</target>
+
+	<target name="signing.INIT" depends="signing.CLEAN">
+		<!-- create output directories -->
+		<mkdir dir="${signing.JAR_FOLDER}" />
+		<mkdir dir="${signing.CLASSES_FOLDER}" />
+		<mkdir dir="${signing.RELEASE_FOLDER}" />
+		<mkdir dir="${signing.TEST_CLASSES_FOLDER}" />
+		<mkdir dir="${signing.TEST_REPORTS_FOLDER}" />
+	</target>
+
+	<target name="signing.CLEAN">
+		<!-- delete output directories -->
+		<delete dir="${signing.JAR_FOLDER}" />
+		<delete dir="${signing.CLASSES_FOLDER}" />
+		<delete dir="${signing.RELEASE_folder}" />
+		<delete dir="${signing.TEST_CLASSES_FOLDER}" />
+		<delete dir="${signing.TEST_REPORTS_FOLDER}" />
+	</target>
+
+</project>

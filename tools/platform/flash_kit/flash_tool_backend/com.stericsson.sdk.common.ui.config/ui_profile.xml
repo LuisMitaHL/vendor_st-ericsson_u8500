@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<profile layout="grid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="ui_validator.xsd">
+
+  <section name="Basic Settings" extendable="false" columns="2" columnSpan="1" layout="grid">
+    <record name="Profile" match="Profile .*" label="Profile" minCount="1" maxCount="1">
+      <attribute name="Name">
+        <visual label="Name" type="TEXT_FIELD" regexpValidator="[a-zA-Z0-9_]+"/>
+      </attribute>
+    </record>
+
+    <record name="Platform" match="Platform .*" label="Platform" minCount="1" maxCount="1">
+      <attribute name="Filter">
+        <visual label="Platform" type="COMBO"><!-- regexpValidator="^\([a-zA-Z0-9=]+\)$"/>-->
+          <option label="U8500" value="(platform~=U8500)"/>
+          <option label="U5500" value="(platform~=U5500)"/>
+        </visual>
+      </attribute>
+    </record>
+  </section>
+  <section name="Software Settings" extendable="false" columns="2" columnSpan="1" layout="grid">
+    <record name="Software" match="Software .*" label="Software" minCount="1" maxCount="1">
+      <attribute name="Type">
+        <visual label="Type" type="COMBO">
+          <option label="Loader" value="Loader" />
+          <option label="Other" value="Other" />
+        </visual>
+      </attribute>
+      <attribute name="Path">
+        <visual label="Boot image" type="PATH">
+          <option label="*.ldr" value="*.ldr" />
+        </visual>
+      </attribute>
+    </record>
+  </section>
+  <section name="Security Properties" extendable="true" columns="2" columnSpan="1" layout="grid"> 
+    <record name="SecurityProperty" match="SecurityProperty .*" minCount="0" maxCount="-1"
+      showGroup="true">
+      <attribute name="Name">
+        <visual label="Name" type="TEXT_FIELD" regexpValidator="[a-zA-Z0-9=_]+" />
+      </attribute>
+      <attribute name="ID">
+        <visual label="Id" type="TEXT_FIELD" regexpValidator="0x[0-9a-fA-F]+" />
+      </attribute>
+      <attribute name="Write">
+        <visual label="Write" type="CHECK_BUTTON">
+          <option label="true" value="true"/>
+          <option label="false" value="false"/>
+        </visual>
+      </attribute>
+      <attribute name="Read">
+        <visual label="Read" type="CHECK_BUTTON">
+          <option label="true" value="true"/>
+          <option label="false" value="false"/>
+        </visual>
+      </attribute>
+    </record>
+  </section>
+  <section name="Properties" extendable="true" columns="1" columnSpan="1" layout="grid">
+    <record name="Property" match="Property BootIndication=.*" label="Boot indication" minCount="0" maxCount="1">
+      <attribute name="BootIndication">
+        <visual label="Boot indication" type="COMBO">
+          <option label="Programming" value="programming"/>
+          <option label="Normal" value="normal"/>
+          <option label="ADL" value="adl"/>
+          <option label="ALT" value="alt"/>
+          <option label="Production" value="production"/>
+        </visual>
+      </attribute>
+    </record>
+    <record name="Property" match="Property DebugTraceOnUART=.*" label="Debug trace on UART" minCount="0" maxCount="1">
+      <attribute name="DebugTraceOnUART">
+        <visual label="Debug trace on UART" type="CHECK_BUTTON">
+          <option label="true" value="yes"/>
+          <option label="false" value="no"/>
+        </visual>
+      </attribute>
+    </record>
+    <record name="Property" match="Property XLoaderDebugTraceOnUART=.*" label="XLoader debug trace on UART" minCount="0" maxCount="1">
+      <attribute name="XLoaderDebugTraceOnUART">
+        <visual label="XLoader debug trace on UART" type="CHECK_BUTTON">
+          <option label="true" value="yes"/>
+          <option label="false" value="no"/>
+        </visual>
+      </attribute>
+    </record>
+    <record name="Property" match="Property WithDMAOnUSB=.*" label="DMA on USB" minCount="0" maxCount="1">
+      <attribute name="WithDMAOnUSB">
+        <visual label="With DMA on USB" type="CHECK_BUTTON">
+          <option label="true" value="yes"/>
+          <option label="false" value="no"/>
+        </visual>
+      </attribute>
+    </record>
+    <!--
+    // Property UsesLoaderCommunication="Yes" applicable only if BootIndication != normal
+     -->
+    <record name="Property" match="Property UsesLoaderCommunication=.*" label="Uses loader communication" minCount="0" maxCount="1">
+      <attribute name="UsesLoaderCommunication">
+        <visual label="Uses loader communication" type="CHECK_BUTTON">
+          <option label="true" value="yes"/>
+          <option label="false" value="no"/>
+        </visual>
+      </attribute>
+    </record>
+    <record name="Property" match="Property GDFSAreaPath=.*" label="GDFS area path" minCount="1" maxCount="1">
+      <attribute name="GDFSAreaPath">
+        <visual label="GDFS area path" type="TEXT_FIELD" regexpValidator="(/[-a-zA-Z0-9_]+)+/{0,1}" />
+      </attribute>
+    </record>
+    <record name="Property" match="Property TrimAreaPath=.*" label="Trim area path" minCount="1" maxCount="1">
+      <attribute name="TrimAreaPath">
+        <visual label="Trim area path" type="TEXT_FIELD" regexpValidator="(/[-a-zA-Z0-9_]+)+/{0,1}" />
+      </attribute>
+    </record>
+  </section>
+</profile>

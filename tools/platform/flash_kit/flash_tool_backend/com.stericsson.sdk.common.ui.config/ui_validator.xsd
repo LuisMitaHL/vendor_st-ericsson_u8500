@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified">
+
+	<xs:simpleType name="VisualType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="TEXT_FIELD"></xs:enumeration>
+			<xs:enumeration value="COMBO"></xs:enumeration>
+			<xs:enumeration value="TEXT_FIELD_NO_EDIT"></xs:enumeration>
+			<xs:enumeration value="PATH"></xs:enumeration>
+			<xs:enumeration value="CHECK_BUTTON"></xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="profile">
+
+		<xs:complexType>
+			<xs:sequence maxOccurs="unbounded" minOccurs="1">
+				<xs:element name="section">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="record" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence maxOccurs="unbounded" minOccurs="1">
+										<xs:element name="attribute">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="visual">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="option" minOccurs="0" maxOccurs="unbounded">
+																</xs:element>
+															</xs:sequence>
+															<xs:attribute name="label" type="xs:string">
+															</xs:attribute>
+															<xs:attribute name="regexpValidator" type="xs:string">
+															</xs:attribute>
+															<xs:attribute name="type" type="VisualType">
+															</xs:attribute>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="name" type="xs:string">
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="name" type="xs:string">
+									</xs:attribute>
+									<xs:attribute name="match" type="xs:string">
+									</xs:attribute>
+									<xs:attribute name="label" type="xs:string" use="optional">
+									</xs:attribute>
+									<xs:attribute name="minCount" type="xs:integer">
+									</xs:attribute>
+									<xs:attribute name="maxCount" type="xs:integer">
+									</xs:attribute>
+									<xs:attribute name="showGroup" type="xs:boolean">
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="name" type="xs:string" use="required">
+						</xs:attribute>
+						<xs:attribute name="extendable" type="xs:boolean" use="optional" default="false">
+						</xs:attribute>
+						<xs:attribute name="columns" type="xs:integer" use="optional" default="1">
+						</xs:attribute>
+						<xs:attribute name="columnSpan" type="xs:integer" use="optional" default="1">
+						</xs:attribute>
+						<xs:attribute name="layout" type="xs:string" use="optional" default="grid">
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="layout" type="xs:string" />
+		</xs:complexType>
+
+
+	</xs:element>
+
+
+
+
+</xs:schema>

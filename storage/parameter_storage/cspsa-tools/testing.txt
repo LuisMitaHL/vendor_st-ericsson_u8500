@@ -1,0 +1,26 @@
+How to test the utilities
+=========================
+
+nwm2cspsa
+---------
+
+On target:
+
+1) Create input files
+# mkdir -p /tmp/modemfs/RFHAL
+# for i in `seq -w 0 20`; do
+#   echo "file $i" > /tmp/modemfs/RFHAL/${i}010101
+# done
+# mkdir -p /tmp/modemfs/CONF/MCE
+# echo -e '\0' | dd bs=1 count=1 > /tmp/modemfs/CONF/MCE/MCE.CFG
+
+2) Write the files to CSPSA
+# nwm2cspsa -d -c CSPSA0 /tmp /modemfs
+
+3) Read the files back to /tmp/2
+# mkdir /tmp/2
+# cspsa2nwm -r /tmp/2 -f -d -u 0xfffffffd:0 -g guardfile  CSPSA0
+
+4) Make sure they don't differ
+# diff -Nur /tmp/modemfs /tmp/2/modemfs
+

@@ -1,0 +1,211 @@
+#get_modem_mode
+SendCommand "get_modem_mode"
+CheckReply "MODEM_NORMAL"
+if [ $Ret -eq $TRUE ]; then
+  Print "MODEM in NORMAL MODE"
+  echo "GetModem_Mode PASSED" | tee -a $LOGFILE; export LOGFILE
+else
+  echo "GetModem_Mode FAILED" | tee -a $LOGFILE; export LOGFILE
+  Terminate
+  exit
+fi
+
+
+#get_rf_state
+SendCommand "get_rf_state"
+CheckReply "RF_OFF"
+if [ $Ret -eq $TRUE ]; then
+  Print "RF is off"
+else
+  Terminate
+  exit
+fi
+
+# Enable RF
+SendCommand "enable_rf"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "enable_rf"
+  CheckReply "SUCCESS"
+  if [ $Ret -eq $FALSE ]; then
+    echo "Enable_RF FAILED" | tee -a $LOGFILE; export LOGFILE
+    Print "Check manually that RF can be enabled using modem_ape.exe"
+    Terminate
+    exit
+  else
+    echo "Enable_RF PASSED" | tee -a $LOGFILE; export LOGFILE
+  fi
+fi
+
+# set_prefered_rat
+SendCommand "set_prefered_rat --rat gsm"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "set_prefered_rat"
+  CheckReply "SUCCESS"
+  if [ $Ret -eq $FALSE ]; then
+    Print "Check manually that set_prefered_rat can be performed using modem_ape.exe"
+    Terminate
+    exit
+  fi
+fi
+
+# get_prefered_rat
+SendCommand "get_prefered_rat"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "get_prefered_rat"
+  CheckReply "PREFERED_GSM"
+  if [ $Ret -eq $TRUE ]; then
+    Print "prefered rat GSM"
+    echo "rat_GSM PASSED" | tee -a $LOGFILE; export LOGFILE
+  else
+    echo "rat_GSM FAILED" | tee -a $LOGFILE; export LOGFILE
+    Print "bad prefered_rat"
+    Terminate
+    exit
+  fi
+fi
+
+# get_sim_state
+SendCommand "get_sim_state"
+CheckReply "REJECTED"
+if [ $Ret -eq $TRUE ]; then
+  Print "Check manually that get_sim_state can be performed using modem_ape.exe"
+  Terminate
+  exit
+fi
+WaitCbComplete "get_sim_state"
+
+# wait to be attached
+WaitEvent "NET_REG_STATUS_HOME" 1200
+if [ $Ret -eq $FALSE ]; then
+  echo "Register FAILED" | tee -a $LOGFILE; export LOGFILE
+  Print "cell phone not attached"
+  Terminate
+  exit
+else
+	 echo "Register PASSED" | tee -a $LOGFILE; export LOGFILE
+fi
+
+# dialup_cs
+SendCommand "dialup_cs --number $NUM"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "dialup_cs" 40
+  CheckReply "CSCALL_ACTIVE"
+  if [ $Ret -eq $FALSE ]; then
+    echo "CS2G FAILED" | tee -a $LOGFILE; export LOGFILE
+    Print "Check manually that dialup_cs can be performed using modem_ape.exe"
+    Terminate
+    exit
+  else
+    echo "CS2G PASSED" | tee -a $LOGFILE; export LOGFILE
+  fi
+fi
+
+# call is active
+Print "CS call active"
+
+# wait 3 second to be attached
+sleep 3
+
+# release_cs
+SendCommand "release_cs"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "release_cs"
+  CheckReply "SUCCESS"
+  if [ $Ret -eq $FALSE ]; then
+  echo "ReleaseCS2G FAILED" | tee -a $LOGFILE; export LOGFILE
+    Print "Check manually that release_cs can be performed using modem_ape.exe"
+    Terminate
+    exit
+  else
+  echo "ReleaseCS2G PASSED" | tee -a $LOGFILE; export LOGFILE
+  fi
+fi
+
+# call is active
+Print "CS call idle"
+
+# set_prefered_rat
+SendCommand "set_prefered_rat --rat wcdma"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "set_prefered_rat"
+  CheckReply "SUCCESS"
+  if [ $Ret -eq $FALSE ]; then
+    Print "Check manually that set_prefered_rat can be performed using modem_ape.exe"
+    Terminate
+    exit
+  fi
+fi
+
+# get_prefered_rat
+SendCommand "get_prefered_rat"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "get_prefered_rat"
+  CheckReply "PREFERED_WCDMA"
+  if [ $Ret -eq $TRUE ]; then
+    Print "prefered rat WCDMA"
+    echo "rat_WCDMA PASSED" | tee -a $LOGFILE; export LOGFILE
+  else
+    echo "rat_WCDMA FAILED" | tee -a $LOGFILE; export LOGFILE
+    Print "bad prefered_rat"
+    Terminate
+    exit
+  fi
+fi
+
+# wait to be attached
+WaitEvent "NET_REG_STATUS_HOME" 1200
+if [ $Ret -eq $FALSE ]; then
+  Print "cell phone not attached"
+  Terminate
+  exit
+fi
+
+# dialup_cs
+SendCommand "dialup_cs --number $NUM"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "dialup_cs" 40
+  CheckReply "CSCALL_ACTIVE"
+  if [ $Ret -eq $FALSE ]; then
+    echo "CS3G FAILED" | tee -a $LOGFILE; export LOGFILE
+    Print "Check manually that dialup_cs can be performed using modem_ape.exe"
+    Terminate
+    exit
+  else
+    echo "CS3G PASSED" | tee -a $LOGFILE; export LOGFILE
+  fi
+fi
+
+# call is active
+Print "CS call active"
+
+# release_cs
+SendCommand "release_cs"
+CheckReply "ACCEPTED"
+if [ $Ret -eq $TRUE ]; then
+  WaitCbComplete "release_cs"
+  CheckReply "SUCCESS"
+  if [ $Ret -eq $FALSE ]; then
+    echo "ReleaseCS3G PASSED" | tee -a $LOGFILE; export LOGFILE
+    Print "Check manually that release_cs can be performed using modem_ape.exe"
+    Terminate
+    exit
+  else
+    echo "ReleaseCS3G PASSED" | tee -a $LOGFILE; export LOGFILE
+  fi
+fi
+
+# call is active
+Print "CS call idle"
+
+# SAFE QUIT (do not remove)
+Terminate
+exit
+

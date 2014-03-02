@@ -1,0 +1,22 @@
+composite h264dec.arm_nmf.h264dec
+{
+
+#include "../h264dec/h264dec_common.inc"
+
+#ifdef __ndk5500_a0__
+
+contains  hva_drv.arm_nmf.hva_drv   as cHva
+binds decoder.iStartCodec to cHva.iStartCodec   asynchronous fifo=4    
+binds cHva.iEndCodec to decoder.iEndCodec       asynchronous fifo=4 
+
+#else
+
+requires h264dec.mpc.ddep.api.start_codec                as iStartCodec
+provides h264dec.mpc.ddep.api.end_codec                    as iEndCodec
+
+binds decoder.iStartCodec to this.iStartCodec
+binds this.iEndCodec to decoder.iEndCodec
+
+#endif
+}
+

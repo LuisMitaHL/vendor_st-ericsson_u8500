@@ -1,0 +1,24 @@
+# -*- Mode: Makefile -*-
+include $(MM_MAKEFILES_DIR)/SharedConfig.mk
+
+INSTALL_HEADER=$(wildcard include/*)
+
+INSTALL_HEADER+= mpc/libresamplingapi/resample_api.h \
+		    mpc/libvolctrlapi/volctrl_api.h \
+                    mpc/libmalloc/include/dsp_mem_map.h \
+                    mpc/include/audiolibs_trace.h
+
+
+INSTALL_HEADER_PREFIX_DIR:=libeffects/
+
+#WARNING todo target is MANDATORY (exe and/or lib)
+todo: header
+
+include $(MM_MAKEFILES_DIR)/SharedRules.mk
+
+#-------------------------------
+# local Rules
+#-------------------------------
+
+test cleantest:
+	@echo No Test...

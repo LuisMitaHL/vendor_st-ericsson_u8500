@@ -1,0 +1,25 @@
+#ifndef common_frameinfo_idt
+#define common_frameinfo_idt
+
+typedef struct
+{
+    t_uint32 eProfile; // OMX_VIDEO_AVCPROFILETYPE,...
+    t_uint32 eLevel; // OMX_VIDEO_AVCLEVELTYPE,...
+    t_uint16 pic_width;
+    t_uint16 pic_height;
+	t_uint16 dpb_size;
+	t_uint16 frame_cropping_flag;
+	t_uint16 frame_crop_right;	
+	t_uint16 frame_crop_left;
+	t_uint16 frame_crop_top;
+	t_uint16 frame_crop_bottom;
+	t_uint16 nPixelAspectRatioWidth;
+	t_uint16 nPixelAspectRatioHeight;
+    t_uint32 nTimeStampH;       // High part of the ticks as seen in the input buffer (cf. omx specification)
+    t_uint32 nTimeStampL;       // Low  part of theticks as seen in the input buffer (cf. omx specification)
+    t_uint16 nColorPrimary;     // OMX_COLORPRIMARYTYPE
+    t_uint32 nSupportedExtension;   // mask of the extension that are supported. cf VFM_SUPPORTEDEXTENSION_...
+} t_common_frameinfo;
+
+#endif
+

@@ -1,0 +1,73 @@
+
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+MODULE_NAME:=jpegdec
+CORE=arm
+COMPONENT_PATH = $(MMROOT)/video/components
+
+SRCPATH += $(MMROOT)/shared/ens
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENTS+= jpegdec.arm_nmf.jpegdec_sw
+
+CONFFILES =     $(MODULE_NAME)/arm_nmf/parser_arm/parser_arm.conf               \
+                $(MODULE_NAME)/arm_nmf/algo/algo.conf                    \
+		$(MODULE_NAME)/arm_nmf/jpegdec_sw/jpegdec_sw.conf         
+
+# OST capability
+include ../make.ost_conf
+OST_SRC_DIR = parser_arm/src
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_ARM_2)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_ARM
+CPPFLAGS  += -I$(MMROOT)/video/components/jpegdec/inc/autogentraces
+                		
+CPPPATH += -I$(MMROOT)/shared/ens/components/common
+                
+CPPPATH += -I$(MMROOT)/shared/ens/components/common
+                
+ITFLIST += $(MODULE_NAME)/arm_nmf/portSettings.idl
+#ITFLIST += $(MODULE_NAME)/arm_nmf/api/setParam.idl	
+
+PREBUILD_COMPONENTS = conf-check $(CONFFILES)	
+
+#DUMMY:=$(shell echo $(SRCPATH) > org.c)
+#to be removed...taking incorrect path of constructor.idl(from mpcee not form smpee)
+#DUMMY:=$(shell echo $(SRCPATH) > after.c)
+SRCPATH += $(NMF)/$(MMSYSTEM)/api
+SRCPATH += $(MM_IDT_DIR)
+SRCPATH += $(MMROOT)/shared/ens/nmf/common
+SRCPATH += $(MMROOT)/shared/ens/nmf
+SRCPATH += $(MMROOT)/shared/ens/nmf/mpc/common
+SRCPATH += $(MMROOT)/shared/ens/nmf/mpc
+SRCPATH += $(MMROOT)/shared/ens/nmf/host
+SRCPATH += $(MMROOT)/shared/ens/nmf/host/common
+#SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)/mpc/share
+SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)
+#SRCPATH +=$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share/$(SVA_SUBSYSTEM)
+
+
+SRCPATH+= \
+        $(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser_arm/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/share    
+        
+CPPFLAGS +=  -D__JPEGDEC_ARM_NMF -D__JPEGDEC_SOFTWARE
+
+CPPFLAGS+= -DMMHWBUFFER
+
+CPPFLAGS+= \
+	-I$(MMROOT)/shared/nmf/tools/api/smpee\
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser_arm/inc\
+        -I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/algo/inc \
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/api \
+	-I$(SHARED_REPOSITORY) \
+	-I$(MMROOT)/shared/ens/proxy/omxil \
+	-I$(MMROOT)/shared/ens/proxy/include \
+       
+CPPFLAGS += -DRELEASE -D__RELEASE
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+
+    

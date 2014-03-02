@@ -1,0 +1,95 @@
+;------------------------------------------------------------
+; load_dual.cmm
+;------------------------------------------------------------
+; Startup file to select and setup target
+;
+; 061109 - KM Initial version
+; 070119 - KM Added support for Kajsa and Camilla
+; 070122 - KM improved intercom
+; 070405 - PH Adaption to fit new startup.cmm
+; 071017 - KM Added support for loaders.
+; 071220 - DE Copy + change to new layout (Miranda)
+; 080228 - DE Added started cpu check
+; 100917 - KM Adapted to U5500
+;-----------------------------------------------------------
+; This file set up all cores
+;-----------------------------------------------------------
+
+local &masterCpu
+local &masterIc
+
+;Load master is "current" core, e.g. core where load is pressed
+&masterCpu="&targetCpu"
+;Load master is APP
+;&masterCpu="APP"
+
+gosub getIcPort &masterCpu
+entry &masterIc
+
+;Check if we are running in load master, if not do a intercom call
+if "&masterCpu"!="&targetCpu"
+(
+	intercom.execute &masterIc do load_dual.cmm
+	enddo
+)
+
+;What cores are we debugging?
+if INTERCOM.PING(&icAcc)
+	&AccStarted="True"	
+if INTERCOM.PING(&icApp)
+	&AppStarted="True"
+if INTERCOM.PING(&icCeva)
+	&CevaStarted="True"
+
+
+
+
+
+;Load master first
+gosub loadOne &masterCpu
+
+
+enddo
+
+
+
+loadOne:
+	ENTRY &Cpu
+	if ("&AccStarted"=="True")
+		intercom.executenowait &icAcc print "Waiting for &Cpu to load software"
+	if ("&AppStarted"=="True")
+		intercom.executenowait &icApp print "Waiting for &Cpu to load software"
+	if ("&CevaStarted"=="True")
+		intercom.executenowait &icCeva print "Waiting for &Cpu to load software"
+
+	gosub getIcPort &Cpu
+	entry &icPort
+	intercom.executenowait &icPort print "Load software"
+	intercom.execute &icPort do load_target
+
+	return
+
+waitUntilLoaded:
+	entry &cpu
+
+	;Wait until load is complete, don't wait if load cpu is running this script
+	if ("&masterCpu"!="&cpu")
+	(
+		gosub getIcPort &cpu
+		entry &icCpu
+		intercom.wait &icCpu
+	)
+	return
+
+getIcPort:
+	ENTRY &Cpu
+
+	if "&Cpu"=="acc"
+		&result="&icAcc"
+	else if "&Cpu"=="app"
+		&result="&icApp"
+	else if "&Cpu"=="ceva"
+		&result="&icCeva"
+	else print %error "Unknown CPU &Cpu in "+os.ppd()+" getIcPort()"
+
+	return &result

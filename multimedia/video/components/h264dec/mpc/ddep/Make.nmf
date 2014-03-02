@@ -1,0 +1,59 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+COMPONENT_TOP_DIR=../..
+
+ITF_PREFIX := video_h264dec_ddep
+
+COMPONENTS+= h264dec.mpc.ddep
+
+CONFFILES = h264dec/mpc/ddep/ddep.conf
+
+IDLLIST += 	h264dec/mpc/api/algo.idl				\
+			h264dec/mpc/api/end_algo.idl			\
+			h264dec/mpc/ddep/api/start_codec.idl	\
+			h264dec/mpc/ddep/api/end_codec.idl   \
+			h264dec/mpc/api/trace_init.idl
+
+IDTLIST +=	h264dec/mpc/share/$(SVA_SUBSYSTEM)/t1xhv_vdc_h264.idt	\
+			../idt/$(MMDSPCORE)/t1xhv_common.idt				\
+			../idt/$(MMDSPCORE)/t1xhv_retarget.idt				\
+			../idt/$(MMDSPCORE)/t1xhv_vdc.idt
+
+
+SRCPATH+= \
+	$(MM_IDT_DIR)							\
+	$(MMROOT)/video/idt												\
+	$(MMROOT)/video/vfm/common										\
+	$(MMROOT)/video/components/h264dec/mpc/algo/inc	\
+	$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/common/inc	\
+	$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc	\
+	$(MMROOT)/video/components/h264dec/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/h264dec/mpc/share \
+
+
+# OST trace capability
+include ../../make.ost_conf
+OST_SRC_DIR = src 
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_DSP)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_dsp
+CPPFLAGS  += -I$(MMROOT)/video/components/h264dec/inc/autogentraces
+
+# host FSM != mpc fsm  (ORDER: mpc first!!!)
+CPPFLAGS  += -I$(MM_NMF_COMP_SRC_MMDSP_DIR)/fsm/generic/include
+CPPFLAGS  += -I$(MM_NMF_REPO_DIR)/$(MMDSPCORE)
+
+USER2MPCITFS_CPP += h264dec.mpc.ddep.api.start_codec
+MPC2USERITFS_CPP += h264dec.mpc.ddep.api.end_codec
+ASYNCITFS_CPP    += h264dec.mpc.ddep.api.log_event
+
+USER2MPCITFS_CPP += h264dec.mpc.api.trace_init
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+include $(MMROOT)/video/makefiles/Make.doc
+

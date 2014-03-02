@@ -1,0 +1,85 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/rxtestpattern_stream_lr.ite
+
+##############################################################################################################
+# The Use case will test Rx Test Pattern in LR Pipe in Sensor Streaming Mode (Run Time).
+# Pre Requisite : Set Use case for LR Pipe with Resoultion and Format.
+# 
+#  1. Prepare and Start LR pipe
+#  2. Once LR Pipe is sync with frames, write data into sdcard for verification.
+#  3. Stop LR and then Free LR.		
+#  
+##############################################################################################################
+# This Use case can configure Following Rx Test Patterns
+# 1. Color Bar
+# 2. Fade 2 Color Bar
+# 3. Horizontal, Veritical and Diagnoal Grey Scale Modes
+# 4. PN9
+# 5. Solid Color with Different R,G1,G2,B Combinations
+# 6. Cursor Position Configuration.
+##############################################################################################################
+
+usagemode vf
+LR prepare
+LR start
+
+wait 2
+SetCursorPosition 0 0 0 0
+SetRXTestPattern COLORBAR
+wait 2
+
+writebmp LR LR_RX_S_COLORBAR 0
+
+wait 2
+SetRXTestPattern NORMAL_MODE
+wait 2
+
+writebmp LR LR_RX_S_NORMAL_MODE 0
+
+wait 2
+SetRXTestPattern FADETOGREY_COLORBAR
+wait 2
+
+writebmp LR LR_RX_S_FADETOGREY_COLORBAR 0
+
+wait 2
+SetRXTestPattern DIAGONAL_GREY_SCALE
+wait 2
+
+writebmp LR LR_RX_S_DIAGONAL_GREY_SCALE 0
+
+wait 2
+SetRXTestPattern PN9
+wait 2
+
+writebmp LR LR_RX_S_PN9 0
+
+
+wait 2
+SetRXTestPattern HORIZ_GREY_SCALE
+wait 2
+
+writebmp LR LR_RX_S_HORIZ_GREY_SCALE 0
+
+
+wait 2
+SetRXTestPattern VERT_GREY_SCALE
+wait 2
+
+writebmp LR LR_RX_S_VERT_GREY_SCALE 0
+
+wait 2
+SetRXTestPattern NORMAL_MODE
+SetCursorPosition 50 100 50 150
+wait 2
+
+writebmp LR LR_RX_S_NORMAL_MODE_CURSOR 0
+
+wait 2
+SetCursorPosition 0 0 0 0
+SetRXTestPattern SOLIDBAR 4095 4095 0 4095
+wait 2
+
+writebmp LR LR_RX_S_SOLIDBAR_YELLOW 0
+
+LR stop
+LR free

@@ -1,0 +1,46 @@
+;------------------------------------------------------------
+; load_code.cmm
+;------------------------------------------------------------
+; Startup file to load code to bigboard
+;
+;------------------------------------------------------------
+
+if !("&ElfFile"=="")
+(
+
+
+	if simulator()
+		data.load "&ElfFile" /plusvm &LOptionStrip /noclear
+	else
+	(
+		data.load.coff "&ElfFile" &LOption &LOptionVM &LOptionStrip
+	)
+
+	print "Coff File Loaded"
+)
+
+
+
+
+if !("&SrcPath"=="")
+(
+	if "&RSrcPath"=="TRUE"
+		y.spath.setrecursedir "&SrcPath"
+	else
+		y.spath.setdir "&SrcPath"
+	print "Source Path Set"
+)
+
+
+
+
+ENDDO
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,50 @@
+#include <t1xhv_vec_h264.idt>
+#include <t1xhv_common.idt>
+
+/** @addtogroup vecH264SetDebugAlgoGroup setDebug
+ *  @ingroup vecH264ProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecH264ConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Example of normal usage of debug mode. In this particular case, the "VEC_H264" NMF Algo component will copy 
+ * the content of the input bitstream buffer into the ouput image buffer (see \ref vecH264ConfigureAlgoGroup for details).
+ * As soon as the copy will be finished, the interface signaling the end of algo will be called.
+ * 
+ * 
+ * \msc
+    H264_encoder_data_dep,H264_encoder_algo;
+    H264_encoder_data_dep=>H264_encoder_algo [label="setDebug(DBG_MODE_PATTERN, 0x00, 0x00)"];
+    H264_encoder_data_dep<<H264_encoder_algo;
+    H264_encoder_data_dep=>H264_encoder_algo [label="configureAlgo(VEC_H264, ...)"];
+    H264_encoder_data_dep<<H264_encoder_algo;
+    H264_encoder_data_dep=>H264_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    H264_encoder_data_dep<=H264_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE"];
+    H264_encoder_data_dep,H264_encoder_algo;
+    H264_encoder_data_dep=>H264_encoder_algo [label="setDebug(DBG_MODE_NORMAL, 0x00, 0x00)"];
+  \endmsc
+  \n
+ * Another exemple of normal usage of debug mode. In this case, the NMF algo component will only
+ * acknowledge the CMD_START command by calling the endAlgo interface.
+ *  
+ * \msc
+    H264_encoder_data_dep,H264_encoder_algo;
+    H264_encoder_data_dep=>H264_encoder_algo [label="setDebug(DBG_MODE_NO_HW, 0x00, 0x00)"];
+    H264_encoder_data_dep<=H264_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE"];
+  \endmsc
+  \n
+ * @} */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint16 param1, t_uint16 param2);
+
+ /** @} */ // end of vecH264SetDebugAlgoGroup

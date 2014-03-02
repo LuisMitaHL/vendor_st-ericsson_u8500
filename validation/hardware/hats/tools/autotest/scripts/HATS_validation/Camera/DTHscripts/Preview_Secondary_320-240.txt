@@ -1,0 +1,99 @@
+#DTH script
+#Author: Guillaume Camus
+
+
+#-> Secondary Sensor
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+BEGIN Initialize_secondary_camera
+
+WRITE /VIDEO/Camera/Staticconf/Init/In_SensorID 1
+WRITE /VIDEO/Camera/Staticconf/Init 0
+EXEC /VIDEO/Camera/Staticconf/Init EXEC /DTH/VIDEO/Camera/Staticconf/Init
+READ /VIDEO/Camera/Staticconf/Init/In_SensorID  1
+
+END Initialize_secondary_camera
+#-------------------------------------------------------------------------------------------------------------
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+BEGIN Set_preview_properties
+
+WRITE /VIDEO/Camera/Staticconf/Set_Video/Resolution 3
+WRITE /VIDEO/Camera/Staticconf/Set_Video/In_VideoWidth 320
+WRITE /VIDEO/Camera/Staticconf/Set_Video/In_VideoHeight 240
+WRITE /VIDEO/Camera/Staticconf/Set_Video/In_VideoFrameRate 22
+WRITE /VIDEO/Camera/Staticconf/Set_Video 0
+EXEC /VIDEO/Camera/Staticconf/Set_Video EXEC /DTH/VIDEO/Camera/Staticconf/Set_Video
+READ /VIDEO/Camera/Staticconf/Set_Video/Resolution  3
+READ /VIDEO/Camera/Staticconf/Set_Video/In_VideoWidth  320
+READ /VIDEO/Camera/Staticconf/Set_Video/In_VideoHeight  240
+READ /VIDEO/Camera/Staticconf/Set_Video/In_VideoFrameRate  22
+WAIT 2
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayID 0
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/Resolution 4
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_PreviewWidth 320
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_PreviewHeight 240
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_PreviewFrameRate 22
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_ScanMode 0
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayWidth 320
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayHeight 240
+WRITE /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayFrameRate 22
+WRITE /VIDEO/Camera/Staticconf/Set_Preview 0
+EXEC /VIDEO/Camera/Staticconf/Set_Preview EXEC /DTH/VIDEO/Camera/Staticconf/Set_Preview
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayID  0
+READ /VIDEO/Camera/Staticconf/Set_Preview/Resolution  4
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_PreviewWidth  320
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_PreviewHeight  240
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_PreviewFrameRate  22
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_ScanMode  0
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayWidth  320
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayHeight  240
+READ /VIDEO/Camera/Staticconf/Set_Preview/In_DisplayFrameRate  22
+
+END Set_preview_properties
+#-------------------------------------------------------------------------------------------------------------
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+BEGIN Set_picture_properties
+
+WRITE /VIDEO/Camera/Staticconf/Set_Picture/In_PictureFormat 0
+WRITE /VIDEO/Camera/Staticconf/Set_Picture/Resolution 3
+WRITE /VIDEO/Camera/Staticconf/Set_Picture/In_PictureWidth 320
+WRITE /VIDEO/Camera/Staticconf/Set_Picture/In_PictureHeight 240
+WRITE /VIDEO/Camera/Staticconf/Set_Picture/In_PictureFrameRate 22
+WRITE /VIDEO/Camera/Staticconf/Set_Picture/In_PicturePath /mnt/UserFS2/
+WRITE /VIDEO/Camera/Staticconf/Set_Picture 0
+EXEC /VIDEO/Camera/Staticconf/Set_Picture EXEC /DTH/VIDEO/Camera/Staticconf/Set_Picture
+READ /VIDEO/Camera/Staticconf/Set_Picture/In_PictureFormat  0
+READ /VIDEO/Camera/Staticconf/Set_Picture/Resolution  3
+READ /VIDEO/Camera/Staticconf/Set_Picture/In_PictureWidth  320
+READ /VIDEO/Camera/Staticconf/Set_Picture/In_PictureHeight  240
+READ /VIDEO/Camera/Staticconf/Set_Picture/In_PictureFrameRate  22
+
+END Set_picture_properties
+#-------------------------------------------------------------------------------------------------------------
+
+
+
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot/shotmode 0
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot/burstmode 0
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot/nFrameLimited 2
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot 0
+EXEC /DTH/VIDEO/Camera/Staticconf/Shot EXEC /DTH/VIDEO/Camera/Staticconf/Shot
+READ /DTH/VIDEO/Camera/Staticconf/Shot/CurrentState  1
+READ /DTH/VIDEO/Camera/Staticconf/Shot/shotmode  0
+READ /DTH/VIDEO/Camera/Staticconf/Shot/burstmode  0
+READ /DTH/VIDEO/Camera/Staticconf/Shot/nFrameLimited  2
+WAIT 5
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot/shotmode 0
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot/burstmode 0
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot/nFrameLimited 2
+WRITE /DTH/VIDEO/Camera/Staticconf/Shot 5
+EXEC /DTH/VIDEO/Camera/Staticconf/Shot EXEC /DTH/VIDEO/Camera/Staticconf/Shot
+READ /DTH/VIDEO/Camera/Staticconf/Shot/CurrentState  2
+READ /DTH/VIDEO/Camera/Staticconf/Shot/shotmode  0
+READ /DTH/VIDEO/Camera/Staticconf/Shot/burstmode  0
+READ /DTH/VIDEO/Camera/Staticconf/Shot/nFrameLimited  2
+

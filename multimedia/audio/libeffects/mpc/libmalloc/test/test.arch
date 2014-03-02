@@ -1,0 +1,19 @@
+contains libeffects.mpc.libmalloc.test.main     as main
+contains rtos.synchronous.nofpu                 as rtos
+contains sleep.null                             as sleep
+contains rtos.trace.null                        as null
+contains libeffects.mpc.libmalloc               as libmalloc
+contains osttrace.mmdsp                         as osttrace
+
+binds rtos.ulp                      to sleep.ulp
+binds sleep.scheduler               to rtos.sched
+
+binds main.panic to rtos.panic
+
+binds main.malloc to libmalloc.libmalloc
+binds libmalloc.debug to rtos.debug
+
+binds libmalloc.osttrace            to osttrace.osttrace
+
+option CPPFLAGS "-DEXTMEM_ALLOC -DMMDSP_ARCHI -DY_ALLOC -DESRAM_ALLOC -D__ext_mem__ -D__esram__ -D_NMF_MPC_ -D_SIMU_"
+

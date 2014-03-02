@@ -1,0 +1,13 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/bin:/system/usr/bin
+MODE_M=`/usr/bin/modem_config -l`
+F_CNF=/etc/Flashless_mid.conf.$MODE_M
+F_TMP=/etc/test.conf
+echo "normal2itp"
+sed -e 's/runtime_mode[ ]*=[ ]*"engineering"/runtime_mode = "itp"/' $F_CNF > $F_TMP
+rm $F_CNF
+mv $F_TMP $F_CNF
+sync
+echo "you poweroff and reboot your board to restart on ITP modem mode ."
+exit
+

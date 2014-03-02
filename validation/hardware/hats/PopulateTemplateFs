@@ -1,0 +1,115 @@
+#!/bin/bash
+
+function myCp()
+{
+	cp --remove-destination -d $* || exit 1
+}
+
+function cpStripLib()
+{
+	myCp $* $SYSTEMFS_INSTALL_DIR_LIB
+
+    if [ $STRIP_LIB = "1" ]; then
+		for ALL_LIB_NAME in $*
+		do
+		 LIB_NAME=$(basename $ALL_LIB_NAME)
+		 $STRIP_BIN $SYSTEMFS_INSTALL_DIR_LIB/$LIB_NAME
+		done
+	fi
+}
+
+function getConfigValue()
+{
+	line=`grep $1 $HATS_CONFIG`
+	echo $line | sed 's/.*=//'
+}
+
+if [ $# -ne 6 ]
+    then
+    echo "Usage: $0 <HOST_BASH_SHELL> <SYSTEMFS_INSTALL_DIR> <TOOLCHAIN_TARGET_DIR> <LOG_PATH> <HATS_CONFIG> <PRODUCT>"
+    echo Populates the template target file system tree
+    echo 1st arg: HOST_BASH_SHELL
+    echo 2nd arg: SYSTEMFS_INSTALL_DIR
+    echo 3rd arg: TOOLCHAIN_TARGET_DIR
+    echo 4th arg: LOG_PATH
+    echo 5th arg: HATS_CONFIG
+    echo 6th arg: PRODUCT
+    exit 1
+else
+    HOST_BASH_SHELL=$1
+    SYSTEMFS_INSTALL_DIR=$2
+    TOOLCHAIN_TARGET_DIR=$3
+    LOG_PATH=$4
+    HATS_CONFIG=$5
+    PRODUCT=$6
+
+    SYSTEMFS_INSTALL_DIR_LIB=$SYSTEMFS_INSTALL_DIR/lib/
+    STRIP_BIN=$TOOLCHAIN_TARGET_DIR/../bin/strip
+
+    # create initial root file system
+    mkdir -p $SYSTEMFS_INSTALL_DIR
+
+    ################################################
+    #Preparation of the Filesystem
+    ################################################
+    #Copy regular files and directories from filesystem/ to $SYSTEMFS_INSTALL_DIR/
+    #.iamvoid files are there to manage empty directories in git
+    rsync -r --exclude "- *~" --exclude "- *.ini" --exclude "- .iamvoid" --exclude "- *.template" filesystem/ $SYSTEMFS_INSTALL_DIR/
+
+    #Adding symbolic links
+    ln -sf /bin/busybox $SYSTEMFS_INSTALL_DIR/linuxrc
+    ln -sf /proc/mounts $SYSTEMFS_INSTALL_DIR/etc/mtab
+
+    #Check if C libraries must be copied in filesystem
+    COPY_LIB=$(grep -c HATSCONF_ENABLE_TOOLCHAIN=y $HATS_CONFIG)
+    if [ $COPY_LIB = "1" ]; then
+        #Check if libraries must be stripped
+        STRIP_LIB=$(grep -c HATSCONF_STRIP_TOOLCHAIN=y $HATS_CONFIG)
+
+        #Adding libraries
+        mkdir -p $SYSTEMFS_INSTALL_DIR_LIB
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/ld-*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libc*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libm*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libgcc_s*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libpthread*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libdl*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/librt*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libthread_db*
+        #NSS libs needed by tat/DthFramework/spfs
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libnss_nis*
+        cpStripLib $TOOLCHAIN_TARGET_DIR/lib/libnss_files*
+    fi
+
+    #Adding syslog.conf
+    mkdir -p $SYSTEMFS_INSTALL_DIR/$LOG_PATH/tat
+    if test -z `grep local7.* $SYSTEMFS_INSTALL_DIR/etc/syslog.conf | awk '{print $1}'` ; \
+        then echo "echo 'local7.*	/$LOG_PATH/tat/tat.log' >> $SYSTEMFS_INSTALL_DIR/etc/syslog.conf" | /bin/sh ; \
+        fi;
+
+    #Adding fstab
+    myCp filesystem/etc/fstab.u8500.template $SYSTEMFS_INSTALL_DIR/etc/fstab.u8500
+    myCp filesystem/etc/fstab.u8520.template $SYSTEMFS_INSTALL_DIR/etc/fstab.u8520
+    #need to create a symlink on /etc/fstab. Choose fstab.u8500 as default.
+    #It will be changed during board startup
+    ln -sf /etc/fstab.u8500 $SYSTEMFS_INSTALL_DIR/etc/fstab
+
+    #Adding Mmc4 tools
+    myCp filesystem/etc/init.d/CheckMmc4.$PRODUCT.template $SYSTEMFS_INSTALL_DIR/etc/init.d/CheckMmc4
+    myCp filesystem/usr/bin/FormatMmc4.$PRODUCT.template $SYSTEMFS_INSTALL_DIR/usr/bin/FormatMmc4
+
+    #Adding rcS
+    hatsVersion=`getConfigValue HATSCONF_KERNELVERSION`
+    magicNumber=6A657279
+    sed s/"$magicNumber\(HATSCONF_KERNELVERSION\)$magicNumber"/"$hatsVersion"/ filesystem/etc/init.d/rcS.template > $SYSTEMFS_INSTALL_DIR/etc/init.d/rcS
+    chmod +x $SYSTEMFS_INSTALL_DIR/etc/init.d/rcS
+
+    #Adding product-specific files
+    $HOST_BASH_SHELL PopulateTemplateFs.$PRODUCT $SYSTEMFS_INSTALL_DIR $TOOLCHAIN_TARGET_DIR $LOG_PATH $HATS_CONFIG
+    popReturn=$?
+    if [ $popReturn -ne 0 ]
+	then exit $popReturn
+    fi
+fi
+echo "Done"
+exit 0

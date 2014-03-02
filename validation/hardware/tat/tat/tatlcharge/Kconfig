@@ -1,0 +1,35 @@
+#
+# TatlCharge configuration
+#
+
+menuconfig TATLCHARGE
+	bool "TatlCharge"
+	depends on DTHSRVHELPER && LIBAB && TATTOOLS && TATLTEST && AB_APE
+	help
+	  depends on DTHSRVHELPER, LIBAB, TATTOOLS, TATLTEST and AB_APE
+
+if TATLCHARGE
+
+config TATLCHARGE_DIR
+	string
+	default ../tat/tat/tatlcharge
+
+config TATLCHARGE_DEPS
+	string
+	default "DTHSRVHELPER LIBAB TATTOOLS TATLTEST AB_APE"
+
+config TATLCHARGE_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLCHARGE
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLCHARGE_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLCHARGE
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLCHARGE

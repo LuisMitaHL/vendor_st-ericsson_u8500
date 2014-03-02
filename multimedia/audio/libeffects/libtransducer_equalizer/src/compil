@@ -1,0 +1,32 @@
+rm -f Retarget_CA9.o Init_CA9.o InitCache_CA9.o Benchmark_CA9.o
+rm -f transducer_equalizer_src_CA9_arm_simu.o main_CA9_arm_simu.o test_transducer_equalizer_arm_simu.axf test_transducer_equalizer_arm_simu.map
+rm -f pcm_tables_CA9.c pcm_tables_CA9.h make_pcm_tables
+rm -f transducer_equalizer_src_CA9_arm_board.o main_CA9_arm_board.o pcm_tables_CA9_arm_board.o test_transducer_equalizer_arm_board.axf test_transducer_equalizer_arm_board.map
+rm -f transducer_equalizer_src_CA9_linux.o main_CA9_linux.o test_transducer_equalizer_linux
+
+armcc -g -c --cpu=Cortex-A9 Init_CA9.s -o Init_CA9.o
+armcc -g -c --cpu=Cortex-A9 InitCache_CA9.s -o InitCache_CA9.o
+armcc -g -c --cpu=Cortex-A9 Benchmark_CA9.s -o Benchmark_CA9.o
+armcc -g -c --cpu=Cortex-A9 -Otime -O3 Retarget_CA9.c -o Retarget_CA9.o
+
+gcc -O3 make_pcm_tables.c -o make_pcm_tables
+make_pcm_tables
+rm -f make_pcm_tables
+
+armcc -g -c --cpu=Cortex-A9 -Otime -O3 --vectorize --asm -I../include -I../../../audiolibs/common/include transducer_equalizer_src_CA9.c -o transducer_equalizer_src_CA9_arm_simu.o
+armcc -g -c --cpu=Cortex-A9 -Otime -O3 --fpu=softvfp+vfp -I../include -I../../../audiolibs/common/include main_CA9.c -o main_CA9_arm_simu.o
+armlink --cpu=Cortex-A9 --scatter scatter_CA9.scat --entry 0x2000 --map --symbols --info sizes,totals Init_CA9.o InitCache_CA9.o Retarget_CA9.o Benchmark_CA9.o transducer_equalizer_src_CA9_arm_simu.o main_CA9_arm_simu.o ../../../tools/ARM/perf/target/lib/cortexA9-x-rvct4gnu-x/libtperf.a -o test_transducer_equalizer_arm_simu.axf > test_transducer_equalizer_arm_simu.map
+
+armcc -g -c --cpu=Cortex-A9 -Otime -O3 --vectorize --asm -I../include -I../../../audiolibs/common/include -DBOARD_TEST transducer_equalizer_src_CA9.c -o transducer_equalizer_src_CA9_arm_board.o
+armcc -g -c --cpu=Cortex-A9 -Otime -O3 -DBOARD_TEST pcm_tables_CA9.c -o pcm_tables_CA9_arm_board.o
+armcc -g -c --cpu=Cortex-A9 -Otime -O3 --fpu=softvfp+vfp -I../include -I../../../audiolibs/common/include -DBOARD_TEST main_CA9.c -o main_CA9_arm_board.o
+armlink --cpu=Cortex-A9 --scatter scatter_CA9.scat --entry 0x2000 --map --symbols --info sizes,totals Init_CA9.o InitCache_CA9.o Retarget_CA9.o Benchmark_CA9.o transducer_equalizer_src_CA9_arm_board.o main_CA9_arm_board.o pcm_tables_CA9_arm_board.o ../../../tools/ARM/perf/target/lib/cortexA9-x-rvct4gnu-x/libtperf.a -o test_transducer_equalizer_arm_board.axf > test_transducer_equalizer_arm_board.map
+rm -f pcm_tables_CA9.c pcm_tables_CA9.h
+cp test_transducer_equalizer_arm_board.axf codebox/run.axf
+
+
+gcc -g -c -O3 -I../include -I../../../audiolibs/common/include transducer_equalizer_src_CA9.c -o transducer_equalizer_src_CA9_linux.o
+gcc -g -c -O3 -I../include -I../../../audiolibs/common/include main_CA9.c -o main_CA9_linux.o
+g++ transducer_equalizer_src_CA9_linux.o main_CA9_linux.o -lm -o test_transducer_equalizer_linux
+
+rm -f *.o

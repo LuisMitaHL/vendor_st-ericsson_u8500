@@ -1,0 +1,36 @@
+//
+//       Configuration file for      vpp
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite vpp singleton
+{
+//singleton
+
+// Sub components
+contains vpp.mpc.algo								as  cAlgo
+
+// Provided interfaces
+provides vpp.mpc.api.algo							as iAlgo
+
+// Required interfaces
+requires resource_manager.api.interrupt				as iInterrupt
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo									to cAlgo.iAlgo
+binds cAlgo.iInterrupt								to this.iInterrupt
+
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+option stack = 512
+
+}
+
+

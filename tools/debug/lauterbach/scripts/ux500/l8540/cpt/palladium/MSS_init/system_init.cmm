@@ -1,0 +1,51 @@
+&mpre="a"
+
+; Modem Stuff Here
+; PRCM_MSS_RESETN_SET, release acc_rst_n, acc_core_rst_n, acc_dbg_rst_n, acc_evp_rst_n
+d.s &mpre:0x8006820C %L 0x0F
+
+; PRCM_HOSTACCESS_REQ, Set modem_rq
+d.s &mpre:0x800687B0 %L 0x01
+
+; PRCM_MOD_DDR_REQ, set mod_mem_req_en
+d.s &mpre:0x800688C4 %L 0x01
+
+; PRCM_MOD_DDR_ACK, set ddr_ack
+d.s &mpre:0x800688C8 %L 0x03
+
+; PRCM_MOD_PWR_OK, set pwr_ack
+d.s &mpre:0x8006886C %L 0x01
+
+; PRCM_MODEM_SYSCLKOK, set m_clk_ack(ref_clk_ack)
+d.s &mpre:0x80068794 %L 0x2
+
+; ACC_DEG_EN, SCR, PRCMU 
+d.s &mpre:0x80065128 %L 0x0B00FF0F
+; I set this register as 0xFBFFFFFF before, but it stop accessing DDR 
+;d.s &mpre:0x80065128 %L 0xFBFFFFFF 
+
+; PRCMU_SRAM_LS_SLEEP_VAL
+d.s &mpre:0x80068780 %L 0x0
+print "PRCMU_SRAM_LS_SLEEP_VAL <= 0x0"
+
+print "system init done"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

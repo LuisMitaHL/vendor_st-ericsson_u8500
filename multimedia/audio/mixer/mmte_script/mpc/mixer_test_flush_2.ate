@@ -1,0 +1,257 @@
+test_start Test_for_flush_command_output
+
+
+OMX_GetHandle       mixer OMX.ST.AFM.mixer
+
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+OMX_SetConfig mixer  ENS_IndexConfigTraceSetting nTraceEnable=0xff nParentHandle=0x11
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nBitPerSample=16 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nBitPerSample=16 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/sinus_1k.pcm 0 0 0
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/mix_mpc_flush_2.out
+ate_attach_io       mixer 0 MEM $(OUTPUT_FILE) 2000000 0 0
+
+
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers mixer 0
+MMTE_AllocateAndUseBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+#Start
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+# flush buffers
+OMX_SendCommand mixer OMX_CommandFlush 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandFlush 0
+MMTE_resume_transfer mixer 0 0
+mmte_sleep 100
+
+
+#Wait EOS
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1 TIMEOUT
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+
+#Stop
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand  mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent   mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+mmte_check_CBmessage
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+
+test_end
+

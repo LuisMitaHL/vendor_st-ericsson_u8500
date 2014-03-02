@@ -1,0 +1,23 @@
+# This script sends commands to a Mixer component while playing.
+#
+# Script's arguments:
+#   1: component name
+
+mmte_sleep 2000
+
+#Mute input port 1
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_TRUE
+mmte_sleep 2000
+
+#Unmute input port 1
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_FALSE
+mmte_sleep 2000
+
+#Mute input port 2
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=2 bMute=OMX_TRUE
+mmte_sleep 2000
+
+#Unmute input port 2
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=2 bMute=OMX_FALSE
+mmte_sleep 2000
+

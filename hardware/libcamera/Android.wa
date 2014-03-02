@@ -1,0 +1,39 @@
+##
+# Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+# This code is ST-Ericsson proprietary and confidential.
+# Any use of the code for whatever purpose is subject to
+# specific written permission of ST-Ericsson SA.
+##
+
+# Uncoment below line to do workaround for ER 340074
+# Expsosure initiated event is coming twice, disable
+# event request after first event
+LOCAL_CFLAGS += -DDISABLE_EXPOSURE_INITIATED_EVENT_AFTER_CALLBACK=1
+
+# Uncomment below line to do workaround for ER 342057
+# This requires setting the Camera Properties again since these are
+#  not reflected when applied in Loaded state of hsmcamera
+LOCAL_CFLAGS += -DCAM_REINIT_CAM_PROP=1
+
+# Uncomment below line to do workaround for ER 346039
+# After Setting the Video Rotation to any angle,
+# unexpected event(FPS Changed) is comming
+LOCAL_CFLAGS += -DDISABLE_FPS_CHANGE_EVENT_AFTER_VIDEO_ROTATION=1
+
+# Uncomment below line to do workaround for ER 351601
+# Get Config for Focus Locks not supported
+LOCAL_CFLAGS += -DDISABLE_GET_CONFIG_LOCK=1
+
+# Uncomment below line to do a workaround for YUV camera
+# to work with smooth zoom enabled(CR 361759)
+#LOCAL_CFLAGS += -DSMOOTH_ZOOM_ENABLED=0
+
+# Uncomment below line to do a workaround for zoom in video
+# mode. 4x zoom will be supported till 720p resolution only.
+# zoom for higher resolutions will be ignored.
+# Max zoom supported for 1080p is 1.3x which is also not working.
+# ER raised for zoom support in 1080p : 410106
+# ER424867 zoom x4 in 1080p video record must be supported on 9540
+ifneq ($(strip $(PLATFORM_9540)),yes)
+LOCAL_CFLAGS += -DVIDEO_ZOOM_720P=1
+endif #PLATFORM_9540

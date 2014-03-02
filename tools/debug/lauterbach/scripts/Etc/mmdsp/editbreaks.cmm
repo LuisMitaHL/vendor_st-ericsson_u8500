@@ -1,0 +1,293 @@
+; *LIMITATION* The script is currently limited to handling deferred breaks for a max. number of 5
+; different components and a max. number of 3 deferred breaks for different instances
+; of the same component
+
+&setbreak_file="setbreaks.cmm"
+&updatebreak_file="nmf_updatebreaks.cmm"
+
+local &break1
+local &break2
+local &break3
+local &break4
+local &break5
+local &comp11
+local &comp12
+local &comp13
+local &comp21
+local &comp22
+local &comp23
+local &comp31
+local &comp32
+local &comp33
+local &comp41
+local &comp42
+local &comp43
+local &comp51
+local &comp52
+local &comp53
+
+
+
+gosub readbreaks
+gosub showdialog
+gosub writebreaks
+
+enddo
+
+
+; TODO: handle CANCEL or find out what happens
+; TODO: check if we can load all symbols at start to check at least
+;       if the symbols exist somewhere in the program
+
+; shows the dialog for handling deferred breaks
+
+showdialog:
+
+	dialog
+	(&
+
+		Header "Configure nmf break points"
+
+		pos 1. 0. 30.
+		text "Symbol (e.g., adder_add)"
+		pos 34. 0. 22.
+		text "component instance name 1"
+		pos 57. 0. 22.
+		text "component instance name 2"
+		pos 80. 0. 22.
+		text "component instance name 3"
+
+		pos 1. 1. 30.
+		breakpoint1: defedit "&break1 " "gosub deleteold breakpoint1 &break1"
+		pos 34. 1. 20.
+		component11:  defedit "&comp11 "  "gosub deleteold breakpoint1 &break1"
+		pos 57. 1. 20.
+		component12:  defedit "&comp12 "  "gosub deleteold breakpoint1 &break1"
+		pos 80. 1. 20.
+		component13:  defedit "&comp13 "  "gosub deleteold breakpoint1 &break1"
+
+		pos 1. 2. 30.
+		breakpoint2: defedit "&break2 " "gosub deleteold breakpoint2 &break2"
+		pos 34. 2. 20.
+		component21:  defedit "&comp21 " "gosub deleteold breakpoint2 &break2"
+		pos 57. 2. 20.
+		component22:  defedit "&comp22 "  "gosub deleteold breakpoint2 &break2"
+		pos 80. 2. 20.
+		component23:  defedit "&comp23 "  "gosub deleteold breakpoint2 &break2"
+
+		pos 1. 3. 30.
+		breakpoint3: defedit "&break3 " "gosub deleteold breakpoint3 &break3"
+		pos 34. 3. 20.
+		component31:  defedit "&comp31 " "gosub deleteold breakpoint3 &break3"
+		pos 57. 3. 20.
+		component32:  defedit "&comp32 "  "gosub deleteold breakpoint3 &break3"
+		pos 80. 3. 20.
+		component33:  defedit "&comp33 "  "gosub deleteold breakpoint3 &break3"
+
+		pos 1. 4. 30.
+		breakpoint4: defedit "&break4 " "gosub deleteold breakpoint4 &break4"
+		pos 34. 4. 20.
+		component41:  defedit "&comp41 " "gosub deleteold breakpoint4 &break4"
+		pos 57. 4. 20.
+		component42:  defedit "&comp42 "  "gosub deleteold breakpoint4 &break4"
+		pos 80. 4. 20.
+		component43:  defedit "&comp43 "  "gosub deleteold breakpoint4 &break4"
+
+		pos 1. 5. 30.
+		breakpoint5: defedit "&break5 " "gosub deleteold breakpoint5 &break5"
+		pos 34. 5. 20.
+		component51:  defedit "&comp51 " "gosub deleteold breakpoint5 &break5"
+		pos 57. 5. 20.
+		component52:  defedit "&comp52 "  "gosub deleteold breakpoint5 &break5"
+		pos 80. 5. 20.
+		component53:  defedit "&comp53 "  "gosub deleteold breakpoint5 &break5"
+
+		pos 10. 7. 22.
+		defbutton "Update config file" "Goto okclose"
+
+	)
+	stop
+
+
+	okclose:
+
+	&comp11=dialog.string(component11)
+	&comp12=dialog.string(component12)
+	&comp13=dialog.string(component13)
+	&param=dialog.string(breakpoint1)
+	gosub normalize &param
+	entry &break1
+	do &setbreak_file  &break1 &comp11 &comp12 &comp13
+
+	&comp21=dialog.string(component21)
+	&comp22=dialog.string(component22)
+	&comp23=dialog.string(component23)
+	&param=dialog.string(breakpoint2)
+	gosub normalize &param
+	entry &break2
+	do &setbreak_file  &break2 &comp21 &comp22 &comp23
+
+	&comp31=dialog.string(component31)
+	&comp32=dialog.string(component32)
+	&comp33=dialog.string(component33)
+	&param=dialog.string(breakpoint3)
+	gosub normalize &param
+	entry &break3
+	do &setbreak_file  &break3 &comp31 &comp32 &comp33
+
+	&comp41=dialog.string(component41)
+	&comp42=dialog.string(component42)
+	&comp43=dialog.string(component43)
+	&param=dialog.string(breakpoint4)
+	gosub normalize &param
+	entry &break4
+	do &setbreak_file  &break4 &comp41 &comp42 &comp43
+
+	&comp51=dialog.string(component51)
+	&comp52=dialog.string(component52)
+	&comp53=dialog.string(component53)
+	&param=dialog.string(breakpoint5)
+	gosub normalize &param
+	entry &break5
+	do &setbreak_file  &break5 &comp51 &comp52 &comp53
+
+	print "break1=<&break1" " &comp11" " &comp12" " &comp13" ">"
+	print "break2=<&break2" " &comp21" " &comp22" " &comp23" ">"
+	print "break3=<&break3" " &comp31" " &comp32" " &comp33" ">"
+	print "break4=<&break4" " &comp41" " &comp42" " &comp43" ">"
+	print "break5=<&break5" " &comp51" " &comp52" " &comp53" ">"
+
+
+	dialog.end
+
+	return
+
+; helper for the dialog
+; deletes old breakpoints if they exist
+deleteold:
+	entry &label &oldval
+	if y.exist("&oldval")
+	(
+		break.delete &oldval
+	)
+	return
+
+
+
+
+; writes the modified break to the script file (and overwrites the old file)
+writebreaks:
+
+open #1 &updatebreak_file /create
+
+write #1 "; ** Auto-generated file. Do not modify! **"
+write #1 "; ** <param1>: symbol, <param2>: component instance on which to break (optional)! **"
+
+if "&break1"!=""&&"&break1"!=" "
+write #1 "do &setbreak_file &break1 &comp11 &comp12 &comp13"
+
+if "&break2"!=""&&"&break2"!=" "
+write #1 "do &setbreak_file &break2 &comp21 &comp22 &comp23"
+
+if "&break3"!=""&&"&break3"!=" "
+write #1 "do &setbreak_file &break3 &comp31 &comp32 &comp33"
+
+if "&break4"!=""&&"&break4"!=" "
+write #1 "do &setbreak_file &break4 &comp41 &comp42 &comp43"
+
+if "&break5"!=""&&"&break5"!=" "
+write #1 "do &setbreak_file &break5 &comp51 &comp52 &comp53"
+
+write #1 "enddo"
+close #1
+return
+
+
+; Reads the breaks from the script file
+readbreaks:
+
+if os.file("&updatebreak_file")
+(
+	open #1 &updatebreak_file /read
+)
+else
+(
+	return
+)
+
+&found=0.
+&var=1.
+while (&var<13.)&&(&found<=5.)
+(
+	;  read #1 &dummy0 &dummy2 %line &symbol
+	read #1 &dummy0 &dummy2 &symbol &component1 &component2 &component3 %line &ignore
+	if string.lwr("&dummy0")=="do"
+	(
+		print "break.set  &symbol"
+		&found=&found+1.
+
+		if &found==1.
+		(
+			&break1="&symbol"
+			&comp11="&component1"
+			&comp12="&component2"
+			&comp13="&component3"
+		)
+
+		if &found==2.
+		(
+			&break2="&symbol"
+			&comp21="&component1"
+			&comp22="&component2"
+			&comp23="&component3"
+		)
+
+		if &found==3.
+		(
+			&break3="&symbol"
+			&comp31="&component1"
+			&comp32="&component2"
+			&comp33="&component3"
+		)
+
+		if &found==4.
+		(
+			&break4="&symbol"
+			&comp41="&component1"
+			&comp42="&component2"
+			&comp43="&component3"
+		)
+
+		if &found==5.
+		(
+			&break5="&symbol"
+			&comp51="&component1"
+			&comp52="&component2"
+			&comp53="&component3"
+		)
+	)
+	&var=&var+1.
+)
+
+close #1
+
+return
+
+
+; removes all blanks at begin and end of a string
+normalize:
+
+	entry &string
+	&result=""
+
+	&len=string.len("&string")
+	&var=1.
+	while (&var<=&len)
+	(
+		if (string.char("&string",&var-1.)!=0x20)
+		(
+			&result="&result"+string.mid("&string", &var-1, 1.)
+		)
+		&var=&var+1.
+	)
+	return &result

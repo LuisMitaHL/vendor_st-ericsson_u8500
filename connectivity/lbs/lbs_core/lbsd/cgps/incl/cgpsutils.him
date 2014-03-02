@@ -1,0 +1,56 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSUTILS_HIM__
+#define __CGPSUTILS_HIM__
+/**
+* \file cgpsutils.h
+* \date 07/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all macro used to generate utils in CGPS module.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 03.07.08</TD><TD> T.VIVET </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+//#define MC_CGPS_TRACE(x)                CGPS4_12Trace x
+
+
+/* ++ Logging Mechanism */
+
+
+#define MC_CGPS_TRACE(x)                 MC_CGPS_TRACE_INF(x)
+
+#define MC_CGPS_TRACE_ERR(x)             MC_CGPS_TRACE_ERR_PARAM x
+#define MC_CGPS_TRACE_WRN(x)             MC_CGPS_TRACE_WRN_PARAM x
+#define MC_CGPS_TRACE_INF(x)             MC_CGPS_TRACE_INF_PARAM x
+#define MC_CGPS_TRACE_DBG(x)             MC_CGPS_TRACE_DBG_PARAM x
+#define MC_CGPS_TRACE_FNC(x)             MC_CGPS_TRACE_FNC_PARAM x
+
+#define MC_CGPS_TRACE_ERR_PARAM(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_ERR, __VA_ARGS__ )
+#define MC_CGPS_TRACE_WRN_PARAM(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_WRN, __VA_ARGS__ )
+#define MC_CGPS_TRACE_INF_PARAM(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_INF, __VA_ARGS__ )
+#define MC_CGPS_TRACE_DBG_PARAM(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_DBG, __VA_ARGS__ )
+#define MC_CGPS_TRACE_FNC_PARAM(...)             LBSOSATRACE_PRINT(K_LBSOSATRACE_CGPS, K_LBSOSATRACE_LOG_LEV_FNC, __VA_ARGS__ )
+
+#define MC_CGPS_MIN(x,y) (x < y ? x : y)                     /* Function to find minima.*/
+#define MC_CGPS_MAX(x,y) (x > y ? x : y)                     /* Function to find maxima.*/
+
+
+/* -- Logging Mechanism */
+
+
+#endif /* __CGPSUTILS_HIM__ */

@@ -1,0 +1,69 @@
+test_start SINKS_114 playback_headset_Volum
+
+alias TIMEOUT 0
+ 
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+ 
+
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 0 
+
+OMX_SetConfig renderer OMX_IndexConfigAudioChannelVolume nPortIndex=0  nChannel=OMX_ALL bLinear=OMX_TRUE sVolume.nValue=10 sVolume.nMin=0 sVolume.nMax=100 bIsMIDI=OMX_FALSE
+OMX_SetConfig renderer OMX_IndexConfigAudioChannelMute nPortIndex=0 nChannel=OMX_ALL bMute=OMX_TRUE bIsMIDI=OMX_FALSE
+MMTE_DispatchState OMX_StateIdle renderer:0
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=50 sVolume.nMin=0 sVolume.nMax=100
+
+alias volum 0 
+ 
+
+mmte_sleep 1000
+MMTE_NMF_ListComponent
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+
+OMX_SetConfig renderer OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_FALSE
+
+#Value crash ?
+	OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=9 sVolume.nMin=0 sVolume.nMax=100
+
+mmte_sleep 2000
+
+loop 101
+	OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=volum sVolume.nMin=0 sVolume.nMax=100
+	arithmeticalias volum+ 1
+	mmte_sleep 100
+
+endloop
+
+
+mmte_sleep 1000
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=70 sVolume.nMin=0 sVolume.nMax=100
+mmte_sleep 2000
+OMX_SetConfig renderer OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_TRUE
+mmte_sleep 2000
+OMX_SetConfig renderer OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_FALSE
+mmte_sleep 2000
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=50 sVolume.nMin=0 sVolume.nMax=100
+
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer
+
+ 
+MMTE_DispatchState OMX_StateLoaded renderer:0
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+MMTE_NMF_ListComponent
+unalias TIMEOUT
+
+#check_test
+
+test_end

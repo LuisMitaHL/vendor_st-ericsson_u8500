@@ -1,0 +1,54 @@
+;------------------------------------------------------------
+; load_code.cmm
+;------------------------------------------------------------
+; Startup file to load code to bigboard
+;
+; 060509 - KM/PH Initial version
+; 070405 - PH Adaption to fit new startup.cmm
+; 071212 - KM Added kernel awareness for Linux
+; 071213 - KM Added functionality for loading many elf:s
+; 081118 - NJ Adaptation to use with StripPATH option
+; 090403 - NJ Modified for U380 
+; 090612 - KM Modified for Ewa
+; 110921 - KM Modified for U5500 Ceva
+;------------------------------------------------------------
+
+if !("&ElfFile"=="")
+(
+	
+
+	if simulator()
+		data.load "&ElfFile" /plusvm &LOptionStrip /noclear
+	else
+	(	
+		data.load.coff "&ElfFile" &LOption &LOptionVM &LOptionStrip
+	)
+
+	print "Coff File Loaded"
+)
+
+
+
+
+if !("&SrcPath"=="")
+(
+	if "&RSrcPath"=="TRUE"
+		y.spath.setrecursedir "&SrcPath"
+	else
+		y.spath.setdir "&SrcPath"
+	print "Source Path Set"
+)	
+
+
+
+
+ENDDO
+
+
+
+
+
+
+
+
+

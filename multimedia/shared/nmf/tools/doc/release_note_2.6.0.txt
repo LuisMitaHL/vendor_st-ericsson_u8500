@@ -1,0 +1,270 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+Author:         Jean-Philippe Fassino & NMF Team
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.6.0 "Colvert"
+Date:           May 13th, 2010
+
+1.2 Board configuration:
+
+    Successfully tested configuration:
+        - STn8500 SVA & SIA (Only flashed with UBoot)
+            * MOP500-ED & HREF-ED V1.0
+            * MOP500 V1.0 & HREF V1.0
+            * MOP500 V1.1 & HREF V1.1
+
+    Not 100% successfully tested configuration:
+
+    Not (or no more) supported configuration:
+        - STn8500 SVA & SIA
+            * SVP 2.0 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                STM IP trace not available
+            * SVP 2.2 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                Argc/Argv not supported
+            * SVP 2.3 (No more tested)
+            * SVP 2.4 (No more tested)
+            * SVP 3.2.0
+                Issue in MMDSP simulator where code execution in ESRAM failed
+            * SVP 3.2.4
+                Issue in MMDSP simulator where 16bits based accessed failed
+            * PEPS 8500
+                PEPS SIA with an ED mapping + MMDSP V1
+
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version:
+        - RVCT 4.0 for 8500
+
+    MMDSP compiler version
+        - MMDSP Toolset 4.3.0
+
+    - Java SE Runtime Environment
+        http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - RODOS
+        http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+    - Week delivery
+        Ready to use components.txt for Linux environments (com.stericsson.nmf/components.txt)
+            # RODOS components.txt
+            include rod+package://com.stericsson.nmf:{year MMD delivery}.{week MMD delivery}.{patch}/component.txt
+
+
+3   RELEASE CONTENT
+
+    See tools/doc/file_hierarchies.txt about file tree organization !
+
+    - Toolbox
+
+    - Component Manager
+
+    - Execution Engine
+
+
+3.1 Component Manager
+    
+    - ECR (VI 28186): By default, STM trace is disabled, to enable them use:
+        CM_SetMode(CM_CMD_TRACE_ON, <core Id>)
+        This command will also send a reset to NMF profiling tools and flush the network.
+    
+    - Video ECR: Support for scratch domains:
+        CM_CreateMemoryDomainScratch()
+        This API creates a scratch domain for esram data (it can contain other memories).
+        A scratch zone is the physical memory covered by scratch domains.
+        
+        Memory in a scratch zone can be allocated concurrently to several scratch domains.
+        
+        The API expects a parent domain (parentId) which will determine the boundaries of the
+        scratch zone, any child scratch domain must be within these boundaries. It may be smaller.
+        Several scratch domains can be created over the same zone. For each such domain, a virtual
+        allocator is created for the scratch zone. Scratch domains overlap and so do the allocations
+        between these domains! It is up to the user to use the allocated memory carefully, ie 
+        no persistent data must be stored in the scratch domain, so only one-shot data, like
+        buffers may be in the scratch. This works as the nmf model is run-to-completion. However,
+        special case must be taken to ensure that all components using the same scratch zone
+        run at the same priority!         
+    
+    - MMTE ECR: Add CM_GetMemoryStatusEx() replacing CM_GetMemoryStatus() domainId by coreId.
+        New API required due to deprecation of CM_GetDefaultDomain.
+    
+    - ** DEPRECATED (Will be removed in 2.7) ** 
+        CM_GetDefaultDomain()
+        CM_GetMemoryStatus()
+
+    - VI 28355 Fix a kernel panic that occurs in some corner cases when processing
+      MPC Events 
+
+
+3.2 MPC Execution Engine
+
+    - ECR (VI 28186): By default, STM trace is disabled, to enable them use:
+        CM_SetMode(CM_CMD_MPC_TRACE_ON, <core Id>)
+
+    - Audio ECR: Interrupt handler & IT11 locked in cache
+
+    - Audio ECR: Allow component to declare code to be locked in cache
+        -> Don't use this feature without global synchronization with architect !!!!!!!
+        -> Require MMDSP toolset 4.3.0 Patch 4
+        
+    
+3.3 Host Execution Engine
+
+    - Fix warning in generated code
+    
+    - Remove deprecated EE_TrigInterrupt API
+        -> Use IO priority if need synchronous way on kernel drivers.
+        
+    - Audio ECR: Enhance ARM composite API in order to allow bind with MMDSP component deploy through CM API:
+        bindFromMPC
+        unbindFromMPC
+        bindToMPC
+        unbindToMPC
+        
+    - bindAsychronous Allow MPC tunneling binding without involving ARM side 
+    
+    - ECR (VI 28186): By default, STM trace is disabled, to enable them use:
+        EE_SetMode(EE_CMD_TRACE_ON, 0)
+        This command will also send a reset to NMF profiling tools and flush the network.
+
+    - ** DEPRECATED (Will be removed in 2.7) ** 
+        Since CM_GetDefaultDomain is deprecated, such syntax in ADL is also deprecated:
+            contains A as a SIA
+            contains A as a SVA
+        You have to pass explicitly the domain created by yourself or RME, like that:
+            contains A as a domainX
+            
+            Composite->domainX = ...; // Assigned before calling Composite->construct();
+        
+
+3.4 OS integration guidelines
+
+    - Remove deprecated EE_OS_RegisterInterrupt API
+    
+    - Changed CM_OS_GetMemoryStatus() (domainId -> coreId)
+ 
+    - Added scratch domain API:
+            CM_OS_CreateMemoryDomainScratch()
+            
+    - OSAL_Alloc must log an error if returning NULL, in order to ease debug and support.
+
+
+3.5 Tools
+
+
+3.6 Programming model
+
+
+3.7 Linux & Symbian
+
+    - VI 28292: nmf test api, need to support SKIPPED result for test
+        mmte_testResult() supports now TEST_SKIPPED
+        
+
+3.8 Examples
+
+
+3.9 Packaging
+
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    28360   assert in nmfUnregisterComposite() when composite component contruct() failed.
+    28292   nmf test api, need to support SKIPPED result for test
+    28308   MEMORY CHECK STATUS: FAILED
+    28249   Need for API to export the current level of priority when executing a singletong method inside
+    28227   Async CM_SetMode(CM_CMD_ULP_MODE_ON, 1)  support
+    28186   Improve MMDSP/MPC trace filtering mechanism
+    28182   ee.api.sleep.itf can't be call from 16 bits mode
+    28089   load counter are not correct in hybrid scheduler
+    28075   hostee may stuck after 100 of millions of calls.
+    28043   crash during component instantiate that failed due to lo lack of Y memory
+    28355   MMTE process broken by user lets the SIA and CM in a bad status
+
+4.2 Active defect list
+
+    28367   setjmp/longjmp not supported
+    28355   MMTE process broken by user lets the SIA and CM in a bad status
+    28239   GetDefaultDomain API is to be removed ==> proposal of new API for CM_GetMpcMemoryStatus
+    27770   C++ stub generation: unexpected pointer usage in data marshalling for a parameter passed as reference
+    26043   Functions in a Static-Required-Interface of an NMF ARM component giving linking error, when compiled in NMF-MMTE
+    23121   setConfig argument passing by pointer instead of structure
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+
+
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+    - Component manager
+        All warnings and errors removed.
+
+
+6.2 Code Static analysis result
+
+    - Component manager
+        Coverity done (each remaining issue could be explained).
+
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Done.
+
+6.4 Confidentiality safe
+
+    Done.
+
+7   DOCUMENTS
+
+    Test report available at:
+        http://gnx2487:9000/

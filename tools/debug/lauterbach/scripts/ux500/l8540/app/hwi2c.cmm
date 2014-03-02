@@ -1,0 +1,121 @@
+;===========================================================================
+; ST-Ericsson
+; ===========================================================================
+;
+;
+; $Source: /scripts/hwi2c.cmm$
+;
+; Copyright Statement:
+; -------------------
+; The confidential and proprietary information contained in this file may
+; only be used by a person authorized under and to the extent permitted
+; by a subsisting licensing agreement from ST-Ericsson S.A.
+;
+; Copyright (C) ST-Ericsson S.A. 2011. All rights reserved.
+;
+; This entire notice must be reproduced on all copies of this file
+; and copies of this file may only be made by a person if such person is
+; permitted to do so under the terms of a subsisting license agreement
+; from ST-Ericsson S.A..
+;
+;
+; Project :  L8540
+; -------
+;
+; Description:
+; ------------
+; PRCMU HWI2C driver.
+; Allows to write or read in AB8540 registers from HWI2C.
+;
+;===========================================================================
+;                    Revision History
+;===========================================================================
+;
+;
+;
+;
+; $KeysEnd $
+;
+;
+;===========================================================================
+
+
+entry &ab_bank &ab_address &ab_data &ab_access_type
+
+local &cmd
+local &temp
+local &statusReg
+local &bit_reserved
+local &bank
+local &AB_FIELD
+
+local &PRCM_HWI2C_BaseAdd
+local &PRCM_HWI2C_DIV_add
+local &PRCM_HWI2C_GO_add
+local &PRCM_HWI2C_CMD_add
+local &PRCM_HWI2C_DATA123_add
+local &PRCM_HWI2C_SR_add
+local &PRCM_HWI2C_A9ITCLR_add
+
+;---------------------------------------------------------------------------*/
+;                             Init Variable                                 */
+;---------------------------------------------------------------------------*/
+&PRCM_HWI2C_BaseAdd=0x80157000
+&PRCM_HWI2C_DIV_add=&PRCM_HWI2C_BaseAdd+0x1B0
+&PRCM_HWI2C_GO_add=&PRCM_HWI2C_BaseAdd+0x1B4
+&PRCM_HWI2C_CMD_add=&PRCM_HWI2C_BaseAdd+0x1B8
+&PRCM_HWI2C_DATA123_add=&PRCM_HWI2C_BaseAdd+0x1BC
+&PRCM_HWI2C_SR_add=&PRCM_HWI2C_BaseAdd+0x1C0
+&PRCM_HWI2C_A9ITCLR_add=&PRCM_HWI2C_BaseAdd+0x5D8
+
+&AB_FIELD=0x00000040
+&bit_reserved=0x08
+
+;---------------------------------------------------------------------------*/
+;                          HWI2C Transfer function                          */
+;---------------------------------------------------------------------------*/
+
+&bank=(&ab_bank&0x1F)|0x20          ; PRCMU I2C slave address is 1
+
+&cmd=(&ab_data<<24.)|(&ab_address<<16.)|(&bit_reserved<<8.)|(&bank<<1.)|(&ab_access_type)
+
+
+; Disable hardware general call feature
+&cmd=&cmd&0xFFFFFBFF
+
+; Write command reg and start I2C
+data.set ad:&PRCM_HWI2C_CMD_add %long &cmd		; cmd register
+data.set ad:&PRCM_HWI2C_GO_add %long 0x01		; go register
+
+wait 0.1s
+
+; read status register
+&statusReg=d.l(ad:&PRCM_HWI2C_SR_add)
+
+; Check if i2c transfer reaches timeout
+while ((&statusReg&0x3)==0x01)
+(
+	;statusReg = PRCMUREGI2C->PRCM_HWI2C_SR;
+	&statusReg=d.l(ad:&PRCM_HWI2C_SR_add)
+)
+
+; Check if I2C transfer were aborted
+if ((&statusReg&0x03)==0x03)
+(
+	print %ERROR "HWI2C FAIL (bank:&bank add:&ab_address)"
+)
+else
+(
+	; For I2c read transfer read value is in RegVal field of cmd register
+	if ((&cmd&0x01)==0x01)
+	(
+		&dataRead=d.l(ad:&PRCM_HWI2C_CMD_add)
+		;print "HWI2C Read OK"
+	)
+	else
+	(
+		;print "HWI2C Write OK"
+	)
+)
+
+enddo

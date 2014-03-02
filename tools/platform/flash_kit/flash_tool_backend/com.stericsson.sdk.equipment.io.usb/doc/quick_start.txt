@@ -1,0 +1,73 @@
+This bundle provides USB IO handling and contains both java and native code. Folder structure of bundle root is very important because of it consists of different developement parts which are tightly coupled. Changes made on this structure might require code adjustments. That's why it's recomended to be very careful with moving files and folders, doing refactoring etc.
+
+1. Bundle folder structure
+
+COM.STERICSSON.SDK.EQUIPMENT.IO.USB
++---.settings
++---bin
+|   \---com
+|       \---stericsson
+|           \---sdk
+|               \---equipment
+|                   \---io
+|                       \---usb
+|                           \---internal
++---doc
++---jni
+|   +---headers
+|   |   +---linux
+|   |   \---windows
+|   +---libusb_linux
+|   +---libusb_win32
+|   |   \---drivers
+|   +---src
+|   \---win
++---META-INF
++---native
+\---src
+    \---com
+        \---stericsson
+            \---sdk
+                \---equipment
+                    \---io
+                        \---usb
+                            \---internal
+
+2. Bundle starting
+  When you load and start bundle in OSGI framework either on Linux or Windows you will need to satisfy dependecy on libusb shared libraries. For this purpose you need to install libusb drivers.
+  
+    2.1. Windows LibUsb driver installation
+      The easiest way how to do it is to use installer jni/libusb_win32/libusb-win32-filter-bin-0.1.12.2.exe under bundle root. For more informaiton about libusb api version, building jni code take a look into jni_building.txt.
+      
+    2.2 Linux LibUsb driver installation
+      Unpack jni/libusb_linux/libusb-0.1.12.tar.gz under bundle root somewhere in your file system. Enter folder libusb-0.1.12 and run using sudo following commands:
+     -> sudo ./configure
+     -> sudo make
+     -> sudo make install     
+
+      For more information about libusb api, building jni code under linux etc. see jni_building.txt.
+
+3. Work with java part
+  Bundle root contains project files so you can use bundle root to import java part as an Eclipse project.
+  
+4. Work with JNI part
+  Under jni folder in bundle root there are project files to be able to import JNI part as Eclipse CDT project. Eclipse CDT is using except .project file also .cproject file which is OS dependent. That's why before importing CDT project you should choose one of .cproject_os file related to your OS and copy/rename it to .cproject.
+  
+5. Building native code
+  In general should be sufficient to enter jni folder under bundle root and run make file related to your OS using following:
+  -> make -f Makefile-OS
+  -> make -f Makefile-OS install
+  
+  Example for Windows:
+    -> make -f Makefile-windows
+    -> make -f Makefile-windows install
+    
+    When build is successful files under bundle root in folder jni/build/OS/ (build artifacts) and in folder native (shared libraries used from java) are updated. If build fails see jni_building.txt and check if you satisfied all prerequisites.
+    
+6. Connection ME devices
+  
+  6.1 Mandatory prerequisite for successful communication with USB device is on both operating system to add your device into list of accepted devices. Device acceptance test is done based on its vendor and product id by calling com.stericsson.sdk.equipment.io.usb.internal.USBNativeHandler#accept(int, int) method. Only device with VID and PID stored in USBNativeHandler#acceptedDevices map will be accepted.
+  
+  6.2 On Windows there is a need to do somehting more. Your device has to be assosiated with LibUsb driver in operating system. For this purpose you will firstly need to uninstall all drivers associated with your device and install new driver using .inf file. 
+  
+  Some of generated inf and other related files you can find in jni/libusb_win32/drivers/ under bundle root. You can also use inf wizard included in jni/libusb_win32/libusb-win32-device-bin-0.1.12.2.tar.gz. For more information see jni_building.txt document or libusb-win32 project website. 

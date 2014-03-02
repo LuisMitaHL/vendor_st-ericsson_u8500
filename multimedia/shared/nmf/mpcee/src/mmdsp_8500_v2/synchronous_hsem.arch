@@ -1,0 +1,23 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+composite synchronous_hsem : 
+    rtos.ee<
+        rtos.synchronous.nofpu,
+        semaphores.system,
+        sleep.sleep.v1
+    > 
+{
+    provides rtos.api.runtime       as runtime unambiguous
+    provides trace.api.trace        as trace unambiguous
+    
+    contains rtos.trace.stm         as xti
+    binds this.runtime              to xti.runtime
+    binds this.trace                to xti.trace
+
+    option CPPFLAGS "-D__STN_8500=30 -DEXECUTIVE_ENGINE"
+}

@@ -1,0 +1,16 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+typedef t_uint32 hMutex;
+
+interface ee.api.mutex {
+    IMPORT_SHARED hMutex eeMutexCreate();
+    IMPORT_SHARED t_sint32 eeMutexDestroy(hMutex mutex);
+    IMPORT_SHARED void eeMutexLock(hMutex mutex);
+    IMPORT_SHARED t_sint32 eeMutexLockTry(hMutex mutex);
+    IMPORT_SHARED void eeMutexUnlock(hMutex mutex);
+}

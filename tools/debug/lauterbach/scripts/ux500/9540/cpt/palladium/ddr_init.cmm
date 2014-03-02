@@ -1,0 +1,695 @@
+; This script is used for LPDDR2/LPDDR2_GFX configuration on AP9540 on palladium.
+; Created by HED/CSP/CPT/ACT on 2011-05-05
+; Contact jingyi-xiaoyan.lu@st.com
+
+&LPDDR1=0
+&LPDDR1_EXT=1
+&LPDDR2=2
+&LPDDR2_EXT=3
+&DDR2=4
+&LPDDR2_GFX=5
+&LPDDR2_GFX_EXT=6
+
+gosub nkvp_DDR_controller_initialisation &LPDDR2
+gosub nkvp_DDR_controller_initialisation &LPDDR2_GFX
+print "Done."
+enddo
+
+
+
+
+
+
+
+nkvp_DDR_controller_initialisation:
+	entry &DDR_type
+		 
+	// Disable functionnality of DDR sharing
+	data.set az:0x801550E8 %l 0xFFFFFFFF
+	data.set az:0x801550E8 %l 0xFFFFFFFF
+		
+	
+	if &DDR_type==&LPDDR2||&DDR_type==&LPDDR2_EXT
+		data.set az:0xA0412C00 %l 0x40000001
+	else
+		data.set az:0xA0412C04 %l 0xC0000000
+	
+	data.set az:0xA0410000 %l d.l(az:0xA0410000)&0xFFFFFFFD
+		
+	if &DDR_type==&LPDDR2
+	(
+		print "----> Start DDR controller init for LPDDR2"
+		gosub nkvp_DBAHN_init_lpddr2 &LPDDR2
+		print "----> End DDR controller init for LPDDR2";
+	)
+	else if &DDR_type==&LPDDR2_GFX
+	(
+		print "----> Start DDR controller init for LPDDR2_GFX"
+		gosub nkvp_DBAHN_init_lpddr2 &LPDDR2_GFX
+		print "----> End DDR controller init for LPDDR2_GFX"
+	)
+	else if &DDR_type==&LPDDR2_EXT
+	(
+		print "----> DDR controller init for LPDDR2_EXT"
+		gosub nkvp_DBAHN_init_lpddr2 &LPDDR2_EXT
+		print "----> End DDR controller init for LPDDR2_EXT"
+	)
+	else if &DDR_type==&LPDDR2_GFX_EXT
+	(
+		print "----> DDR controller init for LPDDR2_GFX_EXT"
+		gosub nkvp_DBAHN_init_lpddr2 &LPDDR2_GFX_EXT
+		print "----> End DDR controller init for LPDDR2_GFX_EXT"
+	)
+	return
+
+nkvp_DBAHN_init_lpddr2:
+	entry &DDR_type
+  	&loop_config=0
+
+	if &DDR_type==&LPDDR2||&DDR_type==&LPDDR2_EXT
+	(
+		// release fsm reset
+		data.set az:0x80157438 %l 0
+		data.set az:0x8015709C %l 1
+		data.set az:0x80157470 %l 1
+  
+		// release fsm reset
+		data.set az:0x801571E4 %l 0x00060000  
+		// release DDR reset
+		data.set az:0x801571E4 %l d.l(az:0x801571E4)|1<<19.
+
+		&loop_config=0
+		while (&loop_config!=7)
+		(
+			if (d.l(az:0x80157448)&0x01)==0x01
+			(	
+				gosub nkvp_DBAHN_settings_LPDDR2 &DDR_type
+				&loop_config=&loop_config|1
+				data.set az:0x8015744C %l d.l(az:0x8015744C)|0x01
+			)
+			if (d.l(az:0x80157448)&0x02)==0x02 
+			(
+				&loop_config=&loop_config|2
+				data.set az:0x80156120 %l d.l(az:0x80156120)|0x03cb1001
+				// this two line request a phy compensation
+				data.set az:0x80156124 %l d.l(az:0x80156124)|0x02000000
+				data.set az:0x80156124 %l d.l(az:0x80156124)&~0x02000000
+
+				// this line enable the clock output
+				data.set az:0x80156030 %l 0x00000301
+
+				data.set az:0x8015744C %l d.l(az:0x8015744C)|0x02
+				data.set az:0x8015601C %l d.l(az:0x8015601C)|0x10000
+			)
+			if (d.l(az:0x801570AC)&1)==1
+			( 	
+				&loop_config=&loop_config|4
+				data.set az:0x80157538 %l d.l(az:0x80157538)|0x10
+			)
+		)	
+		
+		// Here we should use the dedicated function to wait on...
+		while (d.l(az:0x80157480)&1)==0
+		(
+			printf "."
+		)
+	)
+	else
+	(
+		//enable SYSCLK for DDR1: CLK38M_DDR1PLL_SW = 3'b001
+		data.set az:0x80157528 %l d.l(az:0x80157528)|0x10000
+		
+		// release fsm reset
+		data.set az:0x80159450 %l 0
+		data.set az:0x80159438 %l 0
+		data.set az:0x8015909C %l 1
+		data.set az:0x80159470 %l 1
+		
+		// release fsm reset
+		data.set az:0x801571E4 %l d.l(az:0x801571E4)|0x00010000
+		// release DDR reset
+		data.set az:0x801571E4 %l d.l(az:0x801571E4)|0x00200000
+		
+		&loop_config=0
+		while (&loop_config!=7)
+		(
+			if (d.l(az:0x80159448)&0x01)==0x01
+			(
+				gosub nkvp_DBAHN_settings_LPDDR2 &DDR_type
+				&loop_config=&loop_config|1
+				data.set az:0x8015944C %l d.l(az:0x8015944C)|0x01
+			)
+			if (d.l(az:0x80159448)&0x02)==0x02
+			(	 
+				&loop_config=&loop_config|2
+			
+				data.set az:0x8015A120 %l d.l(az:0x8015A120)|0x03cb1001
+				// this two line request a phy compensation
+				data.set az:0x8015A124 %l d.l(az:0x8015A124)|0x02000000
+				data.set az:0x8015A124 %l d.l(az:0x8015A124)&~0x02000000
+			
+				// this line enable the clock output
+				data.set az:0x8015A030 %l 0x00000301
+			
+				data.set az:0x8015944C %l d.l(az:0x8015944C)|0x02
+				data.set az:0x8015A01C %l d.l(az:0x8015A01C)|0x10000
+			)
+			if (d.l(az:0x801590AC)&1)==1
+			(	  
+				&loop_config=&loop_config|4
+				data.set az:0x80157538 %l d.l(az:0x80157538)|0x00800000
+			)
+		)
+		// Here we should use the dedicated function to wait on...
+		while (d.l(az:0x80159480)&1)==0
+		(
+		)
+  	)
+	return
+
+
+nkvp_DBAHN_settings_LPDDR2:
+	entry &DDR_type
+	&tabLPDDR2_25=0x00000000 
+	&tabLPDDR2_28=0x00000000 
+	&tabLPDDR2_31=0x00000000 
+	
+	&tabLPDDR2_41=0x00000000 
+	&tabLPDDR2_42=0x00000000 
+	&tabLPDDR2_43=0x00000000 
+	
+	&tabLPDDR2_48=0x00000000 
+	&tabLPDDR2_49=0x00000000 
+	&tabLPDDR2_50=0x00000000 
+	&tabLPDDR2_51=0x00000000 
+	&tabLPDDR2_52=0x00000000 
+	&tabLPDDR2_53=0x00000000 
+	&tabLPDDR2_54=0x00000000 
+	&tabLPDDR2_55=0x00000000 
+	&tabLPDDR2_56=0x00000000 
+	&tabLPDDR2_57=0x00000000 
+	&tabLPDDR2_58=0x00000000 
+	&tabLPDDR2_61=0x00000000  
+	&tabLPDDR2_62=0x00000000 
+	&tabLPDDR2_65=0x00000000 
+	&tabLPDDR2_66=0x00000000 
+	&tabLPDDR2_67=0x00000000
+	&tabLPDDR2_68=0x00000000 
+	&tabLPDDR2_69=0x00000000 
+	&tabLPDDR2_70=0x00000000 
+	&tabLPDDR2_71=0x00000000 
+	&tabLPDDR2_74=0x00000000  
+	&tabLPDDR2_75=0x00000000  
+	&tabLPDDR2_133=0x00000000 
+	&tabLPDDR2_134=0x00000000 
+	&tabLPDDR2_135=0x00000000 
+	&tabLPDDR2_136=0x00000000 
+	&tabLPDDR2_137=0x00000000 
+	&tabLPDDR2_138=0x00000000 
+	&tabLPDDR2_139=0x00000000 
+	&tabLPDDR2_140=0x00000000 
+	
+	
+	
+	
+	
+	
+	&tabLPDDR2_0=0x00000101
+	&tabLPDDR2_1=0x01010100
+	&tabLPDDR2_2=0x00000001
+	&tabLPDDR2_3=0x00010100
+	&tabLPDDR2_4=0x01010100
+	&tabLPDDR2_5=0x01000100
+	&tabLPDDR2_6=0x00000000
+	&tabLPDDR2_7=0x00000001
+	&tabLPDDR2_8=0x00000101
+	&tabLPDDR2_9=0x02020304
+	&tabLPDDR2_10=0x03030303
+	&tabLPDDR2_11=0x01030303
+	&tabLPDDR2_12=0x00030301
+	&tabLPDDR2_13=0x00000000
+	&tabLPDDR2_14=0x00000207
+	&tabLPDDR2_15=0x03000000
+	&tabLPDDR2_16=0x06020202
+	&tabLPDDR2_17=0x10000f04
+	&tabLPDDR2_18=0x00000f12
+	&tabLPDDR2_19=0x00120000
+	&tabLPDDR2_20=0x0002000a
+	&tabLPDDR2_21=0x00080a03
+	&tabLPDDR2_22=0x03000909
+	&tabLPDDR2_23=0x32002e20
+	&tabLPDDR2_24=0x23003200
+	&tabLPDDR2_26=0x08170000
+	&tabLPDDR2_27=0x00000046
+	&tabLPDDR2_29=0x08130813
+	&tabLPDDR2_30=0x08130813
+	
+	
+	&tabLPDDR2_32=0xffff0000
+	&tabLPDDR2_33=0xffffffff
+	&tabLPDDR2_34=0x0000ffff
+	&tabLPDDR2_35=0x00100100
+	&tabLPDDR2_36=0x00000000
+	&tabLPDDR2_37=0x00040000
+	&tabLPDDR2_38=0x004c1b4e
+	&tabLPDDR2_39=0x0000004d
+	&tabLPDDR2_40=0x00000036
+	
+	
+	&tabLPDDR2_44=0x00000000
+	&tabLPDDR2_45=0x00000000
+	&tabLPDDR2_46=0x00000000
+	&tabLPDDR2_47=0x00000000
+	
+	&tabLPDDR2_59=0x00000000
+	&tabLPDDR2_60=0x00000000
+	
+	&tabLPDDR2_63=0x05000004
+	&tabLPDDR2_64=0x00050009
+	
+	&tabLPDDR2_67=0x00000000
+	
+	
+	&tabLPDDR2_72=0x00000000
+	&tabLPDDR2_73=0x00007c00
+	
+	
+	&tabLPDDR2_76=0x01000100   
+	&tabLPDDR2_77=0x01000103   
+	&tabLPDDR2_78=0x02030300   
+	&tabLPDDR2_79=0x02000104   
+	&tabLPDDR2_80=0x1b000100   
+	&tabLPDDR2_81=0x0001b040   
+	&tabLPDDR2_82=0x00c00000   
+	&tabLPDDR2_83=0x02140030   
+	&tabLPDDR2_84=0x0000001b   
+	&tabLPDDR2_85=0x00000000   
+	&tabLPDDR2_86=0x00000000   
+	&tabLPDDR2_87=0x00c20000   
+	&tabLPDDR2_88=0x000600c2   
+	&tabLPDDR2_89=0x00010006   
+	&tabLPDDR2_90=0x00000001   
+	&tabLPDDR2_91=0x00000000   
+	&tabLPDDR2_92=0x00019f8f   
+	&tabLPDDR2_93=0x00000214   
+	&tabLPDDR2_94=0x000014c8   
+	&tabLPDDR2_95=0x00010100   
+	&tabLPDDR2_96=0x01000001   
+	&tabLPDDR2_97=0x0a020201   
+	&tabLPDDR2_98=0x000b0b0a   
+	&tabLPDDR2_99=0x0fff0000   
+	&tabLPDDR2_100=0x00000fff
+	&tabLPDDR2_101=0x03021000  
+	&tabLPDDR2_102=0x00050804  
+	&tabLPDDR2_103=0x08130813  
+	&tabLPDDR2_104=0x00000813  
+	&tabLPDDR2_105=0x00080403  
+	&tabLPDDR2_106=0x00170c06  
+	&tabLPDDR2_107=0x39462312  
+	&tabLPDDR2_108=0x04080200  
+	&tabLPDDR2_109=0x00140813  
+	&tabLPDDR2_110=0x004c0027  
+	&tabLPDDR2_111=0x00280015  
+	&tabLPDDR2_112=0x00d1004d  
+	&tabLPDDR2_113=0x00490711  
+	&tabLPDDR2_114=0x0449b388  
+	&tabLPDDR2_115=0x0001800c  
+	&tabLPDDR2_116=0x00060030  
+	&tabLPDDR2_117=0x000c0030  
+	&tabLPDDR2_118=0x16622cc4  
+	&tabLPDDR2_119=0x00210022  
+	&tabLPDDR2_120=0x006100c2  
+	&tabLPDDR2_121=0x00210022  
+	&tabLPDDR2_122=0x00010001  
+	&tabLPDDR2_123=0x00030006  
+	&tabLPDDR2_124=0x00010001  
+	&tabLPDDR2_125=0x02899001  
+	&tabLPDDR2_126=0x034a1001  
+	&tabLPDDR2_127=0x06684711  
+	&tabLPDDR2_128=0x02114106  
+	&tabLPDDR2_129=0x24934906  
+	&tabLPDDR2_130=0x1041a907  
+	&tabLPDDR2_131=0x1041a8a3  
+	&tabLPDDR2_132=0x03460408  
+	
+	&tabLPDDR2_141=0x03cb1001
+	&tabLPDDR2_142=0x00010003
+	&tabLPDDR2_143=0x00008001
+	&tabLPDDR2_144=0x00010003
+		
+	if &DDR_type==&LPDDR2_EXT
+	(
+		&tabLPDDR2_9=0x02020303;
+		
+		&tabLPDDR2_14=0x00060207;
+		
+		&tabLPDDR2_16=0x04020202;
+		&tabLPDDR2_17=0x0C000F03;
+		&tabLPDDR2_18=0x00000F0D;
+		&tabLPDDR2_19=0x000E0000;
+		
+		&tabLPDDR2_21=0x00060803;
+		&tabLPDDR2_22=0x03000909;
+		&tabLPDDR2_23=0x32002e1a;
+		
+		&tabLPDDR2_26=0x08110000;
+		&tabLPDDR2_27=0x00000034;
+		&tabLPDDR2_29=0x06100610;
+		&tabLPDDR2_30=0x06100610;
+		
+		&tabLPDDR2_37=0x00030000;
+		&tabLPDDR2_38=0x00391b4e;
+		&tabLPDDR2_39=0x0000003a;
+		&tabLPDDR2_40=0x00000028;
+		
+		&tabLPDDR2_63=0x05000003;
+		&tabLPDDR2_64=0x00050006;
+		
+		&tabLPDDR2_78=0x02020200;
+		&tabLPDDR2_79=0x02000103;
+		&tabLPDDR2_80=0x14000100;
+		
+		&tabLPDDR2_82=0x00900000;
+		&tabLPDDR2_83=0x01900024;
+		&tabLPDDR2_84=0x00000014;
+		
+		&tabLPDDR2_87=0x00820000;
+		&tabLPDDR2_88=0x00040082;
+		&tabLPDDR2_89=0x00010004;
+		
+		&tabLPDDR2_92=0x00013880;
+		&tabLPDDR2_93=0x00000190;
+		&tabLPDDR2_94=0x00000fa0;
+		
+		&tabLPDDR2_97=0x0a010101;
+		&tabLPDDR2_98=0x0009090a;
+		&tabLPDDR2_99=0x1fff0000;
+		&tabLPDDR2_100=0x00001fff;
+		&tabLPDDR2_101=0x03022000;
+		&tabLPDDR2_102=0x00050604;
+		&tabLPDDR2_103=0x06100610;
+		&tabLPDDR2_104=0x00000610;
+		&tabLPDDR2_105=0x00080403;
+		&tabLPDDR2_106=0x00110905;
+		&tabLPDDR2_107=0x39341a0d;
+		&tabLPDDR2_108=0x0304017e;
+		&tabLPDDR2_109=0x000f0610;
+		&tabLPDDR2_110=0x0039001d;
+		&tabLPDDR2_111=0x001e0010;
+		&tabLPDDR2_112=0x0089003a;
+		&tabLPDDR2_113=0x0030c6c9;
+		&tabLPDDR2_114=0x03494288;
+		&tabLPDDR2_115=0x00012009;
+		&tabLPDDR2_116=0x00048024;
+		&tabLPDDR2_117=0x00090024;
+		&tabLPDDR2_118=0x125224a4;
+		&tabLPDDR2_119=0x00110022;
+		&tabLPDDR2_120=0x00410082;
+		&tabLPDDR2_121=0x00110022;
+		&tabLPDDR2_122=0x00008001;
+		&tabLPDDR2_123=0x00020004;
+		&tabLPDDR2_124=0x00008001;
+		&tabLPDDR2_125=0x02491001;
+		&tabLPDDR2_126=0x02ca1001;
+		&tabLPDDR2_127=0x044b36c9;
+		&tabLPDDR2_128=0x019130c6;
+		&tabLPDDR2_129=0x1c7334c6;
+		&tabLPDDR2_130=0x0c31a906;
+		&tabLPDDR2_131=0x0c31a083;
+		&tabLPDDR2_132=0x0201a347;
+		&tabLPDDR2_141=0x03cb1001;
+	)
+
+	&DENALI_CTL_start_addr=0x80156000
+
+	if &DDR_type==&LPDDR2_GFX_EXT||&DDR_type==&LPDDR2_GFX
+	(
+		&tabLPDDR2_25=0x00000000 
+		&tabLPDDR2_28=0x00000000 
+		&tabLPDDR2_31=0x00000000 
+		
+		&tabLPDDR2_41=0x00000000 
+		&tabLPDDR2_42=0x00000000 
+		&tabLPDDR2_43=0x00000000 
+		
+		&tabLPDDR2_48=0x00000000 
+		&tabLPDDR2_49=0x00000000 
+		&tabLPDDR2_50=0x00000000 
+		&tabLPDDR2_51=0x00000000 
+		&tabLPDDR2_52=0x00000000 
+		&tabLPDDR2_53=0x00000000 
+		&tabLPDDR2_54=0x00000000 
+		&tabLPDDR2_55=0x00000000 
+		&tabLPDDR2_56=0x00000000 
+		&tabLPDDR2_57=0x00000000 
+		&tabLPDDR2_58=0x00000000 
+		&tabLPDDR2_61=0x00000000  
+		&tabLPDDR2_62=0x00000000 
+		&tabLPDDR2_65=0x00000000 
+		&tabLPDDR2_66=0x00000000 
+		&tabLPDDR2_67=0x00000000
+		&tabLPDDR2_68=0x00000000 
+		&tabLPDDR2_69=0x00000000 
+		&tabLPDDR2_70=0x00000000 
+		&tabLPDDR2_71=0x00000000 
+		&tabLPDDR2_74=0x00000000  
+		&tabLPDDR2_75=0x00000000  
+		&tabLPDDR2_133=0x00000000 
+		&tabLPDDR2_134=0x00000000 
+		&tabLPDDR2_135=0x00000000 
+		&tabLPDDR2_136=0x00000000 
+		&tabLPDDR2_137=0x00000000 
+		&tabLPDDR2_138=0x00000000 
+		&tabLPDDR2_139=0x00000000 
+		&tabLPDDR2_140=0x00000000 
+		
+		
+		
+		
+		
+		
+		&tabLPDDR2_0=0x00000101
+		&tabLPDDR2_1=0x01010100
+		&tabLPDDR2_2=0x00000001
+		&tabLPDDR2_3=0x00010100
+		&tabLPDDR2_4=0x01010100
+		&tabLPDDR2_5=0x01000100
+		&tabLPDDR2_6=0x00000000
+		&tabLPDDR2_7=0x00000001
+		&tabLPDDR2_8=0x00000101
+		&tabLPDDR2_9=0x02020304
+		&tabLPDDR2_10=0x03030303
+		&tabLPDDR2_11=0x01030303
+		&tabLPDDR2_12=0x00030301
+		&tabLPDDR2_13=0x00000000
+		&tabLPDDR2_14=0x00000207
+		&tabLPDDR2_15=0x03000000
+		&tabLPDDR2_16=0x06020202
+		&tabLPDDR2_17=0x10000f04
+		&tabLPDDR2_18=0x00000f12
+		&tabLPDDR2_19=0x00120000
+		&tabLPDDR2_20=0x0002000a
+		&tabLPDDR2_21=0x00080a03
+		&tabLPDDR2_22=0x03000909
+		&tabLPDDR2_23=0x32002e20
+		&tabLPDDR2_24=0x23003200
+		&tabLPDDR2_26=0x08170000
+		&tabLPDDR2_27=0x00000046
+		&tabLPDDR2_29=0x08130813
+		&tabLPDDR2_30=0x08130813
+		
+		
+		&tabLPDDR2_32=0xffff0000
+		&tabLPDDR2_33=0xffffffff
+		&tabLPDDR2_34=0x0000ffff
+		&tabLPDDR2_35=0x00100100
+		&tabLPDDR2_36=0x00000000
+		&tabLPDDR2_37=0x00040000
+		&tabLPDDR2_38=0x004c1b4e
+		&tabLPDDR2_39=0x0000004d
+		&tabLPDDR2_40=0x00000036
+		
+		
+		&tabLPDDR2_44=0x00000000
+		&tabLPDDR2_45=0x00000000
+		&tabLPDDR2_46=0x00000000
+		&tabLPDDR2_47=0x00000000
+		
+		&tabLPDDR2_59=0x00000000
+		&tabLPDDR2_60=0x00000000
+		
+		&tabLPDDR2_63=0x05000004
+		&tabLPDDR2_64=0x00050009
+		
+		&tabLPDDR2_67=0x00000000
+		
+		
+		&tabLPDDR2_72=0x00000000
+		&tabLPDDR2_73=0x00007c00
+		
+		
+		&tabLPDDR2_76=0x01000100   
+		&tabLPDDR2_77=0x01000103   
+		&tabLPDDR2_78=0x02030300   
+		&tabLPDDR2_79=0x02000104   
+		&tabLPDDR2_80=0x1b000100   
+		&tabLPDDR2_81=0x0001b040   
+		&tabLPDDR2_82=0x00c00000   
+		&tabLPDDR2_83=0x02140030   
+		&tabLPDDR2_84=0x0000001b   
+		&tabLPDDR2_85=0x00000000   
+		&tabLPDDR2_86=0x00000000   
+		&tabLPDDR2_87=0x00c20000   
+		&tabLPDDR2_88=0x000600c2   
+		&tabLPDDR2_89=0x00010006   
+		&tabLPDDR2_90=0x00000001   
+		&tabLPDDR2_91=0x00000000   
+		&tabLPDDR2_92=0x00019f8f   
+		&tabLPDDR2_93=0x00000214   
+		&tabLPDDR2_94=0x000014c8   
+		&tabLPDDR2_95=0x00010100   
+		&tabLPDDR2_96=0x01000001   
+		&tabLPDDR2_97=0x0a020201   
+		&tabLPDDR2_98=0x000b0b0a   
+		&tabLPDDR2_99=0x0fff0000   
+		&tabLPDDR2_100=0x00000fff
+		&tabLPDDR2_101=0x03021000  
+		&tabLPDDR2_102=0x00050804  
+		&tabLPDDR2_103=0x08130813  
+		&tabLPDDR2_104=0x00000813  
+		&tabLPDDR2_105=0x00080403  
+		&tabLPDDR2_106=0x00170c06  
+		&tabLPDDR2_107=0x39462312  
+		&tabLPDDR2_108=0x04080200  
+		&tabLPDDR2_109=0x00140813  
+		&tabLPDDR2_110=0x004c0027  
+		&tabLPDDR2_111=0x00280015  
+		&tabLPDDR2_112=0x00d1004d  
+		&tabLPDDR2_113=0x00490711  
+		&tabLPDDR2_114=0x0449b388  
+		&tabLPDDR2_115=0x0001800c  
+		&tabLPDDR2_116=0x00060030  
+		&tabLPDDR2_117=0x000c0030  
+		&tabLPDDR2_118=0x16622cc4  
+		&tabLPDDR2_119=0x00210022  
+		&tabLPDDR2_120=0x006100c2  
+		&tabLPDDR2_121=0x00210022  
+		&tabLPDDR2_122=0x00010001  
+		&tabLPDDR2_123=0x00030006  
+		&tabLPDDR2_124=0x00010001  
+		&tabLPDDR2_125=0x02899001  
+		&tabLPDDR2_126=0x034a1001  
+		&tabLPDDR2_127=0x06684711  
+		&tabLPDDR2_128=0x02114106  
+		&tabLPDDR2_129=0x24934906  
+		&tabLPDDR2_130=0x1041a907  
+		&tabLPDDR2_131=0x1041a8a3  
+		&tabLPDDR2_132=0x03460408  
+		
+		&tabLPDDR2_141=0x03cb1001
+		&tabLPDDR2_142=0x00010003
+		&tabLPDDR2_143=0x00008001
+		&tabLPDDR2_144=0x00010003
+
+		if &DDR_type==&LPDDR2_GFX_EXT
+		(
+			&tabLPDDR2_9=0x02020303;
+			
+			&tabLPDDR2_14=0x00060207;
+			
+			&tabLPDDR2_16=0x04020202;
+			&tabLPDDR2_17=0x0C000F03;
+			&tabLPDDR2_18=0x00000F0D;
+			&tabLPDDR2_19=0x000E0000;
+			
+			&tabLPDDR2_21=0x00060803;
+			&tabLPDDR2_22=0x03000909;
+			&tabLPDDR2_23=0x32002e1a;
+			
+			&tabLPDDR2_26=0x08110000;
+			&tabLPDDR2_27=0x00000034;
+			&tabLPDDR2_29=0x06100610;
+			&tabLPDDR2_30=0x06100610;
+			
+			&tabLPDDR2_37=0x00030000;
+			&tabLPDDR2_38=0x00391b4e;
+			&tabLPDDR2_39=0x0000003a;
+			&tabLPDDR2_40=0x00000028;
+			
+			&tabLPDDR2_63=0x05000003;
+			&tabLPDDR2_64=0x00050006;
+			
+			&tabLPDDR2_78=0x02020200;
+			&tabLPDDR2_79=0x02000103;
+			&tabLPDDR2_80=0x14000100;
+			
+			&tabLPDDR2_82=0x00900000;
+			&tabLPDDR2_83=0x01900024;
+			&tabLPDDR2_84=0x00000014;
+			
+			&tabLPDDR2_87=0x00820000;
+			&tabLPDDR2_88=0x00040082;
+			&tabLPDDR2_89=0x00010004;
+			
+			&tabLPDDR2_92=0x00013880;
+			&tabLPDDR2_93=0x00000190;
+			&tabLPDDR2_94=0x00000fa0;
+			
+			&tabLPDDR2_97=0x0a010101;
+			&tabLPDDR2_98=0x0009090a;
+			&tabLPDDR2_99=0x1fff0000;
+			&tabLPDDR2_100=0x00001fff;
+			&tabLPDDR2_101=0x03022000;
+			&tabLPDDR2_102=0x00050604;
+			&tabLPDDR2_103=0x06100610;
+			&tabLPDDR2_104=0x00000610;
+			&tabLPDDR2_105=0x00080403;
+			&tabLPDDR2_106=0x00110905;
+			&tabLPDDR2_107=0x39341a0d;
+			&tabLPDDR2_108=0x0304017e;
+			&tabLPDDR2_109=0x000f0610;
+			&tabLPDDR2_110=0x0039001d;
+			&tabLPDDR2_111=0x001e0010;
+			&tabLPDDR2_112=0x0089003a;
+			&tabLPDDR2_113=0x0030c6c9;
+			&tabLPDDR2_114=0x03494288;
+			&tabLPDDR2_115=0x00012009;
+			&tabLPDDR2_116=0x00048024;
+			&tabLPDDR2_117=0x00090024;
+			&tabLPDDR2_118=0x125224a4;
+			&tabLPDDR2_119=0x00110022;
+			&tabLPDDR2_120=0x00410082;
+			&tabLPDDR2_121=0x00110022;
+			&tabLPDDR2_122=0x00008001;
+			&tabLPDDR2_123=0x00020004;
+			&tabLPDDR2_124=0x00008001;
+			&tabLPDDR2_125=0x02491001;
+			&tabLPDDR2_126=0x02ca1001;
+			&tabLPDDR2_127=0x044b36c9;
+			&tabLPDDR2_128=0x019130c6;
+			&tabLPDDR2_129=0x1c7334c6;
+			&tabLPDDR2_130=0x0c31a906;
+			&tabLPDDR2_131=0x0c31a083;
+			&tabLPDDR2_132=0x0201a347;
+			&tabLPDDR2_141=0x03cb1001;
+		)
+
+		&DENALI_CTL_start_addr=0x8015A000
+	)
+
+	&i=0
+	&sz_tabLPDDR2=145.
+	while &i<&sz_tabLPDDR2
+	(
+		if &i<10.
+			&ii=FORMAT.UDECIMAL(1,&i)
+		else if &i<100.
+			&ii=FORMAT.UDECIMAL(2,&i)
+		else
+			&ii=FORMAT.UDECIMAL(3,&i)
+		&&temp=&tabLPDDR2_&ii
+		&addr=&DENALI_CTL_start_addr+&i*4
+		data.set &DENALI_CTL_start_addr+&i*4 %l &temp
+		&i=&i+1
+	)
+	return

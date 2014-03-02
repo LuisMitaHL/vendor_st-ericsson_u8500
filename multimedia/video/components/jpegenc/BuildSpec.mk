@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_video/components/jpegenc=bin
+NO_STD_BUILD_video/components/jpegenc=1
+BUILD_MMDSP_NMF_video/components/jpegenc=bin
+BUILD_ARM_PROC_video/components/jpegenc=src
+BUILD_ARM_CODE_video/components/jpegenc=src
+BUILD_ARM_NMF_video/components/jpegenc=src
+BUILD_XP70_SIA_CODE_video/components/jpegenc=false

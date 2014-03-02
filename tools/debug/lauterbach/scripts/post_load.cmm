@@ -1,0 +1,55 @@
+;------------------------------------------------------------
+; post_load.cmm
+;------------------------------------------------------------
+; Should include commands that must run after load, used by 
+; all targets
+;
+; 070330 - KM Initial version
+; 070405 - PH Adaption to fit new startup.cmm
+; 071018 - KM Added support for loaders
+; 080201 - KM Added support for Carolina
+;-----------------------------------------------------------
+
+
+IF (("&Target"=="[Camilla_ACC]")||("&Target"=="[Camilla_ACC_Loader]"))
+(
+  ;Disable interupts at startup
+  R.S I 1 
+  R.S F 1 
+)
+
+IF (("&Target"=="[Camilla_APP]")||("&Target"=="[Camilla_APP_Loader]"))
+(
+  ;Disable interupts at startup
+  R.S I 1 
+  R.S F 1
+)
+
+IF (("&Target"=="[Kajsa_ACC]")||("&Target"=="[Kajsa_ACC_Loader]"))
+(
+  ;Disable interupts at startup
+  R.S I 1 
+  R.S F 1 
+)
+
+IF (("&Target"=="[Kajsa_APP]")||("&Target"=="[Kajsa_APP_Loader]"))
+(
+  ;Disable interupts at startup
+  R.S I 1 
+  R.S F 1
+)
+
+IF (("&Target"=="[Carolina_ACC]")||("&Target"=="[Carolina_ACC_Loader]"))
+(
+  ;Disable interupts at startup
+  R.S I 1 
+  R.S F 1 
+)
+
+IF (("&Target"=="[Carolina_APP]")||("&Target"=="[Carolina_APP_Loader]"))
+(
+  ;Disable interupts at startup
+  R.S I 1 
+  R.S F 1
+)
+ENDDO

@@ -1,0 +1,171 @@
+##################################################################################
+# Configuration file for Calibration tool
+# ----------------------------------------
+# This is a configration file for calibration tool (also called) nvm application
+# It contains configration in "TAG"="VALUE" format.
+# 
+# Configuration set via config file can be overriden via command line agruments
+# CMD line should use same TAG=VALUE pair to override any value as used in the 
+# config file
+###################################################################################
+		
+# Number of RAW images to be taken for calibration.
+# Default Value: 10
+######
+RAW_CNT=10
+
+# Bayer order - Bayer order from sensor
+# Default Value: Gr
+# Possible Value: R / Gr / Gb / B
+# Notes: It defines the pixel order from the sensor
+######
+BAYER_ORDER=Gr
+
+# Exposure value to be used during calibration (in ms).
+# Default Value: 30
+# Notes: Exposure is limited by the framerate.
+######
+EXPOSURE=30
+
+# Sensitivity value to be used during calibration.
+# Default Value: 200
+# Notes: Used for tuning calibration activity.
+######
+SENSITIVITY=200
+
+# Sensitivity tolerance value to be used during calibration.
+# Default Value: 0.29
+# Notes: Used for tuning calibration activity.
+######
+TOLERANCE=0.29
+
+# LSC Minimum/Average MinMaxRatio
+# Default Value: 0.0
+# Notes: Value passed to calibration process as 'lens_shading_min_average_minmaxratio'
+######
+LSC_MIN_AVG_MINMAXRATIO=0.0
+
+# LSC Min_NormCrossCorr
+# Default Value: 0.0
+# Notes: Value passed to calibration process as 'lens_shading_min_normcrosscorr'
+######
+LSC_MIN_NORMCROSSCORR=0.0
+
+# LSC Minimum/Sigma MinMaxRatio
+# Default Value: 0.0
+# Notes: Value passed to calibration process as 'lens_shading_min_sigma_minmaxratio'
+######
+LSC_MIN_SIGMA_MINMAXRATIO=0.0
+
+# Sensor resolution - Full field of view resolution for sensor under test.
+# Defaule Value: 8MP
+# Possible Values: 8MP / 5MP
+# Notes: Currently 8MP and 5MP RAW bayer sesnor are supported
+# 		 8MP = 3280 x 2466
+#        5MP = 2608 x 1960 	
+######
+SENSOR_RESOLUTION=8MP
+
+# Application Mode 
+# Default Value: CALIBRATION
+# Possible Values: CALIBRATION / RAW
+# Notes: Define the application behavior, whether need to create RAW files only or full calibration 
+# to be run (i.e. calibration data also need to be generated)
+######
+APP_MODE=CALIBRATION
+
+# RAW Image File Creation
+# Default Value: TRUE
+# Possible Values: TRUE / FALSE
+# Notes: Define the application behavior, whether we need to create the RAW image file.
+######
+RAW_IMAGE=FALSE
+
+# JPEG Creation
+# Default Value: TRUE
+# Possible Values: TRUE / FALSE
+# Notes: Define the application behavior, whether we need to create the JPEG file from RAW image or not.
+######
+JPEG=TRUE
+
+# Color Format 
+# Default Value: 12BIT
+# Possible Values: 8BIT / 12BIT
+# Notes: Define the RAW format to be used for capturing RAW Bayer images from sensor.
+######
+COLOR_FMT=12BIT
+
+# ISP FW Debug support
+# Default Value: FALSE
+# Possible Values: TRUE / FALSE
+# Notes: ISP FW trace support to be enabled during Calibration process or not.
+######
+ISP_DEBUG=FALSE
+
+# ISP FW Debug level
+# Default Value: 255
+# Possible Values: 1 to 255 LogLevel
+# Notes: This config value is effective if ISP_DEBUG = TRUE.
+######
+ISP_LOGLVL=255
+
+# Flash support
+# Default Value: FALSE
+# Possible Values: TRUE / FALSE
+# Notes: Define whether flash is needed during calibration or not.
+######
+FLASH=FALSE
+
+# Framerate value to be used during calibration (in fps).
+# Default Value: 5
+# Notes: Number of frames to be captured per second. Can be used for changing sensor mode.
+######
+FRAME_RATE=5
+
+# Mirror support
+# Default Value: NONE
+# Possible Values: NONE / VERTICAL / HORIZONTAL / BOTH
+# Notes: Define whether mirroring is needed during calibration or not.
+######
+MIRROR=NONE
+
+# Radial threshold for channel sensitivity check support
+# Default Value: FALSE
+# Possible Values: TRUE / FALSE
+# Notes: Define whether radial threshold is to be used for channel sensitivity check or not.
+######
+RADIAL_THRESHOLD_FOR_SENSITIVITY_CHECK=FALSE
+
+# File location - location for generated files on board
+# Default Value: /data
+# Possible Values: Customer specific
+# Notes: Path should match with the one defined in tuningloader
+#####
+FILE_PATH=/data
+
+################# FOCUS RELATED TAG - START #######################
+# Focus VCM total steps
+# Default Value: 0
+FOCUS_VCM_TOTAL_STEPS=0
+
+# Focus VCM Start Step
+# Default Value: 0
+# Possible Values: 0 to FOCUS_VCM_TOTAL_STEPS
+FOCUS_VCM_START_STEP=0
+
+# Focus VCM Step Size
+# Default Value: 0 (no lens movement between 2 captures)
+FOCUS_VCM_STEP_SIZE=0
+################# FOCUS RELATED TAG - END #########################
+
+# Sensor NVM Data Save Support
+# Default Value: FALSE
+# Possible Values: TRUE / FALSE
+SAVE_SENSOR_NVM_DATA=FALSE
+
+# File location - Sensor NVM data Save Path
+# Default Value: /data/nvm_sensorData.dat
+# Possible Values: Customer specific
+SENSOR_NVM_DATA_PATH=/data/nvm_sensorData.dat
+
+#END###############################################################################

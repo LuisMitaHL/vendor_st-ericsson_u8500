@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPS_TESTMODE_HEP__
+#define __CGPS_TESTMODE_HEP__
+
+/*
+* Copyright (C) ST-Ericsson 2009
+*
+* cgpsTestMode.he
+* Date: 07-09-2009
+* Author: Balaji Natakala
+* Email : balaji.natakala@stericsson.com
+*/
+
+#ifdef AGPS_TEST_MODE_FTR
+
+/* + RRR */
+#ifdef ATT_LOGGING_ENABLE
+/* - RRR */
+
+/**
+* \fn void CGPS9_02PsteCallbackRegistrationReq(t_cgps_PsteNmeaCallback vp_Callback)
+* \brief CGPS uses this function to register a callback through which the PSTE messages are sent out\n
+* Don't used directly this function. Used the macro \ref MC_CGPS_PSTENMEA_CB_REGISTER
+* \param vp_Callback [in] callback used to notify the user of any events in form of PSTE messages (Cf. \ref t_cgps_PsteNmeaCallback)
+*/
+void CGPS9_02PsteCallbackRegistrationReq(t_cgps_PsteNmeaCallback vp_Callback);
+
+/* + RRR */
+#endif /*ATT_LOGGING_ENABLE*/
+/* - RRR */
+
+/* + LMSQC06481 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \fn uint16_t CGPS9_05StartProductionTest( void )
+* \brief This function is used to get a C/No value in production test\n
+* Don't used directly this function. Used the macro \ref MC_CGPS_GET_CNO_VALUE
+* Return of CNO is by callback registered by the caller.
+* \return void
+*/
+void CGPS9_05StartProductionTest( t_CGPS_CnoCriteria vp_CnoCriteria );
+#endif /* CGPS_CNO_VALUE_FTR */
+/* - LMSQC06481 : Production test */
+
+#endif /*AGPS_TEST_MODE_FTR*/
+
+
+
+/**
+* \fn void CGPS9_33StartProduction(uint16_t v_TestMask, t_CGPS_TREQTestRequest *p_cgpsTREQ_Req);
+* \brief Production Test Start Request Function
+* \Paramater TestMode and t_CGPS_TREQTestRequest
+*/
+void CGPS9_33StartProduction(uint16_t v_TestMask, t_CGPS_TestRequest *p_cgpsTREQ_Req);
+
+/**
+* \fn void CGPS9_34StopProduction( );
+* \brief Production Test Stop Request Function
+* \Paramater TestMode and v_Status
+*/
+void CGPS9_34StopProduction( );
+
+
+#endif /*__CGPS_TESTMODE_HEP__*/
+

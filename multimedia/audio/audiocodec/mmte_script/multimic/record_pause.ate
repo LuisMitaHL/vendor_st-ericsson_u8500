@@ -1,0 +1,52 @@
+test_start SOURCES_002 Record_Multimic_Pause
+
+OMX_GetHandle capturer OMX.ST.AFM.MULTI_MIC
+
+OMX_SetParameter capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+
+ate_attach_io       capturer 0 MEM $(OUTPUT_DIR)/record_48k_stereo_pause.pcm.out 2000000 0 0
+MMTE_DispatchState OMX_StateIdle capturer:0
+
+
+MMTE_DispatchState OMX_StatePause capturer
+
+#Start
+MMTE_DispatchState OMX_StateExecuting capturer
+
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=90 
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+################
+#RECORD ONGOING#
+################
+mmte_sleep 2000
+MMTE_DispatchState OMX_StatePause capturer
+################
+#   PAUSE      #
+################
+mmte_sleep 2000
+MMTE_DispatchState OMX_StateExecuting capturer
+
+################
+#RECORD ONGOING#
+################
+mmte_sleep 2000
+MMTE_DispatchState OMX_StatePause capturer
+################
+#   PAUSE      #
+################
+mmte_sleep 2000
+MMTE_DispatchState OMX_StateExecuting capturer
+
+mmte_sleep 2000
+#Stop
+MMTE_DispatchState OMX_StateIdle capturer
+MMTE_DispatchState OMX_StateLoaded capturer:0
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+
+#check_test
+
+test_end

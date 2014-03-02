@@ -1,0 +1,150 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPS_HEM__
+#define __HALGPS_HEM__
+/**
+* \file halgps.hem
+* \date 31/03/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all macro used by External application 
+* to communicate with the HALGPS module.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 31.03.08 </TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\addtogroup HLINIT
+*\{
+*/
+
+/**
+* \def MC_HALGPS_INIT
+* Macro used to init the GPS module \n
+* this macro is call by HlInit module when the init of the needed modules
+* (FSM, CLOCK) is finished.
+* \see HALGPS0_01Init
+*/
+#define MC_HALGPS_INIT    HALGPS0_01Init
+
+/**
+*\}
+*/
+
+/**
+*\addtogroup CGPS
+*\{
+*/
+
+/**
+* \def MC_HALGPS_POWERUP
+* Macro used to start the GPS module
+* 
+* \see HALGPS0_06Start
+*/
+#define MC_HALGPS_POWERUP  HALGPS0_06Start
+
+/**
+* \def MC_HALGPS_POWERDOWN
+* Macro used to stop the GPS module
+*
+* \see HALGPS0_07Stop
+*/
+#define MC_HALGPS_POWERDOWN HALGPS0_07Stop
+
+/**
+* \def MC_HALGPS_RESET
+* Macro used to reset the GPS module \n
+* Stop the GPS module via the GPIO, wait 500 ms and restart it
+*
+* \see HALGPS0_08Reset
+*/
+#define MC_HALGPS_RESET        HALGPS0_08Reset
+
+/**
+* \def MC_HALGPS_UTCCORRUPTED
+* Macro used by CGPS to inform the HALGPS module that the Clock was corrupted
+*
+* \see HALGPS0_05UTCCorrupted
+*/
+#define MC_HALGPS_UTCCORRUPTED HALGPS0_05UTCCorrupted
+
+/**
+* \def MC_HALGPS_DELETE_UTCCALIBSTORE
+* Macro used by CGPS to Delete GPS_UTC_Calib.bin file
+*
+* \see MC_HALGPS_DELETE_UTCCALIBSTORE
+*/
+#define MC_HALGPS_DELETE_UTCCALIBSTORE HALGPS0_19DeleteUTCCalibStore
+
+/**
+* \def MC_HALGPS_GETINFO
+* Macro used by CGPS to obtain versionning informations
+*
+* \see HALGPS0_13TATGetInfo
+*/
+#define MC_HALGPS_GETINFO HALGPS0_13TATGetInfo
+
+/**
+* \def MC_HALGPS_SLEEP
+* Macro used by CGPS when the GPS is put in sleep mode
+*
+* \see HALGPS0_14Sleep
+*/
+#define MC_HALGPS_SLEEP HALGPS0_14Sleep
+
+/**
+* \def MC_HALGPS_SET_SYSTEM_PATH
+* Macro used by CGPS to set the system directory path
+*
+* \see HALGPS0_15SetSystemPath
+*/
+#define MC_HALGPS_SET_SYSTEM_PATH HALGPS0_15SetSystemPath
+
+/**
+* \def MC_HALGPS_CLEAR_RX_BUF
+* Macro used to clear rx data when GPS is in sleep/coma 
+*
+* \see HALGPS0_16FlushRxBuffer
+*/
+#define MC_HALGPS_CLEAR_RX_BUF HALGPS0_16FlushRxBuffer
+
+/* +LMSqc06482 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \def MC_HALGPS_QUICK_START
+* Macro used by CGPS to start the chip for test mode
+*
+* \see HALGPS0_17QuickStart
+*/
+#define MC_HALGPS_QUICK_START HALGPS0_17QuickStart
+
+/**
+* \def MC_HALGPS_QUICK_STOP
+* Macro used by CGPS to stop the chip after test mode
+*
+* \see HALGPS0_18QuickStop
+*/
+
+#define MC_HALGPS_QUICK_STOP HALGPS0_18QuickStop
+#endif /* CGPS_CNO_VALUE_FTR */
+/* -LMSqc06482 : Production test */
+/**
+*\}
+*/
+
+#endif /* __HALGPS_HEM__ */

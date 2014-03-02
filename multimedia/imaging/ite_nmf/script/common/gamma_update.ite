@@ -1,0 +1,38 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/gamma_update.ite
+
+
+setusecase default
+
+#Gamma update when only LR is streaming
+LR prepare
+LR start
+setGammaCurve standard
+setGammaCurve disable
+setGammaCurve custom
+setGammaCurve disable
+LR stop
+LR free
+
+#Gamma update when only HR is streaming
+HR prepare
+HR start
+setGammaCurve standard
+setGammaCurve disable
+setGammaCurve custom
+setGammaCurve disable
+HR stop
+HR free
+
+#Gamma update when both LR and HR are streaming
+LR prepare
+LR start
+HR prepare
+HR start
+setGammaCurve standard
+setGammaCurve disable
+setGammaCurve custom
+setGammaCurve disable
+LR stop
+LR free
+HR stop
+HR free

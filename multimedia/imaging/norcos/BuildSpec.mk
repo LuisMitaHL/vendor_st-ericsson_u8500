@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_imaging/norcos=bin
+NO_STD_BUILD_imaging/norcos=1
+BUILD_MMDSP_NMF_imaging/norcos=bin
+BUILD_ARM_PROC_imaging/norcos=bin
+BUILD_ARM_CODE_imaging/norcos=bin
+BUILD_ARM_NMF_imaging/norcos=bin
+BUILD_XP70_SIA_CODE_imaging/norcos=false

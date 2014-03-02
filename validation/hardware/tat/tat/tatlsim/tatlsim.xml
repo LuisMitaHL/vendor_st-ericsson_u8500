@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlsim">
+  	<argument path="/DTH/SMC/config/menus/menu_08scm.xml" type="FILE" user_data="ACT_SMC_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsim/config/menus\nFilename=menu_08scm.xml</info> 
+	  </argument>
+	  <argument path="/DTH/SMC/config/panels/smc.xml" type="FILE" user_data="ACT_SMC_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsim/config/panels\nFilename=smc.xml</info> 
+	  </argument>
+	  <argument path="/DTH/SMC/config/panels/adpu.xml" type="FILE" user_data="ACT_SMC_ADPU_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsim/config/panels\nFilename=adpu.xml</info> 
+	  </argument>
+	  <argument path="/DTH/SMC/config/panels/self_test.xml" type="FILE" user_data="ACT_SMC_SEL_TEST_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlsim/config/panels\nFilename=self_test.xml</info> 
+	  </argument>
+    <action path="/DTH/SMC/Card_Activation/Activation" type="U8" user_data="ACT_ACTIVATION" set="DthSim_Simple_set" exec="DthSim_Simple_Exec">
+      <enum>
+        <enum_item value="TATSIM_ACTIVATE:0">Activate</enum_item>
+        <enum_item value="TATSIM_DEACTIVATE:1">Desactivate</enum_item>
+      </enum>
+      <info>Label Action:Activate SMC</info>
+      <argument path="/DTH/SMC/Card_Activation/Activation/Voltage" type="U8" user_data="ARG_ACTIVATION_VOLTAGE" get="DthSim_Simple_get" set="DthSim_Simple_set">
+        <enum>
+          <enum_item value="ENUM_SMC_ACTIVATE_1_2V">1,2V</enum_item>
+          <enum_item value="ENUM_SMC_ACTIVATE_1_8V">1,8V</enum_item>
+          <enum_item value="ENUM_SMC_ACTIVATE_3V">3V</enum_item>
+        </enum>
+        <range min="0" max="2"/>
+        <info>Label Box:Voltage</info>
+      </argument>
+      <argument path="/DTH/SMC/Card_Activation/Activation/ATR" type="U8" user_data="ARG_ACTIVATION_ATR" get="DthSim_Simple_get">
+        <range min="0" max="255"/>
+        <array rows="1" cols="255"/>
+        <info>Label Box:ATR\nElementPerLine:15\nPrefered format:hexa\nCell text: any:byte{celln}</info>
+      </argument>
+    </action>
+    <action path="/DTH/SMC/Set_PPS/PPS" type="U8" user_data="ACT_PPS" set="DthSim_Simple_set" exec="DthSim_Simple_Exec">
+      <info>Label Box:Set PPS</info>
+      <argument path="/DTH/SMC/Set_PPS/PPS/T" type="U8" user_data="ARG_PPS_T" set="DthSim_Simple_set">
+        <range min="0" max="1"/>
+        <info>Label Box:T parameter (0 or 1)</info>
+      </argument>
+      <argument path="/DTH/SMC/Set_PPS/PPS/F" type="U8" user_data="ARG_PPS_F" get="DthSim_Simple_get" set="DthSim_Simple_set">
+        <range min="0" max="9"/>
+        <info>Label Box:F parameter</info>
+      </argument>
+      <argument path="/DTH/SMC/Set_PPS/PPS/D" type="U8" user_data="ARG_PPS_D" get="DthSim_Simple_get" set="DthSim_Simple_set">
+        <range min="0" max="9"/>
+        <info>Label Box:D parameter</info>
+      </argument>
+      <argument path="/DTH/SMC/Set_PPS/PPS/Status" type="U8" user_data="ARG_PPS_STATUS" get="DthSim_Simple_get">
+        <range min="0" max="255"/>
+        <info>Label Box:New PPS :</info>
+      </argument>
+    </action>
+    <action path="/DTH/SMC/Snd_Cmd/SendAPDU" type="U8" user_data="ACT_SEND_APDU" set="DthSim_Simple_set" exec="DthSim_Simple_Exec">
+      <range min="0" max="255"/>
+      <info>Label Box:Send APDU</info>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Class" type="U8" user_data="ARG_SEND_APDU_CLASS" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <info>Label Box:APDU CLASS\nPrefered format:hexa</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Instruction" type="U8" user_data="ARG_SEND_APDU_INS" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <info>Label Box:APDU INS\nPrefered format:hexa</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Parameter1" type="U8" user_data="ARG_SEND_APDU_P1" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <info>Label Box:APDU Parameter 1</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Parameter2" type="U8" user_data="ARG_SEND_APDU_P2" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <info>Label Box:APDU Parameter 2</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Lc" type="U8" user_data="ARG_SEND_APDU_LC" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <info>Label Box:APDU Lc</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/LeMSB" type="U8" user_data="ARG_SEND_APDU_LEMSB" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <info>Label Box:APDU Le MSB</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/LeLSB" type="U8" user_data="ARG_SEND_APDU_LELSB" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <info>Label Box:APDU Le LSB</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Data" type="U8" user_data="ARG_SEND_APDU_DATAIN" set="DthSim_Simple_set">
+        <range min="0" max="255"/>
+        <array rows="1" cols="128"/>
+        <info>Label Box:APDU Data\nPrefered format:hexa\nElementPerLine:15\nCell text:any:{celln}</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/DataOut" type="U8" user_data="ARG_SEND_APDU_DATAOUT" get="DthSim_Simple_get">
+        <range min="0" max="255"/>
+        <array rows="1" cols="255"/>
+        <info>Label Box:Card data out\nPrefered format:hexa\nElementPerLine:15\nCell text:any:{celln}</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Sw1" type="U8" user_data="ARG_SEND_APDU_SW1" get="DthSim_Simple_get">
+        <range min="0" max="255"/>
+        <info>Label Box:SW1\nPrefered format:hexa</info>
+      </argument>
+      <argument path="/DTH/SMC/Snd_Cmd/SendAPDU/Sw2" type="U8" user_data="ARG_SEND_APDU_SW2" get="DthSim_Simple_get">
+        <range min="0" max="255"/>
+        <info>Label Box:SW2\nPrefered format:hexa</info>
+      </argument>
+    </action>
+    <action path="/DTH/SMC/CardClock/CardClock" type="U8" user_data="ACT_CLOCK" set="DthSim_Simple_set" exec="DthSim_Simple_Exec">
+      <enum>
+        <enum_item value="ENUM_SMC_START_CLOCK">START</enum_item>
+        <enum_item value="ENUM_SMC_STOP_CLOCK">STOP</enum_item>
+      </enum>
+      <range min="0" max="1"/>
+      <info>Label Box:Clock</info>
+      <argument path="/DTH/SMC/CardClock/CardClock/SetClockStop" type="U8" user_data="ARG_STOP_CLOCK_LEVEL" set="DthSim_Simple_set">
+        <enum>
+          <enum_item value="ENUM_SMC_STOP_CLOCK_HIGH">Stop High</enum_item>
+          <enum_item value="ENUM_SMC_STOP_CLOCK_LOW">Stop Low</enum_item>
+        </enum>
+        <range min="0" max="1"/>
+        <info>Label Box:clock stop</info>
+      </argument>
+      <argument path="/DTH/SMC/CardClock/CardClock/State" type="U32" user_data="ARG_CLOCK_STATE" get="DthSim_Simple_get">
+      <enum>
+        <enum_item value="ENUM_SMC_CLOCK_STARTED">Started</enum_item>
+        <enum_item value="ENUM_SMC_CLOCK_STOPPED">Stopped</enum_item>
+      </enum>
+      <info>Label Box:Clock Status</info>
+    </argument>
+    </action>
+    <action path="/DTH/SMC/ClockFrequency/SetClockFrequency" type="U8" user_data="ACT_SET_CLOCK" exec="DthSim_Simple_Exec">
+      <range min="0" max="1"/>
+      <info>Label Box:Frequency</info>
+      <argument path="/DTH/SMC/ClockFrequency/SetClockFrequency/ClockFrequency" type="U8" user_data="ARG_SET_CLOCK_FREQ" set="DthSim_Simple_set">
+        <enum>
+          <enum_item value="ENUM_SMC_CLOCK_1_01MHZ">1,01Mhz</enum_item>
+          <enum_item value="ENUM_SMC_CLOCK_3_2MHZ">3,20Mhz</enum_item>
+          <enum_item value="ENUM_SMC_CLOCK_3_84MHZ">3,84Mhz</enum_item>
+          <enum_item value="ENUM_SMC_CLOCK_4_8MHZ">4,80Mhz</enum_item>
+        </enum>
+        <range min="0" max="3"/>
+        <info>Label Box:Frequency</info>
+      </argument>
+    </action>
+    <action path="/DTH/SMC/SelfTest/UICC/Exec" type="U32" user_data="ACT_SELFTEST_UICC" exec="DthSim_SelfTest_Exec">
+      <info>Label action: Self Test UICC</info>
+      <argument path="/DTH/SMC/SelfTest/UICC/Exec/Status" type="U8" user_data="ARG_SELFTEST_UICC_STATUS" get="DthSim_SelfTest_get">
+        <info>Label box: Status (0x80 = success)\nPrefered format: hexa</info>
+      </argument>
+      <argument path="/DTH/SMC/SelfTest/UICC/Exec/Results" type="U16" user_data="ARG_SELFTEST_UICC_RESULT" get="DthSim_SelfTest_get">
+        <array rows="1" cols="4"/>
+        <info>Label box: Results\nPrefered format: hexa\nCell text: CLK;IOCTRL;DATA;INT</info>
+      </argument>
+    </action>
+    <action path="/DTH/SMC/SelfTest/I2C/Exec" type="U32" user_data="ACT_SELFTEST_I2C" exec="DthSim_SelfTest_Exec">
+      <info>Label action: Self Test I2C</info>
+      <argument path="/DTH/SMC/SelfTest/I2C/Exec/Status" type="U8" user_data="ARG_SELFTEST_I2C_STATUS" get="DthSim_SelfTest_get">
+        <info>Label box: Status\nPrefered format: hexa</info>
+      </argument>
+    </action>
+  </module>
+</dthapi>

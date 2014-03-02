@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Copyright (c) ST-Ericsson, 2010
+# Author: Gerald Lejeune <gerald.lejeune@stericsson.com>
+#
+case $1 in
+    start)
+    tatIsInUse=`netstat -t -n -p | grep -v 127.0.0.1 | grep ESTABLISHED | grep 9pserver`
+    if [ ! "$tatIsInUse" ]
+	then
+	formatMmc4="yes"
+	echo "Checking MMC4 on /dev/mmcblk0..."
+	type=`cat /sys/block/mmcblk0/device/type`
+	if [ "$type" == "MMC" ]
+	    then
+	    mountOutput=`mount -t ext2 /dev/mmcblk0p8 /mnt/UserFS1 2>&1`
+	    if [ -z "$mountOutput" ]
+		then
+		if [ -e  /mnt/UserFS1/.ufs1 ]
+		    then
+		    mountOutput=`mount -t vfat /dev/mmcblk0p9 /mnt/UserFS2 2>&1`
+		    if [ -z "$mountOutput" ]
+			then
+			if [ -e /mnt/UserFS2/.ufs2 ]
+			    then
+			    formatMmc4="no"
+			fi
+			umount /mnt/UserFS2
+		    fi
+		fi
+		umount /mnt/UserFS1
+	    fi
+	fi
+	if [ "$formatMmc4" == "yes" ]
+	    then
+	    FormatMmc4 -f
+	fi
+    fi
+    ;;
+    stop)
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

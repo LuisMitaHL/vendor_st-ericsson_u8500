@@ -1,0 +1,895 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.4.4" />
+<title>Crash Safe Parameter Storage Area Design Specification</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revision {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+div.imageblock img { border: 1px solid silver; }
+span.image img { border-style: none; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+</head>
+<body>
+<div id="header">
+<h1>Crash Safe Parameter Storage Area Design Specification</h1>
+</div>
+<div id="preamble">
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>This document is the design specification of a generic Crash Safe Parameter Storage Area (CSPSA)
+that can be used to implement a so called "trim area" or any type of parameter/value
+storage.</p></div>
+</div></div>
+</div>
+</div>
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>The CSPSA is an area in a persistent memory media containing parameter values. It needs to be
+accessible both from application in user space and from OS free applications. The area must
+reside outside any file system partition, and must have a direct interface
+to low level storage routines. In a Linux user space application CSPSA will access e.g. MTD or MMC
+directly as devices. In OS free applications it needs to interface low level drivers
+directly.</p></div>
+<div class="paragraph"><p>It is a requirement that the CSPSA is designed to be as crash safe as possible. It must
+be assumed that power can be cut off at any moment both at production and at end user.</p></div>
+<div class="paragraph"><p>CSPSA API will be implemented as a shared library in Linux userspace, operating against device nodes such as MTD and eMMC directly, and as
+an OS free static library for e.g. Loaders that operates directly against the flash memory drivers.</p></div>
+<div class="paragraph"><p>In Linux userspace one must consider that there may be several clients, but there must be only one common instance of the cached
+CSPSA image.</p></div>
+<div class="paragraph"><p>CSPSA must be design to be able to handle different flash memory types such as MMC and NAND flashes, and cope with specific characteristic such as blocks being or becoming
+bad in NAND flash memories.</p></div>
+</div></div>
+</div>
+<h2 id="U5">Persistant Media Storage</h2>
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>There are two important features that should make the CSPSA crash safe:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+There must always exist at least one valid CSPSA image
+</p>
+</li>
+<li>
+<p>
+There must be a checksum or hash value that can determin if a CSPSA image is valid
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>The solution for these requirements is to have two places where the CSPSA header and data can be written so that
+an old version of CSPSA image is not overwritten until the new is completed. The first image is situated
+from the start of the CSPSA partition and grows upwards, while the second is put last in the CSPSA partition growing
+sector or erase block wise downwards. Bad blocks are skipped as if they did not exist.</p></div>
+<div class="paragraph"><p>Furthermore there must exist a header containing a CRC32 value protecting the integrity of the data and the
+header, and an index value incremented for each instance of the header. After an image is written completely
+the previously valid header must be erased to mark the completion. Meaning that if there is only one valid header
+at the opening of CSPSA the previous writing of the header was performed uninterrupted. If there are two
+valid headers, the one with the highest index may have a data retention problem.</p></div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>Normally there will be only one valid image that CSPSA can load, but it may happen that there are two
+valid images. In this case either of these cases may apply:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Last write operation was interrupted just before it was completely finished. Data in this last sector
+may suffer from data retention problem. That is, data appears valid but may get unstable in a near future.
+</p>
+</li>
+<li>
+<p>
+The erase of the previous header was interrupted in a very early state. Data may appear valid but
+may get instable in a near future.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>To cope with this state the newest valid image must be used to overwrite the old version during the
+next session even though nothing has been written to the CSPSA.</p></div>
+<div class="paragraph"><p>If there seem to be two valid images, but the newest has corrupt data, the old one should
+be used. It is important to load the entire CSPSA structure before overwriting an older.</p></div>
+<div class="paragraph"><p>This is the sequence of how the three first stores of the CSPSA image would look like:</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">First image. Write header 1 and data.</caption>
+<col width="14%" />
+<col width="14%" />
+<col width="42%" />
+<col width="14%" />
+<col width="14%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Header 1</p></td>
+<td align="left" valign="top"><p class="table">Data 1</p></td>
+<td align="center" valign="top"><p class="table">&#8230;</p></td>
+<td align="left" valign="top"><p class="table">&#8230;</p></td>
+<td align="left" valign="top"><p class="table">&#8230;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Second image. Write header 2 and data.</caption>
+<col width="14%" />
+<col width="14%" />
+<col width="42%" />
+<col width="14%" />
+<col width="14%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Header 1</p></td>
+<td align="left" valign="top"><p class="table">Data 1</p></td>
+<td align="center" valign="top"><p class="table">&#8230;</p></td>
+<td align="left" valign="top"><p class="table">Data 2</p></td>
+<td align="left" valign="top"><p class="table">Header 2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Second image. Erase header 1.</caption>
+<col width="14%" />
+<col width="14%" />
+<col width="42%" />
+<col width="14%" />
+<col width="14%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">*</p></td>
+<td align="left" valign="top"><p class="table">Data 1</p></td>
+<td align="center" valign="top"><p class="table">&#8230;</p></td>
+<td align="left" valign="top"><p class="table">Data 2</p></td>
+<td align="left" valign="top"><p class="table">Header 2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Third image. Write header 3 and data.</caption>
+<col width="14%" />
+<col width="14%" />
+<col width="42%" />
+<col width="14%" />
+<col width="14%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Header 3</p></td>
+<td align="left" valign="top"><p class="table">Data 3</p></td>
+<td align="center" valign="top"><p class="table">&#8230;</p></td>
+<td align="left" valign="top"><p class="table">Data 2</p></td>
+<td align="left" valign="top"><p class="table">Header 2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Third image. Erase header 2</caption>
+<col width="14%" />
+<col width="14%" />
+<col width="42%" />
+<col width="14%" />
+<col width="14%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Header 3</p></td>
+<td align="left" valign="top"><p class="table">Data 3</p></td>
+<td align="center" valign="top"><p class="table">&#8230;</p></td>
+<td align="left" valign="top"><p class="table">Data 2</p></td>
+<td align="left" valign="top"><p class="table">*</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>With memory medias that may have bad blocks, it is assumed those blocks are just skipped as if they do not exist. This strategy
+will not be repeated in the text below, but should be assumed wherever applicable. CSPSA will keep a table over bad blocks
+in the CSPSA header for such devices according to the ONFI standard. If the CSPSA partition is empty, a scan must be done
+to find all factory bad blocks.</p></div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>When CSPSA code is reading a CSPSA image the following should apply:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Try to read headers at both start and end of the CSPSA partition. For NAND flash devices the second header is found
+at the first page of the last erase block. For other devices the second header is found at the last sector.
+</p>
+</li>
+<li>
+<p>
+Normally there will only be one valid header available. However it may occur a special case where two valid headers
+are found. In this case the image with the highest index should be loaded. If it is corrupt the other image should be
+loaded. When an image is loaded CSPSA must store its contents to flash before doing anything else.
+</p>
+</li>
+<li>
+<p>
+The sector/page at the end with invalid header must be determined to be fully erased. Otherwise a new copy
+of the current image must be created.
+</p>
+</li>
+<li>
+<p>
+Data is read sequentially upwards from start of CSPSA partition or sequentially downwards, sector or erase block wise,
+at the end of the CSPSA partition.
+</p>
+</li>
+</ul></div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>When CSPSA code is writing a CSPSA image the following should apply:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Write header and data at the end opposite of the one with the highest header index. If writing starts at the end
+of the CSPSA partition, data is written sector or erase block wise downwards.
+</p>
+</li>
+<li>
+<p>
+Erase the previously valid header to mark completion.
+</p>
+</li>
+<li>
+<p>
+If writing new data would overlap old valid data, writing must be aborted.
+</p>
+</li>
+</ul></div>
+</div></div>
+<h3 id="U1">Header (Persistant Media Storage)</h3><div style="clear:left"></div>
+<div class="paragraph"><p>The CSPSA header contains ten fixed data fields. There are different CRC32 values for data and header. This allows for quick
+verification of headers. For flash memory types that may have bad blocks, there is a bad block table trailing the header.
+Each bit represents an erase block in the CSPSA partition, where <em>1</em> indicates the blocks is ok and LSB represents the first
+erase block in the CSPSA partition. For devices that do not have bad blocks, this BBT has no meaning and the BBT Size must
+be set to 0. There are four 32-bit values dedicated for a "fast parameter" feature, which means that an application that
+only needs access to the these parameters only has to read the CSPSA header(s). Furthermore there are four reserved fields
+for future usage.</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Header Format (Little Endian)</caption>
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Magic (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">Version (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">Index (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">Flags (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">Data Size (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">CRC32 Data (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">CRC32 Header(uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">FastParameter[4] (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">Reserved[4] (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">BBT Size (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">BBT #1 (uint32_t)</p></td>
+<td align="left" valign="top"><p class="table">BBT #2</p></td>
+<td align="left" valign="top"><p class="table">&#8230;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">CSPSA Image Format</caption>
+<col width="11%" />
+<col width="11%" />
+<col width="76%" />
+<thead>
+<tr>
+<th align="left" valign="top">Field </th>
+<th align="left" valign="top"> Type </th>
+<th align="left" valign="top"> Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Magic</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">0x00415350 &#8658; "PSA"; <em>'Magic</em>' word to help recognize a CSPSA image.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Version</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Version of CSPSA image. Current value is 0x00000001.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Index</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Index that grows with 1 for each instance of an CSPSA image.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Flags</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Flags for current CSPSA image. If bit #0 is 0 it means header&#8217;s data is put at start of CSPSA
+partition, otherwise it is put at the end.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Data Size</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Size of data part in bytes.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">CRC32 Data</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">CRC32 value covering all data based on polynomial 0x04C11DB7, with initial value 0x00415350. CRC32 value
+is calculated with data in sequence from first item after the header to the last.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">CRC32 Header</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">CRC32 value covering header based on polynomial 0x04C11DB7, with initial value 0x00415350. CRC32 value
+is calculated with header in sequence from first byte to last according to BBT Size, excluding the CRC32 Header itself.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">FastParameter[4]</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Four 32-bit values for "fast parameter" feature. There are four dedicated keys for fast parameters at
+0xFFFFFFFC to 0xFFFFFFFF.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Reserved[4]</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Four 32-bit values reserved for future usage.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">BBT Size</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Determines the size of the bad block table. Size must be a multiple of 4 as the data part must start on a
+32 bit aligned address.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">BBT #1</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Bad block table #1 representing erase block #0 to #31 into the CSPSA partition. A <em>1</em> represents a valid block,
+while a <em>0</em> represents a bad block.</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">BBT #2</p></td>
+<td align="left" valign="top"><p class="table">uint32_t</p></td>
+<td align="left" valign="top"><p class="table">Bad block table #2 representing erase block #32 to #63 into the CSPSA partition. A <em>1</em> represents a valid block,
+while a <em>0</em> represents a bad block.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<h3 id="U2">Data (Persistant Media Storage)</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Data field contains a sorted array of triplets of <tt>{key, size, data}</tt>, where <tt>key</tt> is a 32-bit identifier, <tt>size</tt>
+is the size of data in bytes and <tt>data</tt> is the data. The array is sorted with increasing <tt>key</tt> value.</p></div>
+<div class="paragraph"><p>See <a href="#TableDataFormat">Table 4</a>. Fields <tt>key</tt> and <tt>size</tt> are of C99 type uint32_t stored in little endian format.</p></div>
+<div class="paragraph"><p>The <tt>key</tt> element must start at a 32-bit aligned address, so data part is padded with extra bytes of 0xFF when necessary.
+The padding is not included in the <tt>size</tt> value.</p></div>
+<div class="paragraph"><p>A data item may have a data size of 0 (zero), but normally deleted items should not be stored in persistant memory media
+allowing a compact storage of a sparse key array.</p></div>
+<div class="paragraph"><p>There are four keys dedicated for the fast parameters feature at 0xFFFFFFFC to 0xFFFFFFFF. These keys are always
+accessible, always 4 bytes in size and cannot be deleted. Access is done through normal read and write functions. The
+default value for these fields are zero.</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="tableblock" id="TableDataFormat">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Data Format (Little Endian)</caption>
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table"><tt>key (uint32_t)</tt></p></td>
+<td align="left" valign="top"><p class="table"><tt>size (uint32_t)</tt></p></td>
+<td align="left" valign="top"><p class="table"><tt>data (&#8230;)</tt></p></td>
+<td align="left" valign="top"><p class="table"><tt>key</tt></p></td>
+<td align="left" valign="top"><p class="table"><tt>size</tt></p></td>
+<td align="left" valign="top"><p class="table"><tt>data (&#8230;)</tt></p></td>
+<td align="left" valign="top"><p class="table">&#8230;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+</div>
+<h2 id="_implementation_design">Implementation Design</h2>
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>The implementation should focus on optimizing access speed rather than on saving space in RAM or on flash memory. Adding
+new items and changing size of existing items should be considered as rare operations, but must be possible.</p></div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>At startup of CSPSA code, a valid CSPSA image will be found according to chapter <a href="#U5">Persistant Media Storage</a>. CSPSA shall
+load the image into an field of arrays with an effort that no array is larger than 8kB (should be configurable), sorted by
+increasing <tt>key</tt> order. If single elements are larger than 8kB, then they will occur as single items in the array of image. Each
+array must start with a <tt>key</tt> value so data fields may not wrap to next array. This field of arrays will assure
+item search can be done in a deterministic time period, while the number of heap allocations is kept at a low level.</p></div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>All operations should operate on this field-of-array image if possible. When deleting objects, it is sufficient to set size to zero.
+Actual deletion of item may be performed at a later time when storing image to flash memory. New items, or items of new
+size is kept in a separate linked list, sorted on increasing <tt>key</tt> value, on the side of the main data cache image. When reading
+or writing CSPSA must use the separate item list prior to using the image arrays.</p></div>
+</div></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>When it is required to store a CSPSA image to flash memory, CSPSA will store data in chunks depending on the media.
+The chunk size should be a multiple of the smallest size that can be written do current flash media. The
+contents of the chunk shall be composed of the main data image in combination with the new item list, so that a sorted array is
+stored in flash memory. Any deleted objects should be skipped. The storage of the CSPSA image must follow directions in
+chapter <a href="#U5">Persistant Media Storage</a>. As the first flash memory page/sector will contain the CSPSA image header, it must be saved to be
+stored after all data. After all data is stored, details in the Header field can  be determined and at last the final CRC32 Data and Header
+values can be caclulated.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">In NAND flashes it is normally required that pages are written in sequence from start to end within an erase block. Thus, one cannot
+write the first page last as suggested above, but the entire first erase block must be cached in RAM before being stored to flash.</td>
+</tr></table>
+</div>
+</div></div>
+</div>
+<h2 id="_limitations">Limitations</h2>
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="paragraph"><p>To limit physical space requirements there is a situation when power is cut muliple times in a row
+at critical moments during writing of an image, that cannot be handled with out risk of unrecoverable
+damages to the area. Here is a detailed description of this scenario:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+A new CSPSA image is stored, but power is cut while writing the last sector/page of data so that
+data is having a retention problem. This means that data may appear valid, but is really unstable and
+may deteriorate much quicklier than normally.
+</p>
+</li>
+<li>
+<p>
+CSPSA is re-opened and finds two valid headers. After loading of data it starts erasing and overwriting
+the oldest image with the newly read image data. If power is cut just after the erase of the sector/page containing
+the header, CSPSA can no longer determine that the apparently valid image actually may have a data retention
+problem.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>The probability of this scenario should be very rare and in practice should never occur.</p></div>
+</div></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2010-09-14 16:48:32 CEST
+</div>
+</div>
+</body>
+</html>

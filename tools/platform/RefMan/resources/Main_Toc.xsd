@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.stericsson.com/refman/Main_Toc.xsd" elementFormDefault="qualified" xmlns="http://www.stericsson.com/refman/Main_Toc.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- The toc element-->
+  <xs:element name="toc">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="topic" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="label" use="required" />
+      <xs:attribute name="href" use="optional" />
+    </xs:complexType>
+  </xs:element>
+  <!-- The topic element-->
+  <xs:element name="topic">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="link" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+					  <xs:attribute name="toc" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="label" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Introduction" />
+            <xs:enumeration value="Abstract" />
+            <xs:enumeration value="Disclaimer" />
+            <xs:enumeration value="References" />
+            <xs:enumeration value="Feedback" />
+            <xs:enumeration value="API" />
+            <xs:enumeration value="Android documentation" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="href" use="optional" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# Init file for cspsa2nwm
+
+### BEGIN INIT INFO
+# Provides: cspsa2nwm
+# Required-Start: $local_fs cspsa-server
+# Required-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start and stop cspsa2nwm
+# Description: The cspsa2nwm will run at startup to read trim area for
+#              modem parameters and put them into modemfs.
+### END INIT INFO
+
+progname=cspsa2nwm
+execname=/usr/sbin/$progname
+lockfile=/var/lock/subsys/cspsa-tools
+
+# Sanity check
+[ -x $execname ] || exit 5
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+start() {
+        echo -n "Starting $progname: "
+        $execname -r / -u 0xFFFFFFFD:0 -g /modemfs/guardfile -p /modemfs/RFHAL CSPSA0 && success || failure
+        RETVAL=$?
+        [ $RETVAL -eq 0 ] && touch $lockfile
+        echo
+        return $RETVAL
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        ;;
+  reload)
+  ;;
+  restart|force-reload)
+        stop
+        start
+        ;;
+  status)
+        status $progname
+        RETVAL=$?
+        ;;
+  try-restart)
+        if [ -f $lockfile ]; then
+            stop
+            start
+        fi
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|try-restart|reload|force-reload|status}"
+        RETVAL=$?
+esac
+
+exit $RETVAL

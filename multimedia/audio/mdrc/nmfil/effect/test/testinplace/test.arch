@@ -1,0 +1,23 @@
+contains mdrc.nmfil.effect.test.tester          as tester
+
+contains mdrc.nmfil.effect.test.parser          as mdrc_parser
+
+contains mdrc.nmfil.effect                      as mdrc_nmfil
+contains mdrc.effect.libmdrc5b                  as libmdrc5b
+
+contains malloc                                 as malloc
+contains afmtestmalloc                          as afmtestmalloc
+
+binds tester.algoConfParser                     to mdrc_parser.configure
+binds mdrc_parser.mdrc_config                   to mdrc_nmfil.configure     asynchronous fifo = 2
+binds mdrc_parser.mdrc_memory_size              to mdrc_nmfil.memory_size
+
+binds tester.effect                             to mdrc_nmfil.effect
+
+// library
+binds mdrc_nmfil.libmdrc5b                      to libmdrc5b.libmdrc5b
+
+binds mdrc_nmfil.malloc                         to malloc.malloc
+
+binds afmtestmalloc.setheap                     to mdrc_nmfil.setheap
+binds mdrc_parser.setheap                       to mdrc_nmfil.setheap

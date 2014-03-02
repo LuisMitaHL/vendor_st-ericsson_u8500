@@ -1,0 +1,224 @@
+add 
+menu 
+( 
+  popup "&SIA Register banks" 
+  ( 
+  popup "CFG" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "PSA (0x0000)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0000)"
+     menuitem  "PEA (0x0002)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0002)"
+     menuitem  "ICE (0x0004)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0004)"
+     menuitem  "CSC_L (0x0006)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0006)"
+     menuitem  "CSC_H (0x0007)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0007)"
+     menuitem  "CGC (0x0008)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0008)"
+     menuitem  "TIM_L (0x0000)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0000)"
+     menuitem  "TIM_H (0x0001)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0001)"
+     menuitem  "TIC_L (0x0002)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0002)"
+     menuitem  "TIC_H (0x0003)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0003)"
+     menuitem  "IIS_L (0x0010)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0010)"
+     menuitem  "IIS_H (0x0011)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0011)"
+     menuitem  "ISR_L (0x0012)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0012)"
+     menuitem  "ISR_H (0x0013)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0013)"
+     menuitem  "IMR_L (0x0014)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0014)"
+     menuitem  "IMR_H (0x0015)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0015)"
+     menuitem  "ISS_L (0x0110)" "var.addwatch *(0xE02E0000 + 0x0000 + 0x0110)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02e0000 /DIALOG"
+  )
+  popup "CVCF" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "REG_SOFT_RESET (0x0000)" "var.addwatch *(0xE02E0000 + 0xC220 + 0x0000)"
+     menuitem  "REG_VFILTER (0x0001)" "var.addwatch *(0xE02E0000 + 0xC220 + 0x0001)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec220 /DIALOG"
+  )
+  popup "DMA" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "ENR_L (0x0000)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0000)"
+     menuitem  "ENR_H (0x0001)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0001)"
+     menuitem  "DIR_L (0x0002)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0002)"
+     menuitem  "DIR_H (0x0003)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0003)"
+     menuitem  "IMR_L (0x0004)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0004)"
+     menuitem  "IMR_H (0x0005)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0005)"
+     menuitem  "ISR_L (0x0006)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0006)"
+     menuitem  "ISR_H (0x0007)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0007)"
+     menuitem  "SOFT_RST_L (0x0008)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0008)"
+     menuitem  "SOFT_RST_H (0x0009)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0009)"
+     menuitem  "BSM_L (0x000A)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x000A)"
+     menuitem  "BSM_H (0x000B)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x000B)"
+     menuitem  "MTF_R_TFL (0x0041)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0041)"
+     menuitem  "MTF_R_INCR (0x0042)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0042)"
+     menuitem  "MTF_R_BSA_L (0x0043)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0043)"
+     menuitem  "MTF_R_BSA_H (0x0044)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0044)"
+     menuitem  "MTF_W_TFL (0x0045)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0045)"
+     menuitem  "MTF_W_INCR (0x0046)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0046)"
+     menuitem  "MTF_W_BSA_L (0x0047)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0047)"
+     menuitem  "MTF_W_BSA_H (0x0048)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x0048)"
+     menuitem  "MAX_PRI (0x00F1)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x00F1)"
+     menuitem  "MIN_OPC_SZ (0x00F2)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x00F2)"
+     menuitem  "PAGE_SZ (0x00F3)" "var.addwatch *(0xE02E0000 + 0xC300 + 0x00F3)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec300 /DIALOG"
+  )
+  popup "IRP" 
+  ( 
+  popup "Page content"
+  (
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02e9000 /DIALOG"
+  )
+  popup "ITC" 
+  ( 
+  popup "Page content"
+  (
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ede00 /DIALOG"
+  )
+  popup "IPP" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "CCP_IF (0x0000)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0000)"
+     menuitem  "CSI_IF (0x0001)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0001)"
+     menuitem  "SD_RESET (0x0020)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0020)"
+     menuitem  "SD_START (0x0021)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0021)"
+     menuitem  "SD_PIPES_OUT_EN (0x0022)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0022)"
+     menuitem  "SD_CCIR (0x0023)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0023)"
+     menuitem  "SD_CCIR_EXT_MODE (0x0024)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0024)"
+     menuitem  "SD_IF (0x0025)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0025)"
+     menuitem  "SD_BPP (0x0026)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0026)"
+     menuitem  "SD_LOAD_STORE_FORMAT (0x0029)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0029)"
+     menuitem  "SD_LOAD_ACTIVE_LINE_TIME_LSB_EN (0x002B)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x002B)"
+     menuitem  "SD_LOAD_ACTIVE_LINE_TIME_MSB (0x002C)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x002C)"
+     menuitem  "SD_LOAD_WW (0x002D)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x002D)"
+     menuitem  "SD_LOAD_WH (0x002E)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x002E)"
+     menuitem  "SD_LOAD_BML_PIXEL_ORDER (0x002F)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x002F)"
+     menuitem  "SD_LOAD_NB_LINETYPES (0x0030)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0030)"
+     menuitem  "SD_ERROR_INT_CTRL (0x0039)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0039)"
+     menuitem  "SD_CCIR_FIELD_NUM (0x003A)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x003A)"
+     menuitem  "SD_LOAD_NON_ACTIVE_LINE_TIME_LSB_EN (0x003B)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x003B)"
+     menuitem  "SD_LOAD_NON_ACTIVE_LINE_TIME_MSB (0x003C)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x003C)"
+     menuitem  "SD_ERROR_INT_EN (0x003D)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x003D)"
+     menuitem  "CD_RESET (0x0040)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0040)"
+     menuitem  "CD_START (0x0041)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0041)"
+     menuitem  "CD_CCIR (0x0042)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0042)"
+     menuitem  "CD_CCIR_EXT_MODE (0x0043)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0043)"
+     menuitem  "CD_BPP (0x0045)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0045)"
+     menuitem  "CD_CCP_FC (0x0046)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0046)"
+     menuitem  "CD_CCP_LC (0x0047)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0047)"
+     menuitem  "CD_CCP_RAW (0x0048)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0048)"
+     menuitem  "CD_IF (0x0049)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0049)"
+     menuitem  "CD_CROP_EN (0x004B)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x004B)"
+     menuitem  "CD_CCIR_FIELD_NUM (0x0050)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0050)"
+     menuitem  "CD_ERROR_INT_CTRL (0x0051)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0051)"
+     menuitem  "CD_ERROR_INT_EN (0x0052)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0052)"
+     menuitem  "CD_RAW_EOF_INT_EN (0x0053)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0053)"
+     menuitem  "CD_CCP_CCIR_ERR_DBG (0x0054)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0054)"
+     menuitem  "TCR (0x0060)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0060)"
+     menuitem  "ITIP_L (0x0061)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0061)"
+     menuitem  "ITIP_H (0x0062)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0062)"
+     menuitem  "ITOP_L (0x0063)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0063)"
+     menuitem  "REG_SOFT_RESET (0x0001)" "var.addwatch *(0xE02E0000 + 0xC000 + 0x0001)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec000 /DIALOG"
+  )
+  popup "SVCF" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "REG_SOFT_RESET (0x0000)" "var.addwatch *(0xE02E0000 + 0xC210 + 0x0000)"
+     menuitem  "REG_VFILTER (0x0001)" "var.addwatch *(0xE02E0000 + 0xC210 + 0x0001)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec210 /DIALOG"
+  )
+  popup "CPROJ" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "ENR (0x0000)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0000)"
+     menuitem  "DIR (0x0001)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0001)"
+     menuitem  "IMR (0x0002)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0002)"
+     menuitem  "ISR (0x0003)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0003)"
+     menuitem  "RST (0x0004)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0004)"
+     menuitem  "STA (0x0005)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0005)"
+     menuitem  "HSIZE (0x0006)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0006)"
+     menuitem  "VSIZE (0x0007)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0007)"
+     menuitem  "GCFW_DIS (0x0008)" "var.addwatch *(0xE02E0000 + 0xC230 + 0x0008)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec230 /DIALOG"
+  )
+  popup "MTF" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "R_REG_SOFT_RESET (0x0000)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0000)"
+     menuitem  "W_REG_SOFT_RESET (0x0001)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0001)"
+     menuitem  "R_REG_ENR (0x0002)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0002)"
+     menuitem  "W_REG_ENR (0x0003)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0003)"
+     menuitem  "R_REG_DIR (0x0004)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0004)"
+     menuitem  "W_REG_DIR (0x0005)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0005)"
+     menuitem  "R_REG_STA (0x0006)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0006)"
+     menuitem  "W_REG_STA (0x0007)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0007)"
+     menuitem  "R_FIFO_SKIP_BYTES (0x0010)" "var.addwatch *(0xE02E0000 + 0xC400 + 0x0010)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec400 /DIALOG"
+  )
+  popup "CKG" 
+  ( 
+  popup "Page content"
+  (
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec200 /DIALOG"
+  )
+  popup "HWR" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "END (0xDDFF)" "var.addwatch *(0xE02E0000 + 0xC800 + 0xDDFF)"
+     menuitem  "BASE_RAM_ARRAY_EXT_REG (0xDC00)" "var.addwatch *(0xE02E0000 + 0xC800 + 0xDC00)"
+     menuitem  "BASE_CONFIG (0xDC40)" "var.addwatch *(0xE02E0000 + 0xC800 + 0xDC40)"
+     menuitem  "EXT_REG_TABLE (0x0000)" "var.addwatch *(0xE02E0000 + 0xC800 + 0x0000)"
+     menuitem  "INDIRECT_ADD (0x0000)" "var.addwatch *(0xE02E0000 + 0xC800 + 0x0000)"
+     menuitem  "INDIRECT_DATA_WR (0x0001)" "var.addwatch *(0xE02E0000 + 0xC800 + 0x0001)"
+     menuitem  "INDIRECT_DATA_RD (0x0002)" "var.addwatch *(0xE02E0000 + 0xC800 + 0x0002)"
+     menuitem  "CK_EN (0x0003)" "var.addwatch *(0xE02E0000 + 0xC800 + 0x0003)"
+     menuitem  "SOFT_RST_START_SCHED (0x0004)" "var.addwatch *(0xE02E0000 + 0xC800 + 0x0004)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec800 /DIALOG"
+  )
+  popup "SPROJ" 
+  ( 
+  popup "Page content"
+  (
+     menuitem  "ENR (0x0000)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0000)"
+     menuitem  "DIR (0x0001)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0001)"
+     menuitem  "IMR (0x0002)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0002)"
+     menuitem  "ISR (0x0003)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0003)"
+     menuitem  "RST (0x0004)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0004)"
+     menuitem  "STA (0x0005)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0005)"
+     menuitem  "HSIZE (0x0006)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0006)"
+     menuitem  "VSIZE (0x0007)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0007)"
+     menuitem  "GCFW_DIS (0x0008)" "var.addwatch *(0xE02E0000 + 0xC240 + 0x0008)"
+  )
+  separator
+  menuitem "View page in memory" "data.dump  0xe02ec240 /DIALOG"
+  )
+    )
+  )

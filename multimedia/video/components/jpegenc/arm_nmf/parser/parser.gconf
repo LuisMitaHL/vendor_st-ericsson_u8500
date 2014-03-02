@@ -1,0 +1,32 @@
+primitive jpegenc.arm_nmf.parser extends fsm.component.armnmf_component
+{
+
+	// Constructor
+	provides lifecycle.constructor   as constructor
+
+	// input port
+	provides armnmf_emptythisbuffer   as      emptythisbuffer
+	requires armnmf_fillthisbuffer    as      inputport
+	requires jpegenc.arm_nmf.api.portSettings    as      iChangePortSettingsSignal
+	requires jpegenc.arm_nmf.api.cmd_ack    as      iCommandAck
+	// output port
+	requires armnmf_emptythisbuffer    as      outputport
+	provides armnmf_fillthisbuffer     as      fillthisbuffer
+
+	// Provided interfaces to algo component
+	requires jpegenc.arm_nmf.api.algo            as iAlgo
+	provides jpegenc.arm_nmf.api.end_algo        as iEndAlgo
+	
+        provides jpegenc.arm_nmf.api.setParam	as setParam
+
+	requires jpegenc.arm_nmf.api.log_event       as iSendLogEvent
+	provides jpegenc.arm_nmf.api.log_event       as iGetLogEvent	
+
+	sources src/parser.cpp    
+    
+	option memories EMB24RAM|EMB16RAM|XROM|EXT24RAM|EXT16RAM	
+	option CPPFLAGS "-g -O3"
+	   
+
+}
+

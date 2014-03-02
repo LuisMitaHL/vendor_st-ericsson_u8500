@@ -1,0 +1,260 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 0.9.0)      *
+**********************************************************
+	"Compilé, c'est gagné" (M. Guene)
+	"La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World's, Training, Mandelbrot, User Fifo)
+ 		Hello world and mp3 Eclipse project delivered
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+	- STn8815 SAA & SVA Cut A0/B0/C0
+	
+Supported environments:
+	- nmf_bare: based on Nomadik HCL/services libraries
+	- nmf_ee: 	based on internal component-based OS
+	- nmf_os21: based on ARM OS21
+
+Changes:
+--------
+[CM]
+ 	- Remove blocking communication
+	  	In case of PARAMS or COMS FIFO overflow detected by Panic or error returning by communication 
+	  	done from host; you must check your fifo size according your scenario.
+	- Add Y configuration in CM_ConfigureMediaProcessorCore CM API in order to set required Y memory
+	  	MPC by MPC.
+	- Replace enum used in CM_API by sized integer typedef + set of defines in order to control size
+		of enum due to incompatibility ABI between C compiler.
+		This API change is fully source compatible with old API. 
+	- Rename VOID_COMPONENT -> NMF_VOID_COMPONENT.
+	- CM_AllocMpcMemory can now be used to allocate in TCM Y memory.
+	 
+[MPC Executive Engine]
+	- Add dynamic stack management that take into account stack option.
+		If not specified 128 words is assumed. 
+		Initial stack size are fixed to:
+			128 words for synchronous execution engine
+			3*128 words for hybrid execution engine
+	
+[OS integration]		
+	  
+[Tools] 
+	- Add error management with unique error number id (will be aligned with programming model 
+	  documentation).
+		Use this error number as tools exit value.
+	- Allow generation of PIC/PID".arch" MMDSP static executable compiled with "--pic" option.
+	- Allow LDFLAGS option.
+		This option will be used and pass to linker only if defined in ADL of top component composition
+		(the component pass to "nmfconfc"). Other LDFLAGS define in sub-component will be ignored.
+	- Check that IDT/IDL type not defined twice. 
+	- Check that IDL method parameters not defined twice. 
+ 
+[Programming model]
+	- Error return type add for interface calling from component (a.k.a: NMFCALL).
+	  When calling component from host side, error could now be returned in order to detect 
+ 	  potential error. Thus, Iyour.interface has been enhance for returning an error type, 
+ 	  while your interface declaration don't. You can use this error to retry communication 
+ 	  in case of fifo overflow.
+	- Introduce call back interface.
+	  In order to avoid warning during compilation of callback interface, you can use
+ 	  CByour.interface in place of Iyour.interface.
+	- Remove library component which is replace by singleton one:
+ 		library your.component -> primitive your.component singleton
+	- Add static required interface that can be used by directly call method through: 
+ 		meth() ( and not though I.meth() ). 
+ 	  Binding static required interface could be done only to singleton component which don't
+ 	  need context. This feature could be very useful for legacy code that call library and 
+ 	  for avoiding virtual call and context switching on singleton static component.
+ 	- Add definition of constants in IDL through '#define'.
+ 	  Such grammars allowed:
+ 		#define <Identifier> <Integer>
+ 		#define <Identifier> <String>
+ 		#define <Identifier> <Character>
+ 	  Furthermore, integer constants can be used as size of array:
+ 	  	type array[identifier];	
+ 	- "dcumode" no more supported in IDL. 
+ 	- Replace 'provide ... prefix <STRING>' by 'provide ... prefix CIdentifier'.
+
+
+Bug fixes:
+----------
+	- [ Defect #27779 ] "#define" is not supported by NMF's IDL
+	- [ Defect #28844 ] [Tools] grammar for 'incdir' option
+	- [ Defect #29897 ] [Tools] 2D array parameter in method declaration (IDL)
+	- [ Defect #32553 ] [CM] asynchronous internal binding inside composite
+	  [ Defect #32634 ] [CM] In a composite component, asynchronous bindings problems
+		This Construction is not encouraged since it's better to do that through dynamic allocation. 
+		Nevertheless, for now it's allowed by programming model and the defect has been fixed.
+	- [ Defect #33595 ] [CM] Unable to generate the Panic reasons COM_FIFO_OVERFLOW 
+	  and PARAM_FIFO_OVERFLOW
+	- [ Defect #33598 ] [CM] Panic for reason EVENT_FIFO_OVERFLOW faultingComponent value
+	- [ Defect #33760 ] [TOOLS] Possibility to rebind in a composite component
+		Add error in case in case or rebindind a client interface (either with the same server or 
+		the same binding factory).
+		Concerning sub-components, they are started and stopped automatically when composite start 
+		or stop (in fact composite call start and stop method of sub-components automatically).
+	- [ Defect #33848 ] [CM] CM_DisconnectMpcAsFifoPoper: unbind must not be done in case of 
+	  error on notify interface
+	- [ Defect #34084 ] --enum-is-int must be used when compiling CM
+		Finally replace
+		typedef enum {
+			FOO_ONE,
+			FOO_TWO
+		} t_foo; by
+		typdef t_[s|u]int[8|16|32] t_foo; and
+		#define FOO_ONE ((t_foo)0)
+		#define FOO_TWO ((t_foo)1)
+	- [ Defect #34098 ] [CM] Return code CM_ILLEGAL_UNBINDING is not documented in the cm_api doc.
+	- [ Defect #34250 ] [CM] crash if sdram memory handle (from alloc) is provided to mpc free 
+	  memory api
+	  	Correct using a 'magic' number in sdram handle user data. Allow to differentiate mpc from
+	  	sdram handle
+	- [ Defect #34415 ] [TOOLS] Prefix syntax checking by nmfconfc not strict enough
+	- [ Defect #34419 ] [CM] OS21 Panic detection crash (memory access violation)
+		This defect occure since test make printf under interrupt context (when Panic occure) 
+		either for log or for test harness write.
+		Make semihosting print delayed under interrupt context on OS21.
+	- [ Defect #34434 ] [TOOLS] protected keywords possible for interface names
+		All these sample will now be reject.
+	- [ Defect #34478 ] [CM] config. of lifecycle interfaces in composite conf. files
+		Such construction no more allowed and refuse by tools.
+	- [ Defect #34483 ] [TOOLS] Possibility to use the 'prefix' keyword in composite conf. files
+		Since using String for specifying prefix is not a good thing.
+		I replace String by C identifier in programming model.
+	- [ Defect #34486 ] [TOOLS] lifecycle interfaces access from the introspection API
+		Introspection no more return lifecycle interface.
+	- [ Defect #34519 ] [Tools] hexadecimal value not supported for dcumode
+	  [ Defect #34520 ] [Tools] no check on dcumode value
+		"dcumode" no more supported in interface.
+		Removed from grammar and programming model.
+	- [ Defect #34532 ] [CM] CM_GetComponentRequiredInterface (introspection API) using static 
+	  interface
+	- [ Defect #34534 ] [Tools] t_bool primitive type not supported inside structure (IDL)
+	  [ Defect #34552 ] [Tools] t_bool parameter unsupported in method declaration (IDL)
+		Declared it in share/inc/type.h file.
+	- [ Defect #34535 ] [TOOLS] Static interface with a collection size
+		Prohibited by tools.
+	- [ Defect #34539 ] [CM] CM_StartComponent does not detect an unbinded required itf
+	- [ Defect #34543 ] [Tools] hexadecimal value not supported for array size (IDL)
+	- [ Defect #34553 ] [CM] PANIC for reason COM FIFO OVERFLOW (MPC->HOST)
+	  [ Defect #34558 ] [CM] PANIC for reason COM_FIFO_OVERFLOW (DSP->DSP)
+		Fix defect could have been solved through two ways:
+		- Declare in NMF-EE and OS21 callback thread with high priority that test thread
+		  in order to receive CB before sending new command.
+	- [ Defect #34554 ] [CM] PANIC for reason PARAM_FIFO_OVERFLOW (MPC->HOST)
+	  [ Defect #34565 ] [CM] PANIC for reason PARAM FIFO OVERFLOW (DSP->DSP)
+		Fix defect could have been solved through two ways:
+		- Declare in NMF-EE callback thread with high priority that test thread
+		- Wait to have received all coms before continue.
+		Elsewhere, we can request another one which will fall again in PARAM
+		FIFO Overflow.
+	- [ Defect #34557 ] cannot retrieve a t_uint32 attributes
+		Only attribute filling in one word could be handle.
+		Thus, you can't use biggest type than t_uint24 on MMDSP.
+	- [ Defect #34591 ] [CM] CM_OK returned when starting a component not binded
+	- [ Defect #34595 ] [CM] first destroy of singleton returns CM_COMPONENT_NOT_STOPPED error
+	- [ Defect #34863 ] [CM] Panic reason COM_FIFO_OVERFLOW (MPC->HOST)
+		Solved by introduce lantency in NMF-os21. Nevertheless, such methodology not work to
+		detect COM fifo overflow.
+	- [ Defect #34864 ] [CM] Panic reason COM_FIFO_OVERFLOW (DSP->DSP)
+	 	Detected COM seem very difficult.
+		Thus; on distributed communication and to detect COM overflow, disable target IT.
+	- [ Defect #34896 ] [Tools] check on initial value of integer attribute
+	- [ Defect #34898 ] [Tools] check on size of attribute names
+	- [ Defect #34899 ] [Tools] check on property string size
+	- [ Defect #34903 ] [Tools] sources redeclaration (ADL)
+		Prohibited by tool.
+	- [ Defect #34907 ] [Tools] error #127 with type extended twice
+		Fix by don't check that a type has not been already extended through other types.
+	- [ Defect #34908 ] [Tools] no check on types extended by types (ADL)
+	- [ Defect #34909 ] [Tools] java exception if types extended in a cyclical way (ADL)
+	- [ Defect #34912 ] [Tools] java exception if direct binding inside composite (ADL)
+	- [ Defect #34949 ] [Tools] assigning untyped attribute is allowed (ADL)
+	- [ Defect #34954 ] [Tools] no check on assigned attribute values (ADL)
+	
+
+Known Issues:
+-------------
+	- Potential lost of event if such operations occur simultaneously:
+		* Host->MPC and 
+		* Interrupt handler which call asynchronously other component
+	  This issue will be fixed in NMF  V0.9.1. 
+
+
+Notes:
+------
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested 
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one memory segment only
+		
+	- MP3 example supported only on nmf_bare environment.
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+		Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+	- Mandelbrot example supported only on nmf_bare and nmf_ee environment (not included in Nomadik
+	 	Toolset delivery).
+	- Some link issue with GNU toolchain could occur in examples until HCL/Services compiled with 
+		correct flags. 
+		
+	- NME API will be delivered in NMF V0.9.1.
+
+
+Pre-requires:
+-------------
+	- At least Nomadik Toolset 1.0.0 Alpha Service Pack 1
+		- Patched with MMGDB debugger 3.9.2 for debugging MMDSP 
+			Available at https://codex.cro.st.com/file/showfiles.php?group_id=310
+		- Patched with ST ARM GCC 1.0.7.
+	- Or Nomadik Toolset 1.0.0 Beta
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		MPC: SAA & SVA
+		Execution Engine: Synchronous, Hybrid
+		Nomadik Toolset 1.0.0: 1.0.0 Alpha SP1
+		ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593, st-armgcc (gcc version 4.1.1)
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-MPC
+			asynchronous intra-MPC
+			ARM -> MPC
+			MPC -> ARM
+			inter MPCs (asynchronous)
+			MPC -> MPC (on 8815B0)
+			error management
+		* Memory 
+			Alloc and free
+		* User Fifo 
+		* Programming Language
+			IDL
+			ADL
+		* Collection :
+			Behavior with binds between primitives component
+			Behavior with binds between composites component
+			Behavior with binds defined in composites components (conf. files)
+		* Network introspection
+			Components (primitives or composites)
+			Interfaces with and without collections (size and index usage)
+      		Attributes
+      		Properties	
+		* Panic :
+			Behavior upon each Panic (reason) detection and after the detection.

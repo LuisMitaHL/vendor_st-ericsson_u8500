@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/STE_darkBlue"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    android:padding="5dp" >
+
+    <TextView
+        android:id="@+id/labelSendCmd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:text="@string/labelSendCmd" />
+
+    <EditText
+        android:id="@+id/editTextSendCmd"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/labelSendCmd"
+        android:background="@android:drawable/editbox_background"
+        android:inputType="text|textNoSuggestions"
+        android:singleLine="true"
+        android:textColor="@color/black" />
+
+    <Button
+        android:id="@+id/buttonSendCmd"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editTextSendCmd"
+        android:layout_below="@+id/editTextSendCmd"
+        android:layout_marginTop="5dp"
+        android:text="@string/buttonSendCmd" />
+
+    <ScrollView android:id="@+id/traceStatusScroller"
+        android:layout_width="fill_parent"
+        android:layout_height="225dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="1dp"
+        android:layout_below="@+id/buttonSendCmd"
+        android:fillViewport="true" >
+
+        <EditText
+            android:id="@+id/editTextInfo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:inputType="text|textMultiLine|textNoSuggestions"
+            android:enabled="false"
+            android:text="@string/advancedHelp"
+            android:textSize="16dp" />
+    </ScrollView>
+
+    <ImageView
+        android:id="@+id/ImageViewPageIndAdv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/labelVersionInfoAdv"
+        android:contentDescription="@string/imgviewDesc"
+        android:src="@drawable/third_page_indication" />
+
+    <TextView
+        android:id="@+id/labelVersionInfoAdv"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:text="@string/labelVersionInfo"
+        android:textSize="8dp" />
+
+    <TextView
+        android:id="@+id/labelSendCmdStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/buttonSendCmd"
+        android:layout_alignBottom="@+id/buttonSendCmd"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/buttonSendCmd"
+        android:text="@string/labelSendCmdStatus" />
+
+</RelativeLayout>

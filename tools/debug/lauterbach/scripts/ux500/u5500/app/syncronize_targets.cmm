@@ -1,0 +1,35 @@
+;------------------------------------------------------------
+; syncronize_targets.cmm
+;------------------------------------------------------------
+
+;
+; 090508 - KM Initial version
+;-----------------------------------------------------------
+
+// Prepare for syncronize debuggers
+
+ SYNCH.MASTERGO ON
+ SYNCH.MASTERBREAK ON
+ SYNCH.MASTERSTEP OFF
+ SYNCH.SLAVEGO ON
+ SYNCH.SLAVEBREAK ON
+ SYNCH.SLAVESTEP OFF
+  if ("&AccStarted"=="True")&&("&CevaStarted"=="True")
+ 	SYNCH.CONNECT &icAcc &icCeva								; localhost:40001 localhost:40002
+ else if ("&AccStarted"=="True")
+	SYNCH.CONNECT &icAcc
+ else if ("&CevaStarted"=="True")
+	SYNCH.CONNECT &icCeva
+
+ SYNCH.OFF
+ SYNCH.ON			;bugfix
+ if "&SynchApp"=="False"
+	SYNCH.OFF
+ else
+	SYNCH.ON
+
+
+
+
+
+ ENDDO

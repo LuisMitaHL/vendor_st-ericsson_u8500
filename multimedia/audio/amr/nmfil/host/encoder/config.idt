@@ -1,0 +1,18 @@
+#ifndef __AMRENC_CONFIG_IDT__
+#define __AMRENC_CONFIG_IDT__
+#include <memorypreset.idt>
+#include <amr/nmfil/common.idt>
+
+typedef struct {
+	t_uint16                bNoHeader;
+	t_memory_preset         memory_preset;
+} AmrEncParam_t;
+
+typedef struct {
+	t_uint16                nBitRate;
+	t_uint16                bDtxEnable;
+  	AmrPayloadFormat_e      ePayloadFormat;
+	t_uint16	  	        bEfr_on;
+} AmrEncConfig_t;
+
+#endif

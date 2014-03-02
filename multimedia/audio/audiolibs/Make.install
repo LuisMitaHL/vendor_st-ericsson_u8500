@@ -1,0 +1,24 @@
+# -*- Mode: Makefile -*-
+include $(MM_MAKEFILES_DIR)/SharedConfig.mk
+
+INSTALL_HEADER=$(wildcard common/include/*)
+
+INSTALL_HEADER+=$(wildcard common/*)
+
+INSTALL_HEADER+=$(wildcard fake_dsptools/*)
+
+
+
+INSTALL_HEADER_PREFIX_DIR:=audiolibs/
+
+#WARNING todo target is MANDATORY (exe and/or lib)
+todo: header
+
+include $(MM_MAKEFILES_DIR)/SharedRules.mk
+
+#-------------------------------
+# local Rules
+#-------------------------------
+
+test cleantest:
+	@echo No Test...

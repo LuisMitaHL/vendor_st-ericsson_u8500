@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/component.xml" />
+    <include name="component/packaging.xml" />
+    <include name="Makefile" />
+    <include name="sia_ost_conf.mk" />	
+  </fileset>
+  <package name="arm-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmf/host/nmf_repository/cortexA9-x-android-x/**" />
+      <include name="nmf/host/img_network/*.adl" />
+      <include name="nmf/host/imgcontroller/inc/*.hpp" />
+      <include name="nmf/host/imgcontroller/*.adl" />
+      <include name="nmf/host/resource_sharer/api/*.idl" />
+      <include name="nmf/host/resource_sharer/inc/*.hpp" />
+      <include name="nmf/host/resource_sharer/*.adl" />
+      <include name="nmf/host/stab/api/*.idl" />
+      <include name="nmf/host/stab/inc/*.hpp" />
+      <include name="nmf/host/stab/*.adl" />
+      <include name="nmf/host/Makefile" />
+    </fileset>
+  </package>
+  
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="./Makefile" />
+	  <include name="proxy/Makefile" />
+	  <include name="proxy/*.h" />
+      <include name="share/*.idt" />
+      <include name="proxy/lib/cortexA9-android-android-x/*.a" />
+      <include name="proxy/*.txt" />
+      <include name="nmf/Makefile" />
+    </fileset>
+  </package>
+
+  <package name="mmdsp-nmf-bin">
+    <fileset>
+      <include name="nmf/Makefile" />
+      <include name="nmf/mpc/Makefile" />
+      <include name="nmf/mpc/nmf_repository/mmdsp_*/**" />
+      <include name="share/*" />
+      <include name="nmf/mpc/grabctl/grabctl.conf" />
+      <include name="nmf/mpc/grabctl/api/*.itf" />
+      <include name="nmf/mpc/grab/grab.conf" />
+      <include name="nmf/mpc/grab/api/*.itf" />
+      <include name="nmf/mpc/ispctl/ispctl.conf" />
+      <include name="nmf/mpc/ispctl/api/**" />
+      <include name="nmf/mpc/memgrabctl/*.conf" />
+      <include name="nmf/mpc/memgrabctl/api/*.itf" />
+      <include name="nmf/mpc/api/**" />
+    </fileset>
+    <fileset>
+      <include name="nmf/mpc/nmf_repository/mmdsp_*/**" />
+      <include name="nmf/mpc/common/inc/*.h" />
+      <include name="nmf/mpc/ispctl/ispctl_adapter/inc/*.h" />
+      <include name="nmf/mpc/ispctl/ispctl_core/inc/*.h" />
+      <include name="nmf/mpc/ispctl/api/*.itf" />
+      <include name="nmf/mpc/ispctl/*.conf" />
+      <include name="nmf/mpc/ispctl/ispctl_core/*.conf" />
+      <include name="nmf/mpc/ispctl/ispctl_adapter/*.conf" />
+      <include name="nmf/mpc/grab/grab_adapter/inc/*.h" />
+      <include name="nmf/mpc/grab/*.conf" />
+      <include name="nmf/mpc/grab/grab_adapter/*.conf" />
+      <include name="nmf/mpc/grab/grab_core/*.conf" />
+      <include name="nmf/mpc/grab/grab_core/inc/*.h" />
+      <include name="nmf/mpc/grab/api/*.itf" />
+      <include name="nmf/mpc/grabctl/api/*.itf" />
+      <include name="nmf/mpc/grabctl/*.conf" />
+      <include name="nmf/mpc/memgrabctl/*.conf" />
+      <include name="nmf/mpc/memgrabctl/api/*.itf" />
+      <include name="nmf/mpc/api/*.itf" />
+      <include name="nmf/mpc/Makefile" />
+    </fileset>
+  </package>
+  <package name="arm-proxy-src">
+    <fileset>
+      <include name="proxy/*.h" />
+      <include name="proxy/*.cpp" />
+      <include name="proxy/Makefile" />
+      <include name="nmf/Makefile" />
+      <include name="./Makefile" />
+      <include name="proxy/*.txt" />
+      <include name="share/*.idt" />
+      <exclude name="proxy/lib/cortexA9-android-android-x/*.a" />
+    </fileset>
+  </package>
+  <package name="arm-nmf-src">
+  <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmf/Makefile" />
+      <include name="nmf/host/Makefile" />
+      <include name="nmf/host/**" />
+      <include name="share/*.idt" />
+      <exclude name="nmf/host/nmf_repository/**" />
+	  </fileset>
+  </package>
+  
+  
+</packages>

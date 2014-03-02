@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+
+#ifndef __HALGPSHCI_HIT__
+#define __HALGPSHCI_HIT__
+/**
+* \file halgpshci.hit
+* \date 25/09/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all strucutres used by halgps9multiuserspi.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.09.09</TD><TD> Archana B </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+/**
+*\struct t_HALGPSCommBuffer
+*\brief HALGPS Circular buffer
+* 
+*/
+typedef struct
+{
+ uint32_t  v_DataStart;         /*!< Buffer Start index */
+ uint32_t  v_BufferFreeStart;           /*!< Buffer Free index   */
+ uint8_t   v_Buffer[HALGPS_HCI_MAX_BUF_READ_LEN];  /*!< Circular buffer    */
+} t_HALGPSCommBuffer;
+
+#endif //__HALGPSHCI_HIT__
+

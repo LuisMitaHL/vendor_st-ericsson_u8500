@@ -1,0 +1,204 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+/** @addtogroup vdcMpeg4Group MPEG4 Decoder NMF Component
+ *  \brief This part shows a MPEG4 Decoder NMF Component description (in term
+ *  of configuration and interfaces)
+ *  @{
+ *   
+ * \image html algo-overview.jpg
+ *  with <algo_name> = mpeg4_decoder \n
+ *  and  <algo> = Mpeg4Decoder
+ *   
+ *
+ * \section data_flow_sec Mpeg4 decoder dataflow description
+ * \n
+ * \n
+ * \image html mpeg4_decoder_global_dataflow.jpg
+ * \n
+ * \section memory_desc_sec Memory needs description
+ * \n
+ * \n The following diagram shows the different needed buffers, their respective location and the way their
+ * address is given as parameter to the algo component.
+ * \image html mpeg4_decoder_dataflow.jpg
+ */ 
+
+/** @addtogroup vdcMpeg4ConfigurationGroup NMF Configuration file
+ *  \brief Source code of the configuration file of the component \ref vdcMpeg4Group 
+ *  @{
+ *  \include mpeg4_decoder_algo.conf
+ */ 
+/** @} */ // end of vdcMpeg4ConfigurationGroup
+
+
+/** @addtogroup vdcMpeg4ProvidedInterfaceGroup Provided interface(s)
+ *  \brief Description of all provided interfaces of NMF component \ref vdcMpeg4Group 
+ *  @{
+ */ 
+
+/** @} */ // end of vdcMpeg4ProvidedInterfaceGroup
+
+/** @addtogroup vdcMpeg4RequiredInterfaceGroup Required interface(s)
+ *  \brief Description of all required interfaces of NMF component \ref vdcMpeg4Group  
+ *  @{
+ */ 
+
+/** @} */ // end of vdcMpeg4RequiredInterfaceGroup
+
+#ifndef  _t1xhv_vdc_mpeg4_idt
+#define _t1xhv_vdc_mpeg4_idt
+
+#include <t1xhv_vdc.idt>
+#include <t1xhv_retarget.idt>
+
+
+/** \brief This structure defines a MPEG4 Decode input parameter buffers. */
+typedef struct {
+  t_ushort_value picture_coding_type;           /**<\brief Type of the picture to be decoded : 
+                                                      \n  0: intra-coded (also called I-frame or Intra frame).
+                                                      \n  1: predictive-coded (also called P-frame or Inter frame).
+                                                      \n  2: bidirectional-coded (also called B-frame).*/
+  t_ushort_value quant;                         /**<\brief Quantization parameter (i.e. value of the initial quantizer of the picture to be decoded).
+                                                      \n Constraints : ]1,31] */
+  t_ushort_value quant_type;                    /**<\brief Inverse quantization method flag (ASP specific). 
+                                                      \n  0: Second inverse quantization method is used.
+                                                      \n  1: First inverse quantization method is used. */
+  t_ushort_value intra_quant_mat[64];           /**<\brief Inverse intra quantization matrix (ASP specific). 
+                                                      \n Constraints : [0,255] */
+  t_ushort_value nonintra_quant_mat[64];        /**<\brief Inverse non intra quantization matrix (ASP specific). 
+                                                      \n Constraints : [0,255] */
+  t_ushort_value low_delay;                     /**<\brief Low delay flag (ASP specific).
+                                                      \n  0: VOL contains B-VOPs.
+                                                      \n  1: VOL contains no B-VOPs. */
+  t_ushort_value interlaced;                    /**<\brief Interlaced mode (ASP specific).
+                                                      \n  0: VOP contains interlaced video.
+                                                      \n  1: VOP may contains interlaced video. */
+  t_ushort_value rounding_type;                 /**<\brief Rounding type (i.e. value of the rounding control parameter 
+                                                    used for pixel value interpolation in motion compensation for P-frames. 
+                                                    It is not used if picture_coding_type=0.)
+                                                    \n Constraints : [0,1] */
+  t_ushort_value intra_dc_vlc_thr;              /**<\brief Threshold to consider DC as AC coeff (i.e. value of the intra_dc_vlc_thr field 
+                                                    of the "Video Object Plane" structure in MPEG4 bitstreams. It is not used if flag_short_header=1.
+                                                    \n Constraints : [0,7] */                                                   
+  t_ushort_value vop_fcode_forward;             /**<\brief Fcode to decode MV (i.e. value of the vop_fcode_forward field of the "Video Object Plane"
+                                                    structure in MPEG4 bitstreams). It is not used if flag_short_header=1 or picture_coding_type=0. 
+                                                    \n Constraints : [1,7] */
+  t_ushort_value vop_fcode_backward;            /**<\brief Fcode to decode MV (ASP specific) (i.e. value of the vop_fcode_backward field of the 
+                                                    "Video Object Plane" structure in MPEG4 bitstreams).
+                                                    \n Constraints : [1,7] */
+  t_ushort_value frame_width;                   /**<\brief Destination frame width (i.e. width of the destination frame for an MPEG4/H263 decode.
+                                                    It is equal to the number of luminance pixels contained in the horizontal dimension of the
+                                                    frame. It also defines the width of the forward reference frame.
+                                                    \n Constraints : 1<=(frame_width/16)<=396 and (frame_width/16)*(frame_height/16)<=1200
+                                                    \n Alignment : Multiple of 16.*/
+  t_ushort_value frame_height;                  /**<\brief Destination frame height (i.e. number of luminance pixels contained in the vertical dimension of
+                                                    the destination frame and the forward reference frame).
+                                                    \n Constraints : 1<=(frame_width/16)<=396 and (frame_width/16)*(frame_height/16)<=1200
+                                                    \n Alignment : Multiple of 16.*/  
+  t_ushort_value flag_short_header;             /**<\brief Short Header flag (i.e. value of the short_video_header "internal flag" of the "Video Object
+                                                    Layer" structure in MPEG4 bitstreams).
+                                                      \n  0: "normal" MPEG4 format.
+                                                      \n  1: "short header" MPEG4 format (equivalent to H263 Baseline).*/
+  t_ushort_value modulo_time_base;              /**<\brief Modulo time base (ASP specific / needed for TRB and TRD computation) (i.e. value of the 
+                                                    modulo_time_base "internal flag" of the VOP structure in MPEG4 bitstreams)*/
+  t_ushort_value vop_time_increment;            /**<\brief VOP time increment (ASP specific / needed for TRB and TRD computation) (i.e. represents the 
+                                                    absolute vop_time_increment from the synchronization point marked by the modulo_time_base measured 
+                                                    in the number - value of the vop_time_increment "internal field" of the VOP structure in MPEG4 bitstreams).
+                                                    \n Constraints : [0,vop_time_increment_resolution]*/
+  t_ushort_value vop_time_increment_resolution; /**<\brief VOP time increment (i.e. value of the vop_time_increment_resolution field of the "Video
+                                                    Object Layer" structure in MPEG4 bitstreams).
+                                                    \n Constraints : [1,65535] */
+  t_ushort_value resync_marker_disable;         /**<\brief Resync Marker Disable (i.e. value of the resync_marker_disable field of the "Video Object
+                                                    Layer" structure in MPEG4 bitstreams.
+                                                      \n  0: resync. markers are enabled.
+                                                      \n  1: no resync_marker in coded VOPs.*/
+  t_ushort_value data_partitioned;              /**<\brief Data Partitioned flag (i.e. value of the data_partitioned field of the "Video Object Layer" 
+                                                    structure in MPEG4 bitstreams) :
+                                                    \n 0: no data partitioning
+                                                    \n 1: data partitioning (macroblock motion vector data are separated from texture data)
+                                                    \n Constraints : Must be 0 if the frame size is greater than CIF (i.e. frame_width<=352 and 
+                                                    picture_height<=288). Only used if flag_short_header=0 */
+  t_ushort_value reversible_vlc;                /**<\brief Reversible VLC (i.e. value of the reversible_vlc field of the "Video Object Layer" structure
+                                                    in MPEG4 bitstreams:
+                                                    \n 0 : standard VLC tables.
+                                                    \n 1 : reversible VLC tables.
+                                                    \n Constraints : Not used if flag_short_header=1 or data_partitioned=0.*/
+  t_ushort_value error_concealment_config;      /**<\brief Error Concealment MPEG4 mode (i.e. allows to configure the error concealment algorithm in an 
+                                                    MPEG4/H263 decode. Note that for MPEG4 the actual algorithm also depends on flag_short_header, 
+                                                    data_partitioned and reversible_vlc parameters. Note that each bit field can be enabled/disabled 
+                                                    independently of the other bits.
+                                                    \n bit 0 or Mask 0x0001 (MCE / Motion compensated error concealment enable) :
+                                                    \n    0 : motion-compensated error concealment disabled
+                                                    \n    1 : motion-compensated error concealment enabled.
+                                                    \n bit 1 or Mask 0x0002 (IQZ / Check on inverse error concealment enable)
+                                                    \n    0 : check on inverse quantized coefficients disabled
+                                                    \n    1 : check on inverse quantized coefficients enabled
+                                                    \n bit 2 or Mask 0x0004 (DMA / DMA backward repositioning enable)
+                                                    \n    0 : DMA backward repositioning disabled
+                                                    \n    1 : DMA backward repositioning enabled: when detecting errors, a few MBs
+                                                    already decoded can be concealed (because detection of the error happens later than the real error
+                                                    \n bit 3 or Mask 0x0008 (RES / Resynchronization on restart markers enable
+                                                    \n    0 : resynchronization on restart markers disabled
+                                                    \n    1 : resynchronization on restart markers enabled
+                                                    \n bit 4 or Mask 0x0010 (IFI / Error concealment in intra frames by interpolation enable)
+                                                    \n    0 : error concealment in intra frames by interpolation disabled
+                                                    \n    1 : error concealment in intra frames by interpolation enabled
+                                                    \n bit 5 or Mask 0x0020 (RVL / backward decoding of reversible VLC codes enable)
+                                                    \n    0 : backward decoding of reversible VLC codes disabled
+                                                    \n    1 : backward decoding of reversible VLC codes enabled (can be used only if
+                                                    reversible_vlc=1). Only available on STn8815B0
+                                                    \n Constraints : If the frame size is greater than CIF motion-compensated 
+                                                    error concealment is disabled*/
+  t_ushort_value flag_sorenson;                 /**<\brief Sorenson stream if = 1      */
+  t_ulong_value flv_version;                   /**<\brief FLV version 0(H263) or 1    */
+  t_ulong_value reserved_3; 
+
+} ts_t1xhv_vdc_mpeg4_param_in;
+
+typedef ts_t1xhv_vdc_mpeg4_param_in *tps_t1xhv_vdc_mpeg4_param_in;
+
+/** \brief This structure defines a MPEG4 Decode input/output parameter buffers. */
+typedef struct {
+
+    t_ulong_value  reserved_1;                     /**<\brief Reserved 32            */
+    t_ulong_value  reserved_2;                     /**<\brief Reserved 32            */
+    t_ulong_value  reserved_3;                     /**<\brief Reserved 32            */
+    t_ulong_value  reserved_4;                     /**<\brief Reserved 32            */
+
+} ts_t1xhv_vdc_mpeg4_param_inout;
+
+typedef ts_t1xhv_vdc_mpeg4_param_inout *tps_t1xhv_vdc_mpeg4_param_inout;
+
+/** \brief This structure defines a MPEG4 Decode output parameter buffers. */
+typedef struct {
+
+    t_ushort_value error_type;             /**<\brief Return bitstream error type (see t_t1xhv_decoder_info for details in \ref vdcMpeg4endAlgoGroup) */
+    t_ushort_value picture_loss;           /**<\brief Picture loss flags (i.e. set to 1 when a picture loss is detected during the 
+                                              decode process (more than 8 slice loss detections). */
+    t_ushort_value slice_loss_first_mb[8]; /**<\brief Slice lost first macroblock (i.e. position of the first macroblock of a "slice" that has been concealed,
+                                              when a slice loss is detected during the decode subtask. */
+    t_ushort_value slice_loss_mb_num[8];   /**<\brief Slice loss MB number (i.e. number of macroblocks of a "slice" that has been concealed, when
+                                              a slice loss is detected during the decode subtask. It is equal to 0 when no slice loss is detected.)*/
+    t_ushort_value concealed_mb_num;       /**<\brief NB of Concealed MacroBlock (i.e. number of MacroBlock that have been 
+                                              concealed during a MPEG4 decode.*/
+    t_ushort_value concealed_vp_num;       /**<\brief NB of video packets concealed (i.e. number of video packets that have been 
+                                              concealed during a MPEG4 decode.
+                                              \n Constraints : Only used if flag_short_header=0 */
+    t_ushort_value decoded_vp_num;         /**<\brief NB of video packets decoded (i.e. number of video packets that have been 
+                                              decoded during a MPEG4 decode.
+                                              \n Constraints : Only used if flag_short_header=0 */
+    t_ushort_value  reserved_1;             /**<\brief Reserved 32                    */    
+    t_ulong_value  reserved_2;             /**<\brief Reserved 32                    */    
+
+} ts_t1xhv_vdc_mpeg4_param_out;
+
+typedef ts_t1xhv_vdc_mpeg4_param_out *tps_t1xhv_vdc_mpeg4_param_out;
+
+
+/** @} */ // end of vdcMpeg4Group
+
+#endif /* _t1xhv_vdc_mpeg4_idt */

@@ -1,0 +1,27 @@
+;------------------------------------------------------------
+; syncronize_targets.cmm
+;------------------------------------------------------------
+;
+; 090508 - KM Initial version
+;-----------------------------------------------------------
+
+// Prepare for syncronize debuggers
+
+SYNCH.MASTERGO ON
+SYNCH.MASTERBREAK ON
+SYNCH.MASTERSTEP OFF
+SYNCH.SLAVEGO ON
+SYNCH.SLAVEBREAK ON
+SYNCH.SLAVESTEP OFF
+
+if ("&MmdspSiaStarted"=="True")
+	SYNCH.CONNECT &icMmdspSia
+
+SYNCH.OFF
+SYNCH.ON			;bugfix
+if "&SynchApp"=="False"
+	SYNCH.OFF
+else
+	SYNCH.ON
+
+ENDDO

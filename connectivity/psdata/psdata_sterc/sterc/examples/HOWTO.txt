@@ -1,0 +1,13 @@
+
+- Forward all traffic between PC and NW when running NAP
+
+To forward all traffic between PC and NW when running NAP run these commands:
+> adb remount
+> adb shell
+and in the shell:
+# mv /data/misc/psdata/sterc_conf_alt /data/misc/psdata/sterc_conf
+# mv /data/misc/psdata/sterc_script_connect_alt /data/misc/psdata/sterc_script_connect
+# mv /system/etc/psdata/sterc_conf_alt /system/etc/psdata/sterc_conf
+# mv /system/etc/psdata/sterc_script_connect_alt /system/etc/psdata/sterc_script_connect
+# sync
+Then restart the platform and start NAP for this to work. This will work until next re-flash.

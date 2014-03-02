@@ -1,0 +1,222 @@
+;------------------------------------------------------------
+; Init.cmm
+;------------------------------------------------------------
+; CMM-file to setup path for the U8xxx platform
+; Called from Common Init
+;
+; 091210 - KM First version
+;-----------------------------------------------------------
+
+global &targetPlatform
+global &targetFamily
+global &targetCpu
+
+global &icApp
+
+; APP core (Cortex A9 SMP)
+global &AppStarted
+global &SynchApp
+global &EtmApp
+global &AppDataTrace
+
+global &EtmPortSize
+global &EtmTraceClk
+global &exectl_addr
+
+global &chip_version
+
+local &pos
+
+&pos=string.scan("&Target","_",0)
+if (&pos==-1)
+(
+	enddo
+)
+
+&icApp="localhost:40000."
+
+;global &startedCpus removed because not used
+;&startedCpus=":"
+
+
+&targetFamily=string.mid("&Target",0 ,&pos) ; [<target>
+&targetFamily=string.cut("&targetFamily",1) ; <target>
+&targetCpu=string.mid("&Target", &pos+1, 100.) ; <cpu>]
+&targetCpu=string.cut("&targetCpu", -1) ; <cpu>
+
+if (string.scan("&Target", "U8500", 0)!=-1)
+(
+	; remove chip version from targetFamily
+	&pos=string.scan("&targetFamily","-",0)
+	&targetFamily_tmp=string.mid("&targetFamily",0 ,5)
+	&chip_version=string.lwr(string.mid("&targetFamily",&pos+1 ,100.))
+	&targetFamily="&targetFamily_tmp"
+)
+
+&targetFamily=string.lwr("&targetFamily")
+&targetCpu=string.lwr("&targetCpu")
+
+if ("&targetFamily"=="u8500")
+(
+; define global only used for u8500
+; nothing to do
+)
+else if ("&targetFamily"=="u5500")
+(
+; define global only used for u5500
+global &icAcc
+global &icCeva
+
+global &AccStarted
+global &CevaStarted
+
+global &SynchAcc
+global &SynchCeva
+
+global &EtmAcc
+global &EtmCeva
+
+global &AccDataTrace
+global &CevaDataTrace
+
+&icAcc="localhost:40001."
+&icCeva="localhost:40002."
+)
+else if ("&targetFamily"=="9540")
+(
+; define global only used for 9540
+global &icMmdspSia
+global &icMmdspSva
+
+global &MmdspSiaStarted
+global &MmdspSvaStarted
+
+global &SynchMmdspSia
+global &SynchMmdspSva
+
+global &EtmMmdspSia
+global &EtmMmdspSva
+
+global &MmdspSiaDataTrace
+global &MmdspSvaDataTrace
+
+&icMmdspSia="localhost:40001."
+&icMmdspSva="localhost:40002."
+)
+else if ("&targetFamily"=="l8540")
+(
+; define global used for l8540
+global &icMmdspSia
+global &MmdspSiaStarted
+global &SynchMmdspSia
+global &EtmMmdspSia
+global &MmdspSiaDataTrace
+&icMmdspSia="localhost:40001."
+)
+else
+(
+	print %error "Unknown target &targetFamily in "+os.ppd()+"\init.cmm"
+	enddo
+)
+
+; Common paths
+PATH &UsrPath/.. ; h:\t32
+PATH + &UsrPath  ; h:\t32\settings
+
+&targetPlatform="ux500"
+
+;Check if Cpu directory exists
+if (!os.dir(&CMM_PATH_BASE/&targetPlatform/&targetFamily/&targetCpu))&&(!os.dir(&UsrPath/../&targetPlatform/&targetFamily/&targetCpu))
+(
+	print %error "CPU directory &CMM_PATH_BASE/&targetPlatform/&targetFamily/&targetCpu dosn't exist, check configuration"
+	enddo
+)
+
+// set up variable default format
+setup.var %HEX %FIXED %TYPE %STRING
+
+;Create New layout user override directories
+if OS.VERSION(0)!=0x1X
+(
+	if !os.dir(&UsrPath/..)
+		mkdir "&UsrPath/../../T32"
+
+	if !os.dir(&UsrPath/../&targetPlatform)
+		mkdir "&UsrPath/../&targetPlatform"
+
+	if !os.dir(&UsrPath/../&targetPlatform/&targetFamily)
+		mkdir "&UsrPath/../&targetPlatform/&targetFamily"
+
+	if !os.dir(&UsrPath/../&targetPlatform/&targetFamily/&targetCpu)
+		mkdir "&UsrPath/../&targetPlatform/&targetFamily/&targetCpu"
+)
+else
+(
+	if !os.dir(~/.t32)
+		mkdir ~/.t32
+	if !os.dir(~/.t32/&targetPlatform)
+		mkdir "~/.t32/&targetPlatform"
+	if !os.dir(~/.t32/&targetPlatform/&targetFamily)
+		mkdir "~/.t32/&targetPlatform/&targetFamily"
+
+	if !os.dir(~/.t32/&targetPlatform/&targetFamily/&targetCpu)
+		mkdir "~/.t32/&targetPlatform/&targetFamily/&targetCpu"
+
+)
+
+; New layout user override
+PATH + &UsrPath/../&targetPlatform/&targetFamily/&targetCpu
+PATH + &UsrPath/../&targetPlatform/&targetFamily
+PATH + &UsrPath/../&targetPlatform
+
+; New layout
+PATH + &CMM_PATH_BASE/&targetPlatform/&targetFamily/per
+PATH + &CMM_PATH_BASE/&targetPlatform/&targetFamily/&targetCpu
+PATH + &CMM_PATH_BASE/&targetPlatform/&targetFamily
+PATH + &CMM_PATH_BASE/&targetPlatform
+
+;Script from CPT
+if os.dir(&CMM_PATH_BASE/&targetPlatform/&targetFamily/cpt)
+	PATH + &CMM_PATH_BASE/&targetPlatform/&targetFamily/cpt
+
+if os.dir(&CMM_PATH_BASE/&targetPlatform/&targetFamily/prcmu_fw)
+	PATH + &CMM_PATH_BASE/&targetPlatform/&targetFamily/prcmu_fw
+
+; Old layout
+PATH + &CMM_PATH_BASE
+
+if (string.scan("&Target", "U5500", 0)!=-1)		;Change working folder to T32 folder, necessary after integration of CPT script
+	cd ~~/
+
+;Check version of Trace32 software
+
+&t32_version=0.
+&t32_label=""
+
+;Patch from July 2010 should be used for U5500 and U8500
+if (("&targetFamily"=="u5500")||("&targetFamily"=="u8500"))
+(
+	&t32_version=24890.
+	&t32_label="July 2010"
+)
+;Patch from Nov 2011 should be used for 9540
+else if ("&targetFamily"=="9540")
+(
+	&t32_version=33008.
+	&t32_label="Nov 2011"
+)
+;Patch from May 2012 should be used for L8540
+else if ("&targetFamily"=="l8540")
+(
+	&t32_version=36773.
+	&t32_label="May 2012"
+)
+
+if ((&t32_version>0.)&&(VERSION.BUILD()<&t32_version))
+(
+	dialog.ok "Your TRACE32 software is too old to use all features on the Ux500/&targetFamily platform. Update to TRACE32 from &t32_label (build &t32_version) or later or click ok to ignore this warning."
+)
+
+enddo
+
+

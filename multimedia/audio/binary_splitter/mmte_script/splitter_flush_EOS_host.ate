@@ -1,0 +1,143 @@
+# This script sends flush command to input and output ports of a component.
+# !! OUTPUT_SIZE alias has to be defined 
+# sequence is :
+# - Start until EOS
+# - Send Flush Command
+# - attach again input/output files
+# - Start until EOS
+
+test_start BIN_SPL_015
+test_property TEST_NAME binary_splitter_flush_allports_EOS_host
+
+alias TIMEOUT 10000
+
+# instantiate and configure splitter
+OMX_GetHandle splitter OMX.ST.AFM.binary_splitter_host
+
+alias INPUT_FILE    $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+MMTE_attach_io      splitter 0 MEM $(INPUT_FILE) 0 0 0
+test_property       input_file $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/splitter_pcm.out
+alias OUTPUT_SIZE   500000
+MMTE_attach_io      splitter 1 MEM $(OUTPUT_FILE) $(OUTPUT_SIZE) 0 0
+test_property       output_file $(OUTPUT_DIR)/splitter_pcm.out
+
+# 2nd output port
+alias OUTPUT_FILE2   $(OUTPUT_DIR)/splitter_pcm_2.out
+alias OUTPUT_SIZE    500000
+test_property        output_file2 $(OUTPUT_DIR)/splitter_pcm_2.out
+MMTE_attach_io       splitter 2 MEM $(OUTPUT_FILE2) $(OUTPUT_SIZE) 0 0
+
+alias REF_FILE       $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+test_property        ref_file $(AUDIO_STREAMS)/binary_splitter/streams/Machado.pcm
+alias REF_DIGEST     $(AUDIO_STREAMS)/binary_splitter/streams/Machado_digest.hash
+
+#Set output ports as synchronized
+OMX_SetParameter splitter OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+OMX_SetParameter splitter OMX_IndexParamAudioSynchronized nPortIndex=2 bIsSynchronized=OMX_TRUE
+
+# Basic OMX checks
+MMTE_CheckParameter splitter OMX_IndexParamAudioInit nPorts=3 nStartPortNumber=0
+MMTE_CheckParameter splitter OMX_IndexParamVideoInit nPorts=0
+MMTE_CheckParameter splitter OMX_IndexParamImageInit nPorts=0
+MMTE_CheckParameter splitter OMX_IndexParamOtherInit nPorts=0
+
+# Go to Idle 
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers splitter 0
+MMTE_AllocateBuffers splitter 1
+MMTE_AllocateBuffers splitter 2
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Executing
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent  splitter OMX_EventBufferFlag 1 TIMEOUT
+
+# compare first decoded data
+MMTE_detach_io splitter 1
+file_comp OUTPUT_FILE REF_FILE
+MMTE_detach_io splitter 2
+file_comp OUTPUT_FILE2 REF_FILE
+
+# flush only input port
+OMX_SendCommand splitter OMX_CommandFlush 0
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandFlush 0
+
+# flush MMTE Received Event List
+MMTE_FlushReceivedEvent
+
+# attach again input and output files
+# !! attach output files
+alias OUTPUT_FILE_2    $(OUTPUT_FILE).2
+MMTE_attach_io         splitter 1 MEM $(OUTPUT_FILE_2) $(OUTPUT_SIZE) 0 0
+alias OUTPUT_FILE2_2   $(OUTPUT_FILE2).2
+MMTE_attach_io         splitter 2 MEM $(OUTPUT_FILE2_2) $(OUTPUT_SIZE) 0 0
+
+MMTE_attach_io   splitter 0 MEM $(INPUT_FILE) 0 0 0
+
+#Wait EOS
+MMTE_WaitEvent  splitter OMX_EventBufferFlag 1 TIMEOUT
+
+# compare second decoded data
+MMTE_detach_io splitter 1
+file_comp OUTPUT_FILE_2 REF_FILE
+MMTE_detach_io splitter 2
+file_comp OUTPUT_FILE2_2 REF_FILE
+
+# flush buffers
+OMX_SendCommand splitter OMX_CommandFlush 1
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandFlush 1
+
+# flush MMTE Received Event List
+MMTE_FlushReceivedEvent
+
+# attach again input and output files
+# !! attach output files
+alias OUTPUT_FILE_3    $(OUTPUT_FILE).3
+MMTE_attach_io         splitter 1 MEM $(OUTPUT_FILE_3) $(OUTPUT_SIZE) 0 0
+alias OUTPUT_FILE2_3   $(OUTPUT_FILE2).3
+MMTE_attach_io         splitter 2 MEM $(OUTPUT_FILE2_3) $(OUTPUT_SIZE) 0 0
+
+MMTE_attach_io   splitter 0 MEM $(INPUT_FILE) 0 0 0
+
+#Wait EOS
+MMTE_WaitEvent  splitter OMX_EventBufferFlag 1 TIMEOUT
+
+# Go to Idle
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_FreeBuffers splitter 2
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# compare third decoded data
+file_comp OUTPUT_FILE_3 REF_FILE
+file_comp OUTPUT_FILE2_3 REF_FILE
+
+# Free Handle
+OMX_FreeHandle splitter
+
+# check memory status
+MMTE_CheckMemoryStatus
+
+unalias INPUT_FILE
+unalias OUTPUT_FILE
+unalias OUTPUT_FILE2
+unalias OUTPUT_FILE_2
+unalias OUTPUT_FILE2_2
+unalias OUTPUT_FILE_3
+unalias OUTPUT_FILE2_3
+unalias OUTPUT_SIZE
+unalias REF_FILE
+unalias REF_DIGEST
+unalias TIMEOUT
+
+test_end

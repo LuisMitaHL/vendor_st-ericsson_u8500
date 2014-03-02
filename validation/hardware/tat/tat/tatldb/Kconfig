@@ -1,0 +1,35 @@
+#
+# Tatldb configuration
+#
+
+menuconfig TATLDB
+	bool "Tatldb"
+	depends on DTHSRVHELPER && LIBDB && TATTOOLS && LIBTREEDYN && DTHTREEDYN
+	help
+	  depends on DTHSRVHELPER, LIBDB, TATTOOLS and LIBTREEDYN DTHTREEDYN
+
+if TATLDB
+
+config TATLDB_DIR
+	string
+	default ../tat/tat/tatldb
+
+config TATLDB_DEPS
+	string
+	default "DTHSRVHELPER LIBDB TATTOOLS LIBTREEDYN DTHTREEDYN"
+
+config TATLDB_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLDB
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLDB_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLDB
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLDB

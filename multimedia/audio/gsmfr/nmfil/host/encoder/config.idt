@@ -1,0 +1,18 @@
+#ifndef __GSMFRENC_CONFIG_IDT__
+#define __GSMFRENC_CONFIG_IDT__
+#include <memorypreset.idt>
+#include <gsmfr/nmfil/common.idt>
+
+typedef struct {
+	t_memory_preset        memory_preset;
+	
+} NmfGsmfrEncParams_t;
+typedef struct {
+
+	t_uint16    bDtx;                 //STATIC, range [0, 1]
+	//t_uint16    ipayload_format;			// either MB or FB modem
+	GsmfrPayloadFormat_e   epayload_format;			// either MB or FB modem
+
+} NmfGsmfrEncConfig_t;
+
+#endif

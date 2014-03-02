@@ -1,0 +1,74 @@
+; #####################################################################
+; # L8540 debug & Trace script file: stm_config.cmm                   #
+; # Copyright (C) 2012, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for STM trace and dedicated GPIOs configuration on 8540.
+; Created by ST/DCG/CSP/CPT/ACT on 2012-06-07
+; Contact: jingyi-xiaoyan.lu@st.com
+
+entry &tracecore &gpio
+&tracecore=string.upr("&tracecore")
+&gpio=string.upr("&gpio")
+if "&tracecore"!="APE"&&"&tracecore"!="XMIP"
+(
+	print "ERROR: unknown trace core &tracecore. Expected value: ape or xmip."
+	enddo
+)
+if "&gpio"!="GPIO23"&&"&gpio"!="GPIO70"&&"&gpio"!="GPIO161"
+(
+	print "ERROR: unknown GPIO number &gpio. Expected value: gpio23 or gpio70 or gpio161."
+	enddo
+)
+
+&mem_acc_prefix="a"
+
+d.s a:0x8000F000 %l 0xFFFFFFFF
+d.s a:0x8000F008 %l 0xFFFFFFFF
+d.s a:0x8012F000 %l 0xFFFFFFFF
+d.s a:0x8012F008 %l 0xFFFFFFFF
+
+d.s a:0x80157208 %l 0xFFFFFFFF
+
+; 
+d.s a:0x80155190 %l d.l(a:0x80155190)|1<<22.
+
+if "&gpio"=="GPIO23"&&"&tracecore"=="APE"
+(
+	;GPIO 23, 25-28 ALT-C1
+	data.set &mem_acc_prefix:0x8012E014 %l 0x1E800000
+	data.set &mem_acc_prefix:0x8012E020 %l 0x1E800000
+	data.set &mem_acc_prefix:0x8012E024 %l 0x1E800000
+	data.set &mem_acc_prefix:0x80157138 %l 0x00000200  //PRCM_GPIOCR1[9]=1
+)
+else if "&gpio"=="GPIO23"&&"&tracecore"=="XMIP"
+(
+	;GPIO 23, 25-28 ALT-B
+	data.set &mem_acc_prefix:0x8012E014 %l 0x1E800000
+	data.set &mem_acc_prefix:0x8012E020 %l 0
+	data.set &mem_acc_prefix:0x8012E024 %l 0x1E800000
+)
+else if "&gpio"=="GPIO70"
+(
+	;GPIO 70-74 ALT-C
+	data.set &mem_acc_prefix:0x8000E014 %l 0x000007C0 
+	data.set &mem_acc_prefix:0x8000E020 %l 0x000007C0 
+	data.set &mem_acc_prefix:0x8000E024 %l 0x000007C0 
+	if "&tracecore"=="XMIP"  //ALT-C2
+		data.set &mem_acc_prefix:0x80157138 %l d.l(&mem_acc_prefix:0x80157138)|0x00000400 //PRCM_GPIOCR1[10]=1
+)
+else //"&gpio"=="GPIO161"
+(
+	;GPIO 161-164,86 ALT-C
+	data.set &mem_acc_prefix:0x8000E194  %l 0x0000001E 
+	data.set &mem_acc_prefix:0x8000E1A0  %l 0x0000001E
+	data.set &mem_acc_prefix:0x8000E1A4  %l 0x0000001E 
+	data.set &mem_acc_prefix:0x8000E014  %l 0x00400000
+	data.set &mem_acc_prefix:0x8000E020  %l 0x00400000  
+	data.set &mem_acc_prefix:0x8000E024  %l 0x00400000
+	if "&tracecore"=="APE"  //ALT-C2
+		// --- TODO: PRCM_PRIOCR2 --- ICOS is not udpated.
+	else //"&tracecore"=="XMIP" //ALT-C4
+		// --- TODO: PRCM_PRIOCR2 --- ICOS is not udpated.
+)
+print "Configure GPIOs for STM: done."
+enddo

@@ -1,0 +1,23 @@
+OMX_SendCommand	my_sink_1			OMX_CommandStateSet		OMX_StateIdle
+OMX_SendCommand	my_sink_2			OMX_CommandStateSet		OMX_StateIdle
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+OMX_SendCommand	my_sink_3			OMX_CommandStateSet		OMX_StateIdle
+OMX_SendCommand	my_sink_4			OMX_CommandStateSet		OMX_StateIdle
+endif
+OMX_SendCommand	tested_component	OMX_CommandStateSet		OMX_StateIdle
+OMX_SendCommand	my_source_1			OMX_CommandStateSet		OMX_StateIdle
+MMTE_WaitEvent	my_source_1			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+MMTE_WaitEvent	my_sink_4			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+MMTE_WaitEvent	my_sink_3			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+endif
+MMTE_WaitEvent	my_sink_2			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StateIdle
+
+if S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY == OMX_FALSE
+	if SYMBIAN == 1
+		MMTE_WaitEvent my_sink_1 OMX_EventPortSettingsChanged OMX_SymbianIndexParamVideoGFXSurfaceConfig
+	endif
+endif
+

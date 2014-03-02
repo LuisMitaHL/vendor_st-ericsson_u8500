@@ -1,0 +1,28 @@
+primitive vc1dec.arm_nmf.ddep extends fsm.component.armnmf_component
+
+// input port
+provides  armnmf_emptythisbuffer   as      emptythisbuffer
+requires  armnmf_fillthisbuffer    as      inputport
+
+// output port
+requires armnmf_emptythisbuffer    as      outputport
+provides armnmf_fillthisbuffer     as      fillthisbuffer
+
+provides vc1dec.arm_nmf.api.picture as output
+provides vc1dec.arm_nmf.api.bitstream_handshake as nal_ctl
+
+requires vc1dec.arm_nmf.api.compressed_bitstream as nal
+requires vc1dec.arm_nmf.api.picture_to_fill as output_buffer
+
+requires vc1dec.arm_nmf.api.set_decoder_parameter as set_decoder_parameter
+
+provides vc1dec.arm_nmf.api.set_config as set_config
+provides vc1dec.arm_nmf.api.set_configuration as set_configuration 
+requires vc1dec.arm_nmf.api.get_config as get_config
+
+requires vc1dec.arm_nmf.api.decoder_trace_init as decoder_trace_init
+
+// start / stop mandatory to be able to destroy correctly the component
+provides lifecycle.starter as starter
+provides lifecycle.stopper as stopper
+option CPPFLAGS "-g"

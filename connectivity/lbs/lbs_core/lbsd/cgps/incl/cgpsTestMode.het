@@ -1,0 +1,108 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPS_TESTMODE_HET__
+#define __CGPS_TESTMODE_HET__
+
+/*
+* Copyright (C) ST-Ericsson 2009
+*
+* cgpsTestMode.he
+* Date: 07-09-2009
+* Author: Balaji Natakala
+* Email : balaji.natakala@stericsson.com
+*/
+
+#ifdef AGPS_TEST_MODE_FTR
+
+#ifdef ATT_LOGGING_ENABLE
+/**
+* \brief This Callback function is registered by upper modules using the \ref MC_CGPS_PSTENMEA_CB_REGISTER macro to receive 
+* the PSTE NMEA from CGPS.
+* \warning The memory for the notification parameter is allocated and freed by the CGPS. Application has to make a copy.
+*/
+typedef void (* t_cgps_PsteNmeaCallback) (
+  char* p_NmeaString,   /**< [in] pointer to the buffer containing NMEA string */
+  uint8_t    v_StringLength  /**< [in] Length of the Nmea String */
+);
+#endif /* ATT_LOGGING_ENABLE */
+
+
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+* \brief This Callback function is registered by upper modules using the \ref MC_CGPS_PRODUCTION_TEST_CB_REGISTER macro to receive 
+* CNO value after starting the production test using \ref MC_CGPS_GET_CNO_VALUE
+* \warning The memory for the notification parameter is allocated by the CGPS module and freed by the application.
+*/
+typedef void (* t_cgps_ProductionTestCallback) (
+  uint16_t  v_CnoValue,  /**< [in] CNO value received from chipset */
+  bool v_CheckLimit /**< [in] TRUE if the CNO is correct according to criteria */
+);
+
+
+/**
+* \struct t_CGPS_CnoCriteria
+* \brief Operator requirements
+*/
+typedef struct
+{
+   uint16_t    v_AU;        /**< A,B,C,D,E,F upper limit */
+   uint16_t    v_SU;        /**< S upper limit */
+   uint16_t    v_SL;        /**< S lower limit */
+   uint16_t    v_E3U;        /**< E3 upper limit */
+   uint16_t    v_E8L1;        /**< E8 lower limit 1 */
+   uint16_t    v_E8U1;        /**< E8 upper limit 1 */
+   uint16_t    v_E8L2;        /**< E8 lower limit 2 */
+   uint16_t    v_E8U2;        /**< E8 upper limit 2 */
+   uint16_t    v_EAL;        /**< EA lower limit */
+   uint16_t    v_E9L;        /**< E9 lower limit */
+   uint8_t    v_TCXO;        /**< TCXO frequence MHz (16 or 26) */
+}t_CGPS_CnoCriteria;
+#endif /* CGPS_CNO_VALUE_FTR */
+
+
+/**
+* \struct  t_CGPS_TestRequest for the Production test start request
+* \struct type sync with t_agps_TestRequest and t_gpsClient_TestRequest
+*/
+typedef struct
+{
+    char     v_InputSigFreq[CGPS_MAX_TREQ_FREQ_LEN]; /**< @brief  Input signal frequency */
+    char     v_RefClockFreq[CGPS_MAX_TREQ_FREQ_LEN]; /**< @brief  Reference clock frequency */
+    char     v_PgaValues[CGPS_MAX_PGA_VALUE_LEN];    /** @brief   PGA/AGC values to be set in Spectrum analyzer test*/
+    uint16_t v_InPinValue;                           /**< @brief  Input pin mask and Value */
+    uint16_t v_InPinMask;                            /**< @brief   Input pin mask*/
+    uint16_t v_OutPinValue;                          /**< @brief  Output pin mask and Value */
+    uint16_t v_OutPinMask;                           /**< @brief   Output pin mask*/
+    uint8_t  v_SpectrumTestType;                     /**< @brief  Spectrum analyser test Command type */
+    uint8_t  v_FileLogResult;                        /**< @brief  File logging of results */
+}t_CGPS_TestRequest;
+
+/**
+* \struct  t_CGPS_StopReq for the Production test stop request
+* \struct type sync with t_CGPS_StopReq
+* \struct type sync with  t_agps_StopRequest and t_gpsClient_TestStop
+*/
+typedef struct
+{
+    uint16_t    v_TestReqMask;   /**< @brief  Test Request Mask */
+    uint8_t     v_State;         /**< @brief  Test Result state    */
+}t_CGPS_StopReq;
+
+
+#define F_CGPS_TREQ_LOOP_TIMER_EXPIRY               MC_PCC_FUNCTION_TYPE(CGPS_F_TREQ_LOOP_TIMER, PCC_T_TIM)
+
+#define CGPS_TREQ_LOOP_TIMER_EXPIRY                  MC_RTK_PROCESS_OPERATION(PROCESS_CGPS, F_CGPS_TREQ_LOOP_TIMER_EXPIRY)
+#define CGPS_TREQ_LOOP_TIMER                        MC_RTK_PROCESS_TIMER(PROCESS_CGPS, 0, CGPS_TREQ_LOOP_TIMER_EXPIRY)
+
+#define K_CGPS_TREQ_LOOP_TIMER_DURATION          100
+
+
+#endif /* AGPS_TEST_MODE_FTR */
+
+#endif /*__CGPS_TESTMODE_HET__*/
+

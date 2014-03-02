@@ -1,0 +1,95 @@
+#do $(IMAGING_PATH)/ite_nmf/script/debug/gnd_testframerate_LR_HR_acmemini1.ite.ite
+##############################################################################################################
+# The Use case will test following scenerios in HR
+#  1. Set manualfps
+#  2. check if the fps received is same as the set fps
+#  3. Will display the the sensor mode on which it is running
+#  4. will display active length ,line length &active_x,active_y
+#  5. the image format is setup as setusecase function is called internally
+##############################################################################################################
+LogPE disable
+
+################################################
+## SAS COMPLIANCE TEST <HR resolution format> ##
+################################################
+
+usagemode video
+manualfps 30
+testframerate HR SUBQCIF YUV422RI
+testframerate HR SUBQCIF YUV420MB_D
+testframerate HR SUBQCIF YUV420RP_I420
+
+
+testframerate HR SUBQCIFPLUS YUV422RI
+testframerate HR SUBQCIFPLUS YUV420MB_D
+testframerate HR SUBQCIFPLUS YUV420RP_I420
+
+
+testframerate HR QCIF YUV422RI
+testframerate HR QCIF YUV420MB_D
+testframerate HR QCIF YUV420RP_I420
+
+
+testframerate HR QCIFPLUS YUV422RI
+testframerate HR QCIFPLUS YUV420MB_D
+testframerate HR QCIFPLUS YUV420RP_I420
+
+
+testframerate HR CIF YUV422RI
+testframerate HR CIF YUV420MB_D
+testframerate HR CIF YUV420RP_I420
+
+
+testframerate HR CIFPLUS YUV422RI
+testframerate HR CIFPLUS YUV420MB_D
+testframerate HR CIFPLUS YUV420RP_I420
+
+
+testframerate HR QQVGA YUV422RI
+testframerate HR QQVGA YUV420MB_D
+testframerate HR QQVGA YUV420RP_I420
+
+
+testframerate HR QVGA YUV422RI
+testframerate HR QVGA YUV420MB_D
+testframerate HR QVGA YUV420RP_I420
+
+
+testframerate HR QVGAPLUS YUV422RI
+testframerate HR QVGAPLUS YUV420MB_D
+testframerate HR QVGAPLUS YUV420RP_I420
+
+manualfps 22
+testframerate HR VGA YUV422I
+testframerate HR VGA YUV420MB_D
+testframerate HR VGA YUV420RP_I420
+
+################################################
+##                                            ##
+##  	SAS COMPLIANCE <LR FPS FORMAT>    	  ##
+##                                            ##
+################################################
+manualfps 30
+testframerate LR SUBQCIF YUV422RI
+testframerate LR SUBQCIFPLUS YUV422RI
+testframerate LR QCIF YUV422RI
+testframerate LR QCIFPLUS YUV422RI
+testframerate LR CIF YUV422RI
+testframerate LR CIFPLUS YUV422RI
+testframerate LR QQVGA YUV422RI
+testframerate LR QVGA YUV422RI
+testframerate LR QVGAPLUS YUV422RI
+
+testframerate LR SUBQCIF RGB565
+testframerate LR SUBQCIFPLUS RGB565
+testframerate LR QCIF RGB565
+testframerate LR QCIFPLUS RGB565
+testframerate LR CIF RGB565
+testframerate LR CIFPLUS RGB565
+testframerate LR QQVGA RGB565
+testframerate LR QVGA RGB565
+testframerate LR QVGAPLUS RGB565
+
+manualfps 22
+testframerate LR VGA YUV422RI
+testframerate LR VGA RGB565

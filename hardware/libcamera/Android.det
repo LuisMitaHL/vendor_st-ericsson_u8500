@@ -1,0 +1,77 @@
+##
+# Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+# This code is ST-Ericsson proprietary and confidential.
+# Any use of the code for whatever purpose is subject to
+# specific written permission of ST-Ericsson SA.
+##
+
+# Init as NULL
+MY_PLATORM :=
+
+#Default sensor is IMX072
+MY_PRIMARY_SENSOR := MT9P111
+
+# temporary workaround to disable focus on 9540
+ifeq ($(MULTIMEDIA_SET_PLATFORM),u9540)
+PLATFORM_9540 := yes
+endif
+
+# check for u8500
+ifeq ($(STE_CAMERA_ENABLE_FEATURE_PLATFORM),u8500)
+MY_PLATFORM := u8500
+LOCAL_CFLAGS += -DSTE_PLATFORM_U8500=1
+endif #module configuration u8500
+
+# check for u5500
+ifeq ($(STE_CAMERA_ENABLE_FEATURE_PLATFORM),u5500)
+MY_PLATFORM := u5500
+LOCAL_CFLAGS += -DSTE_PLATFORM_U5500=1
+endif #module configuration u5500
+
+# check for Kanna sensor
+ifeq (IMX072,$(filter IMX072%,$(CAMERA_SET_PRIMARY_SENSOR)))
+MY_PRIMARY_SENSOR := IMX072
+LOCAL_CFLAGS += -DSTE_SENSOR_IMX072=1
+endif #module configuration Kanna sensor
+
+# check for Toshiba sensor
+ifeq (TOSHIBA,$(filter TOSHIBA%,$(CAMERA_SET_PRIMARY_SENSOR)))
+MY_PRIMARY_SENSOR := TOSHIBA
+LOCAL_CFLAGS += -DSTE_SENSOR_TOSHIBA=1
+endif #module configuration Toshiba sensor
+
+# check for sony sensor
+ifeq (ISX006,$(filter ISX006%,$(CAMERA_SET_PRIMARY_SENSOR)))
+MY_PRIMARY_SENSOR := ISX006
+LOCAL_CFLAGS += -DSTE_SENSOR_ISX006=1
+endif #module configuration Sony sensor
+
+# check for aptina sensor
+ifeq (MT9P111,$(filter MT9P111%,$(CAMERA_SET_PRIMARY_SENSOR)))
+MY_PRIMARY_SENSOR := MT9P111
+LOCAL_CFLAGS += -DSTE_SENSOR_MT9P111=1
+endif #module configuration aptina sensor
+
+# check for aptina sensor
+ifeq (MT9V113,$(filter  MT9V113%,$(CAMERA_SET_SECONDARY_SENSOR)))
+MY_SECONDARY_SENSOR := MT9V113
+LOCAL_CFLAGS += -DSTE_SENSOR_MT9V113=1
+endif #module configuration aptina sensor
+# check for Kanna Sensor
+ifeq (IMX072,$(filter  IMX072%,$(CAMERA_SET_SECONDARY_SENSOR)))
+MY_SECONDARY_SENSOR := IMX072
+LOCAL_CFLAGS += -DSTE_SENSOR_IMX072=1
+endif #module configuration Kanna  sensor
+
+# check for omnivision sensor
+ifeq (OV5640,$(filter  OV5640%,$(CAMERA_SET_PRIMARY_SENSOR)))
+MY_PRIMARY_SENSOR := OV5640
+LOCAL_CFLAGS += -DSTE_SENSOR_OV5640=1
+endif #module configuration omnivision sensor
+
+# check for omnivision sensor
+ifeq (OV5640,$(filter  OV5640%,$(CAMERA_SET_SECONDARY_SENSOR)))
+MY_SECONDARY_SENSOR := OV5640
+LOCAL_CFLAGS += -DSTE_SENSOR_OV5640=1
+endif #module configuration omnivision sensor
+

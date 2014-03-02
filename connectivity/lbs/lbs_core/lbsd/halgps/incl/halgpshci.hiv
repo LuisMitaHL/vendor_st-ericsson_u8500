@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+
+#ifndef __HALGPSHCI_HIV__
+#define __HALGPSHCI_HIV__
+/**
+* \file halgpshci.hiv
+* \date 03/02/2010
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all variables used by halgps1lib.c\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 03.02.2010</TD><TD> C.ALMEIDA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __HALGPS9HCI_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__HALGPS9HCI_C__*/
+
+
+GLOBAL t_HALGPSCommBuffer   *vg_HALGPS_HciRxBuffer
+#ifdef __HALGPS9HCI_C__
+ = NULL
+#endif
+;
+
+GLOBAL t_HALGPS_HciState    vg_HALGPS_HciState
+#ifdef __HALGPS9HCI_C__
+ = K_HCI_STATE_NOT_CONNECTED
+#endif
+;
+
+GLOBAL t_HALGPS_HciGpsState vg_HALGPS_HciGpsState
+#ifdef __HALGPS9HCI_C__
+ = K_HCI_GPS_DISABLED
+#endif
+;
+
+GLOBAL uint8_t*             vg_HALGPS_HciRawReadBuffer
+#ifdef __HALGPS9HCI_C__
+ = NULL
+#endif
+;
+
+GLOBAL uint32_t             vg_HALGPS_HciRawReadLen;
+GLOBAL uint32_t             vg_HALGPS_Max_Num_Missed_Acks
+#ifdef __HALGPS9HCI_C__
+= 0
+#endif
+;
+
+#undef GLOBAL
+#endif /* __HALGPSHCI_HIV__ */

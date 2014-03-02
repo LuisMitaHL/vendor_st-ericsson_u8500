@@ -1,0 +1,2463 @@
+//=========================================================
+//Revision history
+//=========================================================
+	
+// 0.1 Based on MT9P111 U33x camdriver // QSVAHER 20100505
+// 0.2 Adding basic settings from Aptina //QSVAHER 20100507
+
+//=========================================================
+//Information section
+//=========================================================
+
+info_name = MT9P111;
+info_vendor = Aptina; // Sensor from Aptina, Module from ?
+info_major_ver = 0;
+info_minor_ver = 2;
+
+//=========================================================
+// Camera characteristics section
+//=========================================================
+
+//TODO cam_power_on_0 
+//TODO cam_power_off_0 
+//TODO cam_platform_power_on_0 
+// GPIO's and other power related things not known yet...
+// power, reset, standby/enable, MLCK etc.
+
+cam_i2c_address = 78;		// "If the SADDR signal is driven LOW": 78 (write address) 79 (read address)
+//cam_i2c_address = 7a; 	// "If the SADDR signal is driven HIGH"
+
+//TODO cam_isp_config = 0;
+//TODO cam_ccp2_enabled = 0;
+// Port configuration on Ux500? This one uses MIPI CSI-2.
+//  cam_interface - 16bit number
+//  [Bit 0] = 0: Primary interface, 1: Secondry interface
+//  [Bit 1] = 0: CCP2 output, 1: CSI2 output
+//  [Bit 2:3] = Number of lanes
+//  [Bit 4] = 0:v.81b DPHY, 1: v.90 DPHY spec
+//  [Rest] = Unused
+cam_interface = 16;
+
+//CSI bit rate - needed to programmed IPP for 8500
+cam_csi_bitrate = 300;//384Mbit/s //585.6Mbit/s
+
+cam_csi_bitrate_array = 00C8,015B,00EB,015B,015B,015B,0190,0190,0190,01F4,01F4,015B,01F4,01F4,015B,00C8,00C8,0190,015B;
+
+// Datatype 0 for preview and still config
+//    1 byte: [byte 0] datatype 0 
+cam_csi_datatype0 = 1e;
+
+// Datatype 1 for non-image data
+//    1 byte: [byte 0] datatype 1
+cam_csi_datatype1 = 1e;
+
+// Datatype 2 not used
+//    1 byte: [byte 0] datatype 2
+cam_csi_datatype2 = 1e;
+
+// Pixwidth for datatype 0
+//    1 byte: [byte 0] pix width for datatype 0
+cam_csi_datatype0_pix_wd = 08;
+
+// Pixwidth for datatype 1
+//    1 byte: [byte 0] pix width for datatype 1
+cam_csi_datatype1_pix_wd = 08;
+
+// Pixwidth for datatype 2
+//    1 byte: [byte 0] pix width for datatype 2
+cam_csi_datatype2_pix_wd = 08;
+
+cam_vf_format = B100; // U,Y1,V,Y2 - TBD
+cam_ss_format = B100; // U,Y1,V,Y2 - TBD
+
+cam_watchdog_timeout = 3e8;// 1000 ms
+
+// Pipe configuration
+cam_pipe_number = 1;
+
+// Snap shot Frame skip value
+cam_ss_frame_skip= 0;
+
+// Viewfinder Frame skip value
+cam_vf_frame_skip= 0;
+
+//Lens HORIZONTAL ANGLE OF VIEW  only put integer for Panorama
+cam_horizontal_angle = 4500;
+//Lens VERTICAL ANGLE OF VIEW  only put integer
+cam_vertical_angle = 5700;
+//focal length in 100s i.e if focal length is 3.33 then it is represented as 333
+cam_focal_length = 333;
+//Max X and Y co-ordinates for touch focus supported by sensor
+cam_touch_max_x_y_values=48,36;
+//=========================================================
+// Exif default settings section (for extradata only)
+//=========================================================
+exif_maker_note = MakerNote;
+exif_x_resolution = 48;  //72
+exif_y_resolution = 48;  //72
+exif_max_num_pixels_x = 0;
+exif_analog_gain = 0;
+exif_digital_gain = 0;
+
+//=========================================================
+// Supported resolutions
+//=========================================================
+
+sup_sizes =
+    0 [B0,  90,  0],    //  176x144 - QCIF
+    1 [B0,  90,  1],    //  176x144
+    2 [B0,  90,  2],    //  176x144
+
+    3 [140, F0, 0],     //  320x240 - QVGA
+    4[140, F0,  1],     //  320x240
+    5[140, F0,  2],     //  320x240
+
+    6 [160, 120, 0],    //  352x288 - CIF
+    7 [160, 120, 1],    //  352x288
+    8 [160, 120, 2],    //  352x288
+
+    9[280, 1E0, 0],     //  640x480  - VGA
+    a [280, 1E0, 1],    //  640x480
+    b [280, 1E0, 2],    //  640x480
+
+    c [2D0, 1E0, 1],    //  720x480 - SDTV(NTSC)
+    d [2D0, 1E0, 2],    //  720x480
+
+    e [2D0, 240, 1],    //  720x576 - SDTV(PAL)
+    f [2D0, 240, 2],    //  720x576
+
+    10 [350, 1E0, 1],   //  848x480 - WVGA, 16:9
+
+    11 [3C0, 21C, 1],   //  960x540 - qHD, 16:9
+
+    12 [400, 300, 0],   //  1024x768 - 1M
+
+    13 [500, 2D0, 0],   //  1280x720 - 720P, 16:9
+    14 [500, 2D0, 1],   //  1280x720
+    15 [500, 2D0, 2],   //  1280x720
+
+    16 [500, 3C0, 0],   //  1280x960
+    17 [500, 3C0, 1 ],  //  1280x960 - SXGA
+    18 [500, 3C0, 2 ],  //  1280x960
+
+    19 [640, 4B0, 0],   //  1600x1200 - 2M
+
+    1a [780, 438, 0 ],  //  1920x1080 - 1080P, 16:9
+
+    1b [800, 600, 0],   //  2048x1536 - 3.2M
+
+    1c [A20, 798, 0],   //  2592x1944 - 5MP
+
+    1d [A00, 780, 0],   //  2560x1920 - 5MP
+
+    1e [800, 480, 0],   //  2048x1152 - 2.4M, 16:9
+
+    1f [A00, 5A0, 0],   //  2560x1440 - 3.6M, 16:9
+;
+
+//=========================================================
+// Suported properties
+//=========================================================
+
+sup_properties =
+  0[0,2,0],    // Exposure control.
+  1[0,7,0],    // AWB on
+  2[1,3,1],    // Auto flicker on
+  3[0,1,0],    // No vertical flip ( default)
+  4[0,1,0],    // No horizontal mirror ( default)
+  6[0,5,0],    // focus mode
+  a[0,a,0],    // Image Effects (0= none, others, see below)
+  c[0,c8,64],  // Contrast
+  e[0,64,32],  // Brightness     
+  10[0,c8,64], // Gamma  
+  11[0,5,0] ,  // Flash
+  13[0,c8,64], // Saturation   
+  14[0,8,4],   // Exposure compensation
+  15[0,f,0],   //Scene mode
+  16[0,f,0],   //sharpness mode
+  17[0,f,0],   //ISO mode
+  18[0,f,0],   //metering exposure mode
+  19[0,f,0],   //focus range
+  1a[0,1f,1f], //FPS
+  20[0,3,0],   // No rotation ( default) 
+  21[0,5,0]    // Test Pattern (0= none, others, see below)
+  22[0,1,0]    //Tocuh Focus
+;
+
+//=========================================================
+// Property descriptions:
+//=========================================================
+prop_description_0 = "Exposure Control";
+prop_description_0_0 = "ExposureControlOff";
+prop_description_0_1 = "ExposureControlAuto";
+prop_description_0_2 = "ExposureControlNight";
+
+prop_description_1 = "White Balance";
+prop_description_1_0 = "WhiteBalControlOff";
+prop_description_1_1 = "WhiteBalControlAuto";
+prop_description_1_2 = "WhiteBalControlSunLight";
+prop_description_1_6 = "WhiteBalControlFluorescent";
+prop_description_1_7 = "WhiteBalControlIncandescent";
+
+prop_description_2 = "Flicker Cancellation";
+prop_description_2_0 = "FlickerRemovalOff";
+prop_description_2_1 = "FlickerRemovalAuto";
+prop_description_2_2 = "FlickerRemoval50";
+prop_description_2_3 = "FlickerRemoval60";
+
+prop_description_a = "Image Effects";
+prop_description_a_0 = "Normal";
+prop_description_a_3 = "Neg";
+prop_description_a_a = "Solarize";
+//prop_description_a_4 = "Sepia";
+//prop_description_a_1 = "Black & white";
+//prop_description_a_64 = "Solarize with UV";
+
+prop_description_c = "Contrast test";
+prop_description_c_0 = "Min contrast";
+prop_description_c_32 = "50 contrast";
+prop_description_c_64 = "Mid contrast";
+prop_description_c_96 = "150 contrast";
+prop_description_c_c8 = "Max contrast";
+
+prop_description_e = "Brightness test";
+prop_description_e_0 = "Min brightness";
+prop_description_e_32 = "Mid brightness";
+prop_description_e_64 = "Max brightness";
+
+prop_description_10 = "Gamma test";
+prop_description_10_0 = "Min Gamma";
+prop_description_10_64 = "Mid Gamma";
+prop_description_10_c8 = "Max Gamma";
+
+prop_description_13 = "Saturation test";
+prop_description_13_0 = "Min Saturation";
+prop_description_13_64 = "Mid Saturation";
+prop_description_13_c8 = "Max Saturation";
+
+prop_description_14 = "Exposure compensation test";
+prop_description_14_0 = "Min exposure compensation";
+prop_description_14_4 = "Mid exposure compensation";
+prop_description_14_8 = "Max exposure compensation";
+
+prop_description_15 = "Scene mode test";
+prop_description_15_0 = "SceneAuto";
+prop_description_15_1 = "ScenePortrait";
+prop_description_15_2 = "SceneLandscape";
+prop_description_15_3 = "SceneNight";
+//prop_description_15_4 = "SceneNightPortrait";
+prop_description_15_5 = "SceneSport";
+//prop_description_15_6 = "SceneMacro";
+prop_description_15_b = "SceneSunset";
+prop_description_15_e = "SceneCandleLight";
+
+prop_description_1a = "Frame Rate";
+prop_description_1a_0 = "Frame Rate Auto";
+prop_description_1a_a = "Frame Rate 10 FPS";
+prop_description_1a_f = "Frame Rate 15 FPS";
+prop_description_1a_14 = "Frame Rate 20 FPS";
+prop_description_1a_1e = "Frame Rate 30 FPS";
+prop_description_1a_1f = "Frame Rate 30 FPS";
+
+prop_description_21 = "Test Pattern";
+prop_description_21_0 = "Off";
+prop_description_21_1 = "Solid white";
+prop_description_21_2 = "Grey ramp";
+prop_description_21_3 = "Color bar ramp";
+prop_description_21_4 = "Solid white (color bars)";
+prop_description_21_5 = "Noise";
+
+
+//=========================================================
+// Driver registers (for reference/housekeeping)
+//=========================================================
+// 0 - temporary and return value (GET_REG)
+// 1 - temporary and return value (GET_REG)
+// 2 - temporary and return value
+// 3 - temporary and return value
+// 4 - temporary loop register
+// 9 - camera module active state (size id)
+
+//=========================================================
+// Macro definition section
+//=========================================================
+
+////////////////////////////
+GET_REG=
+//  $"CAMDRIVER::GET_REG"
+  $f !0 $r2 1 0	// read 2 byte from cam reg !0 into internal 0 and 1
+;
+ 
+
+GET_REG8=
+//  $"CAMDRIVER::GET_REG"
+  $f !0 $r1 0	// read 2 byte from cam reg !0 into internal 0 and 1
+;
+
+
+POLL_INIT_CMD_DONE=        //POLL_FIELD=SEQ_CMD, !=0, DELAY=10, TIMEOUT=200
+  $"  >> CAMDRIVER::POLL_INIT_CMD_DONE"
+
+  $s4 01
+  [4 14             // loop
+    #GET_REG(8404)
+    $c1 00    // compare with zero
+      $s4 00     // done
+    $cl
+      $d0014    	// else not done, delay 20ms
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::POLL_INIT_CMD_DONE timeout"
+  $cx
+
+  $"  << CAMDRIVER::POLL_INIT_CMD_DONE"
+
+;
+////////////////////////////
+POLL_SEQ_CMD_DONE=        //POLL_FIELD=SEQ_CMD, !=0, DELAY=10, TIMEOUT=200
+  $"  >> CAMDRIVER::POLL_SEQ_CMD_DONE"
+
+  $s4 01
+  [4 14             // loop
+    #GET_REG(8404)
+    $c1 00    // compare with zero
+      $s4 00     // done
+    $cl
+      $d0014    	// else not done, delay 20ms
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::POLL CMD 8404 DONE timeout"
+  $cx
+
+  $s4 01
+  [4 14             // loop
+    #GET_REG(8405)
+    $c1 03    // compare with 3 preview mode
+      $s4 00     // done
+    $cl
+      $d0014    	// else not done, delay 20ms
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::POLL_SEQ_CMD_DONE timeout"
+  $cx
+
+  $"  << CAMDRIVER::POLL_SEQ_CMD_DONE"
+
+; // POLL_SEQ_CMD_DONE
+
+////////////////////////////
+POLL_STREAMING_IS_ON=        
+  $"  >> CAMDRIVER::POLL_STREAMING_IS_ON"
+
+  $s4 01
+  [4 64             	// loop
+    #GET_REG(301a)
+    $c0.02 1   			// compare with zero
+      $s4 00     		// done
+    $cl
+      $d000A    		// else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::POLL_STREAMING_IS_ON timeout"
+  $cx
+
+  $"  << CAMDRIVER::POLL_STREAMING_IS_ON"
+
+; // POLL_STREAMING_IS_ON
+
+POLL_STREAMING_IS_OFF=        
+  $"  >> CAMDRIVER::POLL_STREAMING_IS_OFF"
+
+  $s4 01
+  [4 64             	// loop
+    #GET_REG(301a)
+    $c0.02 0   			// compare with zero
+      $s4 00     		// done
+    $cl
+      $d000A    		// else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::POLL_STREAMING_IS_OFF timeout"
+  $cx
+
+  $"  << CAMDRIVER::POLL_STREAMING_IS_OFF"
+
+;
+
+
+
+////////////////////////////
+REFRESH_P=
+
+  $">> CAMDRIVER::REFRESH_P"
+
+  098E 8404 $f          // Refresh Sequencer Mode
+  8404 05   $f          // = 5
+  $d0014
+  
+  #POLL_SEQ_CMD_DONE
+  
+  $"<< CAMDRIVER::REFRESH_P"
+
+; // REFRESH_P
+
+////////////////////////////
+REFRESH_MODE=
+
+  $">> CAMDRIVER::REFRESH_MODE"
+
+
+  098E 8404 $f          // Refresh Sequencer Mode
+  8404 06   $f          // = 6
+  $d0032
+  #POLL_SEQ_CMD_DONE
+  
+  $"<< CAMDRIVER::REFRESH_MODE"
+
+; // REFRESH_MODE
+
+CHECK_STANDBY_MODE =       //POLL_FIELD=SEQ_STATE, !=3, DELAY=10, TIMEOUT=200
+  $"  >> CAMDRIVER::CHECK_STANDBY_MODE"
+
+  $s4 01
+  [4 64             // loop
+    098E 8405 $f
+    #GET_REG(0990)
+    $c1 09       // compare with 9 (return 9 for standby)
+      $s4 00     // done
+    $cl
+      $d000a     // else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::CHECK_STANDBY_MODE timeout"
+  $cx
+
+  $"  << CAMDRIVER::CHECK_STANDBY_MODE"
+
+; 
+
+CHECK_INIT_MODE =       
+  $"  >> CAMDRIVER::CHECK_INIT_MODE"
+
+  $s4 01
+  [4 64             // loop
+    098E 8405 $f
+    #GET_REG(0990)
+    $c1 00       // compare with 0 (return 0 for init)
+      $s4 00     // done
+    $cl
+      $d000a     // else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::CHECK_INIT_MODE timeout"
+  $cx
+
+  $"  << CAMDRIVER::CHECK_INIT_MODE"
+
+; 
+
+CHECK_PREVIEW_MODE =       //POLL_FIELD=SEQ_STATE, !=3, DELAY=10, TIMEOUT=200
+  $"  >> CAMDRIVER::CHECK_PREVIEW_MODE"
+
+  $s4 01
+  [4 28             // loop
+    098E 8405 $f
+    #GET_REG(0990)
+    $c1 03       // compare with 3 (return 3 for preview)
+      $s4 00     // done
+    $cl
+      $d0014     // else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::CHECK_PREVIEW_MODE timeout"
+  $cx
+
+  $"  << CAMDRIVER::CHECK_PREVIEW_MODE"
+
+; // CHECK_PREVIEW_MODE
+
+CHECK_CAPTURE_MODE =       //POLL_FIELD=SEQ_STATE, !=3, DELAY=10, TIMEOUT=200
+  $"  >> CAMDRIVER::CHECK_CAPTURE_MODE"
+
+  $s4 01
+  [4 28             // loop
+    098E 8405 $f
+    #GET_REG(0990)
+    $c1 07       // compare with 7 (return 7 for capture)
+      $s4 00     // done
+    $cl
+      $d0014     // else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::CHECK_CAPTURE_MODE timeout"
+  $cx       
+
+  $"  << CAMDRIVER::CHECK_CAPTURE_MODE"
+
+; // CHECK_CAPTURE_MODE
+
+////////////////////////////
+ENTER_PREVIEW_MODE=
+
+  $">> CAMDRIVER::ENTER_PREVIEW_MODE"
+
+098E 8405 $f
+#GET_REG(0990)
+$c1 03    // compare with zero
+   $">> CAMDRIVER::ENTER_PREVIEW_MODE---------in preview now,not switch "
+$cl
+   $">> CAMDRIVER::ENTER_PREVIEW_MODE---------capture mode, switch to preview"
+  //use this [Go to preview] 2012-3-19 23:02
+	098E  843C 	$f// LOGICAL_ADDRESS_ACCESS
+	843C  01 	  $f// SEQ_STATE_CFG_5_MAX_FRAME_CNT
+	8404  01 	  $f// SEQ_CMD
+	// 2012-3-19 23:02
+	// Add delay 200ms 2012-3-19 23:03
+	$d0014
+  
+  #CHECK_PREVIEW_MODE
+$cx
+  
+  $"<< CAMDRIVER::ENTER_PREVIEW_MODE"
+
+; // ENTER_PREVIEW_MODE
+
+
+////////////////////////////
+ENTER_CAPTURE_MODE=
+
+  $">> CAMDRIVER::ENTER_CAPTURE_MODE"
+
+  098E 843C $f 	// LOGICAL_ADDRESS_ACCESS [SEQ_STATE_CFG_5_MAX_FRAME_CNT]
+  843C FF   $f	// SEQ_STATE_CFG_5_MAX_FRAME_CNT
+  8404 02   $f	// SEQ_CMD
+  $d0032
+  #CHECK_CAPTURE_MODE
+  
+  $"<< CAMDRIVER::ENTER_CAPTURE_MODE"
+
+; // ENTER_CAPTURE_MODE
+
+////////////////////////////
+MODIFY_REG=
+//  $"CAMDRIVER::MODIFY_REG"
+  $f !0 $r2 1 0 $f           // Read from CamReg !0 (2 Bytes) to Internal Reg 1, 0
+  !1                         // Do !1 sequence
+  $f !0 $w1 $w0 $f           // Write to CamReg !0 (2 Bytes) from Internal Reg 1, 0
+;
+
+////////////////////////////
+CHECK_SOC_IN_STANDBY=        //POLL_REG= 0x0018,0x4000, !=1, DELAY=10, TIMEOUT=100    //Poll standby_done bit until set to 1
+  $">> CAMDRIVER::CHECK_SOC_IN_STANDBY"
+
+  $s4 01
+  [4 32             // loop
+    #GET_REG(0018)
+    $c1.06 1    // compare with bit
+      $s4 00     // done
+    $cl
+      $d000a    // else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::CHECK_SOC_IN_STANDBY timeout"
+  $cx
+
+  $"<< CAMDRIVER::CHECK_SOC_IN_STANDBY"
+
+; // CHECK_SOC_IN_STANDBY
+
+
+CHECK_SOC_NOT_IN_STANDBY=        //POLL_REG= 0x0018,0x4000, !=0, DELAY=10, TIMEOUT=100    //Poll standby_done bit until set to 0
+  $">> CAMDRIVER::CHECK_SOC_NOT_IN_STANDBY"
+
+  $s4 01
+  [4 32             // loop
+    #GET_REG(0018)
+    $c1.06 0    // compare with bit
+      $s4 00     // done
+    $cl
+      $d000a    // else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::CHECK_SOC_NOT_IN_STANDBY timeout"
+  $cx
+
+  $"<< CAMDRIVER::CHECK_SOC_NOT_IN_STANDBY"
+
+; // CHECK_SOC_NOT_IN_STANDBY
+
+
+MIPI_IN_STANDBY=
+  $">> CAMDRIVER::MIPI_IN_STANDBY"
+
+  //#MODIFY_REG(3400,$s0.01 1) 		// MIPI Standby
+  
+  $s4 01
+  [4 64             	// loop
+    #GET_REG(3402)
+    $c0.00 1    		// compare with bit
+      $s4 00     		// done
+    $cl
+      $d000a    		// else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::MIPI_IN_STANDBY timeout"
+  $cx  
+
+  $"<< CAMDRIVER::MIPI_IN_STANDBY"
+
+; // MIPI_IN_STANDBY
+
+MIPI_NOT_IN_STANDBY=
+  $">> CAMDRIVER::MIPI_NOT_IN_STANDBY"
+
+  //#MODIFY_REG(3400,$s0.01 0) 		// MIPI Standby
+  
+  $s4 01
+  [4 64             	// loop
+    #GET_REG(3402)
+    $c0.00 0    		// compare with bit
+      $s4 00     		// done
+    $cl
+      $d000a    		// else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::MIPI_NOT_IN_STANDBY timeout"
+  $cx
+
+  $"<< CAMDRIVER::MIPI_NOT_IN_STANDBY"
+
+; // MIPI_NOT_IN_STANDBY
+
+MON_CMD_FINISH=
+  $">> CAMDRIVER::MON_CMD_FINISH"
+  
+  $s4 01
+  [4 64             	// loop
+    #GET_REG(8002)
+    $c0.00 0    		// compare with bit
+      $s4 00     		// done
+    $cl
+      $d000a    		// else not done, delay
+    $cx
+  ]
+  $c4 00
+  $cl
+    $"CAMDRIVER::MON_CMD_FINISH timeout"
+  $cx
+
+  $"<< CAMDRIVER::MON_CMD_FINISH"
+;
+
+
+seq_init_focus_trig=
+098E B000 	$f// LOGICAL_ADDRESS_ACCESS [AF_STATUS]
+B000 0000       $f// clear to zero
+
+098E b006 	$f// LOGICAL_ADDRESS_ACCESS [AF_PROGRESS]
+b006 01     $f
+;
+
+
+seq_init_focus_off=
+098E B000 	$f// LOGICAL_ADDRESS_ACCESS [AF_STATUS]
+B000 0000       $f// clear to zero
+
+098E b006 	$f// LOGICAL_ADDRESS_ACCESS [AF_PROGRESS]
+b006 00     $f
+;
+
+
+seq_focus_status =
+
+  $">> CAMDRIVER::seq_focus_status"
+  098E 3000 $f
+  #GET_REG(B000)
+  $"<< CAMDRIVER::seq_focus_status"
+  
+  //poll bit13 or bit15 is 1 ,error,exit
+;
+
+cam_focus_result = 10,00;//is focused
+
+////////////////////////////
+cam_exposure_lock =
+  $">> CAMDRIVER:: cam_exposure_lock"
+
+  $"<< CAMDRIVER:: cam_exposure_lock"
+;
+////////////////////////////
+cam_exposure_unlock =
+  $">> CAMDRIVER:: cam_exposure_unlock"
+
+  $"<< CAMDRIVER:: cam_exposure_unlock"
+;
+
+////////////////////////////
+cam_awb_lock =
+  $">> CAMDRIVER:: cam_awb_lock"
+
+  $"<< CAMDRIVER:: cam_awb_awb"
+;
+////////////////////////////
+cam_awb_unlock =
+  $">> CAMDRIVER:: cam_awb_unlock"
+
+  $"<< CAMDRIVER:: cam_awb_unlock"
+;
+
+////////////////////////////
+
+INIT_SEQ_ROBIN=
+//[Snda SOC5140 MIPI test 20120503]
+//XMCLK = 19200000
+
+0010 0350	$f//PLL Dividers = 833
+0012 0070	$f//PLL P Dividers = 112
+0014 20F5	$f//PLL Control: TEST_BYPASS off = 8437
+001A 001C	$f	// FIELD_WR= RESET_AND_MISC_CONTROL, 0x001C
+0022 0039	$f//VDD_DIS Counter Delay = 57
+002A 7FFF	$f//PLL P Dividers 4-5-6 = 32767
+002C 0000	$f//PLL P Dividers 7 = 0
+002E 0000	$f//Sensor Clock Divider = 0
+001E 0444	$f//Pad Slew Pad Config = 1092
+0018 400C	$f//Standby Control and Status: Out of standby
+
+#CHECK_SOC_NOT_IN_STANDBY
+098E 0000		$f// FIELD_WR= LOGICAL_ADDRESS_ACCESS, 0x0000
+301A 0030		$f// FIELD_WR= RESET_REGISTER, 0x0030
+316C B430		$f// FIELD_WR= DAC_TXLO, 0xB430
+31E0 0003		$f// FIELD_WR= PIX_DEF_ID, 0x0003
+3E2E F319		$f// FIELD_WR= SAMP_SPARE, 0xF319
+3EE6 A7C1		$f// FIELD_WR= DAC_LD_26_27, 0xA7C1
+301E 00A8		$f// FIELD_WR= DATA_PEDESTAL, 0x00A8
+DC33 2A 	  $f// SYS_FIRST_BLACK_LEVEL
+3812 212C		$f// FIELD_WR= OTPM_CFG, 0x212C
+3400 7A26		$f// FIELD_WR= MIPI_CONTROL, 0x7A26
+
+#MIPI_IN_STANDBY
+340A 001F		$f// FIELD_WR= TXSS_MIPI_CONTROL_ADDL, 0x001F
+3410 0F00		$f// FIELD_WR= MIPI_TIMING_T_HS_ZERO, 0x0F00
+3412 0B04		$f// FIELD_WR= MIPI_TIMING_T_HS_EXIT_HS_TRAIL, 0x0B04
+3414 0D01		$f// FIELD_WR= MIPI_TIMING_T_CLK_POST_CLK_PRE, 0x0D01
+3416 031D		$f// FIELD_WR= MIPI_T_CLK_TRAIL_CLK_ZERO, 0x031D
+3418 0006		$f// FIELD_WR= MIPI_TIMING_T_LPX, 0x0006
+341A 0A0C		$f// FIELD_WR= MIPI_INIT_TIMING, 0x0A0C
+3CA0 0001		$f// FIELD_WR= TXSS_PARAMETERS, 0x0001
+3CA2 0087		$f// FIELD_WR= TXC_PARAMETERS, 0x0087
+3CAA 1010		$f// FIELD_WR= TXC_TIMING, 0x1010
+3400 7A20		$f// FIELD_WR= MIPI_CONTROL, 0x7A24
+
+#MIPI_NOT_IN_STANDBY
+C8D4 0000 	$f// CAM_OUTPUT_1_MIPICHANNEL
+D822 4710 	$f// JPEG_JPSS_CTRL_VAR
+
+0982 0000		$f// FIELD_WR= ACCESS_CTL_STAT, 0x0000
+098A 0000		$f// FIELD_WR= PHYSICAL_ADDRESS_ACCESS, 0x0000
+886C C0F1   $f
+886E C5E1   $f
+8870 246A   $f
+8872 1280   $f
+8874 C4E1   $f
+8876 D20F   $f
+8878 2069   $f
+887A 0000   $f
+887C 6A62   $f
+887E 1303   $f
+8880 0084   $f
+8882 1734   $f
+8884 7005   $f
+8886 D801   $f
+8888 8A41   $f
+888A D900   $f
+888C 0D5A   $f
+888E 0664   $f
+8890 8B61   $f
+8892 E80B   $f
+8894 000D   $f
+8896 0020   $f
+8898 D508   $f
+889A 1504   $f
+889C 1400   $f
+889E 7840   $f
+88A0 D007   $f
+88A2 0DFB   $f
+88A4 9004   $f
+88A6 C4C1   $f
+88A8 2029   $f
+88AA 0300   $f
+88AC 0219   $f
+88AE 06C4   $f
+88B0 FF80   $f
+88B2 08C4   $f
+88B4 FF80   $f
+88B6 086C   $f
+88B8 FF80   $f
+88BA 08C0   $f
+88BC FF80   $f
+88BE 08C4   $f
+88C0 FF80   $f
+88C2 097C   $f
+88C4 0001   $f
+88C6 0005   $f
+88C8 0000   $f
+88CA 0000   $f
+88CC C0F1   $f
+88CE 0976   $f
+88D0 06C4   $f
+88D2 D639   $f
+88D4 7708   $f
+88D6 8E01   $f
+88D8 1604   $f
+88DA 1091   $f
+88DC 2046   $f
+88DE 00C1   $f
+88E0 202F   $f
+88E2 2047   $f
+88E4 AE21   $f
+88E6 0F8F   $f
+88E8 1440   $f
+88EA 8EAA   $f
+88EC 8E0B   $f
+88EE 224A   $f
+88F0 2040   $f
+88F2 8E2D   $f
+88F4 BD08   $f
+88F6 7D05   $f
+88F8 8E0C   $f
+88FA B808   $f
+88FC 7825   $f
+88FE 7510   $f
+8900 22C2   $f
+8902 248C   $f
+8904 081D   $f
+8906 0363   $f
+8908 D9FF   $f
+890A 2502   $f
+890C 1002   $f
+890E 2A05   $f
+8910 03FE   $f
+8912 0A16   $f
+8914 06E4   $f
+8916 702F   $f
+8918 7810   $f
+891A 7D02   $f
+891C 7DB0   $f
+891E F00B   $f
+8920 78A2   $f
+8922 2805   $f
+8924 03FE   $f
+8926 0A02   $f
+8928 06E4   $f
+892A 702F   $f
+892C 7810   $f
+892E 651D   $f
+8930 7DB0   $f
+8932 7DAF   $f
+8934 8E08   $f
+8936 BD06   $f
+8938 D120   $f
+893A B8C3   $f
+893C 78A5   $f
+893E B88F   $f
+8940 1908   $f
+8942 0024   $f
+8944 2841   $f
+8946 0201   $f
+8948 1E26   $f
+894A 1042   $f
+894C 0F15   $f
+894E 1463   $f
+8950 1E27   $f
+8952 1002   $f
+8954 224C   $f
+8956 A000   $f
+8958 224A   $f
+895A 2040   $f
+895C 22C2   $f
+895E 2482   $f
+8960 204F   $f
+8962 2040   $f
+8964 224C   $f
+8966 A000   $f
+8968 B8A2   $f
+896A F204   $f
+896C 2045   $f
+896E 2180   $f
+8970 AE01   $f
+8972 0D9E   $f
+8974 FFE3   $f
+8976 70E9   $f
+8978 0125   $f
+897A 06C4   $f
+897C C0F1   $f
+897E D010   $f
+8980 D110   $f
+8982 D20D   $f
+8984 A020   $f
+8986 8A00   $f
+8988 0809   $f
+898A 01DE   $f
+898C B8A7   $f
+898E AA00   $f
+8990 DBFF   $f
+8992 2B41   $f
+8994 0200   $f
+8996 AA0C   $f
+8998 1228   $f
+899A 0080   $f
+899C AA6D   $f
+899E 0815   $f
+89A0 01DE   $f
+89A2 B8A7   $f
+89A4 1A28   $f
+89A6 0002   $f
+89A8 8123   $f
+89AA 7960   $f
+89AC 1228   $f
+89AE 0080   $f
+89B0 C0D1   $f
+;
+
+INIT_SEQ_ROBIN_2=
+89B2 7EE0   $f
+89B4 FF80   $f
+89B6 0158   $f
+89B8 FF00   $f
+89BA 0618   $f
+89BC 8000   $f
+89BE 0008   $f
+89C0 FF80   $f
+89C2 0A08   $f
+89C4 E280   $f
+89C6 24CA   $f
+89C8 7082   $f
+89CA 78E0   $f
+89CC 20E8   $f
+89CE 01A2   $f
+89D0 1002   $f
+89D2 0D02   $f
+89D4 1902   $f
+89D6 0094   $f
+89D8 7FE0   $f
+89DA 7028   $f
+89DC 7308   $f
+89DE 1000   $f
+89E0 0900   $f
+89E2 7904   $f
+89E4 7947   $f
+89E6 1B00   $f
+89E8 0064   $f
+
+89EA 7EE0   $f
+89EC E280   $f
+89EE 24CA   $f
+89F0 7082   $f
+89F2 78E0   $f
+89F4 20E8   $f
+89F6 01A2   $f
+89F8 1102   $f
+89FA 0502   $f
+89FC 1802   $f
+89FE 00B4   $f
+8A00 7FE0   $f
+8A02 7028   $f
+8A04 0000   $f
+8A06 0000   $f
+8A08 FF80   $f
+8A0A 097C   $f
+8A0C FF80   $f
+8A0E 08CC   $f
+8A10 0000   $f
+8A12 08DC   $f
+8A14 0000   $f
+8A16 0998   $f
+098E 0000		$f// FIELD_WR= LOGICAL_ADDRESS_ACCESS, 0x0000
+C40C 00FF 	$f// AFM_POS_MAX
+C40A 0000 	$f// AFM_POS_MIN
+#MON_CMD_FINISH
+8016 086C   $f
+8018 FF80   $f
+8002 0001 	$f// MON_CMD
+#MON_CMD_FINISH
+C86C 0518	 $f//Output Width (A) = 1304
+C86E 03D4	 $f//Output Height (A) = 980
+C83A 000C	 $f//Row Start (A) = 12
+C83C 0018	 $f//Column Start (A) = 24
+C83E 07B1	 $f//Row End (A) = 1969
+C840 0A45	 $f//Column End (A) = 2629
+C842 0001	 $f//Row Speed (A) = 1
+C844 0103	 $f//Core Skip X (A) = 259
+C846 0103	 $f//Core Skip Y (A) = 259
+C848 0103	 $f//Pipe Skip X (A) = 259
+C84A 0103	 $f//Pipe Skip Y (A) = 259
+C84C 00F6	 $f//Power Mode (A) = 246
+C84E 0001	 $f//Bin Mode (A) = 1
+C850 0000	   $f//Orientation (A) = 0      //00 12/20
+C851 0000	   $f//Pixel Order (A) = 0
+C852 019C	 $f//Fine Correction (A) = 412
+C854 0732	 $f//Fine IT Min (A) = 1842
+C856 048E	 $f//Fine IT Max Margin (A) = 1166
+C858 0002	 $f//Coarse IT Min (A) = 2
+C85A 0001	 $f//Coarse IT Max Margin (A) = 1
+C85C 0423	 $f//Min Frame Lines (A) = 1059
+C85E FFFF	 $f//Max Frame Lines (A) = 65535
+C860 0423	 $f//Base Frame Lines (A) = 1059
+C862 1228	 $f//Min Line Length (A) = 3571
+C864 FFFE	 $f//Max Line Length (A) = 65534
+C866 7F7C	 $f//P456 Divider (A) = 32618
+C868 0423	 $f//Frame Lines (A) = 1059
+C86A 1228	 $f//Line Length (A) = 3571
+C870 0014	 $f//RX FIFO Watermark (A) = 20
+C8AA 0280	 $f//Output_0 Image Width = 640
+C8AC 01E0	 $f//Output_0 Image Height = 480
+C8AE 0001	 $f//Output_0 Image Format = 1
+C8B0 0000	 $f//Output_0 Format Order = 0
+C8B8 0004	 $f//Output_0 JPEG control = 4
+C8A4 0A28	 $f//Output Width (B) = 2600
+C8A6 07A0	 $f//Output Height (B) = 1952
+C872 0010	 $f//Row Start (B) = 16
+C874 001C	 $f//Column Start (B) = 28
+C876 07AF	 $f//Row End (B) = 1967
+C878 0A43	 $f//Column End (B) = 2627
+C87A 0001	 $f//Row Speed (B) = 1
+C87C 0101	 $f//Core Skip X (B) = 257
+C87E 0101	 $f//Core Skip Y (B) = 257
+C880 0101	 $f//Pipe Skip X (B) = 257
+C882 0101	 $f//Pipe Skip Y (B) = 257
+C884 00F2	 $f//Power Mode (B) = 242
+C886 0000	 $f//Bin Mode (B) = 0
+C888 0000	   $f//Orientation (B) = 0    //12/20
+C889 0000	   $f//Pixel Order (B) = 0
+C88A 009C	 $f//Fine Correction (B) = 156
+C88C 034A	 $f//Fine IT Min (B) = 842
+C88E 02A6	 $f//Fine IT Max Margin (B) = 678
+C890 0002	 $f//Coarse IT Min (B) = 2
+C892 0001	 $f//Coarse IT Max Margin (B) = 1
+C894 07EF	 $f//Min Frame Lines (B) = 2031
+C896 FFFF	 $f//Max Frame Lines (B) = 65535
+C898 07EF	 $f//Base Frame Lines (B) = 2031
+C89A 1E4C	 $f//Min Line Length (B) = 5586
+C89C FFFE	 $f//Max Line Length (B) = 65534
+C89E 7F7C	 $f//P456 Divider (B) = 32618
+C8A0 07EF	 $f//Frame Lines (B) = 2031
+C8A2 1E4C	 $f//Line Length (B) = 5586
+C8A8 0014	 $f//RX FIFO Watermark (B) = 20
+C8C0 0A20	 $f//Output_1 Image Width = 2592
+C8C2 0798	 $f//Output_1 Image Height = 1944
+C8C4 0001	 $f//Output_1 Image Format = 1
+C8C6 0000	 $f//Output_1 Format Order = 0
+C8CE 0004	 $f//Output_1 JPEG control = 5
+A010 00F4	 $f//fd_min_expected50hz_flicker_period = 308
+A012 0108	 $f//fd_max_expected50hz_flicker_period = 328
+A014 00CA	 $f//fd_min_expected60hz_flicker_period = 255
+A016 00DE	 $f//fd_max_expected60hz_flicker_period = 275
+A018 00FE	 $f//fd_expected50hz_flicker_period (A) = 318
+A01A 0098	 $f//fd_expected50hz_flicker_period (B) = 203
+A01C 00D4	 $f//fd_expected60hz_flicker_period (A) = 265
+A01E 007F	 $f//fd_expected60hz_flicker_period (B) = 169
+DC0A 06	   $f//Scaler Allow Zoom Ratio = 6
+DC1C 2710	 $f//System Zoom Ratio = 10000
+A000 10 	$f// FD_STATUS
+8417 04 	$f// SEQ_STATE_CFG_1_FD
+
+AC01 AB 	$f // AWB_MODE
+AC46 02D6 	$f // AWB_LEFT_CCM_0
+AC5C 03B6 	$f // AWB_RIGHT_CCM_0
+AC72 0100 	$f // AWB_LL_CCM_0
+AC48 FE93 	$f // AWB_LEFT_CCM_1
+AC5E FDD7 	$f // AWB_RIGHT_CCM_1
+AC74 0000 	$f // AWB_LL_CCM_1
+AC4A FFC7 	$f // AWB_LEFT_CCM_2
+AC60 FFA6 	$f // AWB_RIGHT_CCM_2
+AC76 0000 	$f // AWB_LL_CCM_2
+AC4C FF10 	$f // AWB_LEFT_CCM_3
+AC62 FF58 	$f // AWB_RIGHT_CCM_3
+AC78 0000 	$f // AWB_LL_CCM_3
+AC4E 025C 	$f // AWB_LEFT_CCM_4
+AC64 023D 	$f // AWB_RIGHT_CCM_4
+AC7A 0100 	$f // AWB_LL_CCM_4
+AC50 FFD1 	$f // AWB_LEFT_CCM_5
+AC66 FF9B 	$f // AWB_RIGHT_CCM_5
+AC7C 0000 	$f // AWB_LL_CCM_5
+AC52 FFBA 	$f // AWB_LEFT_CCM_6
+AC68 FFE3 	$f // AWB_RIGHT_CCM_6
+AC7E 0000 	$f // AWB_LL_CCM_6
+AC54 FDD5 	$f // AWB_LEFT_CCM_7
+AC6A FF2D 	$f // AWB_RIGHT_CCM_7
+AC80 0000 	$f // AWB_LL_CCM_7
+AC56 03A0 	$f // AWB_LEFT_CCM_8
+AC6C 022C 	$f // AWB_RIGHT_CCM_8
+AC82 0100 	$f // AWB_LL_CCM_8
+AC58 0118 	$f // AWB_LEFT_CCM_R2BRATIO
+AC6E 0070 	$f // AWB_RIGHT_CCM_R2BRATIO
+B842 0037 	$f // STAT_AWB_GRAY_CHECKER_OFFSET_X
+B844 0044 	$f // STAT_AWB_GRAY_CHECKER_OFFSET_Y
+3240 0024 	$f //AWB_XY_SCALE
+3242 F206 	$f //AWB_WEIGHT_R0
+3244 E22D 	$f //AWB_WEIGHT_R1
+3246 29AD 	$f //AWB_WEIGHT_R2
+3248 D435 	$f //AWB_WEIGHT_R3
+324A 6C62 	$f //AWB_WEIGHT_R4
+324C 2B68 	$f //AWB_WEIGHT_R5
+324E EB98 	$f //AWB_WEIGHT_R6
+3250 B283 	$f //AWB_WEIGHT_R7
+323C 003D 	$f //AWB_X_SHIFT
+323E 0044 	$f //AWB_Y_SHIFT
+
+AC3C 3E 	 $f// AWB_MIN_ACCEPTED_PRE_AWB_R2G_RATIO
+AC3D 79 	 $f// AWB_MAX_ACCEPTED_PRE_AWB_R2G_RATIO
+AC3E 22 	 $f// AWB_MIN_ACCEPTED_PRE_AWB_B2G_RATIO
+AC3F 5E 	 $f// AWB_MAX_ACCEPTED_PRE_AWB_B2G_RATIO
+ACB0 3E 	 $f// AWB_RG_MIN
+ACB1 79 	 $f// AWB_RG_MAX
+ACB4 22 	 $f// AWB_BG_MIN
+ACB5 5E 	 $f// AWB_BG_MAX
+AC01 BB 	 $f// AWB_MODE
+ACB2 46 	 $f// AWB_RG_MIN_BRIGHT
+ACB3 4C 	 $f// AWB_RG_MAX_BRIGHT
+ACB6 44 	 $f// AWB_BG_MIN_BRIGHT
+ACB7 4A 	 $f// AWB_BG_MAX_BRIGHT
+ACB8 004B  $f	// AWB_START_NUM_INT_LINES
+ACBA 0019  $f	// AWB_END_NUM_INT_LINES
+     
+D80F 04 	 $f// JPEG_QSCALE_0
+D810 08 	 $f// JPEG_QSCALE_1
+C8D2 04 	 $f// CAM_OUTPUT_1_JPEG_QSCALE_0
+C8D3 08 	 $f// CAM_OUTPUT_1_JPEG_QSCALE_1
+C8BC 04 	 $f// CAM_OUTPUT_0_JPEG_QSCALE_0
+C8BD 08 	 $f// CAM_OUTPUT_0_JPEG_QSCALE_1
+;
+
+INIT_SEQ_ROBIN_3=
+DC35 04 	 $f// SYS_UV_COLOR_BOOST
+326E 0006	 $f	// FIELD_WR= LOW_PASS_YUV_FILTER, 0x0006
+DC37 62 	 $f// SYS_BRIGHT_COLORKILL
+35A4 0596	 $f	// FIELD_WR= BRIGHT_COLOR_KILL_CONTROLS, 0x0596
+35A2 0094	 $f	// FIELD_WR= DARK_COLOR_KILL_CONTROLS, 0x0094
+DC36 23 	 $f// SYS_DARK_COLOR_KILL
+BC18 00 	 $f// LL_GAMMA_CONTRAST_CURVE_0
+BC19 11 	 $f// LL_GAMMA_CONTRAST_CURVE_1
+BC1A 23 	 $f// LL_GAMMA_CONTRAST_CURVE_2
+BC1B 3F 	 $f// LL_GAMMA_CONTRAST_CURVE_3
+BC1C 67 	 $f// LL_GAMMA_CONTRAST_CURVE_4
+BC1D 85 	 $f// LL_GAMMA_CONTRAST_CURVE_5
+BC1E 9B 	 $f// LL_GAMMA_CONTRAST_CURVE_6
+BC1F AD 	 $f// LL_GAMMA_CONTRAST_CURVE_7
+BC20 BB 	 $f// LL_GAMMA_CONTRAST_CURVE_8
+BC21 C7 	 $f// LL_GAMMA_CONTRAST_CURVE_9
+BC22 D1 	$f// LL_GAMMA_CONTRAST_CURVE_10
+BC23 DA 	$f// LL_GAMMA_CONTRAST_CURVE_11
+BC24 E1 	$f// LL_GAMMA_CONTRAST_CURVE_12
+BC25 E8 	$f// LL_GAMMA_CONTRAST_CURVE_13
+BC26 EE 	$f// LL_GAMMA_CONTRAST_CURVE_14
+BC27 F3 	$f// LL_GAMMA_CONTRAST_CURVE_15
+BC28 F7 	$f// LL_GAMMA_CONTRAST_CURVE_16
+BC29 FB 	$f// LL_GAMMA_CONTRAST_CURVE_17
+BC2A FF 	$f// LL_GAMMA_CONTRAST_CURVE_18
+BC2B 00 	$f// LL_GAMMA_NEUTRAL_CURVE_0
+BC2C 11 	$f// LL_GAMMA_NEUTRAL_CURVE_1
+BC2D 23 	$f// LL_GAMMA_NEUTRAL_CURVE_2
+BC2E 3F 	$f// LL_GAMMA_NEUTRAL_CURVE_3
+BC2F 67 	$f// LL_GAMMA_NEUTRAL_CURVE_4
+BC30 85 	$f// LL_GAMMA_NEUTRAL_CURVE_5
+BC31 9B 	$f// LL_GAMMA_NEUTRAL_CURVE_6
+BC32 AD 	$f// LL_GAMMA_NEUTRAL_CURVE_7
+BC33 BB 	$f// LL_GAMMA_NEUTRAL_CURVE_8
+BC34 C7 	$f// LL_GAMMA_NEUTRAL_CURVE_9
+BC35 D1 	$f// LL_GAMMA_NEUTRAL_CURVE_10
+BC36 DA 	$f// LL_GAMMA_NEUTRAL_CURVE_11
+BC37 E1 	$f// LL_GAMMA_NEUTRAL_CURVE_12
+BC38 E8 	$f// LL_GAMMA_NEUTRAL_CURVE_13
+BC39 EE 	$f// LL_GAMMA_NEUTRAL_CURVE_14
+BC3A F3 	$f// LL_GAMMA_NEUTRAL_CURVE_15
+BC3B F7 	$f// LL_GAMMA_NEUTRAL_CURVE_16
+BC3C FB 	$f// LL_GAMMA_NEUTRAL_CURVE_17
+BC3D FF 	$f// LL_GAMMA_NEUTRAL_CURVE_18
+BC3E 00 	$f// LL_GAMMA_NR_CURVE_0
+BC3F 18 	$f// LL_GAMMA_NR_CURVE_1
+BC40 25 	$f// LL_GAMMA_NR_CURVE_2
+BC41 3A 	$f// LL_GAMMA_NR_CURVE_3
+BC42 59 	$f// LL_GAMMA_NR_CURVE_4
+BC43 70 	$f// LL_GAMMA_NR_CURVE_5
+BC44 81 	$f// LL_GAMMA_NR_CURVE_6
+BC45 90 	$f// LL_GAMMA_NR_CURVE_7
+BC46 9E 	$f// LL_GAMMA_NR_CURVE_8
+BC47 AB 	$f// LL_GAMMA_NR_CURVE_9
+BC48 B6 	$f// LL_GAMMA_NR_CURVE_10
+BC49 C1 	$f// LL_GAMMA_NR_CURVE_11
+BC4A CB 	$f// LL_GAMMA_NR_CURVE_12
+BC4B D5 	$f// LL_GAMMA_NR_CURVE_13
+BC4C DE 	$f// LL_GAMMA_NR_CURVE_14
+BC4D E7 	$f// LL_GAMMA_NR_CURVE_15
+BC4E EF 	$f// LL_GAMMA_NR_CURVE_16
+BC4F F7 	$f// LL_GAMMA_NR_CURVE_17
+BC50 FF 	$f// LL_GAMMA_NR_CURVE_18
+B801 E0 	$f// STAT_MODE
+B862 04 	$f// STAT_BMTRACKING_SPEED
+B829 02 	$f// STAT_LL_BRIGHTNESS_METRIC_DIVISOR
+B863 02 	$f// STAT_BM_MUL
+B827 0F 	$f// STAT_AE_EV_SHIFT
+A409 37 	$f// AE_RULE_BASE_TARGET
+BC52 00C8 	$f// LL_START_BRIGHTNESS_METRIC
+BC54 0A28 	$f// LL_END_BRIGHTNESS_METRIC
+BC58 00C8 	$f// LL_START_GAIN_METRIC
+BC5A 12C0 	$f// LL_END_GAIN_METRIC
+BC5E 00FA 	$f// LL_START_APERTURE_GAIN_BM
+BC60 0258 	$f// LL_END_APERTURE_GAIN_BM
+BC66 00FA 	$f// LL_START_APERTURE_GM
+BC68 0258 	$f// LL_END_APERTURE_GM
+BC86 00C8 	$f// LL_START_FFNR_GM
+BC88 0640 	$f// LL_END_FFNR_GM
+BCBC 0040 	$f// LL_SFFB_START_GAIN
+BCBE 01FC 	$f// LL_SFFB_END_GAIN
+BCCC 00C8 	$f// LL_SFFB_START_MAX_GM
+BCCE 0640 	$f// LL_SFFB_END_MAX_GM
+BC90 00C8 	$f// LL_START_GRB_GM
+BC92 0640 	$f// LL_END_GRB_GM
+BC0E 0001 	$f// LL_GAMMA_CURVE_ADJ_START_POS
+BC10 0002 	$f// LL_GAMMA_CURVE_ADJ_MID_POS
+BC12 02BC 	$f// LL_GAMMA_CURVE_ADJ_END_POS
+BCAA 044C 	$f// LL_CDC_THR_ADJ_START_POS
+BCAC 00AF 	$f// LL_CDC_THR_ADJ_MID_POS
+BCAE 0009 	$f// LL_CDC_THR_ADJ_END_POS
+BCD8 00C8 	$f// LL_PCR_START_BM
+BCDA 0A28 	$f// LL_PCR_END_BM
+3380 0504		$f// FIELD_WR= KERNEL_CONFIG, 0x0504
+BC94 0C 	 $f// LL_GB_START_THRESHOLD_0
+BC95 08 	 $f// LL_GB_START_THRESHOLD_1
+BC9C 3C 	 $f// LL_GB_END_THRESHOLD_0
+BC9D 28 	 $f// LL_GB_END_THRESHOLD_1
+33B0 2A16	 $f	// FIELD_WR= FFNR_ALPHA_BETA, 0x2A16
+BC8A 02 	 $f// LL_START_FF_MIX_THRESH_Y
+BC8B 0F 	 $f// LL_END_FF_MIX_THRESH_Y
+BC8C FF 	 $f// LL_START_FF_MIX_THRESH_YGAIN
+BC8D FF 	 $f// LL_END_FF_MIX_THRESH_YGAIN
+BC8E FF 	 $f// LL_START_FF_MIX_THRESH_GAIN
+BC8F 00 	 $f// LL_END_FF_MIX_THRESH_GAIN
+BCB2 20 	 $f// LL_CDC_DARK_CLUS_SLOPE
+BCB3 3A 	 $f// LL_CDC_DARK_CLUS_SATUR
+BCB4 39 	 $f// LL_CDC_BRIGHT_CLUS_LO_LIGHT_SLOPE
+BCB7 39 	 $f// LL_CDC_BRIGHT_CLUS_LO_LIGHT_SATUR
+BCB5 20 	 $f// LL_CDC_BRIGHT_CLUS_MID_LIGHT_SLOPE
+BCB8 3A 	 $f// LL_CDC_BRIGHT_CLUS_MID_LIGHT_SATUR
+BCB6 80 	 $f// LL_CDC_BRIGHT_CLUS_HI_LIGHT_SLOPE
+BCB9 24 	 $f// LL_CDC_BRIGHT_CLUS_HI_LIGHT_SATUR
+BCAA 03E8 	$f// LL_CDC_THR_ADJ_START_POS
+BCAC 012C 	$f// LL_CDC_THR_ADJ_MID_POS
+BCAE 0009 	$f// LL_CDC_THR_ADJ_END_POS
+33BA 0084		$f// FIELD_WR= APEDGE_CONTROL, 0x0084
+33BE 0000		$f// FIELD_WR= UA_KNEE_L, 0x0000
+33C2 8800		$f// FIELD_WR= UA_WEIGHTS, 0x8800
+BC5E 0154 	$f// LL_START_APERTURE_GAIN_BM
+BC60 0640 	$f// LL_END_APERTURE_GAIN_BM
+BC62 0E 	 $f// LL_START_APERTURE_KPGAIN
+BC63 14 	 $f// LL_END_APERTURE_KPGAIN
+BC64 0E 	 $f// LL_START_APERTURE_KNGAIN
+BC65 14 	 $f// LL_END_APERTURE_KNGAIN
+BCE2 0A 	 $f// LL_START_POS_KNEE
+BCE3 2B 	 $f// LL_END_POS_KNEE
+BCE4 0A 	 $f// LL_START_NEG_KNEE
+BCE5 2B 	 $f// LL_END_NEG_KNEE
+3210 01B0	 $f	// FIELD_WR= COLOR_PIPELINE_CONTROL, 0x01B0
+BCC0 1F 	 $f// LL_SFFB_RAMP_START
+BCC1 03 	 $f// LL_SFFB_RAMP_STOP
+BCC2 2C 	 $f// LL_SFFB_SLOPE_START
+BCC3 10 	 $f// LL_SFFB_SLOPE_STOP
+BCC4 07 	 $f// LL_SFFB_THSTART
+BCC5 0B 	 $f// LL_SFFB_THSTOP
+BCBA 0009 	$f// LL_SFFB_CONFIG
+BC14 FFFE 	$f// LL_GAMMA_FADE_TO_BLACK_START_POS
+BC16 FFFF 	$f// LL_GAMMA_FADE_TO_BLACK_END_POS
+BC66 0154 	$f// LL_START_APERTURE_GM
+BC68 07D0 	$f// LL_END_APERTURE_GM
+BC6A 04 	 $f// LL_START_APERTURE_INTEGER_GAIN
+BC6B 00 	 $f// LL_END_APERTURE_INTEGER_GAIN
+BC6C 00 	 $f// LL_START_APERTURE_EXP_GAIN
+BC6D 00 	 $f// LL_END_APERTURE_EXP_GAIN
+A81C 0040  $f	// AE_TRACK_MIN_AGAIN
+A820 01FC  $f	// AE_TRACK_MAX_AGAIN
+A822 0080  $f	// AE_TRACK_MIN_DGAIN
+A824 0100  $f	// AE_TRACK_MAX_DGAIN
+BC56 64 	 $f// LL_START_CCM_SATURATION
+BC57 1E 	 $f// LL_END_CCM_SATURATION
+BCDE 03 	 $f// LL_START_SYS_THRESHOLD
+BCDF 50 	 $f// LL_STOP_SYS_THRESHOLD
+BCE0 08 	 $f// LL_START_SYS_GAIN
+BCE1 03 	 $f// LL_STOP_SYS_GAIN
+BCD0 000A 	$f// LL_SFFB_SOBEL_FLAT_START
+BCD2 00FE 	$f// LL_SFFB_SOBEL_FLAT_STOP
+BCD4 001E 	$f// LL_SFFB_SOBEL_SHARP_START
+BCD6 00FF 	$f// LL_SFFB_SOBEL_SHARP_STOP
+BCC6 00 	 $f// LL_SFFB_SHARPENING_START
+BCC7 00 	 $f// LL_SFFB_SHARPENING_STOP
+BCC8 20 	 $f// LL_SFFB_FLATNESS_START
+BCC9 40 	 $f// LL_SFFB_FLATNESS_STOP
+BCCA 04 	 $f// LL_SFFB_TRANSITION_START
+BCCB 00 	 $f// LL_SFFB_TRANSITION_STOP
+BCE6 03 	 $f// LL_SFFB_ZERO_ENABLE
+BCE6 03 	 $f// LL_SFFB_ZERO_ENABLE
+A410 04 	 $f// AE_RULE_TARGET_AE_6
+A411 06 	 $f// AE_RULE_TARGET_AE_7
+C8BC 04 	 $f// CAM_OUTPUT_0_JPEG_QSCALE_0
+C8BD 0A 	 $f// CAM_OUTPUT_0_JPEG_QSCALE_1
+C8D2 04 	 $f// CAM_OUTPUT_1_JPEG_QSCALE_0
+C8D3 0A 	 $f// CAM_OUTPUT_1_JPEG_QSCALE_1
+DC3A 23 	 $f// SYS_SEPIA_CR
+DC3B B2 	 $f// SYS_SEPIA_CB
+A818 03E0  $f		// AE_TRACK_TARGET_INT_TIME_ROWS  07D0
+A81A 03E0  $f		// AE_TRACK_MAX_INT_TIME_ROWS    0611 15fps
+
+
+//Internal VCM                                                                 
+098E C400 	$f// LOGICAL_ADDRESS_ACCESS [AFM_ALGO]              
+C400 88 	$f// AFM_ALGO                                         
+                                       
+//AF Full Scan  
+8419 05 	$f// SEQ_STATE_CFG_1_AF, 0x05 full scan; 02 hill climing; 0x04 fast focus.
+c400 08   $f
+b002 C7   $f
+b004 04   $f
+
+//AF Window size
+B854 22 	$f// STAT_SM_WINDOW_POS_X
+B855 23 	$f// STAT_SM_WINDOW_POS_Y
+B856 BD 	$f// STAT_SM_WINDOW_SIZE_X
+B857 BC 	$f// STAT_SM_WINDOW_SIZE_Y
+C40A 0014 	$f// AFM_POS_MIN
+C40C 00FF 	$f// AFM_POS_MAX
+
+//Different from the default AF position
+B018 18 	$f// AF_FS_POS_0
+B019 40 	$f// AF_FS_POS_1
+B01A 5e 	$f// AF_FS_POS_2
+B01B 7c 	$f// AF_FS_POS_3
+B01C 98 	$f// AF_FS_POS_4
+B01D b3 	$f// AF_FS_POS_5
+B01E cd 	$f// AF_FS_POS_6
+B01F e5 	$f// AF_FS_POS_7
+B020 Fb 	$f// AF_FS_POS_8
+b012 09   $f
+b013 77   $f
+b014 05   $f
+
+0018 2008	 $f	// FIELD_WR= STANDBY_CONTROL_AND_STATUS, 0x2008
+8404 06    $f
+#POLL_INIT_CMD_DONE
+;
+
+
+
+// ==========================================================
+// Power on initialization required for MT9P111 camera module
+// ==========================================================
+INIT_SEQ_MT9P111 =
+
+  $">> CAMDRIVER::Initialization seq for MT9P111 camera module"
+  
+  #INIT_SEQ_ROBIN
+  #INIT_SEQ_ROBIN_2
+  #INIT_SEQ_ROBIN_3
+  $"<< CAMDRIVER::Initialization seq for MT9P111 camera module"
+
+; // INIT_SEQ_MT9P111
+
+//=========================================================
+// I2C sequence section
+//=========================================================
+            
+////////////////////////////
+seq_init =  
+            
+  $">> CAMDRIVER::seq_init"
+  
+  // Do the one time initialization for MT9P111
+  #INIT_SEQ_MT9P111
+
+  // save default preview VGA, seq_vf_config_a
+  $sa  0A
+
+  #GET_REG(0000)  // read MT9P111 Device ID number. (0x2880)
+
+  $"<< CAMDRIVER::seq_init"
+;           
+            
+cam_init_result = 80,28;
+            
+////////////////////////////
+seq_ping =  
+            
+  $">> CAMDRIVER::seq_ping"
+            
+  #GET_REG(0000)  // read MT9P111 Device ID number. (0x2880)
+            
+  $"<< CAMDRIVER::seq_ping"
+;           
+            
+cam_ping_result = 80,28;	
+            
+
+////////////////////////////
+seq_deinit = 
+
+  $">> CAMDRIVER::seq_deinit"
+  //after this command the data and clock lane can be cleared to zero
+  
+  001A 0011 $f                      // RESET_AND_MISC_CONTROL
+  $d000A                            // DELAY=10
+  001A 0000 $f                      // RESET_AND_MISC_CONTROL
+  $d000A                            // DELAY=10
+
+  001C 0001 $f						// RESET_MCU
+  $d000A							// DELAY=10
+  001C 0000 $f						// RESET_MCU
+  
+  #CHECK_INIT_MODE
+  
+  //hardware reset 10ms
+  $"<< CAMDRIVER::seq_deinit"
+;
+
+
+////////////////////////////
+seq_vf_config_1 = 
+  $">> CAMDRIVER::seq_vf_config_1"
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 1
+      $"CAMDRIVER::seq_vf_config_1 (already 176x144,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_1 update 176x144"
+      098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+      C8AA  00B0 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+      C8AC  0090 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+      C86C  04AE 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+      C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+      C83C  0082 	$f// CAM_CORE_A_X_ADDR_START
+      C840  09DB 	$f// CAM_CORE_A_X_ADDR_END
+      C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+      C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 1
+    $cx
+
+  $"<< CAMDRIVER::seq_vf_config_1" 
+; 
+
+seq_vf_config_2 = 
+  $">> CAMDRIVER::seq_vf_config_2"
+  
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 2
+      $"CAMDRIVER::seq_vf_config_2 (already 176x144,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_2 update 176x144"
+      098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+      C8AA  00B0 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+      C8AC  0090 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+      C86C  04AE 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+      C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+      C83C  0082 	$f// CAM_CORE_A_X_ADDR_START
+      C840  09DB 	$f// CAM_CORE_A_X_ADDR_END
+      C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+      C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 2
+    $cx
+
+  $"<< CAMDRIVER::seq_vf_config_2" 
+;          
+
+
+seq_vf_config_4 = 
+  $">> CAMDRIVER::seq_vf_config_4" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 84
+      $"CAMDRIVER::seq_vf_config_4 (already 320x240,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_4 update 320x240"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0140 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  00F0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 84	// "$sa 4" parser error in config file, strange!!!
+    $cx
+
+  $"<< CAMDRIVER::seq_vf_config_4" 
+;
+
+seq_vf_config_5 = 
+  $">> CAMDRIVER::seq_vf_config_5" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 5
+      $"CAMDRIVER::seq_vf_config_5 (already 320x240,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_5 update 320x240"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0140 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  00F0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 5
+    $cx
+
+  $"<< CAMDRIVER::seq_vf_config_5" 
+;
+
+seq_vf_config_7 = 
+  $">> CAMDRIVER::seq_vf_config_7" 
+  
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 7
+      $"CAMDRIVER::seq_vf_config_7 (already 352x288,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_7 update 352x288"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0160 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  0120 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  04AE 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0082 	$f// CAM_CORE_A_X_ADDR_START
+C840  09DB 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 7
+    $cx
+
+  $"<< CAMDRIVER::seq_vf_config_7" 
+; 
+
+seq_vf_config_8 = 
+  $">> CAMDRIVER::seq_vf_config_8" 
+  
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 8
+      $"CAMDRIVER::seq_vf_config_8 (already 352x288,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_8 update 352x288"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0160 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  0120 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  04AE 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0082 	$f// CAM_CORE_A_X_ADDR_START
+C840  09DB 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 8
+    $cx
+
+  $"<< CAMDRIVER::seq_vf_config_8" 
+;          
+
+seq_vf_config_a = 
+$">> CAMDRIVER::seq_vf_config_a" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 0A
+      $"CAMDRIVER::seq_vf_config_a (already 640x480,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_a update 640x480"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0280 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  01E0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03d4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 0A
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_a" 
+;
+
+seq_vf_config_b = 
+$">> CAMDRIVER::seq_vf_config_b" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 0B
+      $"CAMDRIVER::seq_vf_config_b (already 640x480,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_a update 640x480"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0280 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  01E0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03d4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 0B
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_b" 
+;
+
+seq_vf_config_c = 
+$">> CAMDRIVER::seq_vf_config_c" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 0C
+      $"CAMDRIVER::seq_vf_config_c (already 720x480,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_c update 720x480"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  02D0 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  01E0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  0366 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  007A 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  0745 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 0C
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_c" 
+;
+
+seq_vf_config_d = 
+$">> CAMDRIVER::seq_vf_config_d" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 0D
+      $"CAMDRIVER::seq_vf_config_d (already 720x480,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_d update 720x480"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  02D0 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  01E0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  0366 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  007A 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  0745 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 0D
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_d" 
+;
+
+seq_vf_config_e = 
+$">> CAMDRIVER::seq_vf_config_e" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 0E
+      $"CAMDRIVER::seq_vf_config_e (already 720x576,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_e update 720x576"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  02D0 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  0240 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  04C8 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0068 	$f// CAM_CORE_A_X_ADDR_START
+C840  09F5 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 0E
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_e" 
+;
+
+seq_vf_config_f = 
+$">> CAMDRIVER::seq_vf_config_f" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 0F
+      $"CAMDRIVER::seq_vf_config_f (already 720x576,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_f update 720x576"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  02D0 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  0240 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  04C8 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03D4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0068 	$f// CAM_CORE_A_X_ADDR_START
+C840  09F5 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 0F
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_f" 
+;
+
+seq_vf_config_10 = 
+$">> CAMDRIVER::seq_vf_config_10" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 10
+      $"CAMDRIVER::seq_vf_config_10 (already 848x480,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_10 update 848x480"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0350 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  01E0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  02DE 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  0102 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  06BD 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 10
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_10" 
+;
+
+seq_vf_config_11 = 
+$">> CAMDRIVER::seq_vf_config_11" 
+    //11 [3C0, 21C, 1],   //  960x540 - qHD 16:9
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 11
+      $"CAMDRIVER::seq_vf_config_11 (already 960x540,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_11 update 960x540"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  03C0 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  021C 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  02DE 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  0102 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  06BD 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 11
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_11" 
+;
+
+seq_vf_config_14 = 
+$">> CAMDRIVER::seq_vf_config_14" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 14
+      $"CAMDRIVER::seq_vf_config_14 (already 1280x720,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_14 update 1280x720"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0500 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  02D0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  02DE 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  0102 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  06BD 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 14
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_14" 
+;
+
+seq_vf_config_15 = 
+$">> CAMDRIVER::seq_vf_config_15" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 15
+      $"CAMDRIVER::seq_vf_config_15 (already 1280x720,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_15 update 1280x720"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0500 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  02D0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  02DE 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  0102 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  06BD 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 15
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_15" 
+;
+
+seq_vf_config_17 = 
+$">> CAMDRIVER::seq_vf_config_17" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 17
+      $"CAMDRIVER::seq_vf_config_17 (already 1280x960,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_17 update 1280x960"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0500 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  03C0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03d4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 17
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_17" 
+;
+
+seq_vf_config_18 = 
+$">> CAMDRIVER::seq_vf_config_18" 
+
+    #GET_REG(C8AA)
+    #GET_REG(C8AC)
+
+    $ca 18
+      $"CAMDRIVER::seq_vf_config_18 (already 1280x960,not switch)"
+    $cl
+      $"CAMDRIVER::seq_vf_config_18 update 1280x960"
+098E  48AA 	$f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_0_IMAGE_WIDTH]
+C8AA  0500 	$f// CAM_OUTPUT_0_IMAGE_WIDTH
+C8AC  03C0 	$f// CAM_OUTPUT_0_IMAGE_HEIGHT
+C86C  0518 	$f// CAM_CORE_A_OUTPUT_SIZE_WIDTH
+C86E  03d4 	$f// CAM_CORE_A_OUTPUT_SIZE_HEIGHT
+C83C  0018 	$f// CAM_CORE_A_X_ADDR_START
+C840  0A45 	$f// CAM_CORE_A_X_ADDR_END
+C83A  000c 	$f// CAM_CORE_A_Y_ADDR_START
+C83E  07B1 	$f// CAM_CORE_A_Y_ADDR_END
+      #REFRESH_MODE
+      $sa 18
+    $cx
+
+$"<< CAMDRIVER::seq_vf_config_18" 
+;
+////////////////////////////Preview
+
+
+seq_vf_start = 
+            
+  $">> CAMDRIVER::seq_vf_start"
+  
+  #ENTER_PREVIEW_MODE
+
+  $"<< CAMDRIVER::seq_vf_start"
+;           
+            
+////////////////////////////
+seq_vf_stop = 
+            
+  $">> CAMDRIVER::seq_vf_stop"
+
+  $"<< CAMDRIVER::seq_vf_stop"
+;
+
+seq_vf_return = 
+            
+  $">> CAMDRIVER::seq_vf_return"
+  
+  #ENTER_PREVIEW_MODE
+
+  $"<< CAMDRIVER::seq_vf_return"
+;           
+            
+//=========================================================
+// SS Configuration  
+//=========================================================       
+            
+            
+////////////////////////////
+seq_ss_start =
+            
+  $">> CAMDRIVER::seq_ss_start"
+
+  #ENTER_CAPTURE_MODE
+
+  $"<< CAMDRIVER::seq_ss_start"
+;           
+            
+////////////////////////////
+seq_ss_take = 
+  $">> CAMDRIVER::seq_ss_take" 
+            
+  $"<< CAMDRIVER::seq_ss_take" 
+;           
+            
+////////////////////////////
+seq_ss_stop = 
+  $">> CAMDRIVER::seq_ss_stop"
+
+  $"<< CAMDRIVER::seq_ss_stop"
+;
+            
+            
+            
+seq_ss_config_3 = 
+  $">> CAMDRIVER::seq_ss_config_3"
+
+  098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+  C8C0 0140  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+  C8C2 00F0  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+  C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+  C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+  C874 001C  $f// CAM_CORE_B_X_ADDR_START
+  C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+  C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+  C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+  $d000a
+
+  $"<< CAMDRIVER::seq_ss_config_3" 
+;           
+            
+cam_ss_jpeg_buf_size_3 = BB800; //500KB Jpeg + 100KB EXIF header + 150KB Thumbnail
+            
+seq_ss_config_9 = 
+  $">> CAMDRIVER::seq_ss_config_9" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0280  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 01E0  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+   C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+            
+  $"<< CAMDRIVER::seq_ss_config_9" 
+;           
+            
+cam_ss_jpeg_buf_size_9 = BB800; //500KB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_12 = 
+  $">> CAMDRIVER::seq_ss_config_12" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0400  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 0300  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+   C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+
+  $"<< CAMDRIVER::seq_ss_config_12" 
+;           
+            
+cam_ss_jpeg_buf_size_12 = 13E800; //1MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+            
+seq_ss_config_13 = 
+  $">> CAMDRIVER::seq_ss_config_13" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0500  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 02D0  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 05B8  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0104  $f// CAM_CORE_B_Y_ADDR_START
+   C876 06BB  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+
+  $"<< CAMDRIVER::seq_ss_config_13" 
+;           
+            
+cam_ss_jpeg_buf_size_13 = 13E800; //1MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_16 = 
+  $">> CAMDRIVER::seq_ss_config_16" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0500  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 03C0  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+   C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_16" 
+;
+
+cam_ss_jpeg_buf_size_16 = 13E800; //1MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_19 = 
+  $">> CAMDRIVER::seq_ss_config_19" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0640  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 04B0  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+   C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_19" 
+;
+
+cam_ss_jpeg_buf_size_19 = 13E800; //1MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_1a = 
+  $">> CAMDRIVER::seq_ss_config_1a" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0780  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 0438  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 05B8  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0104  $f// CAM_CORE_B_Y_ADDR_START
+   C876 06BB  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_1a" 
+;  
+
+cam_ss_jpeg_buf_size_1a = 23E800; //2MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_1b = 
+  $">> CAMDRIVER::seq_ss_config_1b" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0800  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 0600  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+   C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_1b" 
+; 
+
+cam_ss_jpeg_buf_size_1b = 23E800; //2MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_1c = 
+  $">> CAMDRIVER::seq_ss_config_1c" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0A20  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 0798  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+   C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_1c" 
+;        
+
+cam_ss_jpeg_buf_size_1c = 43E800; //4MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_1d = 
+  $">> CAMDRIVER::seq_ss_config_1d" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0A00  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 0780  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 07A0  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0010  $f// CAM_CORE_B_Y_ADDR_START
+   C876 07AF  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_1d" 
+;        
+
+cam_ss_jpeg_buf_size_1d = 43E800; //4MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_1e = 
+  $">> CAMDRIVER::seq_ss_config_1e" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0800  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 0480  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 05B8  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0104  $f// CAM_CORE_B_Y_ADDR_START
+   C876 06BB  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_1e" 
+;  
+
+cam_ss_jpeg_buf_size_1e = 23E800; //2MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+seq_ss_config_1f = 
+  $">> CAMDRIVER::seq_ss_config_1f" 
+
+   098E 48C0  $f// LOGICAL_ADDRESS_ACCESS [CAM_OUTPUT_1_IMAGE_WIDTH]
+   C8C0 0A00  $f// CAM_OUTPUT_1_IMAGE_WIDTH
+   C8C2 05A0  $f// CAM_OUTPUT_1_IMAGE_HEIGHT
+   C8A4 0A28  $f// CAM_CORE_B_OUTPUT_SIZE_WIDTH
+   C8A6 05B8  $f// CAM_CORE_B_OUTPUT_SIZE_HEIGHT
+   C874 001C  $f// CAM_CORE_B_X_ADDR_START
+   C878 0A43  $f// CAM_CORE_B_X_ADDR_END
+   C872 0104  $f// CAM_CORE_B_Y_ADDR_START
+   C876 06BB  $f// CAM_CORE_B_Y_ADDR_END
+   $d000a
+  
+  $"<< CAMDRIVER::seq_ss_config_1f" 
+;        
+
+cam_ss_jpeg_buf_size_1f = 43E800; //4MB Jpeg + 100KB EXIF header + 150KB Thumbnail
+
+
+///////////////////////////////////////focus mode
+seq_set_prop_6_0 =
+$">> CAMDRIVER::do focus"
+#seq_init_focus_trig
+;
+
+seq_set_prop_6_1 =
+$">> CAMDRIVER::focus mode------infinity"
+#seq_init_focus_off
+;
+
+seq_set_prop_6_2 =
+$">> CAMDRIVER::focus mode------auto"
+;
+
+seq_set_prop_6_3 = $"=== Focus Mode test value Auto, nothing is sent to camera ===";
+
+seq_set_prop_6_4 =
+$">> CAMDRIVER::focus mode------auto"
+;
+
+seq_set_prop_6_5 = $"=== Focus Mode test value Autolock, nothing is sent to camera ===";
+
+///////////////////////////////////////focus range
+seq_set_prop_19_0 =
+$">> CAMDRIVER::focus range------yjying"
+//#seq_init_focus_trig
+;
+            
+////////////////////////////////////////exposure compensation/exposure value
+seq_set_prop_14_0 =           
+$">> CAMDRIVER::exposure compensation select---0---yjying"
+098E A409 $f// LOGICAL_ADDRESS_ACCESS [AE_RULE_BASE_TARGET]
+A409 0f   $f// AE_RULE_BASE_TARGET
+A805 06   $f // AE_TRACK_GATE
+;
+seq_set_prop_14_1 =           
+$">> CAMDRIVER::exposure compensation select---1---yjying"
+098E A401 $f// LOGICAL_ADDRESS_ACCESS [AE_RULE_BASE_TARGET]
+A401 00   $f// AE_RULE_BASE_TARGET
+A409 12   $f
+337E 0000 $f // AE_TRACK_GATE
+;
+seq_set_prop_14_2 =           
+$">> CAMDRIVER::exposure compensation select---2---yjying"
+098E A401 $f// LOGICAL_ADDRESS_ACCESS [AE_RULE_BASE_TARGET]
+A401 00   $f// AE_RULE_BASE_TARGET
+A409 31   $f
+337E 0000 $f // AE_TRACK_GATE
+;
+seq_set_prop_14_3 =           
+$">> CAMDRIVER::exposure compensation select---3---yjying"
+098E A401 $f// LOGICAL_ADDRESS_ACCESS [AE_RULE_BASE_TARGET]
+A401 00   $f// AE_RULE_BASE_TARGET
+A409 44   $f
+337E 0000 $f // AE_TRACK_GATE
+;
+seq_set_prop_14_4 =           
+$">> CAMDRIVER::exposure compensation select---4---yjying"
+098E A401 $f// LOGICAL_ADDRESS_ACCESS [AE_RULE_BASE_TARGET]
+A401 00   $f// AE_RULE_BASE_TARGET
+A409 66   $f
+337E 1000 $f // AE_TRACK_GATE
+;
+seq_set_prop_14_5 =           
+$">> CAMDRIVER::exposure compensation select---5---yjying"
+098E A401 $f// LOGICAL_ADDRESS_ACCESS [AE_RULE_BASE_TARGET]
+A401 00   $f// AE_RULE_BASE_TARGET
+A409 7C   $f
+337E 2000 $f // AE_TRACK_GATE
+;
+seq_set_prop_14_6 =           
+$">> CAMDRIVER::exposure compensation select---6---yjying"
+098E A409 $f// LOGICAL_ADDRESS_ACCESS [AE_RULE_BASE_TARGET]
+A409 47   $f// AE_RULE_BASE_TARGET
+A805 06   $f // AE_TRACK_GATE
+;
+
+// --- White balance property -------------------------
+seq_set_prop_1_1 =              // WB=Auto
+$">> CAMDRIVER::wb select---auto---yjying"
+098E 8410 $f
+8410 02   $f
+8418 02   $f
+8420 02   $f
+AC44 00   $f
+AC45 7F   $f
+#REFRESH_P
+;           
+            
+seq_set_prop_1_7 =              // WB=Incandescent
+$">> CAMDRIVER::wb select---Incandescent---yjying"
+098E 8410 $f
+8410 01   $f
+8418 01   $f
+8420 01   $f
+AC44 00   $f
+AC45 00   $f
+#REFRESH_P
+AC04 55   $f
+AC05 2A   $f
+;           
+            
+seq_set_prop_1_2 =          // WB=Daylight
+$">> CAMDRIVER::wb select---Daylight---yjying"
+098E 8410 $f
+8410 01   $f
+8418 01   $f
+8420 01   $f
+AC44 79   $f
+AC45 79   $f
+#REFRESH_P
+AC04 41   $f
+AC05 44   $f
+;           
+
+            
+seq_set_prop_1_6 =          // WB=Fluorescent
+$">> CAMDRIVER::wb select---Fluorescent---yjying"
+ 098E 8410 $f 
+ 8410 01   $f 
+ 8418 01   $f 
+ 8420 01   $f 
+ AC44 56   $f 
+ AC45 56   $f 
+#REFRESH_P
+ AC04 4C   $f 
+ AC05 31   $f 
+;           
+
+seq_set_prop_1_3 =          // WB=Cloudy
+$">> CAMDRIVER::wb select---Cloudy---yjying"
+098E 8410 $f 
+8410 01   $f 
+8418 01   $f 
+8420 01   $f 
+AC44 7F   $f 
+AC45 7F   $f 
+#REFRESH_P
+AC04 3D   $f 
+AC05 47   $f 
+;           
+            
+prop_values_1 = [1, 2, 3, 6, 7];
+            
+/////////////////////////////////////special effect
+seq_set_prop_a_0 = 
+$">> CAMDRIVER::special effect---0---none"
+098E    DC38 $f	// LOGICAL_ADDRESS_ACCESS [SYS_SELECT_FX]
+DC38    00   $f// SYS_SELECT_FX
+#REFRESH_P
+;           
+            
+seq_set_prop_a_1 = 
+$">> CAMDRIVER::special effect---1---mono"
+098E    DC38 $f	// LOGICAL_ADDRESS_ACCESS [SYS_SELECT_FX]
+DC38    01   $f// SYS_SELECT_FX
+#REFRESH_P
+;           
+            
+seq_set_prop_a_2 = 
+$">> CAMDRIVER::special effect---2---negative"
+098E    DC38 	$f // LOGICAL_ADDRESS_ACCESS [SYS_SELECT_FX]
+DC38    03 	$f   // SYS_SELECT_FX
+#REFRESH_P
+;           
+            
+seq_set_prop_a_3 = 
+$">> CAMDRIVER::special effect---3---solarize"
+098E    DC38 $f	// LOGICAL_ADDRESS_ACCESS [SYS_SELECT_FX]
+DC38    05  $f// SYS_SELECT_FX
+DC39    20  $f
+#REFRESH_P
+;           
+            
+seq_set_prop_a_4 = 
+$">> CAMDRIVER::special effect---4---sepia"
+098E    DC38 $f	// LOGICAL_ADDRESS_ACCESS [SYS_SELECT_FX]
+DC38    02   $f // SYS_SELECT_FX
+DC3A    2A   $f // SYS_SEPIA_CR
+DC3B    C8   $f // SYS_SEPIA_CB
+#REFRESH_P
+;
+            
+seq_set_prop_a_5 = 
+$">> CAMDRIVER::special effect---5---posterize"
+098E    DC38 $f	// LOGICAL_ADDRESS_ACCESS [SYS_SELECT_FX]
+DC38    05  $f// SYS_SELECT_FX
+DC39    20  $f
+#REFRESH_P
+;
+
+
+////////////////////////////////zoom
+
+seq_vf_zoom_0 = 
+098e 5C18  $f
+0990 0064  $f
+098e 48B6  $f
+0990 0064  $f
+098e 48CC  $f
+0990 0064  $f
+;           
+            
+seq_vf_zoom_1 = 
+098e 5C18  $f
+0990 0070  $f
+098e 48B6  $f
+0990 0070  $f
+098e 48CC  $f
+0990 0070  $f
+;           
+            
+seq_vf_zoom_2 = 
+098e 5C18  $f
+0990 007e  $f
+098e 48B6  $f
+0990 007e  $f
+098e 48CC  $f
+0990 007e  $f
+;           
+            
+seq_vf_zoom_3 = 
+098e 5C18  $f
+0990 008d  $f
+098e 48B6  $f
+0990 008d  $f
+098e 48CC  $f
+0990 008d  $f
+;           
+            
+seq_vf_zoom_4 = 
+098e 5C18  $f
+0990 009f  $f
+098e 48B6  $f
+0990 009f  $f
+098e 48CC  $f
+0990 009f  $f
+;           
+            
+seq_vf_zoom_5 = 
+098e 5C18  $f
+0990 00b2  $f
+098e 48B6  $f
+0990 00b2  $f
+098e 48CC  $f
+0990 00b2  $f
+;           
+            
+seq_vf_zoom_6 = 
+098e 5C18  $f
+0990 00c8  $f
+098e 48B6  $f
+0990 00c8  $f
+098e 48CC  $f
+0990 00c8  $f
+;

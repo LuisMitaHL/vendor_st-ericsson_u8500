@@ -1,0 +1,242 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+ 
+Author:         Jean-Philippe Fassino & NMF Team    
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.0.5 "CH'TI Blonde"
+Date:           September ??th, 2009
+
+* Warning * 
+Think has been deprecated and will be replace by Linux for OSI development.
+It will only been partially supported for 8500 V1 board.
+Please switch to this new environment as soon as possible.
+
+1.2 Board configuration supported:
+
+    - STn8815 SAA & SVA
+        * Cut A0
+            Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        * Cut B0
+        * Cut C0
+    - STn8820 SAA & SVA & SIA 
+        * Cut A0
+    - STn8500 SVA & SIA
+        * SVP 
+            2.2 (Argc/Argv not supported)
+            2.3.0
+            2.4.1
+        * PEPS 8500
+            PEPS SIA with an ED mapping + MMDSP V1
+        * MOP500-ED
+            Only flash board without normal application in flash image 
+              (use -Normal_Appli 0 on command line flasher)
+            Flash with NPT 0.1.2 delivery
+        * HREF-ED V1.0
+            Only flash board without normal application in flash image 
+              (use -Normal_Appli 0 on command line flasher)
+            Flash with NPT 0.1.2 delivery
+
+1.3 Board configuration unsupported:
+
+    - STn8500 SVA & SIA
+        * SVP 2.0 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+            STM IP trace not available          
+        * SVP 2.1 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+        * svp8500_v1-think not supported until TEMA00000240 defect is solve
+        * MOP500-ED
+            Board not flash or flash with normal application in flash image
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version: 
+        - RVCT 2.2-sp1-593 for 8815 & 8820 
+        - RVCT 4.0_build529 for 8500 
+    
+    MMDSP compiler version
+        - MMDSP Toolset 4.2.0 Patch 3
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - RODOS 
+        http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+    - Internal MMD dependencies (See nmf/workstation.txt RODOS dependencies for version)
+        * Launcher
+        * MMENV
+        * Platform script
+        
+        # RODOS components.txt
+        include rod+package://com.stericsson.nmf:2.0.5/workstation.txt
+    
+    - Lauterbach trace32 ref_patch_p20090717
+    
+    - Java SE Runtime Environment  
+        http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)      
+
+
+3   RELEASE CONTENT
+
+    See nmf/doc/file_hierarchies.txt about file tree organization !
+
+    - Toolbox
+    
+        # RODOS components.txt
+        include rod+package://com.stericsson.nmf:2.0.5/workstation.txt
+        com.stericsson.nmf                              [ro::version=2.0.5,     path=shared/nmf/nmf]
+        com.stericsson.nmf.tools                        [ro::version=2.0.5,     path=shared/nmf/tools]
+
+    - Component Manager
+
+    - Execution Engine
+
+    - Think
+    
+        # RODOS components.txt
+        include rod+package://com.stericsson.nmf.think:2.0.5/components.txt
+        # Examples
+        com.stericsson.nmf.examples                     [ro::version=2.0.5,       path=examples]
+
+    - LOS
+
+
+3.1 Component Manager
+
+3.2 MPC Execution Engine
+
+3.3 Host Execution Engine
+
+	- Enable EE_DRV_TrigInterrupt in order to send virtual interrupt from kernel side to Host EE
+		-> In order to catch them, you have to declare an exception.handler interface in your component
+			provides exception.handler as myhandler interrupt X
+		-> Thus, you can trig them
+			EE_DRV_TrigInterrupt(X)
+		Note, the registering and unregistering of your handler are automatically done when
+		loading and unloading component
+		.
+        
+3.4 OS integration guidelines
+
+	- EE_DRV_TrigInterrupt API fully implemented, check chain !!
+		This API is in the ee/drv/api path, nevertheless, must be integrated in the CM driver for now.
+		Maybe FairBank will require to split it in order to be used without CM.
+
+
+3.5 Tools
+
+3.6 Programming model
+
+3.7 Think
+
+
+    -  Variable cfgComponentRepositoryPath must be declared in user code in order to set 
+	   NMF CM component repository path.
+ 	   Component repository path is directory separate by ";".
+		
+		char   cfgComponentRepositoryPath[] = "Path1;Path2;Path3";
+	
+	-  Add weak symbol __think_trace__modem_mipi34_on to control if ape or modem output trace on
+	   mipi34 connector.
+    
+    -  Don't stop sia/sva 90Khz timers if they were started
+    
+    -  At boot disable irq/fiq for both core. This avoid that later on core1 service in interrupt with
+       cache disable that can cause random behaviours.
+
+3.8 Linux & Symbian
+    
+3.9 Examples
+
+3.10 Packaging
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    24472   sia/sva 90Khz timers are stop in think boot if they were started
+ 
+4.2 Active defect list
+
+    23516   CM_ENGINE_SetMode() with CM_CMD_MPC_TRACE_xx or CM_CMD_MPC_PRINT_xx crash if ee not started
+    23488   Assert in mmte_testStart when leading '/' in logdir
+    23483   smpe ee scheduler can modify targetInUse component variable whereas component has been destroy leading to potential crash
+    23121   setConfig argument passing by pointer instead of structure
+    22408   resetting/stopping mmdsp core on mop500 stop mtu timers
+    22218   provided interface are not inside the code, no problem at compilation ????
+    22182   test api: flush of results before test_end
+    21851   Asynchronously bound composite component : trace contains corrupted 'this' addresses
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+ 
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+    
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+    
+    For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+    
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+6.2 Code Static analysis result
+
+    Not done.
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Done.
+
+6.4 Confidentiality safe
+
+	Done.
+
+7   DOCUMENTS
+    
+    Test report available at:
+        http://gnx2487:9000/
+
+    Source codes can be found in :
+        Clearcase
+            /vobs/nmf
+        Codex SVN site: 
+            http://codex.cro.st.com/svn/?group_id=598

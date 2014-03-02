@@ -1,0 +1,35 @@
+#
+# Tatltest configuration
+#
+
+menuconfig TATLTEST
+	bool "Tatltest"
+	depends on TATTOOLS && DTHSRVHELPER && LIBAB && LIBDB && LIBTATASYNC
+	help
+	  depends on TATTOOLS && DTHSRVHELPER && LIBAB && LIBDB && LIBTATASYNC
+
+if TATLTEST
+
+config TATLTEST_DIR
+	string
+	default ../tat/tat/tatltest
+
+config TATLTEST_DEPS
+	string
+	default "TATTOOLS DTHSRVHELPER LIBAB LIBDB LIBTATASYNC"
+
+config TATLTEST_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLTEST
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLTEST_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLTEST
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLTEST

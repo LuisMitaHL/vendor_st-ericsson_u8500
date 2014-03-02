@@ -1,0 +1,42 @@
+;------------------------------------------------------------
+;
+; Target setup 
+;
+; 091207 - KM Initial version
+;-----------------------------------------------------------
+
+enddo
+
+;########################################################################
+;#           Settings for Mali
+;########################################################################
+;Added by Nikhil for Mali
+data.set 0x801571E4 %long 0xFF96BFFF
+data.set 0x801571FC %long 0x00000007
+data.set 0x80157208 %long 0x00000003
+data.set 0x80157214 %long 0x00000001
+data.set 0x80157220 %long 0x00000200
+data.set 0x8015722C %long 0x0000001F
+
+
+enddo
+
+;APE A9 PTM 24bits
+;Alternate function selection
+data.set A:0x8000E120 %long  0xFF800000      ;GPIO2_AFSLA altC2 on GPIO151-152 & 161-168 
+data.set A:0x8000E124 %long 0xFF800000      ;GPIO2_AFSLB altC2 on GPIO151-152 & 161-168 
+	
+data.set A:0x8000E1A0 %long 0x000001FF      ;GPIO2_AFSLA altC2 on GPIO153-160 
+data.set A:0x8000E1A4 %long 0x000001FF      ;GPIO2_AFSLB altC2 on GPIO153-160 
+
+data.set A:0x8000E020  %long 0x00003FC0     ;GPIO2_AFSLA altC1 on GPIO70-77 
+data.set A:0x8000E024  %long 0x00003FC0     ;GPIO2_AFSLB altC1 on GPIO70-77 
+
+;PRCMU_GPIOCR GPIO muxing control register
+data.set A:0x80157138 %long 0x00004060	  ;[5] DBG_PTM_A9_CMD0: altC1 on GPIO70-77
+                                          ;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+					                      ;[14] DBG_PTM_A9_CMD2: altC2 on GPIO153-160
+
+ENDDO
+
+

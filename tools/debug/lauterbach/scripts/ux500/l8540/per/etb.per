@@ -1,0 +1,61 @@
+;ARM Embedded Trace Buffer (ETB) control registers @(#) Nov 14 2005
+
+config 16. 8.
+width 9.
+
+;base e:etbbase()
+base edap:per.arg(0) 
+
+group 0x4--0x7
+ line.long 0x0 "DEPTH,RAM Depth Register"
+
+group 0x0c--0x0f
+ line.long 0x0 "STS,Status Register"
+  bitfld.long 0x0 3. "FTEMPTY ,Data Formatter Pipeline Empty" "no,yes"
+  bitfld.long 0x0 2. "  ACQCOMP ,Acquisition Completed" "no,yes"
+  bitfld.long 0x0 1. "  TRIGGER ,Triggered" "no,yes"
+  bitfld.long 0x0 0. "  FULL ,RAM Full" "no,yes"
+
+hgroup 0x10--0x13
+ hide.long 0x0 "RRD,RAM Read Data Register"
+ in
+
+group 0x14--0x17
+ line.long 0x0 "RRP,RAM Read Pointer Register"
+
+group 0x18--0x1b
+ line.long 0x0 "RWP,RAM Write Pointer Register"
+
+group 0x1c--0x1f
+ line.long 0x0 "TRG,Trigger Counter Register"
+
+group 0x20--0x23
+ line.long 0x0 "CTL,Control Register"
+;  bitfld.long 0x0 2. "SWCNTL ,ETB Register Access via" "JTAG,AHB"
+;  bitfld.long 0x0 1. "  DEMUX ,Demultiplexed Memory Support Enable" "disable,enable"
+  bitfld.long 0x0 0. "  CAPTURE ,Trace Capture Enable" "disable,enable"
+
+wgroup 0x24--0x27
+ line.long 0x0 "RWD,RAM Write Data Register"
+
+group 0x300--0x303
+ line.long 0x0 "FFSR,Formatter and Flush Status Register" 
+  bitfld.long 0x0 1. "FTS ,Formatter stopped" "no,yes"
+  bitfld.long 0x0 0. "  FIP ,Flush in progress" "no,yes"
+
+group 0x304--0x307
+ line.long 0x0 "FFCR,Formatter and Flush Control Register" 
+  bitfld.long 0x0 13. "STOPTRIG ,Stop formatter after Trigger" "no,yes"
+  bitfld.long 0x0 12. "  STOPFL ,Stop formatter after Flush" "no,yes"
+  bitfld.long 0x0 10. "  TRIGFL ,Trigger on Flush completion" "no,yes"
+  bitfld.long 0x0 9. "  TRIGEVT ,Tigger on Trigger Event" "no,yes"
+  bitfld.long 0x0 8. "  TRIGIN ,TRIGIN asserted" "no,yes"
+textline "                "
+  bitfld.long 0x0 6. "  FONMAN ,Manual Flush" "no,yes"
+  bitfld.long 0x0 5. "  FONTRIG ,Flush on Trigger event" "no,yes"
+  bitfld.long 0x0 4. "  FONFIIN ,Flush on FLUSHIN" "no,yes"
+  bitfld.long 0x0 1. "  ENFCONT ,Enable Continuous Formatting" "no,yes"
+  bitfld.long 0x0 0. "  ENFTC ,Enable Formatting" "no,yes"
+
+textline ""
+

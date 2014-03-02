@@ -1,0 +1,29 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+/*!
+ * \brief C/C++ component stopper interface
+ *
+ * The lifecycle.stopper interface must be implement
+ * by a component in order to provide a stop that will be called by
+ * the component manager when the component will exit from RUNNABLE state.
+ *
+ * Such code in your primitive ADL component must be used to provide stopper:
+ * \code
+ * primitive your.component.name {
+ *     ...
+ *     provides lifecycle.stopper as stopper
+ *     ...
+ * }
+ * \endcode
+ */
+interface lifecycle.stopper {
+    /*!
+     * \brief Stop interface method.
+     */
+    void stop(void);
+}

@@ -1,0 +1,94 @@
+The preflash executable includes two major functionalities. First is to generate preflash image
+and second one to generate special "tocgen" boot block.
+
+When preflash option is executed it converts a flash archive to a file in S-Record
+format or optionally in binary format. S-Record file can then be flashed to memory with a
+gang chip programmer while binary image can be directly flashed in memory using raw flash
+functionality.
+
+When tocgen option is executed it generates the boot block (containing the ToC and boot images)
+in S-Record format or optionally in binary format for flashing to the target.
+
+The tocgen image contain three copies of the boot block instead of four as it recommended
+by boot rom specification. Reason is that first copy of the boot block is overwritten by
+Android, so resulting image of the tocgen_tool has to be written starting from address 0x20000.
+
+Building the tool
+==================
+This tool is built during Android build, but can be built individually from the source
+delivered by STE as follows.
+
+Open a terminal window and navigate to the following directory:
+	<delivered source>/product/common
+
+Build loaders using the following command (only needs to be done once):
+	make -f ux500.mak clean-loaders config-loaders build-loaders install-loaders STE_PLATFORM=u8500
+
+Navigate to the following directory:
+	<delivered source>/vendor/st-ericsson/variant/tools/platform/flash_kit/preflash_tool
+
+Build preflash_tool using the following command:
+	make config preflash-tool
+
+The executable file preflash_tool will be found in the following directory:
+	<delivered source>/vendor/st-ericsson/variant/tools/platform/flash_kit/preflash_tool/out
+
+Using the tool
+===============
+
+Usage: preflash_tool <COMMAND_NAME> <REQUIRED_ARGUMENTS> [OPTIONAL_ARGUMENTS]...
+
+Command Name: preflash
+	 Description: Creates preflash image
+	 Required arguments:
+		 -a [FLASH_ARCHIVE] 	 Flash archive that need to be parsed
+	 Optional arguments:
+		 -gd [GDF_FILE] 	 Optional gdf file that need to be written
+		 -s, --skipfirstblock 	 Output image will start from second boot block
+		 -b 			 Create preflash image in binary format (default is S record)
+
+Command Name: tocgen
+	 Description: Creates toc boot image
+	 Required arguments:
+		 -a [FLASH_ARCHIVE] 	 Flash archive that need to be parsed
+
+	 Optional arguments:
+		 -f, --splitoutputfile 	 Split output image in two files:
+					 bootblock0_1.bin (contains data from address 0x20000-0x60000)
+					 bootblock0_2.bin (contains data from address 4MB-4.5MB)
+
+		 -b, 			 Create boot area in binary format (default is S record)
+
+Output: preflash.bin
+
+The preflash image by default has pre-calculated FileSize information of TOC entries that are embedded within the image itself.
+If we intend to calculate TOC Partition Size instead of FileSize(default), we should add this entry in flasharchive.xml in order to calculate image PartitionSize.
+<bax:attribute name="SIZE-MODE">PartitionSize</bax:attribute>
+Default is FileSize.
+
+Usage: In order to obtain information about preflash_tool usage execute following command
+
+       ./preflash_tool --help
+
+This command will show help menu with all supported options and short description for every
+one of them.
+
+
+
+
+The following changes are only applicable for Flashlayout v3.0
+===============================================================
+CR:451872
+
+- Boot images entries have relative addresses regarding SUBTOC,
+  therefore the two copies of boot block are equal.
+
+- Root TOC always contains entries only for ISSW and SUBTOC. 
+
+- SUBTOC always contains all entries for boot images, without ISSW.
+
+- tocgen tool SUBTOC additionally contains entries that 
+  are not part of the boot area (meaning all other entries found in the manifest)
+
+
+

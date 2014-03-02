@@ -1,0 +1,237 @@
+*******************************************************************
+* Nomadik Multiprocessing Framework (version 1.6.0) "La Choulette"  *
+*********************************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Component manager binary & api
+    - Synchronous & Hybrid execution engine binaries
+    - Component tool chain binary
+    - Example source codes (Hello World's, Training, Mandelbrot's, Jpeg)
+        Jpeg fully based on Host local execution domain
+    - Documentations (User guide, programming model, CM API, MPC API)
+        User guide not fully in line with delivery
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Defects must be logged on VI:
+	 http://gnb500137.gnb.st.com/VIWebDev/default.asp
+	 	/Dev/OS and Platform/Multimedia/COMMON/NMF/**
+	 		_Support if category unknown
+
+Notes:
+------
+Supported targets:
+    - STn8815 SAA & SVA
+    	* Cut A0
+			Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+		* Cut B0
+		* Cut C0
+    - STn8820 SAA & SVA & SIA 
+    	* Cut A0
+    	
+Unsupported targets:
+    - STn8500 SVA & SIA
+    	* SVP 2.0 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+			STM IP trace not available    		
+    	* SVP 2.1 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+
+Other target unsupported and not tested.
+    
+
+Changes:
+--------
+[CM]
+	
+
+[MPC Execution Engine]
+	- Repository path have change in order to align with MMENV
+		stnxxx -> mmdsp_xxx (8815, 8820, 8500)
+
+
+[SMP Execution Engine]
+	- Library integrated by default in nmf-think.
+
+
+[OS integration guidelines]
+	- Update exported C header files list
+	
+	- CM API functions renaming & cleaning
+		* CM_SYSCALL_xxx 
+			-> CM_OS_xxx in user space
+			-> CM_ENGINE_xxx in kernel space
+		* CM_SYSCALL_WRAPPED_xxx -> CM_ENGINE_xxx
+		* User API -> cm/proxy/api/**
+		* OS API -> cm/os/api/**
+		* Engine API -> cm/engine/api/**
+		* inc/cm_irq.h -> api/control/irq_engine.h
+		* inc/cm_power.h -> api/control/power_engine.h
+
+
+[Tools]    
+	- Handle properly CXXFLAGS
+
+	- Adopt same compiler environment variable as used in MMENV 
+
+	- "symbian" TARGET added
+		Here generated code are not compiled but a Component.mmh file is generated
+		in order to help symbian OS integration.
+
+	- Update output directory in order to homogenize between component on ARM and MPC.
+		Binary files are generated in "tmpoutput/obj" directory.
+		Source files are genarated in "tmpoutput/src" directory
+
+	- Rework CPreProcessing file processor. 
+
+	- Sanity check :
+		* Check if lifecycle interface used with correct interface name
+		* Check that a C primitive component not instantiate twice in C++ composition 
+		
+	- Don't go through MPC composition when compiling Host composite component and
+	  thus not generated MPC interface source in Host one.
+	  
+	- "itf" generator added to nmfitfc in order to generate .hpp file corresponding
+	  to interfaces for use it in legacy code.
+	  
+	- Allow --cpp code generator selection on nmfitf
+	  This option is only valid with "itf" generator for now !
+    
+    
+[Programming model]
+	- Priority specified in ADL must be done in "contains" and not in "binds".
+		Thus binds xxx.xxxx to yyy.yyyy asynchronous fifo=z [Priority]
+		                                                    ^^^^^^^^ No more supported
+		Use contains xxxxxxx as xxx [Priority] instead
+		                             ^^^^^^^^ New supported syntax
+		The purpose of this constraint (already introduce in 1.5.0) was to 
+		protect against re-entrance. 
+		
+
+
+Bug fixes:
+---------
+	- Fix issue in code generation of FIFO priority generation.
+
+	- Fix C/C++ pre-processing include file computation in order to correctly force 
+	  re-compilation if one dependency modified.
+	  
+	- Don't compile twice same primitive component either if include twice in composition.
+
+	- Fix check of equality between inferred component name and name give in ADL.
+	
+	- Fix ADL parser for recognizing "singleton {}" and not "{ singleton }" according
+	  programming model.
+	
+	- Fix ARM composite component in order to handle well input/output interface 
+	  collections
+	
+
+Known Issues:
+-------------
+        
+            
+Pre-requires:
+-------------
+    - MMENV 1.0.5  
+	    - MMDSP Toolset 4.1.0.
+	    - RVCT 2.2 & 4.0
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)      
+
+
+Installation:
+-------------
+	* Create a NMF directory 
+		mkdir <NMF_ROOT>
+	* Go in this directory 
+		cd <NMF_ROOT>
+	* untar tools and Think package
+		tar xvfz nmf_tools-Vx.y.z.tgz
+		tar xvfz nmf_think-Vx.y.z.tgz
+
+
+Test environment :
+------------------
+    - Environments:
+    	Compiler and compilation options set according MMENV environments  
+        Execution Engine: Synchronous, Hybrid
+        Semaphores: local, hardware
+        Environment: Think (OSI)
+
+	- Report available here : 
+		http://gnx2487:9000/NMF_1.6.0RC7/
+
+    - Tests:
+        * 'ADL' class
+            check 'Architecture Description Language' features from programming model
+            test limit of some ADL features (name length, collection size,...)
+            check error codes returned by ADL tool
+
+        * 'Attribute' class
+            operations on attributes inside component (mpc side)
+            check attribute api on host side
+            api error management
+
+        * 'Binding' class
+            synchronous/asynchronous intra-MPC communication
+            ARM -> MPC
+            MPC -> ARM
+            inter MPCs (asynchronous)
+            MPC -> MPC (on 8815B0)
+            Static intra-MPC optimized binding
+            interruption
+            error management
+
+        * 'Collection' class :
+            Behavior with binds between primitives component using collections interfaces
+            Primitive collections interface introspection
+
+        * 'Composite' class:
+            Behavior with binds between composites component using collections interfaces
+            Behavior with binds defined in composites components (conf. files) using collections interfaces
+            Composite collections interfaces introspection
+
+        * 'Dynamic loading' class: 
+            segment loading (RO, RW, ZI)
+                Mono-instance
+                Multi-instances on same DSP
+                Multi-instances on both DSP
+            error management
+
+        * 'IDL' class
+            check 'Interface Description Language' features from programming model
+            check error codes returned by ADL tool
+
+        * 'Interface' class
+            interfaces introspection for primitives and composites components (except collections interfaces)
+
+        * 'Lifecycle' class
+            check the behavior using the lifecycle API
+
+        * 'Memory' class
+            allocate/free api management for SDRAM and MPC memories
+            check address/status features
+            api error management
+
+        * 'Misc' class
+            'singleton' features (network construction/destruction)
+            communication stressing (mandelbrot applications)
+            multiple instantiation to fill memory
+            component priority inside network
+
+        * 'Network' class
+            components (primitives or composites) introspection (without interfaces)
+
+        * 'Panic' class
+            Behavior upon each Panic (reason) detection and after the detection.
+
+        * 'Properties' class
+            Get property information in component network (primitive/composite)
+            api error management
+
+        * 'Stack' class
+            check the MPC stack evolution combined with the TCM_X MPC dynamic allocation

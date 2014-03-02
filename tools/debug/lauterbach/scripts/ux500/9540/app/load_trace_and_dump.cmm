@@ -1,0 +1,165 @@
+//============================================================================
+// Lauterbach T32 Emulator script: load_trace_and_dump.cmm
+//
+// Comments:
+//
+//
+// Written by: frq08728
+//
+// Creation date: 26/01/2011
+// Last Change: Wed Jun 27 16:00 2012 CEST
+//
+//============================================================================
+
+local &traceFile &rdFile &dmesgFile &rdPath &ynresult
+
+dialog
+(
+	header "Choose your dump and trace files"
+
+	pos 1. 0. 15.
+	TEXT "Coredump file:"
+	POS 16. 0. 36.
+rdFile: EDIT "" ""
+	POS 52. 0. 5.
+	BUTTON "File"
+	(
+		dialog.setfilew rdFile "&RamdumpPath/*"
+	)
+
+	pos 1. 1. 15.
+	TEXT "Trace file:"
+	POS 16. 1. 36.
+traceFile: EDIT "" ""
+	POS 52. 1. 5.
+	BUTTON "File"
+	(
+		dialog.setfilew traceFile "&RamdumpPath/*"
+	)
+
+	pos 1. 2. 15.
+	TEXT "dmesg file:"
+	POS 16. 2. 36.
+dmesgFile: EDIT "" ""
+	POS 52. 2. 5.
+	BUTTON "File"
+	(
+		dialog.setfilew dmesgFile "&RamdumpPath/*"
+	)
+
+	pos 20. 4. 18.
+	DEFBUTTON "OK" "continue"
+)
+
+stop
+
+&rdFile=dialog.string(rdFile)
+&traceFile=dialog.string(traceFile)
+&dmesgFile=dialog.string(dmesgFile)
+
+
+if os.file("&rdFile")
+(
+	if (os.file.extension("&rdFile")==".s3")
+		data.load.s3 "&rdFile" /NOSYMBOL /NOCLEAR /NOREG
+	else if (os.file.extension("&rdFile")==".bin")
+		data.load.binary "&rdFile" 0xC0000000 /NOSYMBOL /NOCLEAR /NOREG
+	else if ((os.file.extension("&rdFile")==".elf")||(os.file.extension("&rdFile")==".ELF"))
+	(
+		; Embedded kernel coredumps
+
+		;DIALOG.YESNO "Download only DDR0 (faster but DDR1 not loaded)"
+		;ENTRY &ynresult
+		;IF &ynresult
+		;(
+			; Use a temporary file
+		;	COPY "&rdFile" "&rdFile".mod
+			; remove DDR1 section from elf file header
+		;	os.hidden perl &(toolsPath)/mod_elf_header_ddr1.pl "&rdFile".mod
+			; load modified elf file
+		;	data.load.elf "&rdFile".mod /NOSYMBOL /NOCLEAR /NOREG
+		;)
+		;else
+		;(
+			; Split elf file into binaries and create load script
+			os.hidden perl &(toolsPath)/parse_cdump.pl "&rdFile" load_dump.cmm
+			mmu.reset
+			mmu.off
+			do load_dump.cmm
+			do linux
+		;)
+	)
+	else
+	(
+		print "Wrong file extension"
+		dialog.end
+		reset
+		enddo
+	)
+
+; Already done in linux.cmm
+;	MMU.TableWalk ON   ; debugger uses a table walk to decode virtual addresses
+;	MMU.SCANALL
+
+;	y.autoload.checklinux "do autoload "
+
+;	task.y.option autoload Process
+
+	;y.autoload.CHECK
+	;y.autoload.touch "Proffer"
+	;y.autoload.touch "BitAndroid"
+
+	&rdPath=os.file.path("&rdFile")
+	if ("&rdPath"!="&RamdumpPath")
+	(
+		&RamdumpPath="&rdPath"
+		do writesettings.cmm
+	)
+	chdir "&RamdumpPath"
+
+	PER.Set C15:0x1 %LONG 1   ; enable MMU in CPU
+)
+else
+	print "Dump file &rdFile not found"
+
+if os.file("&traceFile")
+(
+	a.load "&traceFile"
+
+	a.l /core 0
+	a.l /core 1
+	a.chart / core 0
+	a.chart /core 1
+)
+else
+	print "Trace file &traceFile not found"
+
+if os.file("&dmesgFile")
+(
+	if os.file("&rdFile")
+	(
+		print "Coredump file already chosen, dmesg file will not be used"
+	)
+	else
+	(
+		mmu.reset
+		mmu.off
+		sys.o mmuspaces off
+
+		&rdPath=os.file.path("&dmesgFile")
+		if ("&rdPath"!="&RamdumpPath")
+		(
+			&RamdumpPath="&rdPath"
+			do writesettings.cmm
+		)
+		chdir "&RamdumpPath"
+
+		do linux-fill-mem-with-dmesg.cmm "&dmesgFile"
+		PER.Set C15:0x1 %LONG 1   ; enable MMU in CPU
+	)
+)
+
+dialog.end
+enddo
+
+

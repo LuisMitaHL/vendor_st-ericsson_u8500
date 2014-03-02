@@ -1,0 +1,29 @@
+#
+# Strace configuration
+#
+
+menuconfig STRACE
+	bool "Strace Configuration"
+	help
+	  strace is a system call tracer, i.e. a debugging tool
+	  which prints out a trace of all the system calls made
+	  by a another process/program.
+
+if STRACE
+
+config STRACE_DIR
+	string
+	default ./strace
+
+config STRACE_DEPS
+	string
+	default ""
+
+config STRACE_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on STRACE
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # STRACE

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE usecase SYSTEM "http://opa/lib/usecase.dtd">
+<usecase description="IPC"
+         name="">
+
+  <actors>
+    <actor name=":client" />
+    <actor name=":libstecom_cli" />
+    <boundary />
+    <actor name=":kernel"/>
+    <actor name=":libstecom_srv" />
+    <actor name=":server" />
+  </actors>
+
+
+  <alternative name = "server initialisation">
+  <note text= "create request channel" source=":server"/>
+  <message name="stec_opensrv(local_addr)" source=":server" destination=":libstecom_srv" type="call" />
+  <message name="sock=socket()" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="bind(sock,local_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return(ctrl)" source=":libstecom_srv" destination=":server" type="return" />
+  <note text= "create event channel" source=":server"/>
+  <message name="stec_opensrv(local_addr)" source=":server" destination=":libstecom_srv" type="call" />
+  <message name="event_sock=socket()" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="bind(event_sock,local_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return(event_ctrl)" source=":libstecom_srv" destination=":server" type="return" />
+  <note text= "server calls select() and waits for incoming commands" source=":server"/>
+  </alternative>
+  <alternative name = "client initialisation">
+  <note text= "create request channel" source=":client"/>
+  <message name="stec_open(addr=STE_SERVER_PORT)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="sock=socket()" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="bind(socket)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="connect(socket)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="return(ctrl)" source=":libstecom_cli" destination=":client" type="return" />
+  <note text= "create event channel and subscribe to events" source=":client"/>
+  <message name="stec_open(addr=STE_SERVER_EVENT_PORT)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="event_sock=socket()" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="bind(event_socket)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="connect(event_socket)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="return(event_ctrl)" source=":libstecom_cli" destination=":client" type="return" />
+  <message name="stec_subscribe(event_ctrl)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="sendto(event_sock,'subscribe',addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <note text= "select() returns and server calls receive to process the subscribe" source=":server"/>
+  <message name="recvfrom(event_sock)" source=":libstecom_cli" destination=":kernel" type="call" />
+  <message name="stec_process_recv(event_ctrl)" source=":server" destination=":libstecom_srv" type="call" />
+  <message name="recvfrom(event_sock)" source=":libstecom_srv" destination=":kernel" type="call" />
+  <message name="return('subscribe,event_addr',cli_addr)" source=":kernel" destination=":libstecom_srv" type="return" />
+  <note text= "store client address" source=":libstecom_srv"/>
+  <message name="sendto(event_sock,'ok',event_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return()" source=":libstecom_srv" destination=":server" type="return" />
+  <note text= "server calls select() and waits for incoming commands" source=":server"/>
+  <message name="return('ok',srv_addr)" source=":kernel" destination=":libstecom_cli" type="return" />
+  <message name="return('ok')" source=":libstecom_cli" destination=":client" type="return" />
+  </alternative>
+
+  <alternative name = "send a request">
+  <message name="stec_sendsync(ctrl,req)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="sendto(sock,req,addr)" source=":libstecom_cli" destination=":kernel" type="call_return" />
+  <message name="recvfrom(sock)" source=":libstecom_cli" destination=":kernel" type="call" />
+  <note text= "client wait for response from server" source=":libstecom_cli"/>
+  <note text= "select() returns and server calls receive" source=":server"/>
+  <message name="stec_recv(ctrl)" source=":server" destination=":libstecom_srv" type="call" />
+  <message name="recvfrom(sock)" source=":libstecom_srv" destination=":kernel" type="call" />
+  <message name="return(req,cli_addr)" source=":kernel" destination=":libstecom_srv" type="return" />
+  <message name="return(req)" source=":libstecom_srv" destination=":server" type="return" />
+  <note text= "server processes request and send response" source=":server"/>
+  <message name="stec_send(ctrl,resp)" source=":server" destination=":libstecom_srv" type="call" />
+  <message name="sendto(sock,resp,cli_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return()" source=":libstecom_srv" destination=":server" type="return" />
+  <note text= "server calls select() and waits for incoming commands" source=":server"/>
+  <message name="return(resp,srv_addr)" source=":kernel" destination=":libstecom_cli" type="return" />
+  <message name="return(resp)" source=":libstecom_cli" destination=":client" type="return" /> 
+ </alternative>
+
+  <alternative name = "server sends an evnt">
+  <note text= "client calls select() and wait for incoming events" source=":client"/>
+  <message name="stec_sendevent(event_ctrl,event)" source=":server" destination=":libstecom_srv" type="call" />
+  <note text= "events are broadcast to all registered clients" source=":libstecom_srv"/>
+  <message name="sendto(event_sock,event,event_addr)" source=":libstecom_srv" destination=":kernel" type="call_return" />
+  <message name="return()" source=":libstecom_srv" destination=":server" type="return" />
+  <note text= "select() returns and client read incoming event" source=":client"/>
+  <message name="stec_recv(event_ctrl)" source=":client" destination=":libstecom_cli" type="call" />
+  <message name="recvfrom(event_sock)" source=":libstecom_cli" destination=":kernel" type="call" />
+  <message name="return(event)" source=":kernel" destination=":libstecom_cli" type="return" />
+  <message name="return(event)" source=":libstecom_cli" destination=":client" type="return" />
+  <note text= "client process the event, calls select() and wait for events" source=":client"/>
+  </alternative>
+
+</usecase>

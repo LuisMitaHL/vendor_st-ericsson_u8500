@@ -1,0 +1,141 @@
+test_start PCM_SPL_32_host_002
+test_property TEST_NAME pcmsplitter_32_host_omx_state_machine_1outputpaced
+
+alias TIMEOUT 0
+
+# Test GetHandle-FreeHandle
+OMX_GetHandle   pcmsplitter OMX.ST.AFM.pcmsplitter_host
+OMX_FreeHandle  pcmsplitter
+
+# instantiate and configure pcmsplitter
+OMX_GetHandle   pcmsplitter OMX.ST.AFM.pcmsplitter_host
+
+OMX_SetConfig pcmsplitter  ENS_IndexConfigTraceSetting nTraceEnable=0xff nParentHandle=0x11
+
+OMX_SetConfig    pcmsplitter ENS_IndexConfigTraceSetting nTraceEnable=65535
+
+OMX_SetParameter pcmsplitter OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+#Disable all unused pcmsplitter ports
+OMX_SendCommand pcmsplitter OMX_CommandPortDisable 2
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nBitPerSample=32 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nBitPerSample=32 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+alias INPUT_FILE    $(AUDIO_STREAMS)/pcm_splitter/streams/Portal_8m.pcm
+ate_attach_io       pcmsplitter 0 MEM $(INPUT_FILE) 0 0 0
+alias OUTPUT_FILE   $(OUTPUT_DIR)/pcmsplitter_host_pcm_8k_mono.out
+ate_attach_io       pcmsplitter 1 MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/pcm_splitter/streams/Portal_8m.pcm
+alias REF_DIGEST    $(AUDIO_STREAMS)/pcm_splitter/streams/Portal_32_host_8m_digest.hash
+
+MMTE_CheckParameter pcmsplitter OMX_IndexParamAudioPortFormat nPortIndex=0 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter pcmsplitter OMX_IndexParamAudioPortFormat nPortIndex=1 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter pcmsplitter OMX_IndexParamAudioPortFormat nPortIndex=2 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+
+# test OMX state machine 
+# Basic OMX checks
+MMTE_CheckParameter pcmsplitter OMX_IndexParamAudioInit nPorts=3 nStartPortNumber=0
+MMTE_CheckParameter pcmsplitter OMX_IndexParamVideoInit nPorts=0
+MMTE_CheckParameter pcmsplitter OMX_IndexParamImageInit nPorts=0
+MMTE_CheckParameter pcmsplitter OMX_IndexParamOtherInit nPorts=0
+
+# Go to Idle
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers pcmsplitter 0
+MMTE_AllocateAndUseBuffers pcmsplitter 1
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers pcmsplitter 0
+MMTE_FreeBuffers pcmsplitter 1
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# Go to Idle
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers pcmsplitter 0
+MMTE_AllocateAndUseBuffers pcmsplitter 1
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Start
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# Go to Pause
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent pcmsplitter OMX_EventBufferFlag 1 TIMEOUT
+
+# Go to Idle
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers pcmsplitter 0
+MMTE_FreeBuffers pcmsplitter 1
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig
+MMTE_CheckParameter pcmsplitter OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000
+
+ate_attach_io       pcmsplitter 0 MEM $(AUDIO_STREAMS)/pcm_splitter/streams/Portal_8m.pcm 0 0 0
+alias OUTPUT_FILE   $(OUTPUT_DIR)/pcmsplitter_host_pcm_8k_mono_2.out
+ate_attach_io       pcmsplitter 1 MEM $(OUTPUT_FILE) 2000000 0 0
+
+# Go to Idle
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers pcmsplitter 0
+MMTE_AllocateAndUseBuffers pcmsplitter 1
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Pause
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent pcmsplitter OMX_EventBufferFlag 1 TIMEOUT
+
+# Go to Pause
+OMX_SendCommand pcmsplitter  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+#Stop
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers pcmsplitter 0
+MMTE_FreeBuffers pcmsplitter 1
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+hash_comp OUTPUT_FILE REF_DIGEST
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+unalias TIMEOUT
+
+test_end

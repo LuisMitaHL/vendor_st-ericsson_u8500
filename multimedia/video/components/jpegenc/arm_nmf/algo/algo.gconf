@@ -1,0 +1,28 @@
+//primitive jpegenc.arm_nmf.algo
+//{
+
+provides lifecycle.constructor                              as constructor
+//provides lifecycle.destructor                              as destructor
+//
+// Provided interfaces to a jpeg decoder component
+provides jpegenc.arm_nmf.api.algo                        as iAlgo
+
+// Required interfaces to a jpeg decoder component
+requires jpegenc.arm_nmf.api.end_algo                    as oEndAlgo
+
+//- Source files
+sources src/algo.cpp
+sources src/jpegenc_interface.c
+sources src/jpegenc_fdct_20_16.c
+sources src/jpegenc_compress.c
+
+//sources  ../test/nmf_fw_test/platforms/ca9/benchmark.s
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+//original - option CPPFLAGS "-DCA9 --vectorize --asm -Otime -O3 -D__NMF -I$(MMROOT)/video/components/jpegenc/arm_nmf/algo/inc -I$(MMROOT)/video/components/jpegenc/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/jpegenc/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc/ndk8500_ed -I../../../common/inc"  
+option CPPFLAGS "-DCA9 --asm -O3 -D__NMF -I$(MMROOT)/video/components/jpegenc/arm_nmf/algo/inc -I$(MMROOT)/video/components/jpegenc/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/jpegenc/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc/ndk8500_ed -I../../../common/inc"  
+
+//TRACE_ENABLE define this to enable the printf statements
+ 
+//}

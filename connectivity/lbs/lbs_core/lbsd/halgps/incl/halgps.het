@@ -1,0 +1,53 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPS_HET__
+#define __HALGPS_HET__
+
+/**
+* \file halgps.het
+* \date 15/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all structure used by external module.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 15.04.08 </TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\addtogroup CGPS
+*\{
+*/
+
+/**
+*\struct t_HALGPSTatInfo
+*\brief TAT information
+* 
+* This structure is used by TAT to get information about GPS module like version.
+*
+*/
+typedef struct
+{
+   uint16_t v_EmbeddedMajorVersion;   /*!< Firmware Version     */
+   uint16_t v_EmbeddedMinorVersion;   /*!< Firmware Version     */
+   uint16_t v_BBVersion;               /*!< GPS BaseBand Version   */
+   uint16_t v_PatchVersion;           /*!< Patch Version             */
+}t_HALGPSTatInfo;
+
+/**
+*\}
+*/
+#endif /*__HALGPS_HET__*/

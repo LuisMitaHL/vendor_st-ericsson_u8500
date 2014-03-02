@@ -1,0 +1,24 @@
+OBJ = linked_lists.o memory_mgr.o
+
+CC = ac -mode16
+#CC = gcc
+
+clean:
+	@echo "cleaning obj directory"
+	\rm -f *.o
+	\rm -f test_mmgr
+
+all: ${OBJ} 
+	@echo "----------------------------------------"
+	@echo "<<< linking test_mmgr>>>"
+	@echo "----------------------------------------"
+	$(CC) -g -Wall -I../inc -I. -c test.c -o test.o
+	$(CC) ${OBJ} test.o -o test_mmgr
+
+
+${OBJ}: %.o : ../src/%.c  ../inc/*.h 
+	@echo "----------------------------------------"
+	@echo "<<< compiling :"$(@F:.o=.c)">>>"
+	@echo "----------------------------------------"
+	$(CC) -g -Wall -I../inc -I. -c ../src/$(*F).c -o $@
+  

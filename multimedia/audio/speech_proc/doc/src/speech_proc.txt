@@ -1,0 +1,241 @@
+/**
+   \mainpage Table of contents
+
+   This documentation aims to briefly describe implementation of OMX speech Proc component (OMX.ST.AFM.speech_proc), both hybrid and full host version. \n
+
+   - \subpage overview "Overview" \n
+   - \subpage wrapper "UL & DL wrappers description" \n
+   - \subpage time "Time alignment" \n
+   - \subpage config "Configuration" \n
+   - \subpage trace "How to interpret speech_proc traces" \n
+   - \subpage diff "Differnces between hybrid and full host version" \n
+*/
+
+OVERVIEW
+/**
+   \page overview Overview
+
+   <H2> Introduction </H2>
+
+   This OMX component (OMX.ST.AFM.speech_proc) contains 5 audio ports and is made to be used in an OMX graph that look like :
+
+   \image html speech_proc_omx.png
+   \image latex speech_proc_omx.eps "Speech Proc OMX component" width=15cm
+
+   This component is made of 2 main parts :
+    - a NMF network : This is the implementation of the processing part.
+    - an OMX proxy   : This part is responsible to provide OMX API, and forwards (resp. receives) command/data to(resp. from) NMF network
+
+   It exists two NMF network implementation:
+    - Hybrid version : contains both MPC and HOST nmf component (This is the main version)
+    - Host version   : contians only HOST nmf version (developed for product whitout mmdsp, is it still needed ?)
+
+   Both version have the same "design" (i.e. same main NMF components). The differences between those two versions are highligted \ref diff here.\n
+
+   To understand the following schemes please refer to the following caption.
+   \image html caption.png
+   \image latex caption.eps "caption for detailled graphs" width=15cm
+
+   <H2> Hybrid Version </H2>
+   The hybrid version is described in the following figure :
+   \image html speech_proc_hybrid.png
+   \image latex speech_proc_hybrid.eps "Speech Proc hybrid, detailed graph" width=15cm
+
+   <H2> Full Host version </H2>
+   The full host version is described in the following figure :
+   \image html speech_proc_host.png
+   \image latex speech_proc_host.eps "Speech Proc host, detailed graph" width=15cm
+*/
+
+WRAPPERS
+/**
+   \page wrapper UL & DL wrappers
+   Those 2 components are only here to handle the state machine and the buffer transfer. They do nothing more than calling the processing library with the correct buffers.
+   All the processing is done by the processing library, and the interface between wrappers and the library is fully detailled in speech_proc_itf component.
+*/
+
+TIME ALIGN
+/**
+   \page time Time Alignment
+
+   The goal of this component is to temporarily align the data coming from the source (microphone) with the reference ones received from the sink (speaker).
+   This alignment is done in order to optimize echo cancellation algorithm, by keeping a constant delay between uplink and reference data.\n
+   It will also adapt the sample frequency of reference data to the sample frequency of uplink processing.
+
+   <H2> Principle </H2>
+   The alignment is done based on timestamp set inside buffers. Those timestamps are set by the sink (resp. source) component and represent the date (in us) when the first sample of the buffer has been send to (resp. received from) MSP transfer.\n
+   When a buffer is received on the reference port (port index 2), time alignmennt will adapt its sample frequency (using libresampling) and store it in its ring buffer.
+   Then when a buffer is received on the uplink port (port index 0), time alignment will check its reference ring buffer to extract the samples with the same timestamp, packetize both signal into a single buffer and send it to ul_wrapper.\n
+
+   \remark If timestamps are not set on buffers received by time alignment (whether there are not updated by source/sink components or not propagated by component between source and speech_proc), time alignment will no longer align the data.
+   In this case, for each uplink buffer it will simply extract the oldest samples from its reference ring buffer.
+
+   <H2> Timestamp </H2>
+   It is important to understand the meaning of the timestamp included buffers.\n
+   For reference port buffer, the timestamp (t0) indicates the date (in us) at which sink started to transfer this buffer via MSP. The sink will send this buffer to reference port before the beginning of transfer, so at worst at date=t0. \n
+   For uplink port buffer, the timestamp (t0) indicates the date (in us) at which source started to captured this buffer via MSP. The time_align can only received this buffer when it is completly acquired, so at best at date=t0+5ms (if we assume transfer size is 5ms). \n
+   Thus for a same timestamp (t0), buffer will always be received on reference port before uplink port.\n
+
+   Even if timestamp are expressed in us, since MSP transfer unit is 1ms the "real" (understand usefull) unit for timestamp is ms. That's why in the code, and in the graphs after, we mainly work with ms rather than us.
+
+   <H2> Special cases </H2>
+
+   The following graphs are designed like this :
+   \image html time_align_caption.png
+   \image latex time_align_caption.eps "definiton for time alignment graphs"
+
+   <H3> \anchor start Start </H3>
+   At start, the ring buffer may not contains the reference samples for the first uplink buffers. In this case, missing samples are replaced by 0.\n
+   Let's take a more concrete example :
+
+   \image html time_align_start.png
+   \image latex time_align_start.eps "example of call start"
+
+   <H3> \anchor underrun Underrun on sink </H3>
+   If underun happens on sink, missing samples are replaced with 0. \n
+   We can distinguish 2 cases : \n
+    - Underrun is small, in this case when time align see the discontinous timestamp on reference port, it replaces missing data with 0 inside its ring buffer.
+   \image html time_align_underrun_small.png
+   \image latex time_align_underrun_small.eps "example of \"small\" underrun"
+
+    - Underrun is big enough, in this case when the uplink buffer is received we don't have the corresponding samples in the ring buffer. Time align will replace missing data with 0
+   \image html time_align_underrun_big.png
+   \image latex time_align_underrun_big.eps "example of \"big\" underrun"
+
+   <H2> Some implementation details </H2>
+   - We saw that the ring buffer contains continous data. Indeed if discontinuity is detected in reference timestamp, missing samples are replaced with 0 inside the ring buffer. Thus knowning the timestamp of the last sample,
+   stored in mTimeStamp, and the size used in the ring buffer, stored in mRingUsedSize is enough to calculate the date of every samples in the ring buffer.
+
+   - mRealTimeReference is only test to false for test in which reference port is connected to a file.
+
+   - input out output buffer don't have the same size. Output buffer size is \ref PROCESSING_BUFFER_DURATION, and input size is \ref UL_INPUT_BUFFER_DURATION.\n
+   The funtion packOutputBuffer, is in charge to concatenate NB_OUTPUT_PART (=PROCESSING_BUFFER_DURATION/UL_INPUT_BUFFER_DURATION) input buffers in 1 output buffer. The index of current subpart is stored in mOutputPart.
+
+   - output buffer contains input and reference data, in a multichannel packed (as opposed to interleaved) buffer.
+
+*/
+
+TRACE
+/**
+   \page trace Speech Proc traces
+
+   <H2> Time Align traces </H2>
+   <H3> DEBUG traces </H3>
+   to know if timestamp are present (or not) in buffers, and then if time align feature is activated :\n
+   - time align activated :
+   \code
+      "Alignment starts with reference timestamp %d %d, buffer timestamp %d %d"
+      "Activate Alignment after some buffer with no alignment, with reference timestamp %d %d, buffer timestamp %d %d"
+   \endcode
+   - time align is not activated :
+   \code
+      "No time alignment because : reference status %d, buffer timestamp %d %d - flags %d"
+   \endcode
+
+   <H3> WARNING traces </H3>
+   - Overflow in ring buffer, may happen with or without time align feature
+   \code
+     "Time align : Overflow in reference buffer "
+   \endcode
+
+   - Discontinuity detected in timestamp on reference port (cf \ref underrun)
+   \code
+     "Time align : %d samples lost in reference data flow (buf %d, ring %d) . replaced with 0"
+   \endcode
+
+   - Missing data on the reference port, it is replaced with 0. This is the "big" underrun use case (\ref underrun)
+   \code
+     "Time align : ask data at %d us, whereas we already have samples up to %d us (- %d us)"
+     "Time align : add %d post padding samples"
+   \endcode
+
+   - Data already overwritten (or never received) in the ring buffer. This may happen at the start (cf \ref start Start use case) or if the ring buffer is too small.
+   \code
+     "Time align : ask data at %d us, whereas we already have samples up to %d us (- %d us)"
+     "Time align : add %d pre padding samples"
+   \endcode
+
+   <H2> UL & DL Wrappers traces </H2>
+
+   <H3> FLOW traces </H3>
+   Calls to processing library can be tracked with:
+   \code
+     "start dl process"
+     "end dl process"
+   \endcode
+   and
+   \code
+     "start ul process"
+     "end ul process"
+   \endcode
+
+   <H3> DATA traces </H3>
+   It is possible to dump to send/received to/from processing library by activating the correct trace level.\n
+   You can then use the SpeechProcActivity script (in multimedia/audio/dbg_tools) to extract data from your trace file. \n
+   - Activate trace level TRACE_SP_PORT_UL_IN (aka USER1) to dump uplink input port data\n
+   - Activate trace level TRACE_SP_PORT_DL_IN (aka USER2) to dump downlink input port data\n
+   - Activate trace level TRACE_SP_PORT_UL_REF (aka USER3) to dump uplink reference port data\n
+   - Activate trace level TRACE_SP_PORT_UL_OUT (aka USER4) to dump uplink output port data\n
+   - Activate trace level TRACE_SP_PORT_DL_OUT (aka USER5) to dump downlink output port data\n
+
+   \remarks
+    - even if trace is done on the ARM, data traces can only be captured via fido box.
+    - If hybrid buffers are located in TCM (cf \ref DL_HYBRID_BUFFER_MEMORY, \ref UL_HYBRID_BUFFER_MEMORY), data will NOT be trace even if the corresponding
+	trace level is activated (TRACE_SP_PORT_DL_OUT for downlink) and (TRACE_SP_PORT_UL_IN and/or TRACE_SP_PORT_UL_REF for uplink).
+	Indeed trace routine make 8bits access that isn't supported on mmdsp TCM memory
+
+ */
+
+DIFFERENCES
+/**
+   \page diff Differences Explanation
+   Here is a brief description of the differences between the two previous description
+
+   <H2> Proxy Side: </H2>
+   - SpeechProcComponent : The only difference is that for hybrid version, port 0,2,4 are MPC based and then sample bitsize is 24.\n
+   - SpeechProcNmf_ProcessingComp : 3 mains differences : \n
+     - For hybrid version we inherit from AFMNmfHostMpc_ProcessingComp class and for full host version we inherit from AFMNmfHost_ProcessingComp. Hopefully the methods to implement are very similar in both case (just one more in AFMNmfHostMpc_ProcessingComp) \n
+     - Nmf network is not the same, then some bindings and interfaces (for configuration) are not exactly the same. \n
+	 - Most of the memory used by DSP component is allocated at proxy level (in order to be able to change the memory type without recompiling dsp part).
+
+   <H2> NMF side: </H2>
+   - For hybrid version, we need arm2mpc/mpc2arm components for address translation between ARM and DSP. They play no role at all on the processing chain. \n
+   - dsp_port component for hybrid version, is here to ease the proprietary communication with other NMF MPC components on port 4. It plays no role in the processing chain.\n hopefully it will be removed in next version.\n
+   - dl_wrapper and ul_wrapper are \b exactly the same for both version.\n
+   - speechcontroller is almost the same, expect that in the hybrid version it has one more component (dsp_port) to control.\n
+   - time_align has to be implemented twice. Once as a MPC component and once as a HOST component. They have the same behaviour and the same NMF interfaces.
+
+   <H2> speechProc library </H2>
+   - Any library implementing the speech_proc_interface API, can be used indifferently in hybrid or full host version.\n
+*/
+
+SOURCE
+/*
+   \page source Compilation & Source Tree
+   \section Compilation
+   Both version share the same source tree, and discrimination between both version is done at compilation time with the definition (or not) of the macro \b USE_HYBRID_COMPONENT. By default this macro is set unless variable \b STE_PLATFORM is set to u5500.\n
+
+   \section tree Tree
+   \verbatim
+   +-- inc  .................................. contains generated traces adn configuration file
+   +-- mmte_script  .......................... contains generic test (both version should be able to run all test)
+   +-- nmf ................................... contains NMF component and interfaces
+   |   +-- common  ........................... contains common NMF interface between NMF and MPC
+   |   +-- host  ............................. contains NMF HOST component and composite
+   |   |   +-- common  ....................... contains common NMF interface between all HOST NMF component
+   |   |   +-- composite  .................... contains description of NMF composite
+   |   |   |   +-- speech_proc  .............. contains description of the composite used for Full HOST version
+   |   |   |   +-- speech_proc_hybrid  ....... contains description of the composite used for Hybrid version
+   |   |   +-- dl_wrapper  ................... contains DL-wrapper NMF HOST component (used by both version)
+   |   |   +-- hybrid_buffer ................. contains HOST part of hybrid buffers
+   |   |   +-- speechcontroller  ............. contains Speech Controller NMF HOST component (used by both version)
+   |   |   +-- time_align  ................... contains Time Alignment NMF HOST component (used only by full host version)
+   |   |   +-- ul_wrapper  ................... contains DL-wrapper NMF HOST component (used by both version)
+   |   +-- mpc  .............................. contains NMF MPC component (only used by hybrid version)
+   |       +-- dsp_port  ..................... contains dsp-port NMF MPC component (only used by hybrid version)
+   |       +-- time_align  ................... contains Time Alignment NMF MPC component (used only by hybrid version)
+   |       +-- hybrid_buffer ................. contains DSP part of hybrid buffers
+   +-- proxy  ................................ contains Proxy code (used by both version)
+   \endverbatim
+   (Some directories have been omitted for clarity)
+*/

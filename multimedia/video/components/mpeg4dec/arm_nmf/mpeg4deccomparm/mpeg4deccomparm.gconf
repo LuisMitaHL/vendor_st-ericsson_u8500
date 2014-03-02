@@ -1,0 +1,95 @@
+composite mpeg4dec.arm_nmf.mpeg4deccomparm{
+
+	contains mpeg4dec.arm_nmf.parser as cMpeg4decParser
+	contains mpeg4dec.arm_nmf.mpeg4deccontroller as cMpeg4decController
+	contains nmf.host.shared_bufin  as cSharedBufInARM
+	contains nmf.host.shared_bufout as cSharedBufOutARM
+
+	#include "../../mpc/composite/mpeg4decmpc/mpeg4decmpc.inc"
+	
+	//Exposed Interfaces for Processing component
+
+	// Input Bitstream Buffer Port
+	provides armnmf_emptythisbuffer   as      emptythisbuffer
+	binds this.emptythisbuffer to 	cMpeg4decParser.emptythisbuffer
+
+	requires armnmf_fillthisbuffer    as      inputport
+	binds cMpeg4decParser.inputport to 	this.inputport
+	
+	// Output Image Buffer Port
+	requires armnmf_emptythisbuffer   as      outputport
+	binds cMpeg4decParser.outputport to 	this.outputport
+
+	provides armnmf_fillthisbuffer    as      fillthisbuffer
+	binds this.fillthisbuffer to 	cMpeg4decParser.fillthisbuffer
+	
+	// FSM interfaces
+	provides fsminit          as      fsminit
+	binds this.fsminit to 	cMpeg4decController.fsminit
+
+	provides sendcommand      as      sendcommand
+	binds this.sendcommand to 	cMpeg4decController.sendcommand
+
+	requires eventhandler     as      proxy
+	binds cMpeg4decController.proxy to 	this.proxy
+	
+
+	// Custom Interfaces
+	provides mpeg4dec.arm_nmf.api.memoryRequirements as iMemoryRequirements
+	binds this.iMemoryRequirements to cMpeg4decParser.iMemoryRequirements
+
+	binds cMpeg4decDdep.iCopy to cMpeg4decParser.iCopy asynchronous fifo=32
+	//provides mpeg4dec.arm_nmf.api.Copy as iCopy
+	//binds this.iCopy to cMpeg4decParser.iCopy   
+	//binds cMpeg4decDdep.iCopy to cMpeg4decParser.iCopy   asynchronous fifo=32
+
+	//provides mpeg4dec.arm_nmf.api.setConfig as iSetConfig
+	//binds this.iSetConfig to cMpeg4decParser.iSetConfig
+
+	provides mpeg4dec.arm_nmf.api.sendportSettings as portSettingsInfoSignal
+	binds this.portSettingsInfoSignal to cMpeg4decParser.portSettingsInfoSignal
+	
+	requires mpeg4dec.arm_nmf.api.portSettings    as      iChangePortSettingsSignal
+	binds cMpeg4decParser.iChangePortSettingsSignal to this.iChangePortSettingsSignal
+	
+	// Bindings within 
+	binds cMpeg4decParser.me    to  cMpeg4decParser.postevent asynchronous fifo=32
+        
+	//Binding custom ddep interfaces
+	binds cMpeg4decParser.iDdep to cMpeg4decDdep.iDdep		asynchronous fifo=32
+	
+	//Bindings shared buffer components
+	//Input port bindings with MPC Component
+	binds cSharedBufInARM.mpc to cSharedBufInMPC.emptythisbuffer	        asynchronous fifo=32 
+	binds cSharedBufInMPC.host to cSharedBufInARM.fillthisbuffer	asynchronous fifo=32
+
+	//Output port bindings MPC Component
+	binds cSharedBufOutARM.mpc to cSharedBufOutMPC.fillthisbuffer	asynchronous fifo=32
+	binds cSharedBufOutMPC.host to cSharedBufOutARM.emptythisbuffer	asynchronous fifo=32
+
+	//Input port bindings with Parser component
+	binds cMpeg4decParser.emptythisbufferSharedBufIn to cSharedBufInARM.emptythisbuffer
+	binds cSharedBufInARM.host to cMpeg4decParser.sharedBufInEBD    asynchronous fifo=32
+
+	//Output port bindings with parser component
+	binds cMpeg4decParser.fillthisbufferSharedBufOut to cSharedBufOutARM.fillthisbuffer
+	binds cSharedBufOutARM.host to cMpeg4decParser.sharedBufOutFBD  asynchronous fifo=32
+
+
+	//Bindings of headers port
+	binds cMpeg4decParser.emptythisheader to cMpeg4decDdep.emptythisheader	asynchronous fifo=32
+	binds cMpeg4decDdep.headerport to cMpeg4decParser.returnconsumedheader	asynchronous fifo=32
+
+       
+	binds cMpeg4decController.parserSendcommand to cMpeg4decParser.sendcommand	asynchronous fifo=32
+	binds cMpeg4decController.mpeg4decMPCSendcommand to cMpeg4decDdep.sendcommand	asynchronous fifo=32
+
+	binds cMpeg4decParser.proxy to 	cMpeg4decController.parserHandler	asynchronous fifo=32
+	binds cMpeg4decDdep.proxy to 	cMpeg4decController.mpeg4decMPCHandler	asynchronous fifo=32
+
+	binds cMpeg4decController.parserFSMinit to cMpeg4decParser.fsminit	asynchronous fifo=32
+	binds cMpeg4decController.mpeg4decMPCFSMinit to cMpeg4decDdep.fsminit	asynchronous fifo=32
+
+	//option CPPFLAGS "-g -O0 -D__CACHE_OPTI"
+	option CPPFLAGS " -O3 -D__CACHE_OPTI"
+}

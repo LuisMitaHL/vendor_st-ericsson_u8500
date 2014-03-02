@@ -1,0 +1,39 @@
+//
+//       Configuration file for      cabac (H264 decoder)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive h264dec.mpc.cabac extends debug.mpc.printf_type singleton
+{
+
+provides lifecycle.constructor								as constructor
+//
+// Provided interfaces to a h264_decoder_ddep component
+provides h264dec.mpc.api.cabac								as iCabac
+
+// for interrupt callback
+provides resource_manager.api.signal          as iSignal referenced
+
+
+// Required interfaces to a resource_manager component
+requires resource_manager.api.mtf							as iMtf
+requires resource_manager.api.interrupt			  as iInterrupt
+
+//To enable unfiltered OST traces in cabac
+requires	osttrace.api.osttrace	as	osttrace static
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+option CPPFLAGS "	-ICONF_ROOT/inc/SVA_SUBSYSTEM		\
+					-ICONF_ROOT/inc						\
+					-D__T1XHV_NMF_ENV=1 -DMMDSP"
+
+option CFLAGS "-O3 -g -mode16 "
+
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+
+}

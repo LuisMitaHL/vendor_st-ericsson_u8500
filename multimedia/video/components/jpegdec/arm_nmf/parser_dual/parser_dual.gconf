@@ -1,0 +1,56 @@
+primitive jpegdec.arm_nmf.parser_dual extends fsm.component.armnmf_component
+{
+	// Constructor
+	provides lifecycle.constructor  as constructor
+
+	// input port
+	provides armnmf_emptythisbuffer as emptythisbuffer prefix fromProcComp_
+	requires armnmf_fillthisbuffer  as inputport
+	
+	// output port
+	requires armnmf_emptythisbuffer as  outputport 
+	provides armnmf_fillthisbuffer  as  fillthisbuffer prefix fromProcComp_
+	
+	// Header port
+	requires jpegdec.mpc.api.emptythisheader   as  emptythisheader
+	provides jpegdec.mpc.api.fillthisheader    as  returnconsumedheader
+
+	//Port to shared buffer components
+	
+	// Port for bitstream buffer
+	requires armnmf_emptythisbuffer as emptythisbufferSharedBufIn
+	provides armnmf_fillthisbuffer  as sharedBufInEBD prefix fromSharedBufferComp_
+
+	// Port for Image buffer
+	provides armnmf_emptythisbuffer as sharedBufOutFBD prefix fromSharedBufferComp_
+	requires armnmf_fillthisbuffer  as fillthisbufferSharedBufOut
+
+
+	//Header buffer requirement
+
+	provides jpegdec.arm_nmf.api.computeARMLoad     as icomputeARMLoad
+	provides jpegdec.arm_nmf.api.memoryRequirements as iMemoryRequirements
+	provides jpegdec.arm_nmf.api.setConfig 		as iSetConfig
+	requires jpegdec.arm_nmf.api.portSettings       as iChangePortSettingsSignal
+	
+	provides jpegdec.arm_nmf.api.sendmemoryContext as iSendContextRequirements
+	
+	// set Param
+	provides jpegdec.arm_nmf.api.setParam    as setParam
+
+	// Interfaces for ddep
+	requires jpegdec.mpc.api.ddep    as iDdep  
+	
+	// Provided interfaces to algo component
+	requires jpegdec.arm_nmf.api.algo                 as iAlgo
+	provides jpegdec.arm_nmf.api.end_algo             as iEndAlgo
+
+	sources src/parser_dual.cpp    
+	sources src/JPEGDec_ARMNMF_ParamAndConfig.cpp
+	sources src/JPEGDec_ARMNMF_Parser.cpp
+	    
+	option CPPFLAGS "-g -O3 -D__CACHE_OPTI"
+}
+
+
+

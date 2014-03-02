@@ -1,0 +1,25 @@
+msc {
+		width=1200;
+		Application,SpeechProcComponent,SpeechProcLibrary,SpeechProcNmf_ProcessincComp,speech_proc_library;
+        |||;
+		Application rbox speech_proc_library [label="OMX_SendCommand(OMX_CommandPortEnable, idx) in State other than OMX_StateLoaded"];
+		|||;
+		Application => SpeechProcComponent [label ="OMX_SendCommand(OMX_CommandPortEnable, idx)"];
+		...;
+
+		SpeechProcComponent => SpeechProcNmf_ProcessincComp [label="doSpecificSendCommand(OMX_CommandPortEnable, idx,...)"];
+
+		SpeechProcNmf_ProcessincComp => SpeechProcLibrary [label="checkPortSettings()"];
+		SpeechProcLibrary >> SpeechProcNmf_ProcessincComp;
+
+		...;
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="speech_proc_set_mode(DL)"];
+	    SpeechProcNmf_ProcessincComp :> speech_proc_library [label="If idx==1 and port 4 already enabled\nOr if idx==4 and port 1 already enabled\nor if idx==OMX_ALL",linecolor=white]; 
+		|||;
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="speech_proc_set_mode(UL)"]; 
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="If idx==0 and port 3 already enabled\nOr if idx==3 and port 0 already enabled\nOr if idx==2 and port 0 and 3 already enabled\nor if idx==OMX_ALL", linecolor=white];
+		|||;
+		...;
+
+     	SpeechProcComponent =>> Application [label="OMX_Event(OMX_EventCmdComplete, OMX_CommandPortEnable, idx)"];	 	
+}

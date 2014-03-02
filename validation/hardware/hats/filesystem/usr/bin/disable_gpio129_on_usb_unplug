@@ -1,0 +1,14 @@
+#!/bin/sh
+
+isDisconnected="CONFIGURED";
+while [ "$isDisconnected" == "CONFIGURED" ]
+do
+  isDisconnected=`cat /sys/class/android_usb/android0/state`; 
+done
+echo 0 > /sys/class/gpio/gpio129/value
+echo 0 > /sys/class/gpio/gpio129/value
+echo 0 > /sys/class/gpio/gpio129/value
+echo 0 > /sys/class/gpio/gpio129/value
+echo 1 > /sys/class/gpio/gpio129/value
+exit
+

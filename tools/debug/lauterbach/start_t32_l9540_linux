@@ -1,0 +1,77 @@
+#!/bin/bash
+
+export SCRIPTPATH="./scripts"
+export CONFIGPATH=$SCRIPTPATH/ux500/9540
+
+. $SCRIPTPATH/start_common.sh
+
+# What to debug?
+choice=$1
+
+while [[ $choice -lt 1 ]] || [ $choice -gt 3 ]; do
+   echo "Please select platform:"
+   echo -e "\033[1m#   Chip          Comment\033[0m"
+   echo -e "\033[1m1\033[0m:  9540 APP          APP only : CortexA9 / linux"
+   echo -e "\033[1m2\033[0m:  9540 APP+SIA      APP CortexA9 and MMDSP SIA"
+   echo -e "\033[1m3\033[0m:  9540 APP+SVA      APP CortexA9 and MMDSP SVA"
+
+   # read user input
+   read choice
+   # default
+   if [ "$choice" == '' ]; then
+     choice=1
+     echo "default selected ($choice)"
+   fi
+done
+
+
+# Select target ?
+simu=$2
+
+while [[ $simu -lt 1 ]] || [ $simu -gt 3 ]; do
+   echo "Please select mode:"
+   echo -e "\033[1m#   Mode\033[0m"
+   echo -e "\033[1m1\033[0m:  ICD"
+   echo -e "\033[1m2\033[0m:  Simulator"
+   echo -e "\033[1m3\033[0m:  Palladium"
+
+   # read user input
+   read simu
+   # default
+   if [ "$simu" == '' ]; then
+     simu=1
+     echo "default selected ($simu)"
+   fi
+done
+
+SIM=""
+
+if [[ $simu = 2 ]] ; then
+	SIM="_sim"
+fi
+if [[ $simu = 3 ]] ; then
+	if [[ $choice != 1 ]] ; then
+		choice=1
+		echo "WARNING : only APP supported today for palladium"
+	fi
+	SIM="_palladium"
+	shift
+	shift
+	. $SCRIPTPATH/start_palladium.sh
+fi
+
+# Start t32marm and call config and init script.
+if [[ $choice = 1 ]] ; then
+	echo "Debugging: [9540-APP]"
+	t32marm -c $CONFIGPATH/config_app$SIM.t32 -s "$SCRIPTPATH/init.cmm [9540_APP]" &
+elif [[ $choice = 2 ]] ; then
+	echo "Debugging: [9540-APP+SIA]"
+	t32marm -c $CONFIGPATH/config_app$SIM.t32 -s "$SCRIPTPATH/init.cmm [9540_APP]" &
+	sleep 8s
+	t32mmdsp -c $CONFIGPATH/config_sia$SIM.t32 -s "$SCRIPTPATH/init.cmm [9540_MMDSP]" &
+elif [[ $choice = 3 ]] ; then
+	echo "Debugging: [9540-APP+SVA]"
+	t32marm -c $CONFIGPATH/config_app$SIM.t32 -s "$SCRIPTPATH/init.cmm [9540_APP]" &
+	sleep 8s
+	t32mmdsp -c $CONFIGPATH/config_sva$SIM.t32 -s "$SCRIPTPATH/init.cmm [9540_MMDSP]" &
+fi

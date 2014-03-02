@@ -1,0 +1,35 @@
+#
+# Tatlaudio configuration
+#
+
+menuconfig TATLAUDIO
+	bool "Tatlaudio"
+	depends on DTHSRVHELPER && TATTOOLS && AUDIOSERVICES && VIDEOSERVICES && AB_APE && LIBTATASYNC
+	help
+	  depends on DTHSRVHELPER, TATTOOLS, AUDIOSERVICES, VIDEOSERVICES, AB_APE && LIBTATASYNC
+
+if TATLAUDIO
+
+config TATLAUDIO_DIR
+	string
+	default ../tat/tat/tatlaudio
+
+config TATLAUDIO_DEPS
+	string
+	default "DTHSRVHELPER TATTOOLS AUDIOSERVICES VIDEOSERVICES AB_APE LIBTATASYNC"
+
+config TATLAUDIO_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLAUDIO
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLAUDIO_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLAUDIO
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLAUDIO

@@ -1,0 +1,18 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#include <tuningloader_types.idt>
+
+interface tuningloader.api.query
+{
+    void setTraceInfo(void* info, t_uint32 id);
+    void loadFirmwareTuning(t_camera_info cam, t_fw_blocks_info blocks);
+    void loadNvmTuning(t_camera_info cam);//, t_nvm_op_info op);
+    void saveNvmTuning(t_camera_info cam,t_uint32 pNvm,t_uint32 aSize);
+    void loadImageQualityTuning(t_camera_info cam);
+    void loadFlashTuning(t_flash_info flash);
+}

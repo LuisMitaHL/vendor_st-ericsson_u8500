@@ -1,0 +1,31 @@
+; #####################################################################
+; # DB5500 debug & Trace script file: semihosting_setting.cmm         #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2010-01-20
+; This is an example configuration for semihosting usable in STn8500_A9SS.
+entry &semihosting_point
+
+; ------ ARMSWI emulation mode -------------
+// if the semihosting vector is somewhere else than 0x8:
+if y.exist("SWI_Addr")||y.exist("SWI_Handler")
+(
+  tronchip.set swi off	//the swi should be off (default value)
+  b.s &semihosting_point // or other "semihosting point"
+  term.method armswi &semihosting_point 
+)
+else
+(
+  // otherwise, normal semihosting mode by using the semihosting vector at 0x8
+  tronchip.set swi on
+  term.method armswi
+)
+
+term.reset
+term.method armswi
+term.size 100 9999
+term.scroll on
+term.gate
+
+enddo
+

@@ -1,0 +1,37 @@
+#!/bin/sh
+# Author: Guillaume Camus
+
+chmod u+x lcd
+chmod u+x av8100tvout
+chmod u+x hdmi
+Exit=false
+while [ "$Exit" != "true" ]
+do
+	echo " "
+	echo "*****************************************************************************"
+	echo "*****************************************************************************"
+	echo "***                       Video Tests Validation Menu                     ***"
+	echo "***                       ---------------------------                     ***"
+	echo "***                                                                       ***"
+	echo "***                             1 => LCD                                  ***"
+	echo "***                             2 => TV out AV8100                        ***"
+	echo "***                             3 => HDMI                                 ***"
+	echo "***                             0 => Exit                                 ***"
+	echo "***                                                                       ***"
+	echo "*****************************************************************************"
+	echo "*****************************************************************************"
+	echo "Make your selection:"
+	read MenResp
+	if [ "$MenResp" == "1" ]; then
+		./lcd
+	elif [ "$MenResp" == "2" ]; then
+		.//av8100tvout
+	elif [ "$MenResp" == "3" ]; then
+		./hdmi
+	elif [ "$MenResp" == "0" ]; then
+		Exit=true
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+

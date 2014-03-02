@@ -1,0 +1,267 @@
+##
+# Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+# This code is ST-Ericsson proprietary and confidential.
+# Any use of the code for whatever purpose is subject to
+# specific written permission of ST-Ericsson SA.
+##
+
+# By default Manufacture & Model set using the folllowing keys
+#"ro.product.manufacturer" for Manufacturer
+#"ro.product.model" for Model
+# Uncommment DCAM_EXIF_TAG_MAKE to overide the default manufacturer
+# Uncommment DCAM_EXIF_TAG_MODEL to overide the default model
+#LOCAL_CFLAGS += -DCAM_EXIF_TAG_MAKE=\"stericsson\"
+#LOCAL_CFLAGS += -DCAM_EXIF_TAG_MODEL=\"u8500\"
+
+# By default Manufacture & Model set using the folllowing keys
+#"ro.product.software" for Software version
+# Uncommment DCAM_EXIF_TAG_SOFTWARE to overide the default software version
+LOCAL_CFLAGS += -DCAM_EXIF_TAG_SOFTWARE=\"Android_4.0\"
+
+# Uncomment below line to enable still/video mode specific functionaly.
+# Supported Value - set through KEY_CAM_MODE key
+# 0 - STILL mode with automatic frame rate control
+# 1 - RECORD mode with static frame rate control
+LOCAL_CFLAGS += -DDEFAULT_CAMERA_MODE=1
+
+# Uncomment below line to enable Hw ISP Proc
+LOCAL_CFLAGS += -DHWISPPROC=1
+
+# Uncomment below line to enable Smooth Zoom
+#LOCAL_CFLAGS += -DENABLE_SMOOTH_ZOOM=0
+
+# Uncomment below line to enable face detection
+# Also specify which face detection algo
+# to use,NEVEN or STE
+#LOCAL_CFLAGS += -DENABLE_FACE_DETECTION=1
+
+# Uncomment below line to NEVEN face
+# detection algo
+LOCAL_CFLAGS += -DFACE_DETECTION_ALGO_TYPE=NEVEN
+
+# Uncomment below line to enable Sw ISP Proc
+#LOCAL_CFLAGS += -DSWISPPROC=1
+
+# Uncomment below line to enable Jpeg encoding for image capture
+LOCAL_CFLAGS += -DJPEGENC=1
+
+# Uncomment below line to enable zoom
+#LOCAL_CFLAGS += -DZOOM_ENABLE=0
+
+# Uncomment below line to enable SW processing of below formats from
+# PIXEL_FORMAT_YUV422I in case of preview and snapshot
+#
+# PIXEL_FORMAT_YUV420P
+# PIXEL_FORMAT_YUV420SP
+LOCAL_CFLAGS += -DENABLE_SW_CONVERSION_OF_YUV420PLANAR_PREVIEW_FORMATS=1
+
+# Uncomment below line to enable format conversion input format.
+# ISP Pipe 0 can support RGB565 or YUV422Itd format as output.
+# These are only hardware supported formats.
+#
+# What if application requires preview frame in other format viz
+# YUV420SP, YUV420P etc.which are not supported by hardware.
+#These are all hardware unsupported formats.
+#
+# In this case, we have to do format conversion from supported 
+# to required format.unsupported format.
+#
+#       <--- Input format --->                  <---Output format ---->
+#      |===============|                |================== |
+#      |RGB565/YUV422Itld   |   ===>  |YUV420P/YUV420SP/etc   |
+#      |===============|                |================== |
+#
+# This macro help us to select input format for conversion.
+#   OMX_COLOR_Format16bitRGB565
+#   OMX_COLOR_FormatCbYCrY
+#LOCAL_CFLAGS += -DSWCONVERSION_INPUT_FORMAT=OMX_COLOR_Format16bitRGB565
+LOCAL_CFLAGS += -D_OMX_COLOR_FORMAT16BITRGB565=0
+LOCAL_CFLAGS += -D_OMX_COLOR_FORMATCBYCRY=1
+LOCAL_CFLAGS += -DSWCONVERSION_INPUT_FORMAT=_OMX_COLOR_FORMATCBYCRY
+
+#Uncomment below line to copy extradata from VPB0 into preview
+#callbacks sent to upper client.
+#
+#This is meaningful only if along with preview frame data
+#extra data is also required by the camera service for futher processing
+#for eg. video stablization
+#LOCAL_CFLAGS += -DSEND_PREVIEW_EXTRADATA=1
+
+# Uncomment below line to enable autofocus
+LOCAL_CFLAGS += -DENABLE_AUTOFOCUS
+
+#Uncomment the below line to enable WB/Scene Mode
+LOCAL_CFLAGS += -DPROP_WB_SCENE_MODE=1
+
+#Uncomment the below line to enable Flash
+LOCAL_CFLAGS += -DPROP_FLASH=1
+
+#Uncomment the below line to enable Color Effect
+LOCAL_CFLAGS += -DPROP_COLOR_EFFECT=1
+
+#Uncomment the below line to enable brightness, contrast, saturation
+LOCAL_CFLAGS += -DPROP_BCS=1
+
+#Uncomment the below line to enable ISO effect
+LOCAL_CFLAGS += -DPROP_ISO=1
+
+#Uncomment the below line to enable Metering effect
+LOCAL_CFLAGS += -DPROP_MET=1
+
+#Uncomment the below line to enable Exposure Compensation
+#LOCAL_CFLAGS += -DPROP_EXPOSURE_COMP=1
+
+#Uncomment the below line to enable sharpness
+LOCAL_CFLAGS += -DPROP_SHARPNESS=1
+
+#Comment below line to use PMEM buffers
+LOCAL_CFLAGS += -DUSE_HWMEM=1
+
+#UnComment below line to enable Region Control
+#LOCAL_CFLAGS += -DREGION_CONTROL=1
+
+#UnComment below line to enable ShakeDetection
+LOCAL_CFLAGS += -DSHAKE_DETECTION=1
+
+#UnComment below line to enable lock
+LOCAL_CFLAGS += -DENABLE_LOCK=1
+
+#UnComment below line to Print RoI
+#LOCAL_CFLAGS += -DPRINT_ALL_ROI=1
+
+#UnComment below line to Enable High Resolution(1600x1200) VF
+LOCAL_CFLAGS += -DENABLE_HIGH_RESOLUTION_VF=1
+
+#UnComment below line to Enable Continuous AutoFocus
+LOCAL_CFLAGS += -DENABLE_CONTINUOUS_AUTOFOCUS=1
+
+# Uncomment below line to enable Video Stabilization
+ifneq ($(strip $(PLATFORM_9540)),yes)
+LOCAL_CFLAGS += -DENABLE_VIDEO_STAB=1
+endif #PLATFORM_9540
+
+# Uncomment below line to enable image Rotation
+# Possible image rotation modes
+#
+# CAM_IMAGE_ROTATION_DEVICE = Camera will rotate image and
+# set the exit tag to normal orientation
+#
+# CAM_IMAGE_ROTATION_EXIF = Camera will not rotate image but
+# update orientation field in exif tag which will be used by
+# image viewer application to rotate the image
+LOCAL_CFLAGS += -DENABLE_IMAGE_ROTATION=CAM_IMAGE_ROTATION_EXIF
+
+# Uncomment below line to enable video Rotation
+# Possible video rotation modes
+#
+# CAM_VIDEO_ROTATION_LANDSCAPE = Camera will rotate frame and
+# maintain aspect ratio(640*480 => 640*480(rotated))
+#
+# CAM_VIDEO_ROTATION_PORTRAIT = Camera will rotate frame but
+# not maintain aspect ratio(640*480 -> 480*640). In this case
+# encoder needs to be informed about rotated frame
+#LOCAL_CFLAGS += -DENABLE_VIDEO_ROTATION=CAM_VIDEO_ROTATION_LANDSCAPE
+
+# Define below lines for default thumbnail size
+LOCAL_CFLAGS += -DDEFAULT_THUMBNAIL_WIDTH=160
+LOCAL_CFLAGS += -DDEFAULT_THUMBNAIL_HEIGHT=120
+
+# Define below lines for default picture params
+# For Kanna 2592x1944
+# For Toshiba 3264x2448
+ifeq ($(strip $(MY_PRIMARY_SENSOR)),IMX072)
+LOCAL_CFLAGS += -DPRIMARY_RAW_BAYER=1
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_WIDTH=2592
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_HEIGHT=1944
+endif # MY_PRIMARY_SENSOR
+
+
+ifeq ($(strip $(MY_PRIMARY_SENSOR)),TOSHIBA)
+LOCAL_CFLAGS += -DPRIMARY_RAW_BAYER=1
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_WIDTH=3264
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_HEIGHT=2448
+endif # MY_PRIMARY_SENSOR
+
+# U8500 PLATFORM
+ifeq ($(strip $(MY_PLATFORM)),u8500)
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_FORMAT=CameraParameters::PIXEL_FORMAT_YUV420SP
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_WIDTH=640
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_HEIGHT=480
+LOCAL_CFLAGS += -DDEFAULT_VIDEO_RECORD_WIDTH=640
+LOCAL_CFLAGS += -DDEFAULT_VIDEO_RECORD_HEIGHT=480
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_FRAMERATE=30
+LOCAL_CFLAGS += -DMAX_PREVIEW_FRAMERATE=30
+
+# Define below lines for default preview/record buffers
+LOCAL_CFLAGS += -DCAMERA_PREVIEW_BUFFER_COUNT=3
+LOCAL_CFLAGS += -DCAMERA_RECORD_BUFFER_COUNT=4
+endif # U8500 PLATFORM
+
+# U5500 PLATFORM
+ifeq ($(strip $(MY_PLATFORM)),u5500)
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_FORMAT=CameraParameters::PIXEL_FORMAT_YUV422I
+# Define below lines for default preview params
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_WIDTH=640
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_HEIGHT=480
+LOCAL_CFLAGS += -DDEFAULT_VIDEO_RECORD_WIDTH=1280
+LOCAL_CFLAGS += -DDEFAULT_VIDEO_RECORD_HEIGHT=720
+LOCAL_CFLAGS += -DDEFAULT_PREVIEW_FRAMERATE=30
+LOCAL_CFLAGS += -DMAX_PREVIEW_FRAMERATE=30
+
+# Define below lines for default preview/record buffers
+LOCAL_CFLAGS += -DCAMERA_PREVIEW_BUFFER_COUNT=2
+LOCAL_CFLAGS += -DCAMERA_RECORD_BUFFER_COUNT=4
+endif # U5500 PLATFORM
+
+# Define below lines for default picture quality
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_QUALITY=90
+
+# Define below lines for default picture rotation
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_ROTATION=0
+
+# Uncomment below line to enable exif_mixer component
+#LOCAL_CFLAGS += -DENABLE_EXIF_MIXER
+
+# Define below lines for default values
+LOCAL_CFLAGS += -DDEFAULT_SENSOR_CONTRAST=0
+LOCAL_CFLAGS += -DDEFAULT_SENSOR_SATURATION=0
+LOCAL_CFLAGS += -DDEFAULT_SENSOR_BRIGHTNESS=50
+LOCAL_CFLAGS += -DDEFAULT_SENSOR_ISO=ISO_AUTO
+LOCAL_CFLAGS += -DDEFAULT_SENSOR_SHARPNESS=0
+
+ifeq ($(strip $(MY_PRIMARY_SENSOR)),ISX006)
+LOCAL_CFLAGS += -DPRIMARY_YUV=1
+endif # MY_PRIMARY_SENSOR
+
+#Define below lines for the primary YUV MT9P111
+ifeq ($(strip $(MY_PRIMARY_SENSOR)),MT9P111)
+LOCAL_CFLAGS += -DPRIMARY_EXT_ISP=1
+LOCAL_CFLAGS += -DPRIMARY_YUV=1
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_WIDTH=2592
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_HEIGHT=1944
+#LOCAL_CFLAGS += -DPRIMARY_ENABLE_ZOOM
+endif # MY_PRIMARY_SENSOR
+
+ifeq ($(strip $(MY_SECONDARY_SENSOR)),MT9V113)
+LOCAL_CFLAGS += -DSECONDARY_EXT_ISP=1
+LOCAL_CFLAGS += -DSECONDARY_YUV=1
+endif # MY_SECONDARY_SENSOR
+
+ifeq ($(strip $(MY_SECONDARY_SENSOR)),IMX072)
+LOCAL_CFLAGS += -DSECONDARY_RAW_BAYER=1
+endif # MY_SECONDARY_SENSOR
+
+#Define below lines for the primary YUV OV5640
+ifeq ($(strip $(MY_PRIMARY_SENSOR)),OV5640)
+LOCAL_CFLAGS += -DPRIMARY_YUV=1
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_WIDTH=640
+LOCAL_CFLAGS += -DDEFAULT_PICTURE_HEIGHT=480
+LOCAL_CFLAGS += -DPRIMARY_ENABLE_ZOOM
+endif # MY_PRIMARY_SENSOR
+
+#Define below lines for the secondary YUV OV5640
+ifeq ($(strip $(MY_SECONDARY_SENSOR)),OV5640)
+LOCAL_CFLAGS += -DSECONDARY_YUV=1
+LOCAL_CFLAGS += -DSECONDARY_ENABLE_ZOOM
+endif # MY_SECONDARY_SENSOR
+

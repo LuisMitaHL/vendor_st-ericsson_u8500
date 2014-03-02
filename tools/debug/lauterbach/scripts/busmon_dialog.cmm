@@ -1,0 +1,122 @@
+;------------------------------------------------------------
+; busmon_dialog.cmm
+;------------------------------------------------------------
+; Show the busmon setup dialog
+; busmon_ok and busmon_cancel is jumped to in calling script!
+;
+; 071217 - DE Initial version
+;-----------------------------------------------------------
+
+dialog
+(&
+		header "Busmon setup"
+	
+		pos 0. 0. 40. 9.
+		box "Busmon settings"
+		pos 1. 1. 34. 1.
+		text "Config: &CurConfig"
+
+;BUSMON_TRACEDATA_DIR
+		pos 1. 2. 34. 1.
+		text "Tracedata and HTML output path:"
+		pos 1. 3. 34. 1.
+	BusmonPath:	edit "" ""
+		pos 35. 3. 2. 1.
+		button "..." "gosub SetBusmonPath"
+		pos 37. 3. 2. 1.
+		button "X" "dialog.set BusmonPath """" "
+
+;BUSMON_PARSE_SCRIPT
+		pos 1. 4. 34. 1.
+		text "Busmon Perlscript:"
+		pos 1. 5. 34. 1.
+	BusmonScript:	edit "" ""
+		pos 35. 5. 2. 1.
+		button "..." "gosub SetBusmonScript"
+		pos 37. 5. 2. 1.
+		button "X" "dialog.set BusmonScript """" "
+;PERL
+		pos 1. 6. 34. 1.
+		text "Perl:"
+		pos 1. 7. 34. 1.
+	BusmonPerl:	edit "" ""
+		pos 35. 7. 2. 1.
+		button "..." "gosub SetBusmonPerl"
+		pos 37. 7. 2. 1.
+		button "X" "dialog.set BusmonPerl """" "
+
+; Buttons
+		pos 20. 9. 8. 1.
+		button "OK" "goto ButtonOK"
+		pos 29. 9. 8. 1.
+		button "Cancel" "goto ButtonCancel"
+)
+
+gosub InitDialog
+
+stop
+
+SetBusmonPath:
+	&Temp_Path=dialog.string(BusmonPath)
+	if ("&Temp_Path"=="")
+	(
+		dialog.setdir BusmonPath *
+	)
+	else
+	(
+		dialog.setdir BusmonPath "&Temp_Path\*"
+	)
+	RETURN
+
+SetBusmonScript:
+	&Temp_File=dialog.string(BusmonScript)
+	if ("&Temp_File"=="")
+	(
+		dialog.setfile BusmonScript *.pl
+	)
+	else
+	(
+		&Temp_Path=os.file.path(&Temp_File)
+		dialog.setfile BusmonScript "&Temp_Path\*.pl"
+	)
+	RETURN
+
+SetBusmonScript:
+	&Temp_File=dialog.string(BusmonPerl)
+	if ("&Temp_File"=="")
+	(
+		dialog.setfile BusmonScript *.exe
+	)
+	else
+	(
+		&Temp_Path=os.file.path(&Temp_File)
+		dialog.setfile BusmonPerl "&Temp_Path\*.exe"
+	)
+	RETURN
+
+InitDialog:
+	dialog.set BusmonPath "&BUSMON_TRACEDATA_DIR"
+	dialog.set BusmonScript "&BUSMON_PARSE_SCRIPT"
+	dialog.set BusmonPerl "&PERL"
+	RETURN
+
+
+ButtonCancel:
+	dialog.end
+	jumpto busmon_cancel
+	ENDDO
+
+
+ButtonOK:
+	&BUSMON_TRACEDATA_DIR=dialog.string(BusmonPath)
+	&BUSMON_PARSE_SCRIPT=dialog.string(BusmonScript)
+	&BUSMON_PERL_INCLUDE=os.file.path(&BUSMON_PARSE_SCRIPT)
+	&PERL=dialog.string(BusmonPerl)
+
+	; Save settings
+	do writesettings
+
+	dialog.end
+
+	jumpto busmon_ok
+	ENDDO

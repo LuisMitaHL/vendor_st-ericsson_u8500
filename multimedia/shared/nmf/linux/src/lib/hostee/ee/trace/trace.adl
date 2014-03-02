@@ -1,0 +1,16 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+primitive ee.trace singleton
+{
+    provides ee.api.trace	                   	as trace unambiguous
+    
+    requires ee.api.mutex               		as mutex static
+    requires ee.api.queue               		as queue static
+    requires ee.api.memory              		as allocator
+    requires ee.api.osal.stm					as stm
+}

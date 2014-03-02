@@ -1,0 +1,74 @@
+<project default="main">
+	<property file="build-win.properties" />
+	<target name="main">
+		<echo>Java home:${dir_bootclasspath}</echo>
+		<property name="baseLocation" value="${eclipse.home}" />
+		<echo>Eclipse home:${eclipse.home}</echo>
+		<!-- by default, check for deltapack co-located with eclipse -->
+		<property name="deltapack" value="${eclipse.home}/deltapack/eclipse" />
+		<echo>Eclipse Deltapack:"${deltapack}"</echo>
+
+		<!-- Check that we have a deltapack -->
+		<available property="haveDeltaPack" file="${deltapack}" />
+		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property." />
+
+		<property name="builder" value="${basedir}" />
+		<property name="buildDirectory" value="${basedir}/buildDirectory" />
+		<property name="pluginPath" value="${basedir}/..${path.separator}${deltapack}" />
+		<property name="buildTempFolder" value="${buildDirectory}" />
+
+		<ant antfile="${eclipse.pdebuild.scripts}/productBuild/productBuild.xml" />
+
+		<echo>Basedit:${buildDirectory}</echo>
+
+		<move todir="${buildDirectory}">
+			<fileset dir="${buildDirectory}/${buildLabel}" includes="*.zip" />
+		</move>
+
+		<antcall target="add_configuration" />
+
+		<antcall target="clean_up" />
+
+	</target>
+
+	<target name="add_configuration">
+		<!-- It will add configuration files and drivers to the package -->
+
+		<echo>Adding configuration</echo>
+
+		<zip destfile="${buildDirectory}/FlashKit-win32.win32.x86.zip" update="true">
+			<zipfileset dir="${configuration}/win32" />
+			<zipfileset dir="${configuration}/" includes="*.txt" />
+			<zipfileset dir="${windowsdriver}" includes="windows-usb-driver/" />
+		</zip>
+		<zip destfile="${buildDirectory}/FlashKit-win32.win32.x86_64.zip" update="true">
+			<zipfileset dir="${configuration}/win64" />
+			<zipfileset dir="${configuration}/" includes="*.txt" />
+			<zipfileset dir="${windowsdriver}" includes="windows-usb-driver/" />
+		</zip>
+
+	</target>
+
+	<target name="clean_up">
+		<!-- It cleans temporary files from baseDirectory -->
+
+		<echo>Clean Up:</echo>
+		<echo>buildDirectory:${buildDirectory}</echo>
+
+		<delete includeemptydirs="true">
+			<fileset dir="${buildDirectory}/plugins" includes="**/*" />
+			<fileset dir="${buildDirectory}/I.FlashKit" includes="**/*" />
+			<fileset dir="${buildDirectory}/features" includes="**/*" />
+		</delete>
+
+		<delete dir="${buildDirectory}/plugins" />
+		<delete dir="${buildDirectory}/I.FlashKit" />
+		<delete dir="${buildDirectory}/features" />
+		<delete includeemptydirs="true">
+			<fileset dir="${buildDirectory}" excludes="**/*.zip" />
+		</delete>
+
+
+	</target>
+
+</project>

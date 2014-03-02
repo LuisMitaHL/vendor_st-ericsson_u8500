@@ -1,0 +1,40 @@
+#do $(IMAGING_PATH)/ite_nmf/script/debug/gnd_glacebugtest.ite
+
+# --------------init for pipe LR if needed
+setusecase LR VGA YUV422RI
+# --------------init for pipe HR if needed
+setusecase HR VGA YUV420MB_D
+# ------------------------------------------------
+# -------------- first test with COLORBAR --------
+# ------------------------------------------------
+manualfps 10
+sensormode NORMAL_MODE
+# --------------set HSizeFraction VSizeFraction HROIFraction VROIFraction
+# --------------for example 100% 100% 0% 0%
+glaceblock 100 100 0 0
+histoblock 100 100 0 0
+# --------------set Gride size H and V
+glacegridsize 72 54
+# --------------set R G B saturation level
+glacesat 128 128 128
+# --------------set R G B manual gain
+statwbgain 1.0 1.0 1.0
+createstatbuff
+
+glacedump
+
+LR prepare
+LR start
+
+glacehisto req
+glacedump
+
+glacehisto req
+glacedump
+
+updatexptime 30000
+glacehisto req
+glacedump
+
+LR stop
+LR free

@@ -1,0 +1,53 @@
+#
+# Powerservices configuration
+#
+
+menu "Powerservices Configuration"
+
+menuconfig POWERSERVICES
+		bool "Powerservices Configuration"
+		depends on ((AB_LIB_8500 || AB_LIB_8505)&& ISI_DRIVER_LIB && MODEM_LIB && LIBAB && LIBDB)||((AB_LIB_9540 || AB_LIB_8540 || AB_LIB_X600) && LIBAB && LIBDB && DTHLMODEMMNGT)
+		help
+	  	This module provides routines to manage power
+ 
+
+if POWERSERVICES
+
+config PWS_9540
+	bool "Enable PWS 9540"
+	default n
+	help
+	Specific use power 9540
+
+config PWS_8540
+	bool "Enable PWS 8540"
+	default n
+	help
+	Specific use power 8540
+
+config POWERSERVICES_DIR
+	string
+	default ./powerservices
+
+config POWERSERVICES_DEPS
+	string
+	default "ISI_DRIVER_LIB MODEM_LIB LIBAB LIBDB" if (AB_LIB_8500 || AB_LIB_8505)
+	default "LIBAB LIBDB DTHLMODEMMNGT" if AB_LIB_9540 || AB_LIB_8540 || AB_LIB_X600
+
+config POWERSERVICES_STRIP_DISABLED
+	bool "Disable strip"
+	depends on POWERSERVICES
+	default n
+	help
+	  This will disable strip for this module
+
+config POWERSERVICES_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on POWERSERVICES
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # POWERSERVICES
+
+endmenu

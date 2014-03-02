@@ -1,0 +1,670 @@
+#!/usr/bin/env perl
+#
+# Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+# This code is ST-Ericsson proprietary and confidential.
+# Any use of the code for whatever purpose is subject to
+# specific written permission of ST-Ericsson SA.
+#
+
+use File::Basename ;
+use File::Find;
+use strict;
+
+use FindBin;
+use File::Spec;
+use lib File::Spec->catfile($FindBin::Bin => qw(perllibs));
+use C::Scan;
+use Cwd;
+use Switch;
+
+my @index_type;
+my @header_files;
+my $include_dirs;
+my @customer_extension_path;
+
+if(scalar(@ARGV) != 1) {
+  print "Expecting destination file as argument\n";
+  exit (1);
+}
+
+my $output_file = @ARGV[0];
+
+die "PLATFORM not set in your environment" if (!defined $ENV{PLATFORM});
+die "MM_HEADER_BASEDIR not defined" if (!defined $ENV{MM_HEADER_BASEDIR});
+die "MMBUILDIN not defined" if (!defined $ENV{MMBUILDIN});
+die "MM_IDT_DIR not defined" if (!defined $ENV{MM_IDT_DIR});
+die "COMPONENT_TOP_DIR not defined" if (!defined $ENV{COMPONENT_TOP_DIR});
+
+# name of the index enum and file where it is defined
+@index_type = (
+	       ["OMX_INDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/shared/OMX_Index.h"],
+	       ["OMX_INDEXEXTTYPE",			"$ENV{MM_HEADER_BASEDIR}/shared/OMX_IndexExt.h"],
+	       ["ImgEns_IndexType",			"$ENV{MM_HEADER_BASEDIR}/shared/ImgEns_Index.h"],
+	       ["CSA_AUDIOINDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/audio/audio_chipset_api_index.h"],
+	       ["CSA_VIDEOINDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/video/video_chipset_api_index.h"],
+	       ["AFM_INDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/audio/AFM_Index.h"],
+	       ["VSS_INDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/video/VSS_Index.h"],
+	       ["VFM_INDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/video/VFM_Index.h"],
+	       ["IFM_INDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/imaging/IFM_Index.h"],
+#	       ["OMX_STE_SPEECH_PROC_INDEX",		"$ENV{MM_HEADER_BASEDIR}/audio/omx_ste_speech_proc.h"],
+#	       ["IFM_VALID_INDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/imaging/IFM_valid_Index.h"],
+#	       ["ENS_DR_COMPINDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/shared/ENS_Component_DRe.h"],
+#	       ["OMX_DRC_INDEXTYPE",			"$ENV{MM_HEADER_BASEDIR}/audio/OMX_DRCExt.h"],
+#	       ["OMX_STE_TIMESCALE_INDEXTYPE",		"$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_Timescale.h"],
+#	       ["OMX_STE_SPECTRUMANALYZER_INDEXTYPE",	"$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_SpectrumAnalyzer.h"],
+#	       ["OMX_STE_VIRTUALSURROUND_INDEXTYPE",	"$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_VirtualSurroundExt.h"],
+#	       ["OMX_STE_CHANNELSYNTHESIS_INDEXTYPE",	"$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_ChannelSynthesisExt.h"],
+#	       ["OMX_STE_AUDIOVISUALIZATION_INDEXTYPE",	"$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_AudioVisualizationExt.h"],
+	       ["PV_OMX_INDEXTYPE",			"$ENV{COMPONENT_TOP_DIR}/inc/PV_OMX_Extensions.h"],
+	      );
+
+# headers files where are defined the parameter/config structures
+@header_files = (
+		 "$ENV{MM_HEADER_BASEDIR}/shared/OMX_Audio.h",
+		 "$ENV{MM_HEADER_BASEDIR}/shared/OMX_Video.h",
+		 "$ENV{MM_HEADER_BASEDIR}/shared/OMX_Image.h",
+		 "$ENV{MM_HEADER_BASEDIR}/shared/OMX_Component.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/AFM_Types.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/audio_codec_type.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/audio_codecs_chipset_api.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/audio_hw_control_chipset_api.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/audio_render_chipset_api.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/audio_sourcesink_chipset_api.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/audio_transducer_chipset_api.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/audio_av_sync_chipset_api.h",
+		 "$ENV{MM_HEADER_BASEDIR}/audio/haptics_chipset_api.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/audio/omx_ste_speech_proc.h",
+		 "$ENV{MM_HEADER_BASEDIR}/video/video_generic_chipset_api.h",
+		 "$ENV{MM_HEADER_BASEDIR}/video/VFM_Types.h",
+		 "$ENV{MM_HEADER_BASEDIR}/imaging/IFM_Types.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/imaging/IFM_valid_Types.h",
+		 "$ENV{MM_HEADER_BASEDIR}/video/VSS_Types.h",
+		 "$ENV{MM_HEADER_BASEDIR}/shared/ENS_Component_DRe.h",
+		 "$ENV{MM_HEADER_BASEDIR}/shared/ImgEns_Index.h",
+		 "$ENV{MM_HEADER_BASEDIR}/shared/OMX_CoreExt.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/audio/OMX_DRCExt.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_Timescale.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_SpectrumAnalyzer.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_VirtualSurroundExt.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_ChannelSynthesisExt.h",
+#		 "$ENV{MM_HEADER_BASEDIR}/audio/OMX_STE_AudioVisualizationExt.h",
+		 "$ENV{COMPONENT_TOP_DIR}/inc/PV_OMX_Extensions.h",
+		);
+
+my $compat_plat;
+my @nmf_repostory_include_path;
+
+my ($MMBOARD, $MMSYSTEM) = split('-', $ENV{PLATFORM});
+
+my $MMDSPPROCESSOR;
+my $MMCOMPILER;
+my $MMPROCESSOR ="cortexA9";
+
+switch ("$MMBOARD") {
+  case "href_v1"	{ $MMDSPPROCESSOR = "mmdsp_8500" }
+  case "u8500_v2"	{ $MMDSPPROCESSOR = "mmdsp_8500_v2" }
+  case "x86"		{ $MMDSPPROCESSOR = "x86" }
+  case "svp5500_v1"	{ $MMDSPPROCESSOR = "u5500" }
+  case "u5500_v1"	{ $MMDSPPROCESSOR = "u5500" }
+  case "u9540_v1"	{ $MMDSPPROCESSOR = "mmdsp_9540_v1" }
+  case "svp9600_v1"	{ $MMDSPPROCESSOR = "ux600" }
+  else {
+    die "Unknown board: $MMBOARD\n";
+  }
+}
+
+switch ("$MMSYSTEM") {
+  case "linux"   { $MMCOMPILER="gnu"; }
+  case "android" { $MMCOMPILER="android"; }
+  else {
+    die "Unknown system: $MMSYSTEM\n";
+  }
+}
+
+# directories to find headers files
+$include_dirs = ["$ENV{MM_HEADER_BASEDIR}/shared",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMDSPPROCESSOR",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMDSPPROCESSOR/host",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMDSPPROCESSOR",
+		 "$ENV{MM_IDT_DIR}",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-$MMSYSTEM-$MMCOMPILER-$MMBOARD/host",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-x-$MMCOMPILER-x/host",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-$MMSYSTEM-$MMCOMPILER-x/host",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-x-$MMCOMPILER-x/host",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-$MMSYSTEM-$MMCOMPILER-$MMBOARD",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-x-$MMCOMPILER-x",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-$MMSYSTEM-$MMCOMPILER-x",
+		 "$ENV{MMBUILDIN}/nmf_repository/$MMPROCESSOR-x-$MMCOMPILER-x",
+		 "$ENV{MM_HEADER_BASEDIR}/audio",
+		 "$ENV{MM_HEADER_BASEDIR}/video",
+		 "$ENV{MM_HEADER_BASEDIR}/imaging",
+		];
+
+@customer_extension_path = (
+			    #"$ENV{MM_HEADER_BASEDIR}/shared/OMX_extensions/",
+			   );
+
+my @exclude_fields = ("nSize","nVersion");
+
+my %global_type_hash;
+my $verbose = 3;
+
+my $print="IMGWRAPPER_OMX_LOG";
+my $printprefix="  ---> ";
+my $printfieldprefix="  --->   +";
+
+my %alias_hash = ( OMX_INDEXTYPE     => "yes",
+		   AFM_INDEXTYPE     => "yes",
+		   VFM_INDEXTYPE     => "yes",
+		   IFM_INDEXTYPE     => "yes",
+		   VSS_INDEXTYPE     => "yes",
+		   ENS_DRE_INDEXTYPE => "yes");
+
+# find customer extension files that also need to be parsed
+&find_customer_files();
+
+# parse types listed in @index_type to find the list of index and
+# the structures associated
+&find_index_list();
+
+# Parse all struct in @hearder_files
+&parse_struct();
+
+# finally generate the parser
+&generate_OMXdebug();
+
+################################################################################
+sub hasUriParam {
+  my $struct_hash = shift;
+  my $ret = 0;
+  for my $field_ref (@{$struct_hash->{field}}) {
+    if (ParamIsUriType($field_ref->[0])) {
+      $ret =1; last;
+    }
+  }
+  return $ret ;
+}
+
+sub ParamIsUriType {
+  my $name = shift;
+  return $name =~ /contentURI/;
+}
+
+
+sub hasAFM_IndexNmfCompCapabilitiesParam {
+  my $struct_hash = shift;
+  my $ret = 0;
+  for my $field_ref (@{$struct_hash->{index}}) {
+    if (ParamIsAFM_IndexNmfCompCapabilitiesParamType($field_ref)) {
+      $ret =1; last;
+    }
+  }
+  return $ret ;
+}
+
+sub ParamIsAFM_IndexNmfCompCapabilitiesParamType {
+  my $name = shift;
+  return $name =~ /AFM_IndexNmfCompCapabilities/;
+}
+
+
+
+sub getTabName{
+  my $name = shift;
+  my $ret;
+  if ($name =~ /(.*)\[\d+\]/) {
+    $ret = $1;
+  }
+  return $ret;
+}
+
+sub find_index_list{
+  my $type_ref;
+  my $type;
+  my $header_file;
+  my $line;
+  my $comment;
+  my $index;
+  my $struct;
+
+  foreach $type_ref (@index_type) {
+    ($type,$header_file) = @$type_ref;
+    next if(! -e $header_file);
+    open(LOG, "$header_file") or die "Cannot open header file $header_file :$!";
+    print "Parsing $header_file... " if $verbose;
+    print "\n" if ($verbose > 1);
+
+    while ($line = <LOG>) {
+      if ($line =~ /.*enum.*$type/) {
+	print "Found type $type \n" if ($verbose > 1);
+	while ($line = <LOG>) {
+	  if ($line =~ /^\s*(\w+)\s*(=\s*\w+\s*)?,/) {
+	    $index  = $1;
+	    $comment = "$'";
+	    undef $struct;
+
+	    while (!$struct) {
+	      if ($comment =~ /\b(OMX_\w*)\b/ ) {
+		$struct = $1;
+		last;
+	      } elsif ($comment =~ /\b(ENS_\w*)\b/ ) {
+		$struct = $1;
+		last;
+	      } elsif ($comment =~ /\b(AFM_\w*)\b/ ) {
+		$struct = $1;
+		last;
+	      } elsif ($comment =~ /\b(VFM_\w*)\b/ ) {
+		$struct = $1;
+		last;
+	      } elsif ($comment =~ /\b(IFM_\w*)\b/ ) {
+		$struct = $1;
+		last;
+	      } elsif ($comment =~ /\b(VSS_\w*)\b/ ) {
+		$struct = $1;
+		last;
+	      }
+
+	      if ($comment =~ /\*\// ||
+		  $comment =~ /\/\// ||
+		  $comment =~ /\W*/) {
+		print colored ("Cannot find associated structure for $index -\n", 'red');
+		last
+	      }
+	      $comment = <LOG>;
+	      if (! $comment) {
+		print colored ("Cannot find associated structure for $index\n", 'red');
+		last;
+	      }
+
+	    }
+
+	    if (defined($struct)) {
+	      print "Found struct $struct for index $index\n" if ($verbose > 2);
+	      if (! $global_type_hash{$struct}) {
+		$global_type_hash{$struct} = { index => [$index] };
+	      } else {
+		push(@{$global_type_hash{$struct}->{index}}, $index);
+	      }
+	    }
+	  }
+
+	  if ( $line =~ /}/) {
+	    last;
+	  }
+	}
+	last;
+      }
+    }
+    close LOG;
+    print "done\n" if $verbose;
+  }
+}
+
+################################################################################################
+sub parse_struct()
+  {
+    my $file;
+    my $c;
+    my $structs;
+    my $struct;
+    my $test;
+
+    for $file (@header_files) {
+      next if(! -e $file);
+      print "Parsing structure in $file ..." if $verbose;
+
+      $c = new C::Scan ('filename' => "$file");
+      $c->set('includeDirs' => $include_dirs);
+      $structs = $c->get('typedef_structs');
+      foreach $struct (keys(%$structs)) {
+	if ($global_type_hash{$struct}) {
+	  if (!$global_type_hash{$struct}->{processed}) {
+	    &process_struct($structs, $struct, "", $struct);
+	    $global_type_hash{$struct}->{processed} = "yes";
+	  }
+	}
+      }
+
+      print "done\n" if $verbose;
+    }
+  }
+
+
+
+
+sub process_struct{
+  my ($structs_ref, $struct_name, $prefix, $struct_name_top) = @_;
+  my @struct_array;
+  my @type_array;
+  my $elt;
+  my $number, my $number2;
+  my $i, my $j;
+
+  if (! $structs_ref->{$struct_name}) {
+    die "Error While parsing $struct_name\n";
+  }
+
+  print "process_struct " . $structs_ref->{$struct_name} . "\n";
+
+  @struct_array = @{$structs_ref->{$struct_name}};
+
+  for $elt (@struct_array) {
+    $number  = 0;
+    $number2 = 0;
+    @type_array = @$elt;
+
+    if (&is_excluded_field($type_array[2])) {
+      next;
+    }
+
+    if ($type_array[1] =~ /\[(\d+)\]/) {
+      $number  = $1;
+    }
+
+    if ($type_array[1] =~ /\[(\d+)\]\[(\d+)\]/) {
+      $number  = $1;
+      $number2 = $2;
+    }
+
+    if ( &is_sub_type($type_array[0], $structs_ref)) {
+      if (!$number) {
+	&process_struct($structs_ref, $type_array[0], $prefix.$type_array[2].".", $struct_name_top);
+      } elsif (!$number2) {
+	for ($i=0;$i<$number;$i++) {
+	  &process_struct($structs_ref, $type_array[0], $prefix.$type_array[2]."[$i].", $struct_name_top);
+	}
+      } else			# matrix
+	{
+	  for ($i=0;$i<$number;$i++) {
+	    for ($j=0;$j<$number2;$j++) {
+	      &process_struct($structs_ref, $type_array[0], $prefix.$type_array[2]."[$i][$j]", $struct_name_top);
+	    }
+	  }
+	}
+    } else {
+      if (!$number) {
+	push (@{$global_type_hash{$struct_name_top}->{field}}, [$prefix.$type_array[2],$type_array[0]]);
+      } elsif (!$number2) {
+	for ($i=0;$i<$number;$i++) {
+	  push (@{$global_type_hash{$struct_name_top}->{field}}, [$prefix.$type_array[2]."[$i]",$type_array[0]]);
+	}
+      } else			# matrix
+	{
+	  for ($i=0;$i<$number;$i++) {
+	    for ($j=0;$j<$number2;$j++) {
+	      push (@{$global_type_hash{$struct_name_top}->{field}}, [$prefix.$type_array[2]."[$i][$j]",$type_array[0]]);
+	    }
+	  }
+	}
+    }
+  }
+}
+
+
+
+sub is_sub_type{
+  my $struct_name = $_[0];
+  my $structs_ref = $_[1];
+
+  $structs_ref->{$struct_name};
+}
+
+
+sub is_excluded_field{
+  my $field_name = $_[0];
+  my $elt;
+
+  for $elt (@exclude_fields) {
+    if ($elt eq $field_name) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+
+################################################################################
+
+## Custom case of structure with an union
+sub generate_OMX_IndexParamPortDefinition
+{
+  my $fh = shift;
+
+  print $fh '        ' . $print . '("  --->   + nPortIndex : %d\n", (int) pStruct->nPortIndex);' . "\n";
+  print $fh '        ' . $print . '("  --->   + nBufferCountActual : %d\n", (int) pStruct->nBufferCountActual);' . "\n";
+  print $fh '        ' . $print . '("  --->   + nBufferCountMin : %d\n", (int) pStruct->nBufferCountMin);' . "\n";
+  print $fh '        ' . $print . '("  --->   + nBufferSize : %d\n", (int) pStruct->nBufferSize);' . "\n";
+  print $fh '        if(pStruct->bEnabled== OMX_TRUE){' . "\n";
+  print $fh '            ' . $print . '("  --->   + bEnabled : OMX_TRUE\n");' . "\n";
+  print $fh '        }' . "\n";
+  print $fh '        else{' . "\n";
+  print $fh '            ' . $print . '("  --->   + bEnabled : OMX_FALSE\n");' . "\n";
+  print $fh '        }' . "\n";
+  print $fh '        if(pStruct->bPopulated== OMX_TRUE){' . "\n";
+  print $fh '            ' . $print . '("  --->   + bPopulated : OMX_TRUE\n");' . "\n";
+  print $fh '        }' . "\n";
+  print $fh '        else{' . "\n";
+  print $fh '            ' . $print . '("  --->   + bPopulated : OMX_FALSE\n");' . "\n";
+  print $fh '        }' . "\n";
+  print $fh '        ' . $print . '("  --->   + eDomain : %d\n", (int) pStruct->eDomain);' . "\n";
+
+  print $fh '        if(pStruct->eDomain == OMX_PortDomainAudio) {' . "\n";
+  print $fh '            if(pStruct->format.audio.cMIMEType)' . $print . '("  --->   + format.audio.cMIMEType : %s\n", pStruct->format.audio.cMIMEType);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.audio.pNativeRender : %d\n", (int) pStruct->format.audio.pNativeRender);' . "\n";
+  print $fh '            if(pStruct->format.audio.bFlagErrorConcealment== OMX_TRUE){' . "\n";
+  print $fh '                ' . $print . '("  --->   + format.audio.bFlagErrorConcealment : OMX_TRUE\n");' . "\n";
+  print $fh '            }' . "\n";
+  print $fh '            else{' . "\n";
+  print $fh '                ' . $print . '("  --->   + format.audio.bFlagErrorConcealment : OMX_FALSE\n");' . "\n";
+  print $fh '            }' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.audio.eEncoding : %d\n", (int) pStruct->format.audio.eEncoding);' . "\n";
+  print $fh '        }' . "\n";
+
+  print $fh '        if(pStruct->eDomain == OMX_PortDomainVideo) {' . "\n";
+  print $fh '            if(pStruct->format.video.cMIMEType)' . $print . '("  --->   + format.video.cMIMEType : %s\n", pStruct->format.video.cMIMEType);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.pNativeRender : %d\n", (int) pStruct->format.video.pNativeRender);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.nFrameWidth : %d\n", (int) pStruct->format.video.nFrameWidth);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.nFrameHeight : %d\n", (int) pStruct->format.video.nFrameHeight);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.nStride : %d\n", (int) pStruct->format.video.nStride);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.nSliceHeight : %d\n", (int) pStruct->format.video.nSliceHeight);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.nBitrate : %d\n", (int) pStruct->format.video.nBitrate);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.xFramerate : %d\n", (int) pStruct->format.video.xFramerate);' . "\n";
+  print $fh '            if(pStruct->format.video.bFlagErrorConcealment== OMX_TRUE){' . "\n";
+  print $fh '                ' . $print . '("  --->   + format.video.bFlagErrorConcealment : OMX_TRUE\n");' . "\n";
+  print $fh '            }' . "\n";
+  print $fh '            else{' . "\n";
+  print $fh '                ' . $print . '("  --->   + format.video.bFlagErrorConcealment : OMX_FALSE\n");' . "\n";
+  print $fh '            }' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.eCompressionFormat : %d\n", (int) pStruct->format.video.eCompressionFormat);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.eColorFormat : %d\n", (int) pStruct->format.video.eColorFormat);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.video.pNativeWindow : %d\n", (int) pStruct->format.video.pNativeWindow);' . "\n";
+  print $fh '        }' . "\n";
+
+  print $fh '        if(pStruct->eDomain == OMX_PortDomainImage) {' . "\n";
+  print $fh '            if(pStruct->format.image.cMIMEType)' . $print . '("  --->   + format.image.cMIMEType : %s\n", pStruct->format.image.cMIMEType);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.pNativeRender : %d\n", (int) pStruct->format.image.pNativeRender);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.nFrameWidth : %d\n", (int) pStruct->format.image.nFrameWidth);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.nFrameHeight : %d\n", (int) pStruct->format.image.nFrameHeight);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.nStride : %d\n", (int) pStruct->format.image.nStride);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.nSliceHeight : %d\n", (int) pStruct->format.image.nSliceHeight);' . "\n";
+  print $fh '            if(pStruct->format.image.bFlagErrorConcealment== OMX_TRUE){' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.bFlagErrorConcealment : OMX_TRUE\n");' . "\n";
+  print $fh '            }' . "\n";
+  print $fh '            else{' . "\n";
+  print $fh '                ' . $print . '("  --->   + format.image.bFlagErrorConcealment : OMX_FALSE\n");' . "\n";
+  print $fh '            }' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.eCompressionFormat : %d\n", (int) pStruct->format.image.eCompressionFormat);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.eColorFormat : %d\n", (int) pStruct->format.image.eColorFormat);' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.image.pNativeWindow : %d\n", (int) pStruct->format.image.pNativeWindow);' . "\n";
+  print $fh '        }' . "\n";
+
+  print $fh '        if(pStruct->eDomain == OMX_PortDomainOther) {' . "\n";
+  print $fh '            ' . $print . '("  --->   + format.other.eFormat : %d\n", (int) pStruct->format.other.eFormat);' . "\n";
+  print $fh '        }' . "\n";
+
+  print $fh '        if(pStruct->bBuffersContiguous== OMX_TRUE){' . "\n";
+  print $fh '            ' . $print . '("  --->   + bBuffersContiguous : OMX_TRUE\n");' . "\n";
+  print $fh '        }' . "\n";
+  print $fh '        else{' . "\n";
+  print $fh '            ' . $print . '("  --->   + bBuffersContiguous : OMX_FALSE\n");' . "\n";
+  print $fh '        }' . "\n";
+  print $fh '        ' . $print . '("  --->   + nBufferAlignment : %d\n", (int) pStruct->nBufferAlignment);' . "\n";
+
+}
+
+sub generate_OMXdebug
+{
+  my @array_structure;
+  my $struct_name;
+  my $struct_hash;
+  my $index;
+  my $tmp;
+  my $field_ref;
+  my $include;
+  my $type_ref;
+  my @tmp_array;
+
+  open (OMXDEBUG,">$output_file") or die "Cannot create $output_file : $!";
+
+  # print include
+  print OMXDEBUG "/*----------------------------------------------------------*/\n";
+  print OMXDEBUG "/*   File automatically generated by GenerateOMXdebug       */\n";
+  print OMXDEBUG "/*----------------------------------------------------------*/\n\n";
+
+  print OMXDEBUG "#define IMPORT_C\n\n";
+
+  print OMXDEBUG "#include \"OMX_Core.h\"\n";
+
+  foreach my $header (@index_type) {
+    my $basename_header= basename($header->[1]);
+    print "PP $header->[1]\n";
+    print OMXDEBUG "#include \"$basename_header\"\n" if (-e $header->[1]);
+  }
+  foreach my $header (@header_files) {
+    my $basename_header= basename($header);
+    print OMXDEBUG "#include \"$basename_header\"\n" if (-e $header);
+  }
+
+  print OMXDEBUG "\n#include \"Img_EnsWrapper_Shared.h\"\n";
+  print OMXDEBUG "\n#include \"Img_EnsWrapper_Log.h\"\n";
+  print OMXDEBUG "\n#include \"osal_mutex.h\"\n";
+  print OMXDEBUG "\n#include \"Img_EnsWrapper.h\"\n";
+ 
+
+  ################################################
+  # Dumper of OMX parameter/config
+  ################################################
+  # print prototype
+  print OMXDEBUG "\n\nvoid displayParameterAndConfig(OMX_U32 index, OMX_PTR config)\n{\n";
+
+  print OMXDEBUG "    if(Img_EnsWrapper::OMX_trace_level == 0)\n";
+  print OMXDEBUG "        return;\n\n";
+
+  # print switch
+  print OMXDEBUG "    switch(index) {\n";
+
+  # process all structure
+  while (($struct_name,$struct_hash) = each(%global_type_hash)) {
+    if (($struct_hash->{processed}) &&
+	($struct_hash->{field})) {
+      # print all indexes
+      for $index (@{$struct_hash->{index}}) {
+	print OMXDEBUG "    case ((OMX_U32)$index):\n";
+      }
+
+      #start case
+      print OMXDEBUG "    {\n";
+      print OMXDEBUG "    $struct_name *pStruct = ($struct_name *)config;\n";
+      print OMXDEBUG "    $print(\"". $printprefix . (@{$struct_hash->{index}})[0] . "\\n\");\n";
+      # Dump details depending on verbosity level
+      print OMXDEBUG "    if(Img_EnsWrapper::OMX_trace_level > 1) {\n";
+
+      if ((@{$struct_hash->{index}})[0] eq "OMX_IndexParamPortDefinition") {
+	generate_OMX_IndexParamPortDefinition(*OMXDEBUG);
+      } else {
+	# print all fields of the structure
+	for $field_ref (@{$struct_hash->{field}}) {
+	  if (ParamIsUriType($field_ref->[0])) {
+	    print OMXDEBUG "        $print(\"$printfieldprefix " . getTabName($field_ref->[0]) .
+	      " : %s\\n\", & (pStruct->$field_ref->[0]));\n";
+	  } else {
+	    if ($field_ref->[1] =~ /OMX_STRING|OMX_BYTE/) {
+	      print OMXDEBUG "        if(pStruct->$field_ref->[0])$print(\"$printfieldprefix $field_ref->[0] : %s";
+	      print OMXDEBUG "\\n\", pStruct->$field_ref->[0]);\n";
+	    } elsif ($field_ref->[1] =~ /OMX_PTR/) {
+	      print OMXDEBUG "        if(pStruct->$field_ref->[0])$print(\"$printfieldprefix $field_ref->[0] : %p";
+	      print OMXDEBUG "\\n\", pStruct->$field_ref->[0]);\n";
+	    } else {
+	      if ($field_ref->[1] =~ /OMX_BOOL/) {
+		print OMXDEBUG "        if(pStruct->$field_ref->[0]== OMX_TRUE){\n";
+		print OMXDEBUG "            $print(\"$printfieldprefix $field_ref->[0] : OMX_TRUE\\n\");\n";
+		print OMXDEBUG "        }\n";
+		print OMXDEBUG "        else{\n";
+		print OMXDEBUG "            $print(\"$printfieldprefix $field_ref->[0] : OMX_FALSE\\n\");\n";
+		print OMXDEBUG "        }\n";
+	      } elsif ($field_ref->[1] =~ /OMX_S64|OMX_TICKS/) {
+		print OMXDEBUG "        $print(\"$printfieldprefix $field_ref->[0] : %lld";
+		print OMXDEBUG "\\n\", pStruct->$field_ref->[0]);\n";
+	      } else {
+		print OMXDEBUG "        $print(\"$printfieldprefix $field_ref->[0] : %d";
+		print OMXDEBUG "\\n\", (int) pStruct->$field_ref->[0]);\n";
+	      }
+	    }
+	  }
+	}
+      }
+      print OMXDEBUG "    }\n";
+      #end case
+      print OMXDEBUG "    break;\n    }\n\n";
+    }
+
+  }
+
+  # print default case for switch
+  print OMXDEBUG "    default : \n    $print(\"" . $printprefix ."Unknown (or not supported) index [%d]\\n\", (int) index);\n  }\n}\n";
+
+}
+
+#######################################################################################################################
+my @customer_files;
+
+sub find_customer_files {
+  my $found_file;
+  my $found_dir;
+
+  print("********* Call find_customer_files\n");
+  foreach $found_dir (@customer_extension_path) {
+    print ("*** Parsing dir $found_dir \n");
+    find(\&customer_files, $found_dir);
+  }
+
+  # if ($customer_extension_path ne "")
+  {
+    # find customer extension files that are used
+    foreach $found_file (@customer_files) {
+      print ("*** Parsing $found_file \n");
+
+      if ($found_file =~ /index/i) {
+	open (INDEX,"$found_file");
+	print("***  read index file $found_file\n");
+
+	while (<INDEX>) {
+	  if (/typedef\senum\s(\w*)/) {
+	    push(@index_type,[$1,"$found_file"]);
+	    last;
+	  }
+	}
+	close(INDEX);
+      } elsif ($found_file =~ /(ext|extensions|ext_ste)\.h$/i) {
+	push(@header_files,"$found_file");
+      }
+    }
+  }
+}
+
+# list all .h files in customer extension directory
+sub customer_files {
+  push (@customer_files,$File::Find::name) if (/.h$/);
+}
+

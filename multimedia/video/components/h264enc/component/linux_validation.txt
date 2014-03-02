@@ -1,0 +1,48 @@
+How to run the test suite in Linux environment
+
+copy input files into micro-SD (Windows environemnt)
+
+You will need about 70 MB of free space on micro-SD
+
+Use the following Perl script: "h264enc\test\launcher_video\scripts\upload_sdcard_windows.pl"
+
+> cd /D <YOUR_WINDOWS_MMROOT_DIR>\video\components\h264enc\test\launcher_video\scripts
+> perl upload_sdcard_windows.pl --vtc ..\vtc\OMX_simple_8500v1.vtc --MMROOT <YOUR_WINDOWS_MMROOT_DIR> --prj_drive <YOUR_PRJ_MMEDIA_SUBST_DRIVE> --dest_drive <YOUR_MMC_DRIVE>
+> perl upload_sdcard_windows.pl --vtc ..\vtc\OMX_Test_Plan.vtc --MMROOT <YOUR_WINDOWS_MMROOT_DIR> --prj_drive <YOUR_PRJ_MMEDIA_SUBST_DRIVE> --dest_drive <YOUR_MMC_DRIVE>
+
+
+SHA1 reference files generation
+
+> cd $MMROOT/video/components/h264enc/test/launcher_video/
+> make install_test
+
+Build the ramdisk
+
+> cd $MMROOT/linux/ramdisk/
+> make
+
+
+Load ROM into the board
+> cd $MMROOT/shared/launcher/
+> ./launcher.pl debug_port=T32LINUX 
+
+
+Mount micro-SD card into path "/prj/multimedia_shared"
+
+> cd /usr/video/h264enc
+> ./bin/mount_mmshared.csh
+
+
+Execute the test plan
+
+> cd /usr/video/h264enc/OMX_simple_8500v1_tests
+> source OMX_simple_8500v1.vte.sh
+
+> cd /usr/video/h264enc/OMX_Test_Plan_tests
+> source OMX_Test_Plan.vte.sh
+
+The MMTE scripts already contain a comparison with reference digests
+If the test is OK, the message "TEST STATUS: PASSED" is outputted.
+
+
+

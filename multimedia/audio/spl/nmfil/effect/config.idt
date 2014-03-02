@@ -1,0 +1,41 @@
+#ifndef _SPL_CONFIG_H_
+#define _SPL_CONFIG_H_
+
+typedef struct
+{
+    t_uint16 instance;
+    t_uint16 iSamplingFreq;
+    t_uint16 iNumberChannel;
+    t_uint16 iType;                /* type of limiter sound pressure (0) or peak (1) */
+    /* tuning params */
+    t_uint16 iPeakClippingMode;    /* Clipping mode for last limiter stage in Peak limiter mode */
+    t_uint16 iPowerAttackTime_l;   /* 16 LSB Attack time constant to measure RMS power level, microsecond [1000, 5000000] */
+    t_uint16 iPowerAttackTime_h;   /* 16 MSB Attack time constant to measure RMS power level, microsecond [1000, 5000000] */
+    t_uint16 iPowerReleaseTime_l;  /* 16 LSB Release time constant to measure RMS power level, microsecond [1000, 5000000] */
+    t_uint16 iPowerReleaseTime_h;  /* 16 MSB Release time constant to measure RMS power level, microsecond [1000, 5000000] */
+    t_uint16 iGainAttackTime_l;    /* 16 LSB Attack time constant to compute gain to apply to signal, microsecond [1000, 5000000] */
+    t_uint16 iGainAttackTime_h;    /* 16 MSB Attack time constant to compute gain to apply to signal, microsecond [1000, 5000000] */
+    t_uint16 iGainReleaseTime_l;   /* 16 LSB Release time constant to compute gain to apply to signal, microsecond [1000, 5000000] */
+    t_uint16 iGainReleaseTime_h;   /* 16 MSB Release time constant to compute gain to apply to signal, microsecond [1000, 5000000] */
+    t_uint16 iGainHoldTime_l;      /* 16 LSB Hold time constant to compute gain to apply to signal, microsecond [1000, 5000000] */
+    t_uint16 iGainHoldTime_h;      /* 16 MSB Hold time constant to compute gain to apply to signal, microsecond [1000, 5000000] */
+    t_uint16 iThreshAttackTime_l;  /* 16 LSB Attack time constant to compute gain to limit to threshold, microsecond [1000, 5000000] */
+    t_uint16 iThreshAttackTime_h;  /* 16 MSB Attack time constant to compute gain to limit to threshold, microsecond [1000, 5000000] */
+    t_uint16 iThreshReleaseTime_l; /* 16 LSB Release time constant to compute gain to limit to threshold, microsecond [1000, 5000000] */
+    t_uint16 iThreshReleaseTime_h; /* 16 MSB Release time constant to compute gain to limit to threshold, microsecond [1000, 5000000] */
+    t_uint16 iThreshHoldTime_l;    /* 16 LSB Hold time constant to compute gain to limit to threshold, microsecond [1000, 5000000] */
+    t_uint16 iThreshHoldTime_h;    /* 16 MSB Hold time constant to compute gain to limit to threshold, microsecond [1000, 5000000] */
+    t_uint16 iBlockSize;           /* Internal block size [1,1024] */
+    t_uint16 iLookAheadSize;       /* Internal lookahead buffer size [1,8192] */
+} SPLimiterParams_t;
+
+typedef struct
+{
+    t_uint16 iEnable;       /* enable/disable SPL */
+    t_uint16 iThreshold;    /* reference threshold dBFS Peak in millibel, i.e. 1/100 dB [-9000, 0] */
+    t_uint16 iSPL_Mode;     /* Limitation or Normalization mode for SPL, not available for now */
+    t_uint16 iSPL_UserGain; /* user gain (attenuation) applied after SPL dBFS Peak in millibel, i.e. 1/100 dB [-9000, 0] */
+    t_uint16 iPeakL_Gain;   /* Peak Limiter gain to be applied to the signal */
+} SPLimiterConfig_t;
+
+#endif

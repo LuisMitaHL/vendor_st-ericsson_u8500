@@ -1,0 +1,73 @@
+alias CUT $1
+
+#BEGIN Test of all parameter index
+OMX_GetParameter    CUT OMX_IndexParamPortDefinition nPortIndex=0 
+mmte_sleep 1000
+OMX_GetParameter    CUT OMX_IndexParamAudioPortFormat
+mmte_sleep 1000
+OMX_GetParameter    CUT OMX_IndexParamAudioPcm
+mmte_sleep 1000
+
+OMX_SetParameter    CUT OMX_IndexParamPortDefinition  nPortIndex=0 format.audio.eEncoding=OMX_AUDIO_CodingAutoDetect
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamPortDefinition  nPortIndex=0 format.audio.eEncoding=OMX_AUDIO_CodingPCM
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPortFormat eEncoding=OMX_AUDIO_CodingAutoDetect
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPortFormat eEncoding=OMX_AUDIO_CodingPCM
+mmte_sleep 1000
+
+
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nChannels=3
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nChannels=0
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eNumData=OMX_NumericalDataUnsigned
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eNumData=OMX_NumericalDataSigned
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 bInterleaved=OMX_FALSE
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 bInterleaved=OMX_TRUE
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nBitPerSample=0
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nBitPerSample=16
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nBitPerSample=24
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nBitPerSample=32
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nSamplingRate=44100
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nSamplingRate=48000
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 ePCMMode=OMX_AUDIO_PCMModeALaw
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 ePCMMode=OMX_AUDIO_PCMModeLinear
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[0]=OMX_AUDIO_ChannelLFE
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[0]=OMX_AUDIO_ChannelLF
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[1]=OMX_AUDIO_ChannelLF
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[1]=OMX_AUDIO_ChannelLR
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[0]=OMX_AUDIO_ChannelLF
+mmte_sleep 1000 
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[0]=OMX_AUDIO_ChannelCF
+mmte_sleep 1000 
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[0]=OMX_AUDIO_ChannelLF
+mmte_sleep 1000
+OMX_SetParameter    CUT OMX_IndexParamAudioPcm nPortIndex=0 eChannelMapping[1]=OMX_AUDIO_ChannelLR
+mmte_sleep 1000
+#END   Test of all parameter index

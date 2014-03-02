@@ -1,0 +1,34 @@
+#
+# Cameraservices configuration
+#
+
+menuconfig CAMERASERVICES
+	bool "Cameraservices Configuration"
+	help
+	  This module provides camera services to control and test Ux500 board
+
+if CAMERASERVICES
+
+config CAMERASERVICES_DIR
+	string
+	default ./multimediaservices/cameraservices
+
+config CAMERASERVICES_DEPS
+	string
+	default ""
+
+config CAMERASERVICES_STRIP_DISABLED
+	bool "Disable strip"
+	depends on CAMERASERVICES
+	default n
+	help
+	  This will disable strip for this module
+
+config CAMERASERVICES_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on CAMERASERVICES
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # CAMERASERVICES

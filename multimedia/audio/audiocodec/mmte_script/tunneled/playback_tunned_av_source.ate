@@ -1,0 +1,64 @@
+test_start playback_tunned_avsource Record_Av_source_Playback_Earpiece
+
+ alias TIMEOUT 0
+ 
+OMX_GetHandle   capturer OMX.ST.AFM.NOKIA_AV_SOURCE
+OMX_GetHandle    earpiece OMX.ST.AFM.EARPIECE
+
+
+# configuration
+OMX_SetParameter    capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+OMX_SetParameter earpiece OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+# Adjust volume Renderer
+OMX_SetConfig earpiece OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=99
+OMX_SetConfig earpiece OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_FALSE
+
+
+# Tunneling
+OMX_SetupTunnel capturer 0 earpiece 0
+
+#Go to Idle
+MMTE_DispatchState OMX_StateIdle capturer earpiece
+
+
+# Pause Capturer
+MMTE_DispatchState OMX_StatePause capturer
+
+ 
+mmte_sleep 1000
+MMTE_NMF_ListComponent
+
+#Start
+MMTE_DispatchState OMX_StateExecuting earpiece
+mmte_sleep 1000
+MMTE_DispatchState OMX_StateExecuting capturer
+
+# Adjust volume Capturer 
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=30 
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+################
+#RECORD ONGOING#
+################
+mmte_sleep 10000
+ 
+
+
+#Stop
+MMTE_DispatchState OMX_StateIdle earpiece capturer
+
+ 
+MMTE_DispatchState OMX_StateLoaded earpiece:0
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+MMTE_NMF_ListComponent
+unalias TIMEOUT
+
+check_test
+
+test_end
+

@@ -1,0 +1,29 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/vr_stats_stress.ite
+
+## VR: Start environment -> stats->Start LR -> stats-> Stop LR -> stats->Start LRHR -> stats->Stop LRHR -> Stop environment ##
+
+alias LOOP_TESTS $1
+
+loop LOOP_TESTS
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+glacehistoexp reqnowait
+LR prepare
+LR start
+glacehistoexp waitstatready
+glacehistoexp req
+LR stop
+LR free
+
+glacehistoexp reqnowait
+LRHR prepare
+LRHR start
+glacehistoexp waitstatready
+glacehistoexp req
+LRHR stop
+LRHR free
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite
+
+endloop

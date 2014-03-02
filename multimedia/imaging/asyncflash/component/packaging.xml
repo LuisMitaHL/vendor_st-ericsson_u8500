@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/component.xml" />
+    <include name="component/packaging.xml" />
+    <include name="Makefile" />
+  </fileset>
+  <package name="arm-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmf/Makefile" />
+      <include name="nmf/host/Makefile" />
+	  <include name="nmf/host/asyncflash/**" />
+	  <include name="nmf/host/asyncflash_wrp/**" />
+	  <include name="nmf/host/share/**" />
+	  <exclude name="nmf/host/nmf_repository/**" />
+    </fileset>
+  </package>
+</packages>

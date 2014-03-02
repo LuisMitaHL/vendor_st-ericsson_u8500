@@ -1,0 +1,47 @@
+#!/hats/bin/sh
+#rcS script
+
+export PATH=/bin:/hats/bin:/sbin:/hats/sbin:/usr/bin:/hats/usr/bin:/usr/sbin:/hats/usr/sbin
+
+echo -e "\033[0m\033[34mEntering HATS Ramdisk Start Utility\033[0m"
+
+# Mount system image where HATS is
+mkdir -p /dev
+mkdir -p /system_tmp
+mount -t sysfs none /sys
+mount -t proc none /proc
+mount -t tmpfs none /dev
+mkdir -p /dev/socket
+#mkdir  -p /lib/module
+#touch /dev/socket/dbus_ste
+#touch /dev/socket/dbus
+#mknod -m 666 /dev/hsi_char c 247 0
+mknod -m 666 /dev/ttyS0 c 4 64
+#mkdir -p /dev/log
+#mknod -m 666 /dev/log/main c 10 48
+#mknod -m 666 /dev/log/radio c 10 46
+#mknod -m 666 /dev/log/system c 10 45
+#mknod -m 666 /dev/log/events c 10 47
+mdev -s
+
+mkdir -p /modemfs
+mount -t ext4 /dev/mmcblk0p1 /modemfs
+mount -n -t auto /dev/mmcblk0p2 /system_tmp
+mkdir /hats_tmp
+mount --bind /system_tmp/hats /hats_tmp
+mkdir -p /hats_tmp/dev
+mkdir -p /hats_tmp/proc
+mkdir -p /hats_tmp/sys
+mkdir -p /hats_tmp/modemfs
+mount --move /proc /hats_tmp/proc
+mount --move /sys /hats_tmp/sys
+mount --move /dev /hats_tmp/dev
+mount --move /modemfs /hats_tmp/modemfs
+mount --move /system_tmp /hats_tmp/system
+chmod 755 /hats_tmp/etc/init.d/*
+chmod 755 /hats_tmp/bin/*
+
+# Chroot to HATS & ask execution of busybox init once chrooted
+exec switch_root /hats_tmp /linuxrc
+
+

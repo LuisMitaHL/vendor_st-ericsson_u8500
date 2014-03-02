@@ -1,0 +1,143 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/trace.idt>
+
+
+/*!
+ * \brief EE Debug Level type
+ *
+ * \ingroup NMF_EE_TYPE
+ */
+typedef enum {
+    EE_DEBUG_LEVEL_ERROR = 1,       //!< Error trace
+    EE_DEBUG_LEVEL_WARNING = 2,     //!< Warning trace
+    EE_DEBUG_LEVEL_INFO = 3,        //!< Information trace
+    EE_DEBUG_LEVEL_VERBOSE = 4      //!< Verbose development trace
+} t_ee_debug_level;
+
+/*!
+ * \brief EE Development API
+ *
+ * Runtime API accessible for each primitive component without need to bound it.
+ * You simply have to declare it as required in your component ADL:
+ * \code
+ *    requires ee.api.debug as _debug
+ * \endcode
+ *
+ * <h2><a name="org">EE Print facility</a></h2>
+ *
+ * These functions in the printf like produce output according to a format as described below.
+ *
+ * According the integration:
+ * - on Host: the message is directly send to the OS print mechanism.
+ * - on MPC: the message is send to the Component Manager which send it to the OS print mechanism.
+ *
+ * \note On MPC case, an interruption is generated on Host at each MPC Print, thus use this API with parsimony.
+ *       Furthermore, an second consecutive Print will be blocked until Host has finish to
+ *       handle the previous one (no FIFO mechanism put in place).
+ *
+ * Several integration behaviors could be provided by OS integrator:
+ *      * In case of console without dictionary, CM_ReadMPCString is provided in
+ *        order to retrieve format string passed as EE_Print parameter. This
+ *        method will directly read the string into the MPC memories (TCM, ESRAM,
+ *        SDRAM). This is the default behavior today.
+ *      * In case of OST with dictionary (this is defined by OS integrator), you must passed
+ *        string ID in EE_Print format string parameter which will be directly resend this
+ *        ID to OST low level API by the Component Manager.
+ *
+ * This function write the output under the control of a format string that specifies how subsequent arguments
+ * are  converted for output.
+ *
+ * <h3><a name="org">Format of the format string</a></h3>
+ *
+ *  Formatted printing is heavily inspired by C's <tt>printf</tt>. Although the format strings are
+ *  similar to C, some restrictions have been made for NMF embedded world.
+ *
+ *  This method which produces formatted output requires a format string and an argument list.
+ *  The format string is a String which may contain fixed text and one or more embedded format specifiers.
+ *  Consider the following example:
+ *  \code
+        NmfPrint2(EE_DEBUG_LEVEL_ERROR, "Hello %d %x\n", 123, 0x456);
+ *  \endcode
+ *
+ *  \note This format string must been store in a data memory of the component and not in the stack since
+ *        the entity that flush the message can read asynchronously and later the format string.
+ *
+ * <h3><a name="syntax">Format specifier</a></h3>
+ *
+ * The arguments is actually limited to target word size (24bits on MMDPS, 32bits on ARM). Thus,
+ * no string nor float will be accepted.
+ *
+ * The format specifiers for general, character, and numeric types have the following syntax:
+ *  \code
+        %[flags][width][.precision]conversion
+ *  \endcode
+ *
+ * Where:
+ * - The optional flags is a set of characters that modify the output format. The set of valid flags depends on the conversion.
+ * - The optional width is a non-negative decimal integer indicating the minimum number of characters to be written to the output.
+ * - The optional precision is a non-negative decimal integer usually used to restrict the number of characters. The specific behavior depends on the conversion.
+ * - The required conversion is a character indicating how the argument should be formatted. The set of valid conversions for a given argument depends on the argument's data type.
+ *
+ * <h4><a name="syntax">Conversions</a></h4>
+ *
+ * A character that specifies the type of conversion to be applied. The conversion specifiers and their meanings are:
+ *
+ * - 'c': The result is a character.
+ * - 'd', 'i': The result is formatted as a decimal integer
+ * - 'u': The result is formatted as a unsigned decimal integer
+ * - 'o': The result is formatted as an unsigned octal integer
+ * - 'x', 'X': The result is formatted as a unsigned hexa-decimal integer.
+ *      The letters abcdef are used for x conversions; the  letters ABCDEF are used for X conversions.
+ * - '%': The result is a literal '%'. No argument is converted.
+ *
+ * \warning This conversion is give as minimum support and the behavior mainly depend on your OS.
+ */
+interface ee.api.debug {
+
+    /*!
+     * \brief Print message if debug filter level high enougth.
+     *
+     * See top level documentation for information about formatter.
+     */
+    IMPORT_SHARED void NmfPrint0(
+            t_ee_debug_level        level   /*!< [in] Message level */,
+            char *                  str     /*!< [in] Message to be produced */);
+
+    /*!
+     * \brief Print formatted message with one parameter if debug filter level high enougth.
+     *
+     * See top level documentation for information about formatter.
+     */
+    IMPORT_SHARED void NmfPrint1(
+            t_ee_debug_level        level   /*!< [in] Message level */,
+            char *                  str     /*!< [in] Format message to be produced */,
+            t_uword                 value1  /*!< [in] First argument on the format string */);
+
+
+    /*!
+     * \brief Print formatted message with two parameters if debug filter level high enougth.
+     *
+     * See top level documentation for information about formatter.
+     */
+    IMPORT_SHARED void NmfPrint2(
+            t_ee_debug_level        level   /*!< [in] Message level */,
+            char *                  str     /*!< [in] Format message to be produced */,
+            t_uword                 value1  /*!< [in] First argument on the format string */,
+            t_uword                 value2  /*!< [in] Second argument on the format string */);
+
+    /*!
+     *
+     */
+    IMPORT_SHARED void NmfOstTrace(
+            struct t_nmf_trace *trace,
+            t_bool handleValid,
+            t_uint8 paramNumber);
+
+}
+

@@ -1,0 +1,42 @@
+test_start    CODEC_0011
+test_property TEST_NAME   feedback
+
+alias TIMEOUT 0
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+ate_attach_io    renderer 0 MEM ./doriano48_low.wav 0 0
+ate_attach_io    renderer 1 MEM ./feedback.pcm 2000000 0 0
+
+MMTE_DispatchState OMX_StateIdle renderer
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=60
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+
+MMTE_NMF_ListComponent
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+
+
+#Stop
+
+MMTE_DispatchState OMX_StateIdle renderer
+MMTE_DispatchState OMX_StateLoaded renderer:0
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+#file_comp ./doriano48_low.wav  ./feedback.pcm
+
+unalias TIMEOUT
+
+test_end
+
+

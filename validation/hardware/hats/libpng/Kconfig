@@ -1,0 +1,30 @@
+#
+# Libpng configuration
+#
+
+menuconfig LIBPNG
+	bool "Libpng Configuration"
+	depends on ZLIB
+	help
+	  libpng is the official PNG reference library. It supports almost all
+	  PNG features, is extensible, and has been extensively tested
+	  for over 15 years.
+
+if LIBPNG
+
+config LIBPNG_DIR
+	string
+	default ./libpng
+
+config LIBPNG_DEPS
+	string
+	default "ZLIB"
+
+config LIBPNG_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LIBPNG
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LIBPNG

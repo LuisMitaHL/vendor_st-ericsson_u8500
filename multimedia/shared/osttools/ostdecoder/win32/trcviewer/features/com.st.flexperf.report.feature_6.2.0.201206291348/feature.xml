@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.st.flexperf.report.feature"
+      label="Error Report Generator Feature"
+      version="6.2.0.201206291348"
+      provider-name="STMicroelectronics">
+
+   <description>
+      This feature brings the classes used to create the report action. This action allows the user to export a zip file conatining target plugins data and error log file.
+   </description>
+
+   <copyright>
+      (C) 2010 STMicroelectronics ALL RIGHTS RESERVED
+This program contains proprietary information and is not to be
+used, copied, nor disclosed without the written consent of STMicroelectronics.
+   </copyright>
+
+   <license url="ela.html">
+      SOFTWARE LICENSE AGREEMENT (THE “AGREEMENT”)
+IMPORTANT - READ CAREFULLY: NOTICE: PLEASE READ THIS AGREEMENT
+CAREFULLY BEFORE DOWNLOADING, COPYING OR USING THE LICENSED MATERIALS.
+THIS SOFTWARE LICENSE AGREEMENT IS A LEGAL AGREEMENT BETWEEN
+YOU, THE LICENSEE (A SINGLE PERSON, INSTITUTION, OR LEGAL ENTITY
+EXERCISING RIGHTS UNDER THIS EULA. FOR LEGAL ENTITIES “YOU” INCLUDES
+ANY ENTITY THAT IS CONTROLLED BY YOU WHERE CONTROL MEANS OWNERSHIP
+OF MORE THAN FIFTY PERCENT OF THE OUTSTANDING SHARES OR BENEFICIAL
+OWERSHIP OF SUCH ENTITY), AND STMICROELECTRONICS N.V. A COMPANY
+ORGANIZED UNDER THE LAW OF NETHERLANDS WITH ITS REGISTERED OFFICE
+AT WTC SCHIPHOL AIRPORT, SCHIPHOL BOULEVARD 265, 1118 BH SCHIPHOL
+AIRPORT, AMSTERDAM, THE NETHERLANDS, ACTING THROUGH ITS SWISS
+BRANCH LOCATED AT 39, CHEMIN DU CHAMP DES FILLES, 1228 PLAN-LES-OUATES,
+GENEVA, SWITZERLAND (“ST”), FOR THE SOFTWARE, AND ELECTRONIC
+DOCUMENTATION OR ANY PORTION THEREOF (THE “LICENSED MATERIALS”).
+BY INSTALLING AND USING THE LICENSED MATERIALS ACCOMPANYING THIS
+SOFTWARE LICENSE AGREEMENT INDICATES YOUR ACCEPTANCE OF THESE
+TERMS AND CONDITIONS. THE LICENSED MATERIALS ARE ELECTRONICALLY
+DISTRIBUTED AND ARE COMPOSED OF THE FOLLOWING COMPONENTS THAT
+CONTAIN SOFTWARE CODE:
+1. COMPONENTS INCLUDED IN THE DIRECTORIES \stworkbench\features\org.eclipse.&lt;id&gt;.&lt;id&gt;…&lt;id&gt;,\stworkbench\plugins\org.eclipse.&lt;id&gt;.&lt;id&gt;…&lt;id&gt;
+AND ASSOCIATED SUBDIRECTORIES, IF ANY, (HEREAFTER “Directories
+1”) ARE SUBJECT TO THE ECLIPSE PUBLIC LICENSE V1.0 ATTACHED TO
+THIS AGREEMENT AS APPENDIX 2;
+2. COMPONENTS INCLUDED IN THE DIRECTORIES \stworkbench\features\,
+\stworkbench\plugins\ AND ASSOCIATED SUBDIRECTORIES, IF ANY,
+NAMED org.eclipse.&lt;id&gt;.&lt;id&gt;…&lt;id&gt; (HEREAFTER “Directories 2”)ARE
+SUBJECT TO THE ECLIPSE PUBLIC LICENSE V1.0 ATTACHED TO THIS AGREEMENT
+AS APPENDIX 2;
+3. PROPRIETARY COMPONENTS INCLUDED IN THE DIRECTORIES \stworkbench\features\com.st.&lt;id&gt;.&lt;id&gt;…&lt;id&gt;,
+\stworkbench\plugins\com.st.&lt;id&gt;.&lt;id&gt;…&lt;id&gt; AND ASSOCIATED SUBDIRECTORIES,
+IF ANY, (HEREAFTER “Directories 3”) ARE SUBJECT TO THE TERMS
+SET FORTH IN APPENDIX 1 BELOW.
+4. PROPRIETARY COMPONENTS INCLUDED IN THE DIRECTORIES \stworkbench\features\,
+\stworkbench\plugins\ AND ASSOCIATED SUBDIRECTORIES, IF ANY,
+NAMED com.st.&lt;id&gt;.&lt;id&gt;…&lt;id&gt; (HEREAFTER “Directories 4”) ARE SUBJECT
+TO THE TERMS SET FORTH IN APPENDIX 1 BELOW.
+IMPORTANT -- READ CAREFULLY: BY CLICKING ON THE AGREE BUTTON
+YOU AGREE TO BE AND ARE HEREBY BOUND BY THE TERMS OF THIS SOFTWARE
+LICENSE AGREEMENT. IF YOU DO NOT AGREE TO THE TERMS, PRESS DISAGREE
+BUTTON AND MUST PROMPTLY DESTROY ALL COPIES OF THE SOFTWARE YOU
+MAY HAVE RECEIVED OR DOWNLOADED.
+Appendix 1
+Terms and Conditions
+1.1 The proprietary software delivered to You under this Agreement
+is described in the Directories 1 and Directories 2 is in form
+of source code and/or executable code. The proprietary software,
+including the documentation, if and when provided, and any updates
+(collectively referred to as the “Proprietary Software”) furnished
+to You are proprietary to LICENSOR or its licensor (ST and licensors
+hereafter refers to as &quot;Licensor&quot;). Licensor retains title to
+and ownership of the Proprietary Software, including the copy
+provided herein, and reserves all rights not expressly granted
+in this Agreement. You assume responsibility for the selection
+of the Proprietary Software to achieve your intended results,
+and for the installation, use and results obtained from the Proprietary
+Software.
+1.2 Under the terms and conditions of this Agreement, and in
+particular subject to the restrictions and other terms within
+this Appendix 1, You are hereby granted a limited, revocable,
+nontransferable and nonexclusive worldwide, license to use the
+source code of the Proprietary Software to develop software application
+and to use, copy, distribute, license in object code form only
+such software application solely and only in conjunction with
+the Target Hardware set forth in the Table above. Such foregoing
+right must be (i) only by or for You, and (ii) only for the Target
+Hardware. Any other use of the Proprietary Software is strictly
+prohibited.
+1.3 You have the right to use contractors provided that You (a)
+unconditionally guarantee the performance of Your contractor
+in connection with Your obligations set forth in this Agreement
+and the compliance of Your contractor with the terms and conditions
+of this Agreement, (b) agree to indemnify LICENSOR against all
+and any loss, liability, costs, damages, expenses (including
+the fees of lawyers and other professionals), suffered, incurred
+or sustained as a result of or in relation to the breach of the
+terms of this Agreement.
+1.4 Any copy of the Proprietary Software shall include the copyright
+notice and other proprietary legends indicated on the Proprietary
+Software. Except as set forth in Section 1.2 above, You may not
+modify, adapt, translate, reverse engineer, de-compile, disassemble,
+or create derivative works in whole or in part based on the Proprietary
+Software. You may not rent, lease, loan, or electronically transfer
+the Proprietary Software to others or from one computer to another
+over a network.
+1.5 The term &quot;proprietary&quot; as used in this agreement does not
+establish a confidential relationship between the Licensor and
+You. You will respect all intellectual property rights, in particular
+copyrights, and patents that the Licensor has in the Proprietary
+Software. You agree that normal usage of the Proprietary Software
+by You will not violate Licensor&apos;s proprietary rights. IF YOU
+OTHERWISE TRANSFER POSSESSION OF ANY COPY, OF ANY MODIFICATION
+OR OF ANY MERGED PORTION OF THE PROPRIETARY SOFTWARE TO ANOTHER
+PARTY, YOUR LICENSE IS AUTOMATICALLY TERMINATED.
+1.6 Licensor represents that the ideas and expressions contained
+in the Proprietary Software (but not the executable form of the
+Proprietary Software, in which those ideas and expressions are
+encrypted) are confidential proprietary information of Licensor
+(“Licensor Confidential Information”) in which You have no interest
+and no right to use, other than as granted by this Appendix 1.
+You acknowledge that unauthorized copying or disclosure of Licensor
+Confidential Information may cause irreparable injury to Licensor
+and that Licensor shall be entitled to, among other actions,
+seek to enjoin such activities. You shall have an appropriate
+agreement with each of its employees having access to Licensor
+Confidential Information, sufficient to enable You to comply
+with all terms of this Appendix 1.
+Information shall not be considered to be Confidential Information
+if it: (1) is already or otherwise becomes publicly known through
+no act of the other party; (2) is lawfully received from third
+parties subject to no restriction of confidentiality; or (3)
+can be shown by You to have been independently developed by You
+without reference to the Confidential Information. You will keep
+the Confidential Information in confidence and trust during the
+term of this Appendix 1 and for five (5) years after termination,
+and You will not use the Confidential Information other than
+as permitted under this Appendix 1.
+1.7 THE PROPRIETARY SOFTWARE IS PROVIDED &quot;AS IS&quot; WITHOUT WARRANTY
+OF ANY KIND. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW,
+Licensor FURTHER DISCLAIM ALL WARRANTIES, INCLUDING WITHOUT LIMITATION
+ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE, AND NONINFRINGEMENT. THE ENTIRE RISK ARISING OUT OF
+THE USE OR PERFORMANCE OF THE PROPRIETARY SOFTWARE AND DOCUMENTATION
+REMAINS WITH YOU. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE
+LAW. IN NO EVENT SHALL Licensor BE LIABLE FOR ANY CONSEQUENTIAL,
+INCIDENTAL, INDIRECT, SPECIAL, PUNITIVE, OR OTHER DAMAGES WHATSOEVER
+DAMAGES FOR LOSS OF BUSINESS PROFITS, BUSINESS INTERRUPTION,
+LOSS OF BUSINESS INFORMATION, LOSS OF DATA OR OTHER PECUNIARY
+LOSS, ARISING OUT OF THIS Agreement OR THE USE OF OR INABILITY
+TO USE THE PROPRIETARY SOFTWARE, EVEN IF Licensor HAS BEEN ADVISED
+OF THE POSSIBILITY OF SUCH DAMAGES. BECAUSE SOME STATES/JURISDICTIONS
+DO NOT ALLOW THE EXCLUSION OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL
+OR INCIDENTAL DAMAGES, THE ABOVE LIMITATION MAY NOT APPLY TO
+YOU. NOTWITHSTANDING THE FOREGOING, TO THE EXTENT THAT Licensor
+MAY BE HELD LEGALLY LIABLE TO YOU BY A COURT OF COMPETENT JURISDICTION
+UNDER CONTRACT, TORT, OR ANY OTHER LEGAL THEORY, THE MAXIMUM
+LIABILITY OF Licensor SHALL NOT EXCEED ONE HUNDRED US DOLLARS
+($100.00). BECAUSE SOME STATES/JURISDICTIONS DO NOT ALLOW THE
+EXCLUSION OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL
+DAMAGES, THE ABOVE LIMITATION MAY NOT APPLY TO YOU.
+1.8 The documentations(s), if any, provided with the Proprietary
+Software is copyrighted and may not be copied, photographed,
+reproduced, translated or reduced to any electronic medium or
+machine-readable form in whole or in part.
+1.9 The Proprietary Software is a &quot;commercial item,&quot; as that
+term is defined at 48 C.F.R. 2.101 (OCT 1995), consisting of
+&quot;commercial computer software&quot; and &quot;commercial computer software
+documentation,&quot; as such terms are used in 48 C.F.R. 12.212 (SEPT
+1995) and is provided to the U.S. Government only as a commercial
+end item. Consistent with 48 C.F.R. 12.212 and 48 C.F.R. 227.7202-1
+through 227.7202-4 (JUNE 1995), all U.S. Government licensees
+and end users acquire the Software with only those rights set
+forth herein.
+1.10 The license of the Proprietary Software is effective until
+terminated. You may terminate it at any time by returning and/or
+destroying the Proprietary Software together with all copies.
+This license of the Proprietary Software will also terminate
+immediately without notice from Licensor If You fail to comply
+with any provision of Appendix 1 of this Agreement. You must
+return the original Proprietary Software and any copies, including
+any updates, upon termination of this Agreement.
+1.11 You agree that the Proprietary Software shall not be exported
+or re-exported, directly or indirectly, to any destination restricted
+or prohibited by export control regulations without the required
+authorization or license from the appropriate governmental or
+other regulatory authorities.
+1.12 You covenant and agree that You shall not (i) create derivative
+works of the Licensed Materials in any manner that would cause
+the Licensed Materials, in whole or in part, to become subject
+to any of the terms of the Excluded License or (ii) distribute
+the Licensed Materials (or derivative works including the Software)
+in any manner that would cause any Licensed Materials component
+to become subject to any of the terms of the Excluded License.
+An “Excluded License” is any license that requires as a condition
+of use, modification and/or distribution of software subject
+to the Excluded License, that such software or other software
+combined and/or distributed with such software be (x) disclosed
+or distributed in source code form; (y) licensed for the purpose
+of making derivative works; or (z) re-distributable at no charge.
+1.13 This Appendix 1 shall be construed and interpreted under
+the laws of France, not including conflict of laws principles
+of France. If any provision of Appendix 1 of this Agreement,
+or portion thereof, is found to be unenforceable, that provision
+shall be enforced to the maximum extent possible and the remainder
+of this Appendix 1 of this Agreement shall continue in full force
+and effect. This is the entire agreement between You and Licensor
+with respect to the Proprietary Software and supersedes all prior
+or contemporaneous understandings or agreements, written or oral,
+regarding such subject matter and may only be modified in writing
+executed by LICENSOR and You.
+1.14 YOU ACKNOWLEDGE THAT YOU HAVE READ APPENDIX 1 OF THIS AGREEMENT
+AND AGREE TO BE BOUND BY ITS TERMS. YOU FURTHER AGREE THAT IT
+IS THE COMPLETE AND EXCLUSIVE STATEMENT OF AGREEMENT BETWEEN
+US THAT SUPERSEDE ANY PRIOR AGREEMENT, ORAL OR WRITTEN, ANY PROPOSAL
+AND ANY OTHER COMMUNICATIONS BETWEEN LICENSOR AND YOU RELATING
+TO THE SUBJECT MATTER OF THIS AGREEMENT.
+[End of Appendix 1]
+Appendix 2
+Eclipse Public License – v 1.0
+The software subject to this Eclipse Public License v1.0 (the
+“License”) is described in the Directories 3 and Directories
+4 is in form of source code and/or executable code.
+1. DEFINITIONS
+- &quot;Contribution&quot; means: (a) in the case of the initial Contributor,
+the initial code and documentation distributed under this License,
+and (b) in the case of each subsequent Contributor changes to
+the Program, and additions to the Program; where such changes
+and/or additions to the Program originate from and are distributed
+by that particular Contributor. A Contribution &apos;originates&apos; from
+a Contributor if it was added to the Program by such Contributor
+itself or anyone acting on such Contributor&apos;s behalf. Contributions
+do not include additions to the Program which: (i) are separate
+modules of software distributed in conjunction with the Program
+under their own license agreement, and (ii) are not derivative
+works of the Program.
+- &quot;Contributor&quot; means any person or entity that distributes the
+Program.
+- &quot;Licensed Patents&quot; mean patent claims licensable by a Contributor
+which are necessarily infringed by the use or sale of its Contribution
+alone or when combined with the Program.
+- &quot;Program&quot; means the Contributions distributed in accordance
+with this License.
+- &quot;Recipient&quot; means anyone who receives the Program under this
+License, including all Contributors.
+2. GRANT OF RIGHTS
+2.1 Subject to the terms of this License, each Contributor hereby
+grants Recipient a non-exclusive, worldwide, royalty-free copyright
+license to reproduce, prepare derivative works of, publicly display,
+publicly perform, distribute and sublicense the Contribution
+of such Contributor, if any, and such derivative works, in source
+code and object code form.
+2.2 Subject to the terms of this License, each Contributor hereby
+grants Recipient a nonexclusive, worldwide, royalty-free patent
+license under Licensed Patents to make, use, sell, offer to sell,
+import and otherwise transfer the Contribution of such Contributor,
+if any, in source code and object code form. This patent license
+shall apply to the combination of the Contribution and the Program
+if, at the time the Contribution is added by the Contributor,
+such addition of the Contribution causes such combination to
+be covered by the Licensed Patents. The patent license shall
+not apply to any other combinations which include the Contribution.
+No hardware per se is licensed hereunder.
+2.3 Recipient understands that although each Contributor grants
+the licenses to its Contributions set forth herein, no assurances
+are provided by any Contributor that the Program does not infringe
+the patent or other intellectual property rights of any other
+entity. Each Contributor disclaims any liability to Recipient
+for claims brought by any other entity based on infringement
+of intellectual property rights or otherwise. As a condition
+to exercising the rights and licenses granted hereunder, each
+Recipient hereby assumes sole responsibility to secure any other
+intellectual property rights needed, if any. For example, if
+a third party patent license is required to allow Recipient to
+distribute the Program, it is Recipient&apos;s responsibility to acquire
+that license before distributing the Program.
+2.4 Each Contributor represents that to its knowledge it has
+sufficient copyright rights in its Contribution, if any, to grant
+the copyright license set forth in this License.
+3. REQUIREMENTS
+3.1 A Contributor may choose to distribute the Program in object
+code form under its own license agreement, provided that (a)
+it complies with the terms and conditions of this License, and
+(b) its license agreement (i) effectively disclaims on behalf
+of all Contributors all warranties and conditions, express and
+implied, including warranties or conditions of title and non-infringement,
+and implied warranties or conditions of merchantability and fitness
+for a particular purpose, (ii) effectively excludes on behalf
+of all Contributors all liability for damages, including direct,
+indirect, special, incidental and consequential damages, such
+as lost profits, (iii) states that any provisions which differ
+from this License are offered by that Contributor alone and not
+by any other party; and (iv) states that source code for the
+Program is available from such Contributor, and informs licensees
+how to obtain it in a reasonable manner on or through a medium
+customarily used for software exchange.
+3.2 When the Program is made available in source code form it
+must be made available under this License and a copy of this
+License must be included with each copy of the Program.
+3.3 Contributors may not remove or alter any copyright notices
+contained within the Program.
+3.4 Each Contributor must identify itself as the originator of
+its Contribution, if any, in a manner that reasonably allows
+subsequent Recipients to identify the originator of the Contribution.
+4. COMMERCIAL DISTRIBUTION
+4.1 Commercial distributors of software may accept certain responsibilities
+with respect to end users, business partners and the like. While
+this license is intended to facilitate the commercial use of
+the Program, the Contributor who includes the Program in a commercial
+product offering should do so in a manner which does not create
+potential liability for other Contributors. Therefore, if a Contributor
+includes the Program in a commercial product offering, such Contributor
+(&quot;Commercial Contributor&quot;) hereby agrees to defend and indemnify
+every other Contributor (&quot;Indemnified Contributor&quot;) against any
+losses, damages and costs (collectively &quot;Losses&quot;) arising from
+claims, lawsuits and other legal actions brought by a third party
+against the Indemnified Contributor to the extent caused by the
+acts or omissions of such Commercial Contributor in connection
+with its distribution of the Program in a commercial product
+offering. The obligations in this section do not apply to any
+claims or Losses relating to any actual or alleged intellectual
+property infringement. In order to qualify, an Indemnified Contributor
+must: a) promptly notify the Commercial Contributor in writing
+of such claim, and b) allow the Commercial Contributor to control,
+and cooperate with the Commercial Contributor in, the defense
+and any related settlement negotiations. The Indemnified Contributor
+may participate in any such claim at its own expense.
+4.2 For example, a Contributor might include the Program in a
+commercial product offering, Product X. That Contributor is then
+a Commercial Contributor. If that Commercial Contributor then
+makes performance claims, or offers warranties related to Product
+X, those performance claims and warranties are such Commercial
+Contributor&apos;s responsibility alone. Under this section, the Commercial
+Contributor would have to defend claims against the other Contributors
+related to those performance claims and warranties, and if a
+court requires any other Contributor to pay any damages as a
+result, the Commercial Contributor must pay those damages.
+5. NO WARRANTY
+5.1 EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, THE PROGRAM
+IS PROVIDED ON AN &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS
+OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION,
+ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRTNGEMENT, MERCHANTABILITY
+OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is solely
+responsible for determining the appropriateness of using and
+distributing the Program and assumes all risks associated with
+its exercise of rights under this License, including but not
+limited to the risks and costs of program errors, compliance
+with applicable laws, damage to or loss of data, programs or
+equipment, and unavailability or interruption of operations.
+6. DISCLAIMER OF LIABILITY
+6.1 EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, NEITHER
+RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+IN ANY WAY OUT OF THE USE OR DISTRIBUTION OF THE PROGRAM OR THE
+EXERCISE OF ANY RIGHTS GRANTED HEREUNDER, EVEN IF ADVISED OF
+THE POSSIBILITY OF SUCH DAMAGES.
+7. GENERAL
+7.1 If any provision of this License is invalid or unenforceable
+under applicable law, it shall not affect the validity or enforceability
+of the remainder of the terms of this License, and without further
+action by the parties hereto, such provision shall be reformed
+to the minimum extent necessary to make such provision valid
+and enforceable.
+7.2 If Recipient institutes patent litigation against any entity
+(including a cross-claim or counterclaim in a lawsuit) alleging
+that the Program itself (excluding combinations of the Program
+with other software or hardware) infringes such Recipient&apos;s patent(s),
+then such Recipient&apos;s rights granted under Section 2(b) shall
+terminate as of the date such litigation is Sled.
+7.2 All Recipient&apos;s rights under this License shall terminate
+if it fails to comply with any of the material terms or conditions
+of this License and does not cure such failure in a reasonable
+period of time after becoming aware of such noncompliance. If
+all Recipient&apos;s rights under this License terminate, Recipient
+agrees to cease use and distribution of the Program as soon as
+reasonably practicable. However, Recipient&apos;s obligations under
+this License and any licenses granted by Recipient relating to
+the Program shall continue and survive.
+7.3 Everyone is permitted to copy and distribute copies of this
+License, but in order to avoid inconsistency the License is copyrighted
+and may only be modified in the following manner. The License
+Steward reserves the right to publish new versions (including
+revisions) of this License from time to time. No one other than
+the License Steward has the right to modify this License. The
+Eclipse Foundation is the initial License Steward. The Eclipse
+Foundation may assign the responsibility to serve as the License
+Steward to a suitable separate entity. Each new version of the
+License will be given a distinguishing version number. The Program
+(including Contributions) may always be distributed subject to
+the version of the License under which it was received. In addition,
+after a new version of the License is published, Contributor
+may elect to distribute the Program (including its Contributions)
+under the new version. Except as expressly stated in Sections
+2(a) and 2(b) above, Recipient receives no rights or licenses
+to the intellectual property of any Contributor under this License,
+whether expressly, by implication, estoppel or otherwise. All
+rights in the Program not expressly granted under this License
+are reserved.
+7.4 This License is governed by the laws of the State of New
+York and the intellectual property laws of the United States
+of America. No party to this License will bring a legal action
+under this License more than one year after the cause of action
+arose. Each party waives its rights to a jury trial in any resulting
+litigation
+[End of Appendix 2]
+BY AGREEING TO THIS AGREEMENT I REPRESENT AND WARRANT THAT I
+AM AN AUTHORIZED REPRESENTATIVE OF THE LICENSEE.
+   </license>
+
+   <plugin
+         id="com.st.flexperf.report"
+         download-size="0"
+         install-size="0"
+         version="6.2.0.201206291348"
+         unpack="false"/>
+
+</feature>

@@ -1,0 +1,31 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MMROOT)/video/makefiles/Make.std.config
+
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh mpeg2dec
+
+VPATH = ./src ../../../scheduler/src ../../../common/src ../main/src
+EXENAME = mpeg2dec
+
+EXEOBJ = sm_decoder_mp2 t1xhv_main_m2d sm_common t1xhv_interrupt
+EXEOBJ += m2d_getblk  m2d_gethdr  m2d_getmv  m2d_getpic  m2d_getvlc  m2d_hvcfg  m2d_procmvh t1xhv_m2d  m2d_error
+
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT)
+
+CPPFLAGS += -DT1XHV_TASK_DECODE -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DSTANDALONE_VERSION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION)
+CPPFLAGS += -I../../../scheduler/inc -I../../../common/inc -I../../../hardware/inc -I./inc -I../share
+
+STACK=1000
+SSTACK=1000
+
+#ACFLAGS += -forceesramfn 
+CFLAGS =  -O3
+#CFLAGS =  -g
+
+MEMORYCFG = ../../../common/memconfig/video.$(MEMCFG_EXT)
+
+todo: exe
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

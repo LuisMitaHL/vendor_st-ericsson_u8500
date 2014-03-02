@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/**" />
+    <include name="Makefile" />
+    <include name="Make.nmf" />
+    <include name="Make.host.nmf" />
+    <include name="Make.dirs" />
+    <include name="make.ost_conf" />
+    <include name="inc/autogentraces/*.xml" />
+  </fileset>
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="bellagio/Makefile" />
+      <include name="bellagio/*.cpp" />
+      <include name="proxy/**" />
+      <include name="bellagio/lib/cortexA9-*-*-*/*.so" />
+    </fileset>
+  </package>
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="bellagio/Makefile" />
+      <include name="bellagio/*.cpp" />
+      <include name="proxy/**" />
+    </fileset>
+  </package>
+  <package name="arm-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmf_repository/cortexA9-x-*-x/**" />
+      <include name="nmfil/**" />
+      <exclude name="nmfil/effect/test" />
+      <exclude name="nmfil/effect/test/**" />
+    </fileset>
+  </package>
+  <package name="arm-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmfil/**" />
+      <exclude name="nmfil/effect/test" />
+      <exclude name="nmfil/effect/test/**" />
+    </fileset>
+  </package>
+  <package name="arm-proc-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="effect/Makefile" />
+      <include name="effect/include/**" />
+      <include name="effect/libcontrolSHAI/**" />
+      <exclude name="effect/libcontrolSHAI/biquad_synthesis" />
+      <exclude name="effect/libcontrolSHAI/biquad_synthesis/**" />
+      <include name="effect/libcontrolSHAI/lib/cortexA9-x-rvct4gnu-x/libtransducer_equalizer_control.a" />
+    </fileset>
+  </package>
+  <package name="arm-proc-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="effect/Makefile" />
+      <include name="effect/include/**" />
+      <include name="effect/libcontrolSHAI/**" />
+      <exclude name="effect/libcontrolSHAI/biquad_synthesis" />
+      <exclude name="effect/libcontrolSHAI/biquad_synthesis/**" />
+    </fileset>
+  </package>
+  <package name="mmdsp-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmf_repository/mmdsp_*/**" />
+    </fileset>
+  </package>
+</packages>

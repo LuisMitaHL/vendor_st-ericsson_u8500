@@ -1,0 +1,142 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    
+* \brief   Common data structure and/or definition for post process
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+/** @addtogroup ppGroup Post Process NMF Component
+ *  \brief This part shows a Post Process NMF Component description (in term
+ *  of configuration and interfaces)
+ *  @{
+ *
+ * \image html algo-overview.jpg
+ *  with <algo_name> = post_process \n
+ *  and  <algo> = PostProcess
+ *
+ *
+ * \section data_flow_sec Post process dataflow description
+ * \n
+ * \n
+ * \image html post_process_global_dataflow.jpg
+ * \n
+ * \section memory_desc_sec Memory needs description
+ * \n
+ * \n The following diagram shows the different needed buffers, their respective location and the way their
+ * address is given as parameter to the algo component.
+ * \image html post_process_dataflow.jpg
+ */ 
+
+/** @addtogroup ppConfigurationGroup NMF Configuration file
+ *  \brief Source code of the configuration file of the component \ref ppGroup 
+ *  @{
+ *  \include post_process_algo.conf
+ */ 
+/** @} */ // end of ppConfigurationGroup
+
+
+/** @addtogroup ppProvidedInterfaceGroup Provided interface(s)
+ *  \brief Description of all provided interfaces of NMF component \ref ppGroup 
+ *  @{
+ */ 
+
+/** @} */ // end of ppProvidedInterfaceGroup
+
+/** @addtogroup ppRequiredInterfaceGroup Required interface(s)
+ *  \brief Description of all required interfaces of NMF component \ref ppGroup  
+ *  @{
+ */ 
+
+/** @} */ // end of ppRequiredInterfaceGroup
+
+#ifndef  _t1xhv_post_process_idt
+#define _t1xhv_post_process_idt
+
+#include <t1xhv_pp.idt>
+#include <t1xhv_retarget.idt>
+
+
+/** \brief This structure defines a Post Process input parameter buffers. */
+typedef struct {
+  t_ushort_value source_frame_width;      /**<\brief Width of the source frame to be processed :
+                                                \n Alignment : Multiple of 16.*/
+  t_ushort_value source_frame_height;     /**<\brief Height of the source frame to be processed :
+                                                \n Alignment : Multiple of 16.*/
+  t_ushort_value input_format;            /**<\brief Format of the source frame buffer to be processed :
+                                                \n  0: Macroblock tiled 
+                                                \n  1: Raster planar */
+  t_ushort_value output_format;           /**<\brief Format of the destination frame buffer, result of the process :
+                                                \n  0: 420 Macroblock
+                                                \n  1: 420 Planar
+                                                \n  2: 422 Interleaved*/
+  t_ushort_value filter_type;             /**<\brief Filter algorithm (if any) to be applied duning the post process :
+                                                \n  0: MPEG4 Deblocking filter
+                                                \n  1: MPEG4 Deringing filter
+                                                \n  2: MPEG4 Deblocking AND Deringing filters
+                                                \n  3: DivX6 Deblocking filter
+                                                \n  4: DivX6 Deringing filter
+                                                \n  5: DivX6 Deblocking AND Deringing filters */
+  t_ushort_value reserved_1;              /**<\brief Reserved 16    */
+  t_ulong_value reserved_2;               /**<\brief Reserved 32    */
+
+} ts_t1xhv_pp_param_in;
+
+#define VPP_MACROBLOCK_TILED  0
+#define VPP_RASTER_PLANAR     1
+
+#define VPP_420_MB_OUT     0
+#define VPP_420_PLANAR_OUT 1
+#define VPP_422_ITLVD_OUT  2
+
+#define VPP_MPEG4_DEBLOCKING_FILTER             0
+#define VPP_MPEG4_DERINGING_FILTER              1
+#define VPP_MPEG4_DEBLOCKING_DERINGING_FILTER   2
+#define VPP_DIVX6_DEBLOCKING_FILTER             3
+#define VPP_DIVX6_DERINGING_FILTER              4
+#define VPP_DIVX6_DEBLOCKING_DERINGING_FILTER   5
+
+/*!
+* \typedef ts_t1xhv_pp_param_in *tps_t1xhv_pp_param_in;
+*/
+typedef ts_t1xhv_pp_param_in *tps_t1xhv_pp_param_in;
+
+/** \brief This structure defines a Post Process input/output parameter buffers. */
+typedef struct {
+
+    t_ulong_value  reserved_1;            /**<\brief Reserved 32    */
+    t_ulong_value  reserved_2;            /**<\brief Reserved 32    */
+    t_ulong_value  reserved_3;            /**<\brief Reserved 32    */
+    t_ulong_value  reserved_4;            /**<\brief Reserved 32    */
+
+} ts_t1xhv_pp_param_inout;
+
+/*!
+* \typedef ts_t1xhv_pp_param_inout *tps_t1xhv_pp_param_inout;
+*/
+typedef ts_t1xhv_pp_param_inout *tps_t1xhv_pp_param_inout;
+
+/** \brief This structure defines a Post Process output parameter buffers. */
+typedef struct {
+
+    t_ushort_value error_type;            /**<\brief Error type     */
+    t_ushort_value reserved_1;            /**<\brief reserved  16   */
+    t_ulong_value  reserved_2;            /**<\brief reserved  32   */
+    t_ulong_value  reserved_3;            /**<\brief reserved  32   */
+    t_ulong_value  reserved_4;            /**<\brief reserved  32   */
+
+} ts_t1xhv_pp_param_out;
+
+/*!
+* \typedef ts_t1xhv_pp_param_out *tps_t1xhv_pp_param_out;
+*/
+typedef ts_t1xhv_pp_param_out *tps_t1xhv_pp_param_out;
+
+/** @} */ // end of ppGroup
+
+#endif /* _t1xhv_pp_idt */

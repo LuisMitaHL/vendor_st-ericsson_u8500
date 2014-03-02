@@ -1,0 +1,166 @@
+;------------------------------------------------------------
+; Save_state.cmm
+;------------------------------------------------------------
+; Save state let you dump your target and trace and creates a
+; a script that could be used for debuging in simulator
+;
+; 090922 - KM Initial version
+;-----------------------------------------------------------
+
+local &modelf
+local &APhysical
+local &BPhysical
+local &CPhysical
+Local &L2CacheBase
+
+&L2CacheBase=0xA0412000
+
+;Turn of CTS
+cts.off
+
+; Highest speed
+; Later we need to add OP-point handling here.
+d.s 0xE0043008 %LONG 0x401F9B
+
+DIALOG.OK "Create save folder before you click OK!"
+
+;; Force the user to select a directory to save in:
+print "Select a directory to save data in."
+cd *
+
+OPEN #1 restore_&CurConfig.cmm /Create
+
+WRITE #1 "reset"
+WRITE #1 "sys.cpu DB9540"
+WRITE #1 "sys.u"
+WRITE #1 "y.reset"
+
+if "&LoadModPath"!=""
+(
+	if os.file(&LoadModPath)
+	(
+		open #2 &LoadModPath /read
+		repeat
+		(
+			&modelf=""
+			read #2 %line &modelf
+
+			if "&modelf"!=""
+			(
+				if os.file(&modelf)
+				(
+					WRITE #1 "data.load.elf " "&modelf" " /noclear /nocode /noreg"
+				)
+			)
+
+		)
+		while "&modelf"!=""
+		close #2
+
+	)
+)
+
+; Load kernel awaraness
+if "&LinuxDebug"=="TRUE"
+(
+	WRITE #1 "if os.file(~~\demo\arm\kernel\linux\linux.t32)"
+	WRITE #1 "task.config ~~\demo\arm\kernel\linux\linux.t32"
+
+	WRITE #1 "if os.file(~~\demo\arm\kernel\linux\linux.men)"
+	WRITE #1 "menu.reprogram ~~\demo\arm\kernel\linux\linux.men"
+)
+
+;; Save registers
+WRITE #1 "r.s R0 " register(R0)
+WRITE #1 "r.s R1 " register(R1)
+WRITE #1 "r.s R2 " register(R2)
+WRITE #1 "r.s R3 " register(R3)
+WRITE #1 "r.s R4 " register(R4)
+WRITE #1 "r.s R5 " register(R5)
+WRITE #1 "r.s R6 " register(R6)
+WRITE #1 "r.s R7 " register(R7)
+WRITE #1 "r.s R8 " register(R8)
+WRITE #1 "r.s R9 " register(R9)
+WRITE #1 "r.s R10 " register(R10)
+WRITE #1 "r.s R11 " register(R11)
+WRITE #1 "r.s R12 " register(R12)
+WRITE #1 "r.s R13 " register(R13)
+WRITE #1 "r.s R14 " register(R14)
+WRITE #1 "r.s SPSR " register(SPSR)
+WRITE #1 "r.s CPSR " register(CPSR)
+WRITE #1 "r.s PC " register(PC)
+
+WRITE #1 "r.s R13_ABT " register(R13_ABT)
+WRITE #1 "r.s R14_ABT " register(R14_ABT)
+WRITE #1 "r.s SPSR_ABT " register(SPSR_ABT)
+
+WRITE #1 "r.s R13_IRQ " register(R13_IRQ)
+WRITE #1 "r.s R14_IRQ " register(R14_IRQ)
+WRITE #1 "r.s SPSR_IRQ " register(SPSR_IRQ)
+
+WRITE #1 "r.s R13_SVC " register(R13_SVC)
+WRITE #1 "r.s R14_SVC " register(R14_SVC)
+WRITE #1 "r.s SPSR_SVC " register(SPSR_SVC)
+
+WRITE #1 "r.s R13_UND " register(R13_UND)
+WRITE #1 "r.s R14_UND " register(R14_UND)
+WRITE #1 "r.s SPSR_UND " register(SPSR_UND)
+
+WRITE #1 "r.s R8_FIQ " register(R8_FIQ)
+WRITE #1 "r.s R9_FIQ " register(R9_FIQ)
+WRITE #1 "r.s R10_FIQ " register(R10_FIQ)
+WRITE #1 "r.s R11_FIQ " register(R11_FIQ)
+WRITE #1 "r.s R12_FIQ " register(R12_FIQ)
+WRITE #1 "r.s R13_FIQ " register(R13_FIQ)
+WRITE #1 "r.s R14_FIQ " register(R14_FIQ)
+WRITE #1 "r.s SPSR_FIQ " register(SPSR_FIQ)
+
+WRITE #1 "r.s R8_USR " register(R8_USR)
+WRITE #1 "r.s R9_USR " register(R9_USR)
+WRITE #1 "r.s R10_USR " register(R10_USR)
+WRITE #1 "r.s R11_USR " register(R11_USR)
+WRITE #1 "r.s R12_USR " register(R12_USR)
+WRITE #1 "r.s R13_USR " register(R13_USR)
+WRITE #1 "r.s R14_USR " register(R14_USR)
+
+; CP15, important registers.
+WRITE #1 "d.s C15:0x1 %LONG " Data.Long(C15:0x1)
+WRITE #1 "d.s C15:0x2 %LONG " Data.Long(C15:0x2)
+WRITE #1 "d.s C15:0x19 %LONG " Data.Long(C15:0x19)
+WRITE #1 "d.s C15:0x119 %LONG " Data.Long(C15:0x119)
+
+a.save trace_&CurConfig.ad /MERGECORE
+WRITE #1 "a.load trace_&CurConfig.ad"
+
+
+print "saving sdram data"
+data.save.s3 "sdram_&CurConfig.s3" a:0x00000000++0xfffffff
+WRITE #1 "d.load.s3 sdram_&CurConfig.s3 /noclear /noreg"
+
+
+print "saving esram data"
+data.save.s3 "esram_&CurConfig.s3" a:0x40000000++0x9FFFF
+WRITE #1 "d.load.s3 esram_&CurConfig.s3 /noclear /noreg"
+
+;Enable MMU in simulator
+WRITE #1 "MMU.ON"
+WRITE #1 "MMU.TABLEWALK ON"
+
+; mCore ELF file
+WRITE #1 "data.load.elf " "&ElfFile /noclear /noreg /nocode"
+
+;Open some windows
+WRITE #1 "a.l"
+WRITE #1 "d.l"
+WRITE #1 "Register /SpotLight"
+
+CLOSE #1
+
+enddo
+
+
+
+
+
+
+

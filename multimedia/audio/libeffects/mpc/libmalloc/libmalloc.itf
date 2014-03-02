@@ -1,0 +1,22 @@
+#include <inc/type.h>
+#include <stddef.h>
+
+#include <libeffects/mpc/include/memorybank.idt>
+#include <libeffects/mpc/libmalloc/libmalloc.idt>
+
+interface libeffects.mpc.libmalloc.libmalloc unmanaged {
+
+           int  init_intmem(void * p_intmemX_start, size_t sz_intmemX, void * p_intmemY_start, size_t sz_intmemY);
+
+           int init_extmem(void * p_extmem24_start, size_t sz_extmem24, void * p_extmem16_start, size_t sz_extmem16);
+
+           int init_esram(void * p_esram24_start, size_t sz_esram24, void * p_esram16_start, size_t sz_esram16);
+
+           void *vmalloc(size_t size, t_ExtendedAllocParams * params);
+           void YMEM *vmalloc_y(size_t size, t_ExtendedAllocParams * params);
+           int   vfree(void *mem, t_ExtendedAllocParams * params);
+
+           Mem_Error mcheck_heap_integrity(t_ExtendedAllocParams * params);
+
+           void mdump_heap_info(t_ExtendedAllocParams * params);
+}

@@ -1,0 +1,62 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+ifndef MMSYSTEM
+MMSYSTEM=x
+endif
+ifndef MMBOARD
+MMBOARD=x
+endif
+ifndef CORE
+CORE=arm
+endif
+
+include $(MM_MAKEFILES_DIR)/SharedNmfConfig.mk
+
+ifndef ENS_VERSION
+$(error ENS_VERSION must be defined)
+endif
+
+ifndef MEDIUM
+$(error MEDIUM must be defined)
+endif
+
+ifeq ($(MEDIUM),shared)
+else
+REPOSITORY_HOST := $(REPOSITORY_HOST)/ens_$(MEDIUM)
+INSTALL_NMF_COMP_SRC_HOSTEE_DIR := $(INSTALL_NMF_COMP_SRC_HOSTEE_DIR)/ens_$(MEDIUM)
+endif
+
+ITF_PREFIX = ens
+
+SRCPATH := $(COMPONENT_TOP_DIR)/nmf/host/common;$(COMPONENT_TOP_DIR)/nmf/common;$(COMPONENT_TOP_DIR)/nmf/mpc/common;$(SRCPATH)
+
+ITFS_HEADER=	\
+	sendcommand     \
+	eventhandler    \
+	armnmf_fillthisbuffer  \
+	armnmf_emptythisbuffer \
+	fsminit         \
+	postevent              \
+	sendcommand            \
+        dummy
+
+INSTALL_COMPONENTS = \
+	fsm.component.armnmf_component \
+	fsm.controller.armnmf_controller \
+	nmf.host.shared_bufin \
+	nmf.host.shared_bufout
+
+## Request sources to be installed along with .conf
+INSTALL_NMF_COMP_SRC=true
+
+## Install common directory and its content
+INSTALL_NMF_COMP_SRC_HOSTEE += common
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk
+
+#-------------------------------
+# local Rules
+#-------------------------------
+uninstall:
+install: 

@@ -1,0 +1,28 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ *
+ * \brief   Contains the source for the development of OMX mpeg4enc video component
+ * \author  ST-Ericsson
+ */
+
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vec_mpeg4.idt>
+#include <vfm_vec_mpeg4.idt>
+
+//< void BRC_InitSeq(ts_t1xhv_vec_mpeg4_param_in* mp4_par_in, ts_ddep_vec_mpeg4_custom_param_in* mp4_par_custom_in,  t_sva_brc_out* pBrcOut);
+//< void BRC_InitPict(ts_t1xhv_vec_mpeg4_param_in* mp4_par_in, ts_ddep_vec_mpeg4_custom_param_in* mp4_par_custom_in, t_sva_brc_out* pBrcOut);
+
+//< t_sva_ec_algo_error SP_GetNextFrameParamIn(ts_t1xhv_vec_mpeg4_param_in* mp4_par_in, const ts_ddep_vec_mpeg4_custom_param_in* mp4_custom_par_in);
+void SP_GetNextFrameParamIn(ts_t1xhv_vec_mpeg4_param_in* mp4_par_in, ts_ddep_vec_mpeg4_custom_param_in* mp4_custom_par_in, ts_t1xhv_vec_mpeg4_param_inout* mp4_par_inout, t_sva_timestamp_value pts, t_uint32 frame_number, t_uint32 *buf_level, t_uint32 last_bitstream_size);
+
+void SH_GetNextFrameParamIn(ts_t1xhv_vec_mpeg4_param_in* mp4_par_in, ts_ddep_vec_mpeg4_custom_param_in* mp4_custom_par_in, ts_t1xhv_vec_mpeg4_param_inout* mp4_par_inout, t_sva_timestamp_value pts, t_uint32 frame_number);
+
+void sva_EC_MP4_SetFrameParamOut(const ts_t1xhv_vec_mpeg4_param_out* mp4_par_out, const ts_t1xhv_vec_mpeg4_param_inout* mp4_par_inout);
+
+void set_trace(void * addr,t_uint16 id);
+//void BRC_PostPict(void);
+//void VBR_InitPict();

@@ -1,0 +1,44 @@
+//******************************************************************************************
+Integration of womDemoCpt in mmte for linux:
+//******************************************************************************************
+mmte requires some steps for integrating this new component into its list of valid components
+
+Step 1: Add the womDemoCpt library into mmte
+	in file://../../../imaging\ite\MMTE_Imaging.mk add IMAGING_LIBS += st_omxwomDemoCpt
+	then rebuild ite
+	
+Step 2: Declare the weak factory method
+	in  file://../../../shared\enscore\host\ENS_Core\IFM_WeakSymbols.cpp add following code
+	__weak OMX_ERRORTYPE Factory_womDemoCpt(ImgEns_Component * *ppENSComponent) 
+	{
+		return OMX_ErrorComponentNotFound;
+	}
+	
+Step 4: Declare the factory caller
+	in file://../../../shared\enscore\host\ENS_Core\IFM_Init.cpp in fucntion IFM_Init() add 
+	err = ENS_Core::getInstance()->registerComponent("OMX.STE.WOMDEMOCPT", Factory_womDemoCpt);
+	if (err != OMX_ErrorNone) {
+		return err;
+	}
+
+step 5: Declare the factory prototype
+	in file://../../../shared\enscore\host\ENS_Core\IFM_Init.h add following line
+	OMX_ERRORTYPE Factory_womDemoCpt(ImgEns_Component * *ppENSComponent) __attribute__((weak));
+
+
+step 6:
+	rebuild ENS_Core
+	
+Step 7:
+	in directory shared/mmte re-link mmte
+	rm -rf bin/x86/mmte & make 
+
+
+//******************************************************************************************
+Symbian integration
+//******************************************************************************************
+Only one step: define ID for womDemoCpt ECOM plugin
+	in file://montblanc\multimedia\imaging\uid\inc\st_imaging_uid.hrh
+	take the first unused id and add following lines
+	#define KUidOmxIlStwomDemoCptDll            KStUidDefineImagingXXX
+	#define KUidOmxIlStwomDemoCpt               KUidOmxIlStwomDemoCptDll

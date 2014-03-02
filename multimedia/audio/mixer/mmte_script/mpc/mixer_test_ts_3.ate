@@ -1,0 +1,72 @@
+test_start mix_ts_003
+test_property        TEST_NAME mixer_test_ts_3
+
+alias FILE_NAME     mixer_nonsync.out
+alias OUTPUT_FILE   $(OUTPUT_DIR)/$(FILE_NAME)
+
+#instantiate mixer
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+
+OMX_SetConfig    mixer ENS_IndexConfigTraceSetting nTraceEnable=140 
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+# configure mixer
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+
+MMTE_attach_io       mixer 1 PCM_TS $(AUDIO_STREAMS)/samplerateconv/streams/Portal_48m.pcm 0 0
+MMTE_attach_io       mixer 0 TS_CHECK $(OUTPUT_FILE) 2000000 0 0
+
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Executing 
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# wait until EOF
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+
+ate_check_AV_Sync
+
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+
+mmte_check_CBmessage
+
+MMTE_CheckMemoryStatus
+
+unalias FILE_NAME
+unalias OUTPUT_FILE
+
+test_end

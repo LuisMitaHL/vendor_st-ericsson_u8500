@@ -1,0 +1,136 @@
+Crash Safe Parameter Storage Area Test Procedure
+================================================
+
+Before applying a patch to CSPSA main repository please follow this procedure:
+
+First build all test applications by typing command 'make test' in CSPSA's folder. This will
+produce four executable files that can be run on host PC.
+
+- cspsa-test-core-ram
+- cspsa-test-core-mmc
+- cspsa-test-api-ram
+- cspsa-test-api-mmc
+
+1. Execute core RAM test on PC with Ubuntu
+------------------------------------------
+
+- Execute core ram test './cspsa-test-core-ram'.
+
+The overall result must be 'Ok':
+
+...
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Test Case Info
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Storage type;T_CSPSA_MEMORY_TYPE_RAM
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Module test result;Ok.
+...
+
+If any of the test cases fails one can comment out all other test cases in 'cspsa_test.h'. Then use
+gdb or any other debug tool to find the cause of the failure.
+
+2. Execute API RAM test PC with Ubuntu
+--------------------------------------
+
+Execute api ram test './cspsa-test-api-ram'.
+
+The overall result must be 'Ok':
+
+...
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Test Case Info
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Storage type;T_CSPSA_MEMORY_TYPE_RAM
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Module test result;Ok.
+...
+
+If any of the test cases fails one can comment out all other test cases in 'cspsa_test.h'. Then use
+gdb or any other debug tool to find the cause of the failure.
+
+3. Execute API MMC test on PC with Ubuntu
+-----------------------------------------
+
+Plug in an sdcard in Ubuntu. Type 'dmesg' to get identity of the newly inserted card. Use this device
+name in 'cspsa_test.c', search for '/dev'.
+
+Execute api mmc test './cspsa-test-api-mmc'.
+
+The overall result must be 'Ok':
+
+...
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Test Case Info
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Storage type;T_CSPSA_MEMORY_TYPE_RAM
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Module test result;Ok.
+...
+
+If any of the test cases fails one can comment out all other test cases in 'cspsa_test.h'. Then use
+gdb or any other debug tool to find the cause of the failure.
+
+3. Execute core RAM test under valgrind on PC with Ubuntu
+---------------------------------------------------------
+
+Do test (1) above but under valgrinds supervision. It is done by editing the Makefile, and uncomment
+the line beginning with 'valgrind' and comenting out the line above.
+
+Test exectuion will take a very long time. At least one or two hours. No memory leaks or any kind
+of warnings are allowed. Not even in test code.
+
+4. Execute server daemon and clients under valgrind on PC with Ubuntu
+---------------------------------------------------------------------
+
+Execute server daemon and clients under valgrind.
+
+- Type 'make all' to build all executable.
+
+- Add a ram area to 'cspsa.conf', e.g as area CSPSA2.
+
+- Start server daemon: 'valgrind --leak-check=full --track-origins=yes  --show-reachable=yes ./cspsa-server ./config/cspsa.conf'
+
+- Run CSPSA's command line interface: 'valgrind --leak-check=full --track-origins=yes  --show-reachable=yes  ./cspsa-cmd'
+  >create CSPSA1
+  >write 1 0x12
+  >close
+  >quit
+
+- Run reading client for 60s: 'valgrind --leak-check=full --track-origins=yes  --show-reachable=yes ./exe/cspsa_linux_us_test_client_reader CSPSA2 60'
+
+- Run writing client for 60s: 'valgrind --leak-check=full --track-origins=yes  --show-reachable=yes ./exe/cspsa_linux_us_test_client_writer CSPSA2 60'
+
+No warnings or errors are allowed from valgrind.
+
+5. Execute server daemon and client on target
+---------------------------------------------
+
+It shall be possible to run server daemon and interactive test client on target.
+
+- Build LBP or Android.
+
+- Create or copy a suitable 'cspsa.conf' for the real area and store as '/etc/cspsa.conf' on target.
+  Beware that device names can be a bit different under Android and LBP.
+
+- Start server daemon 'cspsa_linux_us_daemon' (or 'cspsa_linux_us_daemon_dbg' if there is no
+  valid area in target already).
+
+- Build 'cspsa-cmd' and put under '/bin'. Execute 'cspsa-cmd'.
+
+- Try opening the area and read and write some values.
+
+6. Execute API MMC test PC on target
+------------------------------------
+
+Build API MMC test 'cspsa-test-api-mmc' by editing the LBP or Android make files. Edit the
+device name in 'cspsa_test.c', search for '/dev' to match the target. One can use a partition in eMMC
+or on an external sdcard. Just beware of the size of the test area. It is set in 'cspsa_test.c' as
+CFG_CSPSA_TEST_AREA_SIZE.
+
+Execute test on target. This may take an hour or so depending on which tests are enabled.
+
+The overall result must be 'Ok':
+
+...
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Test Case Info
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Storage type;T_CSPSA_MEMORY_TYPE_DEV_MMC
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Module test result;Ok.
+...
+
+If any of the test cases fails one can comment out all other test cases in 'cspsa_test.h'. Then use
+gdb or any other debug tool to find the cause of the failure.
+
+The test log should be stored in the main CSPSA git repository for future references.
+

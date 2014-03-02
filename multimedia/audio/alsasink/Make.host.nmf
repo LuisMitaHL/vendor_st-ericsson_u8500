@@ -1,0 +1,27 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+CPPFLAGS+=-DNVERBOSE -DUNIX \
+-Inmfil/host/wrapper/inc \
+-Ieffect/include
+
+CPPFLAGS += -I$(MMROOT)/audio/alsactrl/include
+CPPFLAGS += -I$(ANDROID_BSP_ROOT)/external/tinyalsa/include
+ifeq ($(MMPROBE_ENABLE_FEATURE_MMPROBE),true)
+  CPPFLAGS += -DMMPROBE_ENABLED
+endif
+
+ITFS_HEADER+= \
+alsasink.nmfil.host.sink \
+alsasink.nmfil.host.wrapper.configure \
+alsasink.nmfil.host.alsasink.configure
+
+COMPONENTS= \
+alsasink.nmfil.host.composite.wrapper
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

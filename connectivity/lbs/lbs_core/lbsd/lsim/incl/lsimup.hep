@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+/*****************************************************************************
+ *  ST-Ericsson GPS Technology
+ *  Copyright (C) 2009 ST-Ericsson.
+ *  All rights reserved
+ *  Date: 03-12-2009
+ *  Author: Rahul Ranade
+ *  Email : rahul.ranade@stericsson.com
+ *****************************************************************************/
+/*****************************************************************************/
+/*!    \file lsimup.hep
+ *  \brief List of prototypes for use by external modules
+ */
+#ifndef LSIMUP_HEP
+#define LSIMUP_HEP
+
+void lsim3_05TcpIpConnectCnf( t_GnsConnectionHandle v_ConnectionHandle );
+void lsim3_06TcpIpConnectErr( t_GnsConnectionHandle v_ConnectionHandle,int v_ErrorType );
+void lsim3_07TcpIpDisconnectInd( t_GnsConnectionHandle v_ConnectionHandle );
+void lsim3_08SendDataCnf(  t_GnsConnectionHandle v_ConnectionHandle );
+void lsim3_09ReceiveDataInd( t_GnsConnectionHandle v_ConnectionHandle , uint8_t *p_Data , uint32_t v_DataLen );
+void lsim3_10SMSReceiveInd( uint8_t *p_Data , uint32_t v_DataLen , uint8_t* p_Hash ,  uint32_t v_HashLen );
+void lsim3_14MobileInfoUpdate( s_gnsSUPL_MobileInfo *p_MobileInfo );
+void lsim3_15WirelessNetworkInfoUpdate( s_gnsWIRELESS_NetworkInfo *p_WirelessNetworkInfo );
+void lsim3_16EstablishBearerCnf();
+void lsim3_17EstablishBearerErr();
+void lsim3_19CloseBearerCnf();
+void lsim3_20CloseBearerErr();
+
+#endif

@@ -1,0 +1,22 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+#
+
+include $(MM_MAKEFILES_DIR)/AudioUid.mk
+
+MODULE_NAME = cscall
+# KStUidAudioDefine089 = 0x20030566 = 537068902
+OST_MODULE_ID = 537068902
+OST_COMPILER = 1
+OST_COMPONENT_NAME = CSCALL
+OST_DICO_NAME = $(OST_COMPONENT_NAME)
+OST_TOP_DICO_LIST = $(MODULE_NAME)::$(KUidTopDicStCscall)
+OST_COMPONENT_INC = $(COMPONENT_TOP_DIR)/inc
+MY_OST_COMPILER_OPTION = "--tgdf=$(COMPONENT_TOP_DIR)/fixed_id.txt"
+MY_OST_COMPILER_OPTION +="--defines=module=cscall"
+MY_OST_COMPILER_OPTION += "--defines=enable_x86"
+TRACECOMPILERDIR = $(INSTALL_TOOLS_DIR)/osttc
+
+
+
+

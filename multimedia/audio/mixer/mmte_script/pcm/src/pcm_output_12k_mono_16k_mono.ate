@@ -1,0 +1,8 @@
+OMX_SetParameter    $1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=16000 eEndian=OMX_EndianBig
+
+if $2 == output_reference
+alias OUTPUT_FILE   $(OUTPUT_DIR)/src_pcm_12k_mono_16k_mono.out
+ate_attach_io       $1 0 MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/samplerateconv/streams/Portal_12k_mono_16k_mono.ref.out
+alias REF_DIGEST    $(AUDIO_STREAMS)/samplerateconv/streams/Portal_12k_mono_16k_mono_digest.hash
+endif

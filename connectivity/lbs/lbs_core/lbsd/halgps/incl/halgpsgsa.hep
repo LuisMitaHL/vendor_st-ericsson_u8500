@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSGSA_HEP__
+#define __HALGPSGSA_HEP__
+/**
+* \file halgpsgsa.hep
+* \date 14/07/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all prototype used by external module.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 14.07.09 </TD><TD> R. GUPTA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+
+/**
+*\addtogroup GSA
+*\{
+*/
+
+/**
+*\fn e_halgps_gsastatus HALGPS20_01GsaInit(void)
+*\brief initialisation of HALGPS-GSA module
+*
+* This function is call by CGPS module when it is being initialized.
+*/
+e_halgps_gsastatus HALGPS20_01GsaInit(void);
+
+
+/**
+*\fn e_halgps_gsastatus HALGPS20_02GsaActivateClockCalibration(void)
+*\brief Function call when Clock calibration is required. This will check the status of AFC and Frequecy error
+* and based on which activate the PWM moudule to start pulse generation. After Pulse generation trigger GPS library
+* should be indicated to start the frequency aiding.
+* 
+*/
+e_halgps_gsastatus HALGPS20_02GsaActivateClockCalibration(void);
+
+
+/**
+*\fn e_halgps_gsastatus HALGPS20_03GsaDeActivateClockCalibration(void)
+*\brief Function call when Clock calibration is not required. This will indicate the PWM moudule to stop pulse generation.
+* After this funtion, GPS library should be already stopped before stopping PWM module.
+* 
+*/
+e_halgps_gsastatus HALGPS20_03GsaDeActivateClockCalibration(void);
+
+
+/**
+*\fn e_halgps_gsastatus HALGPS20_04GsaCheckClockCalibration(void)
+*\brief Function call when Clock calibration is started, and is required to periodically check the AFC status and frequency errors.
+* Based on AFC status and frequency error, clock calibrations may be stopped and GPS library need to be informed accordingly.
+*
+*/
+e_halgps_gsastatus HALGPS20_04GsaCheckClockCalibration(void);
+
+
+/**
+*\}
+*/
+
+#endif /* __HALGPSGSA_HEP__ */

@@ -1,0 +1,25 @@
+
+#ifndef __LIBMALLOC_H_
+#define __LIBMALLOC_H_
+
+#include <libeffects/mpc/include/memorybank.idt>
+
+typedef enum {
+     MEM_SUCCESS             = 0,
+     MEM_INVALID_ADDRESS     =-1,
+     MEM_DISABLED_ALLOC_TYPE =-2,
+     MEM_INTEGRITY_FAILED    =-3
+} Mem_Error;
+
+typedef enum {
+     SIA_HEAP_DEBUG_LEVEL_ERR,
+     SIA_HEAP_DEBUG_LEVEL_INFO,
+     SIA_HEAP_DEBUG_LEVEL_DEBUG
+} e_Sia_Heap_Debug;
+
+typedef struct {
+     t_memory_bank bank;
+     void     * trace_p;
+} t_ExtendedAllocParams;
+
+#endif

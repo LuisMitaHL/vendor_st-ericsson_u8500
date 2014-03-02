@@ -1,0 +1,28 @@
+#include <dma_registers.h>
+#include <msp_registers.h>
+
+interface audiocodec.mpc.msp_dma_controller.control unmanaged {
+    void startDMA(void);
+    void stopDMA(void);
+    void configureDMA();
+    long EXTMMIO * getLogicalParameterPtr(DmaLogicalChannel logChannel);
+    long EXTMMIO * get_relink_param_mem(DmaLogicalChannel logChannel, unsigned int LOS);
+    unsigned int AUDIO_MSP_GetInterruptLevel(MspChannel channel, MspDirection direction);
+
+    DmaLogicalChannel getLogicalChannel( MspChannel msp_channel, MspDirection msp_direction);
+    void AUDIO_DMA_SetChannel_Logical(DmaChannel channel);
+    void AUDIO_DMA_SetRealTime(DmaLogicalChannel logChannel, DmaRealTime real_time);
+    void AUDIO_DMA_SetPriority(DmaLogicalChannel logChannel, DmaPriority priority);
+
+    void start_first_linked_rx_xfer( unsigned int nb_element, unsigned long arm_buffer, MspChannel msp_channel, t_dma_burst_size burst_size, unsigned int LOS);
+    void startFirstRxTransfer(unsigned int nb_element, unsigned long arm_buffer, MspChannel msp_channel, t_dma_burst_size burst_size);
+    void startFirstTxTransfer(unsigned int nb_element, unsigned long arm_buffer, MspChannel msp_channel, t_dma_burst_size burst_size);
+    void startFirstTxLliTransfer(unsigned int nb_element, unsigned long arm_buffer, MspChannel msp_channel, t_dma_burst_size burst_size);
+    void stopRxTransfer(MspChannel msp_channel);
+    void stopTxTransfer(MspChannel msp_channel);
+    
+    // TODO: remove if physical no more used
+    void AUDIO_DMA_Stop    (DmaChannel channel);
+
+    void resetMSP(MspChannel msp_channel);
+}

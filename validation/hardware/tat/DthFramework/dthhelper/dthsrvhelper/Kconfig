@@ -1,0 +1,36 @@
+#
+# DthSrvHelper configuration
+#
+
+menuconfig DTHSRVHELPER
+	bool "DthSrvHelper"
+	depends on DTHFRAMEWORK-INCLUDE && DTHFS && LIBXML2
+	help
+	  depends on DTHFRAMEWORK-INCLUDE, DTHFS and LIBXML2
+
+
+if DTHSRVHELPER
+
+config DTHSRVHELPER_DIR
+	string
+	default ../tat/DthFramework/dthhelper/dthsrvhelper
+
+config DTHSRVHELPER_DEPS
+	string
+	default "DTHFRAMEWORK-INCLUDE DTHFS LIBXML2 "
+
+config DTHSRVHELPER_STRIP_DISABLED
+	bool "Disable strip"
+	depends on DTHSRVHELPER
+	default n
+	help
+	  This will disable strip for this module
+
+config DTHSRVHELPER_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on DTHSRVHELPER
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # DTHSRVHELPER

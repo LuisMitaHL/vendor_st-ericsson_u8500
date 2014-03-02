@@ -1,0 +1,56 @@
+
+#ifndef __CGPSHISTCELL_HIT__
+#define __CGPSHISTCELL_HIT__
+/**
+* \file cgpsHistCell.hic
+* \date 27/08/2010
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains Historical Data  Typedefs CGPS\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 27.08.10</TD><TD> Puneet Misra </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef AGPS_HISTORICAL_DATA_FTR
+
+#include "GN_SUPL_api.h"
+
+typedef struct t_CGPSHistoricalCellInfo
+{
+   s_GN_SUPL_PVTData historicalcell_nav_data;
+   
+   s_LocationId historicalcell_LocationID;
+   
+   struct t_CGPSHistoricalCellInfo *next;
+   
+}t_CGPSHistoricalCellInfo;
+
+
+typedef struct
+{
+   s_GN_SUPL_PVTData rw_historicalcell_nav_data;
+   s_LocationId rw_historicalcell_LocationID;
+
+}t_CGPSRwHistoricalCellInfo;
+
+
+typedef struct
+{
+   uint16_t                   v_NumCell;
+   t_CGPSHistoricalCellInfo *first;
+   t_CGPSHistoricalCellInfo *v_CurrCell;
+   uint16_t                           v_NewDataIndex;
+   }t_CGPSHistoricalCellDatabase;
+
+#endif /* AGPS_HISTORICAL_DATA_FTR */
+
+#endif /*__CGPSHISTCELL_HIT__*/

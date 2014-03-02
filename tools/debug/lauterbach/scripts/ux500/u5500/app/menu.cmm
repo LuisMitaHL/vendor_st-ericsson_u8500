@@ -1,0 +1,93 @@
+;------------------------------------------------------------
+; menu.cmm
+;------------------------------------------------------------
+; Create target specific menu
+;
+; 101004 - KM Initial version
+;-----------------------------------------------------------
+
+
+menu.rp
+(
+	add
+	menu
+	(
+		POPUP "U5500"
+		(
+			menuitem "U5500 V1 peripherals"
+			(
+				per db5500_v1.per
+			)
+
+			menuitem "Cortex-A9 peripherals"
+			(
+				per ~~/percortexa9mpcore.per
+
+			)
+			Separator
+			popup "CoreSight"
+			(
+				menuitem "ETB"            "per peretb.per"
+				menuitem "CTI APP Core 0"	  "per percti.per 0x801CC000"
+				menuitem "CTI APP Core 1"	  "per percti.per 0x801CD000"
+				menuitem "PTM"     "per peretm.per"
+
+			)
+			;separator
+			;menuitem "Save CPU State" "do Save_state"
+			separator
+			popup "Trace"
+			(
+				menuitem "Use PTM" "do etm_settings"
+				menuitem "Use ETB" "Trace.Method ONCHIP"
+		        	menuitem "ETM auto set-up" "a.af"
+			)
+			separator
+		)
+	)
+	
+	add
+	toolbar
+	(
+			separator
+			toolitem "Synch Setup" "do synch_setup.cmm"
+[
+MMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMM
+XXXMXMMMXMXMMMXM
+XMMMXMMMXMXXMMXM
+XMMMMXMXMMXXMMXM
+XXXMMXMXMMXMXMXM
+MMXMMMXMMMXMXMXM
+MMXMMMXMMMXMMXXM
+XXXMMMXMMMXMMXXM
+MMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMM
+MMMMMMMMMMMMMMMM
+]
+			separator
+			toolitem "Etm Selection" "do etm_select.cmm"
+[
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+XXXCXXXXXCXCCCXC
+XCCCCCXCCCXXCXXC
+XCCCCCXCCCXCXCXC
+XCCCCCXCCCXCCCXC
+XXXCCCXCCCXCCCXC
+XCCCCCXCCCXCCCXC
+XCCCCCXCCCXCCCXC
+XXXCCCXCCCXCCCXC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+CCCCCCCCCCCCCCCC
+	]
+	)
+)

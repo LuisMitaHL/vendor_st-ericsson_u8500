@@ -1,0 +1,604 @@
+entry &FileName
+
+if "&FileName"==""
+(
+	; use current script and replace .cmm by .txt
+	&FileName=OS.PPF()
+	&FileName=OS.FILE.NAME(&FileName)
+	&FileName=string.cut("&FileName",-4)+".txt"
+)
+
+; update from AB9540 User manual Draft Rev 1 / November 2011
+
+local &HWI2C
+;&HWI2C=1.  ; I2C access with I2C
+&HWI2C=0. ; I2C access with PRCMU mailbox
+
+open #1 &FileName /Create
+Write #1  "result of script " OS.PPF()
+Write #1  clock.date() clock.time()
+Write #1  ""
+Write #1  "System Control ==================================="
+Write #1  "System control1 / Status: Bank 0x01, Adr 00xxxxxx"
+gosub READ_AB_VALUE 0x0100 TurnOnstatus
+gosub READ_AB_VALUE 0x0101 Resetstatus
+gosub READ_AB_VALUE 0x0102 PonKey1PressStatus
+gosub READ_AB_VALUE 0x0103 SWControlFallback
+Write #1  "System control1 / Status: Bank 0x01, Adr 01xxxxxx"
+gosub READ_AB_VALUE 0x0142 SysClkReqStatus
+gosub READ_AB_VALUE 0x0152 Ctrldef0
+gosub READ_AB_VALUE 0x0154 CtrlUsbUiccPud
+gosub READ_AB_VALUE 0x0155 CtrlVaux5
+gosub READ_AB_VALUE 0x0156 CtrlVaux6
+gosub READ_AB_VALUE 0x0157 CtrlIsoUicc
+Write #1  "System control 1/ Bank 0x01, Adr 10xxxxxx"
+gosub READ_AB_VALUE 0x0180 SystemCtrl1
+gosub READ_AB_VALUE 0x0181 SystemCtrl2
+gosub READ_AB_VALUE 0x0182 SystemCtrl4
+Write #1  "System control 2 / Bank 0x02"
+gosub READ_AB_VALUE 0x0200 SystemCtrl3
+gosub READ_AB_VALUE 0x0201 MainWDogCtrl
+gosub READ_AB_VALUE 0x0202 MainWDogTimer
+gosub READ_AB_VALUE 0x0203 LowBat
+gosub READ_AB_VALUE 0x0204 BattOk
+Write #1  "Clock control registers"
+gosub READ_AB_VALUE 0x0205 SysClkTimer
+gosub READ_AB_VALUE 0x0206 SmpsClkCtrl
+gosub READ_AB_VALUE 0x0207 SmpsClkSel1
+gosub READ_AB_VALUE 0x0208 SmpsClkSel2
+gosub READ_AB_VALUE 0x0209 SmpsClkSel3
+gosub READ_AB_VALUE 0x020A SysUlpClkConf
+gosub READ_AB_VALUE 0x020B SysUlpClkCtrl1
+gosub READ_AB_VALUE 0x020C SysClkCtrl
+gosub READ_AB_VALUE 0x020D SysClkReq1Valid
+gosub READ_AB_VALUE 0x020F SystemCtrlSup
+gosub READ_AB_VALUE 0x0210 SysClkReq1RfClkBuf
+gosub READ_AB_VALUE 0x0211 SysClkReq2RfClkBuf
+gosub READ_AB_VALUE 0x0212 SysClkReq3RfClkBuf
+gosub READ_AB_VALUE 0x0213 SysClkReq4RfClkBuf
+gosub READ_AB_VALUE 0x0214 SysClkReq5RfClkBuf
+gosub READ_AB_VALUE 0x0215 SysClkReq6RfClkBuf
+gosub READ_AB_VALUE 0x0216 SysClkReq7RfClkBuf
+gosub READ_AB_VALUE 0x0217 SysClkReq8RfClkBuf
+gosub READ_AB_VALUE 0x0220 DitherClkCtrl
+gosub READ_AB_VALUE 0x0230 SwatCtrl
+gosub READ_AB_VALUE 0x0232 HiqClkCtrl
+gosub READ_AB_VALUE 0x0233 Vaux0SysClkCtrl
+gosub READ_AB_VALUE 0x0234 SysClk12BufXCtrl
+gosub READ_AB_VALUE 0x0235 SysClk12ConfCtrl
+gosub READ_AB_VALUE 0x0236 SysClk12BufXCtrl2
+gosub READ_AB_VALUE 0x0237 SysClk12BufX1Valid
+gosub READ_AB_VALUE 0x0238 SysClk12BufX2Valid
+gosub READ_AB_VALUE 0x0239 SysClk12BufX3Valid
+gosub READ_AB_VALUE 0x023A SysClk12BufX4Valid
+
+Write #1  "Supply Control======================================"
+Write #1  "Regu control1 / Bank 0x03 - Adr 0xxxxxxx"
+gosub READ_AB_VALUE 0x0300 ReguSerialCtrl1
+gosub READ_AB_VALUE 0x0303 ReguRequestCtrl1
+gosub READ_AB_VALUE 0x0304 ReguRequestCtrl2
+gosub READ_AB_VALUE 0x0305 ReguRequestCtrl3
+gosub READ_AB_VALUE 0x0306 ReguRequestCtrl4
+gosub READ_AB_VALUE 0x0307 ReguSysClkReq1HPValid1
+gosub READ_AB_VALUE 0x0308 ReguSysClkReq1HPValid2
+gosub READ_AB_VALUE 0x0309 ReguHwHPReq1Valid1
+gosub READ_AB_VALUE 0x030A ReguHwHPReq1Valid2
+gosub READ_AB_VALUE 0x030B ReguHwHPReq2Valid1
+gosub READ_AB_VALUE 0x030C ReguHwHPReq2Valid2
+gosub READ_AB_VALUE 0x030D ReguSwHPReqValid1
+gosub READ_AB_VALUE 0x030E ReguSwHPReqValid2
+gosub READ_AB_VALUE 0x030F ReguSysClkReqValid1
+gosub READ_AB_VALUE 0x0310 ReguSysClkReqValid2
+gosub READ_AB_VALUE 0x0311 ReguVaux4ReqValid
+Write #1  "Regu control1 / Bank 0x03 - Adr 1xxxxxxx"
+gosub READ_AB_VALUE 0x0380 ReguMisc1
+gosub READ_AB_VALUE 0x0381 OTGSupplyCtrl
+gosub READ_AB_VALUE 0x0382 VusbCtrl
+gosub READ_AB_VALUE 0x0383 VaudioSupply
+gosub READ_AB_VALUE 0x0384 ReguCtrl1VAmic
+gosub READ_AB_VALUE 0x0385 RegVintCore12HW
+gosub READ_AB_VALUE 0x0386 RegVaux0HzABOff
+Write #1  "Regu control2 / Bank 0x04, Adr 00xxxxxx"
+gosub READ_AB_VALUE 0x0400 ArmRegu1
+gosub READ_AB_VALUE 0x0401 ArmRegu2
+gosub READ_AB_VALUE 0x0402 VsmpsCRegu
+gosub READ_AB_VALUE 0x0403 VsmpsARegu
+gosub READ_AB_VALUE 0x0404 VsmpsBRegu
+gosub READ_AB_VALUE 0x0405 VsafeRegu
+gosub READ_AB_VALUE 0x0406 VpllVanaRegu
+gosub READ_AB_VALUE 0x0408 ExtSupplyRegu
+gosub READ_AB_VALUE 0x0409 Vaux12Regu
+gosub READ_AB_VALUE 0x040A VRF1Vaux3Regu
+gosub READ_AB_VALUE 0x040B VarmSel1
+gosub READ_AB_VALUE 0x040C VarmSel2
+gosub READ_AB_VALUE 0x040D VarmSel3
+gosub READ_AB_VALUE 0x040E VsmpsCSel1
+gosub READ_AB_VALUE 0x040F VsmpsCSel2
+gosub READ_AB_VALUE 0x0410 VsmpsCSel3
+gosub READ_AB_VALUE 0x0411 VBBSel1
+gosub READ_AB_VALUE 0x0412 VBBSel2
+gosub READ_AB_VALUE 0x0413 VsmpsASel1
+gosub READ_AB_VALUE 0x0414 VsmpsASel2
+gosub READ_AB_VALUE 0x0415 VsmpsASel3
+gosub READ_AB_VALUE 0x0417 VsmpsBSel1
+gosub READ_AB_VALUE 0x0418 VsmpsBSel2
+gosub READ_AB_VALUE 0x0419 VsmpsBSel3
+gosub READ_AB_VALUE 0x041B VsafeSel1
+gosub READ_AB_VALUE 0x041C VsafeSel2
+gosub READ_AB_VALUE 0x041D VsafeSel3
+gosub READ_AB_VALUE 0x041F Vaux1Sel
+gosub READ_AB_VALUE 0x0420 Vaux2Sel
+gosub READ_AB_VALUE 0x0421 VRF1Vaux3Sel
+gosub READ_AB_VALUE 0x0422 ReguCtrlExtSup
+gosub READ_AB_VALUE 0x0423 ModemCtrl2
+gosub READ_AB_VALUE 0x0424 VarmSel4
+gosub READ_AB_VALUE 0x0425 VarmSel5
+gosub READ_AB_VALUE 0x0426 VarmSel6
+gosub READ_AB_VALUE 0x0427 VarmSel7
+gosub READ_AB_VALUE 0x0428 VarmSel4567Ctrl
+gosub READ_AB_VALUE 0x0429 VanaVpllSel
+gosub READ_AB_VALUE 0x042A VapeSel45Ctrl
+gosub READ_AB_VALUE 0x042B VapeSel4
+gosub READ_AB_VALUE 0x042C VapeSel5
+gosub READ_AB_VALUE 0x042D Vaux4ReqCtrl
+gosub READ_AB_VALUE 0x042E Vaux4Regu
+gosub READ_AB_VALUE 0x042F Vaux4Sel
+gosub READ_AB_VALUE 0x0430 Vaux0SelGPReg
+Write #1  "Regu control2 / VsmpsM: Bank 0x4, Adr 01xxxxxx"
+gosub READ_AB_VALUE 0x0440 VsmpsMRegu
+gosub READ_AB_VALUE 0x0441 VsmpsMSel1
+gosub READ_AB_VALUE 0x0442 VsmpsMSel2
+gosub READ_AB_VALUE 0x0443 ReguCtrlDisch
+gosub READ_AB_VALUE 0x0444 ReguCtrlDisch2
+gosub READ_AB_VALUE 0x0445 VsmpsMSel3
+gosub READ_AB_VALUE 0x0446 VsmpsMSel4
+gosub READ_AB_VALUE 0x0447 VsmpsMSel34Ctrl
+gosub READ_AB_VALUE 0x0448 ReguCtrlDisCh3
+
+Write #1  "Sim Control SIM: Bank 0x4, Adr 10xxxxxx ============"
+gosub READ_AB_VALUE 0x0480 Reg1-SGR1L
+gosub READ_AB_VALUE 0x0481 Reg1-SGR1U
+gosub READ_AB_VALUE 0x0482 Reg2-SCR1L
+gosub READ_AB_VALUE 0x0483 Reg2-SCR1U
+gosub READ_AB_VALUE 0x0484 Reg3-SCTRLRL
+gosub READ_AB_VALUE 0x0485 Reg3-SCTRLRU
+gosub READ_AB_VALUE 0x0486 IsoUiccIntSourceReg
+gosub READ_AB_VALUE 0x0487 IsoUiccIntLatchReg
+gosub READ_AB_VALUE 0x0488 IsoUiccIntMaskReg
+gosub READ_AB_VALUE 0x0489 Reg4-UsbUicc
+gosub READ_AB_VALUE 0x048A SDelaySel
+gosub READ_AB_VALUE 0x048B VsmpsMSelCtrlReg
+gosub READ_AB_VALUE 0x048C VsmpsMSel34CtrlReg
+
+Write #1  "USB registers======================================="
+Write #1  "USB Control: Bank 0x5, Adr 10xxxxxx"
+gosub READ_AB_VALUE 0x0580 UsbLineStatus
+gosub READ_AB_VALUE 0x0581 UsbLineCtrl1
+gosub READ_AB_VALUE 0x0582 UsbLineCtrl2
+gosub READ_AB_VALUE 0x0583 UsbLineCtrl3
+gosub READ_AB_VALUE 0x0587 UsbOTGCtrl
+gosub READ_AB_VALUE 0x0588 UsbOTGStatus
+gosub READ_AB_VALUE 0x0589 UsbPHYStatus
+gosub READ_AB_VALUE 0x058A UsbPhyCtrl
+gosub READ_AB_VALUE 0x0591 UsbAdpProbeTimerCurrentL
+gosub READ_AB_VALUE 0x0592 UsbAdpProbeTimerCurrentH
+gosub READ_AB_VALUE 0x0593 UsbAdpCtrl
+gosub READ_AB_VALUE 0x0594 UsbLink1Status
+
+Write #1  "Accessory detection: Bank 8, Adr 10xxxxxx==========="
+gosub READ_AB_VALUE 0x0880 AccDetectDb1Th
+gosub READ_AB_VALUE 0x0881 AccDetect2Th
+gosub READ_AB_VALUE 0x0882 AccDetectCtrl
+
+Write #1  "GPADC: Bank 0x0A===================================="
+gosub READ_AB_VALUE 0x0A00 GPADCCtrl1
+gosub READ_AB_VALUE 0x0A01 GPADCCtrl2
+gosub READ_AB_VALUE 0x0A02 GPADCCtrl3
+gosub READ_AB_VALUE 0x0A03 GPADCTrigTimer
+gosub READ_AB_VALUE 0x0A04 GPADCStatus
+gosub READ_AB_VALUE 0x0A05 GPADCSwDataL
+gosub READ_AB_VALUE 0x0A06 GPADCSwDataH
+gosub READ_AB_VALUE 0x0A07 GPADCHwDataL
+gosub READ_AB_VALUE 0x0A08 GPADCHwDataH
+
+Write #1  "Charger============================================"
+Write #1  "Status: Bank 0x0B, Adr 00xxxxxx"
+gosub READ_AB_VALUE 0x0B02 UsbChStatus1
+gosub READ_AB_VALUE 0x0B03 UsbChStatus2
+gosub READ_AB_VALUE 0x0B05 ChargerStatus
+
+Write #1  "Control: Bank 0x0B, Adr 01xxxxxx"
+gosub READ_AB_VALUE 0x0B40 ChVoltLevel
+gosub READ_AB_VALUE 0x0B41 ChVoltLevelMax
+gosub READ_AB_VALUE 0x0B42 ChOutCurrLevel
+gosub READ_AB_VALUE 0x0B43 ChOutCurrLevelMax
+gosub READ_AB_VALUE 0x0B44 ChOutCurrLevelBtempLowMed
+gosub READ_AB_VALUE 0x0B50 ChargWDTimer
+gosub READ_AB_VALUE 0x0B51 ChargWDCtrl
+gosub READ_AB_VALUE 0x0B52 BtempHighTh
+gosub READ_AB_VALUE 0x0B53 LedIndicatorPwmCtrl
+gosub READ_AB_VALUE 0x0B54 LedIndicatorPwmDuty
+gosub READ_AB_VALUE 0x0B55 BattOVV
+gosub READ_AB_VALUE 0x0B56 BChargerCtrl
+gosub READ_AB_VALUE 0x0B57 CharLedBlinkCtrl
+gosub READ_AB_VALUE 0x0B60 BatCtrlCurrentSource
+
+Write #1  "Main control: Bank 0x0B, Adr 10xxxxxx"
+gosub READ_AB_VALUE 0x0BA0 RegIDDetCtrl1
+gosub READ_AB_VALUE 0x0BA1 RegIDDetCtrl2
+gosub READ_AB_VALUE 0x0BA2 RegIDDetCtrl3
+gosub READ_AB_VALUE 0x0BA3 RegIDDetCtrl4
+gosub READ_AB_VALUE 0x0BA4 RegIDDetKeyLevel
+gosub READ_AB_VALUE 0x0BA5 MissKeyPress
+gosub READ_AB_VALUE 0x0BA6 RegIDDetVth
+gosub READ_AB_VALUE 0x0BA7 RegIDDetState
+gosub READ_AB_VALUE 0x0BA9 RegCarKitTst
+gosub READ_AB_VALUE 0x0BAF RegIdDetKeyDeglitch
+gosub READ_AB_VALUE 0x0BB0 RegIdDetKeyTimer1
+gosub READ_AB_VALUE 0x0BB1 RegIdDetKeyTimer2
+gosub READ_AB_VALUE 0x0BB2 RegIdDetKeyTimer3
+
+
+Write #1  "USB Control: Bank 0x0B, Adr 11xxxxxx"
+gosub READ_AB_VALUE 0x0BC0 UsbChCtrl1
+gosub READ_AB_VALUE 0x0BC1 UsbChCtrl2
+gosub READ_AB_VALUE 0x0BC2 UsbChCurrLevel
+gosub READ_AB_VALUE 0x0BF5 UsbChOutCurLim
+
+Write #1  "Gas gauge: Bank 0x0C================================"
+gosub READ_AB_VALUE 0x0C00 CCCtrl
+gosub READ_AB_VALUE 0x0C07 CCSampleConvL
+gosub READ_AB_VALUE 0x0C08 CCSampleConvH
+gosub READ_AB_VALUE 0x0C09 CCCounterAvgOffset
+gosub READ_AB_VALUE 0x0C0A CCOffset
+gosub READ_AB_VALUE 0x0C10 NconvAccu
+gosub READ_AB_VALUE 0x0C11 NconvAccuCtrl
+gosub READ_AB_VALUE 0x0C12 NconvAccuLow
+gosub READ_AB_VALUE 0x0C13 NconvAccuMed
+gosub READ_AB_VALUE 0x0C14 NconvAccuHigh
+
+Write #1  "Audio: Bank 0x0D ==================================="
+
+Write #1  "General Power Up and Software reset"
+gosub READ_AB_VALUE 0x0D00 PowerUp
+gosub READ_AB_VALUE 0x0D01 AudSwReset
+gosub READ_AB_VALUE 0x0D02 ADPathEna
+gosub READ_AB_VALUE 0x0D03 DAPathEna
+gosub READ_AB_VALUE 0x0D04 AnaConf1
+gosub READ_AB_VALUE 0x0D05 AnaConf2
+gosub READ_AB_VALUE 0x0D06 DigMicConf
+gosub READ_AB_VALUE 0x0D07 AnaConf3
+gosub READ_AB_VALUE 0x0D08 AnaConf4
+gosub READ_AB_VALUE 0x0D09 DAPathConf
+gosub READ_AB_VALUE 0x0D0A MuteConf
+gosub READ_AB_VALUE 0x0D0B ShortCirConf
+gosub READ_AB_VALUE 0x0D0C AnaConf5
+gosub READ_AB_VALUE 0x0D0D EnvCPConf
+gosub READ_AB_VALUE 0x0D0E SigEnvConf
+gosub READ_AB_VALUE 0x0D0F PWMGenConf1
+gosub READ_AB_VALUE 0x0D10 PWMGenConf2
+gosub READ_AB_VALUE 0x0D11 PWMGenConf3
+gosub READ_AB_VALUE 0x0D14 AnaGain1
+gosub READ_AB_VALUE 0x0D15 AnaGain2
+gosub READ_AB_VALUE 0x0D16 AnaGain3
+gosub READ_AB_VALUE 0x0D17 AnaGain4
+gosub READ_AB_VALUE 0x0D18 DigLinHsLGain
+gosub READ_AB_VALUE 0x0D19 DigLinHsRGain
+gosub READ_AB_VALUE 0x0D1A ADFiltConf
+gosub READ_AB_VALUE 0x0D1B DigIFConf1
+gosub READ_AB_VALUE 0x0D1C DigIFConf2
+gosub READ_AB_VALUE 0x0D1D DigIFConf3
+gosub READ_AB_VALUE 0x0D1E DigIFConf4
+
+Write #1  "TDM Audio Interface slots assignment from AD path"
+gosub READ_AB_VALUE 0x0D1F ADSlotSel1
+gosub READ_AB_VALUE 0x0D20 ADSlotSel2
+gosub READ_AB_VALUE 0x0D21 ADSlotSel3
+gosub READ_AB_VALUE 0x0D22 ADSlotSel4
+gosub READ_AB_VALUE 0x0D23 ADSlotSel5
+gosub READ_AB_VALUE 0x0D24 ADSlotSel6
+gosub READ_AB_VALUE 0x0D25 ADSlotSel7
+gosub READ_AB_VALUE 0x0D26 ADSlotSel8
+gosub READ_AB_VALUE 0x0D27 ADSlotSel9
+gosub READ_AB_VALUE 0x0D28 ADSlotSel10
+gosub READ_AB_VALUE 0x0D29 ADSlotSel11
+gosub READ_AB_VALUE 0x0D2A ADSlotSel12
+gosub READ_AB_VALUE 0x0D2B ADSlotSel13
+gosub READ_AB_VALUE 0x0D2C ADSlotSel14
+gosub READ_AB_VALUE 0x0D2D ADSlotSel15
+gosub READ_AB_VALUE 0x0D2E ADSlotSel16
+gosub READ_AB_VALUE 0x0D2F ADSlotHizCtrl1
+gosub READ_AB_VALUE 0x0D30 ADSlotHizCtrl2
+gosub READ_AB_VALUE 0x0D31 ADSlotHizCtrl3
+gosub READ_AB_VALUE 0x0D32 ADSlotHizCtrl4
+
+Write #1  "DA channels allocation from TDM Audio Interface slots"
+gosub READ_AB_VALUE 0x0D33 DASlotConf1
+gosub READ_AB_VALUE 0x0D34 DASlotConf2
+gosub READ_AB_VALUE 0x0D35 DASlotConf3
+gosub READ_AB_VALUE 0x0D36 DASlotConf4
+gosub READ_AB_VALUE 0x0D37 DASlotConf5
+gosub READ_AB_VALUE 0x0D38 DASlotConf6
+gosub READ_AB_VALUE 0x0D39 DASlotConf7
+gosub READ_AB_VALUE 0x0D3A DASlotConf8
+
+Write #1  "Class-D EMI Control"
+gosub READ_AB_VALUE 0x0D3B ClassDConf1
+
+Write #1  "Dmic decimator filter"
+gosub READ_AB_VALUE 0x0D3E DmicFiltConf
+
+Write #1  "Digital Multiplexers configuration"
+gosub READ_AB_VALUE 0x0D3F DigMultConf1
+gosub READ_AB_VALUE 0x0D40 DigMultConf2
+
+Write #1  "AD paths digital gains"
+gosub READ_AB_VALUE 0x0D41 ADDigGain1
+gosub READ_AB_VALUE 0x0D42 ADDigGain2
+gosub READ_AB_VALUE 0x0D43 ADDigGain3
+gosub READ_AB_VALUE 0x0D44 ADDigGain4
+gosub READ_AB_VALUE 0x0D45 ADDigGain5
+gosub READ_AB_VALUE 0x0D46 ADDigGain6
+
+
+Write #1  "DA paths digital gains"
+gosub READ_AB_VALUE 0x0D47 DADigGain1
+gosub READ_AB_VALUE 0x0D48 DADigGain2
+gosub READ_AB_VALUE 0x0D49 DADigGain3
+gosub READ_AB_VALUE 0x0D4A DADigGain4
+gosub READ_AB_VALUE 0x0D4B DADigGain5
+gosub READ_AB_VALUE 0x0D4C DADigGain6
+
+Write #1  "Loopbacks digital gains"
+gosub READ_AB_VALUE 0x0D4D ADDigLoopGain1
+gosub READ_AB_VALUE 0x0D4E ADDigLoopGain2
+
+Write #1  "Output drivers digital gains"
+gosub READ_AB_VALUE 0x0D4F HsLEarDigGain
+gosub READ_AB_VALUE 0x0D50 HsRDigGain
+
+Write #1  "Side tone FIRs gain"
+gosub READ_AB_VALUE 0x0D51 SidFIRGain1
+gosub READ_AB_VALUE 0x0D52 SidFIRGain2
+
+Write #1  "Acoustical Noise Cancellation (ANC) Control"
+gosub READ_AB_VALUE 0x0D53 ANCConf1
+gosub READ_AB_VALUE 0x0D54 ANCConf2
+gosub READ_AB_VALUE 0x0D55 ANCConf3
+gosub READ_AB_VALUE 0x0D56 ANCConf4
+gosub READ_AB_VALUE 0x0D57 ANCConf5
+gosub READ_AB_VALUE 0x0D58 ANCConf6
+gosub READ_AB_VALUE 0x0D59 ANCConf7
+gosub READ_AB_VALUE 0x0D5A ANCConf8
+gosub READ_AB_VALUE 0x0D5B ANCConf9
+gosub READ_AB_VALUE 0x0D5C ANCConf10
+gosub READ_AB_VALUE 0x0D5D ANCConf11
+gosub READ_AB_VALUE 0x0D5E ANCConf12
+gosub READ_AB_VALUE 0x0D5F ANCConf13
+gosub READ_AB_VALUE 0x0D60 ANCConf14
+
+Write #1  "Side-tone FIR Controls"
+gosub READ_AB_VALUE 0x0D61 SidFIRAdr
+gosub READ_AB_VALUE 0x0D62 SidFIRCoef1
+gosub READ_AB_VALUE 0x0D63 SidFIRCoef2
+gosub READ_AB_VALUE 0x0D64 SidFIRConf
+gosub READ_AB_VALUE 0x0D65 AudIntMask1
+gosub READ_AB_VALUE 0x0D66 AudIntSource1
+gosub READ_AB_VALUE 0x0D67 AudIntMask2
+gosub READ_AB_VALUE 0x0D68 AudIntSource2
+
+Write #1  "Burst FIFO Control"
+gosub READ_AB_VALUE 0x0D69 FIFOConf1
+gosub READ_AB_VALUE 0x0D6A FIFOConf2
+gosub READ_AB_VALUE 0x0D6B FIFOConf3
+gosub READ_AB_VALUE 0x0D6C FIFOConf4
+gosub READ_AB_VALUE 0x0D6D FIFOConf5
+gosub READ_AB_VALUE 0x0D6E FIFOConf6
+
+Write #1  "Audio module revision"
+gosub READ_AB_VALUE 0x0D6F AudRev
+
+Write #1  "External Microphones and Drivers Control"
+gosub READ_AB_VALUE 0x0D70 EPWM1Conf
+gosub READ_AB_VALUE 0x0D71 EPWM2Conf
+gosub READ_AB_VALUE 0x0D72 DmicFreq
+gosub READ_AB_VALUE 0x0D73 UsbHsGain
+gosub READ_AB_VALUE 0x0D74 UsbDrvCtrl
+gosub READ_AB_VALUE 0x0D75 EarGainMicSel
+gosub READ_AB_VALUE 0x0D76 PDMCtrl
+
+Write #1  "Class-D Driver Control"
+gosub READ_AB_VALUE 0x0D77 ClDEmiCtrl
+gosub READ_AB_VALUE 0x0D78 HFGainCtrl
+gosub READ_AB_VALUE 0x0D79 VibGainCtrl
+gosub READ_AB_VALUE 0x0D7A
+gosub READ_AB_VALUE 0x0D7B
+gosub READ_AB_VALUE 0x0D7C
+gosub READ_AB_VALUE 0x0D7D
+gosub READ_AB_VALUE 0x0D7E
+gosub READ_AB_VALUE 0x0D7F
+
+Write #1  "Interrupt: Bank 0x0E ==============================="
+gosub READ_AB_VALUE 0x0E00 ITSource1
+gosub READ_AB_VALUE 0x0E01 ITSource2
+gosub READ_AB_VALUE 0x0E02 ITSource3
+gosub READ_AB_VALUE 0x0E03 ITSource4
+gosub READ_AB_VALUE 0x0E04 ITSource5
+gosub READ_AB_VALUE 0x0E05 ITSource6
+gosub READ_AB_VALUE 0x0E06 ITSource7
+gosub READ_AB_VALUE 0x0E07 ITSource8
+gosub READ_AB_VALUE 0x0E09 ITSource10
+gosub READ_AB_VALUE 0x0E0C ITSource13
+gosub READ_AB_VALUE 0x0E12 ITSource19
+gosub READ_AB_VALUE 0x0E13 ITSource20
+gosub READ_AB_VALUE 0x0E14 ITSource21
+gosub READ_AB_VALUE 0x0E15 ITSource22
+gosub READ_AB_VALUE 0x0E18 ITSource25
+gosub READ_AB_VALUE 0x0E20 ITLatch1
+gosub READ_AB_VALUE 0x0E21 ITLatch2
+gosub READ_AB_VALUE 0x0E22 ITLatch3
+gosub READ_AB_VALUE 0x0E23 ITLatch4
+gosub READ_AB_VALUE 0x0E24 ITLatch5
+gosub READ_AB_VALUE 0x0E26 ITLatch7
+gosub READ_AB_VALUE 0x0E27 ITLatch8
+gosub READ_AB_VALUE 0x0E28 ITLatch9
+gosub READ_AB_VALUE 0x0E29 ITLatch10
+gosub READ_AB_VALUE 0x0E2B ITLatch12
+gosub READ_AB_VALUE 0x0E2C ITLatch13
+gosub READ_AB_VALUE 0x0E2D ITLatch14
+gosub READ_AB_VALUE 0x0E32 ITLatch19
+gosub READ_AB_VALUE 0x0E33 ITLatch20
+gosub READ_AB_VALUE 0x0E34 ITLatch21
+gosub READ_AB_VALUE 0x0E35 ITLatch22
+gosub READ_AB_VALUE 0x0E38 ITLatch25
+gosub READ_AB_VALUE 0x0E40 ITMask1
+gosub READ_AB_VALUE 0x0E41 ITMask2
+gosub READ_AB_VALUE 0x0E42 ITMask3
+gosub READ_AB_VALUE 0x0E43 ITMask4
+gosub READ_AB_VALUE 0x0E44 ITMask5
+gosub READ_AB_VALUE 0x0E46 ITMask7
+gosub READ_AB_VALUE 0x0E47 ITMask8
+gosub READ_AB_VALUE 0x0E48 ITMask9
+gosub READ_AB_VALUE 0x0E49 ITMask10
+gosub READ_AB_VALUE 0x0E4B ITMask12
+gosub READ_AB_VALUE 0x0E4C ITMask13
+gosub READ_AB_VALUE 0x0E4D ITMask14
+gosub READ_AB_VALUE 0x0E52 ITMask19
+gosub READ_AB_VALUE 0x0E53 ITMask20
+gosub READ_AB_VALUE 0x0E54 ITMask21
+gosub READ_AB_VALUE 0x0E55 ITMask22
+gosub READ_AB_VALUE 0x0E58 ITMask25
+gosub READ_AB_VALUE 0x0E60 ITLatchHier1
+gosub READ_AB_VALUE 0x0E61 ITLatchHier2
+gosub READ_AB_VALUE 0x0E62 ITLatchHier3
+
+
+Write #1  "RTC: Bank 0xF======================================="
+gosub READ_AB_VALUE 0x0F00 SwitchOffStatus
+gosub READ_AB_VALUE 0x0F01 CCConf
+gosub READ_AB_VALUE 0x0F02 RTCReadRequest
+gosub READ_AB_VALUE 0x0F03 WatchtimeSecMid
+gosub READ_AB_VALUE 0x0F04 WatchtimeSecHigh
+gosub READ_AB_VALUE 0x0F05 WatchtimeMinLow
+gosub READ_AB_VALUE 0x0F06 WatchtimeMinMid
+gosub READ_AB_VALUE 0x0F07 WatchtimeMinHigh
+gosub READ_AB_VALUE 0x0F08 AlarmMinLow
+gosub READ_AB_VALUE 0x0F09 AlarmMinMid
+gosub READ_AB_VALUE 0x0F0A AlarmMinHigh
+gosub READ_AB_VALUE 0x0F0B RtcCtrl
+gosub READ_AB_VALUE 0x0F0C RtcBackupChg
+gosub READ_AB_VALUE 0x0F0D RtcForceBackup
+gosub READ_AB_VALUE 0x0F0E RtcCalibration
+gosub READ_AB_VALUE 0x0F0F RtcSwitchStatus
+gosub READ_AB_VALUE 0x0F10 RtcRestartXtal32k
+gosub READ_AB_VALUE 0x0F11 RtcCtrl1
+
+Write #1  "GPIOs==============================================="
+gosub READ_AB_VALUE 0x1000 GpioSel1
+gosub READ_AB_VALUE 0x1001 GpioSel2
+gosub READ_AB_VALUE 0x1002 GpioSel3
+gosub READ_AB_VALUE 0x1003 GpioSel4
+gosub READ_AB_VALUE 0x1004 GpioSel5
+gosub READ_AB_VALUE 0x1005 GpioSel6
+gosub READ_AB_VALUE 0x1006 GpioSel7
+gosub READ_AB_VALUE 0x1010 GpioDir1
+gosub READ_AB_VALUE 0x1011 GpioDir2
+gosub READ_AB_VALUE 0x1012 GpioDir3
+gosub READ_AB_VALUE 0x1013 GpioDir4
+gosub READ_AB_VALUE 0x1014 GpioDir5
+gosub READ_AB_VALUE 0x1015 GpioDir6
+gosub READ_AB_VALUE 0x1016 GpioDir7
+gosub READ_AB_VALUE 0x1020 GpioOut1
+gosub READ_AB_VALUE 0x1021 GpioOut2
+gosub READ_AB_VALUE 0x1022 GpioOut3
+gosub READ_AB_VALUE 0x1023 GpioOut4
+gosub READ_AB_VALUE 0x1024 GpioOut5
+gosub READ_AB_VALUE 0x1025 GpioOut6
+gosub READ_AB_VALUE 0x1026 GpioOut7
+gosub READ_AB_VALUE 0x1030 GpioPud1
+gosub READ_AB_VALUE 0x1031 GpioPud2
+gosub READ_AB_VALUE 0x1032 GpioPud3
+gosub READ_AB_VALUE 0x1033 GpioPud4
+gosub READ_AB_VALUE 0x1034 GpioPud5
+gosub READ_AB_VALUE 0x1035 GpioPud6
+gosub READ_AB_VALUE 0x1036 GpioPud7
+gosub READ_AB_VALUE 0x1040 GpioIn1
+gosub READ_AB_VALUE 0x1041 GpioIn2
+gosub READ_AB_VALUE 0x1042 GpioIn3
+gosub READ_AB_VALUE 0x1043 GpioIn4
+gosub READ_AB_VALUE 0x1044 GpioIn5
+gosub READ_AB_VALUE 0x1045 GpioIn6
+gosub READ_AB_VALUE 0x1046 GpioIn7
+gosub READ_AB_VALUE 0x1050 AlternatFunction
+
+Write #1  "PWMOut generators=================================="
+gosub READ_AB_VALUE 0x1060 PWMOutCtrl1
+gosub READ_AB_VALUE 0x1061 PWMOutCtrl2
+gosub READ_AB_VALUE 0x1062 PWMOutCtrl3
+gosub READ_AB_VALUE 0x1063 PWMOutCtrl4
+gosub READ_AB_VALUE 0x1064 PWMOutCtrl5
+gosub READ_AB_VALUE 0x1065 PWMOutCtrl6
+gosub READ_AB_VALUE 0x1066 PWMOutCtrl7
+gosub READ_AB_VALUE 0x1067 I2CPadCtrl
+gosub READ_AB_VALUE 0x1068 PWMOut1BlinkCtrl
+gosub READ_AB_VALUE 0x1069 PWMOut2BlinkCtrl
+gosub READ_AB_VALUE 0x106A PWMOut3BlinkCtrl
+gosub READ_AB_VALUE 0x106B PWMOut4BlinkCtrl
+gosub READ_AB_VALUE 0x1080 AB9540rev
+
+Write #1  "Registers for development activity================="
+gosub READ_AB_VALUE 0x1100 Bank12Access
+gosub READ_AB_VALUE 0x1101 I2CTrig1adr
+gosub READ_AB_VALUE 0x1102 I2CTrig1id
+gosub READ_AB_VALUE 0x1103 I2CTrig2adr
+gosub READ_AB_VALUE 0x1104 I2CTrig2id
+gosub READ_AB_VALUE 0x1105 NoAccessSupReg
+
+Write #1  "Bank 12 registers==================================="
+gosub READ_AB_VALUE 0x1201 PBTReserved1
+gosub READ_AB_VALUE 0x1202 CCIntTime
+gosub READ_AB_VALUE 0x1203 PBTReserved2
+gosub READ_AB_VALUE 0x1204 PBTReserved3
+gosub READ_AB_VALUE 0x1205 UsbPhyTune1
+gosub READ_AB_VALUE 0x1206 UsbPhyTune2
+gosub READ_AB_VALUE 0x1207 UsbPhyTune3
+gosub READ_AB_VALUE 0x1208 PBTReserved4
+gosub READ_AB_VALUE 0x1209 PBTReserved5
+gosub READ_AB_VALUE 0x120A PBTReserved6
+gosub READ_AB_VALUE 0x120B PBTReserved7
+gosub READ_AB_VALUE 0x120C PBTReserved8
+gosub READ_AB_VALUE 0x120D PBTReserved9
+gosub READ_AB_VALUE 0x120E PBTReserved10
+gosub READ_AB_VALUE 0x120F PBTReserved11
+gosub READ_AB_VALUE 0x1210 PBTReserved12
+gosub READ_AB_VALUE 0x1211 PBTReserved13
+gosub READ_AB_VALUE 0x1280 PBTReserved14
+gosub READ_AB_VALUE 0x1281 PBTReserved15
+
+
+close #1
+print "&FileName file saved !"
+enddo
+
+READ_AB_VALUE:
+	entry &Reg_Address &Reg_Name
+
+global &ValueToRead
+if "&HWI2C"=="1."
+(
+  global &dataRead
+  &abb_bank=&Reg_Address>>8.
+  &abb_address=&Reg_Address&0xFF
+  do hwi2c.cmm &abb_bank &abb_address 0x0 1.
+  ; reformat data depending to abxxxx hwi2c protocol
+  &ValueToRead=(&dataRead>>24.)&0xFF
+)
+else
+(
+  do abb_i2c_read &Reg_Address
+)
+print "&Reg_Address : &ValueToRead	&Reg_Name "
+Write #1  "&Reg_Address : &ValueToRead	&Reg_Name "
+return
+
+

@@ -1,0 +1,30 @@
+test_start GSMHR_002 
+test_property  TEST_NAME  gsmhrhostenc_eos
+
+OMX_GetHandle       encoder OMX.ST.AFM.encoder.gsmhr_host
+OMX_SetParameter    encoder OMX_IndexParamAudioGsm_HR nPortIndex=1 bDTX=OMX_FALSE
+OMX_SetParameter    encoder OMX_IndexParamAudioPcm nPortIndex=0 eEndian=OMX_EndianLittle
+MMTE_CheckParameter encoder OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eChannelMapping[0]=OMX_AUDIO_ChannelCF eEndian=OMX_EndianLittle
+OMX_SetParameter    encoder OMX_IndexParamPortDefinition nPortIndex=0 format.audio.bFlagErrorConcealment=OMX_FALSE
+
+alias INPUT_NAME    $(AUDIO_STREAMS)/gsmhr/streams/short/short.inp
+alias INPUT_SIZE    0
+alias OUTPUT_NAME   gsmhr_enc_nodtx_host.out
+alias OUTPUT_SIZE   50000
+alias CONFIG        $(NOMADIK)/afm/mmte_script/none.ate
+#alias HASH1         $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec_digest.hash
+#alias HASH2         $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec_digest.hash
+alias HASH1         $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec
+alias HASH2         $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec
+
+do $(NOMADIK)/afm/mmte_script/test_oes.ate encoder INPUT_NAME INPUT_SIZE OUTPUT_NAME OUTPUT_SIZE CONFIG HASH1 HASH2
+
+unalias INPUT_NAME
+unalias INPUT_SIZE
+unalias OUTPUT_NAME
+unalias OUTPUT_SIZE
+unalias CONFIG
+unalias HASH1
+unalias HASH2
+
+test_end

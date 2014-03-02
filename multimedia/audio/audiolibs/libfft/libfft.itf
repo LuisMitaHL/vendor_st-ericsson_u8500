@@ -1,0 +1,18 @@
+#include <audiolibs/common/include/fft.h>
+
+interface audiolibs.libfft.libfft unmanaged {
+	void fft_ramxy (Float *Re,
+					Float *Img,
+					int ln);
+
+	void fft_ramxy_input_br(Float *Re,
+							Float YMEM * Img,
+							int ln);
+
+	int fft_ramxy_dyn_scale(Float *Re,
+							Float YMEM * Img,
+							int ln);
+	Float YMEM *fn_fft_p_interleaved_table(void);	
+	
+	void buffer_bit_reverse_ramxy(Float *Re, Float YMEM * Img, int ln);					
+}

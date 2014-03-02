@@ -1,0 +1,35 @@
+#
+# DthTreeDyn configuration
+#
+
+menuconfig DTHTREEDYN
+	bool "DthTreeDyn"
+	depends on DTHSRVHELPER
+	help
+	  depends on DTHSRVHELPER	  
+
+if DTHTREEDYN
+
+config DTHTREEDYN_DIR
+	string
+	default ../tat/generalservices/dthtreedyn
+
+config DTHTREEDYN_DEPS
+	string
+	default "DTHSRVHELPER"
+
+config DTHTREEDYN_STRIP_DISABLED
+	bool "Disable strip"
+	depends on DTHTREEDYN
+	default n
+	help
+	  This will disable strip for this module
+
+config DTHTREEDYN_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on DTHTREEDYN
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # DTHTREEDYN

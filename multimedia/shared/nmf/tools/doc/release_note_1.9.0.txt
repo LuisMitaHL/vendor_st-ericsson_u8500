@@ -1,0 +1,323 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+ 
+Release number:	1.9.0 "La Guignolette"
+Date:	 		July 6th, 2009
+
+Author: 		Jean-Philippe Fassino & NMF Team	
+Organization:	MMD
+
+1	GENERAL INFORMATIONS
+
+1.1	Release number:
+
+	Release number: See bellow
+
+1.2	Board configuration supported:
+
+    - STn8815 SAA & SVA
+    	* Cut A0
+			Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+		* Cut B0
+		* Cut C0
+    - STn8820 SAA & SVA & SIA 
+    	* Cut A0
+    - STn8500 SVA & SIA
+    	* SVP 
+    		2.2 (Argc/Argv not supported)
+    		2.3.0
+        * PEPS 8500 
+        	ARMSS V1.0.4.1
+        * MOP500-ED
+            Only flash board without normal application in flash image 
+              (use -Normal_Appli 0 on command line flasher)
+
+1.3 Board configuration unsupported:
+
+    - STn8500 SVA & SIA
+    	* SVP 2.0 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+			STM IP trace not available    		
+    	* SVP 2.1 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+		* PEPS IP
+			Issue in MMDSP model 
+		* MOP500-ED
+		    Board not flash or flash with normal application in flash image
+
+
+1.3	First level support contact:
+
+1.4	Symbian baseport version:
+
+	Not relevant
+
+1.5	Tools versioning:
+
+	See MMENV for more information.
+
+	ARM compiler version: 
+		- RVCT 2.2-sp1-593 for 8815 & 8820 
+		- RVCT 4.0 for 8500
+	
+	MMDSP compiler version
+	    - MMDSP Toolset 4.2.0
+
+
+2	COMMON COMPONENT LIST VERSIONING:
+
+	- Launcher 1.2.3
+    - MMENV 1.3.9
+    - Platform script 1.1.2
+    
+    - Lauterbach trace32 prod6.5.3_p20090527
+    
+    - Java SE Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)      
+
+
+3	RELEASE CONTENT
+
+	- Component Manager
+		API for dynamic deployment
+
+	- Execution Engine
+		Component scheduler available for MPC and Host (SMP)
+
+	- Think
+		Light ARM component-based environment configured for NMF test and development
+		This environment is based on Think open source component-based OS
+
+	- LOS
+		Light Operating System services API specification
+
+
+3.1 Component Manager
+
+	- Component Loading optimization
+		1) Add component file data to be loaded as last parameter of CM_xx_Instantiate()
+		   This allow to gain one file copy in Symbian & Think
+		2) Cache ELF big endian information in little endian.
+		3) Cache & Optimize MMDSP memory mapping computation. 
+		4) Write in assembler endianness swapping method (optimized for ARM v5/v6/v7).
+
+	- Add CM_PushComponent interface
+		Be careful, such method is only for optimizing dynamic loading and must not been 
+		used yet.
+		
+	- Update header file according ST-Ericsson.
+
+	- The CM_UnbindComponentToUser() API has changed and takes now one more parameter: the
+	  channel used for the binding (it must be the same as the one passed to the corresponding
+	  CM_BindComponentToUser())
+	
+	- Add mmdsp v1 new base support
+
+
+3.2 MPC Execution Engine
+
+	- Update header file according ST-Ericsson.
+	
+	- Execution engine component name has been renamed in order to be more friendly between board type.
+		-> { "synchronous" | "hybrid" } "_" { "hsem" | "lsem" }
+
+    - Add api for retention mode (ee.api.sleep interface)
+
+
+3.3 Host Execution Engine
+		
+	- Update header file according ST-Ericsson.
+	
+	- Check that required priority is really provided by integrator.
+	
+	- Right unallocation of event fifo when unbinding & rebinding.
+
+	- The composite->unbindToUser() API has changed and takes now one more parameter: the
+	  channel used for the binding (it must be the same as the one passed to the corresponding
+	  composite->bindToUser()).
+	
+	- Correct bug that can lead to reaction execution not in the posted order.
+	
+	- Improve quality of EE_CreateChannel/EE_CloseChannel. Init of eesmp lib is now thread safe.
+	
+	- Add readAttribute API on C++ composite.
+	
+
+3.4 OS integration guidelines
+
+	- File "ee/api/debug.idl" now delivered
+	
+	- CM_ENGINE_InstantiateComponent & CM_OS_InstantiateComponent now take a fileData as parameter. 
+	
+	- CM_OS_Init(), CM_OS_Destroy(), CM_OS_CreateChannel() and CM_OS_CloseChannel() have been removed.
+	  Now, the OS Integrator must implement the functions CM_CreateChannel() / CM_CloseChannel(), which
+	  must respectively call CM_INTERNAL_Init() (at first call, with synchronization) and
+	  CM_INTERNAL_CreateChannel() / CM_INTERNAL_Destroy (at last call) and CM_INTERNAL_CloseChannel().
+	  See these API descriptions for more details.
+
+	- CM_OS_UnbindComponentToCMCore() API changes: it takes one more parameter, the t_os_channel used
+	  for the given binding. (It is supposed to be the same as the one provided during the 
+	  CM_OS_BindComponentToCMCore() call)
+	  
+	- Execution engine component name has been renamed in order to be more friendly between board type.
+		-> { "synchronous" | "hybrid" } "_" { "hsem" | "lsem" }
+
+
+3.5 Tools
+
+	- Optimize & clean multi-threading support for parallel compilation.
+	
+	- Dot graph description is now generated with and without generated component, like binding 
+	  component.
+		-> network.dot (user composition)
+		-> network.full.dot (populated composition)
+			
+	- Generated Top Host composite C++ header file and the necessary interfaces in the destination 
+	  directory (nmfconfc -o), which is in the same place as where is generated the library. Other 
+	  files are generated inside the temporary destination directory (nmfconfc --tmpoutput).
+
+    - Allow primitive ARM component to be used like this without need to be wrapped in composite 
+      component. In fact, the tools will generate a composite for you.
+	
+3.6 Programming model
+
+	- Allow such naming convention on ADL file
+		path/name.arch				<- Top Composite file naming, Will be deprecated, prefer ".adl"
+		path/name.type				<- Type file naming
+		path/name/component.adl		<- Convenient file naming, available for composite, primitive & type
+		path/name/name.adl			<- Precise file naming, available for composite, primitive & type
+		path/name/name.conf			<- Precise file naming, Will be deprecated, prefer ".adl"
+
+	- Allow synchronous binding between ARM composite component.
+		In order to not break compilation, no event/call/callback component are generated for 
+		synchronous interface (asynchronous binding is thus disabled for such interface). 
+
+	- Allow priority of synchronous binding to be declared as integer in order to use more than
+	  3 priorities. Such convention used:
+	  	background == 0
+	  	    normal == 1
+	  	    urgent == 2
+	  	    
+	- Instead of returning a specific error type, the C++ lifecycle.constructor interface return
+	  the t_nmf_error type.
+	  => Could impact your component code. 
+	  
+	- IS_NULL_INTERFACE usable either if used between composite and user. 
+	  Indirection has such been removed.
+	  
+	- Allow to concatenate specific CFLAGS to standard CFLAGS file by file in primitive component.
+	  This syntax must be used:
+	  	primitive .... {
+	  		...
+	  		sources src/file1.c "cflags_for_file1"
+	  		sources src/file2.c "cflags_for_file2"
+		  	sources src/file3.c
+		}
+	  Note: when using such feature, all files must be list as sources !!!! 
+	
+
+3.7 Think
+
+	- Set default stack size to 8 KBytes
+	
+	- All configuration debugger script removed from delivery.
+		-> Please use Launcher to run Think
+
+
+3.8 Linux & Symbian
+	
+	See dedicated release notes included in the respective package for more informations .
+
+
+3.9 Examples
+
+	- Examples are now based on Launcher mmtools package.
+	
+
+4	DEFECT STATUS
+
+	Defects must be logged on VI:
+		http://gnb500137.gnb.st.com/VIWebDev/default.asp
+			/Dev/OS and Platform/Multimedia/COMMON/NMF/**
+			_Support if category unknown
+
+
+4.1	Fixed defect list
+
+	- Fix order of scheduling in Think which can be break.
+
+
+4.2	Active defect list
+
+	22139   Think may crash on startup for 8500 targets if user doesn't use main arguments.
+	21851   Asynchronously bound composite component : trace contains corrupted 'this' addresses
+	21365   Pmu api needed for initialization, start/stop of DSP timer (HTIMEN) from Pmu
+	20938   Need new function in iLos to configure XbusDma connection
+	20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+	20440   No way to compile some files with specific options
+
+
+5	COMPILATION RULES
+
+5.1	Compilation procedure & options
+
+	Compilation options is fully based on MMENV.
+	
+
+5.2	Compilation configurability
+
+	EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+	IMPORT_SHARED: can be re-defined for importing API in a specific manner
+	
+	For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+	
+5.3 Installation
+
+	Automatic installation using mmtools
+		update your components file with the correct package versions
+		mmtools extract
+	Manual installation
+		* untar mmenv package into any location: <MMENV>
+			tar xzvf mmenv-x.y.z.tgz
+		* set MMENV_PATH environment variable to point to the mmenv location
+			setenv MMENV_PATH <MMENV>
+		* see mmenv documentation on how to set the target platform
+			e.g. PLATFORM=ndk15b06-think 
+		* create a NMF directory 
+			mkdir <NMF_ROOT>
+		* go in this directory 
+			cd <NMF_ROOT>
+		* untar tools and Think package
+			tar xvfz nmf_tools-Vx.y.z.tgz
+			tar xvfz nmf_think-Vx.y.z.tgz
+
+
+6	QA CHECK STATUS
+
+6.1	Compilation warning / error
+
+6.2	Code Static analysis result
+
+	Not done.
+
+6.3	Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+	Not done.
+
+6.4	Confidentiality safe
+
+
+7	DOCUMENTS
+	
+	Test report available at:
+		http://gnx2487:9000/
+
+	Source codes can be found in :
+		Clearcase
+			/vobs/nmf
+		Codex SVN site: 
+			http://codex.cro.st.com/svn/?group_id=598

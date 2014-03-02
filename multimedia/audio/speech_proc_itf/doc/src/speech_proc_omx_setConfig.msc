@@ -1,0 +1,37 @@
+msc {
+		width=1200;
+		Application,SpeechProcComponent,SpeechProcLibrary,SpeechProcNmf_ProcessincComp,speech_proc_library;
+    |||;
+		Application rbox speech_proc_library [label="OMX_SetConfig call in OMX_StateLoaded"];
+		|||;
+		Application => SpeechProcComponent [label ="OMX_SetConfig(..,index, ptr)"];
+
+		SpeechProcComponent => SpeechProcLibrary [label="checkParameter(index,ptr)"];
+	  SpeechProcLibrary >> SpeechProcComponent [label="OK,ERROR,NOT_SUPPORTED"];
+		SpeechProcComponent >> Application [label="if OK or ERROR"];
+		SpeechProcComponent => SpeechProcComponent [label="process it internally\nor by above layer(ENS,AFM)", linecolor="white"];
+		|||;
+		SpeechProcComponent >> Application;
+
+		|||;
+    |||;
+		Application rbox speech_proc_library [label="OMX_SetConfig call NOT in OMX_StateLoaded"];
+		|||;
+		Application => SpeechProcComponent [label ="OMX_SetConfig(..,index, ptr)"];
+
+		SpeechProcComponent => SpeechProcLibrary [label="checkParameter(index,ptr)"];
+	  SpeechProcLibrary >> SpeechProcComponent [label="OK,ERROR,NOT_SUPPORTED"];
+		...;		
+		SpeechProcComponent => SpeechProcNmf_ProcessincComp [label="applyConfig(index,ptr)"];
+		SpeechProcNmf_ProcessincComp => SpeechProcLibrary [label="getConfig(UL & DL, index, ptr,\n          index_out, ptr_out)"];
+		|||;
+		SpeechProcLibrary >> SpeechProcNmf_ProcessincComp [label="OK,NOT_SUPPORTED"];
+		
+		SpeechProcNmf_ProcessincComp abox speech_proc_library [label="START LOOP: if OK, on all indexes returned", textcolour="gray"];
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="speech_proc_set_config(index_out[i], ptr_out[i])"];
+		SpeechProcNmf_ProcessincComp abox speech_proc_library [label="END LOOP", textcolour="gray"];
+
+		SpeechProcNmf_ProcessincComp >> SpeechProcComponent;
+		SpeechProcComponent >> Application;
+		
+}

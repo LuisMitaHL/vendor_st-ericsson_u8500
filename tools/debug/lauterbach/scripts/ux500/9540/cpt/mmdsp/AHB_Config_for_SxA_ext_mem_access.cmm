@@ -1,0 +1,171 @@
+; ############################################################################
+; # DB8500 debug & Trace script file: AHB_Config_for_SxA_ext_mem_access.cmm  #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved              #
+; ############################################################################
+; Created by HED/CSP/CPT/ACT on 2009-03-05
+; Contact jingyi-xiaoyan.lu@st.com
+
+&usage1="This command allows to set AHB base and top addresses of the external memory area allocated for the MMDSP+ cache."
+&usage2="do AHB_Config_for_SxA_ext_mem_access <8810a|8810v|8815a|8815v|8820a|8820v|8820i|8500v|8500i> <prg_base_adr> <prg_base2_activ> <data_ahb_base> <data_ahb_top_16_24> <data_ahb_base2> <data_ahb_top2_16_24> <external_io_bass_data_ahb_top> <data_top1624_chk> <data2_1624_xa_base> <data_base2_activ>"
+&usage3="Not all bases/tops values are necessary. Give the empty value with NULL"
+
+ENTRY &nomadik_ver &prg_base_adr &prg_base2_activ &data_ahb_base &data_ahb_top &data_ahb_base2 &data_ahb_top2 &external_io_base_data_ahb_top &data_top1624_chk &data2_1624_xa_base &data_base2_activ &stbus_id &prg_base34_adr &data_base3 &data_top3 &data_base4 &data_top4
+
+if (("&nomadik_ver"!="8815a")&&("&nomadik_ver"!="8815v")&&("&nomadik_ver"!="8820a")&&("&nomadik_ver"!="8820v")&&("&nomadik_ver"!="8820i")&&("&nomadik_ver"!="8500v")&&("&nomadik_ver"!="8500i")&&("&nomadik_ver"!="8810a")&&("&nomadik_ver"!="8810v"))
+(
+  print ""
+  print "&usage1"
+  print "&usage2"
+  print "&usage3"
+  print "Unknown param! Nothing do do!"
+  enddo
+)
+
+if "&prg_base_adr"==""||"&prg_base2_activ"==""||"&data_ahb_base"==""||"&data_ahb_top_16_24"==""||"&data_ahb_base2"==""||"&data_ahb_top2_16_24"==""||"&external_io_bass_data_ahb_top"==""||"&data_top1624_chk &data2_1624_xa_base"==""||"&data_base2_activ"==""
+(
+  print ""
+  print "&usage1"
+  print "&usage2"
+  print "&usage3"
+  print "Wrong param! Nothing do do!"
+  enddo
+)
+
+;Hamac involved indirect host registers addresses:
+&ind_reg_prg_base_adr=0x7
+&ind_reg_prg_base2_activ=0x13
+&ind_reg_data_ahb_base=0xA
+&ind_reg_data_ahb_top_16_24=0x14
+&ind_reg_data_ahb_base2=0xC
+&ind_reg_data_ahb_top2_16_24=0x15
+&ind_reg_external_io_bass_data_ahb_top=0xB
+&ind_reg_data_top1624_chk=0x16
+&ind_reg_data2_1624_xa_base=0xF
+&ind_reg_data_base2_activ=0x17
+&ind_reg_stbus_id=0x8
+
+;;For 8500
+&ind_reg_PRG_BASE34_ADR=0x1A
+&ind_reg_DATA_STBUS_BASE3=0x1B
+&ind_reg_DATA_STBUS_BASE4=0x1C
+&ind_reg_DATA_STBUS_TOP3_16_24=0x1D
+&ind_reg_DATA_STBUS_TOP4_16_24=0x1E
+
+;perform the config
+&last_char_idx=string.len(cpu())-1
+if (string.mid(cpu(),0,3)=="STN"&&(string.mid(cpu(),&last_char_idx,1)=="A"||string.mid(cpu(),&last_char_idx,1)=="V"||string.mid(cpu(),&last_char_idx,1)=="I"))
+(
+  if "&prg_base_adr"!="NULL"
+    do write_ind_reg &ind_reg_prg_base_adr &prg_base_adr
+  
+  if "&prg_base2_activ"!="NULL"
+    do write_ind_reg &ind_reg_prg_base2_activ &prg_base2_activ
+
+  if "&data_ahb_base"!="NULL"
+    do write_ind_reg &ind_reg_data_ahb_base &data_ahb_base
+
+  if "&data_ahb_top"!="NULL"
+    do write_ind_reg &ind_reg_data_ahb_top_16_24 &data_ahb_top
+  
+  if "&data_ahb_base2"!="NULL"
+    do write_ind_reg &ind_reg_data_ahb_base2 &data_ahb_base2
+
+  if "&data_ahb_top2"!="NULL"
+    do write_ind_reg &ind_reg_data_ahb_top2_16_24 &data_ahb_top2
+
+  if "&data_top1624_chk"!="NULL"
+    do write_ind_reg &ind_reg_data_top1624_chk &data_top1624_chk
+
+  if "&external_io_base_data_ahb_top"!="NULL"
+    do write_ind_reg &ind_reg_external_io_bass_data_ahb_top &external_io_base_data_ahb_top
+
+  if "&data2_1624_xa_base"!="NULL"
+    do write_ind_reg &ind_reg_data2_1624_xa_base &data2_1624_xa_base
+
+  if "&data_base2_activ"!="NULL"
+    do write_ind_reg &ind_reg_data_base2_activ &data_base2_activ
+	
+  if "&stbus_id"!=""
+    do write_ind_reg &ind_reg_stbus_id &stbus_id
+
+	;; 8500 specific
+	;;--------------
+	
+  if "&prg_base34_adr"!=""
+    do write_ind_reg &ind_reg_PRG_BASE34_ADR &prg_base34_adr
+	
+  if "&data_base3"!=""
+    do write_ind_reg &ind_reg_DATA_STBUS_BASE3 &data_base3
+
+  if "&data_base4"!=""
+    do write_ind_reg &ind_reg_DATA_STBUS_BASE4 &data_base4
+
+  if "&data_top3"!=""
+    do write_ind_reg &ind_reg_DATA_STBUS_TOP3_16_24 &data_top3
+	
+  if "&data_top4"!=""
+    do write_ind_reg &ind_reg_DATA_STBUS_TOP4_16_24 &data_top4
+
+)
+else if (string.mid(cpu(),0,6)=="ARM926"||string.mid(cpu(),0,7)=="ARM1176"||string.mid(cpu(),0,6)=="Cortex"||string.mid(cpu(),0,7)=="STN8820")||string.mid(cpu(),0,6)=="DB8500"||string.mid(cpu(),0,5)=="T5008"||string.mid(cpu(),0,6)=="DB9540"||string.mid(cpu(),0,6)=="DB8540"
+(
+  if "&prg_base_adr"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_prg_base_adr &prg_base_adr
+  
+  if "&prg_base2_activ"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_prg_base2_activ &prg_base2_activ
+
+  if "&data_ahb_base"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_data_ahb_base &data_ahb_base
+
+  if "&data_ahb_top"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_data_ahb_top_16_24 &data_ahb_top
+  
+  if "&data_ahb_base2"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_data_ahb_base2 &data_ahb_base2
+
+  if "&data_ahb_top2"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_data_ahb_top2_16_24 &data_ahb_top2
+
+  if "&data_top1624_chk"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_data_top1624_chk &data_top1624_chk
+
+  if "&external_io_base_data_ahb_top"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_external_io_bass_data_ahb_top &external_io_base_data_ahb_top
+
+  if "&data2_1624_xa_base"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_data2_1624_xa_base &data2_1624_xa_base
+
+  if "&data_base2_activ"!="NULL"
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_data_base2_activ &data_base2_activ
+	
+  if "&stbus_id"!=""
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_stbus_id &stbus_id
+
+;; 8500 specific
+;;--------------
+  if "&prg_base34_adr"!=""
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_PRG_BASE34_ADR &prg_base34_adr
+	
+  if "&data_base3"!=""
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_DATA_STBUS_BASE3 &data_base3
+
+  if "&data_base4"!=""
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_DATA_STBUS_BASE4 &data_base4
+
+  if "&data_top3"!=""
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_DATA_STBUS_TOP3_16_24 &data_top3
+	
+  if "&data_top4"!=""
+    do write_mmdsp_ind_reg &nomadik_ver &ind_reg_DATA_STBUS_TOP4_16_24 &data_top4
+	
+)
+else
+(
+ print "AHB-STbus bases/tops config failed: Unknown target name. Abort."
+ enddo
+)
+
+print ""
+print "AHB-STbus bases/tops config for ","&nomadik_ver", " external memories accesses: DONE."
+enddo

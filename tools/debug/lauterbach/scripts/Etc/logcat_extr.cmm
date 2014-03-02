@@ -1,0 +1,435 @@
+//--------------------------------------------------------------------
+// Lauterbach T32 Emulator script: /opt/t32/myCmm/Linux/logcat.cmm
+//
+// Comments:
+//
+//
+// Written by: frq08728
+//
+// Creation date: 07/12/2009
+// Last Change: Fri Aug 10 15:00 2012 CEST
+//
+//--------------------------------------------------------------------
+
+local &is_events &tag &prio &index_msg &tmpf &msg_dec &time_delta &eventlogtags
+&time_delta=0
+&is_events=0
+
+; Use event-log-tags generated in $ANDROID_PRODUCT_OUT/system/etc/event-log-tags
+; If not present (software not compiled) fallback to &(toolsPath)/event-log-tags
+&android_out=os.env(ANDROID_PRODUCT_OUT)
+if string.len("&android_out")==0
+(
+	if string.len("&SrcPath")!=0
+	(
+		&android_out="&SrcPath/out/target/product/&targetFamily"
+		if (!os.dir("&android_out"))&&(os.dir("&SrcPath/out/target/product/u&targetFamily"))
+		(
+			; for 9540
+			&android_out="&SrcPath/out/target/product/u&targetFamily"
+		)
+	)
+)
+if ((string.len("&android_out")!=0)&&(os.file("&android_out/system/etc/event-log-tags")))
+(
+    &eventlogtags="&android_out/system/etc/event-log-tags"
+)
+else
+(
+    &eventlogtags="&(toolsPath)/event-log-tags"
+)
+
+; --- log_main ---
+area.create log_main 200. 2500.
+area.clear log_main
+winpos 0. 5. 100. 90% 1. 1.
+area.view log_main
+area.select log_main
+
+&log_buf_addr=v.value((struct logger_reader *)log_main->buffer)
+&log_size=v.value(log_main.size)
+&log_read=v.value(log_main.head)
+&log_write_ptr=&log_buf_addr+v.value(log_main.w_off)
+print "PID  | TID  | Time: hh:mm:ss.ns  | Priority | Tag : Message"
+
+gosub Display_func
+
+; Save logcat main to txt file
+printer.file logcat_main.txt
+wp.area.view log_main
+AREA.Select A000
+print "log_main window saved in logcat_main.txt"
+
+
+; --- log_system ---
+log_system:
+if y.exist(log_system)
+(
+	area.create log_sys 200. 700.
+	area.clear log_sys
+	winpos 1. 6. 100. 90% 1. 1.
+	area.view log_sys
+	area.select log_sys
+
+	&log_buf_addr=v.value((struct logger_reader *)log_system->buffer)
+	&log_size=v.value(log_system.size)
+	&log_read=v.value(log_system.head)
+	&log_write_ptr=&log_buf_addr+v.value(log_system.w_off)
+	print "PID  | TID  | Time: hh:mm:ss.ns  | Priority | Tag : Message"
+	&time_delta=0
+
+	gosub Display_func
+
+	; Save logcat system to txt file
+	printer.file logcat_system.txt
+	wp.area.view log_sys
+	AREA.Select A000
+	print "log_system window saved in logcat_radio.txt"
+)
+
+
+; --- log_radio ---
+log_radio:
+area.create log_radio 200. 1400.
+area.clear log_radio
+winpos 1. 6. 100. 90% 1. 1.
+area.view log_radio
+area.select log_radio
+
+&log_buf_addr=v.value((struct logger_reader *)log_radio->buffer)
+&log_size=v.value(log_radio.size)
+&log_read=v.value(log_radio.head)
+&log_write_ptr=&log_buf_addr+v.value(log_radio.w_off)
+print "PID  | TID  | Time: hh:mm:ss.ns  | Priority | Tag : Message"
+&time_delta=0
+
+gosub Display_func
+
+; Save logcat radio to txt file
+printer.file logcat_radio.txt
+wp.area.view log_radio
+AREA.Select A000
+print "log_radio window saved in logcat_radio.txt"
+
+
+; --- log_events ---
+; log_events is not binary buffer, it uses the file /system/etc/event-log-tags (see android/src/system/core/logcat/logcat.cpp)
+; the common treatment cannot be done for that buffer
+log_events:
+area.create log_event 200. 500.
+area.clear log_event
+winpos 2. 7. 100. 90% 1. 1.
+area.view log_event
+area.select log_event
+
+&log_buf_addr=v.value((struct logger_reader *)log_events->buffer)
+&log_size=v.value(log_events.size)
+&log_read=v.value(log_events.head)
+&log_write_ptr=&log_buf_addr+v.value(log_events.w_off)
+print "PID  | TID  | Time: hh:mm:ss.ns  | Message"
+&is_events=1
+&time_delta=0
+gosub Display_func
+
+; Save logcat events to txt file
+printer.file logcat_events.txt
+wp.area.view log_event
+AREA.Select A000
+print "log_event window saved in logcat_events.txt"
+
+
+if os.file(temp.bin)
+	del temp.bin
+
+enddo
+
+
+
+Display_func:
+&log_end_addr=&log_buf_addr+&log_size
+if (&log_read==0)
+(
+	&time_s_init=data.long(D:&log_buf_addr+0xC)
+	&time_delta=&time_s_init%(3600.*24.)
+
+	while (&log_buf_addr<&log_end_addr)
+	(
+		&pid=format.decimal(4,data.long(D:&log_buf_addr+0x4))
+		&tid=format.decimal(4,data.long(D:&log_buf_addr+0x8))
+		&time_s=data.long(D:&log_buf_addr+0xC)-&time_s_init+&time_delta
+		&time_s_dis=format.udecimalz(2,&time_s%60.)
+		&time_h=format.decimal(2,&time_s/3600.)
+		&time_m=format.udecimalz(2,(&time_s/60.)%60.)
+		&time_ns=format.udecimalz(9,data.long(D:&log_buf_addr+0x10))
+
+
+		&msg_length=v.value((struct logger_log *)((struct logger_reader *)&log_buf_addr).log)&0xFFFF
+		if (&msg_length==0)
+			return
+
+		if (&is_events==1)
+		(
+			&tag=format.decimal(8,data.long(D:&log_buf_addr+0x14))
+			&index_msg=0x18
+
+			&tmpf=OS.TMPFILE()
+			data.save.binary &tmpf (&log_buf_addr+&index_msg)++(&msg_length-5)
+			os.hidden perl &(toolsPath)/parse_event-log-tags.pl &(eventlogtags) &tag &tmpf
+			if (os.return()!=0)
+			(
+				print "perl error"
+				enddo
+			)
+			open #1 "&tmpf" /Read
+			read #1 %line &msg_dec
+			close #1
+			print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &msg_dec "
+			del &tmpf
+		)
+		else
+		(
+			&prio=data.byte(D:&log_buf_addr+0x14)
+			; values taken from system/core/include/android/log.h
+			if &prio==4
+				&prio_m="INFO   "
+			else if &prio==3
+				&prio_m="DEBUG  "
+			else if &prio==5
+				&prio_m="WARN   "
+			else if &prio==6
+				&prio_m="ERROR  "
+			else if &prio==2
+				&prio_m="VERBOSE"
+			else if &prio==7
+				&prio_m="FATAL  "
+			else if &prio==1
+				&prio_m="DEFAULT"
+			else if &prio==0
+				&prio_m="UNKNOWN"
+			else if &prio==8
+				&prio_m="SILENT "
+
+			&tag=data.string(D:&log_buf_addr+0x15)
+
+			; tag may be null
+			&index_msg=0x15
+			while (data.byte(D:&log_buf_addr+&index_msg)!=0)
+				&index_msg=&index_msg+1
+
+			&msg=data.string(D:&log_buf_addr+&index_msg+1)
+
+			print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &prio_m  | &tag : &msg "
+		)
+
+		&log_buf_addr=&log_buf_addr+0x14+&msg_length
+	)
+)
+else
+(
+	&log_buf_addr=&log_buf_addr+&log_read
+	&time_s_init=data.long(D:&log_buf_addr+0xC)
+	&time_delta=&time_s_init%(3600.*24.)
+	while (&log_buf_addr<&log_end_addr)
+	(
+		&msg_length=v.value((struct logger_log *)((struct logger_reader *)&log_buf_addr).log)&0xFFFF
+
+		if (&log_buf_addr+0x14+&msg_length<=&log_end_addr)
+		(
+			&pid=format.decimal(4,data.long(D:&log_buf_addr+0x4))
+			&tid=format.decimal(4,data.long(D:&log_buf_addr+0x8))
+			&time_s=data.long(D:&log_buf_addr+0xC)-&time_s_init+&time_delta
+			&time_s_dis=format.udecimalz(2,&time_s%60.)
+			&time_h=format.decimal(2,&time_s/3600.)
+			&time_m=format.udecimalz(2,(&time_s/60.)%60.)
+			&time_ns=format.udecimalz(9,data.long(D:&log_buf_addr+0x10))
+
+			if (&is_events==1)
+			(
+				&tag=format.decimal(8,data.long(D:&log_buf_addr+0x14))
+				&index_msg=0x18
+
+				&tmpf=OS.TMPFILE()
+				data.save.binary &tmpf (&log_buf_addr+&index_msg)++(&msg_length-5)
+				os.hidden perl &(toolsPath)/parse_event-log-tags.pl &(eventlogtags) &tag &tmpf
+				open #1 "&tmpf" /Read
+				read #1 %line &msg_dec
+				close #1
+				print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &msg_dec "
+				del &tmpf
+			)
+			else
+			(
+				&prio=data.byte(D:&log_buf_addr+0x14)
+				; values taken from system/core/include/android/log.h
+				if &prio==4
+					&prio_m="INFO   "
+				else if &prio==3
+					&prio_m="DEBUG  "
+				else if &prio==5
+					&prio_m="WARN   "
+				else if &prio==6
+					&prio_m="ERROR  "
+				else if &prio==2
+					&prio_m="VERBOSE"
+				else if &prio==7
+					&prio_m="FATAL  "
+				else if &prio==1
+					&prio_m="DEFAULT"
+				else if &prio==0
+					&prio_m="UNKNOWN"
+				else if &prio==8
+					&prio_m="SILENT "
+
+				&tag=data.string(D:&log_buf_addr+0x15)
+				&index_msg=0x15
+				while (data.byte(D:&log_buf_addr+&index_msg)!=0)
+					&index_msg=&index_msg+1
+
+				&msg=data.string(D:&log_buf_addr+&index_msg+1)
+
+				print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &prio_m  | &tag : &msg "
+			)
+
+			&log_buf_addr=&log_buf_addr+0x14+&msg_length
+		)
+		else
+		(
+			;message begins at the end of buffer and ends at the beginning of buffer
+			&tmp_addr=&log_buf_addr-&log_size
+			data.save.binary temp.bin &tmp_addr--(&log_end_addr-&log_size-1)
+			data.copy &log_buf_addr--(&log_end_addr-1) &tmp_addr
+
+			&log_buf_addr=&tmp_addr
+
+			&pid=format.decimal(4,data.long(D:&log_buf_addr+0x4))
+			&tid=format.decimal(4,data.long(D:&log_buf_addr+0x8))
+			&time_s=data.long(D:&log_buf_addr+0xC)-&time_s_init+&time_delta
+			&time_s_dis=format.udecimalz(2,&time_s%60.)
+			&time_h=format.decimal(2,&time_s/3600.)
+			&time_m=format.udecimalz(2,(&time_s/60.)%60.)
+			&time_ns=format.udecimalz(9,data.long(D:&log_buf_addr+0x10))
+
+			&msg_length=v.value((struct logger_log *)((struct logger_reader *)&log_buf_addr).log)&0xFFFF
+
+			if (&is_events==1)
+			(
+				&tag=format.decimal(8,data.long(D:&log_buf_addr+0x14))
+				&index_msg=0x18
+
+				&tmpf=OS.TMPFILE()
+				data.save.binary &tmpf (&log_buf_addr+&index_msg)++(&msg_length-5)
+				os.hidden perl &(toolsPath)/parse_event-log-tags.pl &(eventlogtags) &tag &tmpf
+				open #1 "&tmpf" /Read
+				read #1 %line &msg_dec
+				close #1
+				print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &msg_dec "
+				del &tmpf
+			)
+			else
+			(
+				&prio=data.byte(D:&log_buf_addr+0x14)
+				; values taken from system/core/include/android/log.h
+				if &prio==4
+					&prio_m="INFO   "
+				else if &prio==3
+					&prio_m="DEBUG  "
+				else if &prio==5
+					&prio_m="WARN   "
+				else if &prio==6
+					&prio_m="ERROR  "
+				else if &prio==2
+					&prio_m="VERBOSE"
+				else if &prio==7
+					&prio_m="FATAL  "
+				else if &prio==1
+					&prio_m="DEFAULT"
+				else if &prio==0
+					&prio_m="UNKNOWN"
+				else if &prio==8
+					&prio_m="SILENT "
+
+				&tag=data.string(D:&log_buf_addr+0x15)
+				&index_msg=0x15
+				while (data.byte(D:&log_buf_addr+&index_msg)!=0)
+					&index_msg=&index_msg+1
+
+				&msg=data.string(D:&log_buf_addr+&index_msg+1)
+
+				print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &prio_m  | &tag : &msg "
+			)
+
+			&log_buf_addr=&log_buf_addr+0x14+&msg_length
+
+			data.load.binary temp.bin &tmp_addr /noclear /nosymbol
+			goto part2
+
+		)
+	)
+
+part2:
+	while (&log_buf_addr<&log_write_ptr)
+	(
+		&pid=format.decimal(4,data.long(D:&log_buf_addr+0x4))
+		&tid=format.decimal(4,data.long(D:&log_buf_addr+0x8))
+		&time_s=data.long(D:&log_buf_addr+0xC)-&time_s_init+&time_delta
+		&time_s_dis=format.udecimalz(2,&time_s%60.)
+		&time_h=format.decimal(2,&time_s/3600.)
+		&time_m=format.udecimalz(2,(&time_s/60.)%60.)
+		&time_ns=format.udecimalz(9,data.long(D:&log_buf_addr+0x10))
+
+
+		&msg_length=v.value((struct logger_log *)((struct logger_reader *)&log_buf_addr).log)&0xFFFF
+
+		if (&is_events==1)
+		(
+			&tag=format.decimal(8,data.long(D:&log_buf_addr+0x14))
+			&index_msg=0x18
+
+			&tmpf=OS.TMPFILE()
+			data.save.binary &tmpf (&log_buf_addr+&index_msg)++(&msg_length-5)
+			os.hidden perl &(toolsPath)/parse_event-log-tags.pl &(eventlogtags) &tag &tmpf
+			open #1 "&tmpf" /Read
+			read #1 %line &msg_dec
+			close #1
+			print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &msg_dec "
+			del &tmpf
+		)
+		else
+		(
+			&prio=data.byte(D:&log_buf_addr+0x14)
+			; values taken from system/core/include/android/log.h
+			if &prio==4
+				&prio_m="INFO   "
+			else if &prio==3
+				&prio_m="DEBUG  "
+			else if &prio==5
+				&prio_m="WARN   "
+			else if &prio==6
+				&prio_m="ERROR  "
+			else if &prio==2
+				&prio_m="VERBOSE"
+			else if &prio==7
+				&prio_m="FATAL  "
+			else if &prio==1
+				&prio_m="DEFAULT"
+			else if &prio==0
+				&prio_m="UNKNOWN"
+			else if &prio==8
+				&prio_m="SILENT "
+
+			&tag=data.string(D:&log_buf_addr+0x15)
+			&index_msg=0x15
+			while (data.byte(D:&log_buf_addr+&index_msg)!=0)
+				&index_msg=&index_msg+1
+
+			&msg=data.string(D:&log_buf_addr+&index_msg+1)
+
+			print "&pid | &tid | &(time_h):&(time_m):&(time_s_dis).&time_ns | &prio_m  | &tag : &msg "
+		)
+
+		&log_buf_addr=&log_buf_addr+0x14+&msg_length
+	)
+	return
+
+)
+

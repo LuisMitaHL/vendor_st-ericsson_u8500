@@ -1,0 +1,49 @@
+OMX_GetHandle    tested_component OMX.ST.Fakesource
+#do $(S_CURRENT_PATH)/compute_stride.mmte S_WIDTH_IN_0 S_COLOR_FORMAT_IN_0
+#echo CURRENT_STRIDE
+OMX_SetParameter	tested_component OMX_IndexParamPortDefinition nPortIndex=0  format.video.nFrameWidth=S_WIDTH_IN_0 format.video.nFrameHeight=S_HEIGHT_IN_0 format.video.nSliceHeight=0 format.video.nStride=0 format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=S_COLOR_FORMAT_IN_0 format.video.pNativeWindow=0 eDomain=OMX_PortDomainVideo
+
+OMX_SetParameter	tested_component OMX_IndexParamContentURI contentURI=FILE_NAME_INPUT
+
+OMX_SetParameter	tested_component OMX_IndexParamContentURI contentURI=FILE_NAME_INPUT_EXTRADATA
+
+# bContinuous indicates mode loop or not
+# bFrameLimited indicates if nb frame is limited or not
+#	OMX_FALSE means that the whole file will be red once (frame by frame)
+#	OMX_TRUE means that only nFrameLimit frames will be red
+# nFrameLimit indicates nb frames 
+if S_SOURCE_LOOP_ON_INPUT_FILE == OMX_TRUE
+	OMX_SetConfig	tested_component OMX_IndexConfigCaptureMode bContinuous=OMX_TRUE	bFrameLimited=OMX_FALSE nFrameLimit=0
+else
+	echo S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE
+	if S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE == 0
+		OMX_SetConfig	tested_component OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE	bFrameLimited=OMX_FALSE nFrameLimit=0
+	else
+		OMX_SetConfig	tested_component OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE	bFrameLimited=OMX_TRUE nFrameLimit=S_SOURCE_NB_FRAMES_LIMLITED_ON_INPUT_FILE
+	endif
+endif
+OMX_SetConfig		tested_component OMX_IndexConfigVideoFramerate xEncodeFramerate=S_FRAME_RATE
+
+OMX_SetParameter tested_component OMX_IndexParamPortDefinition nPortIndex=0 nBufferCountActual=S_NBUFFERCOUNT
+
+if IMG_PLATFORME == x86
+	OMX_GetHandle    my_sink_1 OMX.ST.FakesinkGeneric
+else
+	if S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY == OMX_TRUE
+		OMX_GetHandle    my_sink_1 OMX.ST.Fakesink
+	else
+		if IMG_OS == symbian
+			OMX_GetHandle    my_sink_1 OMX.SYMBIAN.VIDEO.GRAPHICSINK
+		else
+			OMX_GetHandle    my_sink_1 OMX.ST.VFM.DISPLAY.SINK
+		endif
+	endif
+endif
+#do $(S_CURRENT_PATH)/compute_stride.mmte S_WIDTH_IN_0 S_COLOR_FORMAT_IN_0
+#echo CURRENT_STRIDE
+if IMG_SETTING_APPLYED == old_way
+	OMX_SetParameter my_sink_1 OMX_IndexParamPortDefinition nPortIndex=0  format.video.nFrameWidth=S_WIDTH_IN_0 format.video.nFrameHeight=S_HEIGHT_IN_0 format.video.nSliceHeight=0 format.video.nStride=0 format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=S_COLOR_FORMAT_IN_0 format.video.pNativeWindow=0 eDomain=OMX_PortDomainVideo
+else
+	MMTE_PropagateSettings tested_component 0 my_sink_1 0 OMX_IndexParamPortDefinition
+endif
+

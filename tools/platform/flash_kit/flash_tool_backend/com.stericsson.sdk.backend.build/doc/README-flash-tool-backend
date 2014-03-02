@@ -1,0 +1,152 @@
+FLASH TOOL BACKEND 
+==================
+
+**********************************************************************
+This document describes the structure of the Flash Tool Backend binary
+release folder and how get started with the Flash Tool Backend.
+**********************************************************************
+
+[NOTE]
+Use AsciiDoc formatting rules when editing this document. See
+http://www.methods.co.nz/asciidoc/userguide.html for more information.
+
+INFO
+----
+**********************************************************************
+Section for general information.
+**********************************************************************
+
+FILE TREE STRUCTURE
+-------------------
+**********************************************************************
+Section describing the file tree structure of this release directory.
+**********************************************************************
+
+......................................................................
+<flash-tool-backend-root>/                                        <1>
+  configuration/                                                  <2>
+    backend-default.mesp                                          <3>
+	profile-default.mesp                                          <4>
+	loader.ldr                                                    <5>
+  native/                                                         <6>
+    usb_jni.dll                                                   <7>
+	libusb_jni.so                                                 <8>
+	JNILoaderCommunication.dll                                    <9>
+	LCM.dll                                                       <10>
+	LCDriver_CNH1606432.dll                                       <11>
+  osgi/                                                           <12>
+    configuration/                                                <13>
+	  config.ini                                                  <14>
+	com.stericsson.sdk.backend.*                                  <15>
+	  .
+	  .
+	com.stericsson.sdk.common.*                                   <16>
+	  .
+	  .
+	com.stericsson.sdk.equipment.*                                <17>
+	  .
+	  .
+	com.stericsson.sdk.loader.communication.*                     <18>
+  ste-ftb.bat                                                     <19>
+  ste-ftb                                                         <20>
+  install-linux.sh                                                <21>
+  README                                                          <22>
+......................................................................
+
+<1>  The root folder of the binary release.
+
+<2>  Folder containing configuration files needed for the backend.
+
+<3>  Default backend configuration file in MESP format. This file also
+     points to where to find profiles and which profiles to load.
+
+<4>  Default (example) profile pointing to where to find a loader file.
+
+<5>  An example loader pointed out by the default profile.
+
+<6>  Folder containing native libraries used by the backend.
+
+<7>  The Win32 JNI-wrapper DLL for LibUSB.
+
+<8>  The Linux JNI-wrapper shared object for LibUSB.
+
+<9>  The Win32 JNI-wrapper DLL for Loader communication (LCD/LCM).
+
+<10> The Win32 LCM DLL.
+
+<11> The Win32 LCD DLL.
+
+<12> Folder containing all OSGI bundles and OSGI run configuration
+     needed by the backend.
+
+<13> Folder containing run configuration for the OSGI framework.
+
+<14> OSGI run configuration file (specifies what bundles to activate)
+
+<15> A set of OSGI bundles containing core backend functionality.
+
+<16> A set of OSGI bundles containing common functionality used by all
+     bundles.
+
+<17> A set of OSGI bundles containing equipment (platform) specific
+     functionality.
+
+<18> A set of OSGI bundles containing loader communication
+     functionality.
+
+<19> Start script for Windows.
+
+<20> Start script for Linux (Bash).
+
+<21> Install script for Linux (Bash).
+
+<22> This README file.
+
+REQUIREMENTS
+------------
+In order to run the flash tool backend a java runtime environment must
+be installed and available on the path. The Flash Tool Backend requires
+Java 1.6
+
+[NOTE]
+If Flash Tool Backend should run on Windows hosts please look at the
+xref:anchor-1[LibUSB on Windows Hosts]
+
+INSTALL THE FLASH TOOL BACKEND
+------------------------------
+It is not required to install anything but the environment variable
+STE_FLASH_TOOL_BACKEND_HOME home must be set in order for the backend to
+launch. Set the variable to the folder containing all backend bundles.
+
+There exist a script for installing the backend in another location on
+a Linux host.
+
+[[anchor-1]]
+LIBUSB ON WINDOWS HOSTS
+-----------------------
+If Flash Tool Backend should run on Windows hosts the libusb-win32
+package should be installed first. This is so that Flash Tool Backend
+can find LibUSB shared libraries (.dll) in order to startup correctly.
+
+LibUSB for Windows can be found at the following location:
+http://sourceforge.net/projects/libusb-win32/files/
+
+This step should not be necessary if the USB driver is installed before
+running the Flash Tool Backend. Same shared libraries are copied to
+system folder.
+
+The correct U8500 INF file and howto install it can be found in a
+separate package.
+
+RUNNING THE FLASH TOOL BACKEND
+------------------------------
+Use the start script to launch the backend. If the configuration file
+is found there will be some logging information displayed in the console
+window.
+
+SHUTDOWN FLASH TOOL BACKEND
+---------------------------
+There are two "normal" ways of closing the Flash Tool Backend
+application. Using the pop-up menu by right clicking on the system tray
+icon and selecting "Exit" or type close or exit in the OSGI console
+(available) from the console window.

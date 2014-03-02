@@ -1,0 +1,5 @@
+OMX_SetParameter    $1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+if $2 == input_reference
+ate_attach_io       $1 0 MEM $(AUDIO_STREAMS)/pcm_splitter/streams/casta_8.pcm 0 0 0
+endif

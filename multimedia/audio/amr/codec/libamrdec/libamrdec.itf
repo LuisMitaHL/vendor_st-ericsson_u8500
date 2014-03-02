@@ -1,0 +1,28 @@
+#include <amr_typedef.h>
+#include <amr.h>
+#include <basic_op.h>
+#include <count.h>
+#include <cnst.h>
+#include <set_zero.h>
+#include <dec_amr.h>
+#include <pstfilt.h>
+#include <bits2prm.h>
+#include <mode.h>
+#include <post_pro.h>
+#include <d_homing.h>
+#include <bit_reorder.h>
+#include <amr_memory_preset.h>
+#include <fwmalloc.h>
+#include <oper_32b.h>
+#include <window_tab.h>
+#include <sp_dec.h>
+
+interface amr.codec.libamrdec.libamrdec unmanaged {
+    void amr_Speech_Decode_Frame_exit (Speech_Decode_FrameState **state);
+    int amr_Speech_Decode_Frame_init (Speech_Decode_FrameState **state, char *id, Word16 memory_preset_id, CODEC_INTERFACE_T *itf);
+    int amr_Speech_Decode_Frame_reset (Speech_Decode_FrameState *state);
+    int amr_Speech_Decode_Frame (Speech_Decode_FrameState *st,
+																enum Mode mode, Word16 *serial,enum RXFrameType frame_type,
+																Word16 *synth);
+}
+

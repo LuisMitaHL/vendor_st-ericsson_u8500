@@ -1,0 +1,133 @@
+# This script changes input parameters when input port is disabled
+#
+########################################################################################
+test_start BIN_SPL_016
+test_property TEST_NAME binary_splitter_change_input_params_host
+
+alias TIMEOUT                   0
+
+#I/Os parameters
+alias INPUT_FILE                $(AUDIO_STREAMS)/binary_splitter/streams/techno.pcm
+alias NEW_INPUT_FILE            $(AUDIO_STREAMS)/binary_splitter/streams/BassISO_44kHz_mono.pcm
+
+#alias OUTPUT_DIR                $(AUDIO_STREAMS)/binary_splitter/streams/output
+alias OUTPUT_FILE               $(OUTPUT_DIR)/techno.out
+alias NEW_OUTPUT_FILE           $(OUTPUT_DIR)/BassISO_44kHz_mono.out
+
+alias OUTPUT_SIZE               700000
+alias NEW_OUTPUT_SIZE           550000
+
+alias REF_FILE                  $(AUDIO_STREAMS)/binary_splitter/streams/techno.pcm
+alias NEW_REF_FILE              $(AUDIO_STREAMS)/binary_splitter/streams/BassISO_44kHz_mono.pcm
+
+alias REF_DIGEST                $(AUDIO_STREAMS)/binary_splitter/streams/techno_digest.hash
+alias NEW_REF_DIGEST            $(AUDIO_STREAMS)/binary_splitter/streams/BassISO_44kHz_mono_digest.hash
+
+alias SAMPLING_RATE             48000
+alias NEW_SAMPLING_RATE         44100
+
+alias NB_CHANNELS               2
+alias NEW_NB_CHANNELS           1
+
+### Get splitter handle
+OMX_GetHandle    splitter OMX.ST.AFM.binary_splitter_host
+
+###Disable splitter output port 2
+OMX_SendCommand  splitter OMX_CommandPortDisable 2
+
+### Configure the input port of the splitter.
+OMX_SetParameter splitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=$(NB_CHANNELS) nSamplingRate=$(SAMPLING_RATE) eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+### Check if output port settings are slaved to input port
+MMTE_CheckParameter splitter OMX_IndexParamAudioPcm nPortIndex=1 nChannels=$(NB_CHANNELS) nSamplingRate=$(SAMPLING_RATE) eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+### Input and output files
+MMTE_attach_io       splitter 0 MEM INPUT_FILE 0 0 0
+MMTE_attach_io       splitter 1 MEM OUTPUT_FILE OUTPUT_SIZE 0 0
+
+### Move splitter to IDLE
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers splitter 0
+MMTE_AllocateAndUseBuffers splitter 1
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+### Move splitter to EXECUTING
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+mmte_sleep 1000
+
+## compare first decoded data
+MMTE_detach_io splitter 1
+file_comp OUTPUT_FILE REF_FILE
+hash_comp OUTPUT_FILE REF_DIGEST
+
+#################################################################################
+##################      New configuration for new stream    #####################
+#################################################################################
+
+###Disable i/p port of splitter
+OMX_SendCommand splitter OMX_CommandPortDisable 0
+MMTE_FreeBuffers splitter 0
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+###Set new input parameters
+OMX_SetParameter splitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=$(NEW_NB_CHANNELS) nSamplingRate=$(NEW_SAMPLING_RATE) eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+### Check the reconfigured PCM settings at the output of the splitter
+MMTE_CheckParameter splitter OMX_IndexParamAudioPcm nPortIndex=1 nChannels=$(NEW_NB_CHANNELS) nSamplingRate=$(NEW_SAMPLING_RATE) eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+### Display splitter output port NEW PCM SETIINGS
+OMX_GetParameter splitter OMX_IndexParamAudioPcm nPortIndex=0
+
+### New input & output files
+MMTE_attach_io splitter 0 MEM NEW_INPUT_FILE 0 0 0
+MMTE_attach_io  splitter 1 MEM NEW_OUTPUT_FILE NEW_OUTPUT_SIZE 0 0
+
+###Enable input splitter port
+OMX_SendCommand splitter OMX_CommandPortEnable 0
+MMTE_AllocateBuffers splitter 0
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+###############################################################################
+####################  New configuration for new stream completed   ############
+###############################################################################
+
+###Wait EOS from splitter output port
+MMTE_WaitEvent splitter OMX_EventBufferFlag 1 TIMEOUT
+
+### Compare second decoded data
+MMTE_detach_io splitter 1
+file_comp NEW_OUTPUT_FILE NEW_REF_FILE
+#hash_comp NEW_OUTPUT_FILE NEW_REF_DIGEST
+
+###Send Stop
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand splitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers splitter 0
+MMTE_FreeBuffers splitter 1
+MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias TIMEOUT
+unalias INPUT_FILE
+unalias NEW_INPUT_FILE
+unalias SAMPLING_RATE
+unalias NEW_SAMPLING_RATE
+unalias NB_CHANNELS
+unalias NEW_NB_CHANNELS
+unalias OUTPUT_FILE
+unalias NEW_OUTPUT_FILE
+unalias REF_FILE
+unalias NEW_REF_FILE
+unalias REF_DIGEST
+unalias NEW_REF_DIGEST
+
+test_end

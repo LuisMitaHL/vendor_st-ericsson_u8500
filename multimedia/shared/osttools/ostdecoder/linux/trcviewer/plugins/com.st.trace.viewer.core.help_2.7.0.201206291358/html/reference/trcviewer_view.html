@@ -1,0 +1,221 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML>
+<HEAD>
+  <TITLE>Trace Viewer help -- Trace Viewer View</TITLE>
+    <LINK REL=Stylesheet TYPE="text/css" HREF="../../css/trcviewer_help.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+</HEAD>
+<BODY class='WhiteBackgnd, main'>
+
+<!-- Start of header.inc -->
+<table width="100%" cellpadding=4 cellspacing=0 border=0>
+  <td valign="top">
+    <tr>
+      <td bgcolor="" align=left>
+        <img src="../../images/trcviewer_icon_64x64.gif" width=64 height=64 ALT="Trace Viewer Logo">
+      </td>
+      <td bgcolor="">
+      </td>
+      <td class= 'HeaderBanner' align=left valign=top width="100%">
+        <p class= 'TitleBig'>Trace Viewer Workbench</p>
+        <p class= 'TitleMedium'>Documentation &gt; References &gt; Trace Viewer View</p>
+      </td>
+    </tr>
+  </td>
+</table>
+<!-- End of header.inc -->
+
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Description</p>
+
+<p>This is the main view of Trace Viewer Workbench. It is used to display the decoded trace frames sent by the decoder executable.
+It also provides some useful features such as managing decoder options, search/filter text in the trace frames, link to source, color highlighting.
+</p>
+
+<p align="center"><img src="../../images/trcviewer_view.png"/></p>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Scroll Pane</p>
+
+<p>In order to manage large traces, a scroll pane is displayed to the right when there is a sufficient number of lines (20.000) in the Trace Viewer view.
+The content of text view at the left (including all the scrolling area) is represented by the blue area in the scroll pane. The middle of this area is represented by a red mark.
+</p>
+
+<p align="center"><img src="../../images/trcviewer_scroll_pane.png"/></p>
+
+<p>You can set the position of the text view in many ways:</p>
+<ul>
+  <li><p>Slide the text view scrollbar as usual to navigate in the currently displayed area.</p></li>
+  <li><p>Drag the blue area in the scroll pane to select a different area.</p></li>
+  <li><p>Double-click on the scroll pane ruler to select a different area.</p></li>
+  <li><p>Use the top/botton arrow of the scroll pane to go to the previous/next area in time.</p></li>
+</ul>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Toolbar</p>
+
+<table border="1">
+  <tr>
+    <td><b>Icon</b></td>
+    <td><b>Name</b></td>
+    <td><b>Description</b></td>
+  </tr>
+  <tr>
+    <td><img src="../../images/go_en.gif"/><b>/</b><img src="../../images/go_di.gif"/></td>
+    <td>View icon</td>
+    <td>Highlighted when the view is active (e.g. collecting data).</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/pause.gif"/><b>/</b><img src="../../images/resume.gif"/></td>
+    <td>Pause/Resume button</td>
+    <td>Pause the live display at Trace Viewer level. Decoder will still collect/decode the data but they will only be stored and not displayed. However the view is refreshed with the collected data the time the pause buton was pressed. This allows you to browse the yet parsed trace in the Trace Viewer withouth being annoyed by scrolling moves. Click the "Resume" button to resume the live display in Trace Viewer. Note that the data collected during the pause are kept in memory. It replaces the deprecated "Scroll Lock" functionality. Once in pause or when the parsing is finished, if your trace is too large, a rule is displayed at the right of the view and enables scrolling in the full trace (the text view contains only the equivalent of the thumb of this scroll widget)</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/terminate.gif"/><b>/</b><img src="../../images/terminate_di.gif"/></td>
+    <td>Terminate button</td>
+    <td>Use it to send a terminate command to the decoder process. The icon is highlighted when the decoder process is active (e.g. collecting data). If the terminate command is taking too much time a dialog box appears. Click "Cancel" to force the kill of the decoder process, but in that case the decoder won't terminate properly (no stats displayed, output files may not be fully flushed)</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/search.gif"/></td>
+    <td>Search button</td>
+    <td>It opens a simple text dialog that allows you to search for text in this view. The search can be set to case sensitive and includes all the lines that contains the searched text. The results are displayed in the Details view. Note that this action is only enable in pause or when the parsing is terminated.</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/filters.gif"/></td>
+    <td>Filter button</td>
+    <td>It opens a simple text dialog that allows you to filter the text in this view. The filter can be set to case sensitive and includes all the lines that contains the filter text. When filtering is activated, the search results will be affected by the filtering too.</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/open.gif"/></td>
+    <td>Open Trace Stram button</td>
+    <td>Start decoding your trace file. It opens a dialog with options similar to decoder options to configure decoder and then it launches it.</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/saveas.gif"/></td>
+    <td>"Save as" button</td>
+    <td>Save the content of this view in a text file. It opens a simple file dialog to choose the file to save the text to.</td>
+  </tr>
+  <tr>
+    <td><img src="../../images/clear.gif"/></td>
+    <td>Clear button</td>
+    <td>Clears the view.</td>
+  </tr>
+</table>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Configuration</p>
+
+<p>You can configure some display parameters for this view by opening the preferences window. Click on "Tools > Preferences..." to open the preferences panel. The preferences are applied at the beginning of a decoding session (e.g. will be applied the next time you will parse a trace).
+</p>
+
+<p align="center"><img src="../../images/preferences.png"/></p>
+
+<ul>
+  <li><p><b>Trace Viewer</b></p>
+    <p><ol>
+      <li>
+        <p><b>Components format:</b></p>
+        <p>Select if the OST components will be formatted (using dictionaries names) or raw (trace ids).</p>
+      </li>
+      <li>
+        <p><b>Time format:</b></p>
+        <p>Select if the time will be formatted (HH:MM:SS.precision) or raw.</p>
+      </li>
+      <li>
+        <p><b>Time precision:</b></p>
+        <p>Select the precision for time display. You can choose between milliseconds, microseconds and nanoseconds.</p>
+      </li>
+      <li>
+        <p><b>Max. lines in Trace view:</b></p>
+        <p>When there are too much lines in the Trace Viewer text pane, a scroll pane is displayed in the right end of the view. This parameter sets the floor from which the pane is opened. Default is 20.000 lines, and it can be set from 1.000 to 100.000.</p>
+      </li>
+      <li>
+        <p><b>Max. lines in Console:</b></p>
+        <p>Limit the output of the console view. Unlimited output can slow Trace Viewer if there are countless lines in the console output (more than 50000).</p>
+      </li>
+    </ol></p>
+  </li>
+  <li>
+    <p><b>Colors and Fonts:</b></p>
+    <p>Select the colors assigned to each trace type and the fonts used in the textual views.</p>
+  </li>
+  <li>
+    <p><b>Trace Server:</b></p>
+    <p>Options related to the TraceServer and STMProbe connection (see TraceServer Mode documentation page for more details).</p>
+  </li>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Tips</p>
+<ol>
+  <li>
+    <p><b>Pause:</b></p>
+    <p>Pause data collection (<img src="../../images/pause.gif"/>) to look at specific lines during the parsing. The right scroll pane appears if necessary to enable full-trace scrolling.</p>
+  </li>
+  <li>
+    <p>[OST Only] <b>Open source file:</b></p>
+    <p>Double-click on a line to open the source file where it emitted this trace frame, if available in the provided dictionaries.</p>
+  </li>
+  <li>
+    <p><b>Get line details:</b></p>
+    <p>Select one or more lines in this view. You can see the details in the Details view. If nothing happens check that the <img src="../../images/link.gif"/> button is toggled on. A maximum of 1000 lines can be reviewed at a time in the Details view.</p>
+  </li>
+  <li>
+    <p><b>Search for specific lines:</b></p>
+    <p>Use the <img src="../../images/search.gif"/> button to find particular decoded frames.</p>
+    <p><img src="../../images/search_dialog.png"/></p>
+    <p>The parameters of the search are:</p>
+    <p>
+      <ol>
+        <li><i>Type      </i>: the trace type of the frames to look for. Choosing the specific 'OST' or 'MTT' type will enable the corresponding tabs for advanced search criteria.</li>
+        <li><i>Master(s) </i>: a comma separated list of 1 or more masters that emitted these frames (in some configuration cpus are binded atomically to masters).</li>
+        <li><i>Channel(s)</i>: a comma separated list of 1 or more channels on which the frame was emitted.</li>
+        <li><i>Payload   </i>: a string contained in the textual payload of the frame.</li>
+        <li><i>Match Case</i>: if checked, the case will be checked in every text field of the search.</li>
+      </ol>
+    <p>Note that each of these criterion can be inverted by clicking on the criterion name button.</p>
+    <p>The info box summarize the parameters of your search in human language.</p>
+    <p>The result is displayed in the Details view and is not limited in size. However, if the result oversize 10.000 elements it will be paginated (see the Details view documentation for more information). To keep a search result in the details view toggle off the <img src="../../images/link.gif"/> button.</p>
+    <p><img src="../../images/search_result.png"/></p>
+  </li>
+  <li>
+    <p><b>Filter specific traces:</b></p>
+    <p>Use the <img src="../../images/filters.gif"/> button to filter particular decoded frames (this button is also present at the bottom of the Trace Viewer workbench).</p>
+    <p>The parameters of the filter dialog are the same as the search dialog. The main difference is that the filtering is directly applied to the views instead of being displayed in the Details view.</p>
+    <p>When filters are activated it also filters the results of the Search tool. Activating a filter is similar to hiding the filtered traces from the collected traces.</p>
+    <p>It can be disabled by applying an empty filter or by clicking on the "Deactivate Filtering" button at the bottom of the workbench.</p>
+    <p><img src="../../images/deactivate_filters.png"/></p>
+  </li>
+</ol>
+
+
+<!-- Start of footer.inc -->
+<br/>
+<br/>
+<br/>
+<table width="100%" align="center" cellspacing="2" cellpadding="0"  border="0">
+  <tr>
+    <td>
+      <img src="../../images/st_logo.jpg" width=76 height=45 ALT="ST Logo">
+    </td>
+    <td width="100%">
+      <p class="vsmall"><i>&copy; STMicroelectronics and others 2010, 2011, 2012. All rights reserved.</i>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- End of footer.inc -->
+
+</BODY>
+</HTML>
+

@@ -1,0 +1,96 @@
+test_start    CODEC_0016
+test_property TEST_NAME   SINKS_SOURCES_START_STOP
+
+alias TIMEOUT 0
+
+OMX_GetHandle    renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand  renderer OMX_CommandPortDisable 1
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+ate_attach_io    renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/triangular_offset.pcm 0 0 0
+
+MMTE_DispatchState OMX_StateIdle renderer
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+
+OMX_GetHandle    capturer OMX.ST.AFM.MULTI_MIC
+OMX_SetParameter capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+ate_attach_io    capturer 0 MEM $(OUTPUT_DIR)/record_48k_stereo.pcm.out 2000000 0 0
+MMTE_DispatchState OMX_StateIdle capturer
+
+
+#MMTE_NMF_ListComponent
+
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+
+
+
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=90 
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+mmte_sleep 2000
+
+MMTE_DispatchState OMX_StatePause capturer
+MMTE_DispatchState OMX_StateExecuting capturer
+
+mmte_sleep 2000
+
+
+MMTE_DispatchState OMX_StateIdle   renderer
+MMTE_DispatchState OMX_StateLoaded renderer
+
+mmte_sleep 3000
+
+ate_attach_io    renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/triangular_offset.pcm 0 0 0
+MMTE_DispatchState OMX_StateIdle renderer
+MMTE_DispatchState OMX_StateExecuting renderer
+
+mmte_sleep 3000
+
+#Stop
+MMTE_DispatchState OMX_StateIdle   capturer
+MMTE_DispatchState OMX_StateLoaded capturer
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+MMTE_DispatchState OMX_StateIdle   renderer
+MMTE_DispatchState OMX_StateLoaded renderer
+
+MMTE_PrintMemoryStatus
+ens_network_destroy
+
+
+
+
+#############################
+#  PLAY RECORDED FILE
+#############################
+OMX_GetHandle    renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand  renderer OMX_CommandPortDisable 1
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+MMTE_attach_io   renderer 0 MEM /sdcard/record_48k_stereo.pcm.out 0 0 0
+
+MMTE_DispatchState OMX_StateIdle renderer
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100 
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+MMTE_DispatchState OMX_StateExecuting  renderer
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 0
+
+MMTE_DispatchState OMX_StateIdle   renderer
+MMTE_DispatchState OMX_StateLoaded renderer
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias TIMEOUT
+
+test_end
+

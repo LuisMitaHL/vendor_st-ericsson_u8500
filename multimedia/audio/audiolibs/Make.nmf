@@ -1,0 +1,48 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE
+
+# FIXME ? when compiling audiolibs in standalone do not include *.idt ... check audiolibs_common.h
+CPPFLAGS+=-DNO_IDT_INCLUDE
+
+ifeq ($(CORE_NUMBER),2)
+
+COMPONENTS= \
+	audiolibs.libvector \
+	audiolibs.libbitstream \
+	audiolibs.libmp3dequan \
+	audiolibs.libmp3hybrid \
+	audiolibs.libpolysyn   \
+	audiolibs.libcrc \
+    audiolibs.libdBconv \
+    audiolibs.libsbrqmf \
+    audiolibs.libaudiowindows \
+    audiolibs.libaudiotables \
+    audiolibs.libfft \
+    audiolibs.libmdcttables \
+    audiolibs.libimdct \
+    audiolibs.libmdct 
+
+USER2MPCITFS= audiolibs.common.dummy
+
+SRCPATH+=$(COMPONENT_TOP_DIR)/..
+SRCPATH+=$(COMPONENT_TOP_DIR)/common/include
+SRCPATH+=$(COMPONENT_TOP_DIR)/inc
+
+INSTALL_NMF_COMP_SRC_MMDSP_PREFIX:=audiolibs/
+INSTALL_NMF_COMP_SRC_MMDSP += $(wildcard lib*/lib*.itf)
+
+endif
+
+INSTALL_NMF_COMP_SRC_COMMON_PREFIX:=audiolibs/
+INSTALL_NMF_COMP_SRC_COMMON += $(wildcard common/include/*.idt)
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk
+
+ifeq ($(CORE_NUMBER),2)
+TESTLISTS = testlist_nmf.lst
+DATABASE  = mpc/test
+TEST_TAG  = $(MMDSPPROCESSOR)
+include $(MM_MAKEFILES_DIR)/AudioTest.mk
+endif

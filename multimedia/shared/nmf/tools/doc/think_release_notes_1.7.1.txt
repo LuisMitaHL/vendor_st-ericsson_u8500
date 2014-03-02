@@ -1,0 +1,54 @@
+**********************************************************
+* Think Test Environment (version 1.7.1)                 *
+**********************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Light ARM component-based environment configured for NMF test and development 
+        This environment is based on Think open source component-based OS.
+    - Light Operating System services API specification
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Supported target:
+    - STn8815 SAA & SVA 
+        * Cut A0/B0/C0
+    - STn8820 SAA & SVA & SIA 
+        * Cut A0/A2
+    - STn8500 SVA & SIA
+        * SVP 2.3.0
+        * PEPS 8500 ARMSS V1.0.4.1
+    
+Changes:
+--------
+[NMF Think]
+    - All peripheral clocks are activated. In case board is flash then some clocks were not
+      active and so some think driver were not started. Note that this is a temporary hack
+      since think drivers are supposed to activate their clocks/power through think power
+      driver.
+    - Add mop500_ed-think support. Note the following about clock and reset for this delivery :
+        - Pll management and clock divider settings are the responsability of debugger script.
+        - Think will release reset of peripherals.
+        - Think will set peripherals clock enable for all peripheral control by PRCCs units.
+    
+Bug fixes:
+---------
+    - vi 22203 : Scheduler issue: Arm -> DSP fifo has to be cleared before being filled.
+    - vi 22204 : tls should be initialized at 0 for all jobs.
+
+Known Issues:
+-------------
+    - vi 20938 : Need new function in iLos to configure XbusDma connection.
+    - vi 21365 : Pmu api needed for initialization, start/stop of DSP timer (HTIMEN) from Pmu.
+    - vi 21734 : change request: set default stack size to 8 KBytes in Think environment.
+    - vi 22139 : Think may crash on startup for 8500 targets if user doesn't use main arguments.
+
+Notes:
+------
+    
+    
+Pre-requires:
+-------------
+    - Compatible with RVCT 2.2-sp1-616 and 3.2-sp1-688

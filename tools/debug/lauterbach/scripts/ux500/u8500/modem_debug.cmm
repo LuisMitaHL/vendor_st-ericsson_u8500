@@ -1,0 +1,79 @@
+//============================================================================
+// Lauterbach T32 Emulator script: modem_debug.cmm
+//
+// Comments: Modem debug entry script
+//
+//============================================================================
+
+
+local &Port
+
+if !simulator()
+(
+	area
+	if "&ModemTapEnabled"=="FALSE"
+	(
+		print "Please check Modem TAP line in setup window if you want to debug modem"
+		enddo
+	)
+	if !system.up()
+	(
+		print "You have to click the Load button first"
+		enddo
+	)
+
+	if run()
+		break
+)
+
+
+; Initialize modem core L2
+if OS.VERSION(0)!=0x1X
+(
+	; Windows
+	&Port=30002.
+)
+else
+(
+	; Linux
+	&Port=os.env(T32PORT3)
+)
+
+if intercom.ping(LocalHost:&Port)
+(
+	intercom.execute LocalHost:&Port reset
+	intercom.execute LocalHost:&Port do &CMM_PATH_BASE/emp_t32.cmm
+	intercom.execute LocalHost:&Port cd &CMM_PATH_BASE/ux500/u8500/modem
+	intercom.execute LocalHost:&Port do &CMM_PATH_BASE/ux500/u8500/modem/8500_debug_config_modem.cmm &chip_version HREF up+mod CPU2
+	intercom.wait LocalHost:&Port
+)
+
+if !simulator()
+(
+;	do mod_nopwrdwn.cmm 1
+;	sys.o.pwrdwn off
+)
+
+; Initialize modem core L1
+if OS.VERSION(0)!=0x1X
+(
+	; Windows
+	&Port=30003.
+)
+else
+(
+	; Linux
+	&Port=os.env(T32PORT4)
+)
+
+if intercom.ping(LocalHost:&Port)
+(
+	intercom.execute LocalHost:&Port reset
+	intercom.execute LocalHost:&Port do &CMM_PATH_BASE/emp_t32.cmm
+	intercom.execute LocalHost:&Port cd &CMM_PATH_BASE/ux500/u8500/modem
+	intercom.execute LocalHost:&Port do &CMM_PATH_BASE/ux500/u8500/modem/8500_debug_config_modem.cmm &chip_version HREF up+mod CPU1
+	intercom.wait LocalHost:&Port
+)
+
+enddo
+

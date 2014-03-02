@@ -1,0 +1,62 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   nmf method declaration
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <ext_ispctl_types.idt>
+
+/**
+ * returns well-known important information concerning the ISP, such as completion
+ * of read or write commands, as well as Ewarp-generated events, such as START_STREAMING
+ * or AF_STABLE
+ *
+ * \param info the type of information returned
+ * \param value in the case where info is READ_DONE, returns the read value, otherwise ignored
+ * \param timestamp the SIA 90khz timer timestamp of the event
+ *
+ * \note the host can unsubscribe from info events through the \ref ispctlcmd unsubscribe method.
+ * by default, all info events are enabled.
+*/
+void info(enum e_ispctlInfo info, t_uint32 value, t_uint32 timestamp);
+
+/**
+ * returns errors from the component or forwarded from the Ewarp
+ *
+ * \param error the error type
+ * \param data: extra information, meaning depends on error_id
+ * \param timestamp the SIA 90khz timer timestamp of the event
+ *
+ * \note the host can unsubscribe from error events through the \ref ispctlcmd unsubscribe method.
+ * by default, all error events are enabled.
+ * \note it is not planned to generate an error when the Ewarp doesn't boot, as this would
+ * require the use of a hardware timer and extra binding. The host should handle the timeout itself,
+ * unless there is a compelling need to do it in the ispctl component
+ * \note dispatching of events through alertError or alertDebug can change in the future.
+ * Today's error is tomorrow debug info, and vice-versa
+ *
+ * \todo determine error types and values
+ *
+*/
+void error(enum e_ispctlError error_id, t_uint32 data, t_uint32 timestamp);
+
+/**
+ * returns miscellaneous debug information
+ *
+ * \param debug_id the id of the debug event
+ * \param data1 misc information, significance tied to the specific debug event
+ * \param data2 misc information, significance tied to the specific debug event
+ * \param timestamp the SIA 90khz timer timestamp of the event
+ *
+ * \note the host can subscribe to debug events through the \ref ispctlcmd unsubscribe method.
+ * by default, all debug events are disabled.
+ * \note dispatching of events through alertError or alertDebug can change in the future.
+ * Today's error is tomorrow debug info, and vice-versa
+*/
+void debug(enum e_ispctlDebug debug_id, t_uint16 data1, t_uint16 data2, t_uint32 timestamp);

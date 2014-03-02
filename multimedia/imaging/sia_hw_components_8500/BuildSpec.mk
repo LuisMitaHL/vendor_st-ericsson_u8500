@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_imaging/sia_hw_components_8500=bin
+NO_STD_BUILD_imaging/sia_hw_components_8500=1
+BUILD_MMDSP_NMF_imaging/sia_hw_components_8500=bin
+BUILD_ARM_PROC_imaging/sia_hw_components_8500=bin
+BUILD_ARM_CODE_imaging/sia_hw_components_8500=src
+BUILD_ARM_NMF_imaging/sia_hw_components_8500=src
+BUILD_XP70_SIA_CODE_imaging/sia_hw_components_8500=false

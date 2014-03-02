@@ -1,0 +1,133 @@
+-----------------------------------------------------------------------------
+::: Building cspsa_linux_us_test_core_ram :::
+-----------------------------------------------------------------------------
+gcc -c -g -Wall -Wextra -Werror -DCFG_CSPSA_TEST_TARGET=CFG_CSPSA_TEST_TARGET_LINUX_US -DCFG_CSPSA_TEST_VARIANT=CFG_CSPSA_TEST_VARIANT_CORE -DCFG_CSPSA_CORE_CACHE_ITEM_ARRAY_SIZE=512 -DCFG_CSPSA_CORE_CACHE_INITIAL_NBR_OF_IMAGE_ARRAYS=1 -DCFG_CSPSA_TEST_MEMORY_TYPE=T_CSPSA_MEMORY_TYPE_RAM -DCFG_CSPSA_TEST_READ_ERRORS cspsa_core.c crc32.c cspsa_ll.c cspsa_api_linux_us_core_test.c cspsa_test.c cspsa_test_ram.c cspsa_ll_dev.c cspsa_ll_ram.c cspsa_ll_mmc.c
+-----------------------------------------------------------------------------
+gcc cspsa_core.o crc32.o cspsa_ll.o cspsa_api_linux_us_core_test.o cspsa_test.o cspsa_test_ram.o cspsa_ll_dev.o cspsa_ll_ram.o cspsa_ll_mmc.o -o cspsa_linux_us_test_core_ram  -lpthread
+mkdir -p ./exe
+mv cspsa_linux_us_test_core_ram ./exe
+-----------------------------------------------------------------------------
+::: Created executable file [./exe/cspsa_linux_us_test_core_ram] :::
+-----------------------------------------------------------------------------
+mkdir -p ./cspsa_linux_us_test_core_ram_logs
+-----------------------------------------------------------------------------
+###./exe/cspsa_linux_us_test_core_ram > ./cspsa_linux_us_test_core_ram_logs/cspsa_linux_us_test_core_ram_log.txt
+valgrind --leak-check=full --track-origins=yes  --show-reachable=yes ./exe/cspsa_linux_us_test_core_ram > ./cspsa_linux_us_test_core_ram_logs/cspsa_linux_us_test_core_ram_log.txt
+==1789== Memcheck, a memory error detector
+==1789== Copyright (C) 2002-2009, and GNU GPL'd, by Julian Seward et al.
+==1789== Using Valgrind-3.5.0-Debian and LibVEX; rerun with -h for copyright info
+==1789== Command: ./exe/cspsa_linux_us_test_core_ram
+==1789== 
+==1789== 
+==1789== HEAP SUMMARY:
+==1789==     in use at exit: 0 bytes in 0 blocks
+==1789==   total heap usage: 4,542,893 allocs, 4,542,893 frees, 1,508,998,313 bytes allocated
+==1789== 
+==1789== All heap blocks were freed -- no leaks are possible
+==1789== 
+==1789== For counts of detected and suppressed errors, rerun with: -v
+==1789== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 15 from 8)
+-----------------------------------------------------------------------------
+cat ./cspsa_linux_us_test_core_ram_logs/cspsa_linux_us_test_core_ram_log.txt
+
+[CSPSA]: Module test started.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_1'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_2'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_3'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_4'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_5'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_6'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_7'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_8'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_9'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_10'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_11'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_12'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_13'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_14'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_15'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_16'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_17'.
+
+[CSPSA]: Executing test case 'CSPSA_TEST_TC_18'.
+
+[CSPSA]: Module test ended. Printing test case results.
+
+[CSPSA]: Run 'TcTableToExcel' with this log file to get result in Excel format.
+
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Test Case Info
+
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Storage type;T_CSPSA_MEMORY_TYPE_RAM
+
+[EXCEL,CSPSA_TEST_TC_INFO,TEXT]: Module test result;Ok.
+
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: Test case id;Test case description;Result;Test Duration [ms];Open [ms];Close [ms];Read [ms];Write(empty) [ms];Write(rewrite) [ms];Flush [ms];Format [ms];Create [ms];Delete [ms]
+
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_1;CSPSA_TC_1: Create a CSPSA image and verify it.;Ok.;1367062;24887;3925;700687;513690;22950;16313;64982;365;0
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_2;CSPSA_TC_2: Delete objects in a CSPSA image and verify it.;Ok.;1731722;11317;5631;596561;1081413;0;13923;4631;16;95
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_3;CSPSA_TC_3: Get error result if a CSPSA image cannot be written.;Ok.;227;0;0;0;46;0;123;53;0;0
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_4;CSPSA_TC_4: Manipulate one bit in the CSPSA data field and make sure CSPSA detects it.;Ok.;481;32;6;0;275;0;51;0;3;0
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_5;CSPSA_TC_5: Manipulate one bit in one header's CSPSA header fields (one field at a time) and make sure CSPSA detects it.;Ok.;1080;20;59;0;634;0;65;35;6;0
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_6;CSPSA_TC_6: Manipulate one bit in both header's CSPSA header fields (one field at a time) and make sure CSPSA fails to open.;Obsolete.
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_7;CSPSA_TC_7: Test all API functions with bad input parameters.;Ok.;998
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_8;CSPSA_TC_8: Increase and decrease the size of a CSPSA image significantly and verify it.;Ok.;1098
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_9;CSPSA_TC_9: Increase and decrease the existing parameters small amounts.;Ok.;887
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_10;CSPSA_TC_10: Multiple clients test.;Not applicable.
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_11;CSPSA_TC_11: Performance test (24 B x 4096 items).;Ok.;15158;158;53;7680;6893;128;81;0;0;0
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_12;CSPSA_TC_12: Make sure CSPSA can be opened when there are two valid headers.;Ok.;15158;16;3;0;62;0;3;0;0;0
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_13;CSPSA_TC_13: Performance test of flash media.;Ok. Write @ 12444 [kB/s]. Read @ 11599 [kB/s];21339
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_14;CSPSA_TC_14: Create a CSPSA image and add some values to it.;Ok.;81
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_15;CSPSA_TC_15: Randomly inserts/deletes values.;Ok.;258127
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_16;CSPSA_TC_16: Checks if induced read errors are detected.;Ok.;170804
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_17;CSPSA_TC_17: Check that image is stored alternating at beginning and end.;Ok.;290;53;18;0;51;0;18;0;0;0
+
+ 
+[EXCEL,CSPSA_TEST_TC_TABLE,TEXT]: CSPSA_TEST_TC_18;CSPSA_TC_18: Check flushing/opening when keys are stored at end of a block.;Ok.;117
+
+ 
+-----------------------------------------------------------------------------
+

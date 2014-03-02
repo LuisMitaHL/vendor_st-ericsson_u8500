@@ -1,0 +1,20 @@
+\chapter{Interrupts dispatcher}
+
+Interrupts dispatcher module has for role to reduce code use for interrupt entry
+and exit sequence (mainly to reduce instruction cache pressure). This avoid
+duplication of entry and exit interrupt sequence in user interrupt handler since
+Users interrupt handler are just normal functions.
+
+Dispatcher will be executed by all MMDSP interrupts with the exception of MPCEE
+one (interrupts 2, 11 and 31).
+Dispatcher excecute the following sequence of code:
+\begin{itemize}
+  \item Save needed MMDSP registers.
+  \item Find from where we jump into itDispatcher() to find wanted irq number.
+  \item Switch THIS to the component that will handle interrupt. Save previous
+  one on the stack.
+  \item Jump into user interrupt handler.
+  \item After return from the user interrupt handler then restore original THIS.
+  \item Restore MMDSP registers.
+  \item Return to interrupted code.
+\end{itemize}

@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSGSA_HEM__
+#define __HALGPSGSA_HEM__
+/**
+* \file halgpsgsa.hem
+* \date 14/07/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all macro used by External application 
+* to communicate with the HALGPSGSA module for Frequency Aiding.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 14.07.09 </TD><TD> R.GUPTA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\addtogroup GSA
+*\{
+*/
+
+/**
+* \def MC_HALGPSGSA_INIT
+* Macro used to init the GSA (GPS Synchronization) modules \n
+* this macro is call by CGPS module during the initialization of CGPS module.
+* \see HALGPS20_01GSAInit
+*/
+#define MC_HALGPS_GSAINIT    HALGPS20_01GsaInit
+
+
+/**
+* \def MC_HALGPS_GSA_ACTIVATE_CLOCK_CAL
+* Macro used to activate the clock calibration. This function should check the current status of AFC and the frequency errors.
+* Based on these information it shall start the frequency aiding. The status will be indicated in the function return.
+* 
+* \see HALGPS20_02GsaActivateClockCalibration
+*/
+#define MC_HALGPS_GSA_ACTIVATE_CLOCK_CAL  HALGPS20_02GsaActivateClockCalibration
+
+
+
+/**
+* \def MC_HALGPS_GSA_DEACTIVATE_CLOCK_CAL
+* Macro used to deactivate the clock calibration. The status will be indicated in the function return.
+* 
+* \see HALGPS20_03GsaDeActivateClockCalibration
+*/
+#define MC_HALGPS_GSA_DEACTIVATE_CLOCK_CAL  HALGPS20_03GsaDeActivateClockCalibration
+
+
+
+/**
+* \def MC_HALGPS_GSA_CHECK_CLOCK_CAL
+* Macro used to function shall check the AFC status and activate/deacivate the clock calibration
+ if the AFC status indicate as open or Uncertainity is more than threshold.
+* 
+* \see HALGPS20_04GsaCheckClockCalibration
+*/
+#define MC_HALGPS_GSA_CHECK_CLOCK_CAL  HALGPS20_04GsaCheckClockCalibration
+
+/**
+*\}
+*/
+#endif /* __HALGPSGSA_HEM__ */

@@ -1,0 +1,48 @@
+#include <pcmprocessings/effectconfig.idt>
+#include <armnmf_buffer.idt>
+
+typedef enum {
+  EFFECT_RESET_REASON_STOP,
+  EFFECT_RESET_REASON_EOS,
+  EFFECT_RESET_REASON_FLUSH,
+  EFFECT_RESET_REASON_COUNT // Last value
+} t_effect_reset_reason;
+
+typedef enum {
+  EFFECT_PROCESS_TYPE_NOT_INPLACE,
+  EFFECT_PROCESS_TYPE_INPLACE,
+  // Reserved for future: EFFECT_PROCESS_TYPE_NOT_INPLACE_BUFFERED,
+  // Reserved for future: EFFECT_PROCESS_TYPE_INPLACE_BUFFERED,
+  EFFECT_PROCESS_TYPE_COUNT // Last value
+} t_effect_process_type;
+
+
+typedef struct {
+  t_effect_process_type proc_type;
+} t_effect_caps;
+
+typedef struct {
+  t_uint32 size;
+  t_effect_process_type proc_type;
+} t_effect_process_params;
+
+typedef struct {
+  t_effect_process_params base;
+  OMX_BUFFERHEADERTYPE_p inbuf_hdr;
+  t_bool inbuf_emptied;
+  OMX_BUFFERHEADERTYPE_p outbuf_hdr;
+  t_bool outbuf_filled;
+} t_effect_process_not_inplace_params;
+
+typedef struct {
+  t_effect_process_params base;
+  OMX_BUFFERHEADERTYPE_p buf_hdr;
+} t_effect_process_inplace_params;
+
+interface hst.pcmprocessings.effect {
+  t_bool open(const t_host_effect_config* config, t_effect_caps* caps);
+  void reset(t_effect_reset_reason reason);
+  void process(t_effect_process_params* params);
+  void close(void);
+}
+

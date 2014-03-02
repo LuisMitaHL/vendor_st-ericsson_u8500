@@ -1,0 +1,93 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+/*F(*************************************************************************** 
+* File name  : lsimcp.hep
+* Module     : LSIMCP
+*----------------------------------------------------------------------------* 
+*----------------------------------------------------------------------------* 
+*                             DESCRIPTION
+*  This file contains the internal structures used by the module.
+*
+* 
+*----------------------------------------------------------------------------* 
+***************************************************************************)F*/
+/* == HISTORY ===============================================================*/
+/*  Name     |    Date       |     Action                                    */
+/*---------------------------------------------------------------------------*/ 
+/*  Balaji   | 18-JUL-2008   | Creation                                      */
+/*---------------------------------------------------------------------------*/
+
+/**
+\file LSIMCP.het
+*/
+
+#ifndef LSIMCP_HEP
+#define LSIMCP_HEP
+
+void lsim4_04PosInstructInd( uint8_t vp_SessionId , s_gnsCP_PosInstruct * pp_PosInstruct );
+
+void lsim4_05NavModelElmInd( uint8_t vp_NumSv ,   s_gnsCP_NavModelElm *pp_NavModelElm );
+
+void lsim4_06AcquisAssistInd( s_gnsCP_AcquisAssist *pp_AcquisAssist );
+
+void lsim4_07AlmanacElm( uint8_t vp_NumSv ,  s_gnsCP_AlmanacElm *pp_AlmanacElm , s_gnsCP_GlobalHealth *pp_GlobalHealth );
+
+void lsim4_08RefTimeInd(e_gnsAS_AssistSrc v_Src, s_gnsCP_RefTime *pp_RefTime );
+
+
+void lsim4_09RefPositionInd( s_gnsCP_GpsPosition *pp_RefPosition );
+
+void lsim4_10IonoModelInd( s_gnsCP_IonoModel *pp_IonoModel );
+
+void lsim4_11UtcModelInd( s_gnsCP_UtcModel *pp_UtcModel );
+
+void lsim4_12RtIntegrityInd( s_gnsCP_RTIntegrity *pp_RtIntegrity );
+
+void lsim4_13DgpsCorrectionsInd( s_gnsCP_DGpsCorr *pp_DgpsCorr );
+
+void lsim4_14AbortInd( s_gnsCP_Abort *pp_Abort );
+
+
+void lsim4_15AbortCnf( uint8_t v_SessionId );
+
+void lsim4_16SendLocNotifyReq( uint32_t vp_SessionId , s_gnsCP_LocNotification *pp_Notification );
+
+void lsim4_17SendLocNotifyRsp( uint32_t v_SessionId , uint8_t v_UserResponse );
+
+void lsim4_18SendResetGpsDataReq ( void );
+
+/* +LMSqcMOLR */
+void lsim4_19SendMolrAbortReq (uint8_t vp_SessionId,uint8_t vp_ErrorReason, uint8_t v_MolrType);
+
+void lsim4_20SendMolrStartResp (uint8_t vp_SessionId,s_gnsCP_GpsPosition *pp_RefPosition);
+
+
+void lsim4_21SendMolrStartInd(uint8_t v_SsSessionID, 
+                                  uint8_t v_Option,
+                                  uint8_t v_ServiceType,
+                                  e_gnsCP_MolrType v_MolrType,
+                                  s_gnsCP_GpsAidRequest *p_GpsAidRequest,
+                                  s_gnsCP_QoP *p_QopRequest,
+                                  s_gnsCP_3rdPartyClient *p_3rdPartyRequest,
+                                  uint16_t  v_SupportedGADShapesMask );
+
+void lsim4_22SendMolrStopInd(uint8_t v_SsSessionID, 
+                                  e_gnsCP_MolrType v_MolrType,
+                                  e_gnsCP_MolrErrorReason v_ErrorReason);
+
+void lsim4_23SendPosCapabilityInd();
+
+
+
+
+/* -LMSqcMOLR */
+void lsim4_24SendLocNotifyAbortInd( uint32_t vp_SessionId);
+
+
+#endif /* LSIMCP_HEP */
+

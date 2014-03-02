@@ -1,0 +1,43 @@
+test_start    CODEC_0003
+test_property TEST_NAME   play_tunnel_rec
+
+OMX_GetHandle    renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand  renderer OMX_CommandPortDisable 1
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+OMX_GetHandle    capturer OMX.ST.AFM.MULTI_MIC
+OMX_SetParameter capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+
+OMX_SetupTunnel capturer 0 renderer 0
+
+MMTE_DispatchState OMX_StateIdle capturer renderer
+
+MMTE_NMF_ListComponent
+
+MMTE_DispatchState OMX_StatePause capturer
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=60
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+#Start
+MMTE_DispatchState OMX_StateExecuting  renderer
+mmte_sleep 1000
+MMTE_DispatchState OMX_StateExecuting capturer
+
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=70
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+################
+#RECORD ONGOING#
+################
+
+mmte_sleep 10000
+#Stop
+MMTE_DispatchState OMX_StateIdle capturer renderer
+MMTE_DispatchState OMX_StateLoaded capturer renderer
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+test_end
+

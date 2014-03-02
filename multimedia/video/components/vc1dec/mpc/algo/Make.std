@@ -1,0 +1,71 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MMROOT)/video/makefiles/Make.std.config
+
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh vc1dec
+
+VPATH = ./src/$(SVA_SUBSYSTEM) ../main/src/$(SVA_SUBSYSTEM) ../main/src ./src ../../../scheduler/src
+EXENAME = vc1dec
+
+EXEOBJ = vc1d_co_bitstream \
+	vc1d_co_reconstruction\
+	vc1d_sva_bitplane \
+	vc1d_sva_bitstream \
+	vc1d_sva_block_decode \
+	vc1d_sva_coeff_decode \
+	vc1d_sva_deblock \
+	vc1d_sva_error_concealment \
+	vc1d_sva_inter_prediction \
+	vc1d_sva_interface \
+	vc1d_sva_intra_prediction \
+	vc1d_sva_iquant \
+	vc1d_sva_itrans \
+	vc1d_sva_main \
+	vc1d_sva_mb_decode \
+	vc1d_sva_memory \
+	vc1d_sva_mv_decode \
+	vc1d_sva_overlap \
+	vc1d_sva_picture_decode \
+	vc1d_sva_picture_layer_parser \
+	vc1d_sva_vlc \
+	vc1d_sva_zigzag \
+	vc1d_sva_hw_api \
+	vc1d_utils \
+	sm_decoder_vc1 \
+	sm_common \
+	t1xhv_interrupt \
+	t1xhv_vc1_main
+
+ifeq ($(SVA_SUBSYSTEM),ndk8500_ed)
+EXEOBJ += vc1d_sva_vlc_rll_table \
+	vc1d_sva_reconstruction
+endif 
+
+ifeq ($(SVA_SUBSYSTEM),ndk8500_a0)
+EXEOBJ += vc1d_sva_context
+endif
+
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT)
+
+ifeq ($(findstring 500_v2,$(PLATFORM)),500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+
+CPPFLAGS += -DT1XHV_TASK_DECODE -DT1XHV_FIRMWARE -D_MMDSP -DFINAL_IMPLEMENTATION -DAP_L2 -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION)
+
+CPPFLAGS += -I../../../scheduler/inc -I./inc/$(SVA_SUBSYSTEM) -I./inc -I../share/$(SVA_SUBSYSTEM) -I../share
+
+EXELDFLAGS = pla=-g +link
+
+MEMORYCFG = $(MMROOT)/video/components/common/memconfig/video.$(MEMCFG_EXT)
+STACK = 2048
+SSTACK = 512
+CFLAGS += -forceesramfn
+todo: exe
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

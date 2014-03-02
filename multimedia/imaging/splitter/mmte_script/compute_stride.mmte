@@ -1,0 +1,40 @@
+# $1 is width and $2 is color format (result is updating CURRENT_STRIDE )
+alias CURRENT_STRIDE $1
+
+if $2 == OMX_COLOR_Format16bitRGB565
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if $2 == OMX_COLOR_Format16bitARGB4444
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if $2 == OMX_COLOR_Format16bitARGB1555
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if $2 == OMX_COLOR_Format24bitRGB888
+	arithmeticalias CURRENT_STRIDE* 3
+endif
+if $2 == OMX_COLOR_Format32bitARGB8888
+	arithmeticalias CURRENT_STRIDE* 4
+endif
+if $2 == OMX_COLOR_FormatYUV420Planar
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif
+if $2 == OMX_SYMBIAN_COLOR_FormatYUV420MBPackedSemiPlanar
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif
+if $2 == OMX_COLOR_FormatYUV420PackedPlanar
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif
+if $2 == OMX_COLOR_FormatCbYCrY
+	arithmeticalias CURRENT_STRIDE* 2
+endif
+if $2 == OMX_COLOR_FormatRawBayer8bit
+	arithmeticalias CURRENT_STRIDE* 1
+endif
+if $2 == OMX_SYMBIAN_COLOR_FormatRawBayer12bit
+	arithmeticalias CURRENT_STRIDE* 3
+	arithmeticalias CURRENT_STRIDE/ 2
+endif

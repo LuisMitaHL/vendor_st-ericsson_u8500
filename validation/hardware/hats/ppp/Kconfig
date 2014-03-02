@@ -1,0 +1,27 @@
+#
+# Ppp configuration
+#
+
+menuconfig PPP
+	bool "Ppp Configuration"
+	help
+	  Point-to-Point Protocol
+
+if PPP
+
+config PPP_DIR
+	string
+	default ./ppp
+
+config PPP_DEPS
+	string
+	default ""
+
+config PPP_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on PPP
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # PPP

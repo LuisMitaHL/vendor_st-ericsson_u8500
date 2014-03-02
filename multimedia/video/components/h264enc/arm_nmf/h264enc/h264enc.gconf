@@ -1,0 +1,84 @@
+composite h264enc.arm_nmf.h264enc
+{
+//contains
+contains h264enc.arm_nmf.encoder    as encoder
+
+//itf
+provides h264enc.arm_nmf.api.init                   as init
+provides h264enc.arm_nmf.api.get_headers            as get_headers
+provides h264enc.arm_nmf.api.input                  as input
+provides h264enc.arm_nmf.api.output_buffer          as output_buffer
+requires h264enc.arm_nmf.api.notify_input_buffer    as notify_input_buffer
+requires h264enc.arm_nmf.api.notify_output_buffer   as notify_output_buffer
+requires h264enc.arm_nmf.api.pendingCommandAck      as pendingCommandAck
+
+binds this.init                     to encoder.init
+binds this.get_headers              to encoder.get_headers
+binds this.input                    to encoder.input
+binds this.output_buffer            to encoder.output_buffer
+binds encoder.notify_input_buffer   to this.notify_input_buffer
+binds encoder.notify_output_buffer  to this.notify_output_buffer
+binds encoder.pendingCommandAck     to this.pendingCommandAck
+
+provides h264enc.arm_nmf.api.encoder_trace_init     as encoder_trace_init
+binds this.encoder_trace_init                       to encoder.encoder_trace_init
+
+#ifndef __ndk5500_a0__
+contains h264enc.mpc.algo        as cAlgo               domainSVACodec
+contains h264enc.mpc.ddep        as cDdep               domainSVACodec urgent
+contains h264enc.mpc.adapter     as cAdapter            domainSVACodec urgent
+contains resource_manager        as cResource_manager   domainSVACodec urgent
+
+
+// encoder <-> hamac
+binds encoder.iStartCodec       to cAdapter.iStartCodec24bits   asynchronous fifo=4  
+binds cAdapter.iEndCodec24bits  to encoder.iEndCodec            asynchronous fifo=4  
+
+// adapter <-> ddep
+binds cAdapter.iStartCodec16bits    to cDdep.iStartCodec
+binds cDdep.iEndCodec               to cAdapter.iEndCodec16bits
+
+// ddep <-> ddep, rm, h264enc
+binds cDdep.iSendLogEvent   to cDdep.iGetLogEvent   asynchronous fifo=4 
+binds cDdep.iAlgo           to cAlgo.iAlgo          asynchronous fifo=4
+// Set fifo size to 8 instead of 4 because frame skip implies several alloc and free
+// calls that do not fit in a fifo of 4
+binds cDdep.iResource       to cResource_manager.iResource    asynchronous fifo=8
+
+// h264enc <-> rm
+binds cAlgo.iBuffer     to cResource_manager.iBuffer
+binds cAlgo.iMtf        to cResource_manager.iMtf
+binds cAlgo.iInterrupt  to cResource_manager.iInterrupt
+//+ code for step 2 of CR 332873
+binds cAlgo.iTcmAlloc	to cResource_manager.iTcmAlloc
+//- code for step 2 of CR 332873
+
+#ifdef DEBUG_TRACES
+// Printf Messages
+contains debug.mpc.dsp_printf    as dsp_printf                   domainSVACodec
+binds cDdep.oPrintf        to dsp_printf.iPrintf
+binds cAlgo.oPrintf        to dsp_printf.iPrintf
+#endif
+
+//Trace
+contains osttrace.mmdsp                             as osttracedsp domainSVACodec
+binds    cDdep.osttrace                             to osttracedsp.osttrace
+
+binds encoder.mpc_trace_init                        to cDdep.mpc_trace_init asynchronous fifo=1
+binds cDdep.mpc_trace_init_ack                      to encoder.mpc_trace_init_ack asynchronous fifo=1
+
+#else
+//requires  hva_drv.arm_nmf.hva     as cHva
+contains  hva_drv.arm_nmf.hva_drv   as cHva
+binds encoder.iStartCodec to cHva.iStartCodec   asynchronous fifo=4
+binds cHva.iEndCodec      to encoder.iEndCodec  asynchronous fifo=4
+#endif
+
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+}
+

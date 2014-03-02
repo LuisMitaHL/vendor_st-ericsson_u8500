@@ -1,0 +1,157 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+MY_PATH=/usr/share/dthservices
+RES_FILE=$MY_PATH/resmid.txt
+TMP_FILE=$MY_PATH/tmpfile.txt
+INPUT_FILE=$MY_PATH/tempstate.txt
+LISTEN_FILE=$MY_PATH/resmidlistener.txt
+OUTPUT_MODE=file
+
+check_mid()
+{
+RES_FILE=$MY_PATH/checkmid.txt
+netstat -ap | grep mid | grep tcp | grep LISTEN > /dev/null                          
+ if [[ $? -eq 0 ]] ; then
+
+return 1;
+else
+echo "mid is not started"
+return 0;
+fi  
+}
+
+usage()
+{
+ 	echo "Usage: mid_command OUTPUT COMMAND" >&2
+        echo -e "\tOUTPUT" >&2
+        echo -e "\t\t-e : print result on console" >&2
+        echo -e "\t\t-f :print resut on $RES_FILE file" >&2
+        echo -e "\tCOMMAND" >&2
+        echo -e "\t\tgetstate : get modem state on, off, booting .." >&2
+        echo -e "\t\tgetmode : get modem mode itp or normal " >&2
+        echo -e "\t\treboot : reset the modem" >&2
+        echo -e "\t\tpoweroff : poweroff the modem" >&2
+        echo -e "\t\tpoweron : poweron the modem" >&2
+	echo -e "\t\tgetphonefspath : Request phone Fs path" >&2
+	echo -e "\t\tgetwarn : Request modem warning" >&2  
+	echo -e "\t\tgetmodemid : Request modem version" >&2        
+}
+check_nc ()
+{
+ if [[ $? -gt 0 ]] ; then
+exit 0
+fi
+}
+
+if [ $# != 2 ]
+then
+         usage
+exit
+fi
+case $1 in
+	-e)
+		OUTPUT_MODE="echo";
+;;
+	-f)
+		OUTPUT_MODE="file";
+;;
+	*)
+       usage       
+exit
+;;
+esac
+
+
+touch $INPUT_FILE                                                
+                                                                 
+touch $RES_FILE
+
+if check_mid 
+then
+exit
+fi                                                              
+case $2 in                                                              
+getstate)
+	tail -n 1 $LISTEN_FILE | cut -d':' -f4 | cut -d' ' -f2 > $RES_FILE
+;;                                                                                       
+                                                                                         
+getmode)
+	echo "getmode" >  $INPUT_FILE                                  
+        echo "exit" >>  $INPUT_FILE                                         
+        nc -w3 127.0.0.1 9921 < $INPUT_FILE  > $TMP_FILE
+	check_nc	
+	#cat $RES_FILE
+	dos2unix $TMP_FILE
+	head -n 1 $TMP_FILE | sed "s/@/_/g" | sed "s/:/@/g" | cut -d'@' -f2 > $RES_FILE
+;;                                                                                       
+reboot)
+	echo "reboot" >  $INPUT_FILE                                  
+        echo "exit" >>  $INPUT_FILE                                         
+        nc -w3 127.0.0.1 9921 < $INPUT_FILE  > $TMP_FILE
+	check_nc	
+	#cat $RES_FILE
+	dos2unix $TMP_FILE
+	head -n 1 $TMP_FILE | sed "s/@/_/g" | sed "s/:/@/g" | cut -d'@' -f2 > $RES_FILE
+;;                                                                                       
+poweroff)
+	echo "poweroff" >  $INPUT_FILE                                  
+        echo "exit" >>  $INPUT_FILE                                         
+        nc -w3 127.0.0.1 9921 < $INPUT_FILE  > $TMP_FILE
+	check_nc
+	#cat $RES_FILE
+	dos2unix $TMP_FILE
+	head -n 1 $TMP_FILE | sed "s/@/_/g" | sed "s/:/@/g" | cut -d'@' -f2 > $RES_FILE
+;;                                                                                       
+poweron)
+	echo "poweron" >  $INPUT_FILE                                  
+        echo "exit" >>  $INPUT_FILE                                         
+        nc -w3 127.0.0.1 9921 < $INPUT_FILE  > $TMP_FILE
+	check_nc	
+	#cat $RES_FILE
+	dos2unix $TMP_FILE
+	head -n 1 $TMP_FILE | sed "s/@/_/g" | sed "s/:/@/g" | cut -d'@' -f2 > $RES_FILE
+;;
+getwarn)
+	echo "getwarn" >  $INPUT_FILE                                  
+        echo "exit" >>  $INPUT_FILE                                         
+        nc -w3 127.0.0.1 9921 < $INPUT_FILE  > $TMP_FILE
+	check_nc	
+	#cat $RES_FILE
+	dos2unix $TMP_FILE
+	head -n 1 $TMP_FILE | sed "s/@/_/g" | sed "s/:/@/g" | cut -d'@' -f2 > $RES_FILE
+;;
+getmodemid)
+	echo "getmodemid" >  $INPUT_FILE                                  
+        echo "exit" >>  $INPUT_FILE                                         
+        nc -w3 127.0.0.1 9921 < $INPUT_FILE  > $TMP_FILE
+	check_nc
+	#cat $RES_FILE
+	dos2unix $TMP_FILE
+	head -n 1 $TMP_FILE | cut -d'>' -f2 > $RES_FILE
+;;
+getphonefspath)
+	echo "getphonefspath" >  $INPUT_FILE                                  
+        echo "exit" >>  $INPUT_FILE                                         
+        nc -w3 127.0.0.1 9921 < $INPUT_FILE  > $TMP_FILE
+	check_nc
+	#cat $RES_FILE
+	dos2unix $TMP_FILE
+	head -n 1 $TMP_FILE  | cut -d'>' -f2 > $RES_FILE
+;;
+*)                                                                                       
+            usage        
+exit
+;;                                                                                       
+esac
+
+if [ $OUTPUT_MODE == "echo" ]
+then
+cat $RES_FILE
+fi
+
+                                                  
+                                                                          
+exit   
+
+
+

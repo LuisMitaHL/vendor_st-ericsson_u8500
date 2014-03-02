@@ -1,0 +1,35 @@
+#
+# GenAPIdoc configuration
+#
+
+menuconfig GENAPIDOC
+	bool "GenAPIdoc"
+	depends on DTHSRVHELPER && DTHFRAMEWORK-INCLUDE && DTHFS && LIBXML2
+	help
+	  depends on DTHSRVHELPER, DTHFRAMEWORK-INCLUDE, DTHFS && LIBXML2
+
+if GENAPIDOC
+
+config GENAPIDOC_DIR
+	string
+	default ../tat/DthFramework/genAPIdoc
+
+config GENAPIDOC_DEPS
+	string
+	default "DTHSRVHELPER DTHFRAMEWORK-INCLUDE DTHFS LIBXML2"
+
+config GENAPIDOC_STRIP_DISABLED
+	bool "Disable strip"
+	depends on GENAPIDOC
+	default n
+	help
+	  This will disable strip for this module
+
+config GENAPIDOC_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on GENAPIDOC
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # GENAPIDOC

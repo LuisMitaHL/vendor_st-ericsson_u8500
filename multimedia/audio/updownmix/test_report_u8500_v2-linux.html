@@ -1,0 +1,1005 @@
+
+<HTML>    
+    <HEAD>
+        <TITLE>Test report</TITLE>
+
+
+<style type="text/css">
+
+ body {font-family:verdana,'sans serif'}
+ .sortable th {
+ background:#ddd;
+ font-weight:normal;
+ border-width:1px;
+ border-style:solid;
+ }
+ a {cursor:pointer;color:blue;}
+ .high{background:#cccccc;font-weight:bold;}
+
+ table {
+ border-color:black;
+ border-collapse:collapse;
+ border-width:1px;
+ border-style:solid;
+ text-align:left;
+ margin:10pt;
+ }
+ th,td{
+ padding-left:8pt;
+ padding-right:8pt;
+ padding-top:2pt;
+ padding-bottom:2pt;
+ }
+ box { font-size:90%;}
+	
+	.cbLabel { font-size:55%;}
+
+ .comment { font-size:75%;}
+ .copyright { font-size:50%;color:#666666 }
+
+ .testname {
+ font-weight:bold;
+ }
+ .details {
+ width:90%;
+ background:#F0F8FF;
+ }
+	a.tooltip em {
+ display:none;
+	}
+	a.tooltip:hover {
+	border: 0;
+	position: relative;
+	z-index: 500;
+	text-decoration:none;
+	}
+	a.tooltip:hover em {
+	font-style: normal;
+	display: block;
+	position: absolute;
+	top: 20px;
+	left: -10px;
+	padding: 5px;
+	color: #000;
+	border: 1px solid #bbb;
+	background: #ffc;
+	}
+
+	/* Sortable tables */
+	table.sortable a.sortheader {
+	background-color:#eee;
+	color:#666666;
+	font-weight: bold;
+	text-decoration: none;
+	display: block;
+	}
+	table.sortable span.sortarrow {
+	color: black;
+	text-decoration: none;
+	}
+
+</style>
+
+
+ 
+<script>
+
+
+var SORT_COLUMN_INDEX;
+addEvent(window, "load", initView);
+ addEvent(window, "unload", saveAllForms);
+ 
+function initView () {
+ sortables_init();
+ loadAllForms();
+ sortable_expandAllTables()
+ sortable_collapseAllAllTables();
+ filterResultsAllTables();
+}
+function saveAllForms()
+{
+ var forms = document.getElementsByTagName("form");
+ for (f=0;f<forms.length;f++) {
+ saveSelections(forms[f]);
+ }
+}
+ 
+function loadAllForms()
+{
+ var forms = document.getElementsByTagName("form");
+ for (f=0;f<forms.length;f++) {
+ loadSelections(forms[f]);
+ }
+}
+ 
+ 
+
+function getSortableTableList() {
+ // Find all tables with class sortable and make them sortable
+ var SORTABLE_TABLES_ARRAY = new Array();
+ if (!document.getElementsByTagName) return;
+ tbls = document.getElementsByTagName("table");
+ var cntr = 0
+ for (ti=0;ti<tbls.length;ti++) {
+ thisTbl = tbls[ti];
+ if (((' '+thisTbl.className+' ').indexOf("sortable") != -1) && (thisTbl.id)) {
+ SORTABLE_TABLES_ARRAY[cntr++] = thisTbl;
+ }
+ }
+ return SORTABLE_TABLES_ARRAY;
+}
+
+
+function sortables_init() {
+ // Find all tables with class sortable and make them sortable
+ if (!document.getElementsByTagName) return;
+ tbls = document.getElementsByTagName("table");
+ for (ti=0;ti<tbls.length;ti++) {
+ thisTbl = tbls[ti];
+ if (((' '+thisTbl.className+' ').indexOf("sortable") != -1) && (thisTbl.id)) {
+ //initTable(thisTbl.id);
+ ts_makeSortable(thisTbl);
+ }
+ }
+}
+
+function ts_makeSortable(table) {
+ if (table.rows && table.rows.length > 0) {
+ var firstRow = table.rows[0];
+ }
+ if (!firstRow) return;
+ 
+ // We have a first row: assume it's the header, and make its contents clickable links
+ for (var i=0;i<firstRow.cells.length;i++) {
+ var cell = firstRow.cells[i];
+ var txt = ts_getInnerText(cell);
+ cell.innerHTML = '<a href="javascript:void(0)" class="sortheader" '+ 
+ 'onclick="ts_resortTable(this, '+i+');return false;">' + 
+ txt+'<span class="sortarrow">&nbsp;&nbsp;&nbsp;</span></a>';
+ }
+}
+
+function ts_getInnerText(el) {
+	if (typeof el == "string") return el;
+	if (typeof el == "undefined") { return el };
+	if (el.innerText) return el.innerText;	//Not needed but it is faster
+	var str = "";
+	
+	var cs = el.childNodes;
+	var l = cs.length;
+	for (var i = 0; i < l; i++) {
+	switch (cs[i].nodeType) {
+	case 1: //ELEMENT_NODE
+	str += ts_getInnerText(cs[i]);
+	break;
+	case 3:	//TEXT_NODE
+	str += cs[i].nodeValue;
+	break;
+	}
+	}
+	return str;
+}
+
+function ts_resortTable(lnk,clid) {
+ // get the span
+ var span;
+ for (var ci=0;ci<lnk.childNodes.length;ci++) {
+ if (lnk.childNodes[ci].tagName && lnk.childNodes[ci].tagName.toLowerCase() == 'span') span = lnk.childNodes[ci];
+ }
+ var spantext = ts_getInnerText(span);
+ var td = lnk.parentNode;
+ var column = clid || td.cellIndex;
+ var table = getParent(td,'TABLE');
+ 
+ // Work out a type for the column
+ if (table.rows.length <= 1) return;
+ var itm = ts_getInnerText(table.rows[1].cells[column]);
+ var id = 1;
+ while (!itm) {
+ itm = ts_getInnerText(table.rows[++id].cells[column]);
+ }
+ sortfn = ts_sort_caseinsensitive;
+ if (itm) {
+ if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d\d\d$/)) sortfn = ts_sort_date;
+ if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d$/)) sortfn = ts_sort_date;
+ if (itm.match(/^[\d\.]+$/)) sortfn = ts_sort_numeric;
+ }
+ SORT_COLUMN_INDEX = column;
+ var firstRow = new Array();
+ var newRows = new Array();
+ for (i=0;i<table.rows[0].length;i++) { firstRow[i] = table.rows[0][i]; }
+ var k=0;
+ for (j=1;j<table.rows.length-1;j++) { // -1 because last line is statistics, not sorted 
+ var l=0;
+ // Low classed rows should not be sorted !
+ if ((table.rows[j].className) && (table.rows[j].className != "low")) {
+ newRows[k] = table.rows[j];
+ k++;
+ }
+ 
+ }
+
+ newRows.sort(sortfn);
+
+
+ if (span.getAttribute("sortdir") == 'down') {
+ ARROW = '&nbsp;&nbsp;&uarr;';
+ newRows.reverse();
+ span.setAttribute('sortdir','up');
+ } else {
+ ARROW = '&nbsp;&nbsp;&darr;';
+ span.setAttribute('sortdir','down');
+ }
+ 
+ // lets add last line which is statistics
+ newRows[newRows.length] = table.rows[table.rows.length-1];
+ 
+ // We appendChild rows that already exist to the tbody, so it moves them rather than creating new ones
+ // don't do sortbottom rows
+ for (i=0;i<newRows.length;i++) { 
+ if (!newRows[i].className || (newRows[i].className && (newRows[i].className.indexOf('sortbottom') == -1))) {
+ table.tBodies[0].appendChild(newRows[i]);
+ // Let's append details
+ var unique_id = newRows[i].id;
+ var details = document.getElementById(unique_id + "_0");
+ if (details) {
+ table.tBodies[0].appendChild(details);
+ }
+
+ }
+ }
+ // do sortbottom rows only
+ for (i=0;i<newRows.length;i++) {
+ if (newRows[i].className && (newRows[i].className.indexOf('sortbottom') != -1)) {
+ table.tBodies[0].appendChild(newRows[i]);
+ // Let's append details
+ var unique_id = newRows[i].id;
+ var details = document.getElementById(unique_id + "_0");
+ if (details) {
+ table.tBodies[0].appendChild(details);
+ }
+ }
+ }
+ 
+ // Delete any other arrows there may be showing
+ var allspans = document.getElementsByTagName("span");
+ for (var ci=0;ci<allspans.length;ci++) {
+ if (allspans[ci].className == 'sortarrow') {
+ if (getParent(allspans[ci],"table") == getParent(lnk,"table")) { // in the same table as us?
+ allspans[ci].innerHTML = '&nbsp;&nbsp;&nbsp;';
+ }
+ }
+ }
+ 
+ span.innerHTML = ARROW;
+}
+
+function getParent(el, pTagName) {
+	if (el == null) return null;
+	else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())	// Gecko bug, supposed to be uppercase
+	return el;
+	else
+	return getParent(el.parentNode, pTagName);
+}
+function ts_sort_date(a,b) {
+ // y2k notes: two digit years less than 50 are treated as 20XX, greater than 50 are treated as 19XX
+ aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]);
+ bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]);
+ if (aa.length == 10) {
+ dt1 = aa.substr(6,4)+aa.substr(3,2)+aa.substr(0,2);
+ } else {
+ yr = aa.substr(6,2);
+ if (parseInt(yr) < 50) { yr = '20'+yr; } else { yr = '19'+yr; }
+ dt1 = yr+aa.substr(3,2)+aa.substr(0,2);
+ }
+ if (bb.length == 10) {
+ dt2 = bb.substr(6,4)+bb.substr(3,2)+bb.substr(0,2);
+ } else {
+ yr = bb.substr(6,2);
+ if (parseInt(yr) < 50) { yr = '20'+yr; } else { yr = '19'+yr; }
+ dt2 = yr+bb.substr(3,2)+bb.substr(0,2);
+ }
+ if (dt1==dt2) return 0;
+ if (dt1<dt2) return -1;
+ return 1;
+}
+
+function ts_sort_numeric(a,b) { 
+ aa = parseFloat(ts_getInnerText(a.cells[SORT_COLUMN_INDEX]));
+ if (isNaN(aa)) aa = 0;
+ bb = parseFloat(ts_getInnerText(b.cells[SORT_COLUMN_INDEX])); 
+ if (isNaN(bb)) bb = 0;
+ return aa-bb;
+}
+
+function ts_sort_caseinsensitive(a,b) {
+ aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]).toLowerCase();
+ bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]).toLowerCase();
+ if (aa==bb) return 0;
+ if (aa<bb) return -1;
+ return 1;
+}
+
+function ts_sort_default(a,b) {
+ aa = ts_getInnerText(a.cells[SORT_COLUMN_INDEX]);
+ bb = ts_getInnerText(b.cells[SORT_COLUMN_INDEX]);
+ if (aa==bb) return 0;
+ if (aa<bb) return -1;
+ return 1;
+}
+
+
+function addEvent(elm, evType, fn, useCapture)
+// addEvent and removeEvent
+// cross-browser event handling for IE5+, NS6 and Mozilla
+{
+ if (elm.addEventListener){
+ elm.addEventListener(evType, fn, useCapture);
+ return true;
+ } else if (elm.attachEvent){
+ var r = elm.attachEvent("on"+evType, fn);
+ return r;
+ } else {
+ alert("Handler could not be removed");
+ }
+} 
+
+function saveSelections(frm) {
+	var setvalue;
+	var fieldType;
+	var index;
+	var formname = frm.name;
+
+	// Expire cookie in 999 days.
+	var today = new Date();
+	var exp = new Date(today.getTime()+999*24*60*60*1000);
+
+	var string = "formname=" + formname + "|";
+	var cookieName = formname;
+
+	//alert(exp);
+	//alert(formname);
+
+	var n = frm.length;
+	for (i = 0; i < n; i++)
+
+	{
+	e = frm[i].name;
+	fieldValue = frm[i].value;
+	fieldType = frm[i].type;
+
+	//alert(e);
+	//alert(fieldType);
+	//alert(fieldValue);
+
+	//
+	// RADIO BUTTON
+	//
+	if (fieldType == "radio") {
+	//alert(frm.elements[e].length);
+	for (x=0; x < frm.elements[e].length; x++) {
+	if (frm.elements[e][x].checked)
+	{
+	index = x
+	}
+	}
+	string = string + index + "|";
+	}
+
+	//
+	// TEXT, TEXTAREA, and DROPDOWN
+	//
+	if ((fieldType == "text") ||
+	(fieldType == "textarea"))
+	{
+	string = string + frm.elements[e].value + "|";
+	//alert("text");
+	}
+ if (fieldType == "select-one") {
+ string = string + frm.elements[e].selectedIndex+ "|";
+ }
+
+	//
+	// CHECKBOX
+	//
+	if (fieldType == "checkbox")
+	{
+	if (frm.elements[e].checked==true) {
+	var setvalue = "1";
+	}
+	if (frm.elements[e].checked==false) {
+	var setvalue = "0";
+	}
+	string = string + setvalue + "|";
+	//alert("checkbox");
+	}
+
+	//
+	// HIDDEN field
+	//
+	if (fieldType == "hidden")
+	{
+	string = string + frm.elements[e].value + "|";
+	//alert("text");
+	}
+	}
+
+ //alert(string);
+setCookie(cookieName, string, exp);
+}
+
+//
+// LOAD FORM FIELD SELECTIONS FROM SAVED COOKIES
+//
+
+function loadSelections(frm) {
+ var e;
+ var z;
+ var x;
+ var cookieName;
+ var fieldArray;
+ var fieldValues;
+ var fieldValue;
+ 
+ var formname = frm.name;
+ 
+ // Retrieve form elements from cookie and split into array.
+ 
+ cookieName = formname;
+ fieldValues = getCookie(cookieName);
+ 
+ //alert(fieldValues);
+ if (fieldValues) {
+ 
+ fieldArray = fieldValues.split("|");
+ 
+ //alert(fieldArray[0]);
+ //alert(fieldArray[1]);
+ //alert(fieldArray[2]);
+ //alert(fieldArray[3]);
+ 
+ var n = frm.length;
+ for (i = 0; i < n; i++) {
+ e = frm[i].name;
+ z = i;
+ z++;
+ var fieldType = frm[i].type;
+ var fieldValue = fieldArray[z];
+ 
+ //
+ // TEXT, TEXTAREA, and DROPDOWN
+ //
+ if ((fieldType == "text") ||
+ (fieldType == "textarea"))
+ {
+ frm.elements[e].value = fieldValue;
+ //alert(e);
+ //alert(fieldValue);
+ }
+ 
+ if (fieldType == "select-one") {
+ frm.elements[e].selectedIndex = fieldValue;
+
+ }
+ 
+ // CHECKBOX
+ if (fieldType == "checkbox")
+ {
+ fld_checkbox = fieldValue;
+ if (fld_checkbox == "1") {
+ frm.elements[e].checked = true;
+ show_hide_column(frm.elements[e].id,true);
+ }
+ else {
+ frm.elements[e].checked = false;
+ show_hide_column(frm.elements[e].id,false);
+ }
+ }
+ // RADIO BUTTON
+ if (fieldType == "radio") {
+ x = fieldValue;
+ //alert(x);
+ frm.elements[e][x].checked = true;
+ }
+ 
+ //
+ // HIDDEN field
+ if (fieldType == "hidden")
+ {
+ frm.elements[e].value = fieldValue;
+ }
+ }
+ } // if cookie was retrieved correctly
+
+
+}
+
+/// COOKIE FUNCTIONS
+
+function setCookie(name, value, expires, path, domain, secure) {
+document.cookie= name + "=" + escape(value) +
+ ((expires) ? "; expires=" + expires.toGMTString() : "") +
+ ((path) ? "; path=" + path : "") +
+ ((domain) ? "; domain=" + domain : "") +
+ ((secure) ? "; secure" : "");
+}
+
+function getCookie(name) {
+ var dc = document.cookie;
+ var prefix = name + "=";
+ var begin = dc.indexOf("; " + prefix);
+ if (begin == -1) {
+ begin = dc.indexOf(prefix);
+ if (begin != 0) return null;
+ } else {
+ begin += 2;
+ }
+ var end = document.cookie.indexOf(";", begin);
+ if (end == -1) {
+ end = dc.length;
+ }
+ return unescape(dc.substring(begin + prefix.length, end));
+}
+
+
+function show_hide_all_columns(do_show) {
+ var labels = document.getElementsByTagName('label');
+ for (var label=1; label<labels.length;label++) {
+ var htmlFor = labels[label].htmlFor;
+ var boxToCheck = document.getElementById(htmlFor);
+ boxToCheck.checked=do_show;
+
+
+ var stl;
+ if (do_show) stl = ''
+ else stl = 'none';
+ show_hide_column(htmlFor,do_show);
+
+ }
+ 
+}
+function show_hide_column(prop, do_show) {
+
+ document.body.style.cursor='wait';
+ window.status="Processing column " + prop;
+ var stl;
+ if (do_show) stl = ''
+ else stl = 'none';
+ var props_headers = document.getElementsByTagName('th');
+ for (var i = 0; i < props_headers.length; i++) {
+ if ((props_headers[i].className) == prop && (props_headers[i].style.display != stl)) {
+ props_headers[i].style.display=stl;
+ }
+ } 
+ var props = document.getElementsByTagName('td');
+ for (var i = 0; i < props.length; i++) {
+ if ((props[i].className == prop) && (props[i].style.display != stl)) {
+ props[i].style.display=stl;
+ }
+ }
+ window.status=""; 
+ document.body.style.cursor='auto';
+
+}
+
+
+
+
+var sortable_rowstate = new Array();
+var sortable_callbacks = new Array();
+
+sortable_callbacks['eventRowStateChanged'] = 'sortable_eventRowChanged';
+
+function sortable_eventRowChanged(rowId, state) {
+}
+
+function sortable_hideRow(rowId) {
+ el = document.getElementById(rowId);
+ el.style.display = "none";
+}
+
+function sortable_showRow(rowId) {
+ el = document.getElementById(rowId);
+ el.style.display = "";
+}
+
+function sortable_hasChildren(rowId) {
+ res = document.getElementById(rowId + '_0');
+ return (res != null);
+}
+
+function sortable_getRowChildren(rowId) {
+ el = document.getElementById(rowId);
+ var arr = new Array();
+ i = 0;
+ while (true) {
+ childRowId = rowId + '_' + i;
+ childEl = document.getElementById(childRowId);
+ if (childEl) {
+ arr[i] = childRowId;
+ } else {
+ break;
+ }
+ i++;
+ }
+ return (arr);
+}
+
+function sortable_toggleRow(rowId, state, force) {
+ var rowChildren;
+ var i;
+ // open or close all children rows depend on current state
+ force = (force == null) ? 1 : force; 
+ if (state == null) {
+ row_state = ((sortable_rowstate[rowId]) ? (sortable_rowstate[rowId]) : 1) * -1;
+ } else {
+ row_state = state;
+ }
+ rowChildren = sortable_getRowChildren(rowId);
+ if (rowChildren.length == 0) return (false);
+ for (i = 0; i < rowChildren.length; i++) {
+ if (row_state == -1) {
+ sortable_hideRow(rowChildren[i]);
+ sortable_toggleRow(rowChildren[i], row_state, -1);
+ } else {
+ if (force == 1 || sortable_rowstate[rowId] != -1) {
+ sortable_showRow(rowChildren[i]);
+ sortable_toggleRow(rowChildren[i], row_state, -1);
+ }
+ }
+ }
+ if (force == 1) {
+ sortable_rowstate[rowId] = row_state;
+ //sortable_fireEventRowStateChanged(rowId, row_state);
+ }
+ return (true);
+}
+
+function sortable_fireEventRowStateChanged(rowId, state) {
+ if (sortable_callbacks['eventRowStateChanged']) {
+ callback = sortable_callbacks['eventRowStateChanged'] + "('" + rowId + "', " + state + ");";
+ eval(callback);
+ }
+}
+
+function filterResultsAllTables () {
+ if (propSelect = document.getElementById("propField")) {
+ var prop = propSelect[propSelect.selectedIndex].text;
+ var val = document.getElementById("filterField").value;
+ if (prop && val ) showFilteredAllTables(prop,val);
+ }
+}
+
+function showFilteredAllTables(prop,val,bool) {
+ var SORTABLE_TABLES_ARRAY = getSortableTableList();
+ if (!bool) {
+ bool=document.getElementById("matchbool").selectedIndex;
+ }
+ for (var i=0 ; i < SORTABLE_TABLES_ARRAY.length ; i++) {
+ if (SORTABLE_TABLES_ARRAY[i].className == "sortable") showFiltered(SORTABLE_TABLES_ARRAY[i].id,prop,val,bool);
+ }
+}
+
+
+function showFiltered(tableId,filterProp,filterVal,bool) {
+ sortable_expandAll(tableId);
+ sortable_collapse(tableId,"low");
+ 
+ table = document.getElementById(tableId);
+ rowChildren = table.getElementsByTagName('tr');
+ 
+ // bool variable is true if request is to hide matches, so, to keep what does not match
+
+ 
+ for (i = 0; i < rowChildren.length-1; i++) { // last line are stats
+ var retrievedVal = "";
+ if (rowChildren[i].className == 'mid') {
+ values = rowChildren[i].getElementsByTagName('td');
+ // let's retrieve prop
+ for (j = 0; j < values.length; j++) {
+ if (values[j].className == filterProp) {
+ retrievedVal = values[j].innerHTML;
+ }
+ }
+ var regPassed = new RegExp(filterVal,"i");
+
+ if (regPassed.exec(retrievedVal)) {
+ match = 1;
+ }
+ else {
+ match = 0;
+ }
+ 
+ if (match == bool) {
+ if (index = rowChildren[i].id.indexOf('_')) {
+ rowChildren[i].style.display = 'none';
+ //if (sortable_hasChildren(rowChildren[i].id)) {
+ sortable_rowstate[rowChildren[i].id] = -1;
+ //sortable_fireEventRowStateChanged(rowChildren[i].id, -1);
+ //}
+ }
+ }
+ 
+ }
+ }
+ return (true);
+
+}
+
+function showAllTables() {
+ var SORTABLE_TABLES_ARRAY = getSortableTableList();
+ for (var i=0 ; i < SORTABLE_TABLES_ARRAY.length ; i++) {
+ if (SORTABLE_TABLES_ARRAY[i].className == "sortable") {
+ sortable_expandAll(SORTABLE_TABLES_ARRAY[i].id);
+ sortable_collapse(SORTABLE_TABLES_ARRAY[i].id,"low");
+ }
+ }
+ return (true);
+}
+function showAll(tableId) {
+ sortable_expandAll(tableId);
+ sortable_collapse(tableId,"low");
+ return (true);
+}
+function sortable_collapseAllAllTables() {
+ var SORTABLE_TABLES_ARRAY = getSortableTableList();
+ for (var i=0 ; i < SORTABLE_TABLES_ARRAY.length ; i++) {
+ if (SORTABLE_TABLES_ARRAY[i].className == "sortable") sortable_collapse(SORTABLE_TABLES_ARRAY[i].id,"low");
+ }
+}
+function sortable_collapse(tableId,class_name) {
+ table = document.getElementById(tableId);
+
+ if (!class_name) {
+ // The whole table should be hidden
+	table.style.display = 'none';
+ }
+ else {
+ rowChildren = table.getElementsByTagName('tr');
+ 
+ // INIT SECTION, TO BE REMOVED
+ for (i = 0; i < rowChildren.length; i++) {
+ sortable_rowstate[rowChildren[i].id] = -1;
+ }
+ 
+ 
+ 
+ for (i = 0; i < rowChildren.length; i++) {
+ if ((!class_name) || rowChildren[i].className == class_name) {
+ if (index = rowChildren[i].id.indexOf('_')) {
+ rowChildren[i].style.display = 'none';
+ sortable_rowstate[rowChildren[i].id] = -1;
+ }
+ }
+ }
+ }
+ return (true);
+} 
+
+function sortable_collapseAllTables() {
+ var SORTABLE_TABLES_ARRAY = getSortableTableList();
+ for (var i=0 ; i < SORTABLE_TABLES_ARRAY.length ; i++) {
+ if (SORTABLE_TABLES_ARRAY[i].className == "sortable") sortable_collapse(SORTABLE_TABLES_ARRAY[i].id);
+ }
+}
+ 
+function view_summary() {
+ sortable_collapseAllTables();
+	hide_toolbars(true);
+	hide_rulers(true);
+
+}
+function hide_rulers(val) {
+ if (!document.getElementsByTagName) return;
+ hrs = document.getElementsByTagName("hr");
+ var cntr = 0
+ for (ti=0;ti<hrs.length;ti++) {
+ thisHR = hrs[ti];
+ if (((' '+thisHR.className+' ').indexOf("db_limit") != -1)) {
+	// Hide
+	if (val) {
+	thisHR.style.display = 'none';
+	} else {
+	thisHR.style.display = '';
+	}
+	}
+ }
+}
+
+function hide_toolbars(val) {
+ if (!document.getElementsByTagName) return;
+ divs = document.getElementsByTagName("div");
+ var cntr = 0
+ for (ti=0;ti<divs.length;ti++) {
+ thisDiv = divs[ti];
+ if (((' '+thisDiv.className+' ').indexOf("toolbar") != -1)) {
+	// Hide
+ if (val) {
+	thisDiv.style.display = 'none';
+	} else {
+	thisDiv.style.display = '';
+	}
+ }
+ }
+}
+
+function sortable_expandAllTables() {
+ var SORTABLE_TABLES_ARRAY = getSortableTableList();
+ for (var i=0 ; i < SORTABLE_TABLES_ARRAY.length ; i++) {
+ if (SORTABLE_TABLES_ARRAY[i].className == "sortable") sortable_expandAll(SORTABLE_TABLES_ARRAY[i].id);
+ }
+	hide_toolbars(false);
+	hide_rulers(false);
+}
+
+function sortable_expandAll(tableId) {
+
+ table = document.getElementById(tableId);
+ table.style.display = '';
+ rowChildren = table.getElementsByTagName('tr');
+ for (i = 0; i < rowChildren.length; i++) {
+ if (index = rowChildren[i].id.indexOf('_')) {
+ rowChildren[i].style.display = '';
+ //if (sortable_hasChildren(rowChildren[i].id)) {
+ sortable_rowstate[rowChildren[i].id] = 1;
+ //sortable_fireEventRowStateChanged(rowChildren[i].id, 1);
+ //}
+ }
+ }
+ hide_toolbars(false);
+ hide_rulers(false);
+ return (true);
+}
+</script>
+
+    </HEAD>
+    <BODY >
+    <! Report automatically generated by MMTEST Test framework. Author : Steven HUET, STS-MMDSP, STEricsson !>
+
+    <p> This report was automatically generated on 2011-04-19  22:47:40
+    </p>
+    <hr>
+    <h1 style="color:green">
+        OVERALL STATUS : PASSED
+    </h1>
+    <h2 style="color:green">
+        0 FAILED out of 1 ( 0% )
+    </h2>
+	
+    <hr>
+    <form name="column_selection" id="columnSelectionForm" >
+
+
+    <a href="javascript:void(0)" onclick="sortable_expandAllTables();">Expand all</a>
+	<div class='toolbar'>	
+	<a href="javascript:void(0)" onclick="sortable_collapseAllTables();">Collapse All</a>&nbsp;&nbsp;|&nbsp;&nbsp; <a href="javascript:void(0)" onclick="view_summary();">Summary view</a><br>
+    <a href="javascript:void(0)" onclick="sortable_collapseAllAllTables();">Hide details</a><br>
+    <a href="javascript:void(0)" onclick="showFilteredAllTables('status','PASSED',1);">Hide passed tests</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:void(0)" onclick="showAllTables();">Show All</a><br>
+    <br>
+    <input class="box" type='checkbox' name="all" CHECKED onClick='javascript:show_hide_all_columns(this.checked);'>
+    <label for='All' class='cbLabel'> Toggle all properties</label>
+    <br>
+    
+
+        <input class="box" type='checkbox' name="nbtests"  id="nbtests" CHECKED onClick='javascript:show_hide_column("nbtests",  this.checked);'>
+        <label for='nbtests' class='cbLabel'> nbtests </label>
+        <input class="box" type='checkbox' name="nbfailed"  id="nbfailed" CHECKED onClick='javascript:show_hide_column("nbfailed",  this.checked);'>
+        <label for='nbfailed' class='cbLabel'> nbfailed </label>
+        <input class="box" type='checkbox' name="runtime"  id="runtime" CHECKED onClick='javascript:show_hide_column("runtime",  this.checked);'>
+        <label for='runtime' class='cbLabel'> runtime </label>
+        <input class="box" type='checkbox' name="datetime"  id="datetime" CHECKED onClick='javascript:show_hide_column("datetime",  this.checked);'>
+        <label for='datetime' class='cbLabel'> datetime </label>
+    </form>
+    <form name="filter" id="filterForm" >
+    Property: 
+    <select name="propField" id="propField">
+        <option name="testname"> testname </option>
+        <option name="status"> status </option>
+        <option name="nbtests"> nbtests </option>
+        <option name="nbfailed"> nbfailed </option>
+        <option name="runtime"> runtime </option>
+        <option name="datetime"> datetime </option>    
+    </select>
+    <select name="matchbool" id="matchbool">
+        <option name="matches"> matches</option>
+        <option name="nomatch"> does not match </option>
+    </select>
+    Value: 
+    <input type="text" id="filterField" name="filterField">
+    <input type="button" value="Filter" name="submit" onClick='javascript:filterResultsAllTables();'>
+    </form>
+
+    </div>
+
+
+
+    <hr class='db_limit'>
+
+    <H4><a href="javascript:void(0)" onclick="sortable_expandAll('table0');">effect/standalone/misc_std_mmdsp_8500_v2</a><span> - Tag : mmdsp_8500_v2 - </span><span  style="color:green" >Status : PASSED - 0 FAILED out of 1 ( 0% ) </span></H4>
+
+        <table id="table0" class="sortable">
+            <tr>
+
+                <th class="testname">testname</th> 
+                <th class="status">status</th> 
+                <th class="nbtests">nbtests</th> 
+                <th class="nbfailed">nbfailed</th> 
+                <th class="runtime">runtime</th> 
+                <th class="datetime">datetime</th> 
+    </tr>
+
+    <tr id="table0_0" bgcolor=#99FF99  class="mid" name="0">
+    <td class="testname">
+    <a href="javascript:void(0)"  class="tooltip"  onclick="sortable_toggleRow('table0_0');">go<em><span></span>No&nbsp;description&nbsp;provided</em></a>
+        </td>
+                <td  class="status">PASSED</td>
+                <td  class="nbtests">7</td>
+                <td  class="nbfailed">0</td>
+                <td  class="runtime">0</td>
+                <td  class="datetime">2011-04-19&nbsp;&nbsp;22:47:38</td>
+            </tr>
+            <tr id="table0_0_0" class="low" name="low_0">
+              <td  colspan=6  class="test">
+                  <table class="details">
+                      <colgroup>
+                          <col width=80%>
+                          <col width="0*">
+                      </colgroup>
+
+                      <tr  bgcolor=#DDFFDD >
+                          <td > /mnt/disk1/qaleoch/temporal3/multimedia/audio/afm/tools/bin/Linux/rmsdiff  outsig11.pcm  ../../../streams/updownmix/streams/refmix11.pcm </td>
+                          <td >PASSED</td>
+                      </tr>
+
+                      <tr  bgcolor=#DDFFDD >
+                          <td > /mnt/disk1/qaleoch/temporal3/multimedia/audio/afm/tools/bin/Linux/rmsdiff  outsig12.pcm  ../../../streams/updownmix/streams/refmix12.pcm </td>
+                          <td >PASSED</td>
+                      </tr>
+
+                      <tr  bgcolor=#DDFFDD >
+                          <td > /mnt/disk1/qaleoch/temporal3/multimedia/audio/afm/tools/bin/Linux/rmsdiff  outsig16.pcm  ../../../streams/updownmix/streams/refmix16.pcm </td>
+                          <td >PASSED</td>
+                      </tr>
+
+                      <tr  bgcolor=#DDFFDD >
+                          <td > /mnt/disk1/qaleoch/temporal3/multimedia/audio/afm/tools/bin/Linux/rmsdiff  outsig26.pcm  ../../../streams/updownmix/streams/refmix26.pcm </td>
+                          <td >PASSED</td>
+                      </tr>
+
+                      <tr  bgcolor=#DDFFDD >
+                          <td > /mnt/disk1/qaleoch/temporal3/multimedia/audio/afm/tools/bin/Linux/rmsdiff -p -m 1 outsig61.pcm ../../../streams/updownmix/streams/refmix61.pcm </td>
+                          <td >PASSED</td>
+                      </tr>
+
+                      <tr  bgcolor=#DDFFDD >
+                          <td > /mnt/disk1/qaleoch/temporal3/multimedia/audio/afm/tools/bin/Linux/rmsdiff  outsig62.pcm ../../../streams/updownmix/streams/refmix62.pcm </td>
+                          <td >PASSED</td>
+                      </tr>
+
+                      <tr  bgcolor=#DDFFDD >
+                          <td > /mnt/disk1/qaleoch/temporal3/multimedia/audio/afm/tools/bin/Linux/rmsdiff outsig21.pcm ../../../streams/updownmix/streams/refmix21.pcm </td>
+                          <td >PASSED</td>
+                      </tr>
+
+                  </table>
+              </td>
+
+                </tr>
+
+    <tr id="table0_stat" bgcolor=#CCFFFF   class="mid" name="table0_stat">
+    <td class="testname">
+    Stats&nbsp;:&nbsp;sum(avg)&nbsp;
+                <td  class="status"></td>
+                <td  class="nbtests">7</td>
+                <td  class="nbfailed">0</td>
+                <td  class="runtime">0</td>
+                <td  class="datetime"></td>
+                </tr>
+
+    
+        </table>
+
+        <hr>
+        <p class='copyright'>Generated by MMTEST test framework. Copyright (c) STEricsson 2009<p>
+    </BODY>
+</HTML>

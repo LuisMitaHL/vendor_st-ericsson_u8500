@@ -1,0 +1,36 @@
+#
+# Dthfs configuration
+#
+
+menuconfig DTHFS
+	bool "Dthfs"
+	depends on DTHFRAMEWORK-INCLUDE
+	help
+	  depends on DTHFRAMEWORK-INCLUDE
+
+
+if DTHFS
+
+config DTHFS_DIR
+	string
+	default ../tat/DthFramework/dthhelper/dthfs
+
+config DTHFS_DEPS
+	string
+	default "DTHFRAMEWORK-INCLUDE"
+
+config DTHFS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on DTHFS
+	default n
+	help
+	  This will disable strip for this module
+
+config DTHFS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on DTHFS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # DTHFS

@@ -1,0 +1,184 @@
+; OSE Delta specific menu
+
+add
+menu
+(
+  popup "&OSE Delta"
+  (
+;    enable !icd()
+;    menuitem "&RTOS Terminal" "TERM T32OUT T32IN"
+;    separator
+    default
+    menuitem "Display &Processes"     "TASK.DProc"
+    menuitem "Display &Blocks"        "TASK.DBLock"
+    menuitem "Display &Pools"         "TASK.DPOOL"
+    menuitem "Display &Bios Modules"  "TASK.DBIOS"
+    menuitem "Display &Configuration" "TASK.DConf"
+    menuitem "Display &Programs"      "TASK.DProGram"
+    menuitem "Display &Load Modules"  "TASK.DLoadMod"
+    separator
+    popup "&Stack Coverage"
+    (
+      menuitem "&List Stacks"
+      (    
+        if !ice()&&!fire()
+            TASK.STacK.PATtern 0xEE
+        TASK.STacK
+      )
+      menuitem "Add Task"        "TASK.STacK.ADD"
+      menuitem "Remove Task"     "TASK.STacK.ReMove"
+      enable ice()||fire()
+      menuitem "&Reset Coverage" "TASK.STacK.RESet"
+    )
+  )
+  popup "Trace"
+  (
+    popup "[:alist]List"
+    (
+      separator
+      menuitem "&Task Switches"     "Trace.List List.TASK"
+      menuitem "&Default and Tasks" "Trace.List List.TASK DEFault"
+    )
+  )
+  popup "Perf"
+  (
+    separator
+    popup "&Task Runtime"
+    (
+      menuitem "&Prepare"
+      (
+        if t.method.analyzer()
+        (
+          Analyzer.AutoInit on
+        )
+        if (ice()||fire())&&!a.mode.flow()
+        (
+          Analyzer.ReProgram
+          (
+            Sample.Enable if AlphaBreak&&Write
+          )
+          Break.Delete /Alpha
+          Break.Set task.config(magic)++(task.config(magicsize)-1) /Alpha
+        )
+        if a.mode.flow()
+        (
+          Break.Delete /TraceEnable
+          Break.Set task.config(magic) /TraceEnable
+        )
+      )
+      menuitem "[:perf]Show &Numerical"   "Trace.STATistic.TASK"
+      menuitem "[:achart]Show as &Timing" "Trace.CHART.TASK"
+      menuitem "[:achart]Tracking with Trace &List"
+      (
+        Trace.List List.TASK DEFault /Track
+        Trace.CHART.TASK /Track
+      )
+    )
+    popup "Task &Function Runtime"
+    (
+      menuitem "&Prepare"
+      (
+        if t.method.analyzer()
+        (
+          Analyzer.AutoInit on
+          Analyzer.STATistic.PreFetch on
+        )
+
+        if (ice()||fire())&&!a.mode.flow()
+        (
+          if a.config.hac()
+          (
+             Analyzer.ReProgram
+             (
+               Sample.Enable if AlphaBreak
+               Sample.Enable if BetaBreak
+               Mark.A        if AlphaBreak
+               Mark.B        if BetaBreak
+             )
+          )
+          else
+          (
+             Analyzer.ReProgram
+             (
+               Sample.Enable if AlphaBreak||BetaBreak
+               Mark.A if AlphaBreak
+               Mark.B if BetaBreak
+             )
+          )
+
+          Break.Delete /Alpha /Beta /Charly
+          Break.SetFunc
+          Break.Set task.config(magic)++(task.config(magicsize)-1) /Alpha
+        )
+        if a.mode.flow()
+        (
+          Break.Delete /TraceData
+          Break.Set task.config(magic) /TraceData
+        )
+      )
+      menuitem "[:perf]Show &Numerical"     "Trace.STATistic.TASKFUNC"
+      menuitem "[:perf]Show as &Tree"       "Trace.STATistic.TASKTREE"
+      menuitem "[:perf]Show &Detailed Tree" "Trace.STATistic.TASKTREE ALL"
+      menuitem "[:achart]Show as &Timing"   "Trace.CHART.TASKFUNC"
+      menuitem "[:alist]Show N&esting"      "Trace.List List.TASK FUNC TI.FUNC"
+    )
+    popup "Task &Status"
+    (
+      menuitem "&Prepare"
+      (
+        if t.method.analyzer()
+        (
+          Analyzer.AutoInit on
+        )
+        if (ice()||fire())&&!a.mode.flow()
+        (
+          Analyzer.ReProgram
+          (
+            Sample.Enable if AlphaBreak&&Write
+          )
+          Break.Delete /Alpha
+          Break.Set task.config(magic)++(task.config(magicsize)-1) /Alpha
+          TASK.TASKState
+        )
+      )
+      menuitem "[:perf]Show &Numerical"   "Trace.STATistic.TASKSTATE"
+      menuitem "[:achart]Show as &Timing" "Trace.CHART.TASKSTATE"
+      menuitem "[:achart]Tracking with Trace &List"
+      (
+        Trace.List List.TASK DEFault /Track
+        Trace.CHART.TASKSTATE /Track
+      )
+    )
+  )
+  popup "&Help"
+  (
+    menuitem "OSE Multitask Debugger Manual" "HELP __RTOS_OSED_"
+  )
+)
+
+
+menu "task.dp"
+(
+  menuitem "Display Detailed"     "TASK.DProc track.address()"
+  menuitem "Display Stack Frame"  "Var.Frame /Locals /Caller /Task track.address()"
+  menuitem "Switch Context"       "Register.TASK track.address()"
+  separator
+  menuitem "Add to Stack Cov"  "TASK.STK.ADD address.offset(track.address())"
+  menuitem "Rm from Stack Cov" "TASK.STK.RM  address.offset(track.address())"
+  separator
+  menuitem "Dump PCB"          
+  (
+    &address=address.offset(track.address())
+    Data.dump &address /l /dialog
+  )
+)
+
+menu "task.dbl"
+(
+  menuitem "Display Detailed"  "TASK.DBLock track.address()"          
+  menuitem "Dump BCB"
+  (
+    &address=address.offset(track.address())
+    Data.dump &address /l /dialog
+  )
+)

@@ -1,0 +1,90 @@
+//
+//       Configuration file for      algo (VC1 decoder)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive vc1dec.mpc.algo extends debug.mpc.printf_type singleton
+{
+
+provides lifecycle.constructor								as constructor
+//
+// Provided interfaces to a vc1_decoder_ddep component
+provides vc1dec.mpc.api.algo								as iAlgo
+provides vc1dec.mpc.api.mpc_trace_init as iTraceInit
+//
+// Provided interfaces to a resource_manager component
+provides resource_manager.api.signal                        as iSignal referenced
+
+// Required interfaces to a resource_manager component
+requires resource_manager.api.buffer						as iBuffer
+requires resource_manager.api.mtf							as iMtf
+requires resource_manager.api.tcm_mem_alloc					as iTcmAlloc
+requires osttrace.api.osttrace as osttrace static
+
+//      --------------
+//      - Source files
+
+	sources src/algo.c
+	sources src/vc1d_co_bitstream.c
+	sources src/vc1d_sva_bitplane.c
+	sources src/vc1d_sva_bitstream.c
+	sources src/vc1d_utils.c
+	
+	sources src/SVA_SUBSYSTEM/vc1d_co_reconstruction.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_block_decode.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_coeff_decode.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_deblock.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_error_concealment.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_inter_prediction.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_interface.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_intra_prediction.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_iquant.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_itrans.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_main.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_mb_decode.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_memory.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_mv_decode.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_overlap.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_picture_decode.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_picture_layer_parser.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_vlc.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_zigzag.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_hw_api.c
+
+#ifdef __ndk8500_a0__
+	sources src/SVA_SUBSYSTEM/vc1d_sva_context.c
+#endif
+	
+#ifdef __ndk8500_ed__
+	sources src/SVA_SUBSYSTEM/vc1d_sva_reconstruction.c
+	sources src/SVA_SUBSYSTEM/vc1d_sva_vlc_rll_table.c
+#endif
+	
+	sources src/SVA_SUBSYSTEM/mtf_api.c
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+option CPPFLAGS "	-ICONF_ROOT/inc/SVA_SUBSYSTEM		\
+					-ICONF_ROOT/inc						\
+					-DMMDSP								\
+          -D__T1XHV_NMF_ENV=1					\
+					-D__LITTLE_ENDIAN_BITFIELD 			\
+					-D_MMDSP -DNOMADIK_VERSION 			\
+					-DFINAL_IMPLEMENTATION 				\
+					-D_FW_IMPLEMENTATION_ 				\
+					-DT1XHV_TASK_DECODE 				\
+					-DSTANDALONE_VERSION 				\
+					-DT1XHV_IDN_FW=COMPONENT_VERSION 	\
+					-DT1XHV_IDN_HW=HW_VERSION		\
+					-DAP_L2"
+
+//option CFLAGS "-O3 -g -mode16 -forceesramfn"
+option CFLAGS "-O3 -g -mode16 "
+
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+
+}

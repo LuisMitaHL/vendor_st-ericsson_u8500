@@ -1,0 +1,26 @@
+
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+#-------------------------------
+# Default Config
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.config
+
+VPATH+= ../$(BASE_REPOSITORY)/host
+ifneq ($(PLATFORM),x86-linux)
+ifneq ($(findstring 5500,$(PLATFORM)),5500)
+LIBNAME=st_vfm_mpeg4dec_stsk_sw
+LIBOBJ=video_mpe4dec_sw_cpp-mpc2user-skels video_mpe4dec_sw_cpp-user2mpc-stubs
+INSTALL_LIB=libst_vfm_mpeg4dec_stsk_sw.a
+INSTALL_HEADER_DIR=../nmf_repository
+endif
+endif
+
+todo:lib install
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.rules
+
+

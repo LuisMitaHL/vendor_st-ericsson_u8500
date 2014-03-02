@@ -1,0 +1,111 @@
+do $(NOMADIK)/audiocodec/mmte_script/common/play_rec.ate
+do $(NOMADIK)/audiocodec/mmte_script/common/rec_play.ate
+do $(NOMADIK)/audiocodec/mmte_script/common/rec_tunnel_play.ate
+#---------------------------------------------------------
+# Need to implement some audio_hwctrl function in linux
+# do $(NOMADIK)/audiocodec/mmte_script/common/burstmode.mmte
+#---------------------------------------------------------
+do $(NOMADIK)/audiocodec/mmte_script/common/simple_transition.ate
+#---------------------------------------------------------
+# Need to implement some audio_hwctrl function in linux
+#do $(NOMADIK)/audiocodec/mmte_script/common/transition.mmte
+#---------------------------------------------------------
+#do $(NOMADIK)/audiocodec/mmte_script/common/bttx.mmte
+#do $(NOMADIK)/audiocodec/mmte_script/common/btrx.mmte
+do $(NOMADIK)/audiocodec/mmte_script/common/fmtx.ate
+do $(NOMADIK)/audiocodec/mmte_script/common/fmrx.ate
+#do $(NOMADIK)/audiocodec/mmte_script/common/feedback.mmte
+do $(NOMADIK)/audiocodec/mmte_script/common/feedback_enabled_in_exec.ate
+#do $(NOMADIK)/audiocodec/mmte_script/common/feedback_bt.mmte
+
+
+
+# SOURCES_0XX => MULTIMIC
+do $(NOMADIK)/audiocodec/mmte_script/multimic/record_le.ate
+do $(NOMADIK)/audiocodec/mmte_script/multimic/record_be.ate
+do $(NOMADIK)/audiocodec/mmte_script/multimic/record_pause.ate
+do $(NOMADIK)/audiocodec/mmte_script/multimic/test_port.ate
+#TODO move this test it use renderer # do $(NOMADIK)/sources/mmte_script/multimic/test_volume_top.ate
+
+# SOURCES_1XX => AVSOURCE
+do $(NOMADIK)/audiocodec/mmte_script/avsource/record_le.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsource/record_be.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsource/test_port.ate
+
+
+# SINKS_0XX  => EARPIECE
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/test_handle.ate
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/test_port.ate
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/test_state_machine.ate
+#SKIPPED do $(NOMADIK)/audiocodec/mmte_script/earpiece/test_param.ate
+#SKIPPED do $(NOMADIK)/audiocodec/mmte_script/earpiece/test_config.ate
+#do $(NOMADIK)/audiocodec/mmte_script/earpiece/feedback.mmte
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/playback.ate
+do $(NOMADIK)/audiocodec/mmte_script/earpiece/playback_volum.ate
+#OBSOLETE since w28# do $(NOMADIK)/audiocodec/mmte_script/earpiece/playback_physical.ate
+
+#SINKS_1XX => AVSINK
+do $(NOMADIK)/audiocodec/mmte_script/avsink/test_handle.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/test_port.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/test_state_machine.ate
+#SKIPPED do $(NOMADIK)/audiocodec/mmte_script/avsink/test_param.ate
+#SKIPPED do $(NOMADIK)/audiocodec/mmte_script/avsink/test_config.ate
+#do $(NOMADIK)/audiocodec/mmte_script/avsink/feedback.mmte
+
+do $(NOMADIK)/audiocodec/mmte_script/avsink/play_nonlinear.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_2ch.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_Volum_mute.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_mute.ate
+#do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_mute_L_R.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_volum.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_volum_lr.ate
+do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_pause.ate
+#SKIPPED do $(NOMADIK)/audiocodec/mmte_script/avsink/low_power.ate
+#OBSOLETE since w28# do $(NOMADIK)/audiocodec/mmte_script/avsink/playback_physical.ate
+
+
+#SINKS_2XX => IHF
+do $(NOMADIK)/audiocodec/mmte_script/ihf/test_handle.ate
+do $(NOMADIK)/audiocodec/mmte_script/ihf/test_port.ate
+do $(NOMADIK)/audiocodec/mmte_script/ihf/test_state_machine.ate
+do $(NOMADIK)/audiocodec/mmte_script/ihf/playback.ate
+#do $(NOMADIK)/audiocodec/mmte_script/ihf/playback_2ch.ate
+do $(NOMADIK)/audiocodec/mmte_script/ihf/playback_pause.ate
+#do $(NOMADIK)/audiocodec/mmte_script/ihf/feedback.mmte
+#OBSOLETE since w28# do $(NOMADIK)/audiocodec/mmte_script/ihf/playback_2ch_physical.ate
+
+
+#SINKS_3XX => Vibra 1
+do $(NOMADIK)/audiocodec/mmte_script/vibral/test_handle.ate
+#do $(NOMADIK)/audiocodec/mmte_script/vibral/test_port.ate
+do $(NOMADIK)/audiocodec/mmte_script/vibral/playback.ate
+#OBSOLETE since w28# do $(NOMADIK)/audiocodec/mmte_script/vibral/playback_physical.ate
+
+#SINKS_4XX => Vibra 2
+do $(NOMADIK)/audiocodec/mmte_script/vibrar/test_handle.ate
+do $(NOMADIK)/audiocodec/mmte_script/vibrar/playback.ate
+
+#SINKS_5XX => Multi Sinks
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_headset_ihf.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_headset_ihf_pause.ate
+#do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_headset_ihf_stop.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_hs_ihf.ate
+#do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_hs_ihf_4ch.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_hs_ihf_pause.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_ihf_earpiece.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_ihf_earpiece_vibra.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_ihf_earpiece_vibra_pause.ate
+#do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_ihf_earpiece_vibra_stop.ate
+#do $(NOMADIK)/audiocodec/mmte_script/multi_sink/playback_ihf_vibra_pause_stop.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/vibra_lr.ate
+do $(NOMADIK)/audiocodec/mmte_script/multi_sink/all.ate
+
+
+
+
+
+
+#NON_REGRESSION TEST SINKS_8XX
+do $(NOMADIK)/audiocodec/mmte_script/nonregression/test1.ate
+

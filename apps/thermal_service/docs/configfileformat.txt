@@ -1,0 +1,25 @@
+Thermal configuration file format
+=================================
+
+This file defines the syntax of the sensors.conf that is parsed by thermald.
+
+In the syntax below:
+   | is an XOR
+   [] denotes an optional argument
+   '..' is a literal
+   between each <FIELD> then a space should be used
+   EOL is a '\n'
+   STRING is any alphanumeric string without spaces
+   INTEGER is any positive integer
+
+<CONFIGFILE> := <CONFIGLINE> | <CONFIGLINE> <CONFIGFILE>
+<CONFIGLINE> := [<CRITICALSENSORCONFIG> | <MINMAXSENSORCONFIG>] EOL
+<CRITICALSENSORCONFIG> := <SENSORNAME> 'CRITICAL' <ACTIONLIST>
+<MINMAXSENSORCONFIG> := <SENSORNAME> <NOTIFICATIONLEVEL> <MINLEVEL> <MAXLEVEL> <ACTIONLIST>
+<SENSORNAME> := STRING | '"' STRING [STRING...] '"'
+<NOTIFICATIONLEVEL> := INTEGER
+<MINLEVEL> := INTEGER
+<MAXLEVEL> := INTEGER
+<ACTIONLIST> := STRING | STRING <ACTIONLIST>
+
+

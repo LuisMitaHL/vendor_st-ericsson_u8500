@@ -1,0 +1,199 @@
+-- 1.0 -- 15 June 2009
+Description:
+* Creation of this component
+* Test on MOP500ED of display functions (Main and Sub)
+
+Dependencies:
+HATS_8500_DEV_MAIN_PACK_HATS-1.15 + HATS_8500_DEV_MAIN_KERNEL_1.7 (kernel w923) 
+
+-- 1.1 -- 07 July 2009
+Description:
+* update Makefile for new template
+* update videoservices.c file for kernel w927 compatibility
+
+Dependencies:
+HATS_8500_DEV_MAIN_PACK_HATS_1.22 + HATS_8500_DEV_MAIN_KERNEL_1.13 (kernel w927)
++ HATS_8500_DEV_MAIN_LINUXTREE_1.18
+
+-- 1.2 -- 15 July 2009
+Description:
+* update Makefile to get a VideoTests executable using videoservice dynamic library
+* update VideoServices.hi as MCDE_IOCTL_TV_PLUG_STATUS is defined in patch TV-OUT of kernel w927
+* update VideoServices.hi, align the tables DisplayToDev and DisplayToMin with enum e_VidServ_DisplayId_t
+* update VideoServices.c, implementation of a part of CR CAP_384_001 (using of MCDE_IOCTL_TV_CHANGE_MODE ioctl)
+* Add PNG images for TV-OUT CVBS => st-ericsson_720x480.png, st-ericsson_720x576.png
+* update VideoServices.hi, temporary patch waiting for CAP_381_001 implementation 
+	=> RESTRICTION: only TV-OUT display should be enable when using TV-OUT as TV-OUT CVBS 4500 is fixed to minor 0.
+
+Dependencies:
+HATS_8500_DEV_MAIN_PACK_HATS_1.22 + HATS_8500_DEV_MAIN_KERNEL_1.13 (kernel w927)
++ HATS_8500_DEV_MAIN_LINUXTREE_1.18 + patch of kernel for TV-OUT
+
+-- 1.3 -- 17 July 2009
+Description:
+* update of VideoServices.c to access a test driver of camera for 8500 ED
+* update of VideoTests.c to Initiliase/Set 8Mpix sensor/"Start Preview"/Take a picture and write result on SD card 
+   on  "VideoTests -m=1" command line
+* update of Makefile to add CAMERA_8500_ED_TEST definition
+
+Switchs:
+CAMERA_8500_ED_TEST: to enable for test of camera on 8500 Ed using camera test driver (compatibility with patch of camera test driver in kernel)
+
+Dependencies: HATS_8500_DEV_MAIN_PACK_HATS_1.24 + patch of kernel for camera test driver
+
+Restrictions for 8500 ED camera tests:
+- only the following sequence is supported:
+1/ VidServ_CameraSensorInit (initialise the link with camera driver)
+2/ VidServ_CameraSetSensorProp (to select the sensor)
+3/ VidServ_CameraPreviewStart (to put the sensor in streaming mode)
+4/ VidServ_CameraTakeAShot to take a picture. You can call it  several times (raw capture file is converted to BMP file to falicitate display on PC)
+Notes: 
+  - camera tests driver is not implemented to respect the HSI timing.
+  - Tested with MOP board
+
+-- 1.4 -- 20 July 2009
+Description:
+* update of VideoServices.c to stub all non-implemented camera functions (returns VIDSERV_NOT_AVAILABLE error)
+* update Makefile to use dynamic VideoServices library for VideoTests execution (copy dynamic dependencies libraries like libpng to target)
+  Note: hardcoded path is used for toolchain waiting for variable definition in linuxtree (CR CAP_406_001 raised)
+* update of VideoServices.h to change enum e_VidServ_SensorId_t after ISD review
+* update of doc/doxygen/00masterdocfile.txt to add HTML pages in ISD for display picture, take picture sequences
+
+-- 1.5 -- 02 August 2009 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.0
+Description:
+* correction of PR CAP_484_001: Include path in kernel
+	impacted file(s): Makefile
+* rename png images as 28 characters got problem for TAT
+* implementation of CR CAP_384_001: VIDSERV: New ioctl MCDE_IOCTL_TV_CHANGE_MODE to change the resolution of the TV
+	impacted file(s): VideoServices.c
+* implementation of CR CAP_385_001: VIDEOSERVICES => Remove patch for CAP_381_001 : MCDE: Fix the minor number of the display frame buffer 
+	impacted file(s): VideoServices.hi
+* implementation of CR CAP_407_001: VIDSERV: implement the using of CAP_406_001 CR when available (TOOLCHAIN path variable to use)
+	impacted file(s): Makefile
+* add dependency with kernel in Makefile as requested by project.
+	impacted file(s): Makefile
+
+-- 1.6 -- 21 October 2009 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.1
+Description:
+* implementation of CR CAP_795_001: Change of design for framebuffers devices and minors
+     impacted File(s): VideoServices.hi
+* implementation of CR CAP_816_001: rootfs is now saved inf eMMC => need to check /dev/fbX before doing mknod
+     impacted File(s): VideoServices.c
+* implementation of CR CAP_796_001: New IOCTL for 5810 plug/unplug status
+     impacted File(s): VideoServices.c
+* implementation of CR CAP_1092_001: Backlight Management, AB8500 ED/V1 change: Registry structure for PWM Management has changed 
+     impacted File(s): VideoServices.c, VideoServices.hi, VideoServices.h
+* update after ALS tests
+     impacted File(s): VideoServices.c, VideoServices.hi
+
+
+Dependencies: kernel with HDMI driver for CAP_796_001
+
+-- 1.7 -- 04 November 2009 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.2
+Description:
+* implementation of CR CAP_1260_001: Management of audio/TV selection on AV connector
+     impacted File(s): VideoServices.c, VideoTests.c, VideoServices.hi, VideoServices.h
+* implementation of PR CAP_1274_001: buffer of RGB888 not taken into account 
+     impacted File(s): VideoServices.c, VideoServices.hi, Makefile
+     removed File(s): lilies_864x480_rgb565.rgb
+     added File(s): chess_864x480_rgb888.rgb
+
+-- 1.8 -- 04 November 2009 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.3
+Description:
+* correction of PR CAP_1416_001: Coverity Prevent: videoservices issues 
+     impacted File(s): pngrw.c  VideoServices.c  VideoServices.hi  VideoTests.c
+* implementation of changes to be compatible with kernel 2.2.0
+     impacted File(s): VideoServices.c
+
+New Compatibility: HATS_8500_SYS_MAIN_KERNEL_1.24
+
+-- 1.9 -- 22 december 2009 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.4
+Description:
+* implementation CAP_1849_001:Multimedia package: update Makefile to be aligned with DV11
+     impacted File(s): Makefile
+
+-- 1.10 -- 15 March 2010 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.5
+Description:
+* implementation of CR CAP_1234_001: HATS / Camera: Support handover from 8500 ED to 8500 v1 
+     impacted File(s): VideoServices.c
+* implementation of CR CAP_1999_001: Videoservices part: Clean copyright of HATS software 
+     impacted File(s): All sources files
+* correction of PR CAP_2764_001: Videoservices: display picture on primary display is not working with multibuffer switch
+     impacted File(s): VideoServices.c
+* implementation of CR CAP_2771_001: Videoservices: HDMI production tests has been rejected in FRS => remove them from videoservices
+     impacted File(s): VideoServices.c, VideoServices.hi, VideoServices.h, VideoTests.c
+* implementation of CR CAP_2704_001: HATS: STW4500 Component: acces to/dev/AB8500 insteadof /dev/STW4500
+     impacted File(s): VideoServices.c, VideoServices.hi, VideoServices.h, VideoTests.c
+
+
+New compatibility: HATS_8500_SYS_MAIN_PACK_HATS_SYS_2.11 (kernel of MBL pack4)
+
+-- 1.11 -- 23 March 2010 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.6
+Description:
+* implementation of CR CAP_2044_001: Videoservices Part: Picture toggling - Anti tearing effect tool  
+    impacted File(s): VideoServices.c, VideoServices.hi, VideoServices.h, VideoTests.c
+    Note: Interface for VidServ_DisplayPicture and VidServ_StopDisplayPictureLoop has changed => new ISD generated
+* correction of some warnings after activation of Wall in Makefile
+    impacted File(s): Makefile, VideoServices.c, VideoTests.c
+* implement interface of CR CAP_1891_001: Videoservices part: Possibility to take picture in burst mode
+    impacted File(s): VideoServices.h, VideoServices.c  VideoTests.c
+* implementation of CR_CAP_2929_001 Videoservices: New API to implement to change AV8100 resolution (for HDMI)
+	Videoservices.c, VideoTests.c
+    adding of image for HDMI tests : image_1920_1080.png
+
+New compatibility: HATS_8500_SYS_MAIN_PACK_HATS_SYS_2.15 (kernel of MBL pack4 + display/alsa patches)
+
+-- 1.13 -- 06 May 2010 => HATS_8500_MM_MAIN_VIDEOSERVICES_1.8
+Description:
+* correction of PR CAP_3080_001:  Need to remove all "sudo" in all MM video Makefiles in order to compile on the server 
+    impacted File(s): Makefile
+* correction of PR CAP_3298_001:     AV8100 Interlaced mode for hdmi/TV-out does not works
+    impacted File(s): VideoServices.c
+* correction of PR CAP_3213_001: send SIGTERM instead of SIGINT to kill the duplicate process
+    impacted File(s): VideoServices.c
+* workaround for PR CAP_3484_001: unable to know which display is associated to a minor
+   (current configuration is dual LCD display + one of TV-OUT displays)
+    impacted File(s): VideoServices.hi
+* Change place to save images using VideoTests from Sdcard to userFs2
+
+New compatibility: HATS_8500_SYS2_MAIN_PACK_HATS_SYS_1.6 (kernel of MBL pack4.5 + power patchs) + dual display delivery
+patch to kernel
+
+==============================
+New configuration tool => GIT
+==============================
+-- v1.3 -- 07 July 2010
+Description:
+* correction of PR CAP_3979_001: VIDEOSERVICES: Picture loop does not provide correct frame rate
+    impacted File(s): VideoServices.c
+* correction of PR CAP_3992_001: Video: Remove API copies from HATS makefiles to usr/include
+    impacted File(s): Makefile
+* correction of CR CAP_3910_001: Fork removal in the libvideoservices
+    impacted File(s): Makefile, VideoServices.c, VideoServices.hi
+    new File: srce/ExecuteDisplayLoop.c
+
+-- v1.4 -- 20 August 2010
+Description:
+* correction of PR CAP_4220_001: Get Ambient Light sensor doesn't work
+    impacted File(s): VideoServices.c
+* correction of PR CAP_4429_001: MCDE: Image is not displayed on primary LCD
+    impacted File(s): VideoServices.c,VideoServices.h,VideoServices.hi,ExecuteDisplayLoop.c
+* correction of CR CAP_4228_001: Videoservices: Update for restructured MCDE
+    impacted File(s): Makefile, VideoServices.c, VideoServices.hi
+* correction of CR CAP_4463_001: modifying rights on usr/include files is not needed
+    impacted File(s): Makefile
+
+-- v1.8 -- 06 January 2011
+Description:
+* implementation of CR 314762: New AB8500 driver (sysfs & debugfs based)
+    impacted File(s): Makefile, VideoServices.c, VideoServices.hi
+* correction of ER 315227: VideoTest -m=0 -d=0 -dinit does not work.
+    impacted File(s): VideoServices.c
+* correction of ER 314402: TAT HATS Coex: DSI0 and DSI1 busses not working on DV18
+    impacted File(s): VideoServices.c
+* correction of ER 314453: Video Services: HATS compiled libraries are not cleaned properly 
+    impacted File(s): Makefile
+* implementation of CR 311476: VideoServices: Add StopDisplay service
+    impacted File(s): VideoServices.c
+* implementation of CR 320449: videoservices: Implement AV8100 HDMI/TV-OUT dynamic selection
+    impacted File(s): VideoServices.c

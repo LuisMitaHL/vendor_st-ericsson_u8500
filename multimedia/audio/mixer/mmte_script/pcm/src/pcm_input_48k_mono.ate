@@ -1,0 +1,5 @@
+OMX_SetParameter    $1 OMX_IndexParamAudioPcm nPortIndex=$2 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+if $3 == input_reference
+ate_attach_io       $1 $2 MEM $(AUDIO_STREAMS)/samplerateconv/streams/Portal_48m.pcm 0 0 0
+endif

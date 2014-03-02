@@ -1,0 +1,374 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+ 
+Release number:	1.8.0 "L'Angelus"
+Date:	 		May 11th, 2009
+
+Author: 		Jean-Philippe Fassino & NMF Team	
+Organization:	MMD
+
+1	GENERAL INFORMATIONS
+
+1.1	Release number:
+
+	Release number: See bellow
+
+1.2	Board configuration supported:
+
+    - STn8815 SAA & SVA
+    	* Cut A0
+			Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+		* Cut B0
+		* Cut C0
+    - STn8820 SAA & SVA & SIA 
+    	* Cut A0
+    - STn8500 SVA & SIA
+    	* SVP 
+    		2.2 (Argc/Argv not supported)
+    		2.3.0
+        * PEPS 8500 
+        	ARMSS V1.0.4.1
+        * MOP500-ED
+    	
+
+1.3 Board configuration unsupported:
+
+    - STn8500 SVA & SIA
+    	* SVP 2.0 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+			STM IP trace not available    		
+    	* SVP 2.1 (only 90% of test suite passed !)
+			Issue in TLM IP HSEM 
+		* PEPS IP
+			Issue in MMDSP model 
+
+
+1.3	First level support contact:
+
+1.4	Symbian baseport version:
+
+	Not relevant
+
+1.5	Tools versioning:
+
+	See MMENV for more information.
+
+	ARM compiler version: 
+		- RVCT 2.2-sp1-593 for 8815 & 8820 
+		- RVCT 4.0 for 8500
+	
+	MMDSP compiler version
+	    - MMDSP Toolset 4.1.0
+
+
+2	COMMON COMPONENT LIST VERSIONING:
+
+	- Launcher 1.1.1
+    - MMENV 1.2.1
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)      
+
+
+3	RELEASE CONTENT
+
+	- Component Manager
+		API for dynamic deployment
+
+	- Execution Engine
+		Component scheduler available for MPC and Host (SMP)
+
+	- Think
+		Light ARM component-based environment configured for NMF test and development
+		This environment is based on Think open source component-based OS
+
+	- LOS
+		Light Operating System services API specification
+
+
+3.1 Component Manager
+
+	- Stub and skeleton in C or C++ is now managed by Component Manager.
+	  Thus you can compile your stub and skeleton in C++ and interact with them in C or C++.
+	  Interface reference is thus in C or in C++.
+	  In the same project, you can combine C and C++ stub and skeleton but not in the same 
+	  	source file.
+	  Be careful, CM is not able to detect if you compile your binding component for CPP 
+	  	and used in C or vice versa.
+	  For providing callback interface in C++, you have to:
+	  	- include <cm/inc/cm.hpp> instead of <cm/inc/cm.h>.
+	  	- inherit "your_interfaceDescriptor" generated abstract class:
+	  		class mycallback: public your_interfaceDescriptor {
+	  			void meth(...) {}
+	  		};
+	  	- declare an instance:
+	    	mycallback cb;
+	  	- pass a reference on it to CM_BindComponentToHost:
+	  		CM_BindComponentToHost(..., &cb);
+	  	
+	- Allow MPC Print and STM/XTI trace mechanisms to be controlled through CM_SetMode API.
+		SetMode API take MPC ID as parameter and such constant as command: 
+		- CM_CMD_MPC_TRACE_(ON | OFF):
+			Turn on or off XTI/STM traces.
+		- CM_CMD_MPC_PRINT_(OFF | ERROR | WARNING | INFO | VERBOSE):
+			Control level of print output. 
+			
+	- Add Execution Engine state memorizing running and Panic state.
+		The main purpose is to avoid to fall into timeout when un-instantiating component
+		network after Panic.
+
+	- The callback management (MPC to HOST communication) changes a little bit, which implies some
+	  API changes. You can create several different (private) channel or use a common shared channel.
+	  When binding a MPC component to the host, you explicitely specify on which channel you which
+	  the binding to be done.
+	  Here is a summary of the API changes (read carefully the API description for the complete details):
+		- CM_UserInit() and CM_UserRegister() are removed and replaced by the following API.
+		- CM_CreateChannel(NMF_CHANNEL_PRIVATE|NMF_CHANNEL_SHARED, &channel);
+			specify whether you want to use the shared channel or create a new one.
+		- CM_CloseChannel(): required to free a reference to the channel. As many CM_UserDone() as 
+			CM_UserInit() are required to definitively close and free the channel.
+		- CM_GetMessage(): the buffer of the message is now allocated internally. The user has to pass
+		  	a indirect pointer to a buffer instead of the buffer itself. Thus, the buffer size is no 
+		  	more required.
+
+	- The HOST <-> MPC bindings API changes, mainly the naming:
+	 	- CM_BindComponentToHost(), CM_UnbindComponentToHost(), CM_BindComponentFromHost(),
+			and CM_UnbindComponentFromHost() are now deprecated (will be removed soon !) and are
+			respectively replaced by CM_BindComponentToUser(), CM_UnbindComponentToUser(),
+			CM_BindComponentFromUser(), CM_UnbindComponentFromUser().
+			=> Consider using the new form as soon as possible.
+		- CM_BindComponentToUser() takes one more parameter, the channel on which the you the
+			binding to be done. CM_BindComponentToHost() does a binding on the SHARED channel.
+
+   	- Add Service Callback management. The user can register a service callback on a channel.
+	  The goal of this service callback management is to let to the user the opportunity to handle
+	  and be informed of some "CM service messages" (today, the only service messages are panic
+	  messages)
+	  This callback is automatically called when calling CM_ExecuteMessage(), if the message received
+	  contains such a message.
+	  A new API is provided to register these service callbacks:
+		- CM_RegisterService(channel, handler, handlerCtx);
+		- CM_UnregisterService(channel, handler, handlerCtx);
+
+
+3.2 MPC Execution Engine
+
+	- Add API to do printf like output. The Runtime API accessible for each primitive component 
+	  without need to bound it. Such methods are provided:
+	  	* void NmfPrint0(t_ee_debug_level level, char* str);
+	  	* void NmfPrint1(t_ee_debug_level level, char* str, t_uword value1);
+	  	* void NmfPrint2(t_ee_debug_level level, char* str, t_uword value1, t_uword value2);
+	  The message is send to the Component Manager which send it to the OS print mechanism.
+	  Note that an interruption is generated on Host at each MPC Print, thus use this API
+	  with parsimony.  
+		  
+
+3.3 SMP Execution Engine
+
+	- Align API on CM one, thus add such methods:
+		EE_CreateChannel(NMF_CHANNEL_PRIVATE|NMF_CHANNEL_SHARED, &channel)
+		EE_CloseChannel()
+		EE_GetMessage(channel, &clientContext, &message, blockable)
+		EE_ExecuteMessage(interfaceReference, message)
+		EE_RegisterService(channel, handlerMethod, contextHandler)
+		EE_UnregisterService(channel, handlerMethod, contextHandler)
+		EE_RegisterNotify(channel, notifyMethod)
+
+	- Add API to do printf like output. The Runtime API accessible for each primitive component 
+	  without need to bound it, but need to required ee.api.debug in your component. This
+	  interface provided such methods:
+	  	* void NmfPrint0(t_ee_debug_level level, char* str);
+	  	* void NmfPrint1(t_ee_debug_level level, char* str, t_uint32 value1);
+	  	* void NmfPrint2(t_ee_debug_level level, char* str, t_uint32 value1, t_uint32 value2);
+	  The message is directly send to the OS print mechanism.
+	  
+	- Add unbind API in order to destroy correctly create network:
+		- unbindFromUser
+        - unbindToUser
+        - unbindAsynchronous
+        - unbindComponent
+		
+	- Add error management during bindXxx and unbindXxx. Thus each bindXxx and unbindXxx not
+	  return an error. Previously return value is passed as last output parameter. 
+
+
+3.4 OS integration guidelines
+
+	- CM_getPanicDescription replace by CM_getServiceDescription which return a structure
+	  containing service description as parameter. Today, return services are either:
+	  	- MPC Panic: Must be dispatch into each channel service callback. 
+		- Print: Must be redirect to OS print output: console, OST, ...
+			* In case of console without dictionary, CM_ReadMPCString is provided in
+			  order to retrieve format string passed as EE_Print parameter. This
+			  method will directly read the string into the MPC memories (TCM, ESRAM,
+			  SDRAM). This is the default behavior today. 
+			* In case of OST with dictionary, synchronization must be done with EE
+			  which must passed string ID in EE_Print format string parameter. Thus,
+			  the CM driver must directly resend this ID to OST low level API.
+
+	- Regarding the previous point and the panic messages that must be dispatched on each channel,
+	  the message type exchanged through the channel has changed quite a bit to handle both
+	  the usual callback messages and the new service messages
+			  
+	- Clarify files to be delivered in LOS
+		- screen & console LOSEX moved in ilos, OS don't have to provide it
+		- LOS_Irq -> ILOS_Irq and moved to ilos, OS don't have to provide it 
+		- LOS_NmfGetPowerStatus -> ILOS_NmfGetPowerStatus and moved to ilos, OS don't have to provide it 
+		- Add IMPORT_SHARED in method declarations
+
+	- CM_OS_UserInit()/CM_UserDone() are replaced by CM_OS_CreateChannel()/CM_OS_CloseChannel():
+ 	  Both must only create/close a channel, without regarding any other conditions and without
+	  doing anything else
+
+	- CM_OS_UserRegister() is removed.
+
+	- The CM Engine API CM_Init()/CM_Destroy() have been renamed to CM_ENGINE_Init()/
+	  CM_ENGINE_Destroy()
+
+	- In the User Proxy library, two new API must be provided: CM_OS_Init()/CM_OS_Destroy():
+	  they are called only once and are a place to allocate/initialize (respectively free/destroy)
+	  global OS specific resources required in the CMUserProxy.
+
+	- The User Proxy library required now more OSAL API:
+	  OSAL_CreateLock(), OSAL_DestroyLock(), OSAL_Lock() and OSAL_Unlock()
+    
+
+3.5 Tools
+
+	- Generated code no more used CM_OS API to instantiate component network but directly
+	  the CM API.
+	  
+	- nmfitfc is now able to generate interface reference in C or C++ for call/callback.
+	  Use "nmfitfc --cpp" for generate it in C++.
+
+	- testArgs must not be passed to the nmfconfig tool, main() in user application
+	  is used
+	  
+	- Strip unneeded symbols and debug information in .elf4nmf files in order to 
+	  save flash memory and to speed up instantiate time. Furthermore, some 
+	  unused section are also removed.
+	  Note: you must now use .elf file to debug your components on MPC.
+
+
+3.6 Programming model
+
+3.7 Think
+
+	- LOS_{Enable/Disable/...}Irq -> ILOS_{Enable/Disable/...}Irq and moved to ilos
+		You such have to include <ilos/api/irq.h> to use it.
+
+	- API change - mmte_testStart() now accepts a third argument - logDir
+	    if empty, logs are written where the debugger is started (no change)
+	    if non-empty, path is prepended to the log files (it must exist!)
+
+	- API change - added mmte_testConfig() (currently only to control output)
+	
+    - All peripheral clocks are activated. In case board is flash then some clocks were not
+      active and so some think driver were not started. Note that this is a temporary hack
+      since think drivers are supposed to activate their clocks/power through think power
+      driver.
+      
+    - Add mop500_ed-think support. Note the following about clock and reset for this delivery :
+        - Pll management and clock divider settings are the responsability of debugger script.
+        - Think will release reset of peripherals.
+        - Think will set peripherals clock enable for all peripheral control by PRCCs units.
+
+
+3.8 Linux & Symbian
+	
+	See dedicated release notes included in the respective package for more informations .
+
+
+4	DEFECT STATUS
+
+	Defects must be logged on VI:
+		http://gnb500137.gnb.st.com/VIWebDev/default.asp
+			/Dev/OS and Platform/Multimedia/COMMON/NMF/**
+			_Support if category unknown
+
+
+4.1	Fixed defect list
+
+	22339	NMF::composite binding methods should return an error message (to know if binding succeded or not)
+	22259   mmte_testStart() API change request for supporting logDir parameter
+    22204	tls should be initialized at 0 for all jobs.
+    22203	Scheduler issue: Arm -> DSP fifo has to be cleared before being filled.
+	22062	Compilation CPPFLAGS is not working for Composite on ARM-nmf component
+	21679   Test API
+
+
+4.2	Active defect list
+
+	22139   Think may crash on startup for 8500 targets if user doesn't use main arguments.
+	21851   Asynchronously bound composite component : trace contains corrupted 'this' addresses
+	21734   change request: set default stack size to 8 KBytes in Think environment
+	21365   Pmu api needed for initialization, start/stop of DSP timer (HTIMEN) from Pmu
+	20938   Need new function in iLos to configure XbusDma connection
+	20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+	20440   No way to compile some files with specific options
+
+
+
+5	COMPILATION RULES
+
+5.1	Compilation procedure & options
+
+	Compilation options is fully based on MMENV.
+	
+
+5.2	Compilation configurability
+
+	EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+	IMPORT_SHARED: can be re-defined for importing API in a specific manner
+	
+	For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+	
+5.3 Installation
+
+	Automatic installation using mmtools
+		update your components file with the correct package versions
+		mmtools extract
+	Manual installation
+		* untar mmenv package into any location: <MMENV>
+			tar xzvf mmenv-x.y.z.tgz
+		* set MMENV_PATH environment variable to point to the mmenv location
+			setenv MMENV_PATH <MMENV>
+		* see mmenv documentation on how to set the target platform
+			e.g. PLATFORM=ndk15b06-think 
+		* create a NMF directory 
+			mkdir <NMF_ROOT>
+		* go in this directory 
+			cd <NMF_ROOT>
+		* untar tools and Think package
+			tar xvfz nmf_tools-Vx.y.z.tgz
+			tar xvfz nmf_think-Vx.y.z.tgz
+
+
+6	QA CHECK STATUS
+
+6.1	Compilation warning / error
+
+6.2	Code Static analysis result
+
+	Not done.
+
+6.3	Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+	Not done.
+
+6.4	Confidentiality safe
+
+
+7	DOCUMENTS
+	
+	Test report available at:
+		http://gnx2487:9000/
+
+	Source codes can be found in :
+		Clearcase
+			/vobs/nmf
+		Codex SVN site: 
+			http://codex.cro.st.com/svn/?group_id=598

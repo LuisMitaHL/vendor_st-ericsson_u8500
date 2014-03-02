@@ -1,0 +1,23 @@
+rm -f test_prof_dsp.cmd
+echo file ../standalone/bin/mmdsp_8500_v2/mdrc5b.elf > test_prof_dsp.cmd
+echo set args ../../../streams/mdrc/streams/params5 ../../../streams/mdrc/streams/stereo.pcm out_FIR.pcm 2 48000 48 >> test_prof_dsp.cmd
+echo break exit >> test_prof_dsp.cmd
+echo enable profile >> test_prof_dsp.cmd
+echo run >> test_prof_dsp.cmd
+echo profile -o prof_FIR >> test_prof_dsp.cmd
+echo info stacklimit >> test_prof_dsp.cmd
+echo quit >> test_prof_dsp.cmd
+mmdspsim -c test_prof_dsp.cmd
+
+rm -f test_prof_dsp.cmd 
+echo file ../standalone/bin/mmdsp_8500_v2/mdrc5b.elf > test_prof_dsp.cmd
+echo set args ../../../streams/mdrc/streams/params6 ../../../streams/mdrc/streams/stereo.pcm out_IIR.pcm 2 48000 48 >> test_prof_dsp.cmd
+echo break exit >> test_prof_dsp.cmd
+echo enable profile >> test_prof_dsp.cmd
+echo run >> test_prof_dsp.cmd
+echo profile -o prof_IIR >> test_prof_dsp.cmd
+echo info stacklimit >> test_prof_dsp.cmd
+echo quit >> test_prof_dsp.cmd
+mmdspsim -c test_prof_dsp.cmd
+
+rm -f test_prof_dsp.cmd 

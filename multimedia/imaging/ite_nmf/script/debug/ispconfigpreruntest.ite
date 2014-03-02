@@ -1,0 +1,25 @@
+LogPE enable
+
+TestIspBlock RSO            1   test
+TestIspBlock SDL            1   test
+TestIspBlock Gridiron       1   test
+TestIspBlock ChannelGains   1   test
+TestIspBlock Scorpio        1   test
+TestIspBlock Dustor         0   skip
+TestIspBlock BinningRepair  1   test
+TestIspBlock Babylon        1   test
+TestIspBlock ColourMatrix   1   test
+
+ConfigureIspBlocks notoggle nowait
+LogPE disable
+
+HR prepare
+HR start
+
+LogPE enable
+VerifyParamsApplied hr_prerun_datapath nowait
+LogPE disable
+
+HR stop
+HR free
+stopenv

@@ -1,0 +1,70 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+#-------------------------------
+# Default Config
+#-------------------------------
+MMBOARD=x
+MMSYSTEM=x
+
+#include $(COMPONENT_TOP_DIR)/make.ost_conf
+#OST_COMPONENT_ID = $(shell expr $(OST_MODULE_ID) + 4 )
+#OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_hst_lib
+#OST_SRC_DIR = misc/audiocontroller
+#INSTALL_DICO=$(OST_DICO_NAME).xml
+           
+include $(MM_MAKEFILES_DIR)/AudioConfig.mk
+
+#----------------------------
+#     Entry for Make.rules
+#
+#VPATH    : Search Path for prerequisites.(see default value in Make.rules)
+#CFLAGS   : Extra flags to give to the C compiler. (see default value in Make.rules)
+#CXXFLAGS : Extra flags to give to the C++ compiler. (see default value in Make.rules)
+#CPPFLAGS : Extra flags to give to the C preprocessor.(see default value in Make.rules)
+#
+#DEP_DEP  : Dependencies of dependency files. 
+#           (for example generated header file before generating *.d)
+#TOBECLEAN: List of files you want to delete on realclean target.
+#
+#LIBNAME  : Name of the library without the prefix lib.
+#LIBOBJ   : List of object file to put in the lib
+#
+#EXENAME  : Name of executable
+#EXEOBJ   : List of object file needed to build executable
+#         For multiple executable, suffix these to variable with _1, _2 ...  
+#
+#----------------------------
+
+VPATH+= misc/audiocontroller
+
+LIBOBJ= audiocontroller
+
+CPPFLAGS+= -I$(COMPONENT_TOP_DIR)/proxy/include
+ifdef DEBUG
+CFLAGS=-g -O0
+LIBNAME   = st_afm_nmfhost_debug
+INSTALL_LIB= libst_afm_nmfhost.a
+CPPFLAGS += -DDEBUG -D__DEBUG
+OBJ_EXT =odebug 
+else
+LIBNAME   = st_afm_nmfhost
+INSTALL_LIB= libst_afm_nmfhost.a
+CPPFLAGS += -DRELEASE -D__RELEASE
+endif
+
+INSTALL_HEADER= audiocontroller.hpp
+
+#WARNING todo target is MANDATORY (exe and/or lib)
+todo: lib 
+
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MM_MAKEFILES_DIR)/SharedRules.mk
+
+#-------------------------------
+# local Rules
+#-------------------------------
+test cleantest:
+	@echo "Test to be implemented ..."

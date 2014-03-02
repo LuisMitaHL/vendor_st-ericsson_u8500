@@ -1,0 +1,93 @@
+;------------------------------------------------------------
+; deleteconfig.cmm
+;------------------------------------------------------------
+; Cmm-file used to remove a configuration
+;
+; 070907 - KM Initial version
+; 071212 - DE Change so we use conf. name in file
+;-----------------------------------------------------------
+
+local &pos@
+
+local &configFile ; configread from file
+local &targetFile ; target read from file
+local &targetexist
+
+local &settingsLine
+local &settingsName
+local &settingsValue
+
+&current="TRUE" ; Used tos et Current to TRUE on first config in same target
+
+open #1 "&UsrPath"/T32_settings.txt /read
+open #2 "&UsrPath"/T32_settings.tmp /create
+repeat
+(
+	read #1 %line &configFile
+	&pos@=string.scan("&configFile","@",0) ; [<target>@<config>]
+	if &pos@!=-1
+	(
+		&targetFile=string.cut("&configFile",&pos@-string.len("&configFile")) ; [<target>
+		&targetFile="&targetFile]" ; [<target>]
+
+		if "&configFile"=="&CurConfig"
+		(
+			repeat
+			(
+				read #1 %line &settingsLine
+			)
+			while "&settingsLine"!="<EOB>"
+		)
+		else
+		(
+			write #2 "&configFile" ; write configuration
+			repeat
+			(
+				read #1 %line &settingsLine
+				&pos=string.scan("&settingsLine","=",0)
+				if &pos!=-1
+				(
+					&settingsValue=string.cut("&settingsLine",&pos+2)
+					&settingsName=string.cut("&settingsLine",&pos-string.len("&settingsLine"))
+					; strip spaces
+					&pos=string.scan("&settingsLine"," ",0)
+					if &pos>0
+						&settingsName=string.cut("&settingsLine",&pos-string.len("&settingsLine"))
+
+					if ("&settingsName"=="Current")&&("&targetFile"=="&Target") ; Set current in this target group
+					(
+						write #2 "Current         = " "&current"
+						&current="FALSE"
+					)
+					else
+						write #2 "&settingsLine" ; write settings row
+				)
+				else
+					write #2 "&settingsLine" ; write <EOB>
+			)
+			while "&settingsLine"!="<EOB>"
+		)
+	)
+	else
+		write #2 "&configFile" ; write <EOF>
+)
+while "&configFile"!="<EOF>"	
+	
+close #1
+close #2
+
+del "&UsrPath"/T32_settings.txt
+ren "&UsrPath"/T32_settings.tmp "&UsrPath"/T32_settings.txt
+
+append "&UsrPath"/T32_settings.txt clock.date()
+append "&UsrPath"/T32_settings.txt clock.time()
+
+ENDDO
+
+
+
+
+
+
+
+

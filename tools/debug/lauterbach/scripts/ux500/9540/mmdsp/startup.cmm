@@ -1,0 +1,532 @@
+;------------------------------------------------------------
+; startup.cmm
+;------------------------------------------------------------
+; Startup file to start dialog
+;
+;-----------------------------------------------------------
+; NOTE! The cmm-file "generic_menu.cmm" is executed from the T32 shortcut,
+; this file sets up the generic menues and declares variables.
+;-----------------------------------------------------------
+local &repo
+local &offset
+local &tmp
+local &tmp2
+
+;default value
+if "&LinuxDebug"==""
+(
+	&LinuxDebug="TRUE"
+)
+
+; Put current config at the beggining of the list
+&offset=string.scan("&ConfigList", "&CurConfig", 0)
+if &offset>0
+(
+	&tmp=string.mid("&ConfigList",0,&offset)
+	&offset=&offset+string.len("&CurConfig")
+	if string.char("&ConfigList",&offset)==','
+	(
+		&offset=&offset+1
+		&tmp="&tmp"+string.mid("&ConfigList",&offset,string.len("&ConfigList"))
+	)
+	else
+	(
+		&tmp=string.mid("&tmp",0,string.len("&tmp")-1)
+	)
+	&ConfigList="&CurConfig"+",&tmp"
+)
+
+
+; local copy are needed because to update repository list we restart the dialog
+; and then we must save the current dialog status in local variable if user decide
+; to quit without saving
+local &local_LinuxDebug
+local &local_ElfFile
+local &local_SrcPath
+local &local_UseBrk
+local &local_UsrCmm
+local &local_SmpDebug
+
+&local_SrcPath="&SrcPath"
+&local_ElfFile="&ElfFile"
+&local_LinuxDebug="&LinuxDebug"
+&local_UseBrk="&UseBrk"
+&local_UsrCmm="&UsrCmm"
+&local_SmpDebug="&SmpDebug"
+
+local &android_top
+local &mmroot
+
+&android_top=os.env("ANDROID_BUILD_TOP");
+&mmroot=os.env("MMROOT")
+
+if "&mmroot"==""&&"&android_top"!=""
+(
+	if os.dir("&android_top/vendor/st-ericsson/multimedia")
+	(
+		&mmroot="&android_top/vendor/st-ericsson/multimedia"
+	)
+	else if os.dir("&android_top/vendor/st-ericsson/variant/multimedia")
+	(
+		&mmroot="&android_top/vendor/st-ericsson/variant/multimedia"
+	)
+	else if os.dir("&android_top/device/vendor/st-ericsson/variant/multimedia")
+	(
+		&mmroot="&android_top/device/vendor/st-ericsson/variant/multimedia"
+	)
+)
+
+if string.scan("&local_SrcPath=","default",0)>-1
+(
+	&local_SrcPath="&mmroot"
+)
+
+local &android_out
+&android_out=os.env("ANDROID_PRODUCT_OUT")
+
+if string.scan("&local_ElfFile=","default",0)>-1
+(
+	if os.dir("&android_out/obj/mmbuildout/nmf_repository/mmdsp_9540_v1")
+	(
+		&local_ElfFile="&android_out/obj/mmbuildout/nmf_repository/mmdsp_9540_v1"
+	)
+)
+
+
+Start:
+
+dialog
+(&
+	header "ST-Ericsson MMDSP Target Setup Dialog"
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	pos 0. 0. 45. 4.
+	box "Target"
+
+	pos 2. 1. 41. 1.
+	CurConfig:	pulldown "&ConfigList" "gosub SetCurConfig"
+
+	pos 22. 2. 10. 1.
+	NewConfig:	button "New Config" "gosub SetNewConfig"
+
+	pos 33. 2. 10. 1
+	DeleteConfig:	button "Delete Config" "gosub DelConfig"
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	pos 0. 4. 45. 19.
+	box "NMF"
+
+	pos 1. 5. 43. 1.
+	NMF.AUTOLOAD:	checkbox "Use NMF autoloader" "gosub SetNmfAutoloader"
+
+	text "Nmf repository : "
+	pos 1. 7. 43. 8.
+	NMF.REPOSITORY:	listbox "&local_ElfFile" ""
+
+	pos 1. 16. 10. 1.
+	NMF.REPOSITORY.ADD:    button "Add" "gosub AddNmfRepository"
+
+	pos 11. 16. 10. 1.
+	NMF.REPOSITORY.REMOVE: button "Remove" "gosub RemoveNmfRepository"
+
+	pos 21. 16. 10. 1.
+	NMF.REPOSITORY.USEDEFAULT: button "From Env" "gosub AddDefaultNmfRepository"
+
+	pos 1. 18. 20. 1.
+	text "Multimedia Source Path :"
+
+	pos 1. 19. 33. 1.
+	NMF.SRCPATH:	edit "&local_SrcPath" ""
+
+	pos 34. 19. 2. 1.
+	NMF.BUTTONSRC:	button "..." "gosub SetSrcPath"
+
+	pos 36. 19. 8. 1.
+	NMF.BUTTONDEFAULTSRC:	button "From Env" "gosub SetDefaultSrcPath"
+
+	pos 1. 21. 43. 1.
+	NMF.BREAKPOINT: checkbox "Automatic loadmap update (very slow)" "gosub SetNmfBreakpoint"
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	pos 0. 23. 45. 5.
+	box "Options"
+
+	pos 1. 24. 30. 1.
+	SYNCHRO: checkbox "Synchronize ARM and MMDSP debugger" "gosub SetSynch"
+	pos 1. 25. 17. 1.
+	CHECKUSR:	checkbox "Use custom cmm file?" "gosub SetUsr"
+	pos 1. 26. 37. 1.
+	USRCMM:		edit "" ""
+	pos 39. 26. 2. 1.
+	BUTTONUSR:	button "..." "gosub SetUsrFile"
+	pos 41. 26. 2. 1.
+	BUTTONCLEARUSR:	button "X" "gosub ClearUsr"
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	pos 14. 28. 12. 1.
+	button "Save and Close" "gosub ButtonSaveClose"
+
+	pos 27. 28. 7. 1.
+	button "Save" "gosub ButtonSave"
+
+	pos 35. 28. 8. 1.
+	button "Cancel" "goto TheEnd"
+
+	close "goto TheEnd"
+)
+
+InitDialog:
+
+if "&local_UseBrk"=="TRUE"
+(
+	dialog.set NMF.BREAKPOINT "ON"
+)
+else
+(
+	dialog.set NMF.BREAKPOINT "OFF"
+)
+
+if "&local_LinuxDebug"=="TRUE"
+(
+	dialog.enable NMF.REPOSITORY
+	dialog.enable NMF.REPOSITORY.ADD
+	dialog.enable NMF.REPOSITORY.REMOVE
+	dialog.enable NMF.REPOSITORY.USEDEFAULT
+	dialog.enable NMF.SRCPATH
+	dialog.enable NMF.BUTTONSRC
+	dialog.enable NMF.BUTTONDEFAULTSRC
+	dialog.enable NMF.BREAKPOINT
+	dialog.set NMF.AUTOLOAD "ON"
+)
+else
+(
+	dialog.disable NMF.REPOSITORY
+	dialog.disable NMF.REPOSITORY.ADD
+	dialog.disable NMF.REPOSITORY.REMOVE
+	dialog.disable NMF.REPOSITORY.USEDEFAULT
+	dialog.disable NMF.SRCPATH
+	dialog.disable NMF.BUTTONSRC
+	dialog.disable NMF.BUTTONDEFAULTSRC
+	dialog.disable NMF.BREAKPOINT
+	dialog.set NMF.AUTOLOAD "OFF"
+)
+
+if "&local_SmpDebug"=="TRUE"
+(
+	dialog.set SYNCHRO "ON"
+)
+else
+(
+	dialog.set SYNCHRO "OFF"
+)
+
+if "&local_UsrCmm"!=""
+(
+	dialog.set CHECKUSR "ON"
+	dialog.enable USRCMM
+	dialog.enable BUTTONUSR
+	dialog.enable BUTTONCLEARUSR
+	dialog.set USRCMM "&local_UsrCmm"
+)
+else
+(
+	dialog.set CHECKUSR "OFF"
+	dialog.disable USRCMM
+	dialog.disable BUTTONUSR
+	dialog.disable BUTTONCLEARUSR
+)
+
+stop
+
+TheEnd:
+	dialog.end
+	enddo
+
+
+/// CONFIG
+SetCurConfig:
+	&tmp="&CurConfig"
+	&CurConfig=dialog.string(CurConfig)
+	; restart dialog if user change current config
+	if "&tmp"!="&CurConfig"
+	(
+		do readcurrentconfig
+		dialog.end
+		run startup
+	)
+	return
+
+SetNewConfig:
+	dialog
+	(&
+		header "Create New Configuration"
+
+		pos 0. 0. 22. 4.
+		box "Specify Configuration Name"
+
+		pos 1. 1. 20. 1.
+		ConfigName:	defedit "" ""
+
+		pos 10. 2. 5. 1.
+		DEFBUTTON "OK" "gosub SaveNewConfig"
+
+		pos 16. 2. 5. 1.
+		BUTTON "Cancel" "dialog.end"
+	)
+	stop
+
+SaveNewConfig:
+	&tmptarget=string.cut("&Target",-1)
+	&tmpconfig=dialog.string(ConfigName)
+	&tmpconfig="@&tmpconfig]"
+	&CurConfig="&tmptarget&tmpconfig"
+	&ConfigList="&ConfigList,&CurConfig"
+	dialog.end
+	do writesettings
+	dialog.end
+	run startup
+
+
+DelConfig:
+	do deleteconfig
+	&CurConfig=""
+	&ConfigList=""
+	dialog.end
+	do readsettings
+	run startup
+
+
+/// NMF Options
+SetNmfAutoloader:
+	if (dialog.boolean(NMF.AUTOLOAD))
+	(
+		&local_LinuxDebug="TRUE"
+		dialog.enable NMF.REPOSITORY
+		dialog.enable NMF.REPOSITORY.ADD
+		dialog.enable NMF.REPOSITORY.REMOVE
+		dialog.enable NMF.REPOSITORY.USEDEFAULT
+		dialog.enable NMF.SRCPATH
+		dialog.enable NMF.BUTTONSRC
+		dialog.enable NMF.BUTTONDEFAULTSRC
+		dialog.enable NMF.BREAKPOINT
+	)
+	else
+	(
+		&local_LinuxDebug="FALSE"
+		dialog.disable NMF.REPOSITORY
+		dialog.disable NMF.REPOSITORY.ADD
+		dialog.disable NMF.REPOSITORY.REMOVE
+		dialog.disable NMF.REPOSITORY.USEDEFAULT
+		dialog.disable NMF.SRCPATH
+		dialog.disable NMF.BUTTONSRC
+		dialog.disable NMF.BUTTONDEFAULTSRC
+		dialog.disable NMF.BREAKPOINT
+	)
+	return
+
+
+AddNmfRepository:
+	dialog
+	(&
+		header "Add NMF Repository"
+
+		pos 1. 0. 50. 1.
+		REPOSITORY:	defedit "" ""
+
+		pos 1. 2. 8. 1.
+		button "Browse"
+		(
+			dialog.setdir REPOSITORY "&android_out/*"
+			continue
+		)
+
+		pos 9. 2. 8. 1.
+		button "OK" "continue"
+
+		pos 17. 2. 8. 1.
+		BUTTON "Cancel" "dialog.end"
+		close "dialog.end"
+	)
+	stop
+
+	&repo=dialog.string(REPOSITORY)
+
+	if "&repo"!=""
+	(
+		if "&local_ElfFile"==""
+		(
+			&local_ElfFile="&repo"
+		)
+		else
+		(
+			&local_ElfFile="&local_ElfFile,&repo"
+		)
+	)
+
+	dialog.end ; end add repository dialog
+
+	dialog.end
+	goto Start  ; redraw the dialog otherwise cannot update repository list display ...
+	enddo
+
+AddDefaultNmfRepository:
+	if "&android_out"==""
+	(
+		dialog.ok "Environment variable ANDROID_PRODUCT_OUT not set."\
+		          "Cannot detect default repository."
+	)
+	else
+	(
+		&local_ElfFile="&android_out/obj/mmbuildout/nmf_repository/mmdsp_9540_v1"
+		dialog.end
+		goto Start  ; redraw the dialog otherwise cannot update repository list display ...
+		enddo
+	)
+	return
+
+RemoveNmfRepository:
+	&repo=dialog.string(NMF.REPOSITORY)
+	&offset=string.scan("&local_ElfFile", "&repo", 0)
+	if (&offset>-1)
+	(
+		&tmp=string.mid("&local_ElfFile",0,&offset)
+		&offset=&offset+string.len("&repo")+1
+		&tmp="&tmp"+string.mid("&local_ElfFile",&offset,string.len("&local_ElfFile"))
+	)
+	&local_ElfFile="&tmp"
+	dialog.end
+	goto Start  ; redraw the dialog otherwise cannot update repository list display ...
+	enddo
+
+
+SetDefaultSrcPath:
+	if "&android_top"==""
+	(
+		dialog.ok "Environment variable ANDROID_TOP not set"
+	)
+	else if "&mmroot"==""
+	(
+		dialog.ok "Cannot find multimedia from &android_top"
+	)
+	else
+	(
+		&local_SrcPath="&mmroot"
+		dialog.set NMF.SRCPATH "&local_SrcPath"
+	)
+	return
+
+SetSrcPath:
+	if ("&android_top"=="")
+	(
+		dialog.setdir NMF.SRCPATH "*"
+	)
+	else
+	(
+		dialog.setdir NMF.SRCPATH "&Temp_File/*"
+	)
+	return
+
+SetNmfBreakpoint:
+	if dialog.boolean(NMF.BREAKPOINT)
+		&local_UseBrk="TRUE"
+	else
+		&local_UseBrk="FALSE"
+	return
+
+
+/// Other options
+SetSynch:
+	if dialog.boolean(SYNCHRO)
+	(
+		&local_SmpDebug="TRUE"
+	)
+	else
+	(
+		&local_SmpDebug="FLASE"
+	)
+	return
+
+SetUsr:
+	if dialog.boolean(CHECKUSR)
+	(
+		&local_UsrCmm=" "
+		dialog.enable USRCMM
+		dialog.enable BUTTONUSR
+		dialog.enable BUTTONCLEARUSR
+	)
+	else
+	(
+		&local_UsrCmm=""
+		dialog.disable USRCMM
+		dialog.disable BUTTONUSR
+		dialog.disable BUTTONCLEARUSR
+	)
+	return
+
+SetUsrFile:
+	dialog.setfile USRCMM *.cmm
+	if dialog.string(USRCMM)!=""
+		&local_UsrCmm=dialog.string(USRCMM)
+	return
+
+/// Configuration save
+SaveSettings:
+	&CurConfig=dialog.string(CurConfig)
+
+	&LinuxDebug="&local_LinuxDebug"
+	&ElfFile="&local_ElfFile"
+	&SrcPath="&local_SrcPath"
+	&UseBrk="&local_UseBrk"
+	&SmpDebug="&local_SmpDebug"
+	if "&local_UsrCmm"==" "
+		&UsrCmm=""
+	else
+		&UsrCmm="&local_UsrCmm"
+
+	if ("&LinuxDebug"=="TRUE")
+	(
+		if ("&ElfFile"=="")
+		(
+			dialog.ok "You choose to use NMF autoloader, but you did not specify any repository." \
+			          "Autoloader will not be able to load any component." \
+			          "Please specify at least one repository or disable NMF autoloader"
+			dialog.end
+			goto Start
+			return
+		)
+
+		if ("&SrcPath"=="")
+		(
+			dialog.yesno "You did not specify any source path. It means that you won't be able to see" \
+			             "source code of component that you did not compile in that environment." \
+			             "(unless you add path manually via for example symbol.spath.setdir)" \
+			             "Do you want to continue ?"
+			entry &answer
+			if !&answer
+			(
+				dialog.end
+				goto Start
+				return
+			)
+		)
+
+		&UseAttach="TRUE"
+		&LOptionStrip="multimedia/"
+	)
+
+	do writesettings.cmm
+
+	print "Settings are saved..."
+	return
+
+ButtonSaveClose:
+	gosub SaveSettings
+	goto TheEnd
+	return
+
+ButtonSave:
+	gosub SaveSettings
+	return

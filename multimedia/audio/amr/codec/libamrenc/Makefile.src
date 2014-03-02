@@ -1,0 +1,63 @@
+# -*- Mode: Makefile -*-
+
+SRC =	\
+amr_encoder.c \
+sid_sync.c \
+e_homing.c \
+sp_enc.c \
+	pre_proc.c \
+	cod_amr.c \
+		vad1.c \
+		vad2.c \
+		vadname.c \
+		dtx_enc.c \
+		lpc.c \
+			autocorr.c \
+			lag_wind.c \
+			levinson.c \
+		lsp.c \
+			az_lsp.c \
+			q_plsf.c \
+			q_plsf_3.c \
+			q_plsf_5.c \
+				lsfwt.c \
+		cl_ltp.c \
+			pitch_fr.c \
+				inter_36.c \
+				enc_lag3.c \
+				enc_lag6.c \
+			g_pitch.c \
+			q_gain_p.c \
+		pre_big.c \
+		ol_ltp.c \
+			pitch_ol.c \
+			p_ol_wgh.c \
+				hp_max.c \
+		lflg_upd.c \
+		spreproc.c \
+		cbsearch.c \
+			c2_9pf.c  \
+			c2_11pf.c \
+			c3_14pf.c \
+			c4_17pf.c \
+			c8_31pf.c \
+			c1035pf.c \
+				s10_8pf.c \
+		gain_q.c \
+			calc_en.c \
+			qgain475.c \
+			qgain795.c \
+			g_code.c \
+			q_gain_c.c \
+			qua_gain.c \
+			g_adapt.c \
+		ton_stab.c \
+		spstproc.c \
+	prm2bits.c	 \
+	efr_dtx_tx.c 	 \
+	cod_amr_alloc_ymem.c
+
+LIBSRC	= $(SRC)
+
+# generic flags
+#CPPFLAGS += -DUSE_ANCILLARY

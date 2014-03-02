@@ -1,0 +1,107 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_resource_manager.idt>
+
+interface resource_manager.api.resource { 
+
+/* This file specifies methods included inside provided interface named iResource
+          i.e. :          - allocResource
+                          - freeResource
+                          - setDebug
+*/
+
+
+
+/** @addtogroup rmAllocResourceGroup allocResource
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface to allocate a specific resource.
+ 
+ Note : 	This interface has to be called every time the data dependency 
+ component wants to access an algo component (No check will be done at algo 
+ component level).
+ 
+ If any problem occurs during the resource allocation, a specific resource status
+ will be reported through the required interface \ref rmInformResourceGroup.
+   
+ \param[in]  resource  Resource map to be allocated.
+ \param[in]  cb  	   call back pointer to client interface inform_resource_status.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref rmConfigurationGroup
+ */
+
+void allocResource(	t_t1xhv_resource resource
+					, resource_manager.api.inform_resource_status *cb
+					);
+
+/** @} */ // end of rmAllocResourceGroup
+
+
+
+/** @addtogroup rmFreeResourceGroup freeResource
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Interface to free (i.e. release) an already allocated resource.
+ 
+ Note : This interface has to be called each time a resource is free again
+ (i.e. when a data dependency component finished the process it had to do)
+ otherwise the video subsystem will be locked. No monitoring of resource
+ allocation is implemented, that means if a resource is allocated forever, 
+ the video subsystem will be dead locked. 
+ 
+ \param[in]  resource  Resource map to be released.
+ \param[in]  cb  	   call back pointer (to identify resource to remove in flush).
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref rmConfigurationGroup 
+ */
+void freeResource(	t_t1xhv_resource resource
+					, resource_manager.api.inform_resource_status *cb
+					);
+
+/** @} */ // end of rmFreeResourceGroup
+
+
+
+/** @addtogroup rmSetDebugGroup setDebug
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of the NMF resource_manager component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref rmConfigurationGroup
+ * 
+ */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint32 param1, t_uint32 param2);
+
+/** @} */ // end of rmSetDebugGroup
+
+
+void setTimeout(t_t1xhv_resource                               resource, 
+                resource_manager.api.inform_resource_status    *cb, 
+                t_uint32                                       timeout);
+
+void cancelTimeout(t_t1xhv_resource                            resource);
+
+
+} // interface resource_manager.api.resource

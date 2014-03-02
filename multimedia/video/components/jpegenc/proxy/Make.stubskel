@@ -1,0 +1,39 @@
+
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+#-------------------------------
+# Default Config
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.config
+
+#DUMMY:=$(shell echo $(BASE_REPOSITORY) >tmp.file)
+
+#VPATH+= ../host/$(BASE_REPOSITORY)/host
+#CPPFLAGS+= -I ../host/$(BASE_REPOSITORY)/
+
+#LIBNAME=st_vfm_jpegenc_stsk
+#LIBOBJ=video_jpegenc-user2mpc-stubs video_jpegenc-mpc2user-skels
+#INSTALL_LIB=libst_vfm_jpegenc_stsk.a
+#INSTALL_HEADER_DIR=../host/nmf_repository
+
+VPATH+= ../$(BASE_REPOSITORY)/host
+CPPFLAGS+= -I../$(BASE_REPOSITORY)/
+
+ifneq ($(PLATFORM),x86-linux)
+ifneq ($(findstring 5500,$(PLATFORM)),5500)
+LIBNAME=st_vfm_jpegenc_stsk
+LIBOBJ=video_jpegenc_cpp-user2mpc-stubs video_jpegenc_cpp-mpc2user-skels
+INSTALL_LIB=libst_vfm_jpegenc_stsk.a
+INSTALL_HEADER_DIR=../nmf_repository
+endif
+endif
+
+todo:lib install
+
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.rules
+
+

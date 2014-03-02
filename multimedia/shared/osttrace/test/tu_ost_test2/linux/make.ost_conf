@@ -1,0 +1,22 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+#
+OST_COMPILER = 1
+
+MY_TOP_DIR = $(COMPONENT_TOP_DIR)/test/tu_ost_test2/linux
+OST_MODULE_ID = 0x3D
+MODULE_NAME = osttrace
+
+# Translate value to hexa one for tracecompiler
+OST_MODULE_ID_INT = `printf "%d\n" ${OST_MODULE_ID}`
+
+OST_COMPONENT_NAME = ST_OSTTEST2
+OST_DICO_NAME = $(OST_COMPONENT_NAME)
+OST_COMPONENT_INC = $(MY_TOP_DIR)/inc
+
+# List of all UID used. In this example we increment by 1  
+OST_COMPONENT_ID_HOST = $(shell expr ${OST_MODULE_ID_INT} + 1 )
+MY_OST_COMPILER_OPTION = --defines=module=$(MODULE_NAME)
+
+
+

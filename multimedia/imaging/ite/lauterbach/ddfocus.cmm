@@ -1,0 +1,262 @@
+//=========================================================================
+// A script to friendly use focus in an interactive way
+//=========================================================================
+local &addr &witdh &height
+local &addrh &addrl 
+local &rwidth
+local &rheight
+local &rx
+local &ry
+
+&rwidth="50"
+&rheight="50"
+&rx="25"
+&ry="25"
+
+//if run()
+//   Break
+
+//-----------------------------------------------------
+// Capture dialog
+//-----------------------------------------------------
+DIALOG
+(&
+	HEADER "FOCUS"
+	POS 0. 0.
+	LINE "Focus Action"
+	POS 0. 1.
+BT_SINGLE: BUTTON "Single Shot"
+	(
+		GOSUB SingleShot
+	)
+BT_CONTINUOUS: BUTTON "Continuous"
+	(
+		GOSUB CF
+	)
+BT_MANNEAR: BUTTON "Manual Near"
+	(
+		GOSUB NEAR
+	)
+BT_MANMIDDLE: BUTTON "Manual Middle"
+	(
+		GOSUB MIDDLE
+	)
+BT_MANFAR: BUTTON "Manual Far"
+	(
+		GOSUB FAR
+	)
+	POS 12. 0.
+	LINE "Focus Range"
+	POS 12. 1.
+RANGE: PULLDOWN "auto,full,hyperfocal,supermacro,macro,infinity" "GOSUB SETRANGE"
+	POS 12. 2.
+	LINE "Focus Region"
+	POS 12. 3.
+REGION: PULLDOWN "auto,manual,facepriority,objectpriority" "GOSUB SETREGION"
+	POS 12. 4.
+	LINE "Region Width"
+	POS 24. 4.
+RWIDTH: EDIT "" "GOSUB SETRWIDTH"
+	POS 12. 5.
+	LINE "Region Height"
+	POS 24. 5.
+RHEIGHT: EDIT "" "GOSUB SETRHEIGHT"
+	POS 12. 6.
+	LINE "Region X"
+	POS 24. 6.
+RX: 	EDIT "" "GOSUB SETRX"
+	POS 12. 7.
+	LINE "Region Y"
+	POS 24. 7.
+RY:     EDIT "" "GOSUB SETRY"
+	POS 12. 8.
+	LINE "Light Assist Ctrl"
+	POS 12. 9.
+LIGHTASSIST: PULLDOWN "off,on,auto" "GOSUB SETLIGHTASSIST"
+	POS 0. 6. 
+	LINE "WARNING"
+	POS 0. 7.
+BT_STATUS: BUTTON "Focus Status"
+	(
+		GOSUB Status
+	)
+	POS 0. 8. 
+	LINE "Test_Start must be" 
+	LINE "done before status"
+	
+	POS 36. 0.
+	LINE "SHOW BUFFER"
+	POS 36. 1.
+BT_LR: BUTTON "Display LR"
+	(
+		GOSUB LR
+	)
+BT_HR: BUTTON "Display HR"
+	(
+		GOSUB HR
+	)
+BT_GO: BUTTON "Restart Arm"
+	(
+		GOSUB GO
+	)
+)
+dialog.enable BT_SINGLE
+dialog.enable BT_CONTINUOUS
+dialog.enable BT_STATUS
+dialog.enable BT_MANNEAR
+dialog.enable BT_MANMIDDLE
+dialog.enable BT_MANFAR
+dialog.enable BT_GO
+dialog.set RANGE "auto"
+dialog.set REGION "auto"
+dialog.set LIGHTASSIST "off"
+dialog.set RWIDTH "&rwidth"
+dialog.set RHEIGHT "&rheight"
+dialog.set RX "&rx"
+dialog.set RY "&ry"
+dialog.enable BT_LR
+dialog.enable BT_HR
+stop
+enddo
+
+//-----------------------------------------------------
+SingleShot:
+//-----------------------------------------------------	
+do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_single_shot.ite"	
+RETURN
+
+//-----------------------------------------------------
+CF:
+//-----------------------------------------------------	
+do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_continuous.ite" 
+RETURN
+//-----------------------------------------------------
+NEAR:
+//-----------------------------------------------------	
+do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_manual_near.ite" 
+RETURN
+//-----------------------------------------------------
+MIDDLE:
+//-----------------------------------------------------	
+do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_manual_middle.ite" 
+RETURN
+//-----------------------------------------------------
+FAR:
+//-----------------------------------------------------	
+do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_manual_far.ite" 
+RETURN
+//-----------------------------------------------------
+Status:
+//-----------------------------------------------------	
+do cmd "do $(IMG_SCRIPT)/unitary/features/cam_getconfig_focus_status.ite" 
+RETURN
+
+
+//-----------------------------------------------------
+SETRANGE:
+//-----------------------------------------------------	
+local &range
+ &range=dialog.string(RANGE)
+ if "&range"=="auto"       
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeAuto"
+ if "&range"=="full"       
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeFull"
+ if "&range"=="hyperfocal" 
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeHyperfocal"
+ if "&range"=="supermacro" 
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeSuperMacro"
+ if "&range"=="macro"      
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeMacro"
+ if "&range"=="infinity"   
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_range.ite OMX_SYMBIAN_FocusRangeInfinity"
+ RETURN
+
+//-----------------------------------------------------
+SETREGION:
+//-----------------------------------------------------	
+local &region
+ &region=dialog.string(REGION)
+ if "&region"=="auto"   	
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionAuto"
+ if "&region"=="manual"   	
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionManual"
+ if "&region"=="facepriority"   
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionFacePriority"
+ if "&region"=="objectpriority" 
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_region.ite OMX_ALL OMX_SYMBIAN_FocusRegionObjectPriority"
+ RETURN
+
+//-----------------------------------------------------
+SETRWIDTH:
+//-----------------------------------------------------
+&rwidth=dialog.string(RWIDTH)
+do cmd "alias DEFAULT_REGION_WIDTH &rwidth"
+RETURN
+//-----------------------------------------------------
+SETRHEIGHT:
+//-----------------------------------------------------
+&rheight=dialog.string(RHEIGHT)
+do cmd "alias DEFAULT_REGION_HEIGHT &rheight"
+RETURN
+//-----------------------------------------------------
+SETRX:
+//-----------------------------------------------------
+&rx=dialog.string(RX)
+do cmd "alias DEFAULT_REGION_X &rx"
+RETURN
+//-----------------------------------------------------
+SETRY:
+//-----------------------------------------------------
+&ry=dialog.string(RY)
+do cmd "alias DEFAULT_REGION_Y &ry"
+RETURN
+//-----------------------------------------------------
+SETLIGHTASSIST:
+//-----------------------------------------------------	
+local &lightassist
+ &lightassist=dialog.string(LIGHTASSIST)
+ if "&lightassist"=="off"   	
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_assistant_light.ite OMX_SYMBIAN_ControlOff"
+ if "&lightassist"=="on"   	
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_assistant_light.ite OMX_SYMBIAN_ControlOn"
+ if "&lightassist"=="auto"   
+ 	do cmd "do $(IMG_SCRIPT)/interaction/omx_focus_assistant_light.ite OMX_SYMBIAN_ControlAuto"
+ RETURN
+ 
+//-----------------------------------------------------
+LR:
+//-----------------------------------------------------
+if run()
+   Break
+	&addrl=d.w(A:0xA0254490)			//DMA_IRP1_DRS_L
+	&addrh=d.w(A:0xA0254492)			//DMA_IRP1_DRS_H
+	&width=d.w(A:0xA0254494)			//DMA_IRP1_DFW
+	&width=&width/2
+	&height=d.w(A:0xA0254498)			//DMA_IRP1_DWH
+        &addr=&addrh*10000+&addrl
+	&width=FORMAT.UDECIMAL(0,&width)+"."
+	&height=FORMAT.UDECIMAL(0,&height)+"."
+	data.image A:&addr &width &height /YUV422PS
+	RETURN
+	
+
+//-----------------------------------------------------
+HR:
+//-----------------------------------------------------
+	
+if run()
+   Break
+	&addrl=d.w(A:0xA0254490)			//DMA_IRP0_DRS_L
+	&addrh=d.w(A:0xA0254492)			//DMA_IRP0_DRS_H
+	&width=d.w(A:0xA0254494)			//DMA_IRP0_DFW
+	&width=&width/2
+	&height=d.w(A:0xA0254498)			//DMA_IRP0_DWH
+        &addr=&addrh*10000+&addrl
+	&width=FORMAT.UDECIMAL(0,&width)+"."
+	&height=FORMAT.UDECIMAL(0,&height)+"."
+	data.image A:&addr &width &height /YUV422PS
+	RETURN
+
+GO:
+  Go
+   RETURN

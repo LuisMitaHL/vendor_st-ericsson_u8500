@@ -1,0 +1,595 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#ifndef __CGPS_HET__
+#define __CGPS_HET__
+
+/**
+* \file cgps.het
+*
+* <B>Description:</B> This file contains all external struct required and provided by CGPS\n
+*
+*/
+
+/**
+* \addtogroup CGPS_AppliSession_Structures
+*\{
+*/
+
+
+/**
+* \struct t_cgps_CStructNavData
+* \brief Structure with the navigation data in 'C' struct passed through \ref t_cgps_NavigationCallback
+*/
+typedef struct /** t_cgps_CStructNavData */
+{
+  uint32_t   v_LocalTTag;         /**< Local baseband millisecond time-tag [msec] */
+  uint32_t   v_OSTimeMs;          /**< Local Operating System Time [msec] */
+  uint16_t   v_Year;              /**< UTC Year A.D. [eg 2007]*/
+  uint16_t   v_Month;             /**< UTC Month into the year [range 1..12] */
+  uint16_t   v_Day;               /**< UTC Days into the month [range 1..31] */
+  uint16_t   v_Hours;             /**< UTC Hours into the day [range 0..23] */
+  uint16_t   v_Minutes;           /**< UTC Minutes into the hour [range 0..59] */
+  uint16_t   v_Seconds;           /**< UTC Seconds into the hour [range 0..59] */
+  uint16_t   v_Milliseconds;      /**< UTC Milliseconds into the second [range 0..999] */
+  int16_t    v_GpsWeekNo;         /**< GPS Week Number */
+  double     v_GpsTOW;            /**< Corrected GPS Time of Week [seconds] */
+  double     v_UtcCorrection;     /**< Current (GPS-UTC) time zone difference [seconds] */
+  double     v_X;                 /**< WGS84 ECEF X Cartesian coordinate [m]. */
+  double     v_Y;                 /**< WGS84 ECEF Y Cartesian coordinate [m]. */
+  double     v_Z;                 /**< WGS84 ECEF Z Cartesian coordinate [m]. */
+  double     v_Latitude;          /**< WGS84 Latitude  [degrees, positive North] */
+  double     v_Longitude;         /**< WGS84 Longitude [degrees, positive East] */
+  float      v_AltitudeEll;       /**< Altitude above the WGS84 Ellipsoid [m] */
+  float      v_AltitudeMSL;       /**< Altitude above Mean Sea Level [m] */
+  float      v_SpeedOverGround;   /**< 2-dimensional Speed Over Ground [m/s] */
+  float      v_CourseOverGround;  /**< 2-dimensional Course Over Ground [degrees] */
+  float      v_VerticalVelocity;  /**< Vertical velocity [m/s, positive Up] */
+  float      v_NAccEst;           /**< Northing RMS 1-sigma (67%) Accuracy estimate [m] */
+  float      v_EAccEst;           /**< Easting  RMS 1-sigma (67%) Accuracy estimate [m] */
+  float      v_VAccEst;           /**< Vertical RMS 1-sigma (67%) Accuracy estimate [m] */
+  float      v_HAccMaj;           /**< Horizontal RMS 1-sigma (67%) Error ellipse semi-major axis [m] */
+  float      v_HAccMin;           /**< Horizontal RMS 1-sigma (67%) Error ellipse semi-minor axis [m] */
+  float      v_HAccMajBrg;        /**< Bearing of the Horizontal Error ellipse semi-major axis [degrees] */
+  float      v_HVelAccEst;        /**< Horizontal Velocity RMS 1-sigma (67%) Accuracy estimate [m/s] */
+  float      v_VVelAccEst;        /**< Vertical Velocity RMS 1-sigma (67%) Accuracy estimate [m/s] */
+  float      v_COG_AccEst;        /**< Course Over Ground 1-sigma (i.e. rms error) Accuracy estimate [degrees]*/
+  float      v_PRResRMS;          /**< Standard deviation of the Pseudorange a posteriori residuals [m] */
+  float      v_HDOP;              /**< HDOP (Horizontal Dilution of Precision) */
+  float      v_VDOP;              /**< VDOP (Vertical Dilution of Precision) */
+  float      v_PDOP;              /**< PDOP (3-D Position Dilution of Precision) */
+  uint8_t    v_FixType;           /**< Position Fix Type 0=No fix, 1=Estimated, 2=2D, 3=2D Differential, 4=3D, 5=3D Differential */
+  uint8_t    v_Valid2DFix;        /**< Is the published 2D position fix "Valid" relative to the required Horizontal Accuracy Masks ? */
+  uint8_t    v_Valid3DFix;        /**< Is the published 3D position fix "Valid" relative to both the required Horizontal and Vertical Accuracy Masks ? */
+  uint8_t    v_FixMode;           /**< Solution Fixing Mode (1 = Forced 2-D at Mean-Sea-Level, 2 = 3-D with automatic fall back to 2-D mode) */
+  uint8_t    v_SatsInView;        /**< Satellites in View count */
+  uint8_t    v_SatsUsed;          /**< Satellites in Used for Navigation count */
+/** @cond */
+  uint16_t   MsuPadding;          /*!< Padding to align on 32 */
+/** @endcond */
+  uint8_t v_SatsInViewConstell[K_CGPS_NMEA_SV]; /**< Satellites in View Constellation identifier [PRN] */
+  uint8_t    v_SatsInViewSVId[K_CGPS_NMEA_SV];    /**< Satellites in View SV id number [PRN] */
+  uint8_t    v_SatsInViewSNR[K_CGPS_NMEA_SV];     /**< Satellites in View Signal To Noise Ratio [dBHz] */
+  uint8_t    v_SatsInViewJNR[K_CGPS_NMEA_SV];     /**< Satellites in View Signal To Noise Ratio [dBHz] */
+  uint16_t   v_SatsInViewAzim[K_CGPS_NMEA_SV];    /**< Satellites in View Azimuth [degrees] */
+  int8_t     v_SatsInViewElev[K_CGPS_NMEA_SV];    /**< Satellites in View Elevation [degrees].  If = -99 then Azimuth & Elevation angles are currently unknown */
+  uint8_t    v_SatsInViewUsed[K_CGPS_NMEA_SV];    /**< Satellites in View Used for Navigation ? */
+/** @cond */
+  uint32_t   MSUpadding4;                         /*!< Padding to align on 32 */
+/** @endcond */
+} t_cgps_CStructNavData;
+
+
+
+/**
+* \struct t_cgps_NavData
+* \brief Structure which the navigation data passed through \ref t_cgps_NavigationCallback
+*/
+typedef struct
+{
+  void*               p_NavData;    /**< Pointer to navigation in format t_cgps_CStructNavData or directly NMEA data  specified by v_Type */
+  uint16_t            v_Length;     /**< Length of navigation data, sizeof(t_cgps_CStructNavData) if p_NavData is a t_cgps_CStructNavData or ascii buffer length if p_NavData is a t_cgps_NmeaNavData */
+  e_cgps_NavDataType  v_Type;       /**< Type of Navigation data (NMEA or s_CGPS_NavData 'C' Struct) */
+/* +LMSqb93565 */
+  e_cgps_NavStatus    v_NavStatus;  /**< Enum specifying the status of nav updates, K_CGPS_UPDATES_REMAINING ot K_CGPS_FINAL_UPDATE */
+/* -LMSqb93565 */
+} t_cgps_NavData;
+
+
+/**
+* \struct t_cgps_PositioningParams
+* \brief positioning paramters that are given by the application to carry out a GPS session
+*/
+typedef struct
+{
+    uint32_t     v_Timeout;        /**< Response Time in milli seconds [range 1..3600000ms]. 3600000 ms = 1hour.*/
+                                   /**< Value applicable only if v_NumberOfFixes = 1*/
+    uint32_t     v_AgeLimit;       /**< Age Limit in milliseconds. Too old data can't be delivered. 0 value sends only a new position fix. */
+    uint32_t     v_FixInterval;    /**< Fix Interval in seconds [range 100..604800000ms]. 604800000 = 1 week in milli seconds. Value applicable only if v_NumberOfFixes > 1*/
+    uint32_t     v_StartTime;      /**< Start Time in seconds [range 1 to 2678400s]. If value set to 0, reporting started immediately*/
+                                   /**<Value applicable only if v_NumberOfFixes > 1*/
+    uint32_t     v_StopTime;       /**< Stop Time in seconds [range 1 to 11318399s]. If set to 0, value considered not set.*/
+                                   /**< Value applicable only if v_NumberOfFixes > 1.*/ 
+                                   /**<  Stop Time > Start Time. Start Time - Stop Time <= 8639999s (100 days)*/
+                                   /**<  If stop time > (number of fixes * fix interval) + start time, then stop time is ignored */
+    uint16_t     v_NumberOfFixes;  /**< Number of Fixes to be reported. [range 1..65535 ]  */
+    uint16_t     v_HorizAccuracy;  /**< Horizontal Accuracy [range 1.. 65535 m]. If value set to 0 default of 100m is considered*/
+    uint16_t     v_VertAccuracy;   /**< Vertical Accuracy [range 1.. 65535 m]. If value set to 0 default of 150m is considered*/
+    uint16_t     v_Padding;        /*!< Padding to align on 32 */
+} t_cgps_PositioningParams;
+
+
+/**
+* \struct t_CGPS_Geographic_TargetArea_Parms
+* \brief Geographic area paramteres that fed by the application for executing a geographical area event based test cases
+*/
+typedef struct
+{
+    e_cgps_ShapeType  v_ShapeType;                                           /**< Describes the Shape Type  */
+    uint8_t           v_NumberOfPoints;                                      /**< Number of points in polygon. [range 3..15]. Value applicable only if Shape Type is polygon  */
+    uint8_t           v_EllipSemiMinorAngle;                                 /**< Angle between the semi-major axis and North, increasing in a clockwise direction in degrees [range 0..179]*/
+                                                                             /**<Angle 0 represents ellipse with semi-major axis pointing North/South*/ 
+                                                                             /**<while angle of 90 represents an ellipse with semi-major axis pointing East/West.*/
+                                                                             /**<Value applicable only if Shape Type is ellipse. */
+    MC_PCC_FILL_STRUCT2
+    uint8_t           v_LatSign[K_CGPS_MAX_POLYGON_POINTS];                  /**< Array of Latitude Sign. [0=North, 1=South]*/
+                                                                             /**<In case of Shape Type is circle/ellipse, latitude sign is a single element that of center.*/
+                                                                             /**<In case of Shape Type is polygon, array contains a sequnce of latitude signs of all points */
+    uint32_t          v_Latitude[K_CGPS_MAX_POLYGON_POINTS];                 /**< Array of Latitudes. [range 0..8388607 for 0..90 degrees]*/
+                                                                             /**<In case of Shape Type is circle/ellipse, latitudes is a single element that of center.*/
+                                                                             /**<In case of Shape Type is polygon, array contains a sequnce of latitudes of all points */
+    int32_t           v_Longitude[K_CGPS_MAX_POLYGON_POINTS];                /**< Array of Longitudes. [range -8388608..8388607 for -180..+180 degrees]*/
+                                                                             /**< In case of Shape Type is circle/ellipse, longitudes is a single element that of center */
+                                                                                                                                      /**<  In case of Shape Type is polygon, array contains a sequnce of longitudes of all points */
+    uint32_t          v_CircularRadius;            /**< Radius of the circle in meters. [range 1..1000000m].*/
+                                                   /**< Value valid only if Shape Type is circle*/
+    uint32_t          v_CircularRadiusMin;         /**< Hysteresis Minimum Radius of the circle in meters [range 0..1000000m]*/ 
+                                                   /**< Value valid only if Shape Type is circle. Considered not set if 0*/
+    uint32_t          v_CircularRadiusMax;         /**< Hysteresis Maximum Radius of the circle in meters [range 0..1500000m]*/ 
+                                                   /**< Value valid only if Shape Type is circle. Considered not set if 0*/
+    uint32_t          v_EllipSemiMajor;            /**< Semi Major of Ellipse in meters. [range 1..1000000m].*/
+                                                   /**< Value valid only if Shape Type is ellipse */
+    uint32_t          v_EllipSemiMajorMin;         /**< Hysteresis Minimum Semi Major of Ellipse in meters [range 0..1000000m]*/ 
+                                                   /**< Value valid only if Shape Type is ellipse. Considered not set if 0*/
+    uint32_t          v_EllipSemiMajorMax;         /**< Hysteresis Maximum Semi Major of Ellipse in meters [range 0..1500000m] */
+                                                   /**< Value valid only if Shape Type is ellipse. Considered not set if 0*/
+    uint32_t          v_EllipSemiMinor;            /**< Semi Minor of Ellipse in meters. [range 1..1000000m].*/
+                                                   /**< Value valid only if Shape Type is ellipse.*/
+    uint32_t          v_EllipSemiMinorMin;         /**<Hysteresis Minimum Semi Minor of Ellipse in meters [range 0..1000000m]*/ 
+                                                   /**<Value valid only if Shape Type is ellipse. Considered not set if 0*/
+    uint32_t          v_EllipSemiMinorMax;         /**<Hysteresis Maximum Semi Minor of Ellipse in meters [range 0..1500000m]*/  
+                                                   /**<Value valid only if Shape Type is ellipse. Considered not set if 0*/
+    uint32_t          v_PolygonHysteresis;         /**<Hysteresis of polygon in meters. [range 0..100000m].*/ 
+                                                   /**< Value valid only if Shape Type is polygon. Considered not set if 0*/
+}t_cgps_GeographicTargetArea;
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliSession_Functions
+*\{
+*/
+
+/**
+* \brief This Callback function is registered by upper modules using the \ref MC_CGPS_REGISTER_PERIODIC_FIX or \ref MC_CGPS_REGISTER_SINGLE_SHOT_FIX macros to receive
+* the navigation data from CGPS.
+* \warning The memory for the navigation parameter is allocated by the CGPS module and freed by the application.
+*/
+typedef void (* t_cgps_NavigationCallback) (
+  t_cgps_NavData p_NavData /**< [in] Navigation data of type \ref t_cgps_CStructNavData or \ref t_cgps_NmeaNavData */
+);
+
+/**
+*\struct t_cgps_ApplicationID_Info
+*\brief Structure with the Application ID Info
+*/
+typedef struct
+{
+   uint8_t    v_ApplicationIDInfo_present;                           /**< Application Id Info Present */
+   int8_t     a_ApplicationProvider[K_CGPS_MAX_APP_PROVIDER_LEN];    /**< Application Provider string */
+   int8_t     a_ApplicationName[K_CGPS_MAX_APP_NAME_LEN];            /**< Application Name string */
+   int8_t     a_ApplicationVersion[K_CGPS_MAX_APP_VERSION_LEN];      /**< Application Version string */
+}t_cgps_ApplicationID_Info;
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliAGPS_Structures
+*\{
+*/
+
+
+#if defined(AGPS_UP_FTR) || defined(AGPS_FTR)
+
+/**
+* \struct t_cgps_Notification
+* \brief Structure with the notification data passed through \ref t_cgps_NotificationCallback. This structure is defined as specified in SUPL specification (OMA-TS-ULP-V1_0-20070122-C.pdf)
+*/
+typedef struct
+{
+  void* v_Handle;                                       /**< Handle */
+  e_cgps_NotificationType  v_NotificationType;          /**< Type of Notification */
+  e_cgps_EncodingType      v_RequestorIdEncodingType;   /**< Type of Encoding for a_RequestorId */
+  e_cgps_FormatIndicator   v_RequestorIdType;           /**< Format of a_RequestorId */
+  e_cgps_EncodingType      v_ClientNameEncodingType;    /**< Type of Encoding for a_ClientName  */
+  e_cgps_FormatIndicator   v_ClientNameType;            /**< Format of a_ClientName */
+  e_cgps_EncodingType      v_CodeWordAlphabet;          /**< Data Coding scheme for Code word.  */
+  e_cgps_LcsServiceType    v_LcsServiceTypeId;          /**< LCS service Type ID.*/
+  uint8_t                  a_RequestorId[ K_CGPS_MAX_REQ_LENGTH ];        /**< Requestor Id string */
+  uint8_t                  a_ClientName[ K_CGPS_MAX_CLIENT_LENGTH ];      /**< Client Name string */
+  uint8_t                  a_CodeWord[ K_CGPS_MAX_CODE_WORD_LENGTH ];     /**< Code word.If content is NULL string, not valid */
+  uint8_t                  a_PhoneNumber[ K_CGPS_MAX_PHONE_NUM_LENGTH ];  /**< Phone Number. If content is NULL string, not valid. */
+  uint8_t                  v_RequestorIdLen;            /**< Requestor Id string length */
+  uint8_t                  v_ClientNameLen;             /**< Client Name string length */
+  uint8_t                  v_CodeWordLen;               /**< 0 if code word absent */
+  uint8_t                  v_TonNpi;                    /**< Type of Number and number Plan identification. Refer 3GPP TS 24.008, section 10.5.4.7. */
+  uint8_t                  v_TonNpiConfig;              /**< Indicates if v_TonNpi has been populated.  */
+/** @cond */
+  MC_PCC_FILL_STRUCT3                                   /*!< Padding to align on 32 */
+/** @endcond */
+} t_cgps_Notification;
+
+
+/**
+* \struct t_cgps_ThirdPartyInfo
+* \brief Structure with data to identify third party entity to transfer location information. Fields according to OMA specification.
+*/
+typedef struct
+{
+    uint32_t    v_ThirdPartyId;                                             /**< Third Party ID  */
+    int8_t      a_ThirdPartyName[K_CGPS_MAX_THIRDPARTY_NAME_LEN];           /**< Third Party Id string */
+}t_cgps_ThirdPartyInfo;
+
+
+/**
+* \struct t_cgps_ClientInfo
+* \brief Structure with the Client Information
+*/
+typedef struct
+{
+  uint8_t       v_ClientIdTonNpi;         /**< Client ID Type of Number and number Plan identification. Refer 3GPP TS 24.008, section 10.5.4.7. */
+  uint8_t       v_ClientIdConfig;         /**<Indicates if v_TonNpi Client Id has been populated.  */
+  uint8_t       v_MlcNumTonNpi;           /**< MLC Number Type of Number and number Plan identification. Refer 3GPP TS 24.008, section 10.5.4.7. */
+  uint8_t       v_MlcNumConfig;           /**< Indicates if v_TonNpi MLC Number has been populated.  */
+  uint8_t       v_ClientExtIdLen;         /**< Requestor Id string length */
+  uint8_t       v_MlcNumberLen;           /**< Client Name string length */
+/** @cond */                                
+  MC_PCC_FILL_STRUCT2 
+/** @endcond */
+  int8_t        a_ClientExtId[ K_CGPS_MAX_REQ_LENGTH ];       /**< Requestor Id string */
+  int8_t        a_MlcNumber[ K_CGPS_MAX_CLIENT_LENGTH ];      /**< Client Name string */
+  t_cgps_ThirdPartyInfo      t_thirdparty_info;               /**< ThirdParty Info added aspart of client Info */
+} t_cgps_ClientInfo;
+
+
+
+
+
+/**
+* \struct t_agps_GPSExtendedEphData
+* \brief GPS Extended Ephemeris data from Client
+*/
+typedef struct
+{
+    uint8_t     v_Prn;        /*!< Ephemeris PRN or SV. Range 1-32.*/
+    uint8_t     v_CAOrPOnL2;    /*!< Only 2 least sig bits used. Not in RXN std ephemeris struct. */
+    uint8_t     v_Ura;        /*!< User Range Accuracy index.  See IS-GPS-200 Rev D for index values.*/
+    uint8_t     v_Health;     /*!< Corresponds to the SV health value. 6 bits as described within IS-GPS-200 Rev D.*/
+    uint8_t     v_L2PData;      /*!< When 1 indicates that the NAV data stream was commanded OFF on the P-code of the L2 channel. Descrete 1/0. */
+    uint8_t     v_Ure;        /*!< User Range Error. Indicates EE accuracy. Units: meters.*/
+    uint8_t     v_AODO;           /*!< Age Of Data Offset.*/
+    int8_t      v_TGD;          /*!< Time Group Delay. Scale: 2^-31. Units: seconds.*/
+    int8_t      v_Af2;        /*!< Clock Drift Rate Correction Coefficient. Scale: 2^-55. Units: sec/sec^2. */
+    int8_t      v_EphemFit;  /*!< Fit interval relating to the fit interval flag. Typically 4 hrs. */
+    uint16_t    v_GpsWeek;     /*!< Extended week number (i.e. > 1024, e.g.1486). */
+    uint16_t    v_IoDc;            /*!< Issue Of Data (Clock). */
+    uint16_t    v_Toc;         /*!< Time Of Clock or time of week. Scale: 2^4. Units: seconds. */
+    uint16_t    v_Toe;         /*!< Time Of Ephemeris. Scale: 2^4. Units: seconds. */
+    uint16_t    v_Iode;         /*!< Issue Of Data (Ephemeris). */
+    int16_t     v_Af1;        /*!< Clock Drift Correction Coefficient. Scale: 2^-43. Units: sec/sec. */
+    int16_t     v_Crs;        /*!< Amplitude of the Sine Harmonic Correction Term to the Orbit Radius. Scale: 2^-5. Units: meters. */
+    int16_t     v_DeltaN;    /*!< Mean Motion Difference from Computed Value. Scale: 2^-43. Units: semi-circles/sec. */
+    int16_t     v_Cuc;        /*!< Amplitude of the Cos Harmonic Correction Term to the Arguement of Latitude. Scale: 2^-29. Units: radians. */
+    int16_t     v_Cus;        /*!< Amplitude of the Sine Harmonic Correction Term to the Argument of Latitude. Scale: 2^-29. Units: radians. */
+    int16_t     v_Cic;        /*!< Amplitude of the Cos Harmonic Correction Term to the Angle of Inclination. Scale:    2^-29. Units: radians. */
+    int16_t     v_Cis;        /*!< Amplitude of the Sine Harmonic Correction Term to the Angle of Inclination. Scale: 2^-29. Units: radians. */
+    int16_t     v_Crc;        /*!< Amplitude of the Cos Harmonic Correction Term to the Orbit Radius. Scale: 2^-5. Units: meters. */
+    int16_t     v_IDot;        /*!< Rate of Inclination Angle. Scale: 2^-43. Units: semi-circles/sec. */
+    uint32_t    v_E;          /*!< Eccentricity. Scale: 2^-33. Units: N/A - Dimensionless. */
+    uint32_t    v_SqrtA;     /*!< Square Root of the Semi-Major Axis. Scale: 2^-19. Units: square root of meters. */
+    int32_t     v_Af0;        /*!< Clock Bias Correction Coefficient. Scale: 2^-31. Units: sec. */
+    int32_t     v_M0;         /*!< Mean Anomaly at Reference Time. Scale: 2^-31/PI. Units: semi-circles. */
+    int32_t     v_Omega0;     /*!< Longitude of Ascending Node of Orbit Plane and Weekly Epoch. Scale: 2^-31/PI. Units: semi-circles. */
+    int32_t     v_I0;         /*!< Inclination Angle at Reference Time. Scale: 2^-31/PI. Units: semi-circles. */
+    int32_t     v_W;            /*!< Argument of Perigee. Scale: 2^-31/PI. Units: semi-circles. */
+    int32_t     v_OmegaDot;    /*!< Rate of Right Ascension. Scale: 2^-43. Units: semi-circles/sec. */
+
+}t_cgps_GPSExtendedEphData;
+
+
+/**
+* \struct t_agps_GlonassExtendedEphData
+* \brief Glonass Extended Ephemeris data from Client
+*/
+typedef struct
+{
+    uint8_t     v_Slot;         /*!< \brief Ephemeris Id for SV. Range 1-24.*/
+    uint8_t     v_FT;           /*!< \brief User Range Accuracy index.  P32 ICD Glonass for value of Ft.*/
+    uint8_t     v_M;            /*!< \brief Glonass vehicle type. M=1 means type M*/
+    uint8_t     v_Bn;           /*!< \brief Bn SV health see p30 ICD Glonass. */
+    uint8_t     v_UtcOffset;   /*!< \brief Current GPS-UTC leap seconds [sec]; 0 if unknown. */
+    int8_t      v_FreqChannel;  /*!< \brief Freq slot: -7 to +13 incl. */
+    int16_t     v_Gamma;        /*!< \brief SV clock frequency error ratio scale factor 2^-40 [seconds / second] */
+    int16_t     v_Lsx;          /*!< \brief x luni solar accel scale factor 2^-30 Km/s^2 PZ90 datum. */
+    int16_t     v_Lsy;          /*!< \brief y luni solar accel scale factor 2^-30 Km/s^2 PZ90 datum. */
+    int16_t     v_Lsz;          /*!< \brief z luni solar accel scale factor 2^-30 Km/s^2 PZ90 datum. */
+    uint32_t    v_GloSec;       /*!< \brief gloSec=[(N4-1)*1461 + (NT-1)]*86400 + tb*900, [sec] ie sec since Jan 1st 1996 <b>see caution note in struct details description</b> */
+    int32_t     v_TauN;         /*!< \brief SV clock bias scale factor 2^-30 [seconds]. */
+    int32_t     v_X;            /*!< \brief x position at toe scale factor 2^-11 Km PZ90 datum. */
+    int32_t     v_Y;            /*!< \brief y position at toe scale factor 2^-11 Km PZ90 datum. */
+    int32_t     v_Z;            /*!< \brief z position at toe scale factor 2^-11 Km PZ90 datum. */
+    int32_t     v_Vx;           /*!< \brief x velocity at toe scale factor 2^-20 Km/s PZ90 datum. */
+    int32_t     v_Vy;           /*!< \brief y velocity at toe scale factor 2^-20 Km/s PZ90 datum. */
+    int32_t     v_Vz;           /*!< \brief z velocity at toe scale factor 2^-20 Km/s PZ90 datum. */
+
+}t_cgps_GlonassExtendedEphData;
+
+
+/**
+ * \brief
+ * Structure to store navigation data elements. Based on 3GPP TS 44.031.
+ * Note that the Satellite ID value can be derived from the RXN_FullEph_t
+ * prn value (Sat ID with range 0 - 31 = RXN_FullEph_t.prn - 1).
+ */
+typedef struct 
+{
+    uint8_t                         v_NumEntriesGps;                                   /*!< Number of entries in the list. Range 1 - 32. */
+    uint8_t                         v_NumEntriesGlonass;                               /*!< Number of entries in the list. Range 1 - 24. */  
+    uint32_t                        EE_Ref_GPS_secs;                                    /*To Store the time when EE was requested */
+    t_cgps_GPSExtendedEphData       a_GpsList[K_CGPS_CONSTANT_NUM_GPS_PRNS];                    /*!< RXN_FullEph_t elements. */
+    t_cgps_GlonassExtendedEphData   a_GloList[K_CGPS_CONSTANT_NUM_GLONASS_PRNS];        /*!< RXN_FullEph_GLO_t elements. */
+} t_cgps_NavDataList;
+
+
+/**
+ * \brief
+ * Structure to store broadcast Ephemeris data to be fed to MSL.
+ * along with type to identify the constellation.
+ */
+
+typedef struct
+{
+    e_cgps_ConstelType              v_ConsteType;
+    t_cgps_GPSExtendedEphData       v_GpsBCE;                /*!< RXN_FullEph_t elements. */
+    t_cgps_GlonassExtendedEphData   v_GloBCE;                /*!< RXN_FullEph_GLO_t elements. */
+} t_cgps_NavDataBCE;
+/**
+* \addtogroup CGPS_AppliAGPS_Functions
+*\{
+*/
+
+
+/**
+* \brief This Callback function is registered by upper modules using the \ref MC_CGPS_NOTIFICATION_CB_REGISTER macro to receive
+* the SUPL notification indications from CGPS.
+* \warning The memory for the notification parameter is allocated by the CGPS module and freed by the application.
+*/
+typedef void (* t_cgps_NotificationCallback) (
+  t_cgps_Notification *p_SuplNotification /**< [in] pointer to the SUPL notification data */
+);
+
+
+/* ++ LMSqb95626    ANP 03/07/2009 */
+/* ++ LMSqb93693 */
+/**
+* \brief This Callback function is registered by upper modules using the \ref MC_CGPS_DATA_CNT_NOTIFICATION_CB_REGISTER macro to receive
+* the data connection notification indications from CGPS.
+*/
+typedef void (* t_cgps_DataCntNotificationCallback) (
+  bool b_IsActive /**< [in] TRUE if the data connection is active */
+);
+/* -- LMSqb93693 */
+/* -- LMSqb95626    ANP 03/07/2009 */
+
+#endif /* AGPS_UP_FTR || AGPS_FTR */
+
+
+/**
+* \brief This Callback function is registered by to Receive Notification when GPS STARTS and STOPS for NI tests
+*/
+
+typedef void (*t_cgps_NotifyEventsCallback ) (
+  e_cgps_GpsStatus vp_Result
+);
+
+
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliAGPS_Structures
+*\{
+*/
+
+
+
+#ifdef AGPS_UP_FTR
+
+/* + LMSQC16384 : LMSQC16386 SUPL WAP Push */
+/**
+* \struct t_cgps_SuplPush
+* \brief Structure which provide the Payload for SUPL Push and the HASH for SUPL Init message.
+* Hash may or may not be part of the message. CGPS may generate the Hash or can use as provided by Application.\n
+*/
+typedef struct
+{
+    uint32_t    v_PayloadLength;    /**< Payload Length */
+    uint8_t*    v_pointerToPayload; /**<pointer To Payload containing SUPL INIT Pdu */
+    uint32_t    v_HashLength;       /**<Hash Length 0 - Hash is not generated for the message and v_pointertoHash is not valid */
+    uint8_t*    v_pointerToHash;    /**<pointer To Hash */
+}t_cgps_SuplPush;
+/* - LMSQC16384 : LMSQC16386 SUPL WAP Push */
+
+#endif /* AGPS_UP_FTR*/
+
+
+/**
+*\}
+*/
+
+
+
+/**
+* \addtogroup CGPS_AppliConfig_Structures
+*\{
+*/
+
+/**
+* \struct t_cgps_ServerConfig
+* \brief Structure which provide the SLP server configuration to AGPS Subsystem Also refer \ref t_cgps_Config.\n
+* SLP address shall be updated by setting the value for v_AddrType other than \ref K_CGPS_SLPADDR_DFLT.\n
+* The last updated value shall be used for all session after this untill either a new value is updated or requested to use the default value by setting v_AddrType to \ref K_CGPS_SLPADDR_DFLT
+*/
+typedef struct
+{
+    int8_t*                  v_Addr;           /**< Pointer to SLP address to be used for SUPL Sessions */
+    e_cgps_SlpAddrType       v_AddrType;       /**< This information shall define the type of SLP address provided in v_Addr */
+    /* ++ LMSqc00855    ANP 15/07/2009 */
+    uint16_t                 v_PortNum;        /**< Port number to be used for SUPL Sessions, 0XFFF sets the port number to default value. */
+    /* ++ LMSqc00855    ANP 15/07/2009 */
+    uint8_t                  v_AddrLen;        /**< Length of octet used to carry SLP address */
+} t_cgps_ServerConfig;
+
+
+/**
+* \struct t_cgps_ESLP_ServerConfig
+* \brief Structure which provide the ESLP server configuration to AGPS Subsystem Also refer \ref t_cgps_Config.\n
+* The ESLP Server address corresponds to the whitelisted server address.
+*/
+typedef struct
+{
+    int8_t *                s_ESlpAddr[10];              /**< This field shall be used to store the ESLP Address */
+
+} t_cgps_ESLP_ServerConfig;
+
+
+
+
+/* ++ LMSqb89864 - BNS 27 / 04 / 2009*/
+/**
+* \struct t_cgps_BearerConfig
+* \brief Structure which provide the SUPL Bearer configuration. Also refer \ref t_cgps_Config.\n
+* APN address shall be updated by setting the value for s_APN other than K_CGPS_SLPADDR_DFLT.\n
+* The last updated value shall be used for all session after this untill either a new value is updated.
+*/
+typedef struct
+{
+    int8_t*            s_APN;           /**< Pointer to Access Point Name string, NULL if APN has to be set to default value */
+    int8_t*            s_Login;         /**< Pointer to the Login string, NULL if unused */
+    int8_t*            s_Password;      /**< Pointer to the passowrd string, NULL if unused */
+} t_cgps_BearerConfig;
+/* -- LMSqb89864 - BNS 27 / 04 / 2009*/
+
+
+
+/**
+* \struct t_cgps_Config
+* \brief Structure which provide the configuration to AGPS Subsystem \ref t_cgps_Config
+*/
+typedef struct
+{
+  uint32_t                  v_ConfigMaskValidity; /**< This field shall be set for all elements whose information is to be updated in v_ConfigMask as defined in \ref e_cgps_ConfigBitMask  */
+  uint32_t                  v_ConfigMask;         /**< This element bit in this field shall be set if the corresponding bit is set in v_ValidityBitmap
+                                                                                                 1- Field is enabled, 0 - Field is disabled
+                                                                                              \ref e_cgps_ConfigBitMask for the mask detail */
+  uint32_t                  v_Config2Mask;        /**< This field shall based on which all optional element are updated. Refer \ref e_cgps_Config2BitMask*/
+  t_cgps_ServerConfig       v_ServerConfig;       /**< This field shall be used if corresponding bit in v_Config2Mask is set  */
+  e_cgps_SensitivityMode    v_SensMode;           /**< This field shall be used if corresponding bit in v_Config2Mask is set  */
+  e_cgps_SensitivityTtff    v_SensTtff;           /**< This field shall be used if corresponding bit in v_Config2Mask is set  */
+  e_cgps_PowerPref          v_PowerPref;          /**< This field shall be used if corresponding bit in v_Config2Mask is set  */
+  e_cgps_ColdStartMode      v_ColdStart;          /**< This field shall be used if corresponding bit in v_Config2Mask is set  */
+/* ++ LMSqb89864 - BNS 27 / 04 / 2009*/
+  t_cgps_BearerConfig       s_BearerConfig;       /**< This field shall be used if corresponding bit in v_Config2Mask is set  */
+/* -- LMSqb89864 - BNS 27 / 04 / 2009*/
+  t_cgps_ESLP_ServerConfig  v_EslpServerConfig;   /**< This field shall be used if corresponding bit in v_Config2Mask is set  */
+} t_cgps_Config;
+
+
+
+/**
+* \struct t_cgps_PlatformConfig
+* \brief Structure which provide the Platformconfiguration to AGPS Subsystem \ref t_cgps_PlatformConfig
+*/
+
+typedef struct
+{
+    uint8_t   v_Version[50];         /**<PlatformConfiguration file version*/
+    uint32_t  v_Config1MaskValid;    /** This field shall be set for all elements whose information is to be updated in v_Config1Mask as defined by \ref e_cgps_PlatformConfig1BitMask */
+    uint32_t  v_Config1Mask;         /** The element bit in this field shall be set if the corresponding bit is set in v_Config1MaskValid. The bit mask is defined by \ ref e_cgps_PlatformConfig1BitMask*/
+    uint16_t  v_Config2Mask;         /**<This field shall based on which all optional element are updated as defined in  \ref e_cgps_PlatformConfig2BitMask*/
+    uint16_t  v_MsaMandatoryMask;    /**<This field defines the Mandatory Assistance Data Mask for MSA.This field will
+                                                                        be set only if Mandatory MSA Assistance Data bit is set in v_Config2Mask.*/
+    uint16_t  v_MsbMandatoryMask;    /**<This field defines the Mandatory Assistance Data Mask for MSB.This field will
+                                                                         be set only if Mandatory MSB Assistance Data bit is set in v_Config2Mask.*/
+    uint32_t  v_SleepTimerDuration;  /**<This field shall set the Sleep Timer duration of GPS. This field will
+                                                                         be set only if GPS Power saving Int. bit is set in v_Config2Mask.*/
+    uint32_t  v_ComaTimerDuration;   /**<This field shall set the Coma Timer duration of GPS. This field will
+                                                                        be set only if GPS Power saving Int. bit is set in v_Config2Mask.*/
+    uint32_t  v_DeepComaDuration;    /**<This field shall set the DeepComa Timer duration of GPS. This field will
+                                                                         be set only if GPS Power saving Int. bit is set in v_Config2Mask.*/
+} t_cgps_PlatformConfig;
+
+
+
+/*!
+    \struct t_cgps_ModuleTraceConfig
+    \brief Trace configuration for each module
+*/
+typedef struct 
+{
+    uint8_t   v_Source;             /**< Trace source \ref e_cgps_TraceSource*/ 
+    uint8_t   v_Destination;        /**< Trace end point - Application(console), File, None \ref e_cgps_TraceDestn*/ 
+    uint8_t   v_Severity;           /**< E-Error,W-Warnings,I-Information,D-Debug,F-Function,T-Timestamp  \ref e_cgps_TraceSeverity*/
+    uint16_t  v_Filesize;           /**< Maximum File size in MB*/
+}t_cgps_ModuleTraceConfig;
+
+
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliGeneral_Structures
+*\{
+*/
+
+
+/**
+* \struct t_cgps_QoP
+* \brief Structure with the Quality of Position exposed
+*/
+typedef struct
+{
+  uint32_t     vp_Timeout;         /**< Response Time */
+  uint16_t     vp_HorizAccuracy;   /**< Horizontal Accuracy */
+  uint16_t     vp_VertAccuracy;    /**< Vertical Accuracy */
+  uint32_t     vp_AgeLimit;        /**< Age Limit */
+} t_cgps_QoP;
+
+
+/**
+*\}
+*/
+
+#endif  /* __CGPS_HET__ */

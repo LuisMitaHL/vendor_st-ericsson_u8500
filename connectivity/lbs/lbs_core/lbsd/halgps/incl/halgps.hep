@@ -1,0 +1,174 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPS_HEP__
+#define __HALGPS_HEP__
+
+
+/**
+* \file halgps.hep
+* \date 25/01/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all prototype used by external module.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.01.08 </TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __HALGPS0MAIN_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__HALGPS0MAIN_C__*/
+
+/**
+*\addtogroup HLINIT
+*\{
+*/
+
+/**
+*\fn void HALGPS0_01Init(void)
+*\brief initialisation of HALGPS module
+*
+* This function is call by HLINIT module when all services needed by HALGPS are started
+*/
+GLOBAL void HALGPS0_01Init(void);
+
+/**
+*\}
+*/
+
+/**
+*\addtogroup CGPS
+*\{
+*/
+
+/**
+*\fn void HALGPS0_05UTCCorrupted(void)
+*\brief Function call when UTC is corrupted
+*
+* When this function is called the UTC calibration file (difference between GPS UTC and local UTC) is deleted
+* 
+*/
+GLOBAL void HALGPS0_05UTCCorrupted(void);
+
+/**
+*\fn e_halgps_state HALGPS0_06Start(void)
+*\brief Activate GPS module
+*
+* The reset pin of GPS module is controlled by a GPIO\n
+* This function activate this GPIO\n
+*
+* \return halgps state ok/already running....
+* \see e_halgps_state
+*/
+GLOBAL e_halgps_state HALGPS0_06Start(void);
+
+/**
+*\fn e_halgps_state HALGPS0_07Stop(void)
+*\brief Deactivate GPS module
+*
+* The reset pin of GPS module is controlled by a GPIO\n
+* This function deactivate this GPIO\n
+* 
+* \return halgps state ok/already stopped....
+* \see e_halgps_state
+*/
+GLOBAL e_halgps_state HALGPS0_07Stop(void);
+
+/**
+*\fn void HALGPS0_08Reset(void)
+*\brief Reset the GPS module
+*
+* The GPIO is used to reset the GPS module\n
+* Stop GPS module, wait 500 ms, and start the GPS module\n
+* 
+*/
+GLOBAL void HALGPS0_08Reset(void);
+
+/**
+*\fn bool HALGPS0_13TATGetInfo(t_HALGPSTatInfo * pp_Info)
+*\brief  get Information about HALGPS and hardware version
+*
+* this function return sysol version number, GPS Firmware Version, GPS BaseBand Version, RF Version, Patch Version.
+*
+* \param pp_Info pointer on t_HALGPSTatInfo structure where the data provide by halgps are stored\n
+* \return TRUE if the information are retrieved.
+* \see t_HALGPSTatInfo
+*/
+bool HALGPS0_13TATGetInfo(t_HALGPSTatInfo * pp_Info);
+
+/**
+*\fn void HALGPS0_14Sleep(bool vp_SleepOnOff)
+*\brief  advert HALGPS that the GPS chip go in the sleep mode
+*
+* This function used to allow or forbidden the sysol sleep
+*
+*/
+void HALGPS0_14Sleep(bool vp_SleepOnOff);
+
+/**
+*\fn void HALGPS0_15SetSystemPath(uint8_t * pp_DirPath)
+*\brief this function set the system path
+*
+*/
+void HALGPS0_15SetSystemPath(uint8_t * pp_DirPath);
+
+
+/**
+*\fn void HALGPS0_16FlushRxBuffer(void);
+*\brief this function clears receive buffers when GPS is in sleep/coma mode
+*
+*/
+void HALGPS0_16FlushRxBuffer(void);
+
+/* +LMSqc06482 : Production test */
+#ifdef CGPS_CNO_VALUE_FTR
+/**
+*\fn void HALGPS0_17QuickStart(void)
+*\brief Start the chip for test mode, it must be used only to get the CNO value in production test.
+*
+*/
+void HALGPS0_17QuickStart(void);
+
+/**
+*\fn void HALGPS0_18QuickStop(void)
+*\brief Stop the chip after test mode, it must be used only to get the CNO value in production test.
+*
+*/
+void HALGPS0_18QuickStop(void);
+#endif /* CGPS_CNO_VALUE_FTR */
+/* -LMSqc06482 : Production test */
+
+/**
+*\}
+*/
+
+/**
+*\addtogroup DBGMAN
+*\{
+*/
+
+
+/**
+*\fn void HALGPS0_19DeleteUTCCalibStore(void)
+*\brief Deletes the GPS_UTC_Calib.bin file.
+*
+*/
+void HALGPS0_19DeleteUTCCalibStore(void);
+
+#undef GLOBAL
+#endif /* __HALGPS_HEP__ */

@@ -1,0 +1,21 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MM_MAKEFILES_DIR)/VideoNmfConfig.mk
+
+COMPONENT_TOP_DIR=../..
+
+INSTALL_COMPONENTS = debug.mpc.dsp_printf debug.mpc.printf_type 
+## Request sources to be installed along with .conf
+INSTALL_NMF_COMP_SRC=true
+
+ITF_PREFIX := video_debug_dsp_printf
+
+COMPONENTS+= debug.mpc.dsp_printf 
+
+MPC2USERITFS_CPP += debug.mpc.api.msg 
+
+ITFS_HEADER = debug.mpc.api.printf
+
+include $(MM_MAKEFILES_DIR)/VideoNmfRules.mk
+

@@ -1,0 +1,130 @@
+*****************************
+* Nomadik Kernel 0.7.0      *
+*****************************
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World, User Guide, MP3, User Fifo)
+ 	- Documentations (User guide, programming model, CM API, DSP API)
+ 		User guide not fully in line with delivery
+
+Supported target:
+	- Stn8810 SAA
+	- STn8815 SAA & SVA
+
+Changes:
+--------
+- [Tools] inclusion of ".h" and usage of C defined types no more allowed in interface declaration language.
+- [Tools] Allow recognition of Memory qualifier on pointer & allow definition of array type in typedef 
+- [Tools] Added option OVERWRITTEN_CFLAGS support (today for internal use only)
+- [Tools] Updated to be compliant with new CM and EE file trees
+- [Tools] Updated skels/stubs generators to be compliant with new communication scheme
+- [Tools] Adding support to new constructor interface type (controller.constructor -> lifecycle.constructor)
+- [Tools/EE] Constructor interface exports construct method (instead of init) 
+- [Tools] Trace visualizer debug tool available from codex as Eclipse Update site
+	https://codex.cro.st.com/plugins/docman/?group_id=598&action=show&id=4072
+	
+- [CM] new communication scheme
+- [CM] new file tree (clear separation of userfifo from internal NMF fifo, saa vs sva factorization through semaphore virtual layer)
+- [CM] start of code cleaning
+- [CM] Added internal memory allocation error checking and propagation
+- [CM] Added error disassembling service (error/inc/error.h) 
+- [CM] new CM API (a sed script has been developped internally and can be provided as this):
+         + Added CM_BindComponentToVoid() API routine (used to bind a given interface of a given component to a void component (trash-like)
+         + API cleaning:
+                - t_comp_instance_handle -> t_cm_instance_handle
+                - t_interface_reference -> t_cm_interface_desc
+                - t_dsp_id -> t_nmf_core_id (ARM_CORE -> ARM_CORE_ID, SVA_DSP -> SVA_CORE_ID, SAA_DSP -> SAA_CORE_ID)
+                - CM_UnConnectXXX() -> CM_DisconnectXX() (Warning: CM_DisconnectHostAsFifoPusher/Poper take now two new parameters (those given for CM_ConnectXXX)
+                - CM_CreateFifo() takes now t_nmf_core_id instead of t_dsp_id
+                - t_cm_dsp_memory_type has been updated to discriminate 16-bit and 24-bit DSP memory spaces
+                - CM_Init() API has been updated (merging of hw mapping and adding cm configuration (today size of SDRAM pgm and data segments)
+                - t_nk_trace_desc -> t_cm_trace_desc
+                - t_nk_osal_desc -> t_cm_osal_desc
+         + Added NMFCALL/NMFMETH macros to ease Host2Dsp interface call and Dsp2Host callback declaration
+- [CM] Unbind and destroy component implemented
+
+- [EE] new communication scheme
+- [EE] new file tree (saa vs sva factorization through semaphore virtual layer)
+- [EE] Updated to support constructor interface renaming (type (controller -> lifecycle) AND method (init -> construct)
+
+- [Examples] Examples common makefiles have been updated to support absolute pathes to override NMF_DELIVERY_PATH, NMF_EXAMPLEs_PATH and/or MPU_OSI_PATH
+- [Examples] Examples common makefiles have been updated to support STn8810
+- [Examples] Examples common makefiles have been updated to provide automatic current configuration display
+- [Examples] Added Error disassembling service use
+- [Examples] Updated to use of NMFCALL/NMFMETH macros  
+
+Bug fixes:
+----------
+- [Tools] Defects correction: #19336, #19789, #19947, #20024, #20175, #20202, #20874, #20916, #21144, #22287 
+- [Tools] Corrected internal defect: incorrect dependency computation 
+- [Tools] Corrected internal defect: erroneous enum typedef name reference into generated binding components
+
+- [CM] Defects correction: #20030, #20069, #20080, #20092, #20563
+
+Notes:
+------
+	- MMDSP debugger not component aware in MMDSP toolset 3.0.x
+
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested and allowed only in composite 
+		component not though Component manager API (will be available in M2 Milestone)
+	- Inter-DSP distribution not supported due to hardware limitation
+		Will be fixed in STn8815B0
+	- Only the 24bits mode supported on DSP
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one segment only
+		
+	- Safe reconfiguration will be available in M2 Milestone
+	    User must check itself network activity before reconfigure it
+	- Memory allocator don't manage alignement 
+		Must be done manually (alignement will be available in M2 Milestone)
+		
+	- MP3 example
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectonics
+
+Pre-requires:
+-------------
+	- At least MMDSP toolset 3.0.3 must be used (http://gnx1227.gnb.st.com:8080/releases/release_list.php)
+		MMDSP debugger not component aware
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 
+		(also installed by the MMDSP toolset 3.x)
+		(also available for downloading on https://codex.cro.st.com/projects/nomadikkernel/)
+   	- Gnu tools, 
+		* On Linux, installed by default
+		* On Windows, you must install either:
+			+ CygWin
+			+ MinGW/MSYS (http://www.mingw.org)
+				MSYS-1.0.10.exe (at least)
+				MinGW-4.1.0.exe (at least)
+				(also available for downloading on https://codex.cro.st.com/projects/nomadikkernel/)
+        
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		DSP: SAA & SVA
+			* For NVK10 platform, ESRAM data are mapped to SDRAM segments as no ESRAM on 8810
+		Execution Engine: Synchronous, Hybrid
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-DSP
+			asynchronous intra-DSP
+			ARM -> DSP
+			DSP -> ARM
+			error management
+		* Memory 
+			Alloc and free
+		* Misc
+			Attributes and properties
+	- Test report available in Codex download files
+

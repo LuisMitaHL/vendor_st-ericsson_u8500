@@ -1,0 +1,203 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+ 
+Release number: 1.9.2 "La Guignolette"
+Date:           July 24th, 2009
+
+Author:         Jean-Philippe Fassino & NMF Team    
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+    Release number: See bellow
+
+1.2 Board configuration supported:
+
+    - STn8815 SAA & SVA
+        * Cut A0
+            Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        * Cut B0
+        * Cut C0
+    - STn8820 SAA & SVA & SIA 
+        * Cut A0
+    - STn8500 SVA & SIA
+        * SVP 
+            2.2 (Argc/Argv not supported)
+            2.3.0
+            2.4.1
+        * PEPS 8500
+            PEPS SIA with an ED mapping + MMDSP V1
+        * MOP500-ED
+            Only flash board without normal application in flash image 
+              (use -Normal_Appli 0 on command line flasher)
+
+1.3 Board configuration unsupported:
+
+    - STn8500 SVA & SIA
+        * SVP 2.0 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+            STM IP trace not available          
+        * SVP 2.1 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+        * MOP500-ED
+            Board not flash or flash with normal application in flash image
+
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version: 
+        - RVCT 2.2-sp1-593 for 8815 & 8820 
+        - RVCT 4.0 for 8500
+    
+    MMDSP compiler version
+        - MMDSP Toolset 4.2.0
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - Launcher 1.2.3
+    - MMENV 1.3.12
+    - Platform script 1.1.2
+    
+    - Lauterbach trace32 prod6.5.3_p20090527
+    
+    - Java SE Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)      
+
+
+3   RELEASE CONTENT
+
+    - Component Manager
+
+    - Execution Engine
+        Private CM channel for distribution thread is now create in same thread as rest of hostee
+        init (and no more in distribution thread).
+
+    - Think
+
+    - LOS
+
+
+3.1 Component Manager
+
+3.2 MPC Execution Engine
+
+3.3 Host Execution Engine
+    
+    Create CM private channel for distribution channel is no more done in distribution thread. This
+    channel creation is done in same time as the initialization of smpee.
+
+3.4 OS integration guidelines
+
+3.5 Tools
+
+3.6 Programming model
+
+3.7 Think
+
+3.8 Linux & Symbian
+    
+    See dedicated release notes included in the respective package for more informations .
+
+
+3.9 Examples
+
+3.10 Packaging
+    
+    - Correct mmtools package
+        - list of supported platforms corrected
+        - make install corrected
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    23480   Code deferencing channel after channel close can lead to crash
+
+4.2 Active defect list
+
+    21851   Asynchronously bound composite component : trace contains corrupted 'this' addresses
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+    
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+    
+    For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+    
+5.3 Installation
+
+    Automatic installation using mmtools
+        update your components file with the correct package versions
+        mmtools extract
+    Manual installation
+        * untar mmenv package into any location: <MMENV>
+            tar xzvf mmenv-x.y.z.tgz
+        * set MMENV_PATH environment variable to point to the mmenv location
+            setenv MMENV_PATH <MMENV>
+        * see mmenv documentation on how to set the target platform
+            e.g. PLATFORM=ndk15b06-think 
+        * create a NMF directory 
+            mkdir <NMF_ROOT>
+        * go in this directory 
+            cd <NMF_ROOT>
+        * untar tools and Think package
+            tar xvfz nmf_tools-Vx.y.z.tgz
+            tar xvfz nmf_think-Vx.y.z.tgz
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+6.2 Code Static analysis result
+
+    Not done.
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Not done.
+
+6.4 Confidentiality safe
+
+
+7   DOCUMENTS
+    
+    Test report available at:
+        http://gnx2487:9000/
+
+    Source codes can be found in :
+        Clearcase
+            /vobs/nmf
+        Codex SVN site: 
+            http://codex.cro.st.com/svn/?group_id=598

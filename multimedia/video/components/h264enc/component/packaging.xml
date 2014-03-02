@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/**" />
+    <include name="Make*" />
+    <include name="make.ost_conf" />    
+    <include name="inc/autogentraces/*.xml" />
+    <include name="fixed_id.txt"/>
+  </fileset>
+
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+	<include name="proxy_ddep/inc/**.h"/>
+        <include name="proxy_ddep/lib/**"/>
+        <include name="proxy_ddep/Make.proxy"/>
+        <include name="proxy_ddep/Makefile"/>
+    </fileset>
+  </package>
+  
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+	<include name="proxy_ddep/inc/**.h"/>
+	<include name="proxy_ddep/src/**.cpp"/>
+  	<include name="proxy_ddep/Make.proxy"/>
+  	<include name="proxy_ddep/Makefile"/>
+    </fileset>
+  </package>
+  
+  <package name="arm-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+	<include name="arm_nmf/**"/>
+  	<exclude name="arm_nmf/**.c"/>
+        <exclude name="arm_nmf/**.c_"/>
+  	<exclude name="arm_nmf/**.cpp"/>
+  	<exclude name="arm_nmf/test_appli/**"/>
+  	<include name="nmf_repository/cortexA9-**"/>
+   </fileset>
+  </package>
+  <package name="arm-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+       <include name="arm_nmf/**"/>
+       <exclude name="arm_nmf/test_appli/**"/>
+       <exclude name="nmf_repository/cortexA9-**"/>
+    </fileset>
+  </package>
+  
+  <package name="mmdsp-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+	  <include name="mpc/**"/>
+	  <exclude name="mpc/algo/inc/**"/>
+          <exclude name="mpc/algo/src/**"/>
+	  <exclude name="mpc/algo_hdtv/inc/**"/>
+          <exclude name="mpc/algo_hdtv/src/**"/>
+	  <exclude name="mpc/adapter/inc/**"/>
+          <exclude name="mpc/adapter/src/**"/>
+	  <exclude name="mpc/ddep/inc/**"/>
+	  <exclude name="mpc/ddep/src/**"/>
+	  <exclude name="mpc/main/**"/>
+	  <exclude name="mpc/mtf/inc/**"/>
+	  <exclude name="mpc/mtf/src/**"/>
+          <include name="nmf_repository/mmdsp_**"/>
+    </fileset>
+  </package>
+
+  <package name="mmdsp-proc-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+    </fileset>
+  </package>
+  
+</packages>

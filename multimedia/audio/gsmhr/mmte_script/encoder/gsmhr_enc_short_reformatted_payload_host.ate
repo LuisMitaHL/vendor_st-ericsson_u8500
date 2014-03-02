@@ -1,0 +1,26 @@
+OMX_GetHandle       $1 OMX.ST.AFM.encoder.gsmhr_host
+OMX_SetParameter    $1 OMX_IndexParamAudioGsm_HR nPortIndex=1 bDTX=OMX_FALSE
+OMX_SetParameter    $1 OMX_IndexParamAudioPcm nPortIndex=0 eEndian=OMX_EndianLittle
+MMTE_CheckParameter $1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eChannelMapping[0]=OMX_AUDIO_ChannelCF eEndian=OMX_EndianLittle
+OMX_SetParameter    $1 OMX_IndexParamPortDefinition nPortIndex=0 format.audio.bFlagErrorConcealment=OMX_FALSE
+
+if $2 == input_reference
+alias INPUT_FILE    $(AUDIO_STREAMS)/gsmhr/streams/short/short.inp
+ate_attach_io       $1 0 MEM $(INPUT_FILE) 0 0 0
+test_property       input_file $(AUDIO_STREAMS)/gsmhr/streams/short/short.inp
+endif
+
+if $3 == output_reference
+alias OUTPUT_FILE   $(OUTPUT_DIR)/gsmhr_enc_nodtx_host.out
+alias OUTPUT_SIZE   4800
+ate_attach_io       $1 1 MEM $(OUTPUT_FILE) $(OUTPUT_SIZE) 0 0
+test_property       output_file $(OUTPUT_DIR)/gsmhr_enc_nodtx_host.out
+alias REF_FILE      $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec
+test_property       ref_file $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec
+alias REF_DIGEST    $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec_digest.hash
+test_property       ref_digest $(AUDIO_STREAMS)/gsmhr/streams/short/short.reformatted_payload.dec_digest.hash
+endif
+
+if $2 == output_record
+ate_attach_io       $1 1 MEM $(OUTPUT_DIR)/gsmhr_enc_nodtx.rec 40000 0 0
+endif

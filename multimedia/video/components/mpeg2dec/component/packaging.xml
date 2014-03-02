@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/**" />
+    <include name="Make*" />
+    <include name="make.ost_conf" />    
+    <include name="inc/autogentraces/*.xml" />
+  </fileset>
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+        <include name="proxy/inc/*.h" />
+        <include name="proxy/lib/**"/>
+        <include name="proxy/Make.proxy"/>
+        <include name="proxy/Make.stubskel"/>
+        <include name="proxy/Makefile"/>
+    </fileset>
+  </package>
+  
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="proxy/inc/*.h" />
+      <include name="proxy/src/*.cpp" />
+      <include name="proxy/Make.proxy"/>
+      <include name="proxy/Make.stubskel"/>
+      <include name="proxy/Makefile"/>
+    </fileset>
+  </package>
+  
+  <package name="arm-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+        <include name="arm_nmf/**"/>
+  	<exclude name="arm_nmf/**.c"/>
+  	<exclude name="arm_nmf/**.cpp"/>
+  	<include name="nmf_repository/cortexA9-**"/>
+    </fileset>
+  </package>
+
+  <package name="arm-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+       <include name="arm_nmf/**"/>
+       <exclude name="nmf_repository/cortexA9-**"/>
+    </fileset>
+  </package>
+
+  
+  <package name="mmdsp-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+	<include name="mpc/**"/>
+	<include name="nmf_repository/mmdsp_**"/>
+	<exclude name="mpc/ddep/inc/**" />
+	<exclude name="mpc/ddep/src/**" />
+	<exclude name="mpc/algo/inc/**" />
+	<exclude name="mpc/algo/src/**" />
+	<exclude name="mpc/main/**" />    
+    </fileset>
+  </package>
+  
+  
+  <package name="mmdsp-proc-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+    </fileset>
+  </package>
+  
+  
+</packages>
+
+

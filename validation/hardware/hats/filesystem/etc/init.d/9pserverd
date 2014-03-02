@@ -1,0 +1,50 @@
+#!/bin/sh
+case $1 in
+    start)
+		echo "Starting $0..."
+		asyncEventd -p 1030 &
+		if [ -n "$2" ] && [ "$2" == "-d" ]
+		then
+			9pserver -d -s -p 1024 &
+		else
+			9pserver -s -p 1024 &
+		fi
+		isListening=`netstat -l -t -n -p 2> /dev/null | grep 9pserver`
+		count=60
+		while [ -z "$isListening" ] && [ "$count" != "0" ]
+		do
+			sleep 1
+			isListening=`netstat -l -t -n -p 2> /dev/null | grep 9pserver`
+			count=`expr $count - 1`
+		done
+		if [ -n "$isListening" ]
+		then
+			mount -t 9p -oport=1024 127.0.0.1 /mnt/9p
+			echo "...done"
+		else
+			echo "...failed: timed out"
+		fi
+		;;
+    stop)
+		echo "Stopping $0..."
+		umount /mnt/9p 2> /dev/null
+		killall 9pserver
+		echo "...done"
+		;;
+	restart)
+		isRunning=`ps | grep 9pserver | grep -v ps`
+		if [ -n "$isRunning" ]
+		then
+			/etc/init.d/9pserverd stop
+		fi
+		/etc/init.d/9pserverd start $2
+		echo
+		;;
+    *)
+		echo "Usage:" >&2
+		echo -e "\t$0 start <-d>" >&2
+		echo -e "\t$0 stop" >&2
+		echo -e "\t$0 reststart <-d>" >&2
+		;;
+esac
+exit

@@ -1,0 +1,31 @@
+LOCAL_PATH := $(call my-dir)
+PV_TOP := $(LOCAL_PATH)/../../../
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := ste_omx_interface.cpp
+
+LOCAL_MODULE := libsteomx_sharedlibrary
+
+LOCAL_ARM_MODE := arm
+
+# The 'showcommands' goal says to show the full command
+# lines being executed, instead of a short message about
+# the kind of operation being done.
+SHOW_COMMANDS:= $(filter showcommands,$(MAKECMDGOALS))
+
+LOCAL_CFLAGS :=  $(PV_CFLAGS)
+
+LOCAL_C_INCLUDES := \
+	$(PV_TOP)/extern_libs_v2/khronos/openmax/include \
+	$(PV_INCLUDES)
+
+#$(call add-prebuilt-files, ETC, myomxcore.cfg)
+
+LOCAL_PRELINK_MODULE := false
+
+LOCAL_SHARED_LIBRARIES := \
+	libdl \
+	libcutils
+
+include $(BUILD_SHARED_LIBRARY)
+

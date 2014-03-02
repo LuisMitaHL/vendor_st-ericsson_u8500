@@ -1,0 +1,415 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPS_HEM__
+#define __CGPS_HEM__
+
+/**
+* \file cgps.hem
+*
+* <B>Description:</B> This file contains all external macros required and provided by CGPS
+* 
+*/
+
+
+/**
+* \addtogroup CGPS_AppliSession_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                          Positioning Session related APIs                                   */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/**
+* \def MC_CGPS_SERVICE_START
+* \brief Starts the GPS Service by registering the application. Application needs to be registered before placing the positioning request.
+* \see CGPS0_10ServiceStartReq
+*/
+#define MC_CGPS_SERVICE_START               CGPS0_10ServiceStartReq
+
+
+/**
+* \def MC_CGPS_SERVICE_START_2
+* \brief Starts the GPS Service by registering the application with its details. Application needs to be registered before placing the positioning request.
+* \see CGPS0_73ServiceStartReq2
+*/
+#define MC_CGPS_SERVICE_START_2               CGPS0_73ServiceStartReq2
+
+
+/**
+* \def MC_CGPS_SERVICE_STOP
+* \brief De-registers the application that has been registered. If this is the only user then this will stop the GPS.
+* \see CGPS0_11ServiceStopReq
+*/
+#define MC_CGPS_SERVICE_STOP                CGPS0_11ServiceStopReq
+
+
+/* +LMSqb93565 */             
+/**
+* \def MC_CGPS_REGISTER_FIX
+* \brief Registers configuration for an application requesting for a fix with specfied QoP. Updates are returned with defined period until timeout or QoP satisfied
+* \see CGPS0_05RegisterFix
+*/
+#define MC_CGPS_REGISTER_FIX                CGPS0_05RegisterFix
+/* -LMSqb93565 */
+
+
+/**
+* \def MC_CGPS_REGISTER_PERIODIC_FIX
+* \brief  Registers a periodic fix for the application
+* \see CGPS0_12RegisterPeriodicFix
+*/
+#define MC_CGPS_REGISTER_PERIODIC_FIX       CGPS0_12RegisterPeriodicFix
+
+
+/**
+* \def MC_CGPS_REGISTER_SINGLE_SHOT_FIX
+* \brief  Registers a single shot fix for the application
+* \see CGPS0_13RegisterSingleShotFix
+*/
+#define MC_CGPS_REGISTER_SINGLE_SHOT_FIX    CGPS0_13RegisterSingleShotFix
+
+
+/**
+* \def MC_CGPS_REGISTER_FENCE_GEO_TARGET_AREA
+* \brief  Registers an application to get position reporting based on provided target area.
+* \see CGPS0_13RegisterSingleShotFix
+*/
+#define MC_CGPS_REGISTER_FENCE_GEO_TARGET_AREA      CGPS0_72RegisterGeoTargetAreaFence
+
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliGeneral_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                                   General APIs                                              */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/* + LMSqb92911 */
+/**
+* \def MC_CGPS_SAVE_NV_STORE
+* \brief Saves any Nav data collected to the NVStore
+* \see CGPS0_48SaveNVStore
+*/
+#define MC_CGPS_SAVE_NV_STORE             CGPS0_48SaveNVStore
+/* - LMSqb92911 */
+
+
+/*+ LMSqc13768 : DeleteGpsData */
+/**
+* \def MC_CGPS_DELETE_NV_STORE_FIELD
+* \brief Deletes the specified data items from the Non volatile store
+* \see CGPS0_62DeleteNVStoreFields
+*/
+#define MC_CGPS_DELETE_NV_STORE_FIELD     CGPS0_62DeleteNVStoreFields
+/*- LMSqc13768 : DeleteGpsData */
+
+/**
+* \def MC_CGPS_ENABLE_GPS
+* \brief  Enables GPS 
+* \see CGPS0_58EnableGps
+*/
+#define MC_CGPS_ENABLE_GPS                CGPS0_58EnableGps
+
+
+/**
+* \def MC_CGPS_DISABLE_GPS
+* \brief  Switches off / disables the GPS.
+* \see CGPS059_DisableGps
+*/
+#define MC_CGPS_DISABLE_GPS               CGPS0_59DisableGps
+
+
+/**
+* \def MC_CGPS_INIT
+* \brief RTK calls the API once the CGPS process is created
+* \see CGPS0_00Init
+*/
+#define MC_CGPS_INIT                      CGPS0_00Init
+
+
+/**
+* \def MC_CGPS_DEINIT
+* \brief RTK calls the API once the Mobile is shuting down
+* \see CGPS0_09Deinit
+*/
+#define MC_CGPS_DEINIT                    CGPS0_09Deinit
+
+
+/**
+* \def MC_CGPS_UTC_CORRUPTED
+* \brief Hardware layer calls the API once the UTC is corrupted
+* \see CGPS0_04UTCCorruptedInd
+*/
+#define MC_CGPS_UTC_CORRUPTED             CGPS0_04UTCCorruptedInd
+
+
+/**
+* \def MC_CGPS_EVENT_NOTIFICATION_CB_REGISTER
+* \brief Registers Notification callback for the application framework.
+* \see CGPS0_71EventNotificationRegister
+*/
+
+#define MC_CGPS_EVENT_NOTIFICATION_CB_REGISTER          CGPS0_71EventNotificationRegister
+
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliConfig_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                               Configuration APIs                                            */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/**
+* \def MC_CGPS_UPDATE_USER_CONFIGURATION
+* \brief Updates the user configuration parameters specified.
+* Parameters include solution supported features \ref e_cgps_ConfigBitMask 
+* Also settings for SUPL configuration such as Bearer, SLP address can be set.
+* Also configuration for GPS - Sensitivity Mode, Sensitivity TTFF & Power Usage preference.
+* \see t_cgps_Config
+* \see CGPS0_45UpdateUserConfiguration
+*/
+#define MC_CGPS_UPDATE_USER_CONFIGURATION          CGPS0_45UpdateUserConfiguration
+
+
+
+/**
+MC_CGPS_UPDATE_PLATFORM_CONFIGURATION
+* \brief  Updates the configuration parameters that are set specific to platform. 
+* Platform settings include GPS power settings in terms of Sleep, Coma & Deep Coma duration, Assistance request parameters.
+* \see CGPS0_69UpdatePlatformConfiguration
+*/
+#define MC_CGPS_UPDATE_PLATFORM_CONFIGURATION      CGPS0_69UpdatePlatformConfiguration
+
+
+
+/**
+MC_CGPS_UPDATE_TRACE_CONFIGURATION
+* \brief  Updates the trace configuration parameters for a paticular source. \ref e_cgps_TraceSource
+* Trace configuration includes file/console output settings along with max file size, severity, time stamping.
+* \see CGPS0_80UpdateTraceConfiguration
+*/
+#define MC_CGPS_UPDATE_TRACE_CONFIGURATION         CGPS0_80UpdateTraceConfiguration
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliAGPS_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                                    AGPS APIs                                                */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/***********************************************************************************************/
+/*                                    Control Plane                                            */
+/***********************************************************************************************/
+#ifdef AGPS_FTR
+/**
+* \def MC_CGPS_ECALL_START
+* \brief API to intimate CGPS emergency call is started. API starts GPS service in expectation of NI positioning request.
+* API is optional and will improve performance if called.
+* \see CGPS0_42ECall_Start
+*/
+#define MC_CGPS_ECALL_START                  CGPS0_42ECall_Start
+
+
+/**
+* \def MC_CGPS_ECALL_STOP
+* \brief API to intimate CGPS emergency call is stopped.
+* \see CGPS0_43ECall_Stop
+*/
+#define MC_CGPS_ECALL_STOP                   CGPS0_43ECall_Stop
+#endif /* AGPS_FTR */
+
+
+/***********************************************************************************************/
+/*                                       User Plane                                            */
+/***********************************************************************************************/
+/* ++ LMSqb95626    ANP 03/07/2009 */
+/* ++ LMSqb93693 */
+#ifdef AGPS_UP_FTR
+
+
+/**
+* \def MC_CGPS_DATA_CNT_NOTIFICATION_CB_REGISTER
+* \brief  Registers Data connection Notification callback for the user
+* \see CGPS0_51DataCntNotificationRegisterReq
+*/
+#define MC_CGPS_DATA_CNT_NOTIFICATION_CB_REGISTER    CGPS0_51DataCntNotificationRegisterReq
+/* -- LMSqb93693 */
+/* -- LMSqb95626    ANP 03/07/2009 */
+
+
+/* ++ LMSqc00847    ANP 14/07/2009 */
+/**
+* \def MC_CGPS_UPDATE_CERTIFICATE
+* \brief  Updates the SUPL Certificate for establishing secure session.
+* \see CGPS0_50UpdateCertificate
+*/
+#define MC_CGPS_UPDATE_CERTIFICATE                  CGPS0_50UpdateCertificate
+
+
+/* + LMSQC16384 : LMSQC16386 SUPL WAP Push */
+/**
+* \def MC_CGPS_SUPL_PUSH
+* \brief  Indicates a WAP Push having SUPL INIT message has been sent by network
+* \see CGPS5_27SuplPush
+*/
+#define MC_CGPS_SUPL_PUSH                           CGPS5_27SuplPush
+/* - LMSQC16384 : LMSQC16386 SUPL WAP Push */
+
+
+
+/**
+* \def MC_CGPS_INIT_SUPL
+* \brief Hinit calls this API once the registering phase is finished (all network informations are available) 
+* \see CGPS0_27InitSupl
+*/
+#define MC_CGPS_INIT_SUPL                           CGPS0_27InitSupl
+
+#endif /* AGPS_UP_FTR*/
+/* -- LMSqc00847    ANP 14/07/2009 */
+
+
+/***********************************************************************************************/
+/*                          AGPS - User & Control Plane                                        */
+/***********************************************************************************************/
+#if defined(AGPS_UP_FTR) || defined(AGPS_FTR)
+/**
+* \def MC_CGPS_NOTIFICATION_CB_REGISTER
+* \brief Registers Notification callback for the application framework.
+* \see CGPS0_21NotificationRegisterReq
+*/
+#define MC_CGPS_NOTIFICATION_CB_REGISTER     CGPS0_21NotificationRegisterReq
+
+/**
+* \def MC_CGPS_NOTIFICATION_USER_ANSWER
+* \brief Returns the user answer of a notification message 
+* \see CGPS0_22NotificationUserAnswerReq
+*/
+#define MC_CGPS_NOTIFICATION_USER_ANSWER     CGPS0_22NotificationUserAnswerReq
+
+/*+CR_LMSQCMOLR_FTR*/
+/**
+* \def MC_CGPS_REGISTER_LOCATION_FORWARD
+* \brief Forwards the user's location to third party through Control Plane or SUPL channels
+* \see CGPS0_67RegisterLocationForward
+*/
+#define MC_CGPS_REGISTER_LOCATION_FORWARD     CGPS0_67RegisterLocationForward
+
+/**
+* \def MC_CGPS_REGISTER_LOCATION_RETRIEVE
+* \brief  Registers an application to retrieve the target SET location
+* \see CGPS0_76RegisterLocationRetrieval
+*/
+#define MC_CGPS_REGISTER_LOCATION_RETRIEVE     CGPS0_76RegisterLocationRetrieval
+
+/*-CR_LMSQCMOLR_FTR*/
+
+#endif /* AGPS_UP_FTR || AGPS_FTR*/
+
+/**
+*\}
+*/
+
+/**
+* \addtogroup CGPS_AppliTest_Functions
+*\{
+*/
+
+/***********************************************************************************************/
+/***********************************************************************************************/
+/*                                      Test    APIs                                           */
+/***********************************************************************************************/
+/***********************************************************************************************/
+
+/**
+* \def MC_CGPS_NMEA_TEST_CONTROL
+* \brief Sends navigation data to GPS lib from another module.
+* \see CGPS0_28NmeaTestCtrlReq
+*/
+#define MC_CGPS_NMEA_TEST_CONTROL                  CGPS0_28NmeaTestCtrlReq
+
+
+/**
+* \def MC_CGPS_TEST_REGISTER_CALLBACK_FOR_ALL
+* \brief Registers an application to receive all information once application is registered TEST USE ONLY.
+* \see CGPS0_35TestRegisterForAll
+*/
+#define MC_CGPS_TEST_REGISTER_CALLBACK_FOR_ALL     CGPS0_35TestRegisterForAll
+
+
+#ifdef AGPS_UP_FTR
+/**
+* \def MC_CGPS_SMS_PUSH_TEST
+*\brief Sends a SMS payload to the SUPL library.
+* \see CGPS5_17SmsPushTest
+*/
+#define MC_CGPS_SMS_PUSH_TEST                      CGPS5_17SmsPushTest
+#endif /* AGPS_UP_FTR */
+
+/**
+*\}
+*/
+
+
+
+/* +LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+#ifdef CR_LMSQC18522_CPR
+/**
+* \def MC_CGPS_HWL_INIT
+* \brief Hlinit calls this API once initialisation is done so that CGPS Init can be completed
+* \see CGPS0_61LaunchInit
+*/
+#define MC_CGPS_HWL_INIT                       CGPS0_61LaunchInit
+#endif /* CR_LMSQC18522_CPR */
+/* -LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+
+
+#if defined (AGPS_TEST_MODE_FTR)
+/**
+* \def MC_CGPS_PRODUCTION_TEST_START
+*\brief Production Test Start required calls this API when required Test mask and TestRequest paramater.
+* \see CGPS0_78ProductionTestStartReq
+*/
+#define MC_CGPS_PRODUCTION_TEST_START            CGPS0_78ProductionTestStartReq
+
+/**
+* \def MC_CGPS_PRODUCTION_TEST_STOP
+*\brief Production Test Stop required calls this API when required Test mask and Status paramater.
+* \see CGPS0_79ProductionTestStopReq
+*/
+#define MC_CGPS_PRODUCTION_TEST_STOP            CGPS0_79ProductionTestStopReq
+
+#endif
+
+#endif  /* __CGPS_HEM__ */

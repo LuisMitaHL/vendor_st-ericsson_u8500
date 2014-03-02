@@ -1,0 +1,38 @@
+
+if analyzer()
+(
+	etm.off
+	trace.method analyzer
+	if "&EtmPortSize"!=""
+		etm.portsize &EtmPortSize
+	else
+		etm.portsize 8.
+		
+	if ID.PREPRO()==70			;LA-7991
+	(
+		etm.portmode WRAPPED
+	)
+	else ID.PREPRO()==71			;LA-7992
+	(
+		etm.portmode CONTINUOUS
+	)
+	etm.traceid 3.
+	etm.tracepriority 1.
+			
+	if "&AccDataTrace"==""
+		etm.datatrace off
+	else
+		etm.datatrace &AccDataTrace
+	
+	if "&EtmAcc"=="False"
+		etm.off
+	else
+		etm.on
+	
+	if "&UseAttach"=="TRUE"
+		t.arm
+	
+	
+)
+
+enddo

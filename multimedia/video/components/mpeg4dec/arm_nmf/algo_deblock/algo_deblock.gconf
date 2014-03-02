@@ -1,0 +1,16 @@
+primitive mpeg4dec.arm_nmf.algo_deblock
+{
+provides lifecycle.constructor                              as constructor
+provides mpeg4dec.arm_nmf.api.algo_deblock                        as iAlgoDeblock
+#ifndef __ndk5500_a0__
+requires mpeg4dec.arm_nmf.api.end_algodeblock                    as oEndAlgoDeblock
+sources src/algo_deblock.cpp
+sources src/videocodecProfile_three_Filter.c
+option CPPFLAGS "-D__NMF -DNEW_DBLK -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/algo_deblock/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt"  
+#else
+requires mpeg4dec.arm_nmf.api.end_algo                    as oEndAlgoDeblock
+sources src/algo_deblock.cpp
+option CPPFLAGS "-D__NMF -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/algo_deblock/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt"  
+#endif
+
+}

@@ -1,0 +1,347 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: init_sxa_prcmu_debug.cmm        #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2009-05-19
+
+;==============================================================
+; = = = INFORMATIONAL HEADER = = =
+;------------------------------------
+; This script summarizes the necessary memory accesses for setting up SxA or XP70[PRCMU] debug.
+; This is to be used in the case no application running on ARM is handling it.
+;
+; Syntax : 
+;	This script is very flexible, only 2 syntax rules to follow:
+;		-> Use cores identifiers : I=SIA, V=SVA, P=PRCMU
+;		-> Use only 1 argument (don't use space as cores_id separator!)
+;   example :
+; 	9540V1 : do init_sxa_prcmu_debug.cmm V1 SVA_SIA_PRCMU
+;------------------------------------
+
+entry &target_version &soc_cores &mmip_init
+
+&verbose=0 ; force display info about EPOD_C, PRCM_MMIP_LS_CLAMP & APE_RESETN values
+if ("&mmip_init"=="")
+(
+	&mmip_init=0
+)
+
+&soc_cores=string.upr("&soc_cores")
+&target_version=string.upr("&target_version")
+print ""
+
+if ("&target_version"!="V1")
+(
+	print "ERROR : wrong platform type [&target_version] for 1st argument > [V1] <"
+	enddo
+)
+
+if ("&soc_cores"=="")
+(
+	print "WARNING : No core specified (SIA,SVA,PRCMU)..."
+)
+
+; ---- Activate signals for Debug of SxA and XP70[prcmu]
+
+tronchip.set undef off ; To avoid stopping on vector interrupt during NMF Init
+
+if ("&target_version"=="V1")
+(
+	; turnOffXp70HsemInterrupt
+	data.set eahb:0x80157174 %long (1<<21)
+   	data.set eahb:0x80157174 %long (1<<22)
+
+	if &mmip_init==1
+	(
+		print "9540 SoC init for MultiMedia IPs debug"
+		print "--------------------------------------"
+		data.set eahb:0x801571E4 %long 0x0F7E7FFF ; PRCM_APE_RESETN_SET - release resets of ALL blocks within 8500
+		data.set eahb:0x801571FC %long 0x00000007 ; PRCM_MOD_RESETN_SET - reset of modem is armful for JTAG chain stability
+		data.set eahb:0x80157208 %long 0x0003FFFF ; PRCM_GPIO_RESETN_SET - needed by Trace tests
+		data.set eahb:0x80157214 %long 0x00000001 ; PRCM_4500_RESETN_SET
+		data.set eahb:0x80157324 %long 0x00000007 ; PRCM_DSI_SW_RESET
+		data.set eahb:0x80158040 %long 0x0000003F ; PRCM_PERIPH4_RESETN_SET
+
+
+		// PERIPH CLOCK PROGRAMMATION
+
+		data.set eahb:0x80157004 %long 0x124 ; PRCM_ACLK_MGT
+		data.set eahb:0x80157000 %long 0x124 ; PRCM_ARMCLKFIX_MGT
+		data.set eahb:0x80157074 %long 0x121 ; PRCM_DMACLK_MGT
+		data.set eahb:0x80157078 %long 0x125 ; PRCM_B2R2CLK_MGT
+		data.set eahb:0x80157008 %long 0x1124 ; PRCM_SVAMMDSPCLK_MGT
+		data.set eahb:0x8015700c %long 0x1124 ; PRCM_SIAMMDSPCLK_MGT
+		data.set eahb:0x80157014 %long 0x143 ; PRCM_SGACLK_MGT
+		data.set eahb:0x80157018 %long 0x340 ; PRCM_UARTCLK_MGT
+		data.set eahb:0x8015701c %long 0x340 ; PRCM_MSP02CLK_MGT
+		data.set eahb:0x80157288 %long 0x340 ; PRCM_MSP1CLK_MGT
+		data.set eahb:0x80157020 %long 0x14e ; PRCM_I2CCLK_MGT
+		data.set eahb:0x80157024 %long 0x14d ; PRCM_SDMMCCLK_MGT
+		data.set eahb:0x8015702c %long 0x126 ; PRCM_PER1CLK_MGT
+		data.set eahb:0x80157030 %long 0x126 ; PRCM_PER2CLK_MGT
+		data.set eahb:0x80157034 %long 0x126 ; PRCM_PER3CLK_MGT
+		data.set eahb:0x80157038 %long 0x126 ; PRCM_PER5CLK_MGT
+		data.set eahb:0x8015703c %long 0x126 ; PRCM_PER6CLK_MGT
+		data.set eahb:0x80157040 %long 0x128 ; PRCM_PER7CLK_MGT
+		data.set eahb:0x80157044 %long 0x148 ; PRCM_LCDCLK_MGT
+		data.set eahb:0x8015704c %long 0x124 ; PRCM_BMLCLK_MGT
+		data.set eahb:0x80157050 %long 0x146 ; PRCM_HSITXCLK_MGT
+		data.set eahb:0x80157054 %long 0x123 ; PRCM_HSIRXCLK_MGT
+		data.set eahb:0x80157058 %long 0x149 ; PRCM_HDMICLK_MGT
+		data.set eahb:0x8015705c %long 0x125 ; PRCM_APEATCLK_MGT
+		data.set eahb:0x80157064 %long 0x144 ; PRCM_MCDECLK_MGT
+		data.set eahb:0x80157068 %long 0x15d ; PRCM_IPI2CCLK_MGT
+		data.set eahb:0x8015707c %long 0x13d ; PRCM_TVCLK_MGT
+		data.set eahb:0x80157060 %long 0x125 ; PRCM_APETRACECLK_MGT
+		data.set eahb:0x80157028 %long 0x113e ; PRCM_SLIMCLK_MGT
+
+		data.set eahb:0x80157510 %long 0xFFFFFFFF ; PRCM_YYCLKEN0_MGT_SET - activate all clocks
+
+		data.set eahb:0x801570B0 %long d.l(eahb:0x801570B0)|0x3E0F8090 ; to set PRCMU & 8500_APE on internal 38Mhz clock
+		data.set eahb:0x801571e4 %long 0x80000 ; release DDR reset
+
+		;// enable RTC, RTT0/1, SCR and P4RTC clocks
+		;data.set eahb:0x801570b0 %long d.l(eahb:0x801570b0)|0xf8000
+		 
+		;//PLL ARM freq divider = 1
+		data.set eahb:0x80157118 %long 0x1
+
+		;//DSI TVCLK Escape clock dividers & enable
+		data.set eahb:0x8015752c %long d.l(eahb:0x8015752c)|0x7080808
+
+		;//DSI1 PLLOUT DIVSEL
+		data.set eahb:0x80157530 %long d.l(eahb:0x80157530)|0x700
+		data.set eahb:0x80157530 %long d.l(eahb:0x80157530)|0xFFFFFDFF
+		;//DSI0 PLLOUT DIVSEL
+		data.set eahb:0x80157530 %long d.l(eahb:0x80157530)|0x7
+		data.set eahb:0x80157530 %long d.l(eahb:0x80157530)|0xFFFFFFFD
+
+		;//PERIPH1 133 MHz 0x80120000-0x8012FFFF
+		data.set eahb:0x8012F000 %long 0xFFFFFFFF ; PRCC clk enable
+		data.set eahb:0x8012F008 %long 0xFFFFFFFF ; PRCC kernel enable
+		print "  Periph1 set"
+
+		;//PERIPH2 133 MHz 0x80110000-0x8011FFFF
+		data.set eahb:0x8011F000 %long 0xFFFFFFFF ; PRCC clk enable
+		data.set eahb:0x8011F008 %long 0xFFFFFFFF ; PRCC kernel enable
+		print "  Periph2 set"
+
+		;//PERIPH3 133 MHz 0x80000000-0x8000FFFF
+		data.set eahb:0x8000F000 %long 0xFFFFFFFF ; PRCC clk enable
+		data.set eahb:0x8000F008 %long 0xFFFFFFFF ; PRCC kernel enable
+		print "  Periph3 set"
+
+		print "  Periph4 set (always on - PRCMU)"
+
+		;//PERIPH5 133 MHz 0xA03E0000-0xA03FFFFF
+		data.set eahb:0xA03FF000 %long 0xFFFFFFFF ; PRCC clk enable
+		data.set eahb:0xA03FF008 %long 0xFFFFFFFF ; PRCC kernel enable
+		print "  Periph5 set"
+
+		;//PERIPH6 133 MHz 0xA03C0000-0xA03CFFFF
+		data.set eahb:0xA03CF000 %long 0xFFFFFFFF ; PRCC clk enable
+		data.set eahb:0xA03CF008 %long 0xFFFFFFFF ; PRCC kernel enable
+		print "  Periph6 set"
+		print "Done!"
+		print ""
+	)
+		
+	if string.find("&soc_cores","V")
+	(
+		print "Activation of MMDSP SVA"
+	
+		;; This part is inline with NMF TurnOnSva() function
+	
+		;; == Memory Clamping - mandatory to activate R/W on MMDSP TCMs
+		;=======================
+		&sva_sleep_ret_val=((d.l(eahb:0x80157304))>>4)&0x1	; Checking PRCM_SRAM_LS_SLEEP.SVA_MMDSP_SLEEP	
+		
+		if &sva_sleep_ret_val==1
+		(
+		
+			;; EPOD & Clamping management
+			;;---------------------------
+			;// PRCM_APE_RESETN_CLR
+			;data.set eahb:0x801571E8 %long 0x00003FF3
+			data.set eahb:0x801571E8 %long (1<<4) ; PRCM_APE_RESETN_SET.SVA_PIPE_L_RESETN='1'
+			data.set eahb:0x801571E8 %long (1<<5) ; PRCM_APE_RESETN_SET.SVA_MMDSP_L_RESETN='1'
+			data.set eahb:0x801571E8 %long (1<<6) ; PRCM_APE_RESETN_SET.SVA_PIPE_M_INITM='1'
+			data.set eahb:0x801571E8 %long (1<<7) ; PRCM_APE_RESETN_SET.SVA_MMDSP_M_INITN='1'
+			data.set eahb:0x801571E8 %long (1<<8) ; PRCM_APE_RESETN_SET.SVA_MMDSP_MRET_INITN='1'
+			wait 1s
+			
+			;// PRCM_EPOD_C_SET
+			;data.set eahb:0x80157410 %long 0x77BF05
+			data.set eahb:0x80157410 %long (1<<13.) ; PRCM_EPOD_C_SET.SVA_MM_M_ON='1'
+			wait 10ms ; wait for PRCM_EPOD_VOK.SVA_MM_MRET_VOK='1' &  PRCM_EPOD_VOK.SVA_MM_M_VOK='1'
+			data.set eahb:0x80157410 %long (1<<12.) ; PRCM_EPOD_C_SET.SVA_MM_L_ON='1'
+			wait 10ms ; wait for PRCM_EPOD_VOK.SVA_MM_L_ON='1'
+			data.set eahb:0x80157410 %long (1<<11.) ; PRCM_EPOD_C_SET.SVA_M_ON='1'
+			data.set eahb:0x80157410 %long (1<<10.) ; PRCM_EPOD_C_SET.SVA_L_ON='1'
+			wait 10ms
+				
+			;; MMDSP Clamping removal
+			;;-----------------------
+			;data.set eahb:0x80157424 %long 0x7F0FE0 ;
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<7) ; PRCM_MMIP_LS_CLAMP_CLR.SVA_MMDSP_CLAMP='1'
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<6) ; PRCM_MMIP_LS_CLAMP_CLR.SVA_PIPE_CLAMP='1'
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<18.) ; PRCM_MMIP_LS_CLAMP_CLR.SVA_MMDSP_CLAMPI='1'
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<17.) ; PRCM_MMIP_LS_CLAMP_CLR.SVA_PIPE_CLAMPI='1'
+
+			data.set eahb:0x80157430 %long 0x701FF ;// Remove clamp on PMB & VSAFE (PRCM_VSAFE_LS_CLAMP_CLR)
+
+			;//release Sleep pin for all memories (PRCM_SRAM_LS_SLEEP)
+			;data.set eahb:0x80157304 %long 0x30000000;
+			data.set eahb:0x80157304 %long d.l(eahb:0x80157304)&0xFFFFFFEF; PRCM_SRAM_LS_SLEEP.SVA_MMDSP_SLEEP='0'
+			data.set eahb:0x80157304 %long d.l(eahb:0x80157304)&(~(1<<2)); PRCM_SRAM_LS_SLEEP.SVA_PIPE_SLEEP='0'
+
+			print ">> SVA now ON!"			
+		
+			;; Reset released
+			;;-----------------
+			;// PRCM_APE_RESETN_SET
+			;data.set eahb:0x801571E4 %long 0x00003FF3
+			data.set eahb:0x801571E4 %long (1<<4) ; PRCM_APE_RESETN_SET.SVA_PIPE_L_RESETN='1'
+			data.set eahb:0x801571E4 %long (1<<5) ; PRCM_APE_RESETN_SET.SVA_MMDSP_L_RESETN='1'
+			data.set eahb:0x801571E4 %long (1<<6) ; PRCM_APE_RESETN_SET.SVA_PIPE_M_INITM='1'
+			data.set eahb:0x801571E4 %long (1<<7) ; PRCM_APE_RESETN_SET.SVA_MMDSP_M_INITN='1'
+			data.set eahb:0x801571E4 %long (1<<8) ; PRCM_APE_RESETN_SET.SVA_MMDSP_MRET_INITN='1'
+			wait 1s
+
+			;; Clock activation
+			;;-----------------
+			; PRCM_SVAMMDSPCLK_MGT
+			;data.set 0x80157008 %long 0x1124
+			data.set eahb:0x80157008 %long d.l(eahb:0x80157008)|(1<<12.) ; PRCM_SVAMMDSPCLK_MGT.SVA_PHY_EN
+			data.set eahb:0x80157008 %long d.l(eahb:0x80157008)&(~(1<<11.)) ; PRCM_SVAMMDSPCLK_MGT.SVA_LOW_FREQ
+			data.set eahb:0x80157008 %long d.l(eahb:0x80157008)&(~(1<<1)) ; PRCM_SVAMMDSPCLK_MGT.SVAMMDSPCLKPLLDIV
+			data.set eahb:0x80157008 %long d.l(eahb:0x80157008)|(1<<2) ; PRCM_SVAMMDSPCLK_MGT.SVAMMDSPCLKPLLDIV
+			data.set eahb:0x80157008 %long d.l(eahb:0x80157008)|(1<<8) ; PRCM_SVAMMDSPCLK_MGT.SVAMMDSPCLKEN
+			print ">> SVA CLKen: Done."
+
+		)
+		else
+		(
+			print ">> SVA not in sleep or retention mode (already ON)"
+		)
+		
+	)
+	if string.find("&soc_cores","I")
+	(	
+		print "Activation of MMDSP SIA"
+		
+		;; This part is inline with NMF TurnOnSia() function		
+		
+		;; == Memory Clamping - mandatory to activate R/W on MMDSP TCMs
+		;=======================
+		sys.config.ahbaccessport 4
+		&sia_sleep_ret_val=((d.l(eahb:0x80157304))>>8)&0x1	; Checking PRCM_SRAM_LS_SLEEP.SIA_MMDSP_SLEEP	
+		
+		if &sia_sleep_ret_val==1
+		(
+		
+			;; SIA
+			;;----
+			
+			data.set eahb:0x80157410 %long (1<<16.) ; PRCM_EPOD_C_SET.SIA_M_ON='1'
+			wait 10ms
+			data.set eahb:0x80157410 %long (1<<15.) ; PRCM_EPOD_C_SET.SIA_L_ON='1'
+			wait 10ms
+			data.set eahb:0x801571E8 %long (1<<9) ; PRCM_APE_RESETN_CLR.SIA_PIPE_L_RESETN='1'
+			data.set eahb:0x801571E8 %long (1<<11.) ; PRCM_APE_RESETN_CLR.SIA_PIPE_M_INITM='1'
+			data.set eahb:0x801571E8 %long (1<<22.) ; PRCM_APE_RESETN_CLR.SIA_PIPE_M_RAD_RESETN='1'
+			
+			data.set eahb:0x80157304 %long d.l(eahb:0x80157304)&(~(1<<6)) ; PRCM_SRAM_LS_SLEEP.SIA_PIPE_SLEEP='0'
+			
+			data.set eahb:0x80157270 %long (1<<1) ; PRCM_REDUN_LOAD.PRCM_REDUN_GO_SIA='1'
+			wait 10ms
+			
+			data.set eahb:0x801571E4 %long (1<<11.) ; PRCM_APE_RESETN_SET.SIA_PIPE_M_INITM='1'
+			data.set eahb:0x801571E4 %long (1<<9) ; PRCM_APE_RESETN_SET.SIA_PIPE_L_RESETN='1'
+			data.set eahb:0x801571E4 %long (1<<22.) ; PRCM_APE_RESETN_SET.SIA_PIPE_M_RAD_RESETN='1'
+
+			data.set eahb:0x8015700C %long d.l(eahb:0x8015700C)|(1<<12.) ; PRCM_SIAMMDSPCLK_MGT.SIA_PHY_EN
+			data.set eahb:0x8015700C %long d.l(eahb:0x8015700C)&(~(1<<11.)) ; PRCM_SIAMMDSPCLK_MGT.SIA_LOW_FREQ
+			
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<8) ; PRCM_MMIP_LS_CLAMP_CLR.SIA_PIPE_CLAMP='1'
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<19.) ; PRCM_MMIP_LS_CLAMP_CLR.SIA_PIPE_CLAMPI='1'
+			
+			;;// update power status registers SIA_PIPE = 1 is ON
+			data.set eahb:0x8015725C %long d.l(eahb:0x8015725C)|(1<<7); PRCMUPRCM_POWER_STATE_VAL.SIA_PIPE_STATE='1'
+		
+			print ">> SIA now ON!"
+   
+			;; MMDSP
+			;;-------
+			
+			;data.set 0x80157410 %long 0x77BF05
+			data.set eahb:0x80157410 %long (1<<18.) ; PRCM_EPOD_C_SET.SIA_MM_M_ON='1'
+			wait 10ms ; wait for PRCM_EPOD_VOK.SIA_MM_MRET_VOK='1' &  PRCM_EPOD_VOK.SIA_MM_M_VOK='1'
+			data.set eahb:0x80157410 %long (1<<17.) ; PRCM_EPOD_C_SET.SIA_MM_L_ON='1'
+			wait 10ms ; wait for PRCM_EPOD_VOK.SIA_MM_L_ON='1'
+			
+			data.set eahb:0x801571E8 %long (1<<10.) ; PRCM_APE_RESETN_CLR.SIA_MMDSP_L_RESETN='1'
+			data.set eahb:0x801571E8 %long (1<<12.) ; PRCM_APE_RESETN_CLR.SIA_MMDSP_M_INITN='1'
+			data.set eahb:0x801571E8 %long (1<<13.) ; PRCM_APE_RESETN_CLR.SIA_MMDSP_MRET_INITN='1'
+
+			;data.set 0x80157304 %long 0x30000000;//release Sleep pin for all memories (PRCM_SRAM_LS_SLEEP)
+			data.set eahb:0x80157304 %long d.l(eahb:0x80157304)&(~(1<<8)); PRCM_SRAM_LS_SLEEP.SIA_MMDSP_SLEEP='0'
+			
+			data.set eahb:0x801571E4 %long (1<<12.) ; PRCM_APE_RESETN_SET.SIA_MMDSP_M_INITN='1'
+			data.set eahb:0x801571E4 %long (1<<13.) ; PRCM_APE_RESETN_SET.SIA_MMDSP_MRET_INITN='1'
+			data.set eahb:0x801571E4 %long (1<<10.) ; PRCM_APE_RESETN_SET.SIA_MMDSP_L_RESETN='1'
+			
+			data.set eahb:0x8015700C %long d.l(eahb:0x8015700C)|(1<<8.) ; PRCM_SIAMMDSPCLK_MGT.SIA_PHY_EN
+			data.set eahb:0x8015700C %long d.l(eahb:0x8015700C)&(~(1<<11.)) ; PRCM_SIAMMDSPCLK_MGT.SIA_LOW_FREQ
+			data.set eahb:0x8015700C %long d.l(eahb:0x8015700C)&(~(1<<1)) ; PRCM_SIAMMDSPCLK_MGT.SIAMMDSPCLKPLLDIV
+			data.set eahb:0x8015700C %long d.l(eahb:0x8015700C)|(1<<2) ; PRCM_SIAMMDSPCLK_MGT.SIAMMDSPCLKPLLDIV
+			data.set eahb:0x8015700C %long d.l(eahb:0x8015700C)|(1<<8) ; PRCM_SIAMMDSPCLK_MGT.SIAMMDSPCLKEN
+			
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<9) ; PRCM_MMIP_LS_CLAMP_CLR.SIA_MMDSP_CLAMP='1'
+			data.set eahb:0x80157424 %long d.l(eahb:0x80157424)|(1<<20.) ; PRCM_MMIP_LS_CLAMP_CLR.SIA_MMDSP_CLAMPI='1'
+  
+			;; update power status registers SIA_MMDSP = 10 is ON
+			data.set eahb:0x8015725C %long d.l(eahb:0x8015725C)&(~(1<<5)); PRCMUPRCM_POWER_STATE_VAL.SIA_MMDSP_STATE='10'
+			data.set eahb:0x8015725C %long d.l(eahb:0x8015725C)|(1<<6);
+		
+			print ">> MMDSP SIA now ON!"			
+		)
+		else
+		(
+			print ">> SIA not in sleep or retention mode (already ON)"
+		)
+		
+	)
+	 
+	if &verbose==1
+	(
+		&temp=d.l(eahb:0x80157418)
+		print ">> PRCM_EPOD_C value : &temp"
+		&temp=d.l(eahb:0x80157428)
+		print ">> PRCM_MMIP_LS_CLAMP value : &temp"
+		&temp=d.l(eahb:0x801571EC)
+		print ">> PRCM_APE_RESETN value : &temp"
+	)
+)
+
+
+if string.find("&soc_cores","P")
+(
+	&PRCM_XP70CFGCR_addr=0x801580E0
+	data.set a:&PRCM_XP70CFGCR_addr %long d.l(a:&PRCM_XP70CFGCR_addr)|0x00000001 ;XP70_P_FETCH_EN: sets the XP70_P_FETCH_EN bit
+	print ">> PRCMU Fetch enable : Done."
+)
+
+
+;=== Configure SxA DMAC channels to connect on MSPx
+;=======================
+; refer to page 1581 of 8500V1 spec for details.
+; All channels are configured to connect on same MSPx
+;data.set 0xA03C800C %long 0x0 ; MSP0
+;data.set 0xA03C800C %long 0xC2154215 ; MSP1
+;data.set 0xA03C800C %long 0xC42A442A ; MSP2
+;print "SxA DMA Channels configured."
+
+enddo
+
+; written by : Julien HELMER, CPT.

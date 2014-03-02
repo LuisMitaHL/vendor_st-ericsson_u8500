@@ -1,0 +1,38 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/continuous_vf_vr_stress.ite
+
+##  Continuous VR/VF: Start environment:  Loop : Start LR Loop Stats Stop LR Start LRHR loop Stats Stop LRHR loop end stop environment. Start env and run VF/VR multiple times with looped stats request ##
+
+alias LOOP_TESTS $1
+alias INNER_LOOP_TESTS $2
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+loop LOOP_TESTS
+
+
+    glacehistoexp reqnowait
+    LR prepare
+    LR start
+    glacehistoexp waitstatready
+
+    loop INNER_LOOP_TESTS
+        glacehistoexp req
+    endloop
+
+    LR stop
+    LR free
+
+    glacehistoexp reqnowait
+    LRHR prepare
+    LRHR start
+    glacehistoexp waitstatready
+
+    loop INNER_LOOP_TESTS
+        glacehistoexp req
+    endloop
+
+    LRHR stop
+    LRHR free
+
+endloop
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite

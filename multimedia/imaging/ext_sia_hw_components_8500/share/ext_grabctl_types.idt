@@ -1,0 +1,31 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   Interface Description Type file: common declaration types that can be shared between nmf component and host
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#ifndef _grabctl_types_idt
+#define _grabctl_types_idt
+
+/* Possible values for grabctl.configure.setConfig(idx) */
+enum e_grabctlCfgIdx {
+	 GRABCTL_CFG_ALPHA = 0x1, /**< associated data will be the 8-bit value to set the Alpha component when grabbing an ARGB format. For formats with Alpha depth smaller than 8bits, the MSB is used */
+	 GRABCTL_CFG_CAPTURING = 0x2 /**< associated data: 1 to enable HR port (for capturing, following OMX convention), 0 to disable it. When capturing is disabled, it will still return one buffer with flags |= EOS to signal that this is the last buffer (following OMX Camera implementation), so ensure there are still buffers in queue or being processed! */
+};
+
+
+/*  */
+enum e_grabctlPortID {
+    GRBCTLPID_PORT_0 		= 0, 	/**< port 0	*/
+    GRBCTLPID_PORT_1, 				/**< port 1 */
+    GRBCTLPID_PORT_2, 				/**< port 2 */
+    GRBCTLPID_PORT_3 				/**< port 3 */
+};
+
+#endif /* _grabctl_types_idt */

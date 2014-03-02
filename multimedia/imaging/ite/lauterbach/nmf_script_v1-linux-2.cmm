@@ -1,0 +1,22 @@
+
+menu.REPROGRAM nmf_script_v1-linux.men
+
+y.spath.setrecursedir ..\..\..\ite_nmf_8500
+;y.spath.setrecursedir ..\..\..\ite
+
+	y.spath.setrecursedir ..\..\..\..\shared\nmf\linux\src
+
+
+; for XP70 dbg
+; data.set SR:0x80155000 %long d.l(SR:0x80155000)|(0x1<<12.) ; SECR_CR.SIADBGEN='1'
+if ("&platform"=="href_v2-linux")
+(
+    cd ..\..\..\..\linux\lauterbach\util
+)
+
+;do app_debug ite_nmf_8500
+
+term.out "ite_nmf_8500" 
+term.out %BYTE 0xD
+
+

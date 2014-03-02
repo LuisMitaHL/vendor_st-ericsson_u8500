@@ -1,0 +1,76 @@
+alias S_CURRENT_PATH $(IMAGING_PATH)/fakesource/mmte_script
+alias colorformat cbycry
+do $(S_CURRENT_PATH)/init.mmte
+
+if TEST_WITH_FAKE_SINK == yes
+	alias S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY OMX_TRUE
+else
+	alias S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY OMX_FALSE
+endif
+
+do $(S_CURRENT_PATH)/network_init_to_loaded.mmte
+
+echo	OMX_BufferSupplyUnspecified 
+echo	OMX_BufferSupplyInput
+echo	OMX_BufferSupplyOutput
+
+OMX_GetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0
+mmte_sleep 300
+OMX_GetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0
+mmte_sleep 300
+
+do $(S_CURRENT_PATH)/network_tunnels_set.mmte
+
+OMX_GetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0
+mmte_sleep 400
+OMX_GetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0
+mmte_sleep 400
+
+if CHANGE_BUFF_SUPPLY_WAY == output
+	OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+	OMX_SetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+	alias BUFFER_SUPPLY_WAY output
+endif
+
+if CHANGE_BUFF_SUPPLY_WAY == input
+	OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+	OMX_SetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+	alias BUFFER_SUPPLY_WAY input
+endif
+
+if CHANGE_BUFF_SUPPLY_WAY == unspecifed
+	OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyUnspecified
+	OMX_SetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyUnspecified
+	if BUFF_SUPPY_KIND == output
+		alias BUFFER_SUPPLY_WAY output
+	else
+		alias BUFFER_SUPPLY_WAY input
+	endif
+endif
+
+OMX_GetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0
+mmte_sleep 500
+OMX_GetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0
+mmte_sleep 500
+
+do $(S_CURRENT_PATH)/network_loaded_to_idle.mmte
+
+do $(S_CURRENT_PATH)/network_configure_idle.mmte
+
+mmte_sleep 1000
+
+do $(S_CURRENT_PATH)/network_idle_to_executing.mmte
+
+mmte_sleep 4000
+
+do $(S_CURRENT_PATH)/network_executing_to_idle.mmte
+
+mmte_sleep 1000
+
+do $(S_CURRENT_PATH)/network_idle_to_loaded.mmte
+
+do $(S_CURRENT_PATH)/network_clean.mmte
+
+
+
+

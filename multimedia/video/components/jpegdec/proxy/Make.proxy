@@ -1,0 +1,122 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+#-------------------------------
+# Default Config
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.config
+
+
+#----------------------------
+#     Entry for Make.rules
+#
+#VPATH    : Search Path for prerequisites.(see default value in Make.rules)
+#CFLAGS   : Extra flags to give to the C compiler. (see default value in Make.rules)g
+#CXXFLAGS : Extra flags to give to the C++ compiler. (see default value in Make.rules)
+#CPPFLAGS : Extra flags to give to the C preprocessor.(see default value in Make.rules)
+#
+#DEP_DEP  : Dependencies of dependency files. 
+#           (for example generated header file before generating *.d)
+#TOBECLEAN: List of files you want to delete on realclean target.
+#
+#LIBNAME  : Name of the library without the prefix lib.
+#LIBOBJ   : List of object file to put in the lib
+#
+#EXENAME  : Name of executable
+#EXEOBJ   : List of object file needed to build executable
+#         For multiple executable, suffix these to variable with _1, _2 ...  
+#
+#LOCALLIBS: list of local libraries to be linked with executable
+#
+#----------------------------
+#ARM_NMF_REPOSITORY=$(MMROOT)/video/nmf_repository/arm11-think-rvct-ndk20/jpegdec/src
+NMF_TOOLS = $(MMROOT)/shared/nmf/tools/api/smpee
+COMPONENT_PATH  = $(MMROOT)/video/components
+
+ifneq ($(PLATFORM),x86-linux)
+CPPFLAGS+= -DHOST_MPC_COMPONENT_BOTH
+endif
+
+CPPFLAGS += -I$(MMROOT)/shared/ens/nmf/host/nmf_repository/$(MMPROCESSOR)-x-$(MMCOMPILER)-x
+CPPFLAGS += -I$(MMROOT)/shared/ens/nmf/host/nmf_repository/$(MMPROCESSOR)-x-$(MMCOMPILER)-x/host
+CPPFLAGS += -I$(MMROOT)/video/nmf_repository/$(MMPLATFORM)
+CPPFLAGS+= -DMMHWBUFFER
+CPPFLAGS+= \
+		-I$(SHARED_REPOSITORY) \
+		-I$(VIDEO_REPOSITORY) \
+		-Iinclude \
+		-I$(MMROOT)/shared/ens/proxy/omxil \
+		-I$(MMROOT)/shared/ens/proxy/include \
+		-I$(MMROOT)/video/components \
+		-I$(MM_IDT_DIR) \
+                -I$(COMPONENT_PATH)/common/inc 	\
+		-I$(NMF)/nmf_core/mpc_components \
+                -I$(COMPONENT_PATH)/jpegdec/mpc/share 	\
+		-I$(NMF)\
+		-Iinc	\
+		-I$(MMROOT)/video/components/jpegdec/arm_nmf/parser/inc \
+                -I$(NMF_TOOLS)	\
+		-I$(MMROOT)/video/components/common/nmf/arm/inc
+
+ifdef PERF_MEASUREMENT
+CPPFLAGS += -D__PERF_MEASUREMENT
+endif
+                
+CPPFLAGS += -D_CACHE_OPT_
+CPPFLAGS += -D__CACHE_OPTI
+                
+# OST trace capability
+include ../make.ost_conf
+OST_SRC_DIR = src 
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_HOST)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_host
+CPPFLAGS  += -DOST_FLAG -I$(MMROOT)/video/components/jpegdec/inc/autogentraces
+CPPFLAGS  += -D__JPEGDEC__
+                
+
+#VPATH= \
+#		include\
+#		src\
+	#	inc\
+
+LIBOBJ   = \
+	JPEGDec_ParamAndConfig\
+	JPEGDec_ArmNmf_ProcessingComponent \
+	JPEGDec_Port\
+	JPEGDec_Proxy
+	
+ifneq ($(PLATFORM),x86-linux)
+LIBOBJ  += JPEGDec_NmfMpc_ProcessingComponent
+endif
+
+ifdef DEBUG
+CPPFLAGS += -DDEBUG -D__DEBUG
+LIBNAME   = st_vfm_jpegdec_debug
+INSTALL_LIB = libst_vfm_jpegdec_debug.a
+OBJ_EXT =odebug 
+else
+CPPFLAGS += -DRELEASE -D__RELEASE
+LIBNAME   = st_vfm_jpegdec
+INSTALL_LIB = libst_vfm_jpegdec.a
+endif
+
+INSTALL_HEADERDIR= inc\
+
+
+
+todo: lib install
+#DUMMY:=$(shell echo $(MMDSPPROCESSOR) >tmp.file)
+
+#WARNING todo target is MANDATORY (exe and/or lib)
+#todo: lib install
+
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MMROOT)/shared/makefiles/Make.rules
+
+
+#-------------------------------
+# local Rules
+#-------------------------------
+

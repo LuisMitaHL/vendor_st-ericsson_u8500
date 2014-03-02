@@ -1,0 +1,27 @@
+#
+# Busybox configuration
+#
+
+menuconfig BUSYBOX
+	bool "Busybox Configuration"
+	help
+	  BusyBox: The Swiss Army Knife of Embedded Linux
+
+if BUSYBOX
+
+config BUSYBOX_DIR
+	string
+	default ./busybox
+
+config BUSYBOX_DEPS
+	string
+	default ""
+
+config BUSYBOX_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on BUSYBOX
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # BUSYBOX

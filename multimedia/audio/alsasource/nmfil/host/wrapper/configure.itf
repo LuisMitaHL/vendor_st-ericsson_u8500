@@ -1,0 +1,19 @@
+#include <samplefreq.idt>
+
+typedef struct {
+  t_bool         enabled;
+  t_uint32       id;
+} alsasource_wrapper_pcmprobe_config_t;
+
+typedef struct {
+  t_uint32                             sample_rate;
+  t_uint16                             nof_channels;
+  t_uint16                             nof_bits_per_sample;
+  t_uint16                             block_size;
+  t_bool                               endian_little;
+  t_bool                               interleaved;
+  t_bool                               numerical_data_signed;
+  alsasource_wrapper_pcmprobe_config_t pcmprobe_cfg[1];
+} alsasource_wrapper_config_t;
+
+void setParameter(alsasource_wrapper_config_t config);

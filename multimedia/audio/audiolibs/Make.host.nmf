@@ -1,0 +1,16 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+SRCPATH+=$(COMPONENT_TOP_DIR)/..
+SRCPATH+=$(COMPONENT_TOP_DIR)/common/include
+
+ITFS_HEADER=audiolibs.common.dummy
+
+INSTALL_NMF_COMP_SRC_COMMON_PREFIX:=audiolibs/
+INSTALL_NMF_COMP_SRC_COMMON += $(wildcard common/include/*.idt)
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

@@ -1,0 +1,14 @@
+&serial_line=os.env("TARGET_SERIAL_LINE")
+print "&serial_line"
+
+if ("&serial_line"!="")
+(
+     term.method COM &serial_line 115200. 8 NONE 1STOP NONE;
+     term.view;
+)
+else
+(
+	print "TARGET_SERIAL_LINE environnement not set, won't create terminal view"
+	print "exemple under windows:  set TARGET_SERIAL_LINE=COM2"
+	print "exemple under linux/sh: export TARGET_SERIAL_LINE=/dev/ttusb0"
+)

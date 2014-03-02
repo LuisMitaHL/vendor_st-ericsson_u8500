@@ -1,0 +1,58 @@
+#!/bin/bash
+
+USAGE="usage: $0 BUILD_SYSTEM=[android|stelp] PRODUCT=[u8500|u5500|snowball]"
+
+#Sanity check of arguments
+if [ $# != 2 ]; then
+    echo $USAGE
+    exit
+fi
+
+# split key=value into two separate key and value parameters
+until [ -z $1  ]; do
+  OPTLEN=`expr length "$1"`
+  KEYPOS=`expr index "$1" =`
+  KEY=`expr substr "$1" 1 $((KEYPOS - 1))`
+  VALUE=`expr substr "$1" $((KEYPOS + 1)) $OPTLEN`
+  shift
+
+  case $KEY in
+    BUILD_SYSTEM )
+      BUILD_SYSTEM=$VALUE ;;
+    PRODUCT )
+      PRODUCT=$VALUE ;;
+  esac
+done
+
+MODULE_NAME="xloader"
+mkdir -p ../prebuilt
+mkdir -p ../prebuilt/$MODULE_NAME
+
+case $BUILD_SYSTEM in
+  android )
+    ROOT="../../../.."
+    PRODUCT_DIR="${ROOT}/out/target/product/${PRODUCT}"
+    EXE="${PRODUCT_DIR}/obj/${MODULE_NAME}/${PRODUCT}"
+
+    if [ ! -d $PRODUCT_DIR ]; then
+      echo "Product dir ${PRODUCT_DIR} not found!"
+      exit
+    fi
+
+    find ${EXE} -name "*.bin" -exec cp '{}' ../prebuilt/${MODULE_NAME}/ \;
+    cp -v Android_prebuilt.mk ../prebuilt/${MODULE_NAME}/Android.mk
+    cp -v Makefile_prebuilt ../prebuilt/${MODULE_NAME}/Makefile
+
+    rm -rfv ${PRODUCT_DIR}/obj/${MODULE_NAME}
+
+    ;;
+  stelp )
+	echo "Prebuilding for STELP is not yet supported"
+	exit
+    ;;
+  * )
+    echo "Unknown option BUILD_SYSTEM=${BUILD_SYSTEM}"
+    echo $USAGE
+    exit
+    ;;
+esac

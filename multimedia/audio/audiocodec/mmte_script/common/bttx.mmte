@@ -1,0 +1,31 @@
+test_start	CODEC_0007
+test_property	TEST_NAME BTTX 
+
+alias TIMEOUT 0
+
+OMX_GetHandle        bttx OMX.ST.AFM.BT_MONO_SINK
+OMX_SendCommand      bttx OMX_CommandPortDisable 1
+
+OMX_SetParameter     bttx OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianLittle
+
+ate_attach_io        bttx 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/8k_mono_ok_le.pcm 0 0 0 
+
+OMX_SendCommand      bttx OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers bttx 0
+MMTE_WaitEvent       bttx OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand      bttx OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent       bttx OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent       bttx OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+MMTE_DispatchState OMX_StateIdle   bttx
+MMTE_DispatchState OMX_StateLoaded bttx
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+unalias TIMEOUT
+test_end       
+               

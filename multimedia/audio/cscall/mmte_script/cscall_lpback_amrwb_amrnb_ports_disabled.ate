@@ -1,0 +1,165 @@
+# This script tests the CS-Call in non-tunneled loopback mode (no use of modem) with AMR-WB algo.
+#
+# Audio Network Description:
+# 
+#   +--------------+
+#   |              |
+#   |           ..0| <-- INPUT_FILE
+#   |   CS-Call .  |
+#   |           ..1| --> OUTPUT_FILE
+#   |              |
+#   +--------------+
+#
+# Script's arguments:
+#  $1 : ISI|MAI select protocol (ISI if not specified)
+#  $2 : trace level             (0 if not specified)
+
+test_start CSCALL_0022
+test_property TEST_NAME cscall_lpback_amrwb_amrnb_ports_disabled
+
+# script parameter
+if "$($1)" == "MAI"
+  alias PROTOCOL AFM_AUDIO_PROTOCOL_MAI
+  alias PROTO MAI 
+else
+  alias PROTOCOL AFM_AUDIO_PROTOCOL_ISI
+  alias PROTO ISI
+endif
+
+if "$($2)" != ""
+  alias TRACE_LEVEL $($2)
+else
+  alias TRACE_LEVEL 0
+endif
+
+#I/Os parameters
+alias SAMPLING_RATE_NB          8000
+alias SAMPLING_RATE_WB          16000
+alias NB_CHANNELS            	1
+
+alias INPUT_FILE                $(AUDIO_STREAMS)/cscall/streams/T04.INP
+
+alias OUTPUT_FILE               $(OUTPUT_DIR)/cscall_lpback_amrwb_amrnb_ports_disabled.OUT
+alias OUTPUT_SIZE               3000000
+
+alias REF_FILE                  $(AUDIO_STREAMS)/cscall/streams/cscall_lpback_amrnb.ref
+
+#Input Buffer parameters
+alias INPUT_BUFFERCOUNT         nBufferCountActual=4
+
+#Output Buffer parameters
+alias OUTPUT_BUFFERCOUNT        nBufferCountActual=4
+
+alias IN         1
+alias OUT        0
+
+#start test
+OMX_GetHandle    CSCALL  OMX.ST.AFM.cscall
+OMX_SendCommand  CSCALL  OMX_CommandPortDisable 0
+OMX_SendCommand  CSCALL  OMX_CommandPortDisable 1
+OMX_SendCommand  CSCALL  OMX_CommandPortDisable 2
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# activate trace
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig CSCALL ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+#Setting Config for Loops
+OMX_SetConfig    CSCALL  OMX_Symbian_IndexConfigAudioSpeechLoops bLoopUplinkDownlinkAlg=1
+#Setting Config for Loops Complete
+
+OMX_SetConfig    CSCALL  OMX_IndexConfigCallbackRequest nIndex=OMX_Symbian_IndexConfigAudioCodecEnabled bEnable=OMX_TRUE
+OMX_SetConfig    CSCALL  OMX_IndexConfigCallbackRequest nIndex=OMX_Symbian_IndexConfigAudioCodecDisabled bEnable=OMX_TRUE
+OMX_SetConfig    CSCALL  OMX_IndexConfigCallbackRequest nIndex=OMX_Symbian_IndexConfigAudioSampleRate8khz bEnable=OMX_TRUE
+OMX_SetConfig    CSCALL  OMX_IndexConfigCallbackRequest nIndex=OMX_Symbian_IndexConfigAudioSampleRate16khz bEnable=OMX_TRUE
+
+OMX_SetParameter CSCALL  OMX_IndexParamPortDefinition nPortIndex=$(IN) INPUT_BUFFERCOUNT
+OMX_SetParameter CSCALL  OMX_IndexParamPortDefinition nPortIndex=$(OUT) OUTPUT_BUFFERCOUNT
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(IN) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_NB)
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(OUT) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_NB)
+OMX_SetParameter CSCALL  AFM_IndexParamCscall nULRealTimeMode=OMX_FALSE nDLRealTimeMode=OMX_FALSE eProtocol=$(PROTOCOL)
+
+
+OMX_SendCommand	CSCALL OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+
+#Start CS-CALL
+OMX_SendCommand CSCALL OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+ate_attach_io CSCALL IN MEM INPUT_FILE 0 1 0
+ate_attach_io CSCALL OUT MEM OUTPUT_FILE OUTPUT_SIZE 1 0
+
+mmte_sleep 2000
+
+#Setting Config for Speech Codec Request
+OMX_SetConfig    CSCALL  AFM_IndexConfigCscallSpeechCodecReq nCodingType=OMX_AUDIO_CodingAMR nBandModeTypeDecoder=OMX_AUDIO_AMRBandModeWB8
+#Setting Config for Speech Codec Request Complete
+
+#Setting Config for Speech Timing Request + launch 5s loopback call
+OMX_SetConfig    CSCALL  AFM_IndexConfigCscallSpeechTimingReq nDeliveryTime=10000
+
+MMTE_WaitEvent CSCALL OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigAudioCodecEnabled
+MMTE_WaitEvent CSCALL OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigAudioSampleRate16khz
+
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(IN) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_WB)
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(OUT) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_WB)
+
+mmte_sleep 1500
+
+OMX_SetConfig    CSCALL  AFM_IndexConfigCscallSpeechCodecReq nCodingType=OMX_AUDIO_CodingAMR nBandModeTypeDecoder=OMX_AUDIO_AMRBandModeNB3
+OMX_SetConfig    CSCALL  AFM_IndexConfigCscallSpeechTimingReq nDeliveryTime=10000
+MMTE_WaitEvent CSCALL OMX_EventIndexSettingChanged OMX_ALL OMX_Symbian_IndexConfigAudioSampleRate8khz
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(IN) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_NB)
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(OUT) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE_NB)
+
+OMX_SendCommand  CSCALL  OMX_CommandPortEnable 0
+OMX_SendCommand  CSCALL  OMX_CommandPortEnable 1
+MMTE_AllocateAndUseBuffers CSCALL IN
+MMTE_AllocateAndUseBuffers CSCALL OUT
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortEnable 0
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+mmte_sleep 5000
+
+#Setting Config for Speech Codec Request
+OMX_SetConfig    CSCALL  AFM_IndexConfigCscallSpeechCodecReq nCodingType=OMX_AUDIO_CodingUnused
+MMTE_WaitEvent CSCALL OMX_EventBufferFlag OUT 0
+#Setting Config for Speech Codec Request Complete
+
+OMX_SendCommand  CSCALL  OMX_CommandPortDisable 0
+MMTE_FreeBuffers CSCALL 0
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortDisable 0
+OMX_SendCommand  CSCALL  OMX_CommandPortDisable 1
+MMTE_FreeBuffers CSCALL 1
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand	 CSCALL OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	 CSCALL OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle   CSCALL
+
+MMTE_CheckMemoryStatus
+
+unalias PROTO
+unalias PROTOCOL
+unalias TRACE_LEVEL
+unalias SAMPLING_RATE_NB
+unalias SAMPLING_RATE_WB
+unalias NB_CHANNELS 
+unalias INPUT_FILE
+unalias OUTPUT_FILE
+unalias OUTPUT_SIZE
+unalias INPUT_BUFFERCOUNT
+unalias OUTPUT_BUFFERCOUNT
+unalias IN
+unalias OUT
+test_end

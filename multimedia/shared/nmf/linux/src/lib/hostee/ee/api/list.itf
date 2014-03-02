@@ -1,0 +1,25 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/list.idt>
+typedef t_uint32 hList;
+
+interface ee.api.list {
+    hList create(t_bool isProtected);
+    void destroy(hList listHandle);
+    void add(hList listHandle, t_list_link *pElem);
+    void remove(hList listHandle, t_list_link *pElem);
+    /* if pMatchingFunction return true for an elem then pElem is not add and search stop else pElem is add to list */
+    /* return true if pMatchingFunction return true and so elem has not be add */
+    t_bool addNotMatching(hList listHandle, t_list_link *pElem, void *pMatchingFunction, void *pMatchingFunctionArgs);
+    /* if pMatchingFunction return true for an elem then this elem is remove and search stop */
+    /* return true if pMatchingFunction return true and so elem has been removed */
+    t_bool removeMatching(hList listHandle, void *pMatchingFunction, void *pMatchingFunctionArgs);
+    void execute(hList listHandle, void *pExecuteFunction, void *pExecuteFunctionArgs);
+    t_uint32 getNumberOfElem(hList listHandle);
+    t_bool isElem(hList listHandle, t_list_link *pElem);
+}

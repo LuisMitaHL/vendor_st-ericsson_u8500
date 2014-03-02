@@ -1,0 +1,48 @@
+# Playback - Alsasink, "hw:0,0", 2 channels, single
+# Copyright 2010 ST-Ericsson
+#
+
+alias TIMEOUT 0
+
+# [Alsasink] Setup
+OMX_GetHandle              sink OMX.ST.AFM.alsasink
+OMX_SetParameter           sink OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF eChannelMapping[2]=OMX_AUDIO_ChannelLFE eChannelMapping[3]=OMX_AUDIO_ChannelCF eChannelMapping[4]=OMX_AUDIO_ChannelLS eChannelMapping[5]=OMX_AUDIO_ChannelRS
+#OMX_SetParameter          sink AFM_IndexParamForceStandardTunneling nPortIndex=0 bIsStandardTunneling=1
+
+# [Alsasink] Config
+# cDevice = "hw:0,0"
+OMX_SetConfig              sink OMX_IndexConfigALSADevice cDeviceName[0]=104 cDeviceName[1]=119 cDeviceName[2]=58 cDeviceName[3]=48 cDeviceName[4]=44 cDeviceName[5]=48 cDeviceName[6]=0
+
+# [Alsasink] Attach wav-file
+ate_attach_io              sink 0 MEM ./doriano48_low.wav
+
+# [Alsasink] OMX-state: Idle
+# Allocate buffers
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers sink 0
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# [Alsasink] OMX-state: Executing
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# Playback...
+mmte_sleep 8000
+
+# [Alsasink] OMX-state: Idle
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# [Alsasink] OMX-state: Loaded
+# Free buffers
+OMX_SendCommand            sink OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers           sink 0
+MMTE_WaitEvent             sink OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# Cleanup
+OMX_FreeHandle             sink
+check_malloc
+check_error
+
+# Exit MMTE
+quit

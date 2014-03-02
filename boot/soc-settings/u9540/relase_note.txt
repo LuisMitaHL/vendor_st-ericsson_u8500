@@ -1,0 +1,94 @@
+;============================================================================
+; ST-Ericsson
+; ===========================================================================
+;
+; $RCSfile: /relase_note.txt$
+; $Date: Fri Mar 30 15:29:50 2012 GMT$
+;
+;=============================================================================
+
+##############################################################################
+                      AP9540-A0 SOC SETTING CONFIG PACK 
+##############################################################################
+
+-------------------------------------------------------------------------
+Release Version:
+-------------------------------------------------------------------------
+Version: 		V2.0
+
+Release Tag:	SoCSettings_AP9540-V1_V2.0
+
+-------------------------------------------------------------------------
+Main Delta with previous release:
+-------------------------------------------------------------------------
+
+* API update:
+	-	ER 424835 : [SocSettings] : Opp init structure update : replace BB_enable by oppAllowed
+* No AVS voltage values update:
+	-	ER 424840 : [SocSettings] : No AVS update : BBMux Off
+	-	ER 424841 : [SocSettings] : No AVS update : Arm Opp0 disabled
+	-	ER 424842 : [SocSettings] : No AVS update : voltage updated
+* AVS features integration:
+	-	ER 424837 : [SocSettings] : AVS Feature integration
+	-	ER 424847 : [SocSettings] : Add COMPILE_BB compilation flag
+
+Document reference:
+	- AVS FW DOS v1.4b et Stack Voltage v2.4b
+
+
+USE ONLY THIS PACKAGE VERSION WITH A PRCMU FW VERSION EQUAL OR HIGHER TO V2.3.4
+It doesn't work with previous prcmu fw version.
+
+THIS PACKAGE VERSION IS MAINLY PROVIDED FOR VALIDATION AND TEST OF THE AVS VOLTAGE
+* No AVS values: 	Tested
+* AVS features: 	Validation is on going
+
+
+-------------------------------------------------------------------------
+ Description:
+-------------------------------------------------------------------------
+
+The Soc-Setting config pack has to be included in the SoC Setting project.
+This pack allows to:
+	- Provide the Voltage & Frequency values for each OPP and Power domain
+	- Provide the Optimized DDR Ctrl setting
+	- Calculate AVS voltage values
+	- Init the AB9540 Ctrl registers
+
+DON’T MODIFY THESE FILES, ALL MODIFICATIONS CAN BRING SOME MARGINAL ISSUE.
+
+-------------------------------------------------------------------------
+ Content of the package:
+-------------------------------------------------------------------------
+
+1. AB9540 Ctrl registers init:
+	--> ab9540_init.c - v1.3
+	--> ab9540_init.h - v1.2
+	
+These files contain the AB9540 Ctrl registers Init Table.
+
+
+2. OPP Config:
+	--> opp_init.c - v1.5
+	--> opp_init.h - v1.3
+
+These files provide the No AVS values (Default Voltage & Frequency values for each OPP).
+
+
+3. AVS calculation algorithm:
+	--> avs_calc.c - v1.5
+	--> avs_calc.h - v1.5
+	--> avs_const.h - v1.2	   * New file in package
+	--> avs_fuse.h - v1.2	   * New file in package
+	
+These files allows to compute avs voltage.
+
+
+4. DDR Config table:
+	--> lpddr2_jedec_4x4gb_533Mhz.c - v1.2
+	--> lpddr2_jedec_2x4gb_533Mhz.c - v1.2
+
+These tables contain LpDDR2 jedec config table at 533MHz and support the following memories:
+		*  2 channels, 2CS per channel, 4Gb per die => 2*4Gb=8Gb per channel
+		*  2 channels, 1CS per channel, 4Gb per die => 1*4Gb=4Gb per channel
+

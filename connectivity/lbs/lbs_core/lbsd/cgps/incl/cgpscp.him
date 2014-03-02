@@ -1,0 +1,293 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSCP_HIM__
+#define __CGPSCP_HIM__
+
+/**
+* \file cgpscp.him
+* \date 22/07/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all macros used by cgps7cp.c.\n
+*
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 22.07.08</TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+/**
+* \def MC_CGPS_TRACE_SESSION_INFO
+* Macro to print session parameters when MSA / MSB request is received
+*/
+#define MC_CGPS_TRACE_SESSION_INFO(FUNC, X)     MC_CGPS_TRACE(("%s : SessionID %d,Received@ %d, SessionType %s, SuspendState %d ",                              \
+                                                                                FUNC,                                                                           \
+                                                                                X.v_SessionID,                                                                  \
+                                                                                X.v_LastApplicationUpdateTime,                                                  \
+                                                                                (X.v_SessionType==K_CGPS_CP_SESSION_TYPE_MS_ASSISTED)?"ASSISTED":"BASED",       \
+                                                                                X.v_Suspended ));                                                               \
+                                                MC_CGPS_TRACE(("%s : QOP - Timeout %d,  PeriodicInterval %d, RepAmount %d, HorAcc %d, Ver Acc %d",              \
+                                                                                FUNC,                                                                           \
+                                                                                X.v_Timeout,                                                                    \
+                                                                                X.v_PeriodicInterval,                                                           \
+                                                                                X.v_ReportingAmount,                                                            \
+                                                                                X.v_HorizAccuracy,                                                              \
+                                                                                X.v_VertAccuracy ))
+
+
+
+/**
+* \def MC_CGPS_TRACE_ACQ_DATA
+* Macro to print acquisition data.
+*/
+#define MC_CGPS_TRACE_ACQ_DATA(X)       MC_CGPS_TRACE(("CGPS7_05AssistanceDataAReq : Ref_GPS_TOW %d, Num_AA %d", X.Ref_GPS_TOW, X.Num_AA ));    \
+                                        MC_CGPS_TRACE(("CGPS7_05AssistanceDataAReq : SV, Dopp0, Dopp1, DoppUnc, CodePhase, IntCodePhase, GPSBitNo, CodeWind, Azi, Elev\n"))
+
+/**
+* \def MC_CGPS_TRACE_ACQ_ELEMENT
+* Macro to print acquisition elements.
+*/
+#define MC_CGPS_TRACE_ACQ_ELEMENT(X)    MC_CGPS_TRACE(("CGPS7_05AssistanceDataAReq : %2d,%6d,%6d,%8d,%10d,%13d,%9d,%9d,%4d,%5d\n",  \
+                                                        X.SatID, \
+                                                        X.Doppler_0, \
+                                                        X.Doppler_1, \
+                                                        X.Doppler_Unc, \
+                                                        X.Code_Phase, \
+                                                        X.Int_Code_Phase, \
+                                                        X.GPS_Bit_Num, \
+                                                        X.Code_Window, \
+                                                        X.Azimuth, \
+                                                        X.Elevation ))
+
+
+/**
+* \def MC_CGPS_TRACE_REF_TIME
+* Macro to print reference time.
+*/
+#define MC_CGPS_TRACE_REF_TIME(X)       MC_CGPS_TRACE(("CGPS7_06TimeReq : OS_Time_ms %d, TOW_ms %d, WeekNo %d, RMS_ms %d\n", X.OS_Time_ms, X.TOW_ms, X.WeekNo, X.RMS_ms))
+
+
+/**
+* \def MC_CGPS_TRACE_REF_PRECISE_TIME
+* Macro to print precise reference time.
+*/
+#define MC_CGPS_TRACE_REF_PRECISE_TIME(X)       MC_CGPS_TRACE(("CGPS7_06TimeReq : TOW %d, WeekNo %d, Abs_RMS_us %d, Rel_RMS_ns %d, OS_Time_ms = %d, MultiplePulses %d\n", \
+                                                        X.TOW, X.WeekNo, X.Abs_RMS_us, X.Rel_RMS_ns, X.OS_Time_ms, X.MultiplePulses))
+
+
+/**
+* \def MC_CGPS_TRACE_TOW_ASSIST_DATA
+* Macro to print Tow assist data.
+*/
+#define MC_CGPS_TRACE_TOW_ASSIST_DATA(X)        MC_CGPS_TRACE(("CGPS7_06TimeReq : TOW Assist Present\n"));  \
+                                                MC_CGPS_TRACE(("CGPS7_06TimeReq : Num_TOWA %d, TOW_ms %d\n", X.Num_TOWA, X.TOW_ms ));   \
+                                                MC_CGPS_TRACE(("CGPS7_06TimeReq : SV, AntiSF, AlertF, TLMResrvd, TLMWord\n"))
+
+
+
+/**
+* \def MC_CGPS_TRACE_TOW_ASSIST_ELEMENT
+* Macro to print Tow assist elements.
+*/
+#define MC_CGPS_TRACE_TOW_ASSIST_ELEMENT(X)     MC_CGPS_TRACE(("CGPS7_06TimeReq : %2d,%7d,%7d,%10d,%8d\n", X.SatID, X.Anti_Spoof_flag, \
+                                                                                   X.Alert_flag, X.TLM_Reserved, X.TLM_Word))
+
+
+
+/**
+* \def MC_CGPS_TRACE_REF_POS_DATA
+* Macro to print Tow assist elements.
+*/
+#define MC_CGPS_TRACE_REF_POS_DATA(X)           MC_CGPS_TRACE(("CGPS7_07RefPosReq : LatSign %d, Lat %d, Long %d, UncSemiMajor %d, UncSemiMinor %d, OrienMajorAxis %d, UncAlt %d, Confi %d, AltDir %d, Alt %d\n", \
+                                                                  X.latitudeSign, X.latitude, X.longitude, X.uncertaintySemiMajor, X.uncertaintySemiMinor, X.orientationMajorAxis, \
+                                                                  X.uncertaintyAltitude, X.confidence, X.altitudeDirection, X.altitude));   \
+                                                MC_CGPS_TRACE(("CGPS7_07RefPosReq : Verdirect %d, Bearing %d, HorSpeed %d, VerSpeed %d, HorUncSpeed %d, VerUncSpeed %d\n",            \
+                                                                  X.verdirect, X.bearing, X.horspeed, X.verspeed, X.horuncertspeed, X.veruncertspeed))
+
+
+
+
+
+
+/**
+*\def MC_CGPS_TRACE_COMPUTED_POS_DATA
+*Macro to print the computed position elements.
+*/
+#define MC_CGPS_TRACE_COMPUTED_POS_DATA(X)       MC_CGPS_TRACE(("CGPS7_35UpdateLastPosition : LatSign %d, Lat %d, Long %d, UncSemiMajor %d, UncSemiMinor %d, OrienMajorAxis %d, UncAlt %d, Confi %d, AltDir %d, Alt %d\n", \
+                                                                  X.latitudeSign, X.latitude, X.longitude, X.uncertaintySemiMajor, X.uncertaintySemiMinor, X.orientationMajorAxis, \
+                                                                  X.uncertaintyAltitude, X.confidence, X.altitudeDirection, X.altitude));\
+                                                 MC_CGPS_TRACE(("CGPS7_35UpdateLastPosition: Verdirect %d, Bearing %d, HorSpeed %d, VerSpeed %d, HorUncSpeed %d, VerUncSpeed %d\n",\
+                                                                  X.verdirect, X.bearing, X.horspeed, X.verspeed, X.horuncertspeed, X.veruncertspeed))
+                                            
+
+/**
+* \def MC_CGPS_TRACE_NAV_DATA
+* Macro to print navigation data.
+*/
+#define MC_CGPS_TRACE_NAV_DATA(X)           MC_CGPS_TRACE(("CGPS7_08AssistanceDataBReq : NrOfSats %d", X )); \
+                                            MC_CGPS_TRACE(("CGPS7_08AssistanceDataBReq :           SV,     CodeOnL2,          URA,     SVHealth,   FitIntFlag,         AODA,      L2PFlag,          TGD,          AF2,         Week\n")); \
+                                            MC_CGPS_TRACE(("CGPS7_08AssistanceDataBReq :          TOC,          TOE,         IODC,          Af1,           dn,         IDot,          Crs,          Crc,          Cus,          Cuc\n")); \
+                                            MC_CGPS_TRACE(("CGPS7_08AssistanceDataBReq :          Cis,          Cic,          af0,           M0,            e,         A1/2,       Omega0,           I0,            W,     OmegaDot\n"))
+
+
+
+
+/**
+* \def MC_CGPS_TRACE_NAV_ELEMENT
+* Macro to print navigation elements.
+*/
+#define MC_CGPS_TRACE_NAV_ELEMENT(X)        MC_CGPS_TRACE(("CGPS7_08AssistanceDataBReq : %12d,%13d,%13d,%13d,%13d,%13d,%13d,%13d,%13d,%13d\n", \
+                                                            X.SatID,      \
+                                                            X.CodeOnL2,   \
+                                                            X.URA,        \
+                                                            X.SVHealth,   \
+                                                            X.FitIntFlag,  \
+                                                            X.AODA,    \
+                                                            X.L2Pflag, \
+                                                            X.TGD, \
+                                                            X.af2, \
+                                                            X.Week));\
+                                            MC_CGPS_TRACE(("CGPS7_08AssistanceDataBReq : %12d,%13d,%13d,%13d,%13d,%13d,%13d,%13d,%13d,%13d\n", \
+                                                            X.toc,  \
+                                                            X.toe,  \
+                                                            X.IODC, \
+                                                            X.af1,  \
+                                                            X.dn,   \
+                                                            X.IDot, \
+                                                            X.Crs,  \
+                                                            X.Crc,  \
+                                                            X.Cus,  \
+                                                            X.Cuc));\
+                                            MC_CGPS_TRACE(("CGPS7_08AssistanceDataBReq : %12d,%13d,%13d,%13d,%13d,%13d,%13d,%13d,%13d,%13d\n", \
+                                                            X.Cis,      \
+                                                            X.Cic,      \
+                                                            X.af0,      \
+                                                            X.M0,       \
+                                                            X.e,        \
+                                                            X.APowerHalf,\
+                                                            X.Omega0,   \
+                                                            X.i0,       \
+                                                            X.w,        \
+                                                            X.OmegaDot))
+
+
+
+/**
+* \def MC_CGPS_TRACE_ALMANAC_DATA
+* Macro to print almanac data.
+*/
+#define MC_CGPS_TRACE_ALMANAC_DATA(X)       MC_CGPS_TRACE(("CGPS7_09AlmanacDataReq : NrOfSats %d", X )); \
+                                            MC_CGPS_TRACE(("CGPS7_09AlmanacDataReq :           SV,          Wna,     SVHealth,          toa,          Af0,          Af1,            e\n")); \
+                                            MC_CGPS_TRACE(("CGPS7_09AlmanacDataReq :      delta_I,     OmegaDot,         A1/2,        Omega0,           w,          M0\n"))
+
+
+
+/**
+* \def MC_CGPS_TRACE_ALMANAC_ELEMENT
+* Macro to print almanac elements.
+*/
+#define MC_CGPS_TRACE_ALMANAC_ELEMENT(X)    MC_CGPS_TRACE(("CGPS7_09AlmanacDataReq : %12d,%13d,%13d,%13d,%13d,%13d,%13d\n", \
+                                                            X.SatID,   \
+                                                            X.WNa,    \
+                                                            X.SVHealth,\
+                                                            X.toa,    \
+                                                            X.af0,    \
+                                                            X.af1,    \
+                                                            X.e));    \
+                                            MC_CGPS_TRACE(("CGPS7_09AlmanacDataReq : %12d,%13d,%13d,%13d,%13d,%13d\n", \
+                                                            X.delta_I,  \
+                                                            X.OmegaDot, \
+                                                            X.APowerHalf,\
+                                                            X.Omega0,   \
+                                                            X.w,        \
+                                                            X.M0))
+
+
+/**
+* \def MC_CGPS_TRACE_IONO_DATA
+* Macro to print Ionospheric data.
+*/
+#define MC_CGPS_TRACE_IONO_DATA(X)          MC_CGPS_TRACE(("CGPS7_10AssistIonoModelReq : ZCount %d, A0 %d, A1 %d, A2 %d, A3 %d, B0 %d, B1 %d, B2 %d, B3 %d\n",  \
+                                                            X.ZCount, X.a0, X.a1, X.a2, X.a3, X.b0, X.b1, X.b2, X.b3))
+
+
+
+/**
+* \def MC_CGPS_TRACE_UTC_DATA
+* Macro to print UTC data.
+*/
+#define MC_CGPS_TRACE_UTC_DATA(X)           MC_CGPS_TRACE(("CGPS7_12AssistUTCModelReq : ZCount %d, A1 %d, A0 %d, Tot %d, Wnt %d, dtLs %d, WNLSF %d, DN %d, dtLSF %d\n",  \
+                                                            X.ZCount, X.A1, X.A0, X.Tot, X.WNt, X.dtLS, X.WNLSF, X.DN, X.dtLSF))
+
+
+/**
+* \def MC_CGPS_TRACE_MEAS_REPORT
+* Macro to print Measurement data sent by CGPS
+*/
+#define MC_CGPS_TRACE_MEAS_REPORT( X )      MC_CGPS_TRACE(("CGPS7_18CPSendMSAssistedData : NrOfSats %d, Status %d, RefFrame %d, GpsTow %d, DeltaTow %d, TowUnc %d, RefDeltaCellTime %d\n", \
+                                                            X.v_NrOfSats,\
+                                                            X.v_Status,  \
+                                                            X.v_RefFrame,\
+                                                            X.v_GpsTow,\
+                                                            X.v_Delta_TOW,\
+                                                            X.v_GpsTowUnc ,\
+                                                            X.v_RefDeltaCellTime));\
+                                            MC_CGPS_TRACE(("CGPS7_18CPSendMSAssistedData :           SV,          Cno,      Doppler,   WholeChips,    FracChips,     MPathInd, PseudoRmsErr\n"))
+
+
+
+/**
+* \def MC_CGPS_TRACE_SV_MEASUREMENT
+* Macro to print Measurements sent by CGPS
+*/
+#define MC_CGPS_TRACE_SV_MEASUREMENT(X)     MC_CGPS_TRACE(("CGPS7_18CPSendMSAssistedData : %12d,%13d,%13d,%13d,%13d,%13d,%13d\n", \
+                                                            X.v_SatId,      \
+                                                            X.v_CNo,        \
+                                                            X.v_Doppler,    \
+                                                            X.v_WholeChips, \
+                                                            X.v_FracChips,  \
+                                                            X.v_MpathIndic, \
+                                                            X.v_PseudoRmsErr))
+
+
+
+/**
+* \def MC_CGPS_TRACE_POS_DATA
+* Macro to print Position data sent by CGPS
+*/
+#define MC_CGPS_TRACE_POS_DATA(X)           MC_CGPS_TRACE(("CGPS7_19CPSendMSBasedData : Status %d, RefFrame %d, RefDeltaCellTime %d, GpsTow %d, GpsTowSubms %d, FixType %d, SignofLat %d, Lat %d, Long %d\n, UncSemiMaj %d\n", \
+                                                            X.v_Status,         \
+                                                            X.v_RefFrame,       \
+                                                            X.v_RefDeltaCellTime,\
+                                                            X.v_GpsTow,         \
+                                                            X.v_GpsTowSubms,    \
+                                                            X.v_FixType,        \
+                                                            X.v_SignOfLat,      \
+                                                            X.v_Latitude,       \
+                                                            X.v_Longitude,      \
+                                                            X.v_UncertSemiMajor));\
+                                            MC_CGPS_TRACE(("CGPS7_19CPSendMSBasedData : UncSemiMin %d, AxisAngle %d, DirectAlt %d, Alt %d, UncAlt %d, Confi %d, IncAngle %d, OffAngle %d, InnRad %d\n, ShapeType %d\n", \
+                                                            X.v_UncertSemiMinor,\
+                                                            X.v_AxisAngle,     \
+                                                            X.v_DirectOfAlt,    \
+                                                            X.v_Altitude,      \
+                                                            X.v_UncertAltitude, \
+                                                            X.v_Confidence,    \
+                                                            X.v_IncludedAngle,  \
+                                                            X.v_OffsetAngle,    \
+                                                            X.v_InnerRadius,    \
+                                                            X.v_ShapeType))
+#endif /* __CGPSCP_HIM__ */
+

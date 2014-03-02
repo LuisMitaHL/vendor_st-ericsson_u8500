@@ -1,0 +1,108 @@
+state.U85x0card {
+        control.1 {
+                comment.access 'read write'
+                comment.type ENUMERATED
+                comment.count 1
+                comment.item.0 'Mic 2'
+                comment.item.1 'LineIn Right'
+                iface MIXER
+                name 'Mic 2 or LINR Select Capture Route'
+                value 'LineIn Right'
+        }
+        control.2 {
+                comment.access 'read write'
+                comment.type ENUMERATED
+                comment.count 1
+                comment.item.0 'LineIn Right'
+                comment.item.1 'DMic 2'
+                iface MIXER
+                name 'AD 2 Select Capture Route'
+                value 'LineIn Right'
+        }
+        control.3 {
+                comment.access 'read write'
+                comment.type ENUMERATED
+                comment.count 1
+                comment.item.0 'LineIn Left'
+                comment.item.1 'DMic 1'
+                iface MIXER
+                name 'AD 1 Select Capture Route'
+                value 'LineIn Left'
+        }
+        control.4 {
+                comment.access 'read write'
+                comment.type ENUMERATED
+                comment.count 1
+                comment.item.0 Disabled
+                comment.item.1 Enabled
+                iface MIXER
+                name 'AD2 to IHF Right'
+                value Enabled
+        }
+        control.5 {
+                comment.access 'read write'
+                comment.type ENUMERATED
+                comment.count 1
+                comment.item.0 Disabled
+                comment.item.1 Enabled
+                iface MIXER
+                name 'AD1 to IHF Left'
+                value Enabled
+        }
+        control.6 {
+                comment.access 'read write'
+                comment.type INTEGER
+                comment.count 2
+                comment.range '0 - 15'
+                comment.dbmin -1000
+                comment.dbmax 2000
+                iface MIXER
+                name 'LineIn Capture Volume'
+                value.0 12
+                value.1 12
+        }
+        control.7 {
+                comment.access 'read write'
+                comment.type INTEGER
+                comment.count 2
+                comment.range '0 - 63'
+                comment.dbmin -3200
+                comment.dbmax 3100
+                iface MIXER
+                name 'LineIn Master Gain Capture Volume'
+                value.0 32
+                value.1 32
+        }
+        control.8 {
+                comment.access 'read write'
+                comment.type INTEGER
+                comment.count 2
+                comment.range '0 - 63'
+                comment.dbmin -6300
+                comment.dbmax 0
+                iface MIXER
+                name 'Analog Loopback Gain Playback Volume'
+                value.0 63
+                value.1 63
+        }
+	control.11 {
+		comment.access 'read write'
+		comment.type ENUMERATED
+		comment.count 1
+		comment.item.0 Disabled
+		comment.item.1 Enabled
+		iface MIXER
+		name 'LineIn Right'
+		value Enabled
+	}
+	control.12 {
+		comment.access 'read write'
+		comment.type ENUMERATED
+		comment.count 1
+		comment.item.0 Disabled
+		comment.item.1 Enabled
+		iface MIXER
+		name 'LineIn Left'
+		value Enabled
+	}
+}

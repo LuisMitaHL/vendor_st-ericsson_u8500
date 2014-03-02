@@ -1,0 +1,55 @@
+;##############################################
+; HWI2C Transfer write function to ABB via PRCMU
+;##############################################
+entry &Reg_Address &Reg_Value
+
+global &ValueToRead
+
+local &I2CRequest &value1 &value2
+local &prcmu_regs_base &prcmu_data_base &ReqMb5 &AckMb5
+local &PRCM_MBOX_CPU_SET &PRCM_ARM_IT1_VAL &PRCM_ARM_IT1_CLR
+
+; in t_nSecMap 0x7DD4--0x7FFF : offset from TCDM_BASE
+; (see prcmufw/L8540/xp70_MemMap.h)
+&prcmu_data_base=0x801B8000
+
+&ReqMb5=&prcmu_data_base+0x7E44
+&ReqMb5_Head=&prcmu_data_base+0x7FED
+&AckMb5=&prcmu_data_base+0x7DF4
+
+&prcmu_regs_base=0x80157000
+
+&PRCM_MBOX_CPU_SET=&prcmu_regs_base+0x100
+&PRCM_ARM_IT1_VAL=&prcmu_regs_base+0x494
+&PRCM_ARM_IT1_CLR=&prcmu_regs_base+0x48C
+
+
+  &I2CRequest=0x00000800|((&Reg_Address&0x00FF)<<16.)|((&Reg_Address&0xFF00)>>7)|((&Reg_Value)<<24.)
+  data.set a:&ReqMb5 %long &I2CRequest
+  data.set a:&ReqMb5_Head %long 0x0
+
+  ;Send mb5 (IT17) interrupt to XP70 to start HWI2C transfer
+  data.set a:&PRCM_MBOX_CPU_SET  %long 0x20
+
+  ; Check IT for ackMB5
+  &count=0.
+  &it_val=0
+  while (((&it_val&0x20)!=(0x20))&&&count<100.)
+  (
+	&it_val=DATA.LONG(a:&PRCM_ARM_IT1_VAL)
+	&count=&count+1.;
+  )
+  if &count==100.
+  (
+	 print "abb_I2C_write : Value Write for &Reg_Address Failed"
+         enddo
+  )
+
+  ; Clear IT1 ackmb5
+  data.set a:&PRCM_ARM_IT1_CLR 0x20
+
+  ; debug
+  print "HWI2C Transfer write ==> OK ( &Reg_Address => &Reg_Value )"
+
+enddo
+

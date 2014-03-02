@@ -1,0 +1,55 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSGSA_HEC__
+#define __HALGPSGSA_HEC__
+/**
+* \file halgpsgsa.hec
+* \date 14/07/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all constant used by external application.\n
+*
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 14.07.09</TD><TD> R.GUPTA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\addtogroup GSA
+*\{
+*/
+
+/**
+* \enum e_halgps_gsastatus
+*
+* Define HALGPSGSA status\n
+* This state are used to as a return for Frequency Aiding Apis.\n
+*/
+typedef enum
+{
+    HALGPS_GSA_OK,                       /*!< Initialization operation is Successful */
+    HALGPS_GSA_CLK_ALREADY_ACTIVE,       /*!< GSA Clock calibration is already ON   */
+    HALGPS_GSA_CLK_ALREADY_INACTIVE,     /*!< GSA Clock calibration is already OFF   */
+    HALGPS_GSA_CLK_ACTIVATED,            /*!< GSA Clock calibration is activated   */
+    HALGPS_GSA_CLK_DEACTIVATED,          /*!< GSA Clock calibration is deactivated   */
+    HALGPS_GSA_AFC_STATUS_NOT_OK,        /*!< AFC status not ok or uncertainty is higher than threshold. 
+                                              Frequency aiding must not be used. */
+    HALGPS_GSA_UNKNOWN                       /*!< unknown error  */
+}e_halgps_gsastatus;
+
+/**
+*\}
+*/
+#endif /*__HALGPSGSA_HEC__*/

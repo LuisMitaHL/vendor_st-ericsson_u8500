@@ -1,0 +1,36 @@
+;*****************************************************************************
+;*  ST-Ericsson                                                              *
+;*  Reproduction and Communication of this document is strictly prohibited   *
+;*  unless specifically authorized in writing by ST-Ericsson.                *
+;*---------------------------------------------------------------------------*/
+
+;****************************************************************************
+;* Author        : E.EDDI
+;* Description   : This Code/Script is for CA9 PTM Configuration:
+;*
+;*                 Board            :   Maja Validation Board or Big BOARD or Small BOARD
+;*                 SoC name/version :   DB5500V1 (Maja)
+;*                 Code/Script for  :   Lauterbach Power Debug.
+;*                 Version          :   V1.1
+;*
+;*
+;* File Name     : ca9_ptm_cfg.cmm
+;*----------------------------------------------------------------------------*
+
+; release the SOC_NRESETDBG
+d.s eahb:0x801572A0 %l d.l(eahb:0x801572A0)|0x10000
+
+
+;#############################################################################
+;#         Configure GPIOs to outpout PTM (16 datas + 1 clk)
+;#			GPIOs 132 to 148 in ALTB
+;#############################################################################
+print "Configure GPIOs to outpout Cortex-A9 PTM (16 datas + 1 clk)"
+
+;GPIOs 132 to 148 ALTA (AFSLA) disnabled
+d.s eahb:0x8014E020 %l (d.l(eahb:0x8014E020)&0xFFE0000F)
+
+;GPIOs 132 to 148 ALTB (AFSLB) enabled
+d.s eahb:0x8014E024 %l (d.l(eahb:0x8014E024)|0x001FFFF0)
+
+

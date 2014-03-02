@@ -1,0 +1,34 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/testValidFrameFlag.ite
+
+##############################################################################################################
+# The Use case will test the flags added in SystemSetup PE "e_Flag_Request_ValidFrameNotification_Ctrl"
+# and in SystemConfig_Status PE "e_Flag_Request_ValidFrameNotification_Status"
+
+# Host set the value of e_Flag_Request_ValidFrameNotification_Ctrl to either true or flase
+# TRUE -> Firmware will send valid frame notification to host
+# FALSE -> Firmware won't send valid frame notification to host.
+
+# TestValidFrameFlag command is testing the behaviour of the flag (with true and false values) and with
+# all possible values of grab_mode (i.e  0 : NORMAL
+#                                        1 : FORCE_OK
+#                                        2 : FORCE_NOK
+#                                  )
+##############################################################################################################
+
+setusecase default
+
+manualfps 10
+HR prepare
+HR start
+TestValidFrameFlag
+HR stop
+HR free
+
+manualfps 30
+HR prepare
+HR start
+TestValidFrameFlag
+HR stop
+HR free
+
+setusecase default

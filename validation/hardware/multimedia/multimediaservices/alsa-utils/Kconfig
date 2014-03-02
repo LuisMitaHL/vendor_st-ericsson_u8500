@@ -1,0 +1,35 @@
+#
+# Alsa-utils configuration
+#
+
+menuconfig ALSAUTILS
+	bool "Alsa-utils Configuration"
+	depends on NCURSES && ALSALIB
+	help
+	  This module provides alsa tools to control soundcard
+
+if ALSAUTILS
+
+config ALSAUTILS_DIR
+	string
+	default ./multimediaservices/alsa-utils
+
+config ALSAUTILS_DEPS
+	string
+	default "ALSALIB NCURSES"
+
+config ALSAUTILS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on ALSAUTILS
+	default n
+	help
+	  This will disable strip for this module
+
+config ALSAUTILS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on ALSAUTILS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # ALSAUTILS

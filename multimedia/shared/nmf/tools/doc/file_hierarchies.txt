@@ -1,0 +1,114 @@
+NMF_ROOT
+	shared/mmenv
+		target*.sh (path in "/prj/multimedia_shared" to tools)
+		target*.make (compilation flags)
+		
+	shared/launcher
+		launcher.pl
+		
+	shared/platform_scripts
+		*.cmm
+		
+	shared/nmf/nmf
+		components.txt (NMF meta- components.txt)
+		workstation.txt (NMF dependencies; mmenv, ...)
+		
+	shared/nmf/tools
+		api
+			mpcee smpee (must be referenced in srcpath of nmfconfc)
+				*.idl
+		doc
+			release_note*.txt
+			file_hierarchy.txt (this file)
+			programming-model.pdf
+			nmf-api/index.html
+		nmfconfc.exe
+		
+	shared/nmf/mpcee
+		repository
+			target
+				**.elf4nmf
+				
+	shared/nmf/think
+		api
+		lib
+			target
+				**.lib
+		scatter
+		src
+		
+	shared/nmf/linux
+		api
+			*.h cm/**.h ee/**.h
+		driver
+			target (mmenv)
+				cm.ko
+		lib
+			target (mmenv)
+				libnmf.a
+				libnmfee.a
+		src
+			cm
+			hostee
+			los
+			cmuserproxy
+			
+	examples
+		helloworld
+			simple
+			distributed
+			library (ARM/DSP components)
+		eejpeg (full ARM)
+		
+	
+NMF_ROOT (Add-ons for OS integrator)
+	build
+		tools
+			classes
+			src
+		mpcee
+			repository
+				target
+					**.c **.o
+		think
+			target
+				**.o
+		tests
+			repository
+				target
+					**.o **.c (through nmfconfc --tmpoutput=)
+			obj
+				**.c **.o
+			bin
+				**.axf
+			arm_components
+				**.lib 
+				tmp
+					*.o **.c
+			report
+				target.xml
+				**.status
+				
+	shared/nmf/osintegration
+		hostsrc
+		hosteesrc
+		linux
+		symbian
+		
+	shared/los/osintegration
+		api
+		symbian
+		
+	shared/nmf/utils (required only for tests)
+		config.mk
+		
+	tests
+		src
+		doc
+		build
+			repository  (through nmfconfc -o )
+				target
+					host
+					**.elf4nmf
+		
+		

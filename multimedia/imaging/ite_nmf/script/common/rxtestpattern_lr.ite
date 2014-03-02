@@ -1,0 +1,136 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/rxtestpattern_lr.ite
+
+
+####################################################################################################
+# The Use case will test Rx Test Pattern in LR Pipe
+# Pre Requisite :- Set Use Case for LR Pipe with Resoultion and Format.
+#  1. Set Required Color Format 
+#  2. Prepare and Start LR pipe
+#  3. Once LR Pipe is sync with frames, write data into sdcard for verification.
+#  
+##############################################################################################################
+# This Use case can configure Following Rx Test Patterns
+# 1. Color Bar
+# 2. Fade 2 Color Bar
+# 3. Horizontal, Veritical and Diagnoal Grey Scale Modes
+# 4. PN9
+# 5. Solid Color with Different R,G1,G2,B Combinations
+# 6. Cursor Position Configuration.
+##############################################################################################################
+usagemode vf
+
+SetCursorPosition 0 0 0 0
+SetRXTestPattern COLORBAR
+LR prepare
+LR start
+writebmp LR LR_RX_COLORBAR 0
+LR stop
+
+SetRXTestPattern NORMAL_MODE
+LR prepare
+LR start
+writebmp LR LR_RX_NORMAL_MODE 0
+LR stop
+
+
+SetRXTestPattern FADETOGREY_COLORBAR
+LR prepare
+LR start
+writebmp LR LR_RX_FADETOGREY_COLORBAR 0
+LR stop
+
+
+SetRXTestPattern DIAGONAL_GREY_SCALE
+LR prepare
+LR start
+writebmp LR LR_RX_DIAGONAL_GREY_SCALE 0
+LR stop
+
+
+SetRXTestPattern PN9
+LR prepare
+LR start
+writebmp LR LR_RX_PN9 0
+LR stop
+
+
+SetRXTestPattern HORIZ_GREY_SCALE
+LR prepare
+LR start
+writebmp LR LR_RX_HORIZ_GREY_SCALE 0
+LR stop
+
+
+SetRXTestPattern VERT_GREY_SCALE
+LR prepare
+LR start
+writebmp LR LR_RX_VERT_GREY_SCALE 0
+LR stop
+
+
+SetRXTestPattern NORMAL_MODE
+SetCursorPosition 50 100 50 150
+LR prepare
+LR start
+writebmp LR LR_RX_NORMAL_MODE_CURSOR 0
+LR stop
+
+
+SetCursorPosition 0 0 0 0
+SetRXTestPattern SOLIDBAR 4095 4095 0 4095
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_YELLOW 0
+LR stop
+
+
+SetRXTestPattern SOLIDBAR 0 4095 4095 4095
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_CYAN 0
+LR stop
+
+
+SetRXTestPattern SOLIDBAR 4095 0 4095 0
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_MAGENTA 0
+LR stop
+
+
+SetRXTestPattern SOLIDBAR 0 0 0 0
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_BLACK 0
+LR stop
+
+
+SetRXTestPattern SOLIDBAR 4095 4095 4095 4095
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_WHITE 0
+LR stop
+
+
+SetRXTestPattern SOLIDBAR 4095 0 0 0
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_RED 0
+LR stop
+
+
+SetRXTestPattern SOLIDBAR 0 0 4095 0
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_BLUE 0
+LR stop
+
+
+SetRXTestPattern SOLIDBAR 0 4095 0 4095
+LR prepare
+LR start
+writebmp LR LR_RX_SOLIDBAR_GREEN 0
+LR stop
+
+
+LR free

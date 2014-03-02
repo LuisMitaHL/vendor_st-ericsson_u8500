@@ -1,0 +1,141 @@
+#!/bin/sh
+BINDIR="../standalone/bin/x86_mmdsp"
+
+# spl test
+$BINDIR/SPL.exe ../test/spl_static_param_1.txt ../test/spl_dynamic_param_1.txt ../../../streams/spl/streams/SimulatedProgramNoise48kHz.pcm ../test/SimulatedProgramNoise48kHz_output.pcm 48000 1
+if (cmp ../test/SimulatedProgramNoise48kHz_output.pcm ../../../streams/spl/streams/SimulatedProgramNoise48kHz_ref.pcm) then
+	error1=0;
+	rm -f ../test/SimulatedProgramNoise48kHz_output.pcm
+else
+	error1=1;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_1.txt ../test/spl_dynamic_param_1.txt ../../../streams/spl/streams/simprog_noise_2cr2_48k.pcm ../test/simprog_noise_2cr2_48k_output.pcm 48000 2
+if (cmp ../test/simprog_noise_2cr2_48k_output.pcm ../../../streams/spl/streams/simprog_noise_2cr2_48k_ref.pcm) then
+	error2=0;
+	rm -f ../test/simprog_noise_2cr2_48k_output.pcm
+else
+	error2=0;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_2.txt ../test/spl_dynamic_param_1.txt ../../../streams/spl/streams/carre_10s_48khz.pcm ../test/carre_10s_48khz_output.pcm 48000 1
+if (cmp ../test/carre_10s_48khz_output.pcm ../../../streams/spl/streams/carre_10s_48khz_ref.pcm) then
+	error3=0;
+	rm -f ../test/carre_10s_48khz_output.pcm
+else
+	error3=1;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_2.txt ../test/spl_dynamic_param_2.txt ../../../streams/spl/streams/SimulatedProgramNoise48kHz.pcm ../test/SimulatedProgramNoise48kHz_2_output.pcm 48000 1
+if (cmp ../test/SimulatedProgramNoise48kHz_2_output.pcm ../../../streams/spl/streams/SimulatedProgramNoise48kHz_2_ref.pcm) then
+	error4=0;
+	rm -f ../test/SimulatedProgramNoise48kHz_2_output.pcm
+else
+	error4=1;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_3.txt ../test/spl_dynamic_param_3.txt ../../../streams/spl/streams/b48_32khz_stereo_15s.pcm ../test/b48_32khz_stereo_15s_output.pcm 32000 2
+if (cmp ../test/b48_32khz_stereo_15s_output.pcm ../../../streams/spl/streams/b48_32khz_stereo_15s_ref.pcm) then
+	error5=0;
+	rm -f ../test/b48_32khz_stereo_15s_output.pcm
+else
+	error5=1;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_pl.txt ../test/spl_dynamic_param_tc1.txt ../../../streams/spl/streams/sandstorm48000mono.pcm ../test/sandstorm48000mono_output.pcm 48000 1
+if (cmp ../test/sandstorm48000mono_output.pcm ../../../streams/spl/streams/sandstorm48000mono_ref.pcm) then
+	error6=0;
+	rm -f ../test/sandstorm48000mono_output.pcm
+else
+	error6=1;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_pl_tuning2.txt ../test/spl_dynamic_param_tc1.txt ../../../streams/spl/streams/sandstorm48000stereo.pcm ../test/sandstorm48000stereo_output.pcm 48000 2
+if (cmp ../test/sandstorm48000stereo_output.pcm ../../../streams/spl/streams/sandstorm48000stereo_ref.pcm) then
+	error7=0;
+	rm -f ../test/sandstorm48000stereo_output.pcm
+else
+	error7=1;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_pl.txt ../test/spl_dynamic_param_tc2.txt ../../../streams/spl/streams/white_noise.pcm ../test/white_noise_tc2_output.pcm 48000 1
+if (cmp ../test/white_noise_tc2_output.pcm ../../../streams/spl/streams/white_noise_tc2_ref.pcm) then
+	error8=0;
+	rm -f ../test/white_noise_tc2_output.pcm
+else
+	error8=1;
+	error=1;
+fi;
+
+$BINDIR/SPL.exe ../test/spl_static_param_pl_tuning3.txt ../test/spl_dynamic_param_tc3.txt ../../../streams/spl/streams/white_noise.pcm ../test/white_noise_tc3_output.pcm 48000 1
+if (cmp ../test/white_noise_tc3_output.pcm ../../../streams/spl/streams/white_noise_tc3_ref.pcm) then
+	error9=0;
+	rm -f ../test/white_noise_tc3_output.pcm
+else
+	error9=1;
+	error=1;
+fi;
+
+
+if (test $error1 -eq 0) then
+	echo "TEST 1 PASSED";
+else
+	echo "TEST 1 FAILED";
+fi;
+
+if (test $error2 -eq 0) then
+	echo "TEST 2 PASSED";
+else
+	echo "TEST 2 FAILED";
+fi;
+
+if (test $error3 -eq 0) then
+	echo "TEST 3 PASSED";
+else
+	echo "TEST 3 FAILED";
+fi;
+
+if (test $error4 -eq 0) then
+	echo "TEST 4 PASSED";
+else
+	echo "TEST 4 FAILED";
+fi;
+
+if (test $error5 -eq 0) then
+	echo "TEST 5 PASSED";
+else
+	echo "TEST 5 FAILED";
+fi;
+
+if (test $error6 -eq 0) then
+	echo "TEST 6 PASSED";
+else
+	echo "TEST 6 FAILED";
+fi;
+
+if (test $error7 -eq 0) then
+	echo "TEST 7 PASSED";
+else
+	echo "TEST 7 FAILED";
+fi;
+
+if (test $error8 -eq 0) then
+	echo "TEST 8 PASSED";
+else
+	echo "TEST 8 FAILED";
+fi;
+
+if (test $error9 -eq 0) then
+	echo "TEST 9 PASSED";
+else
+	echo "TEST 9 FAILED";
+fi;
+
+exit $error;

@@ -1,0 +1,26 @@
+#!/bin/sh
+case $1 in
+    start)
+    echo "Starting UsbCableConnectionHandler..."
+    touch /tmp/UsbCableConnectionCallbacksRunOnce
+    echo "#\!/bin/sh" > /tmp/UsbCableConnectionCallbacksRunOnce
+    echo "ifconfig usb0 192.168.0.2" >> /tmp/UsbCableConnectionCallbacksRunOnce
+    echo "mount -t devpts none /dev/pts" >> /tmp/UsbCableConnectionCallbacksRunOnce
+    chmod +x /tmp/UsbCableConnectionCallbacksRunOnce
+    touch /tmp/UsbCableConnectionCallbacksRun
+    echo "#\!/bin/sh" > /tmp/UsbCableConnectionCallbacksRun
+    echo "echo \"/bin/sh --login\" > /tmp/mysh && chmod +x /tmp/mysh && telnetd -l /tmp/mysh" >> /tmp/UsbCableConnectionCallbacksRun
+    chmod +x /tmp/UsbCableConnectionCallbacksRun
+    UsbCableConnectionObserver&
+    ;;
+    stop)
+    echo "Stopping UsbCableConnectionHandler..."
+    ps | grep UsbCableConnectionObserver | grep -v grep | awk '{print $1}' | xargs kill
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

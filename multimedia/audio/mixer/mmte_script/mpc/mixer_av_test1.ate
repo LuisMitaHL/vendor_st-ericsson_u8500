@@ -1,0 +1,99 @@
+test_start mix_mpc_0080
+test_property        TEST_NAME mixer_av_test1
+
+alias FILE_NAME     mixer_nonsync.out
+alias OUTPUT_FILE   $(OUTPUT_DIR)/$(FILE_NAME)
+#alias REFFILE       $(AUDIO_STREAMS)/mixer/streams/$(FILE_NAME).ref
+#instantiate mixer
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+#OMX_SetConfig    mixer ENS_IndexConfigTraceSetting nTraceEnable=0xff nParentHandle=0x11
+
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+# configure mixer
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+
+MMTE_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/samplerateconv/streams/Portal_8m.pcm 0 0 0
+MMTE_set_nb_buffer   mixer 1 5
+
+
+MMTE_attach_io       mixer 0 MEM $(OUTPUT_FILE) 2000000 0 0
+
+
+# Go to Idle
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0
+MMTE_CheckConfig mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0 nProcessedDataAmount=000
+
+# Go to Executing 
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# wait until our input buffers have been processed
+MMTE_wait_transfer mixer 1
+
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0
+
+MMTE_CheckConfig mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0 nProcessedDataAmount=1280000
+
+#Today the mixer hardcode the field nProcessedDataAmount to 0
+OMX_SetConfig  mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0 nProcessedDataAmount=0
+mmte_sleep 1000
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0
+MMTE_CheckConfig mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0 nProcessedDataAmount=0
+
+MMTE_resume_transfer mixer 1 5
+# wait until our input buffers have been processed
+MMTE_wait_transfer mixer 1
+
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0
+
+MMTE_CheckConfig mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0 nProcessedDataAmount=1280000
+
+#Today the mixer hardcode the field nProcessedDataAmount to 0
+OMX_SetConfig  mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0 nProcessedDataAmount=0
+mmte_sleep 1000
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0
+MMTE_CheckConfig mixer OMX_IndexConfigAudioProcessedDataAmount nPortIndex=0 nProcessedDataAmount=0
+
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+
+mmte_check_CBmessage
+
+MMTE_CheckMemoryStatus
+
+unalias FILE_NAME
+unalias OUTPUT_FILE
+
+test_end

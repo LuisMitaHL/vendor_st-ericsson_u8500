@@ -1,0 +1,16 @@
+#!/bin/sh
+case $1 in
+start)
+	echo "Starting ModemApeScripts"
+  echo " " > /var/log/miniape/modem_ape/modem_ape.log
+  export MLIB_TRACE_MODE="1"
+# start modemp ape script
+	/usr/bin/scripts/enable_auto_answer.sh | /usr/bin/modem_ape.exe --auto_run --log yes --debug no &
+;;
+stop) 	
+	echo "Stopping ModemApeScripts..."
+	killall enable_auto_answer.sh modem_ape.exe
+;;
+esac
+
+exit

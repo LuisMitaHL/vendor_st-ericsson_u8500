@@ -1,0 +1,70 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/test_variableframerate_hd_hr.ite
+
+LogPE disable
+setusecase HR HD YUV422RI
+usagemode videohq
+
+#VariableFramerate_Set 1 to one by default during postboot
+manualfps NIL 30
+
+HR prepare
+HR start
+
+# test on start-stop
+TestVariableFrameRate
+
+zoomset 3
+manualfps 15 NIL
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+## test zoom alone
+zoomset 6
+getfps HR
+TestVariableFrameRate
+
+### test fps alone
+manualfps 30 NIL
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+HR stop
+
+## Now test in case of BMS
+setusecase BMS MODE0 RAW12
+usagemode still
+bmsmode STILL
+bmsout BAYERSTORE2
+
+VariableFramerate_Set 1
+manualfps 5 5
+
+usagemode still
+bms prepare
+getusecase
+bms start
+wait 1
+TestVariableFrameRate
+bms stop
+
+## now back to streaming
+usagemode videohq
+manualfps NIL 30
+HR start
+getfps HR
+TestVariableFrameRate
+
+## test zoom alone
+zoomset 6
+getfps HR
+TestVariableFrameRate
+
+## test framerate alone
+manualfps 30 NIL
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+HR stop

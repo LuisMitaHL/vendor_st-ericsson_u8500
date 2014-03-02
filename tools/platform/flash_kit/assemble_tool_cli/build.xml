@@ -1,0 +1,240 @@
+<?xml version="1.0"?>
+<project name="assembling_cli" basedir="." default="assemble-tool-cli.RELEASE">
+
+	<property name="assemble-tool-cli.SOURCE_FOLDER" value="./src" />
+	<property name="assemble-tool-cli.BUILD_FOLDER" value="./build" />
+	<property name="assemble-tool-cli.DOC_FOLDER" value="./doc/" />
+	<property name="assemble-tool-cli.SCRIPTS_FOLDER" value="./scripts" />
+	<property name="assemble-tool-cli.CLASSES_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/classes" />
+	<property name="assemble-tool-cli.TEST_CLASSES_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/tests" />
+	<property name="assemble-tool-cli.JAR_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/jar" />
+	<property name="assemble-tool-cli.RELEASE_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/release" />
+	<property name="assemble-tool-cli.JAR_NAME" value="assemble-tool-cli.jar" />
+	<property name="assemble-tool-cli.LIB_FOLDER" value="./lib" />
+	<property name="assemble-tool-cli.TEST_SOURCE_FOLDER" value="./test" />
+	<property name="assemble-tool-cli.TEST_REPORTS_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/reports" />
+	<property name="assemble-tool-cli.KPI_FOLDER" value="./kpi" />
+	<property name="assemble-tool-cli.INSTRUMENTED_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/instrumented" />
+	<property name="assemble-tool-cli.CHECKSTYLE_CFG_FOLDER" value="${assemble-tool-cli.KPI_FOLDER}/checkstyle" />
+	<property name="assemble-tool-cli.JUNIT_JAR" value="${assemble-tool-cli.LIB_FOLDER}/junit-4.6.jar" />
+	<property name="common_build" value="./../flash_tool_backend/com.stericsson.sdk.common"/>
+	<property name="libs_jar" value="./../flash_tool_backend/com.stericsson.sdk.common/build/jar/com.stericsson.sdk.common.jar" />
+
+	<path id="assemble-tool-cli.CLASSPATH">
+		<pathelement location="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+		<pathelement location="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar"/>
+		<pathelement location="${libs_jar}" />
+	</path>
+
+	<path id="assemble-tool-cli.TEST_CLASSPATH">
+		<pathelement location="${assemble-tool-cli.JUNIT_JAR}" />
+		<pathelement location="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+		<pathelement location="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar"/>
+		<pathelement path="${assemble-tool-cli.CLASSES_FOLDER}" />
+		<pathelement location="${libs_jar}" />
+	</path>
+
+	<!-- configure cobertura ant task -->
+
+	<property name="assemble-tool-cli.COBERTURA_FOLDER" value="${assemble-tool-cli.KPI_FOLDER}/cobertura" />
+
+	<path id="assemble-tool-cli.COBERTURA_CLASSPATH">
+		<fileset dir="${assemble-tool-cli.COBERTURA_FOLDER}">
+			<include name="cobertura.jar" />
+			<include name="lib/**/*.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="assemble-tool-cli.COBERTURA_CLASSPATH" resource="tasks.properties" />
+
+	<!-- end configure cobertura ant task -->
+
+	<!-- configure checkstyle ant task -->
+
+	<property name="assemble-tool-cli.CHECKSTYLE_FOLDER" value="${assemble-tool-cli.KPI_FOLDER}/checkstyle" />
+
+	<path id="assemble-tool-cli.CHECKSTYLE_CLASSPATH">
+		<fileset dir="${assemble-tool-cli.CHECKSTYLE_FOLDER}">
+			<include name="checkstyle-all-4.4.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="assemble-tool-cli.CHECKSTYLE_CLASSPATH" resource="checkstyletask.properties" />
+
+	<!-- end configure checkstyle ant task -->
+
+	<target name="assemble-tool-cli.RELEASE_WITH_TEST" depends="assemble-tool-cli.TEST, assemble-tool-cli.RELEASE" />
+
+	<target name="assemble-tool-cli.RELEASE" depends="assemble-tool-cli.JAR, assemble-tool-cli.TEST_COMPILE">
+		<!-- copy libraries produced by this project -->
+		<copy file="${assemble-tool-cli.JAR_FOLDER}/${assemble-tool-cli.JAR_NAME}" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<!-- copy dependency libraries -->
+		<copy file="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<copy file="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<copy file="${libs_jar}" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<!--copy scripts to release folder-->
+		<copy todir="${assemble-tool-cli.RELEASE_FOLDER}">
+			<fileset dir="${assemble-tool-cli.SCRIPTS_FOLDER}/" />
+		</copy>
+
+		<!--copy manpages to release folder-->
+		<copy todir="${assemble-tool-cli.RELEASE_FOLDER}">
+			<fileset dir="${assemble-tool-cli.DOC_FOLDER}" >
+				<exclude name="*.txt"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="assemble-tool-cli.JAR" depends="assemble-tool-cli.COMPILE">
+		<!-- create jar of compiled files -->
+		<jar destfile="${assemble-tool-cli.JAR_FOLDER}/${assemble-tool-cli.JAR_NAME}" basedir="${assemble-tool-cli.CLASSES_FOLDER}" />
+	</target>
+
+	<target name="assemble-tool-cli.COMPILE" depends="assemble-tool-cli.INIT">
+		<ant antfile="${common_build}/build-release.xml" inheritAll="false" />
+		<!-- compile java sources -->
+		<javac srcdir="${assemble-tool-cli.SOURCE_FOLDER}" destdir="${assemble-tool-cli.CLASSES_FOLDER}" classpathref="assemble-tool-cli.CLASSPATH" debug="true" />
+	</target>
+
+	<target name="assemble-tool-cli.TEST_COMPILE" depends="assemble-tool-cli.COMPILE">
+		<ant antfile="${common_build}/build-release.xml" inheritAll="false" />
+		<!-- compile java sources -->
+		<javac srcdir="${assemble-tool-cli.TEST_SOURCE_FOLDER}" destdir="${assemble-tool-cli.TEST_CLASSES_FOLDER}" classpathref="assemble-tool-cli.TEST_CLASSPATH" />
+	</target>
+
+	<target name="assemble-tool-cli.INIT" depends="assemble-tool-cli.CLEAN">
+		<!-- create output directories -->
+		<mkdir dir="${assemble-tool-cli.JAR_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.CLASSES_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.TEST_CLASSES_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}" />
+	</target>
+
+	<target name="assemble-tool-cli.CLEAN">
+		<!-- delete output directories -->
+		<delete dir="${assemble-tool-cli.JAR_FOLDER}" />
+		<delete dir="${assemble-tool-cli.CLASSES_FOLDER}" />
+		<delete dir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<delete dir="${assemble-tool-cli.TEST_CLASSES_FOLDER}" />
+		<delete dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}" />
+	</target>
+
+	<target name="assemble-tool-cli.TEST" depends="assemble-tool-cli.TEST_COMPILE">
+		<mkdir dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit" />
+		<junit printsummary="yes" haltonfailure="no" showoutput="yes">
+			<classpath>
+				<pathelement location="${assemble-tool-cli.JUNIT_JAR}" />
+				<pathelement location="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+				<pathelement location="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar" />
+				<pathelement path="${assemble-tool-cli.CLASSES_FOLDER}" />
+				<pathelement path="${assemble-tool-cli.TEST_CLASSES_FOLDER}" />
+				<pathelement location="${libs_jar}" />
+			</classpath>
+
+			<formatter type="xml" />
+
+			<batchtest fork="yes" todir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<fileset dir="${assemble-tool-cli.TEST_SOURCE_FOLDER}">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTest*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit">
+			<fileset dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit/html" />
+		</junitreport>
+	</target>
+
+	<target name="assemble-tool-cli.ALL_REPORTS" depends="assemble-tool-cli.COBERTURA_REPORT, assemble-tool-cli.CHECKSTYLE" />
+
+	<!-- cobertura targets -->
+
+	<target name="assemble-tool-cli.TEST_INSTRUMENTED" depends="assemble-tool-cli.COBERTURA_INSTRUMENT">
+		<mkdir dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit" />
+		<chmod perm="ugo+rx">
+			<fileset dir="res">
+				<include name="preflash_tool" />
+				<include name="preflash_tool_x64" />
+			</fileset>
+		</chmod>
+		<junit fork="yes" forkmode="once" printsummary="yes" haltonfailure="no" showoutput="yes">
+			<classpath>
+				<pathelement path="${assemble-tool-cli.INSTRUMENTED_FOLDER}" />
+				<pathelement location="${assemble-tool-cli.JUNIT_JAR}" />
+				<pathelement location="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+				<pathelement location="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar" />
+				<pathelement path="${assemble-tool-cli.CLASSES_FOLDER}" />
+				<pathelement path="${assemble-tool-cli.TEST_CLASSES_FOLDER}" />
+				<pathelement location="${libs_jar}" />
+			</classpath>
+			<classpath refid="assemble-tool-cli.COBERTURA_CLASSPATH" />
+
+			<formatter type="xml" />
+
+			<batchtest todir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<fileset dir="${assemble-tool-cli.TEST_SOURCE_FOLDER}">
+					<include name="**/*Test*.java" />
+					<exclude name="**/AllTest*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit">
+			<fileset dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit">
+				<include name="TEST-*.xml" />
+			</fileset>
+			<report format="frames" todir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/junit/html" />
+		</junitreport>
+	</target>
+
+	<target name="assemble-tool-cli.COBERTURA_REPORT" depends="assemble-tool-cli.TEST_INSTRUMENTED">
+
+		<delete dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/code-coverage" />
+
+		<!-- create coverage report -->
+		<cobertura-report format="html" destdir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/code-coverage">
+			<!-- include every source folder for instrumented classes -->
+			<fileset dir="${assemble-tool-cli.SOURCE_FOLDER}" includes="**/*.java" />
+		</cobertura-report>
+	</target>
+
+	<target name="assemble-tool-cli.COBERTURA_INSTRUMENT" depends="assemble-tool-cli.TEST_COMPILE">
+
+		<delete file="cobertura.ser" />
+		<delete dir="${assemble-tool-cli.INSTRUMENTED_FOLDER}" />
+
+		<mkdir dir="${assemble-tool-cli.INSTRUMENTED_FOLDER}" />
+
+		<!-- execute the instrumentation task on release bundles -->
+		<cobertura-instrument todir="${assemble-tool-cli.INSTRUMENTED_FOLDER}">
+			<fileset dir="${assemble-tool-cli.CLASSES_FOLDER}" />
+		</cobertura-instrument>
+	</target>
+
+	<!-- end cobertura targets -->
+
+	<!-- checkstyle targets -->
+
+	<target name="assemble-tool-cli.CHECKSTYLE" depends="assemble-tool-cli.COMPILE">
+		<mkdir dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}/checkstyle" />
+		<checkstyle config="${assemble-tool-cli.CHECKSTYLE_CFG_FOLDER}/ruleset.xml" failOnViolation="false">
+			<classpath>
+				<pathelement location="${assemble-tool-cli.CLASSES_FOLDER}" />
+				<pathelement location="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+				<pathelement location="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar" />
+			</classpath>
+			<!-- every .java file that should be checked -->
+			<fileset dir="${assemble-tool-cli.SOURCE_FOLDER}" includes="**/*.java" />
+			<formatter type="xml" toFile="${assemble-tool-cli.TEST_REPORTS_FOLDER}/checkstyle/report.xml" />
+		</checkstyle>
+		<xslt in="${assemble-tool-cli.TEST_REPORTS_FOLDER}/checkstyle/report.xml" out="${assemble-tool-cli.TEST_REPORTS_FOLDER}/checkstyle/report.html" style="${assemble-tool-cli.CHECKSTYLE_CFG_FOLDER}/checkstyle-noframes-sorted.xsl" />
+	</target>
+
+	<!-- end checkstyle targets -->
+
+</project>

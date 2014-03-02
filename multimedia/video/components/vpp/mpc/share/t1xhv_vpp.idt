@@ -1,0 +1,101 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   VPP data structure and/or definition for VPP NMF ALGO components
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+
+#ifndef	_t1xhv_vpp_idt
+#define _t1xhv_vpp_idt
+
+#include <t1xhv_retarget.idt>
+
+/* ****************************** Enumerates ******************************** */
+
+/** @ingroup vppAlgoAPIGroup
+ *  Kind of type an ALGO component will be assigned
+ *  @{ 
+ */
+
+typedef enum 
+{
+	/**  Job complete with No error (provided with a status STATUS_JOB_COMPLETE)   */
+	VPP_ERT_NONE,
+
+	/**  Job complete with void execution of codec (provided with a status STATUS_JOB_COMPLETE)   */
+	VPP_VOID,
+	
+	/**  All error codes following VPP_ERT are provided with a status STATUS_JOB_ABORTED */
+	VPP_ERT,
+
+	/**  format_conv_type is not 0 */
+	VPP_ERT_BAD_FORMAT_CONV_TYPE,
+		
+	/* addr_src_frame_buffer is not a multiple of 256 */
+	VPP_ERT_BAD_ADD_SRC_BUFFER,
+
+	/* addr_dst_frame_buffer is not a multiple of 256 */
+	VPP_ERT_BAD_ADD_DEST_BUFFER,
+
+	/* addr_deblock_param_buffer is not a multiple of 8 */
+	VPP_ERT_BAD_ADD_DBLK_PARAM_BUFFER,
+
+	/* Task type value is not equal to 5 */
+	VPP_ERT_BAD_TASK_TYPE,
+	
+	/* offset_x is not a multiple of 16 */
+	VPP_ERT_BAD_OFFSET_X,
+
+	/* offset_y is not a multiple of 16 */
+	VPP_ERT_BAD_OFFSET_Y,
+
+	/* in_width is not a multiple of 16 */
+	VPP_ERT_BAD_INPUT_WIDTH,
+
+	/* in_height is not a multiple of 16 */
+	VPP_ERT_BAD_INPUT_HEIGHT,
+
+	/* out_width is not a multiple of 16 */
+	VPP_ERT_BAD_OUTPUT_WIDTH,
+
+	/* output_height is not a multiple of 16 */
+	VPP_ERT_BAD_OUTPUT_HEIGHT,
+
+	/**  The requested feature is not supported */
+	VPP_ERT_NOT_SUPPORTED                
+} t_t1xhv_vpp_info;
+
+
+typedef enum
+{
+  YUV420RasterPlaner_YUV420MB,	/**<\brief format conversion from YUV420 raster planer to YUV420 MB */
+  YUV420MB_YUV420MB				/**<\brief Frame copy from YUV420 MB to YUV420 MB */
+} t_t1xhv_format_conv_type;
+
+typedef enum
+{
+     TASK_CONV_FROM_420			= 0, /**< \brief convert from 420 input     */
+     TASK_CONV_FROM_422			= 1, /**< \brief convert from 422 input     */
+     TASK_H263_INLOOP_SW		= 2, /**< \brief H263 in-loop filter        */
+     TASK_H264_INLOOP			= 3, /**< \brief H264 in-loop filter        */
+     TASK_VC1_INLOOP			= 4, /**< \brief VC1  in-loop filter        */
+     TASK_MPEG4_POST_FLT_HW		= 5, /**< \brief MPEG4 deblocking		    */
+     TASK_DIVX6_POST_FLT_HW		= 6, /**< \brief DivX 6 post-filters        */
+     TASK_H264RCDO_INLOOP		= 7, /**< \brief H264 RCDO in loop          */
+     TASK_MPEG4_POST_DRG_HW		= 8, /**< \brief MPEG4 deringing            */
+     TASK_MPEG4_POST_FLT_DRG_HW	= 9, /**< \brief MPEG4 deblocking/deringing */
+     TASK_DIVX_POST_FLT_DRG_SW	= 10, /**< \brief DIVX deblocking/deringing  */	 
+     TASK_DIVX_POST_FLT_DRG_HW	= 11, /**< \brief DIVX deblocking/deringing  */
+     TASK_H263_INLOOP_HW		= 12, /**< \brief H263 in-loop filter        */	 
+     TASK_MPEG4_POST_FLT_DRG_SW	= 13 /**< \brief MPEG4 deblocking/deringing */	 	
+} t_task_type;
+
+/** @} */ // end of vppAlgoAPIGroup
+
+#endif /* _t1xhv_vpp_idt */

@@ -1,0 +1,22 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+# KStUidAudioDefine231 = 0x2003154D = 537072973
+OST_COMPONENT_ID = $(KUidDicStAudioPcmSplitterNmf)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmfil_mpc
+OST_SRC_DIR = nmfil/wrapper
+CPPFLAGS+= -I$(COMPONENT_TOP_DIR)/inc/autogentraces
+INSTALL_DICO = $(OST_DICO_NAME).xml
+
+
+CPPFLAGS+=-DNVERBOSE
+
+USER2MPCITFS_CPP=pcm_splitter.nmfil.wrapper.configure
+
+COMPONENTS= pcm_splitter.nmfil.wrapper
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

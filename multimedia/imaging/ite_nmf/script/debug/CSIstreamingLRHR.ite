@@ -1,0 +1,23 @@
+# Initialisation
+#LogPE disable
+#startenv grab_vpip_display_01_01 _BACKUPFW_LRoutVGA_HRoutVGA_SENSOR0 
+setusecase LR VGA RGB565
+LR prepare
+display LR
+LR start
+wait 20
+sensormode COLORBAR
+wait 1
+colorbartest LR 
+LR stop
+LR free
+setusecase HR VGA YUV422RI
+HR prepare
+sensormode COLORBAR
+HR start
+wait 3
+colorbartest HR 
+wait 1
+HR stop
+HR free
+stopenv

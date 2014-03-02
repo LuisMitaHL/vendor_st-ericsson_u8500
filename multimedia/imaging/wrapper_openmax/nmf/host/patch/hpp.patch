@@ -1,0 +1,12 @@
+--- orig/openmax_processor_wrp.hpp	2010-07-08 16:00:53.580036882 +0200
++++ fixed/openmax_processor_wrp.hpp	2010-07-08 15:45:12.448014299 +0200
+@@ -38,7 +38,8 @@
+ /*
+  * Component Factory
+  */
+-IMPORT_SHARED openmax_processor_wrp* openmax_processor_wrpCreate(void);
++class openmax_processor;
++IMPORT_SHARED openmax_processor_wrp* openmax_processor_wrpCreate(openmax_processor *pComp=NULL);
+ IMPORT_SHARED void openmax_processor_wrpDestroy(openmax_processor_wrp*& instance);
+ 
+ #endif

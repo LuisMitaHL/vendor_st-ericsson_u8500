@@ -1,0 +1,83 @@
+//
+//       Configuration file for mpeg2 decoder Data Dependancy     
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+
+
+
+primitive mpeg2dec.mpc.ddep extends fsm.component.component
+{
+	provides lifecycle.starter                                  as starter
+	
+	requires resource_manager.api.resource                      as iResource
+	provides resource_manager.api.inform_resource_status        as iInformResourceStatus referenced
+
+
+	provides mpeg2dec.mpc.api.ddep	  as iDdep   
+	requires mpeg2dec.mpc.api.algo	  as iCodecAlgo
+	requires mpeg2dec.mpc.api.configure_algo	  as iConfigureAlgo
+	requires mpeg2dec.mpc.api.update_algo                         as iCodecUpdateAlgo
+
+	// Feed back from the codec
+	provides mpeg2dec.mpc.api.end_algo                          as iEndAlgo referenced
+
+	// transmit directly to the vpp
+	requires vpp.mpc.api.algo                         as vpp_algo
+	// Feed back from  vpp
+	
+	//coming from vpp
+	provides vpp.mpc.api.end_algo                     as ivppEndAlgo prefix vpp referenced
+
+
+
+	// input port
+	provides  emptythisbuffer   as      emptythisbuffer
+	requires  fillthisbuffer    as      inputport
+	
+	// input header port
+	provides  mpeg2dec.mpc.api.emptythisheader   as      emptythisheader
+	requires  mpeg2dec.mpc.api.fillthisheader    as      headerport
+	
+	// output port
+	requires emptythisbuffer    as      outputport
+	provides fillthisbuffer     as      fillthisbuffer
+	
+	// log event
+	requires mpeg2dec.mpc.api.log_event                    as iSendLogEvent
+	provides mpeg2dec.mpc.api.log_event                    as iGetLogEvent
+
+	// Added for power management 
+	requires resource_manager.api.sleep  as iSleep
+	requires ee.api.sleep as _sleep static
+
+	// OST capability
+	requires osttrace.api.osttrace                                          as osttrace static
+
+	requires ee.api.debug                   as _debug
+
+
+	
+	//      - Firmware Version numbers :
+	property component_version = COMPONENT_VERSION
+	
+	//      - Hardware Version numbers :
+	property hardware_version = HW_VERSION
+	
+	sources src/ddep_framePool.c
+	sources src/ddep_dpbDisplayOrder.c
+	sources src/ddep.c
+	sources src/ddep_basicBumping.c
+	sources src/ddep_copyBuffer.c
+
+	option memories EMB24RAM|EMB16RAM|XROM|EXT24RAM|EXT16RAM
+	
+	option incdir   "./inc"
+	//option CFLAGS "-O3 -g -D__T1XHV_NMF_ENV=1 -DMMDSP=1 -D__DEBUG_TRACE_ENABLE -D__DEBUG_TRACE_DECODER "
+	//-D__TRACES_FRAME_POOL_ -D__TRACES_BASIC_BUMPING_ -D__TRACES_COPY_BUFFER_ -D__TRACES_DPB_DISPLAY_ORDER_"
+	option CFLAGS "-O3  -D__T1XHV_NMF_ENV=1 -DMMDSP=1 "
+	option stack= 2048
+
+}

@@ -1,0 +1,20 @@
+#include <bool.idt>
+#include <samplefreq.idt>
+
+typedef struct {
+    t_uint16    nChans[3];
+
+} t_channelConfig;
+
+typedef struct {
+    t_uint16    nOutPutChannel[16];
+
+} t_OutChannelConfig;
+
+void setParameter(t_sample_freq freq,
+                  t_channelConfig chConfig,
+                  t_uint16 blocksize);
+
+
+void setOutputChannelConfig(t_uint16 portIdx, t_OutChannelConfig OutChannelConfig);
+void setTrace(t_uint32 addr);

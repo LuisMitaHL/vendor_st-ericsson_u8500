@@ -1,0 +1,149 @@
+; #####################################################################
+; # DB5500 debug & Trace script file: 5500_debug_config_ARM9.cmm      #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for Trace32-ARM926 debug configuration on 5500.
+; Crated by HED/CSP/CPT/ACT on 2010-06-10
+; Contact jingyi-xiaoyan.lu@st.com
+; 2010-10-17: clean-up: removed old Trace versions support. 
+;	      Removed dbgcfg.cmm call and do it inside this script 
+; 2011-02-24: restructure ==> the main body is more readable.
+; 2011-03-15: added "semihost" parameter in dbg_config.
+
+local &cjtag2pin &attach &up &prcmu &semihost
+&cur_dir=os.ppd()
+ENTRY &5500_ver &platform &dbg_config &core
+
+;--- handle the parameters
+gosub HandleParameters
+
+;---- reset everything
+if &cjtag2pin!=1
+	sys.reset
+
+;---- cpu setting
+sys.cpu &core
+
+;---- jtag clock
+gosub SetJtagClockFreq
+
+;---- configure the JTAG/cJTAG, TAPs topology and the TAP position
+gosub ScanChainCfg
+do "&cur_dir/debugPortCfg" &cjtag2pin
+
+;---- connection
+gosub DoConnection
+
+; ---- semihosting settings
+if &semihost==1
+(
+	do "&cur_dir/semihosting_setting.cmm"
+	term.heapinfo 0 0x20000 0x30000 0x20000
+)
+enddo
+
+
+
+
+
+
+
+; =================== Sub Functions ===================
+
+
+lab1:
+   if !system.up()
+     DIALOG.OK "SYS.UP FAILED"
+   enddo
+
+lab2:
+   if !system.up()
+     DIALOG.OK "SYS.M.ATTACH failed!"
+   enddo
+
+ScanChainCfg:
+	;--- configure the JTAG/cJTAG, TAPs topology and the TAP position
+	if system.up()
+		sys.down
+	print "Configuring the scan chain topology for DB5500 ..."
+	&cfg_connect_val=0x3
+	if &prcmu==1
+	       	&cfg_connect_val=&cfg_connect_val&0xC
+	sys.config.cfgconnect &cfg_connect_val
+	print "DONE."
+	return
+	
+HandleParameters:
+	;---- extract the dbg_config parameters
+	&cjtag2pin=0
+	&attach=0
+	&up=0
+	&prcmu=0
+	&semihost=0
+	while string.len("&dbg_config")!=0
+	(
+		&plus_idx=STRING.SCAN("&dbg_config","+",0)
+		if &plus_idx==0
+		(
+			print "Invalid parameter: &dbg_config !"
+			enddo
+		)
+		if &plus_idx==-1 // there is not any "+", i.e. &dbg_config contains only 1 word
+			&plus_idx=string.len("&dbg_config")
+	
+		// extract the first parameter
+		&temp=string.mid("&dbg_config",0,&plus_idx)
+		&param=string.lwr("&temp")
+	
+		// check the extraited paramter's validity
+		if "&param"!="attach"&&"&param"!="up"&&"&param"!="cjtag2pin"&&"&param"!="prcmu"&&"&param"!="semihost"
+		(
+			print "Invalid configuration parameter: &temp !"
+			enddo
+		)
+	
+		&&(param)=1
+	
+		// cut off the first parameter and the "+"
+		&dbg_config=string.cut("&dbg_config",&plus_idx+1)
+	)
+	return
+
+SetJtagClockFreq:
+	if "&platform"=="PALLADIUM"
+		sys.jc 100khz
+	else
+	(
+		sys.jc 10Mhz
+		if analyzer()
+			sys.jc 5Mhz
+	)
+	return
+
+DoConnection:
+	sys.o.pwrcheck on
+	sys.o.enreset off
+	sys.o.resBreak off
+	sys.o.waitReset off
+	SYStem.CONFIG CTICONFIG ARMV1
+	if &up==1
+	(
+		if system.up()
+			sys.down
+		on ERROR goto lab1
+		sys.up
+		if system.up()
+			print "SYS.UP OK!"
+		on ERROR NOTHING
+	)
+	else
+	(
+		if system.up()
+			sys.down
+		on ERROR goto lab2
+		sys.m.attach
+		if system.up()
+			print "SYS.M.ATTACH OK!"
+		on ERROR NOTHING
+	)
+	return

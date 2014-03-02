@@ -1,0 +1,76 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_resource_manager.idt>
+
+typedef struct
+{
+    t_uint32 addr_start_current_link;         /**< \brief Start address of the buffer  of the current link    */
+    t_uint32 addr_start_previous_link;        /**< \brief Start address of the buffer of the previous link    */
+    t_uint32 addr_end_current_link;           /**< \brief End address of the buffer                           */
+
+    t_uint32 nb_of_bytes_to_current_link;     /**< \brief Bytes number since start to current link            */
+    t_uint32 nb_of_bytes_to_previous_link;    /**< \brief Bytes number since start to previous link           */
+    t_uint32 nb_of_bytes_in_current_link;     /**< \brief Bytes number in the current buffer                  */
+
+    t_uint32 current_address_buffer_link;
+
+} ts_buffer_link_status;
+
+
+interface resource_manager.api.buffer { 
+
+/** @addtogroup getBufferLinkStatusGroup getBufferLinkStatus
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Get DMA for link list buffer mode status
+ (nb of byte transmitted, current node of the link list, ...)
+ \param[in]	p_buffer_link_status pointer buffer link status.
+*/
+
+void getBufferLinkStatus(ts_buffer_link_status * p_buffer_link_status);
+
+/** @} */ // end of getBufferLinkStatusGroup
+
+
+
+
+/** @addtogroup setBufferLinkGroup setBufferLink
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set dma transfers for either decoder, either encode process and launch it
+ * \param[in]	codec_type (ID_DECODER or ID_ENCODER) 
+ * \param[in]	p_bitstream_buf_pos pointer on bitstream buffer position data. It'll
+ * 				be mapped on a tps_t1xhv_bitstream_buf_link data structure 
+ * \param[in]	p_bitstream_buf_link pointer on bitstream buffer link data. It'll
+ * 				be mapped on a tps_t1xhv_bitstream_buf_pos data structure
+ * \param[in]	cb call back pointer
+*/
+
+void setBufferLink(	t_codec_type codec_type, 
+					void * p_bitstream_buf_pos, 
+					void* p_bitstream_buf_link, 
+					resource_manager.api.signal *cb);
+
+void setBufferLinkUpdate(	t_codec_type codec_type, 
+					void * p_bitstream_buf_pos, 
+					void* p_bitstream_buf_link, 
+					resource_manager.api.signal *cb);
+/** @} */ // end of setBufferLinkGroup
+
+
+}

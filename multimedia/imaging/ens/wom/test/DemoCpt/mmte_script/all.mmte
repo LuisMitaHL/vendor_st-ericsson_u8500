@@ -1,0 +1,14 @@
+# womDemoCpt no regression suite
+exist_alias &SIA_ALGO_PATH &bExist
+
+if $(bExist) != 0
+	alias womDemoCptPath $(SIA_ALGO_PATH)/womDemoCpt
+else
+	alias womDemoCptPath .
+endif
+
+do $(womDemoCptPath)/basic_init.mmte
+do $(womDemoCptPath)/test00.mmte
+#todo add here all your tests
+
+quit

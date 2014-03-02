@@ -1,0 +1,75 @@
+; #####################################################################
+; # DB8500 debug & Trace script file: cross_trig_A9_SxA.cmm           #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used to configure the A9SS-SIA/SVA cti link for synchronous break/go.
+; Created by HED/CSP/CPT/ACT on 2010-06-03
+; Contact Jingyi-xiaoyan.lu@st.com
+
+entry &sxa_core &action
+
+&current_core=string.upr(cpu())
+if string.mid("&current_core",0,9)!="DB8540APE"&&"&current_core"!="DB8540"
+(
+	print "This script can only be run in trace32 connected to DB8540 A9SS! Quit."
+	enddo
+)
+
+&sxa_core=string.upr("&sxa_core")
+if "&sxa_core"!="SIA"
+(	
+	print "Unknown SxA core name: &sxa_core"
+	gosub syntax 
+)
+
+&action=string.upr("&action")
+if "&action"!=""&&"&action"!="DISABLE"&&"&action"!="ENABLE"
+(
+	print "Unknown parameter: &action"
+	gosub syntax
+)
+if "&action"==""
+	&action="ENABLE"
+
+
+; --- configure the CTI-SoC
+local &cur_dir
+&cur_dir=os.ppd()
+&cti_call_verbose=""
+
+if "&action"=="ENABLE"
+(
+	print "Enable A9SS<->&sxa_core cross triggering systems:"
+	PER.S EDAP:0x80180000 %L d.l(EDAP:0x80180000)|0x1
+	PER.S EDAP:0x80180020 %LONG 1
+	PER.S EDAP:0x801800A0 %LONG 1
+)
+else //DISABLE
+(
+	print "Disable A9SS<->&sxa_core cross triggering systems:"
+	PER.S EDAP:0x80180000 %L d.l(EDAP:0x80180000)&~1
+)
+
+; --- configure the CTI-A9 by SYNCH
+synch.masterbreak on
+synch.slavebreak on
+synch.on
+
+; --- enable the SIA external break
+d.s ad:0xA02600E4 %l 6 //HOST[BK_COMBI]=exteranl
+
+print "Done."
+enddo
+
+usage:
+print ""
+print "Confiuring the cross triggering mechanism for A9SS<->SIA synchronous stop."
+print "Syntax: do cross_trig_A9_SxA sia [disable|enable]"
+print "If the second parameter is null, the default value is ""enable"""
+print "NOTE that during the cross triggering is acitated and the selected SxA core is in halt state, the ""go"" of A9 core(s) will fail."
+print "To ""go"" A9 core, either ""go"" SxA first, or disable the cross triggering (the second parameter is ""disable"")"
+enddo
+
+syntax:
+print "Syntax: do cross_trig_A9_SxA sia [disable|enable]"
+enddo

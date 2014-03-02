@@ -1,0 +1,235 @@
+#DTH script
+#Author: GBE
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE Internal_Calib_AutoOffset
+BEGIN Internal_Calib_AutoOffset
+EXEC /ADC/Action/Action_CALAUTO/Internal_Calib_AutoOffset
+READ /ADC/Action/Action_CALAUTO/Internal_Calib_AutoOffset/Out_CCCounterAvgOffset_Reg
+END Internal_Calib_AutoOffset
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE Software_Calib_ManualOffset
+BEGIN Software_Calib_ManualOffset
+EXEC /ADC/Action/Action_CALMANUAL/Software_Calib_ManualOffset
+READ /ADC/Action/Action_CALMANUAL/Software_Calib_ManualOffset/Out_CCSampleConv_Reg
+END Software_Calib_ManualOffset
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE READ_SAMPLE
+BEGIN READ_SAMPLE
+EXEC /ADC/Action/Action_READ_SAMPLE/READ_SAMPLE
+READ /ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_CCSampleConv_Reg
+READ /ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_CCSampleConv_calib
+READ /ADC/Action/Action_READ_SAMPLE/READ_SAMPLE/Out_CCSampleConv_calibconv_uAh
+END READ_SAMPLE
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE READ_ACCU_after_nSamples
+BEGIN READ_ACCU_after_nSamples
+#>01
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>02
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>03
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>04
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>05
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>06
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>07
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>08
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>09
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>10
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>11
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>12
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>13
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>14
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>15
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>16
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>17
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>18
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>19
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>20
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>21
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>22
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>23
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>24
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>25
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>26
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>27
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>28
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>29
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>30
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>31
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>32
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>33
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>34
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>35
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>36
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>37
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>38
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>39
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>40
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>41
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>42
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>43
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>44
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>45
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>46
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>47
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>48
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>49
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+#>50
+EXEC /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_Reg
+READ /ADC/Action/Action_READ_ACCU/READ_ACCU_after_nSamples/Out_Accu_conv_uAh
+END READ_ACCU_after_nSamples
+#-------------------------------------------------------------------------------------------------------------

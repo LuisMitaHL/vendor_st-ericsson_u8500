@@ -1,0 +1,20 @@
+rm -f test_dsp.cmd
+echo file ../standalone/bin/mmdsp_8500_v2/mdrc5b.elf                                                                                                >  test_dsp.cmd
+echo set args ../../../streams/mdrc/streams/params_FIR_stereo_48k ../../../streams/mdrc/streams/stereo_48k.pcm FIR_stereo_48k_mmdsp.pcm 2 48000 480 >> test_dsp.cmd
+echo break exit                                                                                                                                     >> test_dsp.cmd
+echo run                                                                                                                                            >> test_dsp.cmd
+echo info stacklimit                                                                                                                                >> test_dsp.cmd
+echo cont                                                                                                                                           >> test_dsp.cmd
+echo quit                                                                                                                                           >> test_dsp.cmd
+mmdspsim -c test_dsp.cmd                                                                                                          
+
+rm -f test_dsp.cmd
+echo file ../standalone/bin/mmdsp_8500_v2/mdrc5b.elf                                                                                                >  test_dsp.cmd
+echo set args ../../../streams/mdrc/streams/params_IIR_stereo_48k ../../../streams/mdrc/streams/stereo_48k.pcm IIR_stereo_48k_mmdsp.pcm 2 48000 480 >> test_dsp.cmd
+echo break exit                                                                                                                                     >> test_dsp.cmd
+echo run                                                                                                                                            >> test_dsp.cmd
+echo info stacklimit                                                                                                                                >> test_dsp.cmd
+echo cont                                                                                                                                           >> test_dsp.cmd
+echo quit                                                                                                                                           >> test_dsp.cmd
+mmdspsim -c test_dsp.cmd
+rm -f test_dsp.cmd

@@ -1,0 +1,109 @@
+/*****************************************************************************/
+/**
+* Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+* This code is ST-Ericsson proprietary and confidential.
+* Any use of the code for whatever purpose is subject to
+* specific written permission of ST-Ericsson SA.
+*
+* \file    
+* \brief   common data structure used to retarget type for host interface 
+*  		   between MMDSP and ARM (or others)
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+/*******************************************************************************
+ * Retarget types in 16/32 bits.
+ * All 32 bits must be endianness inverted...
+ **/
+/******************************************************************************/
+#ifndef _t1xhv_vdc_retarget_idt
+#define _t1xhv_vdc_retarget_idt
+
+
+/*------------------------------------------------------------------------
+ * Include
+ *----------------------------------------------------------------------*/
+//#include <t1xhv_types.h>
+
+/*------------------------------------------------------------------------
+ * Types
+ *----------------------------------------------------------------------*/
+/**
+ * \brief 	Type to redefine endianness from host for unsigned 32 bits words
+ * \todo 	Should be removed when pb of endianness is resolved in MC
+ *
+ * Lsb is defined first to take into account Little endian for 32 bit 
+ * words. Sign is not represented here... Must be taken into account 
+ * after conversion
+ **/
+typedef t_uint32 t_ulong_value;
+
+
+
+/**
+ * \brief 	Type to redefine endianness from host for 32 bits signed words
+ * \todo 	Should be removed when pb of endianness is resolved in MC
+ *
+ * Lsb is defined first to take into account Little endian for 32 bit 
+ * words. Sign is not represented here... Must be taken into account 
+ * after conversion
+ **/
+typedef t_sint32 t_long_value;
+
+/**
+ * \brief 	Type for Unsigned 16 bits words
+ **/
+typedef t_uint16 t_ushort_value;
+
+/**
+ * \brief 	Type for signed 16 bits words
+ **/
+typedef t_sint16 t_short_value;
+
+/**
+ * \brief 	Type used for ahb addresses 
+ * \warning AHB addresses must be at least aligned word. 
+ **/
+typedef t_uint32 t_ahb_address;
+
+/**
+ * \brief 	Time stamp used by timer (90kHz resolution)
+ **/
+typedef t_long_value t_time_stamp;
+
+/**
+ * \brief 	Structure used in VBR
+ **/
+struct rational {
+  t_long_value   div;
+  t_ulong_value  rem;
+  t_ushort_value base; 
+  t_ushort_value padding; 
+};
+
+typedef struct rational ts_rational;
+
+struct rational_32b {
+  t_uint32 div;
+  t_uint32 rem;
+  t_ushort_value base;
+  t_ushort_value padding;
+};
+
+typedef struct rational_32b ts_rational_32b;
+
+/**
+ * \brief 	Structure 2 used in VBR
+ **/
+
+struct fps {
+  t_ulong_value num;
+  t_ulong_value den;
+};
+
+typedef struct fps ts_fps;
+
+#endif /* _t1xhv_vdc_retarget_idt */
+
+

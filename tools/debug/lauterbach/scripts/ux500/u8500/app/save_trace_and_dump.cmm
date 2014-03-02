@@ -1,0 +1,754 @@
+;------------------------------------------------------------
+; 110613 - KM Initial version
+; 110621 - KM Extended to support copy of elf and src
+;------------------------------------------------------------
+; TODO:
+;	- Use the internal read/write settings instead of local
+;		save
+;	- Change variable to non global when applicable
+;------------------------------------------------------------
+;------------------------------------------------------------
+
+global	&SavePath
+global	&Sdram
+global	&Zip
+global	&Trace
+global	&Elf
+global	&Src
+global	&MmuScan
+global	&JtagTurbo
+global	&RangeList
+global	&Range
+global	&RamRange
+global	&RamEnd
+
+
+dialog
+(&
+		header "ST-Ericsson Save State Dialog"
+
+		pos 0. 0. 45. 3.
+		box "Save Folder"
+
+		pos 1. 1. 37. 1.
+SavePath:	defedit "" ""
+
+		pos 39. 1. 2. 1
+ButtonSelectPath:	button "..." "gosub SelectPath"
+		pos 41. 1. 2. 1.
+ButtonClearPath:	button "X" "gosub ClearPath"
+
+		pos 0. 3. 15. 9.
+		box "Save Options"
+
+		pos 1. 4. 9. 1.
+SDRAM:	checkbox "SDRAM" "gosub Sdram"
+		pos 1. 5. 9. 1.
+TRACE:	checkbox "Trace" "gosub Trace"
+		pos 1. 6. 9. 1.
+ZIP:	checkbox "ZIP" "gosub Zip"
+		pos 1. 7. 11. 1.
+ELF:	checkbox "Copy Elf" "gosub Elf"
+		pos 1. 8. 11. 1.
+SRC:	checkbox "Copy Src" "gosub Src"
+		pos 1. 9. 11. 1.
+MMU:	checkbox "MMU scan" "gosub MmuScan"
+		pos 1. 10. 11. 1.
+TURBO:	checkbox "Jtag turbo" "gosub JtagTurbo"
+
+		pos 16. 3. 29. 3.
+		box "Trace Range"
+		pos 17. 4. 26. 1.
+RANGE:	DYNCOMBOBOX " ,(-1000)--(0),""2"" ""1""" "gosub SetRange"
+
+		pos 16. 6. 29. 3.
+		box "SDRAM Range"
+		pos 17. 7. 26. 1.
+RAMRANGE:	edit "&RamRange" "gosub SetRamRange"
+
+		pos 16. 9. 29. 3.
+		box "SDRAM end"
+		pos 17. 10. 26. 1.
+RAMEND:		edit "&RamEnd" "gosub SetRamEnd"
+
+		pos 25. 12. 12. 1.
+		defbutton "OK" "gosub ButtonOK"
+		pos 38. 12. 7. 1.
+		button "Cancel" "gosub ButtonCancel"
+
+		CLOSE "Goto TheEnd"
+)
+	gosub InitVariables
+	gosub InitDialog
+	stop
+
+TheEnd:
+	dialog.end
+	ENDDO
+
+InitVariables:
+	;&SavePath=""
+	if "&Sdram"==""
+		&Sdram="TRUE"
+	if "&Zip"==""
+		&Zip="TRUE"
+	if "&Trace"==""
+		&Trace="TRUE"
+	if "&Elf"==""
+		&Elf="FALSE"
+	if "&Src"==""
+		&Src="FALSE"
+	if "&MmuScan"==""
+		&MmuScan="TRUE"
+	if "&JtagTurbo"==""
+		&JtagTurbo="FALSE"
+	&Range=""
+
+	RETURN
+
+InitDialog:
+	if "&SavePath"!=""
+		dialog.setdir SavePath "&SavePath"
+	if "&Sdram"=="TRUE"
+		dialog.set SDRAM
+
+	if "&Zip"=="TRUE"
+		dialog.set ZIP
+
+	if "&Trace"=="TRUE"
+		dialog.set TRACE
+
+	if "&Elf"=="TRUE"
+		dialog.set ELF
+
+	if "&Src"=="TRUE"
+		dialog.set SRC
+
+	if "&MmuScan"=="TRUE"
+		dialog.set MMU
+
+	if "&JtagTurbo"=="TRUE"
+		dialog.set TURBO
+
+	if "&RamRange"!=""
+		dialog.set RAMRANGE "&RamRange"
+
+	if "&RamEnd"!=""
+		dialog.set RAMEND "&RamEnd"
+	else
+		dialog.set RAMEND "0x0fffffff"
+
+
+	RETURN
+
+SelectPath:
+	&SavePath=dialog.string(SavePath)
+	if ("&SavePath"=="")
+	(
+		dialog.setdir SavePath *
+	)
+	else
+	(
+		dialog.setdir SavePath "&SavePath/*"
+	)
+	&SavePath=dialog.string(SavePath)
+	RETURN
+
+ClearPath:
+	dialog.set SavePath ""
+	&SavePath=""
+	RETURN
+
+Zip:
+	if dialog.boolean(ZIP)
+		&Zip="TRUE"
+	else
+		&Zip="FALSE"
+	RETURN
+
+Sdram:
+	if dialog.boolean(SDRAM)
+		&Sdram="TRUE"
+	else
+		&Sdram="FALSE"
+	RETURN
+
+Trace:
+	if dialog.boolean(TRACE)
+		&Trace="TRUE"
+	else
+		&Trace="FALSE"
+	RETURN
+
+Elf:
+	if dialog.boolean(ELF)
+		&Elf="TRUE"
+	else
+		&Elf="FALSE"
+	RETURN
+
+Src:
+	if dialog.boolean(SRC)
+		&Src="TRUE"
+	else
+		&Src="FALSE"
+	RETURN
+
+MmuScan:
+	if dialog.boolean(MMU)
+		&MmuScan="TRUE"
+	else
+		&MmuScan="FALSE"
+	RETURN
+
+JtagTurbo:
+	if dialog.boolean(TURBO)
+		&JtagTurbo="TRUE"
+	else
+		&JtagTurbo="FALSE"
+	RETURN
+
+SetRange:
+	&Range=dialog.string(RANGE)
+	RETURN
+
+SetRamRange:
+	&RamRange=dialog.string(RAMRANGE)
+	RETURN
+
+SetRamEnd:
+	&RamEnd=dialog.string(RAMEND)
+	RETURN
+
+ButtonOK:
+	&SavePath=dialog.string(SavePath)
+	if "&SavePath"==""
+		(
+			dialog.ok "Please select save directory"
+			return
+		)
+	gosub save_cpu_state
+	goto TheEnd
+	RETURN
+
+ButtonCancel:
+	goto TheEnd
+	RETURN
+
+save_cpu_state:
+
+local &modelf
+local &APhysical
+local &BPhysical
+local &CPhysical
+local &core_org
+
+;Increase dump speed
+if "&JtagTurbo"=="TRUE"
+(
+	do MaxSpeedU8500
+	sys.jtagclock CTCK 30MHz
+)
+
+if "&MmuScan"=="TRUE"
+(
+	mmu.scanall
+	t.flowstart
+)
+
+;Turn of CTS
+cts.off
+
+;Handle error when path end with / \
+
+if ((string.char("&SavePath",string.len("&SavePath")-1)=='/')||(string.char("&SavePath",string.len("&SavePath")-1)=='\'))
+	&SavePath=string.cut("&SavePath",-1)
+
+
+OPEN #1  &SavePath/restore_&CurConfig.cmm /Create
+OPEN #2  &SavePath/switch_core_&CurConfig.cmm /Create
+
+WRITE #1 "reset"
+if corenumber()==2
+(
+	WRITE #1 "menu.reset"
+	WRITE #1 "sys.cpu DB8500"
+)
+else
+(
+	WRITE #1 "sys.cpu DB8500APE-CORE0"
+)
+WRITE #1 "sys.u"
+WRITE #1 "y.reset"
+WRITE #1 "sys.o mmuspaces ON"
+;Marker support in save state
+;WRITE #1 "if version.build()>31552."
+;WRITE #1 "do marker"
+;COPY &CMM_PATH_BASE/&platform/&targetFamily/marker.cmm &SavePath/marker.cmm
+
+if corenumber()==2
+	&core_org=core()
+
+; Load kernel awaraness
+WRITE #1  "if os.file(~~/demo/arm/kernel/linux/linux.t32)"
+WRITE #1  "task.config ~~/demo/arm/kernel/linux/linux.t32"
+
+WRITE #1  "if os.file(~~/demo/arm/kernel/linux/linux.men)"
+WRITE #1  "menu.reprogram ~~/demo/arm/kernel/linux/linux.men"
+
+if core()==0
+(
+	;; Save registers
+	if corenumber()==2
+	WRITE #1 "core.select 0"
+	WRITE #1  "r.s R0 " register(R0)
+	WRITE #1  "r.s R1 " register(R1)
+	WRITE #1  "r.s R2 " register(R2)
+	WRITE #1  "r.s R3 " register(R3)
+	WRITE #1  "r.s R4 " register(R4)
+	WRITE #1  "r.s R5 " register(R5)
+	WRITE #1  "r.s R6 " register(R6)
+	WRITE #1  "r.s R7 " register(R7)
+	WRITE #1  "r.s R8 " register(R8)
+	WRITE #1  "r.s R9 " register(R9)
+	WRITE #1  "r.s R10 " register(R10)
+	WRITE #1  "r.s R11 " register(R11)
+	WRITE #1  "r.s R12 " register(R12)
+	WRITE #1  "r.s R13 " register(R13)
+	WRITE #1  "r.s R14 " register(R14)
+	WRITE #1  "r.s SPSR " register(SPSR)
+	WRITE #1  "r.s CPSR " register(CPSR)
+	WRITE #1  "r.s PC " register(PC)
+
+	WRITE #1  "r.s R13_ABT " register(R13_ABT)
+	WRITE #1  "r.s R14_ABT " register(R14_ABT)
+	WRITE #1  "r.s SPSR_ABT " register(SPSR_ABT)
+
+	WRITE #1  "r.s R13_IRQ " register(R13_IRQ)
+	WRITE #1  "r.s R14_IRQ " register(R14_IRQ)
+	WRITE #1  "r.s SPSR_IRQ " register(SPSR_IRQ)
+
+	WRITE #1  "r.s R13_SVC " register(R13_SVC)
+	WRITE #1  "r.s R14_SVC " register(R14_SVC)
+	WRITE #1  "r.s SPSR_SVC " register(SPSR_SVC)
+
+	WRITE #1  "r.s R13_UND " register(R13_UND)
+	WRITE #1  "r.s R14_UND " register(R14_UND)
+	WRITE #1  "r.s SPSR_UND " register(SPSR_UND)
+
+	WRITE #1  "r.s R8_FIQ " register(R8_FIQ)
+	WRITE #1  "r.s R9_FIQ " register(R9_FIQ)
+	WRITE #1  "r.s R10_FIQ " register(R10_FIQ)
+	WRITE #1  "r.s R11_FIQ " register(R11_FIQ)
+	WRITE #1  "r.s R12_FIQ " register(R12_FIQ)
+	WRITE #1  "r.s R13_FIQ " register(R13_FIQ)
+	WRITE #1  "r.s R14_FIQ " register(R14_FIQ)
+	WRITE #1  "r.s SPSR_FIQ " register(SPSR_FIQ)
+
+	WRITE #1  "r.s R8_USR " register(R8_USR)
+	WRITE #1  "r.s R9_USR " register(R9_USR)
+	WRITE #1  "r.s R10_USR " register(R10_USR)
+	WRITE #1  "r.s R11_USR " register(R11_USR)
+	WRITE #1  "r.s R12_USR " register(R12_USR)
+	WRITE #1  "r.s R13_USR " register(R13_USR)
+	WRITE #1  "r.s R14_USR " register(R14_USR)
+
+	; CP15, important registers.
+	WRITE #1  "d.s C15:0x1 %LONG " Data.Long(C15:0x1)		;SCTLR
+	WRITE #1  "d.s C15:0x2 %LONG " Data.Long(C15:0x2)		;TTBR0
+	WRITE #1  "d.s C15:0x102 %LONG " Data.Long(C15:0x102)	;TTBR1
+	WRITE #1  "d.s C15:0x202 %LONG " Data.Long(C15:0x202)	;TTBCR
+)
+else
+(
+	WRITE #1 "core.select 1"
+	WRITE #1  "r.s R0 " register(R0)
+	WRITE #1  "r.s R1 " register(R1)
+	WRITE #1  "r.s R2 " register(R2)
+	WRITE #1  "r.s R3 " register(R3)
+	WRITE #1  "r.s R4 " register(R4)
+	WRITE #1  "r.s R5 " register(R5)
+	WRITE #1  "r.s R6 " register(R6)
+	WRITE #1  "r.s R7 " register(R7)
+	WRITE #1  "r.s R8 " register(R8)
+	WRITE #1  "r.s R9 " register(R9)
+	WRITE #1  "r.s R10 " register(R10)
+	WRITE #1  "r.s R11 " register(R11)
+	WRITE #1  "r.s R12 " register(R12)
+	WRITE #1  "r.s R13 " register(R13)
+	WRITE #1  "r.s R14 " register(R14)
+	WRITE #1  "r.s SPSR " register(SPSR)
+	WRITE #1  "r.s CPSR " register(CPSR)
+	WRITE #1  "r.s PC " register(PC)
+
+	WRITE #1  "r.s R13_ABT " register(R13_ABT)
+	WRITE #1  "r.s R14_ABT " register(R14_ABT)
+	WRITE #1  "r.s SPSR_ABT " register(SPSR_ABT)
+
+	WRITE #1  "r.s R13_IRQ " register(R13_IRQ)
+	WRITE #1  "r.s R14_IRQ " register(R14_IRQ)
+	WRITE #1  "r.s SPSR_IRQ " register(SPSR_IRQ)
+
+	WRITE #1  "r.s R13_SVC " register(R13_SVC)
+	WRITE #1  "r.s R14_SVC " register(R14_SVC)
+	WRITE #1  "r.s SPSR_SVC " register(SPSR_SVC)
+
+	WRITE #1  "r.s R13_UND " register(R13_UND)
+	WRITE #1  "r.s R14_UND " register(R14_UND)
+	WRITE #1  "r.s SPSR_UND " register(SPSR_UND)
+
+	WRITE #1  "r.s R8_FIQ " register(R8_FIQ)
+	WRITE #1  "r.s R9_FIQ " register(R9_FIQ)
+	WRITE #1  "r.s R10_FIQ " register(R10_FIQ)
+	WRITE #1  "r.s R11_FIQ " register(R11_FIQ)
+	WRITE #1  "r.s R12_FIQ " register(R12_FIQ)
+	WRITE #1  "r.s R13_FIQ " register(R13_FIQ)
+	WRITE #1  "r.s R14_FIQ " register(R14_FIQ)
+	WRITE #1  "r.s SPSR_FIQ " register(SPSR_FIQ)
+
+	WRITE #1  "r.s R8_USR " register(R8_USR)
+	WRITE #1  "r.s R9_USR " register(R9_USR)
+	WRITE #1  "r.s R10_USR " register(R10_USR)
+	WRITE #1  "r.s R11_USR " register(R11_USR)
+	WRITE #1  "r.s R12_USR " register(R12_USR)
+	WRITE #1  "r.s R13_USR " register(R13_USR)
+	WRITE #1  "r.s R14_USR " register(R14_USR)
+
+	; CP15, important registers.
+	WRITE #1  "d.s C15:0x1 %LONG " Data.Long(C15:0x1)		;SCTLR
+	WRITE #1  "d.s C15:0x2 %LONG " Data.Long(C15:0x2)		;TTBR0
+	WRITE #1  "d.s C15:0x102 %LONG " Data.Long(C15:0x102)	;TTBR1
+	WRITE #1  "d.s C15:0x202 %LONG " Data.Long(C15:0x202)	;TTBCR
+)
+;Create Switch core script
+if corenumber()==2
+(
+	core.select 0
+	WRITE #2 "if core()==1"
+	WRITE #2 "("
+	WRITE #2 "core.select 0"
+	WRITE #2  "r.s R0 " register(R0)
+	WRITE #2  "r.s R1 " register(R1)
+	WRITE #2  "r.s R2 " register(R2)
+	WRITE #2  "r.s R3 " register(R3)
+	WRITE #2  "r.s R4 " register(R4)
+	WRITE #2  "r.s R5 " register(R5)
+	WRITE #2  "r.s R6 " register(R6)
+	WRITE #2  "r.s R7 " register(R7)
+	WRITE #2  "r.s R8 " register(R8)
+	WRITE #2  "r.s R9 " register(R9)
+	WRITE #2  "r.s R10 " register(R10)
+	WRITE #2  "r.s R11 " register(R11)
+	WRITE #2  "r.s R12 " register(R12)
+	WRITE #2  "r.s R13 " register(R13)
+	WRITE #2  "r.s R14 " register(R14)
+	WRITE #2  "r.s SPSR " register(SPSR)
+	WRITE #2  "r.s CPSR " register(CPSR)
+	WRITE #2  "r.s PC " register(PC)
+
+	WRITE #2  "r.s R13_ABT " register(R13_ABT)
+	WRITE #2  "r.s R14_ABT " register(R14_ABT)
+	WRITE #2  "r.s SPSR_ABT " register(SPSR_ABT)
+
+	WRITE #2  "r.s R13_IRQ " register(R13_IRQ)
+	WRITE #2  "r.s R14_IRQ " register(R14_IRQ)
+	WRITE #2  "r.s SPSR_IRQ " register(SPSR_IRQ)
+
+	WRITE #2  "r.s R13_SVC " register(R13_SVC)
+	WRITE #2  "r.s R14_SVC " register(R14_SVC)
+	WRITE #2  "r.s SPSR_SVC " register(SPSR_SVC)
+
+	WRITE #2  "r.s R13_UND " register(R13_UND)
+	WRITE #2  "r.s R14_UND " register(R14_UND)
+	WRITE #2  "r.s SPSR_UND " register(SPSR_UND)
+
+	WRITE #2  "r.s R8_FIQ " register(R8_FIQ)
+	WRITE #2  "r.s R9_FIQ " register(R9_FIQ)
+	WRITE #2  "r.s R10_FIQ " register(R10_FIQ)
+	WRITE #2  "r.s R11_FIQ " register(R11_FIQ)
+	WRITE #2  "r.s R12_FIQ " register(R12_FIQ)
+	WRITE #2  "r.s R13_FIQ " register(R13_FIQ)
+	WRITE #2  "r.s R14_FIQ " register(R14_FIQ)
+	WRITE #2  "r.s SPSR_FIQ " register(SPSR_FIQ)
+
+	WRITE #2  "r.s R8_USR " register(R8_USR)
+	WRITE #2  "r.s R9_USR " register(R9_USR)
+	WRITE #2  "r.s R10_USR " register(R10_USR)
+	WRITE #2  "r.s R11_USR " register(R11_USR)
+	WRITE #2  "r.s R12_USR " register(R12_USR)
+	WRITE #2  "r.s R13_USR " register(R13_USR)
+	WRITE #2  "r.s R14_USR " register(R14_USR)
+
+	; CP15, important registers.
+	WRITE #2  "d.s C15:0x1 %LONG " Data.Long(C15:0x1)		;SCTLR
+	WRITE #2  "d.s C15:0x2 %LONG " Data.Long(C15:0x2)		;TTBR0
+	WRITE #2  "d.s C15:0x102 %LONG " Data.Long(C15:0x102)	;TTBR1
+	WRITE #2  "d.s C15:0x202 %LONG " Data.Long(C15:0x202)	;TTBCR
+
+	WRITE #2 ")"
+	WRITE #2 "else"
+	WRITE #2 "("
+	core.select 1
+	WRITE #2 "core.select 1"
+	WRITE #2  "r.s R0 " register(R0)
+	WRITE #2  "r.s R1 " register(R1)
+	WRITE #2  "r.s R2 " register(R2)
+	WRITE #2  "r.s R3 " register(R3)
+	WRITE #2  "r.s R4 " register(R4)
+	WRITE #2  "r.s R5 " register(R5)
+	WRITE #2  "r.s R6 " register(R6)
+	WRITE #2  "r.s R7 " register(R7)
+	WRITE #2  "r.s R8 " register(R8)
+	WRITE #2  "r.s R9 " register(R9)
+	WRITE #2  "r.s R10 " register(R10)
+	WRITE #2  "r.s R11 " register(R11)
+	WRITE #2  "r.s R12 " register(R12)
+	WRITE #2  "r.s R13 " register(R13)
+	WRITE #2  "r.s R14 " register(R14)
+	WRITE #2  "r.s SPSR " register(SPSR)
+	WRITE #2  "r.s CPSR " register(CPSR)
+	WRITE #2  "r.s PC " register(PC)
+
+	WRITE #2  "r.s R13_ABT " register(R13_ABT)
+	WRITE #2  "r.s R14_ABT " register(R14_ABT)
+	WRITE #2  "r.s SPSR_ABT " register(SPSR_ABT)
+
+	WRITE #2  "r.s R13_IRQ " register(R13_IRQ)
+	WRITE #2  "r.s R14_IRQ " register(R14_IRQ)
+	WRITE #2  "r.s SPSR_IRQ " register(SPSR_IRQ)
+
+	WRITE #2  "r.s R13_SVC " register(R13_SVC)
+	WRITE #2  "r.s R14_SVC " register(R14_SVC)
+	WRITE #2  "r.s SPSR_SVC " register(SPSR_SVC)
+
+	WRITE #2  "r.s R13_UND " register(R13_UND)
+	WRITE #2  "r.s R14_UND " register(R14_UND)
+	WRITE #2  "r.s SPSR_UND " register(SPSR_UND)
+
+	WRITE #2  "r.s R8_FIQ " register(R8_FIQ)
+	WRITE #2  "r.s R9_FIQ " register(R9_FIQ)
+	WRITE #2  "r.s R10_FIQ " register(R10_FIQ)
+	WRITE #2  "r.s R11_FIQ " register(R11_FIQ)
+	WRITE #2  "r.s R12_FIQ " register(R12_FIQ)
+	WRITE #2  "r.s R13_FIQ " register(R13_FIQ)
+	WRITE #2  "r.s R14_FIQ " register(R14_FIQ)
+	WRITE #2  "r.s SPSR_FIQ " register(SPSR_FIQ)
+
+	WRITE #2  "r.s R8_USR " register(R8_USR)
+	WRITE #2  "r.s R9_USR " register(R9_USR)
+	WRITE #2  "r.s R10_USR " register(R10_USR)
+	WRITE #2  "r.s R11_USR " register(R11_USR)
+	WRITE #2  "r.s R12_USR " register(R12_USR)
+	WRITE #2  "r.s R13_USR " register(R13_USR)
+	WRITE #2  "r.s R14_USR " register(R14_USR)
+
+	; CP15, important registers.
+	WRITE #2  "d.s C15:0x1 %LONG " Data.Long(C15:0x1)		;SCTLR
+	WRITE #2  "d.s C15:0x2 %LONG " Data.Long(C15:0x2)		;TTBR0
+	WRITE #2  "d.s C15:0x102 %LONG " Data.Long(C15:0x102)	;TTBR1
+	WRITE #2  "d.s C15:0x202 %LONG " Data.Long(C15:0x202)	;TTBCR
+	WRITE #2 ")"
+
+	;Create button for core switch
+	WRITE #1 "menu.addtool " """Switch core""" " " """CS,R""" " " """do switch_core_&CurConfig.cmm"""
+)
+
+
+if "&Trace"=="TRUE"
+(
+	if "&Zip"=="TRUE"
+	(
+		t.save &SavePath/trace_&CurConfig.ad &Range /zip
+		WRITE #1  "t.load trace_&CurConfig.ad"
+	)
+	else
+	(
+		t.save &SavePath/trace_&CurConfig.ad &Range
+		WRITE #1  "t.load trace_&CurConfig.ad"
+	)
+	; Can be loaded with "la.import *.bin"
+	;t.export &SavePath/trace_&CurConfig.bin /fullbytestream
+)
+
+
+;Flush caches
+
+
+local &set
+local &way
+&set=0
+while &set<0xff		;256 sets a 8 words a 4 way is 32kB
+(
+	&way=0
+	while &way<4		;4 way cache
+	(
+		&data=(&set<<5.)+(&way<<30.)
+		data.set C15:02E7 &data		;MCR p15,0,<Rd>,c7,c14,2 ; Clean invalidate data cache by way/set
+		&way=&way+1
+	)
+
+	&set=&set+1
+)
+
+
+Data.Set C15:0057 0x0           ; MCR p15, 0, <Rd>, c7, c5, 0  ; Invalidate inst cache
+
+if corenumber()==2
+(
+	core.select
+
+	&set=0
+	while &set<0xff		;256 sets a 8 words a 4 way is 32kB
+	(
+		&way=0
+		while &way<4		;4 way cache
+		(
+			&data=(&set<<5.)+(&way<<30.)
+			data.set C15:02E7 &data		;MCR p15,0,<Rd>,c7,c14,2 ; Clean invalidate data cache by way/set
+			&way=&way+1
+		)
+
+		&set=&set+1
+	)
+
+	Data.Set C15:0057 0x0           ; MCR p15, 0, <Rd>, c7, c5, 0  ; Invalidate inst cache
+)
+
+wait 1s
+;Set core to original
+if corenumber()==2
+	core.select &core_org
+
+
+;Clean L2 cache
+;L2 base 0xA0412000 on U8500
+;Clean by way, offset 0x7bc
+data.set A:0xA04127bc %long 0x0000FFFF	;16ways
+;data.set 0xA04127bc %long 0x000000FF	;8ways
+wait 1s
+;Cache synch, drain write buffer
+data.set A:0xA0412730 %long 0x00000000
+wait 1s
+
+
+;; Turn of MMU (to allow us to save memory without data abort)
+;; We remove this so we can resume after dumping.
+;&new_cr=((Data.Long(C15:0x1))&0xFFFFFFFE)
+;d.s C15:0x1 %LONG &new_cr
+
+if "&Sdram"=="TRUE"
+(
+	print "saving sdram data"
+	if "&RamRange"!=""
+	(
+		tdiag data.save.s3 &SavePath/sdram_&CurConfig.s3 A:&RamRange
+		WRITE #1 "d.load.s3 sdram_&CurConfig.s3 /noclear /noreg"
+	)
+	else
+	(
+		if "&RamEnd"==""
+		(
+			&RamEnd=0x0fffffff ; default 256Mb
+		)
+
+		&tmp1="&RamEnd"
+		&tmp2="_&CurConfig"
+		&tmpname="&tmp1&tmp2"
+		data.save.s3 &SavePath/sdram_0x0--0x06ffffff_&CurConfig.s3 A:0x0--0x06ffffff
+WRITE #1  "d.load.s3 sdram_0x0--0x06ffffff_&CurConfig.s3 /noclear /noreg"
+		data.save.s3 &SavePath/sdram_0x08000000--&tmpname.s3 A:0x08000000--&RamEnd
+WRITE #1  "d.load.s3 sdram_0x08000000--&tmpname.s3 /noclear /noreg"
+	)
+	wait 1s
+)
+
+;Enable MMU in simulator
+WRITE #1  "MMU.ON"
+WRITE #1  "MMU.TABLEWALK ON"
+
+; VMLINUX ELF file
+if "&ElfFile"!=""
+(
+	if "&Elf"=="TRUE"
+	(
+		&elfname=os.file.name(&ElfFile)
+		WRITE #1 "data.load.elf " "&elfname /noclear /nocode /noreg"
+		COPY &ElfFile &SavePath/&elfname
+	)
+	else
+	(
+		WRITE #1  "data.load.elf " "&ElfFile /noclear /noreg /nocode"
+	)
+)
+
+;Configure MMU format
+WRITE #1 "MMU.FORMAT LINUX swapper_pg_dir 0xc0000000--0xcfffffff 0x00000000"
+WRITE #1 "MMU.Create 0xc0000000--0xcfffffff 0x00000000 ; map kernel pages at RAM start"
+WRITE #1 "MMU.COMMON 0xbf000000--0xffffffff            ; common area for kernel and processes"
+
+;Copy src
+if ("&Src"=="TRUE")
+(
+	if "&SrcPath"!=""
+	(
+		if !OS.DIR(&SavePath/src)
+		(
+			mkdir &SavePath/src
+		)
+
+		if (OS.VERSION(0)!=0x1X)		;Windows
+		(
+			if ((string.char("&SrcPath",string.len("&SrcPath")-1)=='/')||(string.char("&SrcPath",string.len("&SrcPath")-1)=='\'))
+				&tempsrcpath="*"
+			else
+				&tempsrcpath="\*"
+
+			&tempsrcpath="&SrcPath&tempsrcpath"
+			&tempsavepath="\src\"
+			&tempsavepath="&SavePath&tempsavepath"
+			if "&RSrcPath"=="TRUE"
+			(
+				os.command xcopy /e /y "&tempsrcpath" "&tempsavepath"
+				WRITE #1 "y.spath.setrecursedir .\src"
+			)
+			else
+			(
+				os.command xcopy /y "&tempsrcpath" "&tempsavepath"
+				WRITE #1 "y.spath.setdir .\src"
+			)
+		)
+		else							;Linux
+		(
+			if ((string.char("&SrcPath",string.len("&SrcPath")-1)=='/')||(string.char("&SrcPath",string.len("&SrcPath")-1)=='\'))
+				&tempsrcpath="*"
+			else
+				&tempsrcpath="/*"
+
+			&tempsrcpath="&SrcPath&tempsrcpath"
+			&tempsavepath="/src/"
+			&tempsavepath="&SavePath&tempsavepath"
+			if "&RSrcPath"=="TRUE"
+			(
+				os.command cp -rf &tempsrcpath &tempsavepath
+				WRITE #1 "y.spath.setrecursedir ./src"
+			)
+			else
+			(
+				os.command cp -f &tempsrcpath &tempsavepath
+				WRITE #1 "y.spath.setdir ./src"
+			)
+		)
+	)
+)
+
+;Open some windows
+if "&Trace"=="TRUE"
+	WRITE #1  "t.l"
+
+WRITE #1  "d.l"
+WRITE #1  "Register /SpotLight"
+
+CLOSE #1
+CLOSE #2
+RETURN
+

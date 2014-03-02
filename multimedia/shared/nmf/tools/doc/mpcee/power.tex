@@ -1,0 +1,69 @@
+\chapter{Power}
+\section{Idle mode}
+This is the default low power mode mode. It will simply consist to stop MMDSP
+core clocks and use MMDSP emulation unit. There is no need of user intervention
+to use this mode and wakeup latency is very small.
+
+We enter this mode when no more reaction are available for running. This simply
+consist of a call to SWITCH\_IDLE\_MODE() macro (Listing \ref{switchIdleMode}).
+
+\begin{lstlisting}[caption=SWITCH\_IDLE\_MODE() macro
+definition,label=switchIdleMode]
+#define SWITCH_IDLE_MODE()                          \
+{                                                   \
+    wnop();wnop();                                  \
+    EMU_unit_stop = 1;                              \
+    wnop();wnop(); wnop(); wnop();                  \
+}
+\end{lstlisting}
+
+Before calling SWITCH\_IDLE\_MODE() interrupt are mask. When we execute
+\verb#EMU_unit_stop = 1;# MMDSP clocks are stopped, interrupts are unmask. Then
+any interrupt will restart MMDSP clocks and code will continue to run after
+SWITCH\_IDLE\_MODE() call.
+
+\section{Ulp mode}
+Ultra Low Power was originally develop for low power mp3 playback use case. It
+consist to power off MMDSP core and put MMDSP TCM in retention mode. Wakeup only
+occur when an HSEM interrupt or Fifo empty interrupt is received. Latency is
+also greater than Idle mode since PRCMU need to restart power and clock of MMDSP
+and MMDSP has to reboot before entering scheduler loop. Call to ulp mode logic
+is done before calling SWITCH\_IDLE\_MODE() macro. In case Ulp mode is choosen
+the flow control is broken and we will wakeup with a MMDSP reboot. User can
+allow or prevent ULP mode.
+
+\subsection{Ulp entry}
+To decide if we enter in ulp mode MPCEE maitain sleepCounter global that can be
+indrement with preventSleep() and decrement with allowSleep(). Initial
+sleepCounter value after a reboot is 0.
+forceWakeup global is also use to allow or not ulp mode and is use by CM driver
+to be sure MMDSP stay awake to allow memory manipulation. This variable is
+modify by ulp force wakeup and allow sleep services.
+
+If we enter ulp logic with a negative sleepCounter value and a forceWakeup value
+of 0 then we enter in ulp entry squence:
+\begin{itemize}
+  \item deactivate irq.
+  \item call MPCEE and user register save callback. This allow driver to save
+  hardware configuration.
+  \item save MMDSP hardware configuration (YMEM, cache setup).
+  \item set isSleeping global to 1.
+  \item notify PRCMU to put MMDSP in retention mode.
+  \item wait in a forever loop for the MMDSP to be shutdown.
+\end{itemize}
+
+\subsection{Ulp exit}
+After PRCMU has power on MMDSP we start as a cold boot, it start to execute
+instruction located at address 0. Startup code will detect it's a ulp mode exit
+using isSleeping variable and jump into sleep\_wakeup() method which will
+perform following sequence:
+\begin{itemize}
+  \item setup MMDSP core mode.
+  \item init system stack and system stack checker.
+  \item restore MMDSP hardware configuration (YMEM, cache setup).
+  \item set isSleeping global to 0.
+  \item set sleepCounter global to 0.
+  \item setup interrupt registers.
+  \item call MPCEE and user register restore callback.
+  \item return to scheduler
+\end{itemize}

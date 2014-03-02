@@ -1,0 +1,112 @@
+#ifndef _DRC_NMFIL_HOST_EFFECT_CONFIG_H_
+#define _DRC_NMFIL_HOST_EFFECT_CONFIG_H_
+
+/*!
+ *\IDL specification DRC Effect Configuration
+ */
+#include <samplefreq.idt>
+
+#define NUMBER_OF_STATIC_CURVE_POINTS 8
+
+/*!
+ * DRC acceptance level specifier.
+ *  
+ * param ACCEPTANCE_LEVEL_90_PERCENT     90 percent of the desired gain must be reached within the attack or release time.
+ * param ACCEPTANCE_LEVEL_99_PERCENT     99 percent of the desired gain must be reached within the attack or release time.
+ * param ACCEPTANCE_LEVEL_99_9_PERCENT   99.9 percent of the desired gain must be reached within the attack or release time.
+ */
+
+typedef enum 
+{
+  ACCEPTANCE_LEVEL_90_PERCENT = 1,
+  ACCEPTANCE_LEVEL_99_PERCENT,
+  ACCEPTANCE_LEVEL_99_9_PERCENT
+} t_acceptance_level;
+
+
+/*!
+ * DRC Static Curve Point.
+ *
+ * param x  Point x in Q7.8. Range [-128..0] dB.
+ * param y  Point y in Q7.8. Range [-128..0] dB. y may not introduce a gain outside the range [-48..48] dB (including OffsetGain). 
+ *                          (The Gain is calculated as the difference between x and y.)
+ */
+typedef struct 
+{
+  t_sint16  x;
+  t_sint16  y;
+} t_static_curve_point;
+
+
+/*!
+ * DRC Static Curve describes how to dynamically expand or compress the signal.
+ * A linear input value is translated to a dB value on the Static Curve using 20 * log10(abs(input)/2^15) 
+ * if UsePeakMeasure or 10 * log10(RMS(input)/2^15) if UsePeakMeasure is false.
+ * Saturation Protection is always active. This will decrease the amount of saturation when the signal is rapidly raising.
+ * It also protects against saturation when the input is rapidly decreasing and Look Ahead Time is > 0.
+ * (If Look Ahead Time is = 0, saturation cannot occur at all during a decreasing signal.)
+ * 
+ * param static_curve_point    The points describes the Static Curve, with an input on the x-axis and an output on the y-axis.
+ *                             The gain is described as the difference between the "x" point and the "y" point.
+ *                             The StaticCurvePoints array describes the Static Curve with the x points in an increasing order.
+ * param input_gain            Input gain to the Level Detector, in dB expressed in Q7.8 (range [-128..128] dB). Measured input level is amplified
+ *                             with this gain before translated in the Static Curve. This may be useful when input levels are too low to utilize the
+ *                             entire range of the Static Curve.
+ * param OffsetGain            Offset to the gain calculated Gain Processor, in dB expressed in Q7.8. Range [48..-48] dB including the gain 
+ *                             introduced by the Static Curve. The desired output level, specified by the Static Curve, is increased by this offset
+ *                             gain.
+ */
+typedef struct 
+{
+  t_static_curve_point        static_curve_point[NUMBER_OF_STATIC_CURVE_POINTS];
+  t_sint16                    input_gain;
+  t_sint16                    offset_gain;
+} t_static_curve;
+
+
+/*!
+ * Time Specifiers for DRC
+ * 
+ * param level_detector_attack_time   Attack time for the Level Detector, in ms expressed in Q14.1 (range [0..16000] ms)
+ * param level_detector_release_time  Release time for the Level Detector, in ms expressed in Q14.1 (range [0..16000] ms)
+ * param gain_processor_attack_time   Attack time for the Gain Processor, in ms expressed in Q14.1 (range [0..16000] ms)
+ * param gain_processor_release_time  Release time for the Gain Processor, in ms expressed in Q14.1 (range [0..16000] ms)
+ *                                    The Look Ahead Time set during Allocate will be the maximum Look Ahead Time that can be used in this instance.
+ * param acceptance_level             This value tells how much of the specified gain that must have been reached before the attack or release time have elapsed.
+ *                                    The behavior of DRC prior the introduction of this parameters equals DRC_SFXC_ACCEPTANCE_LEVEL_99_9_PERCENT.
+ *                                    The gain changes is exponentially low pass filtered, thus 99.9 percent will take about twice as long to reach as
+ *                                    99 percent and three times as long to reach as 90%. 90% is the recommended setting.
+ */
+typedef struct 
+{
+  t_uint16                    level_detector_attack_time;
+  t_uint16                    level_detector_release_time;
+  t_uint16                    gain_processor_attack_time;
+  t_uint16                    gain_processor_release_time;
+  t_acceptance_level          acceptance_level;
+} t_time_specifiers;
+
+
+/*!
+ * Effect Configuration struct for the DRC.
+ * 
+ * param enable            Enable DRC algorithm. Otherwise, forward input to output
+ * param use_peak_measure  DRC method for measurements: RMS or Peak
+ * param look_ahead_time   Maximum look ahead time allowed in the DRC execution
+ * param static_curve      DRC Static Curve
+ * param time_specifiers   Time Specifiers for DRC
+ */
+typedef struct 
+{
+  t_bool                enable;
+  t_bool                use_separate_channel_settings;
+  t_bool                use_peak_measure;
+  t_bool                use_peak_measure_channel2;
+  t_uint16              look_ahead_time;
+  t_static_curve        static_curve;
+  t_time_specifiers     time_specifiers;
+  t_static_curve        static_curve_channel2;
+  t_time_specifiers     time_specifiers_channel2;
+} t_drc_config;
+
+#endif

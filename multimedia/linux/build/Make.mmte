@@ -1,0 +1,78 @@
+# -*- makefile -*-
+# *
+# * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+# * This code is ST-Ericsson proprietary and confidential.
+# * Any use of the code for whatever purpose is subject to
+# * specific written permission of ST-Ericsson SA.
+# *
+
+include $(MM_MAKEFILES_DIR)/STEOMXLoaderConfig.mk
+
+LINUX_LIBS = st_hw_buffer blt_hw
+
+LINUX_WEAK_LIBS =
+
+LINUX_NMF_HOST_COMPONENTS =
+
+BELLAGIO_SHARED_LIBS=omxil-bellagio ste_ensloader
+
+ifeq ($(MMSYSTEM),linux)
+  BELLAGIO_INSTALL_DIR=usr/lib
+else
+  BELLAGIO_INSTALL_DIR=system/lib
+endif
+
+BELLAGIO_PRESENT_SHARED_LIBS=$(wildcard $(foreach lib,$(BELLAGIO_SHARED_LIBS),$(INSTALL_SOLIB_DIR)/lib$(lib).so))
+
+## Compile mmte_bellagio if module libs are present
+ifneq ($(strip $(BELLAGIO_PRESENT_SHARED_LIBS)),)
+
+  EXE2_LDFLAGS+= $(addprefix -l,$(BELLAGIO_SHARED_LIBS)) $(LDFLAGS_STE_ENS_OMX_COMPONENTS) -llos -lalsactrl -ltinyalsa
+
+  ifeq ($(findstring x86,$(MYMMBOARD)),x86)
+    MYSEARCHPLAT := $(MYMMBOARD)
+  else
+    MYSEARCHPLAT := $(MMPROCESSOR)-*-$(MMCOMPILER)-$(MMBOARD) $(MMPROCESSOR)-*-$(MMCOMPILER)-x
+  endif
+
+  ##### media libs
+  AUDIO_LIBS_2   += $(BELLAGIO_AUDIO_LIBS) ate_cmd ate_weak
+  VIDEO_LIBS_2   += $(BELLAGIO_VIDEO_LIBS) vte_common vte_h264dec vte_vc1dec vte_mpeg2dec vte_h264enc vte_jpegenc vte_mpeg4enc vte_jpegdec vte_mpeg4dec vte_multicomp vte_exifmixer vte_vp6dec vte_init_weak
+  IMAGING_LIBS_2 += $(BELLAGIO_IMAGING_LIBS) ite_darkbox ite_omx_cmd
+
+  AUDIO_LIBS_SEARCH_2 = \
+	$(foreach tmp, $(MYSEARCHPLAT),$(addprefix $(MMROOT)/audio/lib/$(tmp)/,$(addprefix lib,$(addsuffix .$(LIB_EXT),$(AUDIO_LIBS_2)))))
+
+  VIDEO_LIBS_SEARCH_2 = \
+	$(foreach tmp, $(MYSEARCHPLAT),$(addprefix $(MMROOT)/video/lib/$(tmp)/,$(addprefix lib,$(addsuffix .$(LIB_EXT),$(VIDEO_LIBS_2)))))
+
+  IMAGING_LIBS_SEARCH_2 = \
+	$(foreach tmp, $(MYSEARCHPLAT),$(addprefix $(MMROOT)/imaging/lib/$(tmp)/,$(addprefix lib,$(addsuffix .$(LIB_EXT),$(IMAGING_LIBS_2)))))
+
+  ALL_LIBS_2 := $(wildcard $(AUDIO_LIBS_SEARCH_2))
+  ALL_LIBS_2 += $(wildcard $(VIDEO_LIBS_SEARCH_2))
+  ALL_LIBS_2 += $(wildcard $(IMAGING_LIBS_SEARCH_2))
+
+  ##### media weak libs
+
+  VIDEO_WEAK_LIBS_2 += $(BELLAGIO_VIDEO_WEAK_LIBS) vte_weak
+
+  ALL_WEAK_LIBS_SEARCH_2 = \
+    $(foreach tmp, $(MYSEARCHPLAT),$(addprefix $(MMROOT)/video/lib/$(tmp)/,$(addprefix lib,$(addsuffix .$(LIB_EXT),$(VIDEO_WEAK_LIBS_2)))))
+
+  ALL_WEAK_LIBS_2 := $(wildcard $(ALL_WEAK_LIBS_SEARCH1))
+
+  ##### binary
+
+  EXENAME_2    = mmte_bellagio
+  INSTALL_BIN += mmte_bellagio
+
+  LIBS_2= libmmte_core.a $(HASH_LIB) libcli.a $(ALL_WEAK_LIBS) libosttrace.a
+  ifneq ($(CORE_NUMBER),1)
+    ## Existing only for u8500 platforms
+    LIBS_2 += libmmte_nmf.a
+  endif
+  LIBS_2 += $(ALL_LIBS_2) $(ALL_WEAK_LIBS_2)
+  EXE2_LDFLAGS+= -lmmte_init_weak
+
+endif

@@ -1,0 +1,82 @@
+# womDemoCpt scenario
+#
+#  image----+------|0 womDemoCpt 1|--------output
+
+#Check existence of SIA_ALGO_PATH variable (in fact check if SIA_ALGO_NOTDEFINE has been set to 0 as mmte return for undefined variables)
+if $(SIA_ALGO_NOTDEFINE) != 0
+	alias S_WOMDEMOCPT_CURRENT_PATH .
+else 
+	alias S_WOMDEMOCPT_CURRENT_PATH $(SIA_ALGO_DATA_PATH)/womDemoCpt
+endif
+
+MMTE_OMX_SetTraceLevel 1
+enable_disp_alias_process
+enable_skip_unknown_command
+
+echo $(IMAGING_PATH)
+test_logDir $(WOMDEMOCPT_CURRENT_PATH)/output
+
+test_start womDemoCpt_test00.mmte  test00.mmte Description of the test
+
+alias Width_In_0   640
+alias Height_In_0  480
+alias ColorFormat  OMX_COLOR_Format16bitRGB565
+alias Stride       0
+alias SliceHeight  0
+alias Port_Out     1
+alias Port_In      0
+alias Repeat       0
+
+alias FilenameOutput          $(WOMDEMOCPT_CURRENT_PATH)/output/test00.out
+test_result PASSED
+
+test_next Initialisation
+OMX_GetHandle    womDemoCpt OMX.STE.WOMDEMOCPT
+OMX_SetParameter womDemoCpt OMX_IndexParamPortDefinition nPortIndex=$(Port_In)   format.video.nFrameWidth=$(Width_In_0) format.video.nFrameHeight=$(Height_In_0) format.video.nSliceHeight=$(SliceHeight) format.video.nStride=$(Stride)  format.video.eColorFormat=$(ColorFormat)
+OMX_SetParameter womDemoCpt OMX_IndexParamPortDefinition nPortIndex=$(Port_Out)  format.video.nFrameWidth=$(Width_In_0) format.video.nFrameHeight=$(Height_In_0) format.video.nSliceHeight=$(SliceHeight) format.video.nStride=$(Stride)  format.video.eColorFormat=$(ColorFormat)
+test_result PASSED
+
+test_next Goto Idle
+MMTE_attach_io  womDemoCpt  $(Port_In) MEM $(WOMDEMOCPT_CURRENT_PATH)/input/test00.in 0 0 0
+alias OUTPUTFILESIZE 460800
+MMTE_attach_io  womDemoCpt $(Port_Out) MEM $(FilenameOutput) OUTPUTFILESIZE 0 0
+
+OMX_SendCommand      womDemoCpt OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers womDemoCpt $(Port_In)
+MMTE_AllocateBuffers womDemoCpt $(Port_Out)
+MMTE_WaitEvent       womDemoCpt  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+test_result PASSED
+
+test_next Goto Execute
+OMX_SendCommand      womDemoCpt  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent       womDemoCpt  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+test_result PASSED
+
+test_next Wait end of test
+alias TIMEOUT 1000
+MMTE_WaitEvent womDemoCpt OMX_EventBufferFlag Port_Out EOS $(TIMEOUT)
+test_result PASSED
+
+test_next ReturnToIdle
+OMX_SendCommand womDemoCpt  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  womDemoCpt  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+test_result PASSED
+
+test_next ReturnToLoaded
+OMX_SendCommand  womDemoCpt OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers womDemoCpt $(Port_In)
+MMTE_FreeBuffers womDemoCpt $(Port_Out)
+
+MMTE_WaitEvent   womDemoCpt  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+ens_network_destroy
+test_result PASSED
+
+file_comp $(FilenameOutput) $(WOMDEMOCPT_CURRENT_PATH)/ref/test00.out
+
+test_end
+
+
+
+
+
+

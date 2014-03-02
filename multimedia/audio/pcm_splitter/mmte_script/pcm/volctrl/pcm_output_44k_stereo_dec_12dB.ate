@@ -1,0 +1,10 @@
+#OMX_SetParameter    $1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=44100 eEndian=OMX_EndianBig eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+#MMTE_CheckParameter $1 OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+OMX_SetConfig       $1 OMX_IndexConfigAudioVolume nPortIndex=0 sVolume.nValue=-1200
+
+if $3 == output_reference
+alias OUTPUT_FILE   $(OUTPUT_DIR)/volctrl_pcm_output_44k_stereo_dec_12dB.out
+ate_attach_io       $1 $2 MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/pcm_splitter/streams/sin440_dec_12dB.pcm
+alias REF_DIGEST    $(AUDIO_STREAMS)/pcm_splitter/streams/volctrl_pcm_output_44k_stereo_dec_12dB_digest.hash
+endif

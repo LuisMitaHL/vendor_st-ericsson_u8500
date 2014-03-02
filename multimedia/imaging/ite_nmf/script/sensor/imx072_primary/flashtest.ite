@@ -1,0 +1,107 @@
+#do $(IMAGING_PATH)/ite_nmf/script/sensor/imx072_primary/flashtest.ite
+setusecase default
+LogPE disable
+FlashHelp
+
+
+setusecase LR QVGA YUV422RI
+setusecase HR VGA YUV420MB_D
+bmsmode STILL
+bmsout BAYERSTORE2
+setusecase BMS VGA RAW12
+
+##Command Syntax
+##ConfigureFlash[Syntax]: 
+##ConfigureFlash [<wait>|<nowait>] s32_DelayFromStartPoint u32_StrobeLength_us
+##               u8_FrameCount u8_MaximumNumberOfFrames e_StrobeStartPoint_Frame
+
+
+####### TEST 1 ##########
+#   TEST FLASH SUPPORT  #
+#########################
+#TestFlashSupport help
+TestFlashSupport
+
+####### TEST 2 ##########
+#   TEST FLASH SANITY   #
+#########################
+#FlashSanityTest help
+FlashSanityTest
+
+####### TEST 3 ################
+#   TEST FLASH IN RUN STATE   #
+###############################
+manualfps 30 NIL
+#ConfigureFlash help
+usagemode vf
+LR prepare
+LR start
+ConfigureFlash wait 0 500 1 10 0
+LR stop
+LR free
+
+usagemode video
+HR prepare
+HR start
+ConfigureFlash wait 10 1000 1 5 1
+HR stop
+HR free
+
+LRHR prepare
+LRHR start
+ConfigureFlash wait 15 1200 1 7 0
+LRHR stop
+LRHR free
+
+manualfps 20 NIL
+usagemode still
+bms prepare
+bms start
+ConfigureFlash wait 20 1500 1 5 1
+bms stop
+bms free
+
+####### TEST 4 ################
+#   TEST FLASH IN STOP STATE  #
+###############################
+
+
+#ConfigureFlash help
+#VerifyFlashTriggered help
+usagemode vf
+LR prepare
+ConfigureFlash nowait 0 500 1 10 0
+LR start
+VerifyFlashTriggered
+LR stop
+LR free
+
+usagemode video
+HR prepare
+ConfigureFlash nowait 10 1000 1 5 1
+HR start
+VerifyFlashTriggered
+HR stop
+HR free
+
+LRHR prepare
+ConfigureFlash nowait 15 1200 1 7 0
+LRHR start
+VerifyFlashTriggered
+LRHR stop
+LRHR free
+
+manualfps 15 NIL
+usagemode still
+bms prepare
+ConfigureFlash nowait 20 1500 1 4 1
+bms start nowait toggle
+VerifyFlashTriggered
+bms stop
+bms free
+
+
+####################################
+#FLASH ENABLE BEFOR STREAMING CHECK#
+####################################
+Flash_enable HR

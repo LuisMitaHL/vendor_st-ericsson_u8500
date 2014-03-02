@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.stericsson.sdk.equipment.ui.editors.EquipmentEditor"
+            contributorClass="com.stericsson.sdk.equipment.ui.editors.EquipmentEditorContributor"
+            extensions="me"
+            icon="icons/me.png"
+            id="com.stericsson.sdk.equipment.ui.editors.EquipmentEditor"
+            matchingStrategy="com.stericsson.sdk.equipment.ui.editors.EquipmentEditorMatchingStrategy"
+            name="Equipment Editor">
+      </editor>
+      <editor
+            class="com.stericsson.sdk.equipment.ui.editors.EquipmentDumpEditor"
+            contributorClass="com.stericsson.sdk.equipment.ui.editors.EquipmentEditorContributor"
+            extensions="me"
+            icon="icons/warm_me.png"
+            id="com.stericsson.sdk.equipment.ui.editors.EquipmentDumpEditor"
+            matchingStrategy="com.stericsson.sdk.equipment.ui.editors.EquipmentEditorMatchingStrategy"
+            name="Equipment Dump Editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="com.stericsson.sdk.equipment.ui"
+            name="Flash Kit">
+      </category>
+      <view
+            category="com.stericsson.sdk.equipment.ui"
+            class="com.stericsson.sdk.equipment.ui.views.EquipmentView"
+            icon="icons/fk.png"
+            id="com.stericsson.sdk.equipment.ui.views.EquipmentView"
+            name="Connected Equipment">
+      </view>
+   </extension>
+   <extension
+         id="com.stericsson.sdk..equipment.ui.menucontribution"
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <menu
+               icon="icons/fk.png"
+               id="com.stericsson.sdk.equipment.ui.menucontribution.flashkit"
+               label="Flash Kit">
+         </menu>
+         <menu
+               icon="icons/process.png"
+               id="com.stericsson.sdk.equipment.ui.menucontribution.processfile"
+               label="Flash Kit Flash To"
+               tooltip="Enqueue flashing of the selected file">
+            <dynamic
+                  class="com.stericsson.sdk.equipment.ui.contributions.menus.ProcessFileMenuContributionItem"
+                  id="com.stericsson.sdk.equipment.ui.menucontribution.compoundcontribution">
+            </dynamic>
+            <visibleWhen
+                  checkEnabled="true">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <or>
+                     <adapt
+                           type="org.eclipse.core.resources.IFile">
+                        <or>
+                           <test
+                                 property="org.eclipse.core.resources.name"
+                                 value="*.zip">
+                           </test>
+                        </or>
+                     </adapt>
+                  </or>
+               </iterate>
+            </visibleWhen>
+         </menu>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.stericsson.sdk.equipment.ui.contributions.handlers.ProcessFileHandler"
+            id="com.stericsson.sdk.equipment.ui.commands.processfile"
+            name="processfile">
+         <commandParameter
+               id="com.stericsson.sdk.equipment.ui.commands.processfile.equipmentparam"
+               name="equipment"
+               optional="true">
+         </commandParameter>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.stericsson.sdk.equipment.ui.perspective.FlashKitPerspectiveFactory"
+            icon="icons/fk.png"
+            id="com.stericsson.sdk.equipment.ui.perspective"
+            name="Flash Kit">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.stericsson.sdk.equipment.ui.preferences.FlashKitPreferencePage"
+            id="com.stericsson.sdk.equipment.ui.preferences.FlashKitPreferencePage"
+            name="Flash Kit">
+      </page>
+      <page
+            category="com.stericsson.sdk.equipment.ui.preferences.FlashKitPreferencePage"
+            class="com.stericsson.sdk.equipment.ui.preferences.backend.BackendPreferencePage"
+            id="com.stericsson.sdk.equipment.ui.preferences.BackendPreferencePage"
+            name="Flash Tool Backend">
+      </page>
+      <page
+            category="com.stericsson.sdk.equipment.ui.preferences.FlashKitPreferencePage"
+            class="com.stericsson.sdk.equipment.ui.preferences.equipmenteditor.EquipmentEditorPreferencePage"
+            id="com.stericsson.sdk.equipment.ui.preferences.EquipmentEditorPreferencePage"
+            name="Equipment Editor">
+      </page>
+      <page
+            category="com.stericsson.sdk.equipment.ui.preferences.FlashKitPreferencePage"
+            class="com.stericsson.sdk.equipment.ui.preferences.dumphandling.DumpHandlingPreferencePage"
+            id="com.stericsson.sdk.equipment.ui.preferences.DumpHandlingPreferencePage"
+            name="Dump Handling">
+      </page>
+   </extension>
+   <extension
+         id="com.stericsson.sdk.equipment.ui.preferences"
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.stericsson.sdk.equipment.ui.preferences.FlashKitPreferenceInitializer">
+      </initializer>
+   </extension>
+
+
+</plugin>

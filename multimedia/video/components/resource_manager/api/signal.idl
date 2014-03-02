@@ -1,0 +1,52 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_resource_manager.idt>
+
+interface resource_manager.api.signal { 
+
+/*
+ Description :  Report an hw event (end of buffer list, HW block interrupt, ...).
+ */
+
+
+/** @addtogroup rmSignalBufferGroup signalBuffer
+ *  @ingroup rmRequiredInterfaceGroup
+ *  @{ 
+ */
+/*! Report an hw event signalBuffer
+
+\param[in] bufferStatus t_t1xhv_buffer_status
+*/
+
+void signalBuffer(t_t1xhv_buffer_status bufferStatus);
+
+/** @} */ // end of rmSignalBufferGroup
+
+
+
+/** @addtogroup rmSignalInterruptGroup signalInterrupt
+ *  @ingroup rmRequiredInterfaceGroup
+ *  @{ 
+ */
+/*! Report an hw event signalInterrupt
+
+\param[in] interruptSource t_uint16
+*/
+
+void signalInterrupt(t_uint16 interruptSource);
+
+/** @} */ // end of rmSignalInterruptGroup
+
+
+}

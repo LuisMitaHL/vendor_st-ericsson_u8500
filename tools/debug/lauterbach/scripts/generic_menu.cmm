@@ -1,0 +1,81 @@
+;------------------------------------------------------------
+; generic_menu.cmm
+;------------------------------------------------------------
+; This file adds all generic menu used for all targets
+;
+; 060612 - PH Initial version
+; 070329 - KM Added psringbuffer
+; 090916 - NJ Added link to support agreement page
+;-----------------------------------------------------------
+
+; images like :t32 is avalible in demo/menu/t32icon.h
+
+menu.reprogram 
+(
+	
+	add
+	menu
+	(
+		;Add menues for Support and link to intranet page
+		popup "&Help"
+		(
+			after "[:t32]About TRACE32..."
+			menuitem "[,    BBBBBBBS,   BBBBBBBBBS,  BBBBBBBBBBBS,  BBBBS  BBBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  BBBS    BBBS,  SSSS    SSSS]Nohau Support..." "do nohau_support.cmm"
+			
+			after "[:t32]Nohau Support..."
+			menuitem "[,    bbbbbbbS,   bbbbbbbbbS,  bbbbbbbbbbbS,  bbbbS  bbbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  bbbS    bbbS,  SSSS    SSSS]Nohau Service Agreement Homepage [Intranet]" "do nohau_intranet.cmm"
+		)	
+			
+	)
+	; Add buttons for startup, load and reset
+	toolbar
+	(
+		toolitem "Open ST-Ericsson Target Setup Dialog" "do startup.cmm"
+		[
+GGGGGGGGGGGGGGGG
+GGGGGGGGGGGGGGGG
+GGGGGGGGGGGGGGGG
+GGGGGGGGGGGGGGGG
+XXGXXXXXXGXGXXGG
+XGGXGGXGXGXGXGXG
+XGGXGGXGXGXGXGXG
+XXGXXGXGXGXGXXGG
+GXGXGGXGXGXGXGGG
+GXGXGGXGXXXGXGGG
+XXGXXGXGGXGGXGGG
+GGGGGGGGGGGGGGGG
+GGGGGGGGGGGGGGGG
+GGGGGGGGGGGGGGGG
+GGGGGGGGGGGGGGGG
+GGGGGGGGGGGGGGGG
+		]
+		toolitem "Load Target with Current Settings" "run load_dual.cmm"
+		[
+YYYYYYYYYYYYYYYY
+YYYYYYYYYYYYYYYY
+YYYYYYYYYYYYYYYY
+YYYYYYYYYYYYYYYY
+YXYYYXYYYXYYXXYY
+YXYYXYXYXYXYXYXY
+YXYYXYXYXYXYXYXY
+YXYYXYXYXXXYXYXY
+YXYYXYXYXYXYXYXY
+YXYYXYXYXYXYXYXY
+YXXXYXYYXYXYXXYY
+YYYYYYYYYYYYYYYY
+YYYYYYYYYYYYYYYY
+YYYYYYYYYYYYYYYY
+YYYYYYYYYYYYYYYY
+YYYYYYYYYYYYYYYY
+		]
+		toolitem "Trace" ":ACHART" "Analyzer.Chart.sYmbol /track"
+	)
+)
+
+; specific part => ST Ericsson menu for product with OSE
+if (!((string.scan("&Target", "U8500", 0)>0)||(string.scan("&Target", "U5500_APP", 0)>0)||(string.scan("&Target", "9540", 0)>0)||(string.scan("&Target", "L8540", 0)>0)))
+(
+menu.reprogram ose_menu
+)
+
+ENDDO

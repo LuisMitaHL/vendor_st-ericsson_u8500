@@ -1,0 +1,28 @@
+primitive resource_manager.tcm_mem_mgr 
+{
+//singleton
+
+// Constructor of this component
+provides lifecycle.constructor  as  constructor
+
+// Destructor of this component
+provides lifecycle.destructor  as  destructor
+
+
+// Provided interfaces
+provides resource_manager.api.tcm_mem_alloc        as  iTcmAlloc
+
+
+// Additionnal informations : 
+//    --------------
+//    - Source files
+sources src/linked_lists.c 
+sources src/memory_mgr.c
+
+
+//    ----------------------------------------
+//    - Necessary paths (mainly for inclusion)
+option CPPFLAGS "-ICONF_ROOT/inc -DMMDSP=1 -D__T1XHV_NMF_ENV=1 -DTARGET=dsp16 "
+option CFLAGS "-O3 -g -mode16"
+
+}

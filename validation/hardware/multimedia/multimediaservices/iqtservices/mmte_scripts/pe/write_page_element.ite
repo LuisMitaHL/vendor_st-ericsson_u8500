@@ -1,0 +1,54 @@
+if PAGE_ELEMENT_STUB == 1
+
+	alias INDEX $1
+	alias VALUE $2
+
+	if INDEX == 0x0080
+		alias REGISTER_0x0080 VALUE
+	endif
+	if INDEX == 0x0082
+      	alias REGISTER_0x0082 VALUE
+	endif
+	if INDEX == 0x0100
+      	alias REGISTER_0x0100 VALUE
+	endif
+	if INDEX == 0x0101
+      	alias REGISTER_0x0101 VALUE
+	endif
+	if INDEX == 0x0102
+      	alias REGISTER_0x0102 VALUE
+	endif
+	if INDEX == 0x0103     
+      	alias REGISTER_0x0103 VALUE
+	endif
+
+else
+
+	alias P_ADDRESS $1
+	alias P_DATA    $2
+
+#old interface
+#OMX_SetConfig camera IFM_IndexConfigCommonWritePe nPEWriteList_addr[0]=P_ADDRESS nPEWriteList_data[0]=P_DATA nPEWriteList_addr[1]=0 nPEWriteList_data[1]=0
+
+	OMX_SetConfig camera IFM_IndexConfigCommonWritePe nPEToWrite=1 nPEList_addr[0]=P_ADDRESS nPEList_data[0]=P_DATA
+
+
+	MMTE_WaitEvent camera OMX_EventIndexSettingChanged OMX_ALL IFM_IndexConfigCommonWritePe
+
+	OMX_GetConfig ConfigGet camera IFM_IndexConfigCommonWritePe
+
+endif
+
+
+MMTE_FreeConfig
+echo File_saved
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+************************************************************
+* Linux Environment (version 2.7.4) "Cuvée des jonquilles" *
+************************************************************
+
+The release comprises one .tgz file holding the following features:
+    - The needed files to develop NMF applications under Linux:
+      (libraries and header)
+    - The binaries to run NMF applications on the target.
+
+    http://codexstn.cro.st.com/svnroot/nmf/nmf_linux/tags/release_2_7_4
+
+Supported target:
+    - STn8500 (MOP500-V1, HREF-V1, u8500_v2)
+    
+Changes:
+--------
+[CM]
+     * For general changes (such as CM API update, etc), see the NMF release notes
+       in component com.stericsson.nmf.tools
+     * Add this line in your components.txt to use NMF in a Linux environment:
+       include rod+package://com.stericsson.nmf.linux:2.7.4/components.txt
+
+[NMF Linux]
+     * Integrate new mmenv
+     * Add support for u8500_v2 platform
+
+Bug fixes:
+---------
+[NMF Linux]
+     * None
+
+Notes
+-----
+- All warnings/errors of the CMUserProxy are logged through syslog in
+  /var/log/user.log
+  => in case of problems, don't forget to have a look in this file.
+
+Known Issues:
+-------------
+     * None
+
+Pre-requires:
+-------------
+    - linux_ramdisk 1.3.0 or later
+    - com.stericsson.montblanc.linux.trace 0.2.0 or later
+    - GCC ARM compiler 4.2.3 from STLinux 2.3 distribution
+    - The NMF tools are provided in a separate package:
+      nmf_tools package is required to develop NMF applications.

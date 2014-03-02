@@ -1,0 +1,56 @@
+//
+//       Configuration file for      mpeg2dec
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite mpeg2dec.mpc.mpeg2dec extends debug.mpc.printf_type singleton
+{
+
+// Sub components
+contains mpeg2dec.mpc.algo                        as cAlgo
+
+// Provided interfaces
+provides mpeg2dec.mpc.api.algo                    as iAlgo
+provides mpeg2dec.mpc.api.configure_algo	  as iConfigureAlgo
+provides mpeg2dec.mpc.api.update_algo	  as iUpdateAlgo
+
+//
+// Required interfaces
+requires resource_manager.api.buffer              as iBuffer
+requires resource_manager.api.mtf                 as iMtf
+requires resource_manager.api.interrupt				as iInterrupt
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo                                  to cAlgo.iAlgo
+binds this.iConfigureAlgo		to cAlgo.iConfigureAlgo
+binds this.iUpdateAlgo			to cAlgo.iUpdateAlgo
+
+binds cAlgo.oPrintf                               to this.oPrintf
+binds cAlgo.iInterrupt								to this.iInterrupt
+
+binds cAlgo.iBuffer                               to this.iBuffer
+binds cAlgo.iMtf                                  to this.iMtf
+binds cAlgo.iInterrupt                                      to this.iInterrupt
+
+
+// Binds between sub components
+// n/a
+
+// 
+// Additionnal informations : 
+//      -----------------
+//      - Version numbers :
+// Current revision : SVA_FW_NMF_VDC_MPEG2_1.0.0
+//      - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+//      - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+//    ----------------------------------------
+option stack = 1024
+
+}

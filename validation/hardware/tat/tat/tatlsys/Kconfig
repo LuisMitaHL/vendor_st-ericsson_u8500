@@ -1,0 +1,35 @@
+#
+# TatlSys configuration
+#
+
+menuconfig TATLSYS
+	bool "TatlSys"
+	depends on DTHSRVHELPER && TATTOOLS
+	help
+	  depends on DTHSRVHELPER, TATTOOLS
+
+if TATLSYS
+
+config TATLSYS_DIR
+	string
+	default ../tat/tat/tatlsys
+
+config TATLSYS_DEPS
+	string
+	default "DTHSRVHELPER TATTOOLS"
+
+config TATLSYS_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLSYS
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLSYS_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLSYS
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLSYS

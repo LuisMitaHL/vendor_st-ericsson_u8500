@@ -1,0 +1,106 @@
+/*
+ * Copyright (c) 2009 ST-Ericsson SA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2
+ * as published by the Free Software Foundation.
+ */
+
+
+
+#ifndef __MACH_PRCMU_REGS_H
+#define __MACH_PRCMU_REGS_H
+
+#define U5500_PER4_BASE	0x80150000
+#define U5500_PRCMU_BASE	(U5500_PER4_BASE + 0x7000)
+
+#define PRCM_ARM_PLLDIVPS 	(U5500_PRCMU_BASE + 0x118)
+#define PRCM_ARM_CHGCLKREQ 	(U5500_PRCMU_BASE + 0x114)
+#define PRCM_PLLARM_ENABLE	(U5500_PRCMU_BASE + 0x98)
+#define PRCM_ARMCLKFIX_MGT	(U5500_PRCMU_BASE + 0x0)
+#define PRCM_A9_RESETN_CLR	(U5500_PRCMU_BASE + 0x1f4)
+#define PRCM_A9_RESETN_SET	(U5500_PRCMU_BASE + 0x1f0)
+#define PRCM_ARM_LS_CLAMP	(U5500_PRCMU_BASE + 0x30c)
+#define PRCM_SRAM_A9		(U5500_PRCMU_BASE + 0x308)
+
+/* ARM WFI Standby signal register */
+#define PRCM_ARM_WFI_STANDBY    (U5500_PRCMU_BASE + 0x130)
+#define PRCMU_IOCR              (U5500_PRCMU_BASE + 0x310)
+
+
+/* CPU mailbox registers */
+#define PRCM_MBOX_CPU_VAL	(U5500_PRCMU_BASE + 0x0fc)
+#define PRCM_MBOX_CPU_SET	(U5500_PRCMU_BASE + 0x100)
+#define PRCM_MBOX_CPU_CLR	(U5500_PRCMU_BASE + 0x104)
+
+/* Dual A9 core interrupt management unit registers */
+#define PRCM_A9_MASK_REQ	(U5500_PRCMU_BASE + 0x328)
+#define PRCM_A9_MASK_ACK	(U5500_PRCMU_BASE + 0x32c)
+#define PRCM_ARMITMSK31TO0	(U5500_PRCMU_BASE + 0x11c)
+#define PRCM_ARMITMSK63TO32	(U5500_PRCMU_BASE + 0x120)
+#define PRCM_ARMITMSK95TO64	(U5500_PRCMU_BASE + 0x124)
+#define PRCM_ARMITMSK127TO96 	(U5500_PRCMU_BASE + 0x128)
+#define PRCM_POWER_STATE_VAL	(U5500_PRCMU_BASE + 0x25C)
+#define PRCM_ARMITVAL31TO0	(U5500_PRCMU_BASE + 0x260)
+#define PRCM_ARMITVAL63TO32	(U5500_PRCMU_BASE + 0x264)
+#define PRCM_ARMITVAL95TO64	(U5500_PRCMU_BASE + 0x268)
+#define PRCM_ARMITVAL127TO96	(U5500_PRCMU_BASE + 0x26C)
+
+#define PRCM_HOSTACCESS_REQ 	(U5500_PRCMU_BASE + 0x334)
+#define ARM_WAKEUP_MODEM	0x1
+
+/* register for Ack mailbox interrupts */
+#define PRCM_ARM_IT1_CLEAR	(U5500_PRCMU_BASE + 0x48C)
+#define PRCM_ARM_IT1_VAL	(U5500_PRCMU_BASE + 0x494)
+#define PRCM_HOLD_EVT		(U5500_PRCMU_BASE + 0x174)
+
+#define PRCM_ITSTATUS0		(U5500_PRCMU_BASE + 0x148)
+#define PRCM_ITSTATUS1		(U5500_PRCMU_BASE + 0x150)
+#define PRCM_ITSTATUS2		(U5500_PRCMU_BASE + 0x158)
+#define PRCM_ITSTATUS3		(U5500_PRCMU_BASE + 0x160)
+#define PRCM_ITSTATUS4		(U5500_PRCMU_BASE + 0x168)
+#define PRCM_ITSTATUS5		(U5500_PRCMU_BASE + 0x484)
+#define PRCM_ITCLEAR5		(U5500_PRCMU_BASE + 0x488)
+#define PRCM_ARMIT_MASKXP70_IT	(U5500_PRCMU_BASE + 0x1018)
+
+/* System reset register */
+#define PRCM_APE_SOFTRST	(U5500_PRCMU_BASE + 0x228)
+
+/* PRCM Timer 5 */
+#define PRCM_TIMER_5_REF	(U5500_PRCMU_BASE + 0x45C)
+#define PRCM_TIMER_5_DOWNCOUNT	(U5500_PRCMU_BASE + 0x460)
+#define PRCM_TIMER_5_MODE	(U5500_PRCMU_BASE + 0x464)
+
+/* Level shifter and clamp control registers */
+#define PRCM_MMIP_LS_CLAMP_SET     (U5500_PRCMU_BASE + 0x420)
+#define PRCM_MMIP_LS_CLAMP_CLR     (U5500_PRCMU_BASE + 0x424)
+
+/* PRCMU clock/PLL/reset registers */
+#define PRCM_PLLDSI_FREQ           (U5500_PRCMU_BASE + 0x500)
+#define PRCM_PLLDSI_ENABLE         (U5500_PRCMU_BASE + 0x504)
+#define PRCM_LCDCLK_MGT            (U5500_PRCMU_BASE + 0x044)
+#define PRCM_MCDECLK_MGT           (U5500_PRCMU_BASE + 0x064)
+#define PRCM_HDMICLK_MGT           (U5500_PRCMU_BASE + 0x058)
+#define PRCM_TVCLK_MGT             (U5500_PRCMU_BASE + 0x07c)
+#define PRCM_DSI_PLLOUT_SEL        (U5500_PRCMU_BASE + 0x530)
+#define PRCM_DSITVCLK_DIV          (U5500_PRCMU_BASE + 0x52C)
+#define PRCM_APE_RESETN_SET        (U5500_PRCMU_BASE + 0x1E4)
+#define PRCM_APE_RESETN_CLR        (U5500_PRCMU_BASE + 0x1E8)
+
+/* ePOD and memory power signal control registers */
+#define PRCM_EPOD_C_SET            (U5500_PRCMU_BASE + 0x410)
+#define PRCM_SRAM_LS_SLEEP         (U5500_PRCMU_BASE + 0x304)
+
+/* Debug power control unit registers */
+#define PRCM_POWER_STATE_SET       (U5500_PRCMU_BASE + 0x254)
+
+/* Miscellaneous unit registers */
+#define PRCM_DSI_SW_RESET          (U5500_PRCMU_BASE + 0x324)
+
+/* GPIO reset register */
+#define PRCM_GPIO_RESETN_SET	(U5500_PRCMU_BASE + 0x208)
+#define PRCM_GPIO_RESETN_CLR	(U5500_PRCMU_BASE + 0x20C)
+
+#define PRCM_DDRSUBSYS_APE_MINBW (U5500_PRCMU_BASE + 0x438)
+
+#endif /* __MACH_PRCMU__REGS_H */

@@ -1,0 +1,18 @@
+cd $MMROOT/video/video_valid/mmte_script/unitary/decoders/h264
+vte_preproc.pl mmte_h264dec.t ./BP30_StandardCompliance.vtc arm11-think-rvct-ndk20
+cp $MMROOT/video/video_valid/mmte_commands/decoders/h264/init_files/init.ate $MMROOT/shared/mmte/bin/arm11-think-rvct-ndk20
+
+
+gvim $MMROOT/shared/mmte/bin/arm11-think-rvct-ndk20/init.ate &
+gvim $MMROOT/video/video_valid/mmte_commands/decoders/h264/init_files/loadaxf.cmm
+gvim $MMROOT/video/video_valid/mmte_commands/decoders/h264/init_files/setpath.cmm
+
+
+cd $MMROOT/video/video_valid/mmte_script/unitary/decoders/h264/arm11-think-rvct-ndk20
+t32marm -c $HOME/.t32/config.t32,stn8820a0_133mhz.cmm
+cd $MMROOT/video/video_valid/mmte_script/unitary/decoders/h264/arm11-think-rvct-ndk20
+
+
+testengine -d OMXVAL_H264DEC_BP30_STD_COMPLIANCE -t h264dec_0.4.2_fwhw_ndk20 -f -i BP30_StandardCompliance.in -o BP30_StandardCompliance.out
+firefox OMXVAL_H264DEC_BP30_STD_COMPLIANCE_h264dec_0.4.2_fwhw_ndk20.html
+

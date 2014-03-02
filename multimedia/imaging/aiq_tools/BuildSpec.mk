@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_imaging/aiq_tools=bin
+NO_STD_BUILD_imaging/aiq_tools=1
+BUILD_MMDSP_NMF_imaging/aiq_tools=bin
+BUILD_ARM_PROC_imaging/aiq_tools=bin
+BUILD_ARM_CODE_imaging/aiq_tools=bin
+BUILD_ARM_NMF_imaging/aiq_tools=bin
+BUILD_XP70_SIA_CODE_imaging/aiq_tools=false

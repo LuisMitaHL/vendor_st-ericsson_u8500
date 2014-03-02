@@ -1,0 +1,50 @@
+#include <bool.idt>
+#include <samplefreq.idt>
+
+#define NB_OUTPUT               2
+#define NMF_AUDIO_MAXCHANNELS   4
+
+
+typedef struct {
+    // Params
+    t_sample_freq       nSamplingRate;
+    t_uint16            nChannels;
+    t_uint16            nBlockSize; 
+
+    // Configs
+    t_uint16            nChannelSwitchBoard[NMF_AUDIO_MAXCHANNELS];
+    BOOL                bPaused;
+    BOOL                bMute;
+    t_sint16            nBalance;
+    t_sint16            nVolume;
+    t_uint16            nRampChannels;
+    t_sint16            nRampEndVolume;
+    t_uint24            nRampDuration;
+    BOOL                bRampTerminate;
+} HostOutputPortParam_t;
+
+typedef struct {
+    t_uint16            nBlockSize; 
+    t_sample_freq       nSamplingRate;
+    t_uint16            nChannels;
+    t_uint16            nBitsPerSample;
+} HostInputPortParam_t;
+
+typedef struct {
+    HostInputPortParam_t    inputPortParam;
+    HostOutputPortParam_t   outputPortParam[NB_OUTPUT];
+    t_uint32            traceAddr;
+} HostSplitterParam_t;
+
+
+void setParameter(HostSplitterParam_t splitterParam);
+void setInputPortParameter(HostInputPortParam_t inputPortParam);
+void setOutputPortParameter(t_uint16 idx, HostOutputPortParam_t outputPortParam);
+
+// configs
+void setChannelSwitchBoardOutputPort(t_uint16 portIdx, t_uint16 channelSwitchBoard[NMF_AUDIO_MAXCHANNELS]);
+void setPausedOutputPort(t_uint16 portIdx, BOOL bIsPaused);
+void setMuteOutputPort(t_uint16 portIdx, BOOL bIsPaused);
+void setBalanceOutputPort(t_uint16 portIdx, t_sint16 nBalance);
+void setVolumeOutputPort(t_uint16 portIdx, t_sint16 nVolume);
+void setVolumeRampOutputPort(t_uint16 portIdx, t_sint16 nStartVolume, t_sint16 nEndVolume, t_uint16 nChannels, t_uint24 nDuration, BOOL bTerminate);

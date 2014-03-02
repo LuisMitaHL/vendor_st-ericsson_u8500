@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<commandspec>
+  <status>
+    <!--
+    * General Fatal 10001-10025
+    * General Non-Fatal 10026-10050
+    -->
+    <value number="10001" name="TIMEOUT" fatal="false" short="Timeout event occured.">Timeout for previously sent request has occured. Request could be Protrom Command, Bulk transfer, or R15 Command.</value>
+    <value number="10002" name="INVALID_INPUT_PARAMETERS" fatal="false" short="Invalid parameter during Context initialization.">Invalid parameter found during executing LCDriver initialization functions. Failed to initialize Context.</value>
+
+    <!--
+    * Interface Fatal 10051-10075
+    * Interface Non-Fatal 10076-10100
+    -->
+    <value number="10051" name="INTERFACE_COULD_NOT_ADD_OBJECT_TO_LIST" fatal="true" short="Failed to create context for connected device.">Failed to add the LCDriver context for the new device in the devices list. Try to reconnect the device, if the problem is still present report it.</value>
+    <value number="10052" name="INTERFACE_COULD_NOT_CREATE_OBJECT" fatal="true" short="Failed to create loader interface.">Failed to create interface for loader methods, possibly not enough memory to perform the operation. Try to reconnect the device, if the problem is still present report it.</value>
+    <value number="10053" name="INTERFACE_UNKNOWN_EXECPTION_WHILE_ADDING_OBJECT" fatal="true" short="Failed to create context for connected device.">Unknown exception occured while trying to create context for the connected device. Try to reconnect the device, if the problem is still present report it.</value>
+    <value number="10054" name="INTERFACE_COULD_NOT_CREATE_IFC_OBJECT" fatal="true" short="Failed to create context for connected device.">Failed to create LCDriver context for the connected device, possibly not enough memory to perform the operation. Try to reconnect the device, if the problem is still present report it.</value>
+    <value number="10055" name="INTERFACE_OBJECT_POINTER_TO_POINTER_NULL" fatal="true" short="Invalid pointer to interface.">Tried to create LCDriver interface with invalid pointer.</value>
+    <value number="10056" name="INTERFACE_OBJECT_POINTER_NULL" fatal="true" short="Invalid pointer to LCDriver context.">Tried to configure device with invalid pointer to LCDriver interface. Create the LCDriver interface for the conneceted device and try to configure the device later. If the problem is still present report it.</value>
+    <value number="10076" name="INTERFACE_OBJECT_ALREADY_EXISTS" fatal="false" short="LCDriver interface for the device already exists.">The context for the device was previously created.</value>
+    <value number="10077" name="INTERFACE_LC_METHODS_OBJECT_NULL" fatal="false" short="Interface for loader methods is not created.">Tried to execute loader method without creating loader method interface. Create the interface first and retry the same operation. If the problem is still present report it.</value>
+    <value number="10078" name="INTERFACE_INTERFACEID_POINTER_NULL" fatal="false" short="Failed to create LCDriver context.">Tried to create LCDriver context with invalid ID for the context. Try to create context with different context ID, if the problem is still present report it.</value>
+    <value number="10079" name="INTERFACE_CONTEXT_NOT_STARTED" fatal="false" short="LCDriver context is not started.">Tried to call loader method before starting the LCDriver context. Try to start the context before calling loader methods, if the problem is still present report it.</value>
+
+    <!--
+    * System Thread Fatal 10101-10125
+    * System Thread Non-Fatal 10126-10150
+    -->
+    <value number="10126" name="LCDRIVER_THREAD_UNKNOWN_EXCEPTION" fatal="false" short="Unexpexted exit of LCDriver thread.">The LCDriver thread exited in unexpected way. The error is not recognized, if the problem persists report it.</value>
+
+    <!--
+      * Bulk Fatal 10151-10175
+      * Bulk Non-Fatal 10176-10200
+    -->
+    <value number="10176" name="BULK_VECTOR_ID_ERROR" fatal="false" short="Failed to start bulk session.">Failed to open bulk session due to invalid Bulk Vector ID.</value>
+    <value number="10177" name="BULK_ALREADY_IN_PROGRESS" fatal="false" short="Bulk transfer is already in progress.">Bulk transfer is already in progress. Parallel bulk transfers are not supported</value>
+
+    <!--
+      * Hardware Fatal 10201-10225
+      * Hardware Non-Fatal 10226-10250
+    -->
+    <value number="10201" name="PROTROM_STATUS_NOT_OK" fatal="true" short="ROM Code Failure.">Error occured while communicating the ROM code. Possibly there is some security issue with the used SW/HW.</value>
+    <value number="10226" name="TIMEOUT_NO_CHIP_ID_DETECTED" fatal="false" short="Failed to initialize HW.">The HW failed to respond during the initialization sequence. Try with other HW, if the problem still exist report it, otherwise probably it faulty HW.</value>
+    <value number="10227" name="TIMEOUT_NO_Z_DETECTED" fatal="false" short="Failed to start HW initialization.">The HW initialization failed to start. Try with other HW, if the problem still exist report it, otherwise probably it faulty HW.</value>
+
+    <!--
+      * Loader Command Execution Fatal 10251-10275
+      * Loader Command Execution Non-Fatal 10276-10300
+    -->
+    <value number="10276" name="PARALLEL_COMMAND_EXECUTION_NOT_SUPPORTED" fatal="false" short="Command execution failed.">Failed to execute command because there is other active command. Try to execute command again. If the problem persists probably there is some blocked command. Restart the HW.</value>
+    <value number="10277" name="CALLBACKS_NOT_CONFIGURED_CORRECTLY" fatal="false" short="Communication driver configuration failure.">Callbacks for communication decvice are not configured. Try to configure device driver callbacks. If the problem persists report it.</value>
+    <value number="10278" name="GENERAL_RESPONSE_COMMAND_NUMBER_ERROR" fatal="false" short="Failure during command execution.">Recived response for command other than it was expected. Probably there is communication error. Restart the HW, if the problem persists report it.</value>
+    <value number="10279" name="COMMAND_NUMBER_ERROR" fatal="false" short="Failure during command execution.">Command received from ME other than it was expected. Probably there is communication error. Restart the HW, if the problem persists report it.</value>
+    <value number="10280" name="CANCEL_EVENT_RECEIVED" fatal="false" short="Operation execution is canceled.">Canceled execution of active command/communication due to reciving of cancel event.</value>
+    <value number="10281" name="UNEXPECTED_EVENT_RECEIVED" fatal="false" short="Unexpected event during execution.">Unexpected event was received during command execution.</value>
+    <value number="10282" name="INVALID_EXECUTION_MODE" fatal="false" short="Invalid execution mode.">Unexpected event was received during command execution.</value>
+
+    <!--
+      * Buffers Fatal 10301-10325
+      * Buffers Non-Fatal 10326-10350
+      -->
+    <value number="10326" name="BUFFER_BULK_FILE_NOT_ALOCATED" fatal="false" short="Bulk transfer failed.">Failed to load file from local HDD in RAM. Command execution failed.</value>
+
+    <!--
+    * IO File Fatal 10351-10375
+    * IO File Non-Fatal 10376-10400
+    -->
+    <value number="10376" name="FILE_OPENING_ERROR" fatal="false" short="Failed to open file.">Failed to open the file with the given path. Check if the file path is correct.</value>
+    <value number="10377" name="FILE_CREATE_MAPPING_ERROR" fatal="false" short="Failed to load the file in RAM.">Mapping of the file in RAM failed. Try to execute command again, if problem persist try to restart the HW.</value>
+    <value number="10378" name="FILE_MAPPING_VIEW_ERROR" fatal="false" short="Reading of file failed.">Failed to create desired view on RAM area of the mapped file. Try to execute command again, if problem persist try to restart the HW.</value>
+    <value number="10379" name="FILE_FAILED_TO_GET_SIZE" fatal="false" short="Failed to load the file in RAM.">Failed to read file description. Try to execute command again, if problem persist try to restart the HW.</value>
+    <value number="10379" name="FILE_READ_INVALID_OFFSET" fatal="false" short="Invalid data offset requested.">Invalid file offset requested. Try to execute command again, if problem persist try to restart the HW.</value>
+    <value number="10380" name="FILE_READ_ERROR" fatal="false" short="Failed to read from file.">Failed to read data from file. Try to execute command again, if problem persist try to restart the HW.</value>
+
+    <!--
+    * LCM DLL Fatal 10401-10425
+    * LCM DLL Non-Fatal 10426-10450
+    -->
+    <value number="10401" name="LCM_DLL_LOAD_LOADLIBRARY_ERROR" fatal="true" short="Failed to load LCM library.">Loading of dependant library failed. Make sure that it is placed on correct location.</value>
+    <value number="10402" name="LCM_DLL_LOAD_FUNCTION_NOT_FOUND" fatal="true" short="Failed to import LCM functionality.">Some of dependend functions was not found in the given LCM library. Make sure that the version that is used is compatible.</value>
+
+    <!--
+    * Exceptions Fatal 10451-10475
+    * Exceptions Non-Fatal 10476-10500
+    -->
+    <value number="10451" name="UNKNOWN_EXCEPTION" fatal="true" short="Unknown error has stopped the operation.">The active operation was stopped by uknown exception. Repeat the failure procedure, if the problem persists report it.</value>
+    <value number="10476" name="UNKNOWN_WAIT_RETURN_VALUE" fatal="false" short="Operation execution failed.">The activity didn't complete properly. Unhandled event was recieved during execution of command/activity.</value>
+    <value number="10477" name="UNKNOWN_BULK_TRANSFER_EXCEPTION" fatal="false" short="Bulk transfer failed.">The transfer of bulk data was interrpted by unknown exception. Data was not transferred successfuly.</value>
+    <value number="10478" name="UNKNOWN_INTERFACE_EXCEPTION" fatal="false" short="LCDriver context operation failed.">Failed to perform desired operation on the LCDriver context due to unknown exception.</value>
+
+    <!--
+    * LCDriver Thread Fatal 10501-10525
+    * LCDriver Thread Non-Fatal 10526-10550
+    -->
+    <value number="10526" name="LCDRIVER_THREAD_KILLED" fatal="false" short="LCDriver thread stopped.">Execution of LCDriver thread has stopped because the thread was killed with unknown reason.</value>
+    <value number="10527" name="LCDRIVER_THREAD_KILLED_WITH_CANCEL" fatal="false" short="LCDriver thread stopped.">Execution of LCDriver thread has stopped because the thread was killed by cancel event.</value>
+    <value number="10528" name="LCDRIVER_THREAD_KILLED_WITH_SIGNAL_DEATH" fatal="false" short="LCDriver thread stopped.">Execution of LCDriver thread has stopped with shutdown request.</value>
+    <value number="10529" name="LCDRIVER_THREAD_NOT_STARTED" fatal="false" short="Failed to start LCDriver thread.">Starting of LCDriver thread has failed. An error has occured during initialization. Reconnect the device, if the problem persist report it.</value>
+    <value number="10530" name="LCDRIVER_THREAD_STOPPED_AFTER_LCM_ERROR" fatal="false" short="LCDriver thread stopped after receiving LCM error.">LCDriver thread must be stopped due to unrecoverable error state in the LCM. Reconnect the device, if the problem persist report it.</value>
+
+    <!--
+    * LCM Communication Fatal 10551-10575
+    * LCM Communication Non-Fatal 10576-10600
+    -->
+    <value number="10551" name="LCM_RETRANSMISSION_ERROR" fatal="true" short="LCM failed to send packet.">Maximum number of packet retransmission attempts failed. Further communication of device is not possible. Reconnect the device, if the problem persist report it.</value>
+    <value number="10552" name="LCM_DEVICE_WRITE_ERROR" fatal="true" short="LCM failed to write data on communication device.">LCM failed to get response from communication device. Further communication of device is not possible. Reconnect the device, if the problem persist report it.</value>
+
+  </status>
+</commandspec>

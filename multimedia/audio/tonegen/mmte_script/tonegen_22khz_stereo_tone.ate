@@ -1,0 +1,66 @@
+test_start tonegen_22khz_stereo_tone
+
+OMX_GetHandle         source  OMX.ST.AFM.tonegenerator
+OMX_SetParameter      source  OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nBitPerSample=16 nSamplingRate=22050
+ate_attach_io         source  0 MEM $(OUTPUT_DIR)/tonegen_22khz_stereo_tone.out 1000000 0 0
+
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers  source  0
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SetConfig         source  OMX_IndexConfigAudioToneGenerator nPortIndex=0 bEnable=1 eTonetype=OMX_TONEGEN_DtmfTone nDigit=52
+mmte_sleep 20
+OMX_SetConfig         source  OMX_IndexConfigAudioVolumeRamp nPortIndex=0 nChannel=OMX_ALL bLinear=OMX_FALSE sStartVolume.nValue=-10000 sEndVolume.nValue=0 nRampDuration.nValue=0
+MMTE_set_nb_buffer    source  0 2
+
+#Start
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+loop 6
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+
+mmte_sleep 20
+OMX_SetConfig         source  OMX_IndexConfigAudioToneGenerator nPortIndex=0 bEnable=1 eTonetype=OMX_TONEGEN_NormalTone nFrequency[0]=250 nFrequency[1]=350
+mmte_sleep 20
+
+loop 6
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+
+mmte_sleep 20
+OMX_SetConfig         source  OMX_IndexConfigAudioToneGenerator nPortIndex=0 bEnable=1 eTonetype=OMX_TONEGEN_DtmfTone nDigit=55
+mmte_sleep 20
+
+loop 6
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+
+mmte_sleep 20
+OMX_SetConfig         source  OMX_IndexConfigAudioChannelVolume nPortIndex=0 nChannel=OMX_ALL bLinear=OMX_TRUE sVolume.nValue=0
+mmte_sleep 20
+
+loop 4
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+
+mmte_sleep 20
+
+#Stop
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers      source  0
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle        source
+
+file_comp $(AUDIO_STREAMS)/tonegen/streams/tonegen_22khz_stereo_tone.pcm $(OUTPUT_DIR)/tonegen_22khz_stereo_tone.out
+
+test_end

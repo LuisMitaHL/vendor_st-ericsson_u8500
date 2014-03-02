@@ -1,0 +1,38 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+/*!
+ * \brief Runtime API 
+ * 
+ * Runtime API accessible for each primitive component without need to bound it.
+ */ 
+interface rtos.api.runtime {
+
+    /*!
+     * \brief Send a information through XTI/STM.
+     */
+    void traceUser(t_uint32 key);
+    
+    /*!
+     * \brief Send XTI/STM information about function entered.
+     *
+     * This method is called automatically by compiler when entering a function.
+     */
+    void __mmdsp_profile_func_enter(void* addr);
+    
+    /*!
+     * \brief Send XTI/STM information about function exited.
+     * 
+     * This method is called automatically by compiler when exiting a function.
+     */
+    void __mmdsp_profile_func_exit(void* addr);
+    
+    /*!
+     * \brief Retriewe priority of running component
+     */
+    t_sint32 getRunningComponentPriority();
+}

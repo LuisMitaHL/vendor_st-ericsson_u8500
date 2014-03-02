@@ -1,0 +1,28 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.stericsson.atservice" android:sharedUserId="android.uid.phone">
+
+	<application android:label="@string/app_name" android:process="com.android.phone" >
+		<receiver android:name=".OnBootBroadcastReceiver">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED" />
+				<action android:name="android.intent.action.USER_PRESENT" />
+			</intent-filter>
+		</receiver>
+		<service android:name=".AtService" android:label="AtService" />
+	</application>
+
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+	<uses-permission android:name="android.permission.CALL_PHONE" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+	<uses-permission android:name="android.permission.CALL_PRIVILEGED" />
+	<uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+	<uses-permission android:name="android.permission.INJECT_EVENTS" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.MASTER_CLEAR" />
+	<uses-permission android:name="android.permission.REBOOT" />
+	<uses-permission android:name="android.permission.SHUTDOWN"/>
+	<uses-permission android:name="android.permission.DEVICE_POWER"/>
+	<uses-permission android:name="android.permission.SET_TIME_ZONE"/>
+	<uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+</manifest>

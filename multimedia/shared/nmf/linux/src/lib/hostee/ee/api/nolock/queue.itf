@@ -1,0 +1,15 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/queue.idt>
+
+interface ee.api.nolock.queue {
+    t_queue create(void);
+    void destroy(t_queue pQueue);
+    void pushAndExecute(t_queue pQueue, t_queue_link *pElem, void *pExecuteFunction);
+    t_queue_link *popMatchingAndExecute(t_queue pQueue, void* pMatchingFunction, void* pMatchingFunctionArgs, void *pExecuteFunction, void *pExecuteFunctionArgs);
+}

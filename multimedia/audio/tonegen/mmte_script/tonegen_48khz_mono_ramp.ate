@@ -1,0 +1,55 @@
+test_start tonegen_48khz_mono_ramp
+
+OMX_GetHandle         source  OMX.ST.AFM.tonegenerator
+OMX_SetParameter      source  OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nBitPerSample=16 nSamplingRate=48000 eNumData=OMX_NumericalDataSigned bInterleaved=OMX_TRUE ePCMMode=OMX_AUDIO_PCMModeLinear eChannelMapping[0]=OMX_AUDIO_ChannelCF
+ate_attach_io         source  0 MEM $(OUTPUT_DIR)/tonegen_48khz_mono_ramp.out 1000000 0 0
+
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers  source  0
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SetConfig         source  OMX_IndexConfigAudioVolumeRamp nPortIndex=0 nChannel=0 bLinear=OMX_FALSE sStartVolume.nValue=-10000 sEndVolume.nValue=0 nRampDuration.nValue=0
+MMTE_set_nb_buffer    source  0 2
+
+#Start
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+loop 4
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+
+mmte_sleep 20
+OMX_SetConfig         source  OMX_IndexConfigAudioVolumeRamp nPortIndex=0 nChannel=OMX_ALL bLinear=OMX_FALSE sStartVolume.nValue=-10000 sEndVolume.nValue=-600 nRampDuration.nValue=0
+mmte_sleep 20
+
+loop 6
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+
+mmte_sleep 20
+OMX_SetConfig         source  OMX_IndexConfigAudioVolumeRamp nPortIndex=0 nChannel=0 bLinear=OMX_TRUE sStartVolume.nValue=50 sEndVolume.nValue=0 nRampDuration.nValue=0
+mmte_sleep 20
+
+loop 4
+MMTE_wait_transfer    source  0
+MMTE_resume_transfer  source  0 2
+endloop
+
+mmte_sleep 20
+
+#Stop
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand       source  OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers      source  0
+MMTE_WaitEvent        source  OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle        source
+
+file_comp $(AUDIO_STREAMS)/tonegen/streams/tonegen_48khz_mono_ramp.pcm $(OUTPUT_DIR)/tonegen_48khz_mono_ramp.out
+
+test_end

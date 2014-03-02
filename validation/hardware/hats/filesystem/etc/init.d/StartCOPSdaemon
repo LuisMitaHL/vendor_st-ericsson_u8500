@@ -1,0 +1,19 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib
+case $1 in
+    start)
+    echo "Starting COPS daemon..."
+    mkdir -p /dev/block
+    mkdir -p /dev/socket
+    ln -sf /dev/mmcblk0p3 /dev/block/mmcblk0p3
+    ln -sf /dev/mmcblk0boot0 /dev/block/mmcblk0boot0
+    ln -sf /dev/mmcblk0boot1 /dev/block/mmcblk0boot1
+    ln -sf /dev/mmcblk0 /dev/block/mmcblk0
+    /system/bin/cspsa-server 2&> /var/log/cspsa-server.log &
+    /system/bin/copsdaemon 2&> /var/log/copsdaemon.log &
+    ;;
+    stop)
+    echo "Stopping COPS daemon..."
+    ;;
+esac
+exit

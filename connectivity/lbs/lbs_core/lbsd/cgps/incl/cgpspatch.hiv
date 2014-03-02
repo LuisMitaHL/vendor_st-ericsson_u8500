@@ -1,0 +1,99 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSPATCH_HIV__
+#define __CGPSPATCH_HIV__
+/**
+* \file cgpspatch.hiv
+* \date 02/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all variable used by cgps2patch.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 02.04.08</TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __CGPS2PATCH_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS2PATCH_C__*/
+
+/**
+*\var gn_ROM_version
+*
+* Status of GPS baseband ROM version 
+*/
+GLOBAL U2  gn_ROM_version;
+
+/**
+*\var gn_Patch_Status
+*
+* Status of GPS baseband patch transmission
+*/
+GLOBAL U1  gn_Patch_Status;
+
+/**
+*\var gn_Patch_Progress
+*
+* % progress of patch upload for each stage
+*/
+GLOBAL U1  gn_Patch_Progress;
+
+/**
+*\var gn_Cur_Mess
+*
+* Current messages to send, of each 'stage'
+*/
+GLOBAL U2  gn_Cur_Mess[5];
+GLOBAL U1 gn_Patch_Force_Upload
+#ifdef __CGPS2PATCH_C__
+= 0
+#endif
+;
+
+GLOBAL e_cgps_PatchUpload_Source vg_CGPS_PatchUploadState
+#ifdef __CGPS2PATCH_C__
+= K_CGPS_PATCHUPLOAD_STATIC
+#endif
+;
+GLOBAL int8_t vg_patchFileName[100]
+#ifdef __CGPS2PATCH_C__
+= {0,}
+#endif
+;
+GLOBAL U4 vg_FsPatchCheckSum
+#ifdef __CGPS2PATCH_C__
+= 0
+#endif
+;
+GLOBAL U4 vg_PatchFileSize
+#ifdef __CGPS2PATCH_C__
+= 0
+#endif
+;
+GLOBAL U1 vg_FsPatchUploadCount
+#ifdef __CGPS2PATCH_C__
+=0
+#endif
+;
+GLOBAL t_gfl_FILE *vg_gfl_PatchFile;
+
+GLOBAL U1 vg_PatchBuffer[K_CGPS_PATCH_SEGMENT_LENGTH+1];
+
+#undef GLOBAL
+
+#endif /* __CGPSPATCH_HIV__ */

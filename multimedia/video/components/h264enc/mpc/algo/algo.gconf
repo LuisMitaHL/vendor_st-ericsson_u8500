@@ -1,0 +1,119 @@
+//
+//       Configuration file for      algo (H264 encoder)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive h264enc.mpc.algo singleton
+{
+
+provides lifecycle.constructor								as constructor
+//
+// Provided interfaces to a h264_encoder_ddep component
+provides h264enc.mpc.api.algo								as iAlgo
+//
+// Provided interfaces to a resource_manager component
+provides resource_manager.api.signal                        as iSignal referenced
+
+// Debug printf interface
+requires debug.mpc.api.printf								as oPrintf optional
+
+
+// Required interfaces to a resource_manager component
+requires resource_manager.api.buffer						as iBuffer
+requires resource_manager.api.mtf							as iMtf
+requires resource_manager.api.interrupt						as iInterrupt
+requires resource_manager.api.tcm_mem_alloc                 as iTcmAlloc
+
+//      --------------
+//      - Source files
+
+#ifdef __ndk20__
+	sources src/SVA_SUBSYSTEM/algo.c
+	sources src/SVA_SUBSYSTEM/h264e_mecc_control.c
+	sources src/SVA_SUBSYSTEM/inst_dump.c
+	sources src/SVA_SUBSYSTEM/t1xhv_h264e.c
+	sources src/SVA_SUBSYSTEM/t1xhv_mecc_interface.c
+	sources src/SVA_SUBSYSTEM/hamac_aircir.c
+	sources src/SVA_SUBSYSTEM/hamac_block.c
+	sources src/SVA_SUBSYSTEM/hamac_cbr.c
+	sources src/SVA_SUBSYSTEM/hamac_cdme8815.c
+	sources src/SVA_SUBSYSTEM/hamac_deblocking.c
+	sources src/SVA_SUBSYSTEM/hamac_header.c
+	sources src/SVA_SUBSYSTEM/hamac_macroblock.c
+	sources src/SVA_SUBSYSTEM/hamac_main.c
+	sources src/SVA_SUBSYSTEM/hamac_mb_access.c
+	sources src/SVA_SUBSYSTEM/hamac_mv_search.c
+	sources src/SVA_SUBSYSTEM/hamac_rdopt.c
+	sources src/SVA_SUBSYSTEM/hamac_slice.c
+	sources src/SVA_SUBSYSTEM/hamac_vbr.c
+	sources src/SVA_SUBSYSTEM/hamac_vlc.c
+#endif
+#ifdef __ndk8500_ed__
+	sources src/SVA_SUBSYSTEM/fhe_header.c
+	sources src/fhe_encode_macroblock.c
+	sources src/fhe_encode_slice.c
+	sources src/fhe_intra_mode.c
+	sources src/fhe_brc.c
+	sources src/fhe_cdme.c
+	sources src/fhe_h264e.c
+	sources src/fhe_algo.c
+	sources src/algo.c
+	sources src/SVA_SUBSYSTEM/dma_api.c
+	sources src/t1xhv_audiolib_buffer_reset.c
+	sources src/SVA_SUBSYSTEM/bpu_api.c
+#endif
+#ifdef __ndk8500_a0__
+#if 1 // VISIO
+	sources src/SVA_SUBSYSTEM/fhe_encode_macroblock.c
+	sources src/SVA_SUBSYSTEM/fhe_encode_slice.c
+	sources src/SVA_SUBSYSTEM/fhe_ime.c
+	sources src/SVA_SUBSYSTEM/fhe_header.c
+	sources src/SVA_SUBSYSTEM/fhe_algo.c
+	sources src/SVA_SUBSYSTEM/fhe_cbr.c
+#else // HDTV
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_encode_macroblock.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_encode_slice.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_ime.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_header.c
+	sources src/SVA_SUBSYSTEM/hdtv/fhe_algo.c
+#endif
+	sources src/SVA_SUBSYSTEM/fhe_imc.c
+	sources src/SVA_SUBSYSTEM/fhe_h264e.c
+	sources src/SVA_SUBSYSTEM/fhe_newvbr.c
+	sources src/SVA_SUBSYSTEM/fhe_fle.c
+	sources src/algo.c
+	sources src/SVA_SUBSYSTEM/dma_api.c
+	sources src/SVA_SUBSYSTEM/bpu_api.c
+#endif
+
+	sources src/SVA_SUBSYSTEM/mtf_api.c
+
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+option CPPFLAGS "	-ICONF_ROOT/inc/SVA_SUBSYSTEM		\
+					-ICONF_ROOT/inc						\
+					-DMMDSP								\
+					-D__T1XHV_NMF_ENV=1					\
+					-D__LITTLE_ENDIAN_BITFIELD 			\
+					-D_MMDSP -DNOMADIK_VERSION 			\
+					-DFINAL_IMPLEMENTATION 				\
+					-D_FW_IMPLEMENTATION_ 				\
+					-DT1XHV_TASK_DECODE 				\
+					-DSTANDALONE_VERSION 				\
+					-DT1XHV_IDN_FW=COMPONENT_VERSION 	\
+					-DT1XHV_IDN_HW=HW_VERSION           \
+					-DNO_OPTIM_HDTV						\
+					-DDEBUG_TRACES"
+
+//option CFLAGS "-O3 -g -mode16 -forceesramfn"
+option CFLAGS "-O3 -g -mode16 "
+//option CFLAGS "-g -mode16 "
+
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+
+}

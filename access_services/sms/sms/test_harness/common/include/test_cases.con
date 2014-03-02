@@ -1,0 +1,310 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+/**************************************************************************************
+ * This file is used to define the tests run by the Stand-Alone and LTP test harnesses.
+ * It is included in various parts of the code where needed.
+ **************************************************************************************/
+
+/****************************************************************************************************/
+/****************************************************************************************************/
+/*
+ * Ensure that if the macros, in this file, are not being re-defined that they won't
+ * cause any build errors.
+ */
+#ifndef SMS_TEST_CASE_DECLARATION
+#define SMS_TEST_CASE_DECLARATION(FncName)
+#endif
+
+#ifndef SMS_TEST_CASE_EXECUTE
+#define SMS_TEST_CASE_EXECUTE(FncName)
+#endif
+
+
+
+/****************************************************************************************************/
+/****************************************************************************************************/
+/*
+ * The SMS_TEST_CASE_DECLARATION macro is used to specify the function prototypes for each of
+ * the test cases which are run by the Stand-Alone and LTP test harnesses. Each test case must be
+ * specified once in using this macro.
+ */
+SMS_TEST_CASE_DECLARATION(SMSTest_Initialise)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Send_ZeroLengthTPDU)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Send_PPDN)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Send_OTADP)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Send_WaitMode)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Receive)
+
+
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_PreferredStorageSet)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_RelayLinkControlSet)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_ShortMessageInfoRead)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_StatusReportRead)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_ShortMessageStatusSet)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Send_RequestCtrl_P)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Send_NoWaitMode)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_SendConcat)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_MO_MT_Loopback)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Application_Port)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_MoreToSend)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_MemoryCapacityExceeded)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_DeliverReport_Control)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_MO_Route)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_MemCapacityFullReport)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_MemCapacityFullGetState)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_CAT_Refresh_SMS_CBS)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_CAT_Refresh_CBS)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_CAT_Refresh_SMS)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_CAT_Refresh_No_SMS_CBS)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_CAT_Refresh_All)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_MO_MT_SoakTest)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Control)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Storage_SM)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Storage_ME)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Storage_MT)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_StatusReport_SM)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_PowerCycle_Storage_Write_ME)
+
+
+#ifndef REMOVE_SMSTRG_LAYER
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Storage_SM)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Storage_ME)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_Storage_MT)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_StatusReport_SM)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_PowerCycle_Storage_Write_ME)
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_PowerCycle_Storage_Read_ME)
+#endif
+
+
+SMS_TEST_CASE_DECLARATION(SMSTest_Shutdown)
+
+SMS_TEST_CASE_DECLARATION(CBSTest_Activate)
+SMS_TEST_CASE_DECLARATION(CBSTest_Deactivate)
+SMS_TEST_CASE_DECLARATION(CBSTest_SubscribeToAll)
+SMS_TEST_CASE_DECLARATION(CBSTest_UnSubscribeToAll)
+SMS_TEST_CASE_DECLARATION(CBSTest_SubscribeToN)
+SMS_TEST_CASE_DECLARATION(CBSTest_UnSubscribeToN)
+SMS_TEST_CASE_DECLARATION(CBSTest_GetNoOfSubscriptions)
+SMS_TEST_CASE_DECLARATION(CBSTest_GetSubscriptions)
+SMS_TEST_CASE_DECLARATION(CBSTest_CellBroadcastMessageRead)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_errorOccured)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_Util_EmptySignalQueue)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_Uninitialise)
+
+SMS_TEST_CASE_DECLARATION(SMSTest_SMS_CB_Shutdown)
+/****************************************************************************************************/
+
+
+
+/****************************************************************************************************/
+/****************************************************************************************************/
+/*
+ * The SMS_TEST_CASE_EXECUTE macro is used to specify test cases which are run
+ * by the Stand-Alone and LTP test harnesses. The test cases are executed in the
+ * order in which they are specified and may be specified more than once, if so
+ * wished.
+ */
+
+// First test case. Used to initialise Test Harness and connect it to the SMS Server.
+SMS_TEST_CASE_EXECUTE(SMSTest_Initialise) // MUST BE FIRST IN LIST OF TEST CASES
+
+#ifndef REMOVE_SMSTRG_LAYER
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_PowerCycle_Storage_Read_ME) // TEST CASE SHOULD BE NEAR START SO THAT ANY DATA IT READS HAS NOT BEEN OVERWRITTEN
+#endif
+
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_ZeroLengthTPDU)
+/****************************************************************************************************/
+/*
+ * NOTE: THE FOLLOWING NEXT THREE TESTS MUST BE KEPT IN SYNCHRONISATION;
+ *       THE ORDER IS NOT TO BE CHANGED.
+ *
+ *       THE TESTS ARE RELYING ON THE MAL STUB SIDE STATE MACHINE.
+ *       PLEASE REFER TO MAL_SMS_Client CASE: REQUEST_MAL_SMS_SEND_TPDU
+ */
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_PPDN)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_OTADP)
+//SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MO_MT_SoakTest)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_WaitMode)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Receive)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_NoWaitMode)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Receive)
+
+//SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_RequestCtrl_P)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_SendConcat)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MO_MT_Loopback)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Application_Port)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MoreToSend)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_PreferredStorageSet)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_StatusReportRead)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_ShortMessageStatusSet)
+
+#ifndef REMOVE_SMSTRG_LAYER
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Storage_SM)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Storage_ME)
+// Run SMSTest_SMS_Storage_MT() after the SMSTest_SMS_CAT_Refresh() test.
+#endif
+
+// The following block of tests include a CAT refresh. Therefore
+// we re-run some tests to check that SMS Server has re-initialised OK.
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_CAT_Refresh_SMS_CBS)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_CAT_Refresh_CBS)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_CAT_Refresh_SMS)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_CAT_Refresh_No_SMS_CBS)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_CAT_Refresh_All)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_WaitMode)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Receive)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Send_NoWaitMode)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Receive)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MO_MT_Loopback)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Application_Port)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MoreToSend)
+
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_RelayLinkControlSet)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_ShortMessageInfoRead)
+
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MemoryCapacityExceeded)
+
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+#ifndef REMOVE_SMSTRG_LAYER
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_DeliverReport_Control)
+#endif
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MO_Route)
+
+#ifndef REMOVE_SMSTRG_LAYER
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MemCapacityFullReport)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_MemCapacityFullGetState)
+// Run SMSTest_SMS_Storage_SM() and SMSTest_SMS_Storage_ME() before the SMSTest_SMS_CAT_Refresh() test
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Storage_MT)
+#ifndef SMS_MODEM_TEST_PLATFORM
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_StatusReport_SM)
+#endif
+#endif
+
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Control)
+
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Storage_SM)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Storage_ME)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_Storage_MT)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_StatusReport_SM)
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_PowerCycle_Storage_Write_ME)
+
+
+// Start CB Test cases
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToAll)
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(CBSTest_GetNoOfSubscriptions)
+SMS_TEST_CASE_EXECUTE(CBSTest_GetSubscriptions)
+SMS_TEST_CASE_EXECUTE(CBSTest_CellBroadcastMessageRead)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToAll)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToN)
+SMS_TEST_CASE_EXECUTE(CBSTest_GetNoOfSubscriptions)
+SMS_TEST_CASE_EXECUTE(CBSTest_GetSubscriptions)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToN)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToAll)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToAll)
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+// Second_Start CB Test cases
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToN)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToAll)
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(CBSTest_GetSubscriptions)
+SMS_TEST_CASE_EXECUTE(CBSTest_CellBroadcastMessageRead)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToN)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToAll)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToN)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToAll)
+SMS_TEST_CASE_EXECUTE(CBSTest_GetSubscriptions)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToN)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToAll)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+SMS_TEST_CASE_EXECUTE(CBSTest_Activate)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToN)
+SMS_TEST_CASE_EXECUTE(CBSTest_SubscribeToAll)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToAll)
+SMS_TEST_CASE_EXECUTE(CBSTest_UnSubscribeToN)
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+SMS_TEST_CASE_EXECUTE(CBSTest_Deactivate)
+
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_errorOccured)
+
+#ifndef REMOVE_SMSTRG_LAYER
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_PowerCycle_Storage_Write_ME) // TEST CASE SHOULD BE NEAR END SO THAT ANY DATA IT WRITES IS NOT OVERWRITTEN
+#endif
+
+SMS_TEST_CASE_EXECUTE(SMSTest_Util_EmptySignalQueue)
+
+// If running memcheck enable this one and comment out uninitialise test
+//SMS_TEST_CASE_EXECUTE(SMSTest_Shutdown)
+// Final test case. Used to uninitialise Test Harness and disconnect it from the SMS Server.
+SMS_TEST_CASE_EXECUTE(SMSTest_Uninitialise) // MUST BE LAST IN LIST OF TEST CASES
+SMS_TEST_CASE_EXECUTE(SMSTest_SMS_CB_Shutdown)
+
+/****************************************************************************************************/
+/****************************************************************************************************/
+/*
+ * The following is an example of how an array of test cases is generated using the
+ * SMS_TEST_CASE_EXECUTE macro.  It can be copied directly into source code.
+ */
+#ifdef DO_NOT_COMPILE_EXAMPLE_CODE_SHOWN_HERE_TO_GUIDE_READERS
+
+#include "test_cases.h"
+#ifdef SMS_TEST_CASE_EXECUTE
+// Ensure that SMS_TEST_CASE_EXECUTE macro is undefined before it is re-defined below.
+#undef SMS_TEST_CASE_EXECUTE
+#endif
+
+// Define SMS_TEST_CASE_EXECUTE macro. Take care to ensure that the SMS_TestCaseFrameworkId_t
+// parameter is updated to be appropriate for the test framework being used to run the test cases.
+#define SMS_TEST_CASE_EXECUTE(FncName) {FncName, #FncName, SMS_TEST_CASE_FRAMEWORK_ID_STAND_ALONE},
+
+// Create Array of test cases.
+static const SMS_TestCaseFncs_t TestCasesArray[] = {
+#include "test_cases.con"
+};
+
+// Undefine SMS_TEST_CASE_EXECUTE macro incase it is to be re-used again somewhere else.
+#undef SMS_TEST_CASE_EXECUTE
+
+
+// The size of the array of test cases can be calculated using the following construction:
+const size_t TestCaseArraySize = sizeof TestCasesArray / sizeof TestCasesArray[0];
+
+
+#endif //#ifdef DO_NOT_COMPILE_EXAMPLE_CODE_SHOWN_HERE_TO_GUIDE_READERS
+

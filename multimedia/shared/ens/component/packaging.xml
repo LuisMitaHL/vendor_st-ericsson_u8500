@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/component.xml" />
+    <include name="component/packaging.xml" />
+    <include name="Makefile" />
+    <include name="make.ost_conf" />
+    <include name="inc/Makefile" />
+    <include name="common/**" />
+  </fileset>
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="proxy/include/*.h" />
+      <include name="proxy/lib/cortexA9-x-android-u8500_v2/*.a" />
+      <include name="proxy/include/*.inl" />
+      <include name="proxy/Makefile" />
+    </fileset>
+  </package>
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="proxy/include/*.h" />
+      <include name="proxy/ENS_Fsm/*.cpp" />
+      <include name="proxy/ENS_Utils/*.cpp" />
+      <include name="proxy/ENS_Component/*.cpp" />
+      <include name="proxy/include/*.inl" />
+      <include name="proxy/Makefile" />
+    </fileset>
+  </package>
+  <package name="arm-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmf/host/nmf_repository/cortexA9-x-android-x/**" />
+      <include name="nmf/host/fsm/controller/*.h" />
+      <include name="nmf/host/fsm/component/*.h" />
+      <include name="nmf/host/fsm/generic/*.h" />
+      <include name="nmf/host/common/*.h" />
+      <include name="nmf/host/shared_bufin/inc/*.hpp" />
+      <include name="nmf/host/shared_bufout/inc/*.hpp" />
+      <include name="nmf/host/common/*.idt" />
+      <include name="nmf/host/common/*.itf" />
+      <include name="nmf/host/lib/cortexA9-x-android-x/*.a" />
+      <include name="nmf/host/shared_bufout/*.conf" />
+      <include name="nmf/host/shared_bufin/*.conf" />
+      <include name="nmf/host/*.nmf" />
+      <include name="nmf/host/fsm/component/*.type" />
+      <include name="nmf/host/fsm/controller/*.type" />
+      <include name="nmf/host/*.lib" />
+      <include name="nmf/host/Makefile" />
+    </fileset>
+  </package>
+  <package name="arm-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="nmf/host/fsm/controller/*.h" />
+      <include name="nmf/host/fsm/component/*.h" />
+      <include name="nmf/host/fsm/generic/*.h" />
+      <include name="nmf/host/common/*.h" />
+      <include name="nmf/host/shared_bufin/inc/*.hpp" />
+      <include name="nmf/host/shared_bufout/inc/*.hpp" />
+      <include name="nmf/host/common/*.idt" />
+      <include name="nmf/host/common/*.itf" />
+      <include name="nmf/host/fsm/controller/*.cpp" />
+      <include name="nmf/host/shared_bufout/src/*.cpp" />
+      <include name="nmf/host/fsm/generic/*.cpp" />
+      <include name="nmf/host/fsm/component/*.cpp" />
+      <include name="nmf/host/shared_bufin/src/*.cpp" />
+      <include name="nmf/host/shared_bufout/*.conf" />
+      <include name="nmf/host/shared_bufin/*.conf" />
+      <include name="nmf/host/*.nmf" />
+      <include name="nmf/host/fsm/component/*.type" />
+      <include name="nmf/host/fsm/controller/*.type" />
+      <include name="nmf/host/*.lib" />
+      <include name="nmf/host/Makefile" />
+    </fileset>
+  </package>
+</packages>

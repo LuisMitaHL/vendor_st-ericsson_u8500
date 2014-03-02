@@ -1,0 +1,10 @@
+test_start GSMFR_003 
+test_property  TEST_NAME  gsmfrhostenc_enable_disable_port
+
+# instantiate and configure GSMFR encoder
+do $(NOMADIK)/gsmfr/mmte_script/encoder/gsmfr_enc_nodtx_reformatted_payload_host.ate gsmfr input_reference output_reference
+
+# test OMX state machine 
+do $(NOMADIK)/afm/mmte_script/enable_disable_port.ate gsmfr 
+
+test_end

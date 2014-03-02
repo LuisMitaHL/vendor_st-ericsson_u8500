@@ -1,0 +1,52 @@
+Problem:
+Unable to attach to target.
+
+Solution:
+Try to change the check-box for "Modem Tap is on", and try again. 
+
+---------------------------------------------------------------------
+Problem:
+When running the scripts from Windows the target resets itself 
+when using "Debug Linux on APP side".
+
+Solution:
+Look in your Trace32 installation folder for a file named linux.cmm,
+rename or delete the file and try again.
+
+---------------------------------------------------------------------
+Problem:
+Can't look at the trace after the target crashes.
+
+Solution:
+- Set up PTM trace as normal. 
+- If you wish to observe what any kernel module do,
+  you have to load its symbols before the target crash.
+- Run until crash
+Do:
+ t.off
+ t.access VM:
+ data.load <your vmlinux> /VM /NOCLEAR /NOSYMBOL
+
+---------------------------------------------------------------------
+Problem:
+Can't debug loadable modules.
+
+Solution:
+Try without using the GUI, use the commandline like this:
+TASK.sYmbol.LOADMod "<module search path>"
+
+---------------------------------------------------------------------
+Problem:
+Can I look at core1 while debugging core0?
+
+Solution:
+For some windows it is possible to specify core as an option:
+> data.dump 0x00000000 /core 1
+---------------------------------------------------------------------
+Problem:
+Register in the peripheral file only shows 0xXXXXXXXX.
+
+Solution:
+The register is a write-only register, if you still would like to 
+look at it you have to make a "data.dump <address>.
+---------------------------------------------------------------------

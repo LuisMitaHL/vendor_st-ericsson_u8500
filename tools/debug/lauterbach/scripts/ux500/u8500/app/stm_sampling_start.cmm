@@ -1,0 +1,15 @@
+//============================================================================
+// Lauterbach T32 Emulator script: stm_sampling_start.cmm
+//
+//============================================================================
+print "Start STP acquisition > STM_traces.bin"
+ca.init
+; Choose STP as decoding mode
+ca.dm stp
+; Change this threshold to VREF_TRACE/2 if needed
+; This is for 1.8V signals
+ca.th 0.9
+ca.mode pipe
+ca.write STM_traces.bin /ChannelID 0.--255.
+ca.arm
+

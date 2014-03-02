@@ -1,0 +1,129 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+MMBOARD=x
+MMSYSTEM=x
+USE_OPT_COMPILER=true
+include $(MMROOT)/shared/makefiles/Make.config
+
+COMPONENT_PATH  = $(MMROOT)/video/components
+
+#OS_PLATFORM=$(shell echo $(PLATFORM)|sed -n '/think/ s/.*/THINK_PLATFORM/p;/linux/ s/.*/LINUX_PLATFORM/p)
+
+CPPFLAGS += -DFORCEINLINE= -DINLINE= -O3 -DBOOL_OPT \
+            -I$(COMPONENT_TOP_DIR)/algo/inc/NEON
+
+ifneq ($(PLATFORM),x86-linux)
+CPPFLAGS+=  -O3 --asm
+endif
+						
+CPPFLAGS+=  -DH263_P3
+
+ifneq ($(PLATFORM),x86-linux)
+
+CPPFLAGS+= -D__ARM_NEON__ -DALTERNATE_SUB_SAMPLING 
+
+
+
+
+CPPFLAGS+= -I$(RVCT40INC)
+endif
+
+CPPFLAGS+=\
+      -DCA9 -DBOOL_OPT -DNO_OMX_BUILD -D__NMF \
+	  -DFORCEINLINE= -DINLINE= -D_inline= -D_snprintf=snprintf -DSNPRINTF=snprintf \
+	  -DCORTEX -DCORTEX_PROFILE -DCORTEX_FRAME_CYCLES --asm \
+	  -I$(MMROOT)/video/components/mpeg4enc/arm_nmf/algo/inc \
+	  -I$(SHARED_REPOSITORY) \
+	  -I$(VIDEO_REPOSITORY) \
+	  -Iinclude \
+	  -I$(MMROOT)/video/components \
+	  -I$(MMROOT)/shared/nmf/think/src/share/inc \
+	  -I$(MMROOT)/shared/nmf/tools/api/c/inc \
+	  -I$(MMROOT)/shared/nmf/think/ \
+	  -I$(MMROOT)/shared/nmf/think/api \
+	  -I$(MMROOT)/video/components/mpeg4enc/arm_nmf/algo/inc \
+	   -I$(MMROOT)/video/components/mpeg4enc/arm_nmf/api \
+	   -I$(MMROOT)/video/components/mpeg4enc/arm_nmf/share \
+	  -I $(COMPONENT_PATH)/common/nmf/idt 	\
+	  -I ../../arm_nmf/decoder/src/kernel/ca9 	\
+	  -I$(NMF)/nmf/core/mpc/components \
+	  -I$(NMF)\
+	  -Iinc \
+	  -I$(VIDEO_REPOSITORY)/host \
+      -I$(MMROOT)/video/components/mpeg4enc/nmf_repository/$(MMPLATFORM)/mpeg4enc/arm_nmf \
+	  -I$(MMROOT)/video/components/mpeg4enc/nmf_repository/$(MMPLATFORM) \
+	  -DCORTEX -DCORTEX_PROFILE -DCORTEX_FRAME_CYCLES --asm
+		  		  		  		  
+CPPFLAGS += -I$(MMROOT)/shared/nmf/tools/api/smpee 
+CPPFLAGS += -I../../_nmf_tmpdir/$(MMPLATFORM)/
+CPPFLAGS += -I../inc/ -DNMF_BUILD  -I../  -I../../.. -DNOPROXY 
+
+VPATH += ./algo/src
+VPATH += ./algo/src/NEON
+//VPATH += ../../arm_nmf/decoder/src
+
+# Libraries path and libraries, knowing some of them are already in the default as $MMROOT/video/lib/$(PLATFORM) for example 
+#CPPFLAGS += -DNMF_WORKARROUND -DNO_HAMAC -DNO_MPC_NMF -DNMF_BUILD -DCONFNUMBER=2
+
+#ifneq ($(OS_PLATFORM), LINUX_PLATFORM) 
+#CFLAGS += --wchar16
+#endif   
+CPPFLAGS+= -DRVDS_2_2
+
+
+OBJ_EXT=osw		   
+	  
+LIBNAME  = mpeg4enc_sw_algo
+
+
+LIBOBJ   = Algorithmic_data_encode \
+   bitstream \
+   bitstream_cpu \
+   dc_prediction \
+   fdct \
+   fquantize \
+   generate_mv \
+   idct \
+   iquantize \
+   MaSa_ratectrl \
+   MMS_ratectrl \
+   motion_compensation \
+   motion_emp \
+   mp4_initialize \
+   mp4e_encode_frame \
+   no_control \
+   random \
+   util \
+   vbv \
+   vlc \
+   writebits \
+   zigzag \
+   post_filters \
+   H263_dblk \
+   motion_neon
+
+ifneq ($(PLATFORM),x86-linux)
+LIBOBJ   += fdct_neon \
+   fquantize_neon \
+   util_neon \
+   idct_neon \
+   iquantize_neon \
+   motion_compensation_neon
+
+#benchmark removed  
+#benchmark 
+endif
+
+   
+#install = vp6dec_sw_test.$(LIB_EXT)
+INSTALL_LIB = lib$(LIBNAME).$(LIB_EXT)
+todo: lib
+
+conf-clean: 
+all: remove_obj
+remove_obj:
+	rm -rf ../obj/*
+
+
+include $(MMROOT)/shared/makefiles/Make.rules

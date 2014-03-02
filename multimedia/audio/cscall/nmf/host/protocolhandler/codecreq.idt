@@ -1,0 +1,83 @@
+#ifndef _CODEC_REQ_IDT_
+#define _CODEC_REQ_IDT_
+
+typedef enum{
+  CODEC_NONE,
+  CODEC_GSM_FR,
+  CODEC_GSM_HR,
+  CODEC_EFR,
+  CODEC_AMR_NB,
+  CODEC_AMR_WB,
+  CODEC_PCM8,
+  CODEC_PCM16
+}CsCallCodec_t;
+
+
+typedef enum{
+  NETWORK_NONE,
+  NETWORK_GSM,
+  NETWORK_WCDMA,
+  NETWORK_CS_O_HS
+}CsCallNetwork_t;
+
+
+typedef enum {
+  MSG_MODEM_INFORMATION_REQUEST,      // 0  APE   -> MODEM
+  MSG_MODEM_INFORMATION_RESPONSE,     // 1  MODEM -> APE
+  MSG_CODING_FORMAT_REQUEST,          // 2  MODEM -> APE
+  MSG_CODING_FORMAT_RESPONSE,         // 3  APE   -> MODEM
+  MSG_UPLINK_TIMING_CONFIGURATION,    // 4  APE   -> MODEM
+  MSG_DOWNLINK_TIMING_CONFIGURATION,  // 5  MODEM -> APE
+  MSG_TIMING_REPORT,                  // 6  MODEM -> APE
+  MSG_TIMING_REPORT_RESPONSE,         // 7  APE   -> MODEM
+  MSG_SPEECH_DATA_DOWNLINK,           // 8  MODEM -> APE
+  MSG_SPEECH_DATA_UPLINK,             // 9  APE   -> MODEM
+  MSG_VOICE_CALL_STATUS,              // 10 MODEM -> APE
+  MSG_TEST_MODEM_LOOP_REQUEST,        // 11 APE   -> MODEM
+  MSG_TEST_MODEM_LOOP_RESPONSE,       // 12 MODEM -> APE
+  MSG_TEST_AUDIO_LOOP_REQUEST,        // 13 MODEM -> APE
+  MSG_TEST_AUDIO_LOOP_RESPONSE        // 14 APE   -> MODEM
+} CsCallMessage_t;
+
+
+typedef enum{
+  PROTOCOL_AUTODETECT,
+  PROTOCOL_ISI,
+  PROTOCOL_MAI,
+  PROTOCOL_ISI_TD
+}CsCallProtocol_t;
+
+typedef enum{
+    MODEM_LOOP_OFF,
+    MODEM_LOOP_RAW,
+    MODEM_LOOP_SPEECH_CODEC
+}CsCallModemLoop_t;
+
+
+typedef struct{
+    CsCallCodec_t   speech_codec;
+    CsCallNetwork_t network;
+    t_uint8         init;
+    struct{
+        t_uint8 AAC;
+        t_uint8 nsync;
+        t_uint8 SFN;
+        t_uint8 amr_rate;
+        t_uint8 dtx;
+		t_uint8 nodata;
+		t_uint8 NSCB;
+    }encoder;
+    struct{
+        t_uint8 amr_rate;
+    }decoder;
+}CsCallCodecReq_t;
+
+
+typedef struct  {
+	CsCallModemLoop_t 	modem_loop_type;
+	CsCallCodec_t 		codec_on_modem_side;
+	t_uint8 			amr_rate;
+}Cscall_ModemLoop_Config_t;
+
+
+#endif // _CODEC_REQ_IDT_

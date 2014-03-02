@@ -1,0 +1,73 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/automated_glacehisto_geometry_sensor_output_fov.ite
+
+# This test case glace geometry parameters exposed by ISP FW through Glace status page for master pipe fov geometry mode
+
+# Initialisation
+usagemode vf
+LR prepare
+setGlaceGeometry 0 1.0 1.0 0.1 0.1 72 54
+setHistogramGeometry 0 0.9 0.9 0.1 0.1
+LR start
+glacehistoexp req
+#getHistogramGeometry
+#getGlaceGeometry
+#wait 1
+testGlaceGeometry
+testHistogramGeometry
+LR stop
+
+usagemode video
+HR prepare
+setGlaceGeometry 0 1.0 1.0 0.1 0.1 72 54
+setHistogramGeometry 0 0.9 0.9 0.1 0.1
+HR start
+glacehistoexp req
+#getHistogramGeometry
+#getGlaceGeometry
+#wait 1
+testGlaceGeometry
+testHistogramGeometry
+HR stop
+
+LRHR prepare
+setGlaceGeometry 0 1.0 1.0 0.1 0.1 72 54
+setHistogramGeometry 0 0.9 0.9 0.1 0.1
+LRHR start
+glacehistoexp req
+#getHistogramGeometry
+#getGlaceGeometry
+#wait 1
+testGlaceGeometry
+testHistogramGeometry
+LRHR stop
+usagemode still
+setusecase LR VGA YUV422RI
+setusecase HR VGA YUV420MB_D
+setusecase BMS MODE0 RAW12
+bmsmode STILL
+bmsout BAYERSTORE2
+
+bms prepare
+setGlaceGeometry 0 1.0 1.0 0.1 0.1 72 54
+setHistogramGeometry 0 0.9 0.9 0.1 0.1
+bms start
+glacehistoexp req
+#getHistogramGeometry
+#getGlaceGeometry
+#wait 1
+testGlaceGeometry
+testHistogramGeometry
+bms stop
+usagemode video
+LRHR prepare
+setGlaceGeometry 0 1.0 1.0 0.1 0.1 72 54
+setHistogramGeometry 0 0.9 0.9 0.1 0.1
+
+LRHR start
+glacehistoexp req
+#getHistogramGeometry
+#getGlaceGeometry
+#wait 1
+testGlaceGeometry
+testHistogramGeometry
+LRHR stop

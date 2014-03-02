@@ -1,0 +1,22 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <t1xhv_common.idt>
+#include <t1xhv_vec_mpeg4.idt>
+//#include <buffer.idt>
+
+interface mpeg4enc.arm_nmf.api.log_event { 
+
+void eventEndAlgo(t_t1xhv_status status, t_t1xhv_encoder_info info, t_uint32 durationInTicks);
+//void eventReleasebuffer(t_uint32 port_idx);
+void eventProcess();
+//void eventInformResourceStatus(t_t1xhv_resource_status status,t_t1xhv_resource resource);
+
+void sendEventEOS(t_uint32 flags);
+
+}
+

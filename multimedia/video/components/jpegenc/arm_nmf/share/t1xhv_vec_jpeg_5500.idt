@@ -1,0 +1,86 @@
+/******************************************************************************
+ Copyright (c) 2009-2011, ST-Ericsson SA
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials
+      provided with the distribution.
+   3. Neither the name of the ST-Ericsson SA nor the names of its
+      contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
+
+#ifndef _T1XHV_VEC_JPEG_5500_IDT_
+#define _T1XHV_VEC_JPEG_5500_IDT_
+
+#include "t1xhv_common.idt"
+#include "vfm_common.idt"
+
+typedef struct
+{
+	t_uint32 addr_source_buffer;
+	t_uint32 addr_snap_picture;
+	t_uint32 addr_output_bitstream_start;
+	t_uint32 header_size;
+	t_uint32 addr_in_parameters;
+	t_uint32 addr_quant_tables_buffer;
+	t_uint32 addr_out_parameters;
+	t_uint32 addr_output_bitstream_end;
+} ts_hva_task_descriptor;
+
+
+typedef struct
+{
+	t_uint16 frame_width;
+	t_uint16 frame_height;
+	t_uint16 window_width;
+	t_uint16 window_height;
+	t_uint16 window_horizontal_offset;
+	t_uint16 window_vertical_offset;
+	t_uint16 sampling_mode;/* 0: YUV420 semi_planar Raster, 1: YUV422 raster Interleaved */
+	t_uint16 encode_mode; /* 0: YUV420 Interleaved, 1: YUV422 Interleaved */
+	t_uint16 restart_interval;
+	t_uint16 two_chroma_tables_flag; /* 0: Same quantization table for both chroma component,1: One table for each chroma component */
+} ts_t1xhv_hva_input_parameters;
+
+
+typedef struct
+{
+	t_uint16 quant_luma[64];
+	t_uint16 quant_chroma_1[64];
+	t_uint16 quant_chroma_2[64];
+} ts_t1xhv_hva_quant_parameters;
+
+
+typedef struct
+{
+	t_uint32 bitstream_size;
+	t_uint16 error_type;
+	t_uint32 hje_start_time;
+	t_uint32 hje_stop_time;
+} ts_t1xhv_hva_output_parameters;
+
+
+#endif // _T1XHV_VEC_JPEG_5500_IDT_
+

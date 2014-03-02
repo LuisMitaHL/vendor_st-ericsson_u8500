@@ -1,0 +1,27 @@
+primitive exif_mixer.arm_nmf.mixer_core extends fsm.component.armnmf_component
+{
+	// Constructor
+	provides lifecycle.constructor   as constructor
+	provides lifecycle.starter        as  starter
+
+	// input port
+	provides armnmf_emptythisbuffer   as      emptythisbuffer[2]
+	requires armnmf_fillthisbuffer    as      emptybufferdone[2]
+	
+	// output port
+	provides  armnmf_fillthisbuffer    as  fillthisbuffer
+	requires  armnmf_emptythisbuffer   as  fillbufferdone
+	requires exif_mixer.arm_nmf.api.cmd_ack    as      iCommandAck
+	//provides exif_mixer.arm_nmf.api.setConfiguration as  setconfiguration
+	//provides exif_mixer.arm_nmf.api.setParameter     as  setparameter
+	provides exif_mixer.arm_nmf.api.setConfig        as  setConfig
+	provides exif_mixer.arm_nmf.api.getConfig        as  getConfig
+
+	requires exif_mixer.arm_nmf.api.log_event       as iSendLogEvent
+	provides exif_mixer.arm_nmf.api.log_event       as iGetLogEvent	
+
+	sources src/mixer_core.cpp 
+	
+	option memories EMB24RAM|EMB16RAM|XROM|EXT24RAM|EXT16RAM	
+	option CPPFLAGS "-I inc -g -O3"
+}

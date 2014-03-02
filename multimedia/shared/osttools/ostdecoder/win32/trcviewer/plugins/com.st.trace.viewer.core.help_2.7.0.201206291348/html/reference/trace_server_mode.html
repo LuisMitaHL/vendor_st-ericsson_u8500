@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML>
+<HEAD>
+  <TITLE>Trace Viewer help -- TraceServer Mode</TITLE>
+    <LINK REL=Stylesheet TYPE="text/css" HREF="../../css/trcviewer_help.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+</HEAD>
+<BODY class='WhiteBackgnd, main'>
+
+<!-- Start of header.inc -->
+<table width="100%" cellpadding=4 cellspacing=0 border=0>
+  <td valign="top">
+    <tr>
+      <td bgcolor="" align=left>
+        <img src="../../images/trcviewer_icon_64x64.gif" width=64 height=64 ALT="Trace Viewer Logo">
+      </td>
+      <td bgcolor="">
+      </td>
+      <td class= 'HeaderBanner' align=left valign=top width="100%">
+        <p class= 'TitleBig'>Trace Viewer Workbench</p>
+        <p class= 'TitleMedium'>Documentation &gt; References &gt; TraceServer Mode</p>
+      </td>
+    </tr>
+  </td>
+</table>
+<!-- End of header.inc -->
+
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Description</p>
+
+<p>The TraceServer tool allows capturing traces issued via a STM hardware block from instrumented applications running on HED and ST-Ericsson platforms.
+Once captured, the display or the record of these trace data is done by decoder. In the current version (decoder 2.0.0 including TraceServer 1.0-build15),
+it supports 6 modes:
+<ul>
+  <li>
+    <p><i>COMBIPROBE</i>: connect to a Combiprobe box through a named pipe (same as using the named pipe option).</p>
+  </li>
+  <li>
+    <p><i>OTHER</i>: connect to a "Other" box. No more options required.</p>
+  </li>
+  <li>
+    <p><i>STMPROBE</i>: connect to a STMProbe box. The location of the FPGA driver directory is requested.</p>
+  </li>
+  <li>
+    <p><b>[Must be activated in the preferences]</b> <i>FILE_COMBIPROBE</i>: use a Combiprobe generated file as input (same as using the trace file option).</p>
+  </li>
+  <li>
+    <p><b>[Must be activated in the preferences]</b> <i>FILE_OTHER</i>: use a "Other" box generated file as input (same as using the trace file option).</p>
+  </li>
+  <li>
+    <p><b>[Must be activated in the preferences]</b> <i>FILE_TS_STP</i>: debug purpose only, use a STP file dumped by the TraceServer as input (cannot be achieved using the trace file option).</p>
+  </li>
+</ul>
+</p>
+
+<br/>
+<p align="center"><img src="../../images/trace_server.png"/></p>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Usage</p>
+
+<p>The use of the TraceServer from Trace Viewer is transparent for the user. Indeed, by default the TraceServer is started and stopped automatically. It is started the first time that the user selects the TraceServer input mode and is stopped when Trace Viewer GUI is closed.
+<br/>
+<br/>However it can be started and stopped from the menu ("Tools > Start TraceServer" amd "Tools > Stop TraceServer"):
+</p>
+
+<p align="center"><img src="../../images/trace_server_launch_state.png"/></p>
+
+<p>The status of the TraceServer process managed by Trace Viewer is indicated in the bottom status line of the window.
+</p>
+<p><b><u>Important notice</u></b>: Trace Viewer won't manage a TraceServer process that has been launch outside of Trace Viewer workbench. If you launched manually an external TraceServer (not using the Trace Viewer buttons),
+you should disable the automatic launch of the TraceServer inside the Trace Viewer workbench (see the Configuration section).
+</p>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Configuration</p>
+
+<p>The TraceServer preferences page is accessible via the menu "Tools > Preferences...". Then in the preferences window, click on "Trace Viewer > TraceServer" ("Trace Viewer" node might need to be expanded in order to see "TraceServer").
+</p>
+
+<p align="center"><img src="../../images/trace_server_preferences.png"/></p>
+
+<p><b>Launch policy</b></p>
+<ul>
+  <li><p><b>automatic</b>: TraceServer process is automatically launched and managed from the Trace Viewer workbench when you are in TraceServer mode.</p></li>
+  <li><p><b>manual   </b>: TraceServer process is not managed by Trace Viewer workbench. If you want to use the TraceServer mode, you have to either launch the TraceServer from the Trace Viewer workbench (its status will then be managed inside the workbench)
+  or to launch an external TraceServer process (in that case Trace Viewer won't know its status).</p></li>
+</ul>
+
+<p><b>STMProbe home</b></p>
+<ul>
+<li><p><b>Environment variable name</b>: in this field you can optionally fill an envronment variable name that contains a path to a directory containing the STMProbe needed files fx2.hx and stmprobe.rbf (does not include the dynamic library that must be in the path).
+If incorrectly set, you will get errors from the TraceServer when connecting to the STMProbe which should look like: "Cannot find fx2.hex file".</p></li>
+</ul>
+
+<p><b>Connections list</b></p>
+<ul>
+  <li><p><b>standard (recommended)</b>: standard connections list: COMBIPROBE, OTHER, STMPROBE.</p></li>
+  <li><p><b>advanced   </b>: advanced connections list, same as standard plus the following: FILE_COMBIPROBE, FILE_OTHER, FILE_TS_STP.</p></li>
+</ul>
+
+
+<br/>
+<br/>
+<p class= 'TitleMedium'>Tips</p>
+<ol>
+  <li>
+    <p><b>Status Line</b></p>
+    <p>You can start/stop the TraceServer using the context menu (right-click or left-click) of the status line.</p>
+    <p align="center"><img src="../../images/trace_server_status_line_context_menu.png"/></p>
+  </li>
+</ol>
+
+
+<!-- Start of footer.inc -->
+<br/>
+<br/>
+<br/>
+<table width="100%" align="center" cellspacing="2" cellpadding="0"  border="0">
+  <tr>
+    <td>
+      <img src="../../images/st_logo.jpg" width=76 height=45 ALT="ST Logo">
+    </td>
+    <td width="100%">
+      <p class="vsmall"><i>&copy; STMicroelectronics and others 2010, 2011. 2012. All rights reserved.</i>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- End of footer.inc -->
+
+</BODY>
+</HTML>
+

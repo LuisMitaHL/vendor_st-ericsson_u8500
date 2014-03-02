@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# /etc/init.d/coredump-handler
+#
+case "$1" in
+    start)
+	if [ -e /usr/bin/coredump-handler ]; then
+	    echo "Starting coredump-handler..."
+	    /usr/bin/coredump-handler
+	    exit 0
+	else
+	    echo "No coredump-handler found"
+	fi
+
+        ;;
+    stop)
+	;;
+esac

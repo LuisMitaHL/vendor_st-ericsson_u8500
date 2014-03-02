@@ -1,0 +1,27 @@
+#
+# Memtester configuration
+#
+
+menuconfig MEMTESTER
+	bool "Memtester Configuration"
+	help
+	  A userspace utility for testing the memory subsystem for faults.
+
+if MEMTESTER
+
+config MEMTESTER_DIR
+	string
+	default ./memtester
+
+config MEMTESTER_DEPS
+	string
+	default ""
+
+config MEMTESTER_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on MEMTESTER
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # MEMTESTER

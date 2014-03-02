@@ -1,0 +1,33 @@
+#
+# LibTreeDyn configuration
+#
+
+menuconfig LIBTREEDYN
+	bool "LibTreeDyn"
+	help
+
+if LIBTREEDYN
+
+config LIBTREEDYN_DIR
+	string
+	default ../tat/generalservices/libtreedyn
+
+config LIBTREEDYN_DEPS
+	string
+	default ""
+
+config LIBTREEDYN_STRIP_DISABLED
+	bool "Disable strip"
+	depends on LIBTREEDYN
+	default n
+	help
+	  This will disable strip for this module
+
+config LIBTREEDYN_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LIBTREEDYN
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LIBTREEDYN

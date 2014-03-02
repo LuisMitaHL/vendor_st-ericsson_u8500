@@ -1,0 +1,27 @@
+
+;#######################################
+;#         Re-Program 4500 
+;#######################################
+; PRCC periph3 clock settings for SSP0
+data.set 0x8000F000 %long 0x00000153	; Enable bus clock (GPIO, SDMMC2, UART2, SSP0, FSMC)
+data.set 0x8000F008 %long 0x00000053	; Enable kernel clock (UART2, SDMMC2, SSP0, FSMC)
+
+data.set 0x8000e120 %long 0x78000        	; # GPIO Enable AltA for SSP0  (GPIO143-146 AltA)
+
+data.set 0x80002000 %long 0x000002D7        ; # SSP0-> CR0: Set data size
+data.set 0x80002004 %long 0x00000002        ; # SSP0-> CR0:  Clock rate
+data.set 0x80002010 %long 0x00000002	  ; # SSP0->CPSR
+
+
+;##########################
+; Vana programmation
+;##########################
+; Switch on Vana
+print "Switch on Vana..."
+
+data.set 0x80002008 %long 0x101805	         ; SSP0->DR : write 0x5 at 0x406
+data.set 0x80002004 %long 0x2                ; # SSP0-> CR1: Enable Transmit
+wait 1s
+
+
+

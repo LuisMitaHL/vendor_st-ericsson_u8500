@@ -1,0 +1,83 @@
+test_start PCM_SPL_32_host_012
+
+test_property TEST_NAME pcmsplitter_host_1output_nontunneled_change_input_bps_idle
+
+alias OUTPUT_PORT 2
+
+alias TIMEOUT 0
+
+OMX_GetHandle    pcmsplitter OMX.ST.AFM.pcmsplitter_host
+
+#Disable all unused pcmsplitter ports
+
+OMX_SendCommand pcmsplitter OMX_CommandPortDisable 1
+MMTE_WaitEvent pcmsplitter OMX_EventCommandComplete OMX_CommandPortDisable 1
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nBitPerSample=16 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=2 nChannels=2 nBitPerSample=16 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+
+ate_attach_io       pcmsplitter 0 MEM $(AUDIO_STREAMS)/pcm_splitter/streams/sin440.pcm 0 0 0
+OMX_SetConfig       pcmsplitter OMX_IndexConfigAudioVolume nPortIndex=$(OUTPUT_PORT) sVolume.nValue=0
+
+alias OUTPUT_FILE   $(OUTPUT_DIR)/pcmsplitter_host_1output_nontunneled_change_input_bps_idle.out
+ate_attach_io       pcmsplitter $(OUTPUT_PORT) MEM $(OUTPUT_FILE) 2000000 0 0
+alias REF_FILE      $(AUDIO_STREAMS)/pcm_splitter/streams/sin440.pcm
+
+
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers pcmsplitter 0
+MMTE_AllocateAndUseBuffers pcmsplitter $(OUTPUT_PORT)
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Disable input port in idle, change the number of bits per sample and reenable the input port
+OMX_SendCommand pcmsplitter OMX_CommandPortDisable 0
+MMTE_wait_nontunneled_buffers pcmsplitter 0
+MMTE_FreeBuffers pcmsplitter 0
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+# We change the number of bits per sample in idle-> Not Allowed
+#TEST_LAUNCHER_CMD: ignore OMX_ErrorInvalidState
+#TEST_LAUNCHER_CMD: ignore CMD_ERR_OMX
+
+OMX_SetParameter    pcmsplitter OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nBitPerSample=32 nSamplingRate=44100 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+#TEST_LAUNCHER_CMD: consider OMX_ErrorInvalidState
+#TEST_LAUNCHER_CMD: consider CMD_ERR_OMX
+#
+OMX_SendCommand pcmsplitter OMX_CommandPortEnable  0
+MMTE_AllocateBuffers pcmsplitter 0
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+#Start
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#Wait EOS
+MMTE_WaitEvent pcmsplitter OMX_EventBufferFlag $(OUTPUT_PORT) TIMEOUT
+
+#Stop
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand pcmsplitter OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers pcmsplitter 0
+MMTE_FreeBuffers pcmsplitter $(OUTPUT_PORT)
+MMTE_WaitEvent pcmsplitter OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+mmte_check_CBmessage
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+unalias TIMEOUT
+
+test_end

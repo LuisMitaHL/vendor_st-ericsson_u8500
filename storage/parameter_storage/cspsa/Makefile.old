@@ -1,0 +1,286 @@
+#/************************************************************************
+# *                                                                      *
+# *  Copyright (C) 2010 ST-Ericsson                                      *
+# *                                                                      *
+# *  Author: Martin LUNDHOLM <martin.xa.lundholm AT stericsson.com>      *
+# *                                                                      *
+# ************************************************************************/
+
+.PHONY: help clean build run doc all exe compile undoconfig defconfig
+
+help:
+	@echo : ----------------------------------------------------------------------------
+	@echo : Syntax:   "make TARGET=linux_us/linux_boot VARIANT=daemon/lib/test_api/test_core [MEDIA=ram/mmc] all/exe/compile/gcov"
+	@echo :
+	@echo : Where TARGET is one of:
+	@echo :         linux_us:   Linux userspace
+	@echo :         linux_boot: Linux boot code
+	@echo :
+	@echo : Where VARIANT is one of:
+	@echo :         daemon:     Daemon server executable
+	@echo :         daemon_dbg: Daemon server executable debug version
+	@echo :         lib:        Lib file
+	@echo :         test_api:   API test
+	@echo :         test_core:  Core test
+	@echo :         test_client_reader:  Reading test client.
+	@echo :
+	@echo : Where MEDIA is one of:
+	@echo :         ram:        Test code uses RAM
+	@echo :         mmc:        Test code uses MMC
+	@echo :
+	@echo : Valid combinations:
+	@echo :
+	@echo : make TARGET=linux_us VARIANT=daemon all/compile
+	@echo : make TARGET=linux_us VARIANT=daemon_dbg all/compile
+	@echo :
+	@echo : make TARGET=linux_us VARIANT=lib compile
+	@echo :
+	@echo : make TARGET=linux_us VARIANT=test_api MEDIA=ram all/exe/compile/gcov
+	@echo : make TARGET=linux_us VARIANT=test_api MEDIA=mmc all/exe/compile/gcov
+	@echo : make TARGET=linux_us VARIANT=test_core MEDIA=ram all/exe/compile/gcov
+	@echo : make TARGET=linux_us VARIANT=test_core MEDIA=mmc all/exe/compile/gcov
+	@echo :
+	@echo : make TARGET=linux_us VARIANT=test_client_reader all/exe/compile
+	@echo : make TARGET=linux_us VARIANT=test_client_writer all/exe/compile
+	@echo : make TARGET=linux_us VARIANT=test_client_cmd all/exe/compile
+	@echo :
+	@echo : make TARGET=linux_boot VARIANT=lib build/compile
+	@echo : make TARGET=linux_boot VARIANT=test_api MEDIA=ram all/compile
+	@echo : make TARGET=linux_boot VARIANT=test_api MEDIA=mmc all/compile
+	@echo : ----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+
+PROGRAM := cspsa
+ifndef CC
+CC := gcc
+endif
+
+# -----------------------------------------------------------------------------
+
+SRC_CORE := cspsa_core.c crc32.c cspsa_ll.c
+CFLAGS := -c -g -Wall -Wextra -Werror
+PROGRAM_NAME := $(PROGRAM)_$(TARGET)
+
+ifeq ($(TARGET),linux_us)
+	SRC_LL := cspsa_ll_dev.c cspsa_ll_ram.c cspsa_ll_mmc.c cspsa_ll_file.c
+	ifeq ($(VARIANT),daemon)
+		SRC_API := cspsa_api_linux_socket_server.c cspsa_api_linux_socket_common.c config_file_reader.c
+		SRC_TEST :=
+		LIBS :=
+		CFLAGS += -O3 -DCFG_CSPSA_API_LINUX_SOCKET_SERVER_DAEMON=1
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_DEBUG_LEVEL=0
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_MAX_PACKET_SIZE=4096
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)
+	else ifeq ($(VARIANT),daemon_dbg)
+		SRC_API := cspsa_api_linux_socket_server.c cspsa_api_linux_socket_common.c config_file_reader.c
+		SRC_TEST :=
+		LIBS :=
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_SERVER_DAEMON=1
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_DEBUG_LEVEL=1
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_SERVER_DELAYED_CLOSE=0
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)
+	else ifeq ($(VARIANT),test_api)
+		SRC_API := cspsa_api_linux_socket_server.c cspsa_api_linux_socket_client.c cspsa_api_linux_socket_common.c
+		SRC_TEST := cspsa_test.c
+		LIBS := -lpthread
+		CFLAGS += -DCFG_CSPSA_TEST_TARGET=CFG_CSPSA_TEST_TARGET_LINUX_US -DCFG_CSPSA_TEST_VARIANT=CFG_CSPSA_TEST_VARIANT_API
+		ifeq ($(MEDIA),ram)
+			CFLAGS += -DCFG_CSPSA_TEST_MEMORY_TYPE=T_CSPSA_MEMORY_TYPE_RAM
+		else ifeq ($(MEDIA),mmc)
+			CFLAGS += -DCFG_CSPSA_TEST_MEMORY_TYPE=T_CSPSA_MEMORY_TYPE_DEV_MMC
+		endif
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_DEBUG_LEVEL=0
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)_$(MEDIA)
+	else ifeq ($(VARIANT),test_core)
+		SRC_API := cspsa_api_linux_us_core_test.c
+		SRC_TEST := cspsa_test.c
+		LIBS := -lpthread
+		CFLAGS += -DCFG_CSPSA_TEST_TARGET=CFG_CSPSA_TEST_TARGET_LINUX_US -DCFG_CSPSA_TEST_VARIANT=CFG_CSPSA_TEST_VARIANT_CORE
+		CFLAGS += -DCFG_CSPSA_CORE_CACHE_ITEM_ARRAY_SIZE=512 -DCFG_CSPSA_CORE_CACHE_INITIAL_NBR_OF_IMAGE_ARRAYS=1
+		ifeq ($(MEDIA),ram)
+			CFLAGS += -DCFG_CSPSA_TEST_MEMORY_TYPE=T_CSPSA_MEMORY_TYPE_RAM -DCFG_CSPSA_TEST_READ_ERRORS
+			SRC_TEST += cspsa_test_ram.c
+		else ifeq ($(MEDIA),mmc)
+			CFLAGS += -DCFG_CSPSA_TEST_MEMORY_TYPE=T_CSPSA_MEMORY_TYPE_DEV_MMC
+		endif
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)_$(MEDIA)
+	else ifeq ($(VARIANT),test_client_reader)
+	  SRC_CORE :=
+	  SRC_LL :=
+		SRC_API := cspsa_api_linux_socket_client.c cspsa_api_linux_socket_common.c
+		SRC_TEST := cspsa_test_client_reader.c
+		LIBS :=
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_DEBUG_LEVEL=0
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)
+	else ifeq ($(VARIANT),test_client_writer)
+	  SRC_CORE :=
+	  SRC_LL :=
+		SRC_API := cspsa_api_linux_socket_client.c cspsa_api_linux_socket_common.c
+		SRC_TEST := cspsa_test_client_writer.c
+		LIBS :=
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_DEBUG_LEVEL=0
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)
+	else ifeq ($(VARIANT),test_client_cmd)
+	  SRC_CORE :=
+	  SRC_LL :=
+		SRC_API := cspsa_api_linux_socket_client.c cspsa_api_linux_socket_common.c
+		SRC_TEST := cspsa_test_client_cmd.c
+		LIBS :=
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_DEBUG_LEVEL=0
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)
+	else ifeq ($(VARIANT),lib)
+	  SRC_CORE :=
+	  SRC_LL :=
+		SRC_API := cspsa_api_linux_socket_client.c cspsa_api_linux_socket_common.c
+		LIBS :=
+		CFLAGS += -DCFG_CSPSA_API_LINUX_SOCKET_COMMON_DEBUG_LEVEL=0
+		PROGRAM_NAME := $(PROGRAM)_$(TARGET)_$(VARIANT)
+	else
+		SRC_API :=
+		SRC_TEST :=
+		TEST_CFLAG :=
+		LIBS :=
+		CFLAGS :=
+		PROGRAM_NAME :=
+	endif
+else ifeq ($(TARGET),linux_boot)
+	SRC_API :=
+	SRC_TEST :=
+	SRC_LL :=
+	LIBS :=
+	CFLAGS += -O3
+else
+	SRC_API :=
+	SRC_TEST :=
+	TEST_CFLAG :=
+	SRC_LL :=
+	LIBS :=
+	CFLAGS :=
+	PROGRAM_NAME :=
+endif
+ifeq ($(GCOV),1)
+	CFLAGS += -fprofile-arcs -ftest-coverage
+  LDFLAGS += -lgcov
+endif
+
+# -----------------------------------------------------------------------------
+
+OBJS_CORE := $(SRC_CORE:.c=.o)
+OBJS_API := $(SRC_API:.c=.o)
+OBJS_TEST := $(SRC_TEST:.c=.o)
+OBJS_LL := $(SRC_LL:.c=.o)
+
+# -----------------------------------------------------------------------------
+
+clean:
+	rm -f $(PROGRAM) *.o
+
+# -----------------------------------------------------------------------------
+
+clean_gcov:
+	rm -f $(PROGRAM) *.gc*
+
+# -----------------------------------------------------------------------------
+
+compile:
+	@echo -----------------------------------------------------------------------------
+	@echo ::: Compiling $(PROGRAM_NAME) :::
+	@echo -----------------------------------------------------------------------------
+	$(CC) $(CFLAGS) $(SRC_CORE) $(SRC_API) $(SRC_TEST) $(SRC_LL)
+	@echo -----------------------------------------------------------------------------
+	ar rcs $(PROGRAM_NAME).a $(OBJS_CORE) $(OBJS_API) $(OBJS_TEST) $(OBJS_LL)
+	mkdir -p ./lib
+	mv $(PROGRAM_NAME).a ./lib
+	$(CC) -shared -Wl,-soname,libcspsa.so.1 -o libcspsa.so.1.0  $(OBJS_CORE) $(OBJS_API) $(OBJS_TEST) $(OBJS_LL)
+	mv libcspsa.so.1.0 ./lib
+	ln -sf libcspsa.so.1.0 ./lib/libcspsa.so
+	ln -sf libcspsa.so.1.0 ./lib/libcspsa.so.1
+	@echo -----------------------------------------------------------------------------
+	@echo ::: Created static library file [./lib/$(PROGRAM_NAME).a] :::
+	@echo ::: Created dynamic library file [./lib/libcspsa.so] :::
+	@echo -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+
+build:
+	@echo -----------------------------------------------------------------------------
+	@echo ::: Building $(PROGRAM_NAME) :::
+	@echo -----------------------------------------------------------------------------
+	$(CC) $(CFLAGS) $(SRC_CORE) $(SRC_API) $(SRC_TEST) $(SRC_LL)
+	@echo -----------------------------------------------------------------------------
+	$(CC) $(OBJS_CORE) $(OBJS_API) $(OBJS_TEST) $(OBJS_LL) -o $(PROGRAM_NAME) $(LDFLAGS) $(LIBS)
+	mkdir -p ./exe
+	mv $(PROGRAM_NAME) ./exe
+	@echo -----------------------------------------------------------------------------
+	@echo ::: Created executable file [./exe/$(PROGRAM_NAME)] :::
+	@echo -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+
+run: build
+	mkdir -p ./$(PROGRAM_NAME)_logs
+	@echo -----------------------------------------------------------------------------
+	./exe/$(PROGRAM_NAME) > ./$(PROGRAM_NAME)_logs/$(PROGRAM_NAME)_log.txt
+	###valgrind --leak-check=full --track-origins=yes  --show-reachable=yes ./exe/$(PROGRAM_NAME) > ./$(PROGRAM_NAME)_logs/$(PROGRAM_NAME)_log.txt
+	@echo -----------------------------------------------------------------------------
+	cat ./$(PROGRAM_NAME)_logs/$(PROGRAM_NAME)_log.txt
+	@echo -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+
+all: build clean
+
+# -----------------------------------------------------------------------------
+
+exe: run clean
+
+# -----------------------------------------------------------------------------
+
+doc:
+	asciidoc cspsa_ds.txt
+	asciidoc cspsa_ts.txt
+
+# -----------------------------------------------------------------------------
+
+undoconfig:
+	touch ./config/cspsa.conf
+	mv ./config/cspsa.conf ./config/cspsa_undone.conf
+	touch ./config/cspsa_old.conf
+	mv ./config/cspsa_old.conf ./config/cspsa.conf
+
+# -----------------------------------------------------------------------------
+
+defconfig:
+	touch ./config/cspsa.conf
+	mv ./config/cspsa.conf ./config/cspsa_undone.conf
+	cp ./config/cspsa.defconf ./config/cspsa.conf
+
+# -----------------------------------------------------------------------------
+
+# - Code checking tools
+.PHONY: check cppcheck clang pmccabe gcov
+
+check: pmccabe cppcheck clang
+
+
+pmccabe:
+	pmccabe -v -c /dev/null; pmccabe -v -c *.c | sort -nr | head -20
+
+cppcheck:
+	cppcheck -a -s -v --force --unused-functions *.c
+
+clang:
+	<path>/bin/clang -fsyntax-only $(CFLAGS) *.c
+	<path>/bin/clang --analyze $(CFLAGS) *.c
+
+
+gcov:
+	$(MAKE) GCOV=1 all #Run our self, but with GCOV flag enabled
+	./exe/$(PROGRAM_NAME)
+	@echo -----------------------------------------------------------------------------
+	@echo ::: Generated gcov files with [gcov <filename>.
+	@echo ::: Call [make clean_gcov] when done.
+	@echo -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+

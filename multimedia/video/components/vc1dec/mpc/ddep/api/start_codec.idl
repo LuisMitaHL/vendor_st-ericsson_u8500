@@ -1,0 +1,113 @@
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc.idt>
+
+interface vc1dec.mpc.ddep.api.start_codec { 
+
+/** @addtogroup vc1decDdepStartCodecGroup startCodec
+ *  @ingroup vc1decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_internal_buffer       "Internal buffer" structure address (i.e. ts_t1xhv_vdc_internal_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_bitstream_buffer  "Output bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_frame_parameters   "Input In/Out parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_parameters  "Output In/Out parameter buffer" structure address (i.e. ts_t1xhv_vdc_vc1_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vc1decConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+ *
+ */ 
+
+void startCodec(	
+					t_uint32 addr_in_frame_buffer,
+					t_uint32 addr_out_frame_buffer,
+					t_uint32 addr_internal_buffer,
+					t_uint32 addr_in_bitstream_buffer,
+					t_uint32 addr_out_bitstream_buffer,
+					t_uint32 addr_in_parameters,
+					t_uint32 addr_out_parameters,
+					t_uint32 addr_in_frame_parameters,
+					t_uint32 addr_out_frame_parameters);
+
+/** @} */ // end of vc1decDdepStartCodecGroup
+
+/** @addtogroup vc1decDdepInitCodecGroup initCodec
+ *  @ingroup vc1decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Initialize a specific NMF algo component with input parameters (sequence parameters)
+ \param[in]  param_in       sequence parameters structure (i.e. ts_t1xhv_vdc_vc1_param_in_common)
+                            \n(Alignment : Multiple of 16).
+
+ *
+ * 
+ * \Note Usage of this interface
+ * \n  
+ *
+ */ 
+
+void initCodec(
+	    t_uint32 param_in
+		);
+
+ /** @} */ // end of vc1decDdepInitCodecGroup
+
+        
+/** @addtogroup vc1decDdepVoidFrameGroup voidFrame
+ *  @ingroup vc1decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Send an endCodec synchronized with the hamac pipe, without launching the codec.
+ */ 
+
+void voidFrame();
+
+ /** @} */ // end of vc1decDdepVoidFrameGroup
+
+/** @addtogroup vc1decDdepAllowSleepGroup allowSleep
+ *  @ingroup vc1decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : authorize TCM retention mode
+ */ 
+
+void allowSleep();
+
+ /** @} */ // end of vc1decDdepAllowSleepGroup
+ 
+/** @addtogroup vc1decDdepPreventSleepGroup preventSleep
+ *  @ingroup vc1decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : forbid TCM retention mode
+ */ 
+
+void preventSleep();
+
+ /** @} */ // end of vc1decDdepPreventSleepGroup
+
+}

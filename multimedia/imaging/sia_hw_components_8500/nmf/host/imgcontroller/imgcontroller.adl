@@ -1,0 +1,25 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file
+* \brief   This file describes the imgcontroller ARM-NMF component, which 
+*          dispatches commands and regroups events to/from stab and grabctl
+*
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+primitive imgcontroller extends fsm.controller.armnmf_controller
+
+requires sendcommand		  as  grabctl
+requires fsminit as grabctl_fsminit
+provides eventhandler         as  grabctl_handler		prefix grabctl_
+
+requires sendcommand	  as  stab
+requires fsminit       as  stab_fsminit
+provides eventhandler  as  stab_handler   prefix stab_
+
+option stack=64
+option CPPFLAGS "-g -O0"

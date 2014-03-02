@@ -1,0 +1,67 @@
+//============================================================================
+// Lauterbach T32 Emulator script: app/save_trace.cmm
+//
+// Comments:
+//
+//
+// 110124 - Creation by frq08728
+// 111011 - PDE 9540 adpatation
+//
+//============================================================================
+
+local &clock &time &rdOutDir
+
+&clock=CLOCK.unix()
+&time=STRING.MID("&clock",0.,10.)
+
+&rdOutDir="&RamdumpPath"
+
+dialog
+(
+	header "Choose where to save trace and dump"
+
+	pos 1. 0. 12.
+	TEXT "Save directory:"
+	POS 13. 0. 36.
+rdOutDir: EDIT "" ""
+	POS 50. 0. 5.
+	BUTTON "Dir"
+	(
+		dialog.setdir rdOutDir "&rdOutDir/../*"
+	)
+
+	pos 1. 2. 20.
+traceCheck: Checkbox "Save Trace" ""
+
+	pos 1. 3. 20.
+dumpCheck: Checkbox "Save Memory dump" ""
+
+
+	pos 20. 5. 18.
+	DEFBUTTON "OK" "continue"
+)
+
+dialog.set rdOutDir "&rdOutDir"
+dialog.set traceCheck
+dialog.set dumpCheck
+
+stop
+
+&rdOutDir=dialog.string(rdOutDir)
+
+if dialog.boolean(traceCheck)
+(
+	print "Save PTM trace"
+	a.save "&(rdOutDir)/trace-T&(time).ad" /MERGECORE
+	print "File &(rdOutDir)/trace-T&(time).ad saved"
+)
+
+if dialog.boolean(dumpCheck)
+(
+	print "Save Memory content"
+	data.save.s3 "&(rdOutDir)/memory-T&(time).s3" 0xc0000000++0xfffffff
+	print "File &(rdOutDir)/memory-T&(time).s3 saved"
+)
+
+dialog.end
+enddo

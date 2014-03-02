@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>How to create an ISSW certificate for the U5500/U8500/M7400/L9540 platforms</title>
+		<style>
+
+h1 {
+  font-family: sans-serif, verdana;
+  font-size: 16pt;
+  font-weight: normal;
+}
+
+h2 {
+  font-family: sans-serif, verdana;
+  font-size: 12pt;
+  font-weight: bold;
+}
+
+h3 {
+  font-family: sans-serif, verdana;
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+p {
+  font-family: sans-serif, verdnana;
+  font-size: 10pt;
+}
+
+li {
+  font-family: sans-serif, verdnana;
+  font-size: 10pt;
+}
+
+		</style>
+	</head>
+	<body>
+		<h1>How to create an ISSW certificate for the U5500/U8500/M7400/L9540 platforms</h1>
+		<p>
+			An ISSW certificate is a binary file that can be used as input when creating 
+			a U5500/U8500/M7400/L9540 root sign package. It contains information about the keys used to verify the ME software
+		</p>
+		<h2>Pre-requisites</h2>
+		<p>
+			Please make sure that you have access to a public or private RSA root key in PEM format.
+		</p>
+		<h2>Instructions</h2>
+		<p>
+			Open the ISSW Certificate Wizard by completing the following steps:
+		</p>
+		<ul>
+			<li>In the Eclipse menu, select File -&gt; New &gt; Other... (or press Ctrl+N)</li>
+			<li>Expand the Flash Kit category to make the Certificates category visible</li>
+			<li>Expand the Certificates category to see the Initial Secure Software Certificate</li>
+			<li>Select the Initial Secure Software Certificate and press Next</li>
+		</ul>
+		<p>
+			The wizard will appear and the user must fill in correct values in order create the certificate
+		</p>
+		<p>
+			Page 1: 
+		</p>
+		<img src="../../images/issw_wizard_1.png"/>
+		<ul>
+		 	<li>Root key: The key used to verify the ISSW signatures.</li>
+		 	<li>Root key type: Type of the root key.</li>
+		 	<li>Extended key type list: Allows to add up to 64 keys.</li>
+		 	<li>Reserved: Hexadecimal representation of reserved bytes data (e.g. A1B2). Maximal length is 16 bytes and the hexadecimal representation must have even length (leading zeroes must be used for one-digit numbers).</li>
+		 	<li>Model ID: The model ID can be used to separate two mobile device models with identical HW but different SW, without the need to use separate customer public root key pairs and separate customer public root key hashes in OTP. Model ID can also be used to separate two different ISSW certificates for two different device models.</li>
+		</ul>
+		<p>
+			Page 2 lets the user select which keys to use for signing of different types of software: 
+		</p>
+		<img src="../../images/issw_wizard_2.png"/>
+		<p>
+			Click the "Remove Key" or "Add Key" buttons to display the wanted number of keys.<br>
+			To select the path to a key, click the button (e.g "Key1") at the top of the key column.<br>
+			To revoke hash algorithm, (HASH), (HMAC), check the checkbox for the corresponding hash type which should be revoked.<br>
+			Check a software type to enable signing of it using the selected key. Only one key can be used for each software type.
+		</p>
+		<p>
+			On page 3 you must specify where to create the new ISSW certificate: 
+		</p>
+		<img src="../../images/issw_wizard_3.png"/>
+		<p>
+			A summary of which keys you have selected will be displayed. 
+		</p>
+	</body>
+</html>

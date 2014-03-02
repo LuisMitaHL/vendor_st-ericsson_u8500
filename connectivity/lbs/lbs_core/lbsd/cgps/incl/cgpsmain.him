@@ -1,0 +1,210 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSMAIN_HIM__
+#define __CGPSMAIN_HIM__
+
+#include <math.h>
+
+/**
+* \file cgpsmain.him
+* \date 25/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all internal macros required by CGPS\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 03.04.08</TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+* \def MC_CGPS_GET_MSG_POINTER
+* Macro used to retrieve data pointer, in a CGPS message
+*/
+#define MC_CGPS_GET_MSG_POINTER(p_FsmObject) \
+        p_FsmObject->u_ReceivedObj.p_MessageAddress
+
+
+/*MN(**************************************************************************
+ *
+ * Macro name : MC_CGPS_SET_FLAG_IN_PARAM1
+ *-----------------------------------------------------------------------------
+ * Purpose
+ *
+ *-----------------------------------------------------------------------------
+**************************************************************************)MN*/
+#define MC_CGPS_SET_FLAG_IN_PARAM1( A , B )    ( A ) = ( A ) | ( B )
+
+
+/*MN(**************************************************************************
+ *
+ * Macro name : MC_CGPS_RESET_FLAG_IN_PARAM1
+ *-----------------------------------------------------------------------------
+ * Purpose
+ *
+ *-----------------------------------------------------------------------------
+**************************************************************************)MN*/
+#define MC_CGPS_RESET_FLAG_IN_PARAM1( A , B )      ( A ) = ( A ) & ( ~ ( B ) )
+
+
+
+/*MN(**************************************************************************
+ *
+ * Macro name : MC_CGPS_IS_FLAG_SET_IN_PARAM1
+ *-----------------------------------------------------------------------------
+ * Purpose
+ *
+ *-----------------------------------------------------------------------------
+**************************************************************************)MN*/
+#define MC_CGPS_IS_FLAG_SET_IN_PARAM1( A , B )     ( ( ( A ) & ( B ) ) != 0 )
+
+
+/*MN(**************************************************************************
+ *
+ * Macro name : MC_CGPS_UPDATE_CONFIGURATION_ELEMENT
+ *-----------------------------------------------------------------------------
+ * Purpose
+ *
+ *-----------------------------------------------------------------------------
+**************************************************************************)MN*/
+#define MC_CGPS_UPDATE_CONFIGURATION_ELEMENT( ValueInMask, BitMask )       \
+do{                                                                        \
+    if( MC_CGPS_IS_FLAG_SET_IN_PARAM1( ValueInMask, BitMask) )             \
+    {    MC_CGPS_SET_FLAG_IN_PARAM1    ( vg_CGPS_Configuration,  BitMask );  }    \
+    else                                                                   \
+    {    MC_CGPS_RESET_FLAG_IN_PARAM1 ( vg_CGPS_Configuration,  BitMask );  }    \
+  }while(0)
+
+
+/*MN(**************************************************************************
+ *
+ * Macro name : MC_CGPS_UPDATE_PLATFORM_CONFIGURATION_ELEMENT
+ *-----------------------------------------------------------------------------
+ * Purpose
+ *
+ *-----------------------------------------------------------------------------
+**************************************************************************)MN*/
+#define MC_CGPS_UPDATE_PLATFORM_CONFIGURATION_ELEMENT( ValueInMask, BitMask )       \
+do{                                                                        \
+    if( MC_CGPS_IS_FLAG_SET_IN_PARAM1( ValueInMask, BitMask) )             \
+    {    MC_CGPS_SET_FLAG_IN_PARAM1    ( vg_cgps_platform_config.v_Config1Mask,  BitMask );  }    \
+    else                                                                   \
+    {    MC_CGPS_RESET_FLAG_IN_PARAM1 ( vg_cgps_platform_config.v_Config1Mask,  BitMask );  }    \
+  }while(0)
+
+
+/*MN(**************************************************************************
+ *
+ * Macro name : MC_CGPS_IS_CONFIGURATION_ELEMENT_SET
+ *-----------------------------------------------------------------------------
+ * Purpose
+ *
+ *-----------------------------------------------------------------------------
+**************************************************************************)MN*/
+#define MC_CGPS_IS_CONFIGURATION_ELEMENT_SET( BitMask )                    \
+     MC_CGPS_IS_FLAG_SET_IN_PARAM1( vg_CGPS_Configuration, BitMask)
+
+
+/*MN(**************************************************************************
+ *
+ * Macro name : MC_CGPS_IS_PLATFORM_CONFIGURATION_ELEMENT_SET
+ *-----------------------------------------------------------------------------
+ * Purpose
+ *
+ *-----------------------------------------------------------------------------
+**************************************************************************)MN*/
+#define MC_CGPS_IS_PLATFORM_CONFIGURATION_ELEMENT_SET( BitMask )                    \
+     MC_CGPS_IS_FLAG_SET_IN_PARAM1( vg_cgps_platform_config.v_Config1Mask, BitMask)
+
+
+/**
+* \def MC_CGPS_GET_MSG_OPCODE
+* Macro used to retrieve message type(Operation Code), in a CGPS message
+*/
+
+#define MC_CGPS_GET_MSG_OPCODE(p_FsmObject) \
+      MC_RTK_GET_MSG_OPTYPE(p_FsmObject->u_ReceivedObj.p_MessageAddress)
+
+
+
+#define MC_CGPS_ADD_ENUM_AS_STRING(Enum)     #Enum
+
+
+
+#define MC_CGPS_LAT_CONV_WGS84_DEG_TO_GAD(LAT)   ((LAT<0)?( (uint32_t) floor(( (LAT*(-1)/90.0) * pow(2, 23) )+0.5) ):( (uint32_t) floor(( (LAT/90.0) * pow(2, 23) )+0.5) ))
+
+#define MC_CGPS_LAT_CONV_WGS84_DEG_TO_GAD_SIGN(LAT)   ( ( (LAT < 0 )? 1 : 0 ) )
+
+#define MC_CGPS_LONG_CONV_WGS84_DEG_TO_GAD(LONG)  ( (LONG<0)?((int32_t) floor(( (LONG/360.0) * pow(2, 24) )+0.5) )|(int32_t)K_CGPS_GAD_LONGITUDE_SIGN_PADDING:((int32_t) floor(( (LONG/360.0) * pow(2, 24) )+0.5) ))
+
+#define MC_CGPS_LAT_CONV_GAD_TO_WGS84_DEG(GAD_DATA,SIGN)  ( ( ( 90.0 * GAD_DATA ) / pow(2, 23) ) * ( (SIGN == 0 )? 1 : -1 ) )
+
+#define MC_CGPS_ALT_CONV_GAD_TO_WGS84_DEG(GAD_DATA,SIGN)  (  GAD_DATA * ( (SIGN == 0 )? 1.0 : -1.0 ) )
+
+#define MC_CGPS_LON_CONV_GAD_TO_WGS84_DEG(GAD_DATA)       ( 360.0 * ( (int32_t)( (GAD_DATA & K_CGPS_GAD_LONGITUDE_SIGN_MASK)? (GAD_DATA|(int32_t)K_CGPS_GAD_LONGITUDE_SIGN_PADDING) : GAD_DATA )) / pow(2,24) )
+
+#define MC_CGPS_LAT_CONV_GAD_TO_WGS84_RAD(GAD_DATA,SIGN)  ( ( ( M_PI * GAD_DATA ) / (2.0 * pow(2, 23)) ) * ( (SIGN == 0 )? 1 : -1 ) )
+
+#define MC_CGPS_ALT_CONV_GAD_TO_WGS84_RAD(GAD_DATA,SIGN)  (  (M_PI * GAD_DATA / 180.0) * ( (SIGN == 0 )? 1.0 : -1.0 ) )
+
+#define MC_CGPS_LON_CONV_GAD_TO_WGS84_RAD(GAD_DATA)       ( 2.0 * M_PI * ( (int32_t)( (GAD_DATA & K_CGPS_GAD_LONGITUDE_SIGN_MASK)? (GAD_DATA|(int32_t)K_CGPS_GAD_LONGITUDE_SIGN_PADDING) : GAD_DATA )) / pow(2,24) )
+
+
+#if defined(AGPS_TEST_MODE_FTR) && defined (ATT_LOGGING_ENABLE)
+
+#define MC_CGPS_SEND_PSTE_NMEA( PsteType, Lat, Long, Alt)  do{ t_CgpsEventInformation vl_Temp;\
+                                                          vl_Temp.v_EventType = PsteType;\
+                                                          vl_Temp.v_Latitude  = Lat;\
+                                                          vl_Temp.v_Longitude = Long;\
+                                                          vl_Temp.v_Altitude  = Alt;\
+                                                          CGPS9_00HandleEvents(&vl_Temp);}while(0)
+
+
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_REQUEST()    MC_CGPS_SEND_PSTE_NMEA(K_CGPS_POSITIONING_SESSION_START,0,0,0)
+
+/* + LMSQC19754 */
+#define MC_CGPS_SEND_PSTE_NMEA_ABORT_IND()      MC_CGPS_SEND_PSTE_NMEA(K_CGPS_ABORT_SESSION,0,0,0)
+/* - LMSQC19754 */
+
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_COMPLETE()   MC_CGPS_SEND_PSTE_NMEA(K_CGPS_POSITIONING_SESSION_END,0,0,0)
+
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_GAD_REPORT(Lat, LatSign , Long, Alt , AltSign )      \
+                                                   MC_CGPS_SEND_PSTE_NMEA(K_CGPS_RESPONSE_RETURNED, \
+                                                   MC_CGPS_LAT_CONV_GAD_TO_WGS84_DEG( Lat , LatSign ), \
+                                                   MC_CGPS_LON_CONV_GAD_TO_WGS84_DEG( Long ), \
+                                                   MC_CGPS_ALT_CONV_GAD_TO_WGS84_DEG( Alt , AltSign ) )
+
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_WGS84_REPORT(Lat, Long, Alt)       MC_CGPS_SEND_PSTE_NMEA(K_CGPS_RESPONSE_RETURNED, Lat, Long, Alt)
+
+
+#else
+
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_REQUEST()
+
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_COMPLETE() 
+
+/* + LMSQC19754 */
+#define MC_CGPS_SEND_PSTE_NMEA_ABORT_IND()
+/* - LMSQC19754 */
+
+/* + LMSqc32518 */
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_GAD_REPORT(Lat, LatSign , Long, Alt , AltSign)
+/* - LMSqc32518 */
+#define MC_CGPS_SEND_PSTE_NMEA_FIX_WGS84_REPORT(Lat, Long, Alt)     
+
+#endif /*AGPS_TEST_MODE_FTR && ATT_LOGGING_ENABLE*/
+
+
+#endif  /* __CGPSMAIN_HIM__ */

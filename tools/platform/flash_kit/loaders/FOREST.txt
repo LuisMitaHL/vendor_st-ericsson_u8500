@@ -1,0 +1,49 @@
+FOREST
+======
+
+HOW TO COMPILE FROM THE FOREST
+------------------------------
+First we need to sync the forest, this is done by using these commands from the shell:
+
+..................................................................................................
+> mkdir forest # New empty forest to clone to!
+> cd forest
+> echo "export PATH=\$PATH:\$HOME/bin" >> ~/.bashrc
+> echo "export PYTHONPATH=/proj/fairbanks_lx/steg/steg" >> ~/.bashrc
+> source /proj/fairbanks_lx/etc/settings_for_bash
+> steg sync -d . -s /proj/fairbanks_lx/si/ux500 -r Linux_SW_V1_v0.9 --nowait
+..................................................................................................
+
+replace *settings_for_bash* and *.bashrc* with corresponding script for your shell.
+And then replace *Linux_SW_V1_v0.9* with the tag for the forest you want to sync.
+To setup and compile the loaders git you should run the classic *config*, *build* and *install* procedure:
+
+..................................................................................................
+> cd stelp # located in the root of the forest
+> make -f ux500.mak config-loaders STE_USE_V1_HW=0
+> make -f ux500.mak build-loaders
+> make -f ux500.mak install-loaders
+..................................................................................................
+
+or these steps for the debug version
+
+..................................................................................................
+> cd forest/stelp
+> make -f ux500.mak config-loaders STE_USE_V1_HW=0
+> make -f ux500.mak build-loaders LOADERS_DEBUG=1
+> make -f ux500.mak install-loaders
+..................................................................................................
+
+replace *STE_USE_V1_HW=0* with *STE_USE_V1_HW=1* if you are going to run this on V1 hardware.
+You will find the binaries at *stelp/images/loaders* after the installation step.
+To be able to flash it, copy the files to your flash kit structure.
+
+..................................................................................................
+> cp images/loaders/*FlashLoader_*_ED_*.bin $FLASH_KIT/loader/loader_ed.bin
+> cp images/loaders/*FlashLoader_*_ED_*.elf $FLASH_KIT/loader/loader_ed.elf
+..................................................................................................
+
+Replace *$FLASH_KIT* with the path to your copy of the flash kit tree structure
+and replace *ED* with *V1* and *_ed.bin* with *_v1.bin* if it is V1 hardware.
+Do the same thing for the elf files. Now you should be able to run the backend
+and the corresponding flash script.

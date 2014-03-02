@@ -1,0 +1,22 @@
+OMX_SendCommand	my_sink_1			OMX_CommandFlush		OMX_ALL
+OMX_SendCommand	my_sink_2			OMX_CommandFlush		OMX_ALL
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+OMX_SendCommand	my_sink_3			OMX_CommandFlush		OMX_ALL
+OMX_SendCommand	my_sink_4			OMX_CommandFlush		OMX_ALL
+endif
+OMX_SendCommand	tested_component	OMX_CommandFlush		OMX_ALL
+OMX_SendCommand	my_source_1			OMX_CommandFlush		OMX_ALL
+MMTE_WaitEvent	my_source_1			OMX_EventCmdComplete	OMX_CommandFlush	0
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandFlush	0
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandFlush	1
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandFlush	2
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandFlush	3
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandFlush	4
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandFlush	0
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+MMTE_WaitEvent	my_sink_2			OMX_EventCmdComplete	OMX_CommandFlush	0
+MMTE_WaitEvent	my_sink_3			OMX_EventCmdComplete	OMX_CommandFlush	0
+endif
+MMTE_WaitEvent	my_sink_4			OMX_EventCmdComplete	OMX_CommandFlush	0
+
+MMTE_FlushReceivedEvent

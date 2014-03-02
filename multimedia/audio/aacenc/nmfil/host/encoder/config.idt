@@ -1,0 +1,42 @@
+#ifndef __AACENC_CONFIG_IDT__
+#define __AACENC_CONFIG_IDT__
+
+typedef enum
+{
+  NMF_HEAAC_PROFILE_AACLC,
+  NMF_HEAAC_PROFILE_HE,
+  NMF_HEAAC_PROFILE_HE_PS,
+  NMF_HEAAC_PROFILE_HE_MPS,
+  NMF_NUM_HEAAC_PROFILE
+}
+NMF_HEAAC_PROFILE;
+
+typedef enum
+{
+	NMF_HEAAC_BSFORMAT_RAW,
+	NMF_HEAAC_BSFORMAT_ADTS_MPEG2,
+	NMF_HEAAC_BSFORMAT_ADTS_MPEG4,
+	NMF_HEAAC_BSFORMAT_ADIF
+}
+NMF_HEAAC_BS_FORMAT;
+
+
+typedef  struct {
+  t_sint32   		    		  nBitRate;               	/* encoder bit rate in bits/s */
+  t_sint32  				    	sampleRate;							/* sample rate in Hz */
+  t_sint32 				    	  nChannels;							/* number of input channels */
+  t_sint32				      	nBits;									/* number of bits per sample */
+  NMF_HEAAC_PROFILE 		  eAacEncProfile;					/* profile of the encoder */
+  NMF_HEAAC_BS_FORMAT		  eAacEncBsFormat;				/* output bit stream format*/
+  t_sint32								bEncodeMono;		    		/* to force encoding mode to mono/stereo */
+}AacEncParam_t;
+
+
+typedef struct {
+	t_uint16                nBitRate;
+} AacEncConfig_t;
+
+
+
+
+#endif

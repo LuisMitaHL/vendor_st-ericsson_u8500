@@ -1,0 +1,692 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPS_HEC__
+#define __CGPS_HEC__
+
+/**
+* \file cgps.hec
+*
+* <B>Description:</B> This file contains all external constants required and provided by CGPS\n
+* 
+*/
+ 
+
+/**
+* \addtogroup CGPS_AppliGeneral_Constants
+*\{
+*/
+
+/**
+* \enum  e_cgps_Error
+* List of constant used to indicate if current requested service is able to be treated or not.
+*/
+typedef enum 
+{
+  K_CGPS_NO_ERROR,                    /**< Used when service is correctly executed. */
+  K_CGPS_ERR_INVALID_PARAMETER,       /**< At least one parameter of the request is incorrect. */
+  K_CGPS_ERR_INCOHERENT_ORDER,        /**< Received request is incoherent in relation to the current state. */
+  K_CGPS_ERR_UNSUPPORTED_SERVICE,     /**< Service not supported. */
+  K_CGPS_ERR_INVALID_HANDLE,          /**< the handle provided isn't registered */
+  K_CGPS_ERR_GPS_NOT_STARTED,         /**< CGPS can't register any applications because GPS isn't started yet, try later */
+  K_CGPS_ERR_NO_AVAILABLE_HANDLE,     /**< the maximum number of applications has been reached */
+  K_CGPS_ERR_MOLF_FAILED              /**< the maximum number of applications has been reached */  
+} e_cgps_Error;
+
+/**
+* \enum  e_cgps_GpsStatus
+* List of constant used to indicate if GPS is ON or OFF.
+*/
+typedef enum
+{
+
+  K_CGPS_ERR_GPS_ENGINE_ON,
+  K_CGPS_ERR_GPS_ENGINE_OFF,
+  K_CGPS_ERR_GPS_NO_ERROR,
+  K_CGPS_ERR_GPS_ERROR,
+  K_CGPS_ERR_LAST = 0xFFFFFFFF
+} e_cgps_GpsStatus;
+
+/**
+* \enum  e_cgps_GADShapeType
+* List of constant used to the shape type supported.
+*/
+typedef enum{
+    K_CGPS_SHAPE_NONE                  =   0,   /*!< No Shape. */
+    K_CGPS_SHAPE_E_PT                  =   1,   /*!< Shape Ellipsoid Point. */
+    K_CGPS_SHAPE_E_PT_UNC_CIRCLE       =   2,   /*!< Shape Ellipsoid Point with Uncertainty Circle. */
+    K_CGPS_SHAPE_E_PT_UNC_ELLIP        =   4,   /*!< Shape Ellipsoid Point with Uncertainty Eclipse. */
+    K_CGPS_SHAPE_E_PT_POLYGON          =   8,   /*!< Shape Ellipsoid Point with Polygon. */
+    K_CGPS_SHAPE_E_PT_ALT              =  16,   /*!< Shape Ellipsoid Point with Altitude. */
+    K_CGPS_SHAPE_E_PT_ALT_UNC_ELLIP    =  32,   /*!< Shape Ellipsoid Point with Altitude and Uncertainty Eclipse. */
+    K_CGPS_SHAPE_E_ARC                 =  64    /*!< Shape Ellipsoid Arc. */
+} e_cgps_GADShapeType;
+
+
+
+/*+ LMSqc13768 : DeleteGpsData */
+/* PTFEAIUH */
+/**
+* \enum  e_cgps_NVStoreFields
+* this enum provides the field identifiers that is used by \ref MC_CGPS_DELETE_NV_STORE_FIELD to delete required data items in NV store.
+*/
+typedef enum
+{
+   K_CGPS_FIELD_ALMANAC        = (1<< 0),   /**< Almanacs for all satellites. */
+   K_CGPS_FIELD_EPHEMERIS      = (1<< 1),   /**< Ephemeredes for all satellites. */
+   K_CGPS_FIELD_POSITION       = (1<< 2),   /**< Position information .*/
+   K_CGPS_FIELD_TIME           = (1<< 3),   /**< Time. */
+   K_CGPS_FIELD_UTC            = (1<< 4),   /**< UTC model correction parameters .*/
+   K_CGPS_FIELD_IONO_MODEL     = (1<< 5),   /**< Ionospheric model parameters.*/
+   K_CGPS_FIELD_SV_HEALTH      = (1<< 6),   /**< Satellite Health data.*/
+   K_CGPS_FIELD_TCXO_CALIB     = (1<< 7),   /**< Reference TCXO Frequency calibration. */
+   K_CGPS_FIELD_COLD_START     = (1<<16),   /**< Relevant parameters cleared to do a COLD start.*/
+   K_CGPS_FIELD_WARM_START     = (1<<17),   /**< Relevant parameters cleared to do a WARM start.*/
+   K_CGPS_FIELD_FACTORY_START  = (1<<18),   /**< Relevant parameters cleared to do a Factory reset.*/
+   K_CGPS_FIELD_HOT_START      = (1<<19),   /**< Relevant parameters cleared to do a HOT start.*/
+   K_CGPS_FIELD_SEED_DATA      = (1<<20),   /**< Relevant parameters cleared to do SEED data.*/
+   K_CGPS_FIELD_UP_LOCID       = (1<<21)    /**< Relevant parameters cleared FOR Location ID.*/
+} e_cgps_NVStoreFields;
+/*- LMSqc13768 : DeleteGpsData */
+
+/**
+*\}
+*/
+
+
+
+
+/**
+* \addtogroup CGPS_AppliSession_Constants
+*\{
+*/
+
+
+/**
+* \def K_CGPS_MAX_POLYGON_POINTS
+* Number of entries in the \ref t_cgps_GeographicTargetArea Latitude, Longitude arrays 
+*/
+#define K_CGPS_MAX_POLYGON_POINTS 15
+
+
+/**
+* \def K_CGPS_NMEA_SV
+* Number of entries in the \ref t_cgps_CStructNavData satellite arrays 
+*/
+#define K_CGPS_NMEA_SV  32
+/**
+* \def K_CGPS_MAX_APP_PROVIDER_LEN
+* The maximum length of \ref t_cgps_ApplicationID_Info::a_ApplicationProvider
+*/
+#define K_CGPS_MAX_APP_PROVIDER_LEN         65
+
+
+/**
+* \def K_CGPS_MAX_APP_NAME_LEN
+* The maximum length of \ref t_cgps_ApplicationID_Info::a_ApplicationName
+*/
+#define K_CGPS_MAX_APP_NAME_LEN             65
+
+
+/**
+* \def K_CGPS_MAX_APP_VERSION_LEN
+* The maximum length of \ref t_cgps_ApplicationID_Info::a_ApplicationVersion
+*/
+#define K_CGPS_MAX_APP_VERSION_LEN          65
+
+ 
+/* +LMSqb93565 */
+/**
+* \enum  e_cgps_NavStatus
+* List of constants used to status of nav updates received via the callback.
+* 
+*/
+typedef enum
+{
+    K_CGPS_UPDATES_REMAINING = 0,  /**< Specifies at least one more update will follow this if ServiceStop is not called */
+    K_CGPS_FINAL_UPDATE            /**< Last update sent the user*/
+} e_cgps_NavStatus;
+/* -LMSqb93565 */
+
+ 
+/**
+* \enum  e_cgps_NavDataType
+* List of constants used to indicate the type of navigation data.
+*/
+typedef enum
+{
+  K_CGPS_NMEA = 0,         /**< This returned value means that navigation data are NMEA type  */
+  K_CGPS_C_STRUCT,         /**< This returned value means that navigation data are t_cgps_CStructNavData 'C' Struct type */
+  /* ++LMSqc26033 */
+  K_CGPS_NMEA_AND_C_STRUCT /**< This is used only for registering both NMEA and C Structure */ 
+  /* --LMSqc26033 */
+} e_cgps_NavDataType;
+
+/**
+* \enum  e_cgps_FixType
+* List of constants used to indicate the type of positioning session.
+*/
+typedef enum
+{
+  K_CGPS_SINGLE_SHOT = 0,                 /**< Positioning session is of type single shot  */
+  K_CGPS_PERIODIC,                        /**< Positioning session is of type periodic */  
+/* +LMSqb93565 */         
+  K_CGPS_SINGLE_SHOT_WITH_PERIODIC_UPDATE /**< Positioning session is of type single shot with periodic updates before QoP is obtained. */
+/* -LMSqb93565 */
+} e_cgps_FixType;
+
+
+/**
+* \enum  e_cgps_NmeaMask
+* this enum is used in v_NmeaMask when calling \ref MC_CGPS_REGISTER_PERIODIC_FIX or \ref MC_CGPS_REGISTER_SINGLE_SHOT_FIX
+*/
+typedef enum
+{
+   K_CGPS_GPGLL_ENABLE = (1<<0),   /**< Mask for NMEA $GPGLL (Geographic Position - Latitude, Longitude) */
+   K_CGPS_GPGGA_ENABLE = (1<<1),   /**< Mask for NMEA $GPGGA (GPS Fix Data) */
+   K_CGPS_GPGSA_ENABLE = (1<<2),   /**< Mask for NMEA $GPGSA (GNSS DOPS and Active Satellites) */
+   K_CGPS_GPGST_ENABLE = (1<<3),   /**< Mask for NMEA $GPGST (GNSS Pseudorange Error Statistics) */
+   K_CGPS_GPGSV_ENABLE = (1<<4),   /**< Mask for NMEA $GPGSV (GNSS Satellites in View) */
+   K_CGPS_GPRMC_ENABLE = (1<<5),   /**< Mask for NMEA $GPRMC (Recommended Minimum GNSS Sentence) */
+   K_CGPS_GPVTG_ENABLE = (1<<6),   /**< Mask for NMEA $GPVTG (Course Over Ground and Ground Speed) */
+   K_CGPS_GPZCD_ENABLE = (1<<7),   /**< Mask for NMEA $GPZCD (output rate - OS Timestamp for the Fix [seconds]) */
+   K_CGPS_GPZDA_ENABLE = (1<<8),   /**< Mask for NMEA $GPZDA (Time & Date) */
+   K_CGPS_PGNVD_ENABLE = (1<<9)    /**< Mask for NMEA $PGNVD ( proprietary Diagnostics data ) */
+} e_cgps_NmeaMask;
+
+
+/**
+* \enum  e_cgps_EventType
+* List of constants used to define the events that requires reporting.
+*/
+typedef enum
+{
+    K_CGPS_ENTERING_AREA,   /**< Considering event occurence only in case user is entering defined area */
+    K_CGPS_INSIDE_AREA,     /**< Considering event occurence only in case user is inside defined area */
+    K_CGPS_OUTSIDE_AREA,    /**< Considering event occurence only in case user is outside defined area */
+    K_CGPS_LEAVING_AREA,    /**< Considering event occurence only in case user is leaving defined area */
+    K_CGPS_AREA_EVENT_NOT_SET = 0x7FFFFFFF    
+} e_cgps_AreaEventType;
+
+
+/**
+* \enum e_cgps_ShapeType
+* Constant containing area definition.
+*/
+typedef enum
+{
+    K_CGPS_CIRCULAR_AREA,    /**< Describes the Target Area type as Circular */
+    K_CGPS_ELLIPTICAL_AREA,  /**< Describes the Target Area type as Elliptical */
+    K_CGPS_POLYGON_AREA,     /**< Describes the Target Area type as Polygon */
+    K_CGPS_MAX_SHAPE_TYPE = 0x7FFFFFFF
+} e_cgps_ShapeType;
+
+
+/**
+*\}
+*/
+
+
+/**
+* \addtogroup CGPS_AppliConfig_Constants
+*\{
+*/
+
+/**
+* \enum  e_cgps_ConfigBitMask
+* this enum is used to set element v_ConfigMask, v_ConfigMaskValidity calling \ref MC_CGPS_UPDATE_USER_CONFIGURATION 
+*/
+typedef enum
+{
+   K_CGPS_CONFIG_MS_POS_TECH_MSASSISTED     = (1<<0),   /**< Mask for POS TECHNOLOGY-MS ASSISTED */
+   K_CGPS_CONFIG_MS_POS_TECH_MSBASED        = (1<<1),   /**< Mask for POS TECHNOLOGY-MS BASED */
+   K_CGPS_CONFIG_MS_POS_TECH_AUTONOMOUS     = (1<<2),   /**< Mask for POS TECHNOLOGY-AUTONOMOUS */
+   K_CGPS_CONFIG_MS_POS_TECH_ECID           = (1<<3),   /**< Mask for POS TECHNOLOGY-Enhanced Cell Id */
+   K_CGPS_CONFIG_AGPS_TRANSPORT_UPLANE      = (1<<4),   /**< Mask for User Plane Support */
+   K_CGPS_CONFIG_AGPS_TRANSPORT_CPLANE      = (1<<5),   /**< Mask for Control Plane Support */   
+   K_CGPS_CONFIG_AGPS_TRANSPORT_PREF_UPLANE = (1<<6),   /**< Mask for Preference to User Plane over Control Plane */
+   K_CGPS_CONFIG_AGPS_SESSION_MO_ALLOWED    = (1<<7),   /**< Mask for Mobile Originated Location Session */
+   K_CGPS_CONFIG_AGPS_SESSION_MT_ALLOWED    = (1<<8),   /**< Mask for Mobile Terminated Location Session */
+   K_CGPS_CONFIG_SUPL_MULTI_SESSION         = (1<<9),   /**< Mask for SUPL multi session */
+/* ++ LMSqc00847    ANP 14/07/2009 */
+/*This is provided to identify if Position reports need to be sent as soon as coarse position
+is available irrespective of QoP. GPS position need to check for QoP*/   
+   K_CGPS_CONFIG_NBP_SUPPORTED              = (1<<10),  /**< Mask for Network Based Positioning Support. */   
+/* -- LMSqc00847    ANP 14/07/2009 */   
+   K_CGPS_CONFIG_NOTLS_SUPPORTED            = (1<<11),  /**< Mask for Supl Secured Connection. */
+   K_CGPS_CONFIG_SUPLV2_SUPPORTED           = (1<<12),  /**< Mask for Supl Version 2.0 Support. */
+   K_CGPS_CONFIG_AGPS_FTA                   = (1<<13),  /**< Mask for Fine Time Aiding Support. */
+   K_CGPS_CONFIG_FREQ_AIDING                = (1<<14),  /**< Mask for Frequency Aiding Support. */
+   K_CGPS_CONFIG_SEMIAUTO                   = (1<<15),  /**< Mask for Semi Auto Location Mode Support. */
+#ifdef LBS_GLONASS
+   K_CGPS_CONFIG_GPS_ENABLED                = (1<<16),/**< Mask for Enabling GPS. */
+   K_CGPS_CONFIG_GLONASS_ENABLED            = (1<<17),  /**< Mask for Enabling GLONASS */
+   K_CGPS_CONFIG_SBAS_ENABLED               = (1<<18),  /**< Mask for Enabling SBAS */
+#endif
+
+   K_CGPS_CONFIG_EXTENDED_EPHEMERIS_GPS_ENABLED                 = (1<<19),  /**< Mask for Enabling EE for GPS */
+   K_CGPS_CONFIG_EXTENDED_EPHEMERIS_GLONASS_ENABLED             = (1<<20),  /**< Mask for Enabling EE for Glonass*/
+   K_CGPS_CONFIG_WIFI_POS_ENABLED                               = (1<<21),  /**< Mask for Enabling Wi-Fi Positioning*/
+   K_CGPS_CONFIG_QZSS_ENABLED                                   = (1<<22),  /**< Mask for Enabling QZSS */
+   K_CGPS_CONFIG_SNTP_REF_TIME_ENABLED                          = (1<<23),  /**< Mask for Enabling SNTP Reference Time */
+   K_CGPS_CONFIG_SELF_ASSISTED_GPS_ENABLED                      = (1<<24),  /**< Mask for Enabling EE for GPS */
+   K_CGPS_CONFIG_SELF_ASSISTED_GLONASS_ENABLED                  = (1<<25),  /**< Mask for Enabling EE for Glonass*/
+} e_cgps_ConfigBitMask;
+
+/**
+* \enum  e_cgps_PlatformConfig1BitMask
+* this enum is used to set element v_Config1MaskValid, v_Config1Mask calling \ref MC_CGPS_UPDATE_PLATFORM_CONFIGURATION
+*/
+typedef enum
+{
+   K_CGPS_CONFIG_PUREMSA_CP    = (1<<0),   /**< Mask for Pure MSA for CP*/
+   K_CGPS_CONFIG_PUREMSA_UP    = (1<<1),   /**< Mask for Pure MSA for SUPL*/
+   K_CGPS_CONFIG_EXT_LNA       = (1<<2),   /**< Mask for External LNA*/
+} e_cgps_PlatformConfig1BitMask;
+
+
+
+/**
+* \enum  e_cgps_Config2BitMask
+* this enum is used in t_cgps_Config when calling \ref MC_CGPS_UPDATE_USER_CONFIGURATION
+*/
+typedef enum
+{
+
+   K_CGPS_CONFIG2_SUPL_SERVER_CONFIG      = (1<<0),   /**< Mask for SUPL Server configuration */
+   K_CGPS_CONFIG2_TTFF_SENSITIVITY        = (1<<1),   /**< Mask for TTFF sensitivity */
+   K_CGPS_CONFIG2_POWER_PREFERENCE        = (1<<2),   /**< Mask for Power Preference */
+   K_CGPS_CONFIG2_SENSITIVITY_MODE        = (1<<3),   /**< Mask for Sensitivity Mode */
+   K_CGPS_CONFIG2_COLD_START_MODE         = (1<<4),   /**< Mask for Cold Start Mode */
+/* ++ LMSqb89864 - BNS 27 / 04 / 2009*/
+   K_CGPS_CONFIG2_SUPL_BEARER_CONFIG      = (1<<5),   /**< Mask for SUPL bearer configuration */
+/* -- LMSqb89864 - BNS 27 / 04 / 2009*/
+   K_CGPS_CONFIG2_SUPL_ESLP_ADDR_CONFIG   = (1<<6),   /**< Mask for SUPL bearer configuration */   
+} e_cgps_Config2BitMask;
+
+/**
+* \enum  e_cgps_PlatformConfig2BitMask
+* this enum is used in t_CGPS_PlatformConfig when calling \ref MC_CGPS_UPDATE_PLATFORM_CONFIGURATION
+*/
+typedef enum
+{
+
+   K_CGPS_CONFIG2_MSA_MANDATORY_MASK      = (1<<0),   /**< Mask for MSA Mandatory Mask */
+   K_CGPS_CONFIG2_MSB_MANDATORY_MASK      = (1<<1),   /**< Mask for MSB Mandatory Mask */
+   K_CGPS_CONFIG2_GPS_POWER_SAVING_INT    = (1<<2),   /**< Mask for GPS Power saving Interval */
+} e_cgps_PlatformConfig2BitMask;
+
+
+/**
+* \enum  e_cgps_SensitivityMode
+* this enum is used in t_cgps_Config when calling \ref MC_CGPS_UPDATE_USER_CONFIGURATION
+* also this field will be used only if corresponding bit in e_cgps_Config2BitMask is set
+*/
+typedef enum
+{
+   K_CGPS_SENSITIVITY_MODE_HIGH,     /**< High Sensitivity Mode, optimised for mainly indoor / handset usage.*/
+   K_CGPS_SENSITIVITY_MODE_NORMAL,   /**< Normal Sensitivity Mode, optimised for mainly automotive and outdoor usage.*/
+   K_CGPS_SENSITIVITY_MODE_DYNAMIC   /**< Dynamic Sensitivity Mode, optimally switching between the above High & Normal modes.*/
+} e_cgps_SensitivityMode;
+
+/**
+* \enum  e_cgps_SensitivityTtff
+* this enum is used in t_cgps_Config when calling \ref MC_CGPS_UPDATE_USER_CONFIGURATION
+* also this field will be used only if corresponding bit in e_cgps_Config2BitMask is set
+*/
+typedef enum
+{
+   K_CGPS_SENSITIVITY_TTFF_BALANCE,  /**< The default balanced approach between speed and sensitivity.*/
+   K_CGPS_SENSITIVITY_TTFF_FASTER,   /**<  Potentially faster cold start TTFF, but reduced cold start sensitivity.*/
+   K_CGPS_SENSITIVITY_TTFF_SENSITIVE /**< Increased sensitivity cold starts, but at potentially a slower cold start TTFF.*/
+} e_cgps_SensitivityTtff;
+
+/**
+* \enum  e_cgps_PowerPref
+* this enum is used in t_cgps_Config when calling \ref MC_CGPS_UPDATE_USER_CONFIGURATION
+* also this field will be used only if corresponding bit in e_cgps_Config2BitMask is set
+*/
+typedef enum
+{
+   K_CGPS_POWER_PERF_DEFAULT,   /**< The default balanced approach between Power Usage and Performance.*/
+   K_CGPS_POWER_PERF_HI_PERF,   /**< Higher Performance, but at potentially increased power usage.*/
+   K_CGPS_POWER_PERF_LO_POW     /**< Lower power usage, but at potentially reduced performance.*/
+} e_cgps_PowerPref;
+
+
+/**
+* \enum  e_cgps_ColdStartMode
+* this enum is used in t_cgps_Config when calling \ref MC_CGPS_UPDATE_USER_CONFIGURATION
+* also this field will be used only if corresponding bit in e_cgps_Config2BitMask is set
+*/
+typedef enum
+{
+   K_CGPS_COLD_START_DEFAULT,      /**< Should set to default mode no settings to start cold start */
+   K_CGPS_COLD_START_FIRST_ONLY,   /**< Only first session after the command is inserted will be cold start.*/
+   K_CGPS_COLD_START_ALWAYS,       /**< All new session should be cold start.*/
+   K_CGPS_WARM_START_ALWAYS,       /**< All new session should be warm start.*/
+   K_CGPS_HOT_START_ALWAYS         /**<All new session should be hot start.*/ /* Roy STELP and Configfile change */
+} e_cgps_ColdStartMode;
+
+
+/**
+* \enum  e_cgps_SlpAddrType
+* this enum is used in t_cgps_ServerConfig when calling \ref MC_CGPS_UPDATE_USER_CONFIGURATION
+*/
+typedef enum
+{
+   K_CGPS_SLPADDR_DFLT = 0,   /**< This information shall be set if SLP address is not provided in v_SlpAddr and SUPL must used default one*/
+   K_CGPS_SLPADDR_FQDN = 1,   /**< This information shall be set if SLP address provided in v_SlpAddr is of type FQDN */
+   K_CGPS_SLPADDR_IPV4 = 2,   /**< This information shall be set if SLP address provided in v_SlpAddr is of type IPV4 */
+   K_CGPS_SLPADDR_IPV6 = 3,   /**< This information shall be set if SLP address provided in v_SlpAddr is of type IPV6 */
+} e_cgps_SlpAddrType;
+
+
+/**
+* \enum e_cgps_TraceSeverity
+* \brief Severity of messages allowed for tracing.
+*/
+typedef enum
+{
+   K_CGPS_TRACE_LEV_ERR  = (1<<0),  /**< Error */
+   K_CGPS_TRACE_LEV_WRN  = (1<<1),  /**< Warning */
+   K_CGPS_TRACE_LEV_INF  = (1<<2),  /**< Information*/
+   K_CGPS_TRACE_LEV_DBG  = (1<<3),  /**< Debug*/
+   K_CGPS_TRACE_LEV_FNC  = (1<<4),  /**< Function*/
+   K_CGPS_TRACE_LEV_TME  = (1<<5)   /**< Time*/
+} e_cgps_TraceSeverity;
+
+
+/**
+* \enum e_cgps_TraceDestn
+* \brief Provides the destination to which traces are to be routed.
+*/
+typedef enum
+{
+    K_CGPS_TRACE_TYPE_APPL,  /**< Tracing into Application(console) or Platform provided tracing utility*/
+    K_CGPS_TRACE_TYPE_FILE,  /**< Tracing into File*/
+    K_CGPS_TRACE_TYPE_NONE   /**< No Tracing for that particular module */
+}e_cgps_TraceDestn;
+
+
+/**
+* \enum e_cgps_TraceSource
+* \brief Provides the source of trace for which configuration is applicable.
+*/
+typedef enum
+{
+   K_CGPS_TRACE_SOURCE_OSAL,     /**< Logging configuration for OSA related traces*/
+   K_CGPS_TRACE_SOURCE_CGPS,     /**< Logging configuration for CGPS module traces*/
+   K_CGPS_TRACE_SOURCE_HALGPS,   /**< Logging configuration for HALGPS related traces*/
+   K_CGPS_TRACE_SOURCE_CMCC,     /**< Logging configuration for CMCC specific operator logging*/
+   K_CGPS_TRACE_SOURCE_LSIM,     /**< Logging configuration for LSIM module traces*/
+   K_CGPS_TRACE_SOURCE_SBEE,     /**< Logging configuration for SBEE module traces*/
+   K_CGPS_TRACE_SOURCE_SUPL,     /**< Logging configuration for SUPL related traces*/
+   K_CGPS_TRACE_SOURCE_GNSS_CHIP_COMM,   /**< Logging configuration for GNSS library Chip communication related traces (GNB_DEBUG)*/
+   K_CGPS_TRACE_SOURCE_GNSS_NMEA,        /**< Logging configuration for NMEA related traces output by GNSS library*/
+   K_CGPS_TRACE_SOURCE_GNSS_NAV,         /**< Logging configuration for GNSS library Navigation Summary related traces*/
+   K_CGPS_TRACE_SOURCE_GNSS_EVNT,        /**< Logging configuration for events in GNSS library */
+} e_cgps_TraceSource;
+
+
+/**
+*\}
+*/
+
+
+/**
+* \addtogroup CGPS_AppliAGPS_Constants
+*\{
+*/
+ 
+ 
+#if defined(AGPS_UP_FTR) || defined(AGPS_FTR)
+
+/**
+* \enum  e_cgps_FormatIndicator
+* List of constants used to indicate the format of \ref t_cgps_Notification::a_RequestorId or \ref t_cgps_Notification::a_ClientName as defined by SUPL spec. Refer to OMA-TS-ULP-V1_0-20070122-C.pdf for more details.
+*/
+typedef enum
+{
+  K_CGPS_NO_FORMAT = 0,        /**< No format specified */
+  K_CGPS_LOGICAL_NAME = 0,     /**< Logical name type */
+  K_CGPS_EMAIL_ADDRESS,        /**< Email address type */
+  K_CGPS_MSISDN,               /**< MSISDN type */
+  K_CGPS_URL,                  /**< URL type */
+  K_CGPS_SIP_URL,              /**< SIP URL type */
+  K_CGPS_MIN,                  /**< MIN type */
+  K_CGPS_MDN,                  /**< MDN type */
+  K_CGPS_IMS_PUBLIC_IDENTITY,  /**< IMS Public identity type */
+  K_CGPS_MAX_FORMATINDICATOR = 0x7FFFFFFF
+} e_cgps_FormatIndicator;
+
+
+
+/**
+* \enum  e_cgps_EncodingType
+* List of constants used to specify encoding type as defined by SUPL spec. Refer to OMA-TS-ULP-V1_0-20070122-C.pdf for more details.
+*/
+typedef enum
+{
+  K_CGPS_NONE = 0,                /**<  no encoding type specified */
+  K_CGPS_UCS2 = 0,                /**<  ucs2 format */
+  K_CGPS_GSM_DEFAULT,             /**<  gsm-default refers to the 7-bit default alphabet and the SMS packing specified in [3GPP 23.038]. */
+  K_CGPS_UTF8,                    /**<  utf8 format */
+  K_CGPS_DCS_8_BIT_DATA,          /**<  raw 8-bit data. can be ASCII - 8bit */ 
+  K_CGPS_UCS2_COMPRESSED,         /**<  Compressed ucs2 format */          
+  K_CGPS_DCS_8_BIT_TEXT,          /**<  GSM 7-bit alphabet padded with MSB 0 to make them 8-bits each. */
+  K_CGPS_MAX_ENCODINGTYPE = 0x7FFFFFFF
+} e_cgps_EncodingType;
+
+
+
+/**
+* \enum  e_cgps_NotificationType
+* List of constants used to specify notification . Refer to OMA-TS-ULP-V1_0-20070122-C.pdf for more details.
+*/
+typedef enum
+{
+  K_CGPS_NO_NOTIFICATION_NO_VERIFICATION = 0,        /**< User is neither notified nor asked for verification. */
+  K_CGPS_NOTIFICATION_ONLY,                          /**< User is notified but not asked for verification. */
+  K_CGPS_NOTIFICATION_AND_VERIFICATION_ALLOWED_NA,   /**< User is notified and asked for verification. Request will be allowed if user does not answer. */
+  K_CGPS_NOTIFICATION_AND_VERIFICATION_DENIED_NA,    /**< User is notified and asked for verification. Request will be denied if user does not answer. */
+  K_CGPS_PRIVACY_OVERRIDE,                           /**< Is used for preventing notification and verification without leaving any traces.  */
+  K_CGPS_NOTIFICATION_CANCEL,                        /**< Previous notification with same handle has expired */            
+  K_CGPS_MAX_SUPLNOTIFICATIONTYPE = 0x7FFFFFFF
+} e_cgps_NotificationType;
+
+
+/**
+* \enum  e_cgps_LcsServiceType
+* List of service used in notification 
+*/
+typedef enum
+{
+  K_CGPS_EMERGENCY_SERVICES = 0,                   /**< Type of service : Emergency.*/
+  K_CGPS_EMERGENCY_ALERT_SERVICES,                 /**< Type of service : Emergency alert.*/
+  K_CGPS_PERSON_TRACKING,                          /**< Type of service : Person tracking. */
+  K_CGPS_FLEET_MANAGEMENT,                         /**< Type of service : Fleet Management. */
+  K_CGPS_ASSET_MANAGEMENT,                         /**< Type of service : Asset Management. */
+  K_CGPS_TRAFFIC_CONGESTION_REPORTING,             /**< Type of service : Traffic Constellation Reporting. */
+  K_CGPS_ROAD_SIDE_ASSISTANCE,                     /**< Type of service : Road Side Assistance. */
+  K_CGPS_ROUTING_TO_NEAREST_COMMERCIAL_ENTERPRISE, /**< Type of service : Routing to nearest commercial enterprise. */
+  K_CGPS_NAVIGATION,                               /**< Type of service : Navigation.*/
+  K_CGPS_CITY_SIGHTSEEING,                         /**< Type of service : Sight seeing .*/
+  K_CGPS_LOCALIZED_ADVERTISING,                    /**< Type of service : Localized advertising. */
+  K_CGPS_MOBILE_YELLOW_PAGES,                      /**< Type of service : Mobile Yellow Pages. */
+  K_CGPS_MAX_LCSSERVICETYPE = 0x7FFFFFFF           /*!< Maximum Service Type.*/
+} e_cgps_LcsServiceType;
+
+
+/**
+* \enum  e_cgps_UserAnswer
+* List of constants used to indicate the user's answer (accept or reject) to a notification.
+*/
+typedef enum
+{
+  K_CGPS_USER_REJECT = 0,   /**< This returned value means that user has rejected the position request */
+  K_CGPS_USER_ACCEPT,       /**< This returned value means that user has accepted the position request */
+  K_CGPS_MAX_USERANSWER = 0x7FFFFFFF
+} e_cgps_UserAnswer;
+
+
+/**
+* \enum  e_cgps_NumberPlan
+* this enum provides the number plan and is used in t_cgps_ClientInfo when calling \ref MC_CGPS_REGISTER_LOCATION_FORWARD
+*/
+typedef enum
+{
+   K_CGPS_NUMPLAN_UNKNOWN,            /**< Unknown Plan.*/
+   K_CGPS_NUMPLAN_ISDN_TELEPHONY,     /**< ISDN Telephony.*/
+   K_CGPS_NUMPLAN_DATA,               /**< Data Type.*/
+   K_CGPS_NUMPLAN_TELEX,              /**< Telex Type.*/
+   K_CGPS_NUMPLAN_LAND_MOBILE,        /**< Land mobile.*/
+   K_CGPS_NUMPLAN_NATIONAL,           /**< National.*/
+   K_CGPS_NUMPLAN_PRIVATE             /**< Private.*/
+
+} e_cgps_NumberPlan;
+
+/**
+* \enum  e_cgps_ConstelType
+* List of constants used to indicate the Constellation Type.
+*/
+typedef enum
+{
+  K_CGPS_GPS_CONSTEL = 0,        /**< NAVSTAR constellation.*/
+  K_CGPS_GLO_CONSTEL             /**< GLONASS constellation. */
+} e_cgps_ConstelType;
+
+
+/**
+* \def K_CGPS_MAX_REQ_LENGTH
+* The maximum length of \ref t_cgps_Notification::a_RequestorId
+*/
+#define K_CGPS_MAX_REQ_LENGTH 72
+
+/**
+* \def K_CGPS_MAX_CODE_WORD_LENGTH
+* The maximum length of \ref t_cgps_Notification::a_CodeWord
+*/
+#define K_CGPS_MAX_CODE_WORD_LENGTH   72
+
+/**
+* \def K_CGPS_MAX_PHONE_NUM_LENGTH
+* The maximum length of \ref t_cgps_Notification::a_PhoneNumber
+*/
+#define K_CGPS_MAX_PHONE_NUM_LENGTH   64
+
+/**
+* \def K_CGPS_MAX_CLIENT_LENGTH
+* The maximum length of \ref t_cgps_Notification::a_ClientName
+*/
+#define K_CGPS_MAX_CLIENT_LENGTH  64
+
+
+
+/**
+* \def K_CGPS_MAX_THIRDPARTY_NAME_LEN
+* The maximum length of \ref t_cgps_ThirdPartyInfo::a_ThirdPartyName
+*/
+#define K_CGPS_MAX_THIRDPARTY_NAME_LEN          40
+
+
+#endif /* AGPS_UP_FTR || AGPS_FTR */
+
+
+/**
+* \def K_CGPS_CONSTANT_NUM_GPS_PRNS
+*
+* Defines the maximum number of GPS PRNs.
+*/
+#define    K_CGPS_CONSTANT_NUM_GPS_PRNS             32
+
+
+/**
+* \def K_CGPS_CONSTANT_NUM_GLONASS_PRNS
+*
+* Defines the maximum number of GLONASS PRNs.
+*/
+#define    K_CGPS_CONSTANT_NUM_GLONASS_PRNS         24
+
+
+
+/**
+*\}
+*/
+
+
+
+/**************************************************************************************************************************/
+/*                                                   Messages declaration                                                 */
+/**************************************************************************************************************************/
+
+/** @cond */
+/**
+* \internal
+* this enum is used to declare each ID  used in event/message
+*/
+typedef enum
+{
+  CGPS_F_UTC_CORRUPT,
+  CGPS_F_NEW_NAF_REGISTERED,
+  CGPS_F_NAF_DEREGISTERED,
+  CGPS_F_TAT_INIT,
+  CGPS_F_TAT_LOOP_TIMER,
+  CGPS_F_TAT_SLEEP_TIMER,
+  CGPS_F_FIX_LOOP_TIMER,
+  CGPS_F_SLEEP_TIMER,
+  CGPS_F_NMEA_TEST_CONTROL,
+  CGPS_F_FIX_REQ_IND,
+  CGPS_F_INIT_IND,
+  CGPS_F_EMERGENCY_START_REQ,
+  CGPS_F_EMERGENCY_STOP_REQ,
+  CGPS_F_CP_REQUEST_TIMER_EXPIRY,
+  CGPS_F_UPDATE_USER_CONFIG,
+  CGPS_F_MOLF_START_IND,
+  CGPS_F_USER_NOTIFY_ANS,
+  CGPS_F_SAVE_NV_STORE,
+/* + LMSQC16384 : LMSQC16386 SUPL WAP Push */
+/*CGPS_F_LAST_MESSAGE_ID*/
+  CGPS_F_SUPL_PUSH_IND,
+/* +LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+#if defined (DUAL_OS_GEN_FTR) || defined (CR_LMSQC18522_CPR)
+  CGPS_F_HWL_INIT_IND,
+/* -LMSqc19757 : LMSqc18522 : Check return value from UTSER macro : GPS */
+/*,CGPS_F_DUALOS_INIT */
+#endif
+  /*+ LMSqc13768 : DeleteGpsData */
+  CGPS_F_DELETE_GPS_DATA,
+  /*- LMSqc13768 : DeleteGpsData */
+  /*+ LMSqc32518 */
+#ifdef CGPS_UPLOAD_PATCH_AT_INIT_FTR
+  CGPS_F_INITIALIZED_IND,
+#endif /*CGPS_UPLOAD_PATCH_AT_INIT_FTR*/
+#if defined AGPS_TEST_MODE_FTR && defined CGPS_CNO_VALUE_FTR
+    CGPS_F_GET_CNO_VALUE_REQ,
+#endif /*AGPS_TEST_MODE_FTR && CGPS_CNO_VALUE_FTR*/
+/*- LMSqc32518 */
+/* +SUPLv2.0 Modifications */
+  CGPS_F_SUPLEVENT_TRIGGER_TIMER0,
+  CGPS_F_SUPLEVENT_TRIGGER_TIMER1,
+  CGPS_F_SUPLEVENT_TRIGGER_TIMER2,
+  CGPS_F_SUPLEVENT_TRIGGER_TIMER3,
+  CGPS_F_SUPLEVENT_TRIGGER_TIMER4,
+  CGPS_F_UPDATE_PLATFORM_CONFIG,
+  CGPS_F_LOCATION_RETRIEVAL_REQ,
+/* -SUPLv2.0 Modifications */
+  CGPS_F_PRODUCTION_TEST_START_REQ,
+  CGPS_F_PRODUCTION_TEST_STOP_REQ,
+  CGPS_F_HARDWARE_PIN_CTRL_REQ,
+  CGPS_F_TREQ_LOOP_TIMER,
+  CGPS_F_UPDATE_TRACE_CONFIG,
+  CGPS_F_LAST_MESSAGE_ID
+
+/* - LMSQC16384 : LMSQC16386 SUPL WAP Push */
+} e_cgps_message_identifier;
+/** @endcond */
+
+#endif  /* __CGPS_HEC__ */

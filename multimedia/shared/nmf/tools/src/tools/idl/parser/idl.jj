@@ -1,0 +1,630 @@
+options {
+  //OUTPUT_DIRECTORY = "tools/idl/parser";
+  JAVA_UNICODE_ESCAPE = false; // True break tokenizer since we don't handle unicode
+  STATIC=false;
+  JDK_VERSION="1.6"; 
+}
+/*****************************************************
+ Main class 
+ *****************************************************/
+
+PARSER_BEGIN(IDLParser)
+
+package tools.idl.parser;
+
+import tools.common.compilerexception;
+import tools.common.util;
+import tools.idl.ast.*;
+import java.io.File;
+
+public class IDLParser {
+	public File file;
+}
+
+PARSER_END(IDLParser)
+
+/* WHITE SPACE */
+/*****************************************************
+ WHITE SPACE & COMMENTS
+ *****************************************************/
+
+/* WHITE SPACE */
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+/* COMMENTS */
+SPECIAL_TOKEN : 
+{
+    < SINGLE_LINE_COMMENT: "//"(~["\n","\r"])* ("\n"|"\r"|"\r\n")? >
+} 
+
+MORE :
+{
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN  :
+{
+  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+}
+
+<IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/*****************************************************
+ RESERVED WORDS AND LITERALS
+ *****************************************************/
+
+ TOKEN : {
+	<CONTINUE: "continue"> |
+	<VOLATILE: "volatile"> |
+	<REGISTER: "register"> |
+	<TYPEDEF: "typedef"> |
+	<DFLT: "default"> |
+	<SIZEOF: "sizeof"> |
+	<SWITCH: "switch"> |
+	<RETURN: "return"> |
+	<EXTERN: "extern"> |
+	<STRUCT: "struct"> |
+	<STATIC: "static"> |
+	<WHILE: "while"> |
+	<BREAK: "break"> |
+	<UNION: "union"> |
+	<CONST: "const"> |
+	<ELSE: "else"> |
+	<CASE: "case"> |
+	<LONG: "long"> |
+	<ENUM: "enum"> |
+	<AUTO: "auto"> |
+	<VOID: "void"> |
+	<GOTO: "goto"> |
+	<FOR: "for"> |
+	<IF: "if"> |
+	<DO: "do"> | 
+	<IMPORT_SHARED: "IMPORT_SHARED"> |
+	<INTERFACE: "interface"> | 
+	<UNMANAGED: "unmanaged"> |
+	<INCLUDE: "#include" > |
+	<IFNDEF: "#ifndef" > |
+	<DEFINE: "#define" > |
+	<ENDIF: "#endif" >
+}
+
+TOKEN : {
+	<TUINT64: "t_uint64"> |
+	<TUINT56: "t_uint56"> |
+	<TUINT48: "t_uint48"> |
+	<TUINT40: "t_uint40"> |
+	<TUINT32: "t_uint32"> | <TADDRESS: "t_physical_address"> | <TSHAREDREG: "t_shared_reg"> | <TSHAREDFIELD: "t_shared_field"> |
+	<TUINT24: "t_uint24"> | <TUWORD: "t_uword"> |
+	<TUINT16: "t_uint16"> |
+	<TUINT8: "t_uint8"> |
+	
+	<TSINT64: "t_sint64"> |
+	<TSINT56: "t_sint56"> |
+	<TSINT48: "t_sint48"> |
+	<TSINT40: "t_sint40"> |
+	<TSINT32: "t_sint32"> |
+	<TSINT24: "t_sint24"> | <TSWORD: "t_sword"> |
+	<TSINT16: "t_sint16"> |
+	<TSINT8: "t_sint8"> |
+	<CHAR: "char"> |
+	<TBOOL: "t_bool">
+}
+
+TOKEN : {
+	<INT: "int"> |
+	<SHORT: "short"> |
+	<DOUBLE: "double"> |
+	<FLOAT: "float"> |
+	<SIGNED: "signed"> |
+	<UNSIGNED: "unsigned">
+}
+	
+/*****************************************************
+ IDENTIFIERS
+ *****************************************************/
+TOKEN : {
+ <IDENTIFIER: <LETTER> (<LETTER> | <DIGIT>)*>
+|  <#LETTER: ["$","A"-"Z","_","a"-"z"]>
+|  <#DIGIT: ["0"-"9"]>
+|<PATHABS: "<" (~[">"])* ">">
+|< CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+  >
+|< STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+  >
+}
+
+TOKEN [IGNORE_CASE] : {
+ <INTEGER_LITERAL: 
+		<DECIMAL_LITERAL> ("u" | "l" | "ul")? | 
+		<HEX_LITERAL> ("u" | "l" | "ul")? | 
+		<OCTAL_LITERAL> ("u" | "l" | "ul")?>
+|  <#DECIMAL_LITERAL: (["1"-"9"] (["0"-"9"])*)>
+|  <#HEX_LITERAL: "0" ["x"] (["0"-"9","a"-"f"])+>
+|  <#OCTAL_LITERAL: "0" (["0"-"7"])*>
+}
+
+/*****************************************************
+ IDL Grammars
+ *****************************************************/
+
+Interface InterfaceDeclaration(String _name) throws compilerexception:
+{
+  Interface itf = new Interface(file, _name);
+  Method md;
+  definition decl;
+  Token token;
+  String foundname;
+}
+{
+  ( 
+   <INCLUDE> token=<PATHABS> { itf.includes.add(new include(file, token, token.image.substring(1, token.image.length()-1))); }
+  )*
+
+    (
+    	LOOKAHEAD(3)
+  		(
+  		LOOKAHEAD(3) decl = StructDeclaration() ";" |
+    	decl = StructPredeclaredDeclaration() ";" |
+  		decl = TypedefDeclaration() ";" |
+ 		decl = EnumDeclaration() ";" |
+ 		decl = DefineDeclaration() 
+		)
+		{ itf.addDefinition(decl); }
+  	)*
+
+	[ <INTERFACE> 
+		foundname=StringName() { itf.setName(foundname); }
+		[ <UNMANAGED> { itf.unmanaged = true; } ] 
+		"{" 
+	]
+	
+  	( 
+  		md = MethodDeclaration() { itf.methods.add(md); } ";" 
+  	)* 
+  	
+  	[ "}" ]
+  	
+  	<EOF>
+  	{ 
+  		return itf; 
+  	}
+}
+
+definedtype idtDeclaration() throws compilerexception: 
+{
+	definedtype df = new definedtype(file);
+	definition decl;
+	Token name;
+}
+{
+	<IFNDEF> name=<IDENTIFIER>
+		{ df.GuardedIndentifier = name.image; }
+	<DEFINE> <IDENTIFIER>
+  	( 
+  		<INCLUDE> token=<PATHABS> 
+  			{ df.includes.add(new include(file, token, token.image.substring(1, token.image.length()-1))); }
+	)*
+	(
+  		(
+  		LOOKAHEAD(3) decl = StructDeclaration() ";" |
+    	decl = StructPredeclaredDeclaration() ";" |
+		decl = TypedefDeclaration() ";" |
+		decl = EnumDeclaration() ";" |
+ 		decl = DefineDeclaration() 
+		)
+		{ df.addDefinition(decl); }
+  	)*
+	<ENDIF>
+    <EOF>
+  	{ 
+  		return df; 
+  	}
+}
+
+/*
+ * Method declaration grammars
+ */
+Method MethodDeclaration() throws compilerexception:
+{
+  Token t, qual = null;
+  Type type;
+  Method md;
+}
+{
+  [ qual = <IMPORT_SHARED> ]
+  type=ResultType() t=<IDENTIFIER> { md = new Method(file, t, t.image, type, qual == null ? null : qual.image); } 
+  FormalParameters(md) 
+  { return md; }
+}
+
+void FormalParameters(TypeMethod md) throws compilerexception:
+{
+  Parameter fp;
+  Token t;
+}
+{
+  "("
+  (
+    LOOKAHEAD(2)
+    (
+      fp = FormalParameter() { md.addParameter(fp); }
+      ( LOOKAHEAD(2) "," fp = FormalParameter() { md.addParameter(fp); } )* 
+    ) 
+  | 
+	<VOID>
+  ) ?
+  ")"
+ }
+
+Parameter FormalParameter() throws compilerexception:
+{
+  Token t, tc = null;
+  Type type;
+  TypeMethod md;
+  Token nb;
+}
+{
+  (
+  	[ tc = <CONST> ] 
+  	type = ParameterType() 
+  	  { if(tc != null) type = new typeconst(file, tc, type); }
+  )
+  [ t = "&" { type = new typereference(file, t, type); } ]
+  (	( t = <IDENTIFIER> ) |
+  	( "(" "*" t = <IDENTIFIER> ")" 
+  	 	 { type = md = new TypeMethod(file, t, type); } 
+  	  FormalParameters(md) )
+  )
+  type = ArrayDeclaration(type)
+  { return new Parameter(t, t.image, type); }
+}
+
+Type ResultType() throws compilerexception:
+{
+  Type type;
+  Token t, memqualifier=null, tc = null;
+}
+{
+  [ tc = <CONST> ] 
+  (
+  	LOOKAHEAD(2) type = PrimitiveType() |
+	type = UnmanagedPrimitiveType() |
+  	LOOKAHEAD(3) type = ComplexType() |
+  	t=<VOID> { type = new TypeVoid(file, t); }
+  )
+  ( LOOKAHEAD(2) [memqualifier=<IDENTIFIER>] t = "*" 
+  		{ type = new TypePointer(file, t, type, (memqualifier == null) ? null:memqualifier.image); memqualifier = null; } ) *
+  { 
+  		if(tc != null) type = new typeconst(file, tc, type); 
+  		return type;
+  }
+}
+
+Type ParameterType() throws compilerexception:
+{
+  Type type;
+  Token t, memqualifier=null;
+}
+{
+  (
+  	LOOKAHEAD(2) type = PrimitiveType() |
+	type = UnmanagedPrimitiveType() |
+  	type = ComplexType() 
+  )
+  ( LOOKAHEAD(2) [memqualifier=<IDENTIFIER>] t = "*" 
+  	{ type = new TypePointer(file, t, type, (memqualifier == null) ? null:memqualifier.image); memqualifier = null; } ) *
+  { return type;}
+}
+
+/*
+ * Type grammars
+ */
+String StringName():
+{
+	String name;
+	Token fn, n;
+}
+{
+  fn = <IDENTIFIER> { name = fn.image; }
+  (  "." n = <IDENTIFIER> { name = name + "." + n.image; } )*
+  { return name; }
+}
+Type TypeName():
+{
+	String name;
+	Token fn, n;
+}
+{
+  fn = <IDENTIFIER> { name = fn.image; }
+  (  "." n = <IDENTIFIER> { name = name + "." + n.image; } )*
+  { return new TypeTypedef(file, fn, name); }
+}
+Type ComplexType() throws compilerexception: 
+{
+	Token t, name, memqualifier=null;
+	Type type;
+}
+{
+	t=<STRUCT> name=<IDENTIFIER>  { return new typestructure(file, t, name.image); } |
+	t=<ENUM> name=<IDENTIFIER> { return new typeenum(file, t, name.image); } |
+	type=TypeName() { return type; } |
+   	t=<VOID> [memqualifier=<IDENTIFIER>] "*" { return new TypePointer(file, t, new TypeVoid(file, t), (memqualifier == null) ? null:memqualifier.image); }
+}
+TypePrimitive PrimitiveType() throws compilerexception:
+{
+	Token t;
+}
+{
+	(
+	t = <TUINT64> | 
+	t = <TUINT56> |
+	t = <TUINT48> |
+	t = <TUINT40> |
+	t = <TUINT32> | t = <TADDRESS> | t = <TSHAREDREG> | t= <TSHAREDFIELD> |
+	t = <TUINT24> | t = <TUWORD> |
+	t = <TUINT16> |
+	t = <TUINT8> |
+	t = <TSINT64> |
+	t = <TSINT56> |
+	t = <TSINT48> |
+	t = <TSINT40> |
+	t = <TSINT32> |
+	t = <TSINT24> | t = <TSWORD> |
+	t = <TSINT16> |
+	t = <TSINT8> |
+	t = <CHAR> |
+	t = <TBOOL>
+	)
+	{ return new TypePrimitive(file, t, t.image); }
+}
+typeprimitiveunmanaged UnmanagedPrimitiveType() throws compilerexception:
+{
+	Token t1 = null, t2 = null, t3 = null, t4 = null;
+}
+{
+	[ t1 = <UNSIGNED> | t1 = <SIGNED> ]
+	(
+		t2 = <CHAR> |
+		t2 = <SHORT> |
+		t2 = <INT> |
+		LOOKAHEAD(2) t2 = <LONG> t3=<LONG> |
+		t2 = <LONG> |
+		t2 = <DOUBLE> |
+		t2 = <FLOAT>
+	)	
+	{ return new typeprimitiveunmanaged(file, t1, t2, t3, t4); }
+}
+
+Type ArrayDeclaration(Type type):
+{
+	Token nb, t = null;
+	String arraysize[] = new String[10];
+	int arraydim = 0;
+}
+{
+	(
+ 	   t = "[" (nb = <INTEGER_LITERAL> | nb = <IDENTIFIER>) "]"
+ 	   		{ arraysize[arraydim++] = nb.image; }
+    )*
+	{
+		for(int i = arraydim -1 ; i >= 0; i--)
+			type = new typearray(file, t, type, arraysize[i]);
+		return type;
+	}
+}
+/**********************************************************************************
+ * Structure declaratino grammars
+ **********************************************************************************/
+Type FieldType() throws compilerexception:
+{
+  Type type;
+  Token t, memqualifier=null;
+}
+{
+  (
+  	 
+  	type = PrimitiveType() |
+  	LOOKAHEAD(2) type = ComplexType() |
+  	( t=<STRUCT> "{" { type = new structure(file, t); } StructDeclarationList((structure)type) "}" ) |
+   	( t=<ENUM> "{" { type = new enumeration(file, t, null); } EnumDeclarationList((enumeration)type) "}" )
+  )
+  ( LOOKAHEAD(2) [memqualifier=<IDENTIFIER>] t = "*" { type = new TypePointer(file, t, type, (memqualifier == null) ? null:memqualifier.image); } ) *
+  { return type;}
+}
+
+structentry FormalField() throws compilerexception:
+{
+  Token t, tc = null;
+  Type type;
+  Token nb;
+}
+{
+  	[ tc = <CONST> ] 
+	type =  FieldType() 
+  	{ if(tc != null) type = new typeconst(file, tc, type); }
+	t = <IDENTIFIER>
+	type = ArrayDeclaration(type)
+    { return new structentry(t, t.image, type); }
+}
+
+void StructDeclarationList(structure decl) throws compilerexception: 
+{
+	structentry se;
+}
+{
+	( 
+		se = FormalField() ";"
+			{ decl.members.add(se); }
+	 )+
+}
+
+structure StructDeclaration() throws compilerexception: 
+{
+	Token t, name;
+	structure decl;
+	Parameter fp;
+}
+{
+	t=<STRUCT> name=<IDENTIFIER> 
+		{ decl = new structure(file, t); }
+	"{"
+		StructDeclarationList(decl)
+	"}" 
+	{ 
+		decl.setName(name.image); 
+		return decl; 
+	}
+}
+
+structurepredeclared StructPredeclaredDeclaration() throws compilerexception: 
+{
+	Token t, name;
+	structurepredeclared decl;
+}
+{
+	t=<STRUCT> name=<IDENTIFIER> 
+	{ 
+		decl = new structurepredeclared(file, t);
+		decl.setName(name.image); 
+		return decl;
+	}
+}
+
+
+/**********************************************************************************
+ * Typedef declaration
+ **********************************************************************************/
+typedef TypedefDeclaration() throws compilerexception: 
+{
+	Token t, name, nb;
+	Type type;
+}
+{
+	t=<TYPEDEF> 
+	type = FieldType()
+	name=<IDENTIFIER> 
+	type = ArrayDeclaration(type)
+	{ return new typedef(file, t, type, name.image); }
+}
+
+/**********************************************************************************
+ * Enum declaration
+ **********************************************************************************/
+enumentry FormalEnum() :
+{
+ 	Token name, value = null;
+ 	String sign = "";
+  	enumentry entry;
+}
+{
+	name = <IDENTIFIER> 
+	[  "=" 
+	    
+		(
+		[ "-" { sign = "-"; } | "+" ] value=<INTEGER_LITERAL> |
+		value=<IDENTIFIER> |
+		value=<CHARACTER_LITERAL>
+		)
+	]
+	{ return new enumentry(file, name, name.image, (value == null) ? null : (sign + value.image)); }
+}
+
+void EnumDeclarationList(enumeration decl) throws compilerexception : 
+{
+	enumentry entry;
+}
+{
+	entry = FormalEnum() 
+		{ decl.addEnumerator(entry); }
+	( 
+		"," entry = FormalEnum() 
+			{ decl.addEnumerator(entry); }
+	 )*
+}
+
+enumeration EnumDeclaration() throws compilerexception : 
+{
+	Token t, name;
+	enumeration decl;
+}
+{
+	t=<ENUM> name = <IDENTIFIER> 
+	"{"
+		{ decl = new enumeration(file, t, name.image); }
+	EnumDeclarationList(decl)
+	"}" 
+		{ return decl; }
+}
+
+/**********************************************************************************
+ * #define declaration
+ **********************************************************************************/
+String LiteralValue(): 
+{
+	Token value;
+	String sum = "";
+}
+{
+	(
+ 		[ "-" { sum = "-"; } | "+" ] value = <INTEGER_LITERAL> { sum = sum + value.image; }
+ 		{ return sum; }
+ 	) | (
+ 	  	value = <CHARACTER_LITERAL> { sum = value.image; }
+ 		{ return sum; }
+ 	) | (
+ 	  	value = <STRING_LITERAL> { sum = value.image; }
+ 		{ return sum; }
+ 	)
+}
+
+diesedefine DefineDeclaration() throws compilerexception : 
+{
+	Token t, ident, tokenValue;
+	String value;
+	Type type;
+}
+{
+	t = <DEFINE> ident=<IDENTIFIER> 
+	(
+		value = LiteralValue()
+			{ return new diesedefine(file, t, ident.image, value); }
+	| tokenValue = <IDENTIFIER> 
+			{ return new diesedefine(file, t, ident.image, tokenValue.image); }
+	| LOOKAHEAD(2) "(" value = LiteralValue() ")"
+			{ return new diesedefine(file, t, ident.image, "(" + value + ")"); }		
+	| LOOKAHEAD(3) "(" "(" type = ParameterType() ")" value = LiteralValue() ")"
+			{ return new diesedefine(file, t, ident.image, "((" + type.printType() + ")" + value + ")"); }		
+	)
+}

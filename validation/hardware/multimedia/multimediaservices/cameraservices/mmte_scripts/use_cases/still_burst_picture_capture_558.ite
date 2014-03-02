@@ -1,0 +1,13 @@
+OMX_SetConfig camera OMX_IndexAutoPauseAfterCapture bEnabled=OMX_FALSE
+alias S_AS_QUICK_AS_POSSIBLE OMX_TRUE
+#alias S_IS_LIMIT OMX_TRUE
+#alias S_NB_FRAME_LIMIT 6
+
+do $(IMG_SCRIPT)/unitary/features/cam_burstpicture.ite S_AS_QUICK_AS_POSSIBLE S_IS_LIMIT S_NB_FRAME_LIMIT
+OMX_SetConfig camera IFM_IndexExtConfigCapturing bEnabled=OMX_TRUE nPortIndex=CAM_PORT_VPB1
+
+echo File_saved
+
+
+
+

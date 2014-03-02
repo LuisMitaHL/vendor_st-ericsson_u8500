@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<project name="assembling_cli" basedir="." default="assemble-tool-cli.RELEASE">
+	<!-- Check if out folder for interim files is set correctly. -->
+	<available property="interim_out_dir" file="${TARGET_OUT_INTERMEDIATES}" type="dir"/>
+
+	<condition property="assemble-tool-cli.BUILD_FOLDER" value="${TARGET_OUT_INTERMEDIATES}/build" else="./build">
+	    <isset property="interim_out_dir"/>
+	</condition>
+
+	<property name="assemble-tool-cli.SOURCE_FOLDER" value="./src" />
+	<!--property name="assemble-tool-cli.BUILD_FOLDER" value="./build" /-->
+	<property name="assemble-tool-cli.DOC_FOLDER" value="./doc/" />
+	<property name="assemble-tool-cli.SCRIPTS_FOLDER" value="./scripts" />
+	<property name="assemble-tool-cli.CLASSES_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/classes" />
+	<property name="assemble-tool-cli.TEST_CLASSES_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/tests" />
+	<property name="assemble-tool-cli.JAR_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/jar" />
+	<property name="assemble-tool-cli.RELEASE_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/release" />
+	<property name="assemble-tool-cli.JAR_NAME" value="assemble-tool-cli.jar" />
+	<property name="assemble-tool-cli.LIB_FOLDER" value="./lib" />
+	<property name="assemble-tool-cli.TEST_SOURCE_FOLDER" value="./test" />
+	<property name="assemble-tool-cli.TEST_REPORTS_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/reports" />
+	<property name="assemble-tool-cli.KPI_FOLDER" value="./kpi" />
+	<property name="assemble-tool-cli.INSTRUMENTED_FOLDER" value="${assemble-tool-cli.BUILD_FOLDER}/instrumented" />
+	<property name="assemble-tool-cli.CHECKSTYLE_CFG_FOLDER" value="${assemble-tool-cli.KPI_FOLDER}/checkstyle" />
+	<property name="common_build" value="./../flash_tool_backend/com.stericsson.sdk.common"/>
+	<property name="libs_jar" value="${TARGET_OUT_INTERMEDIATES}/build/jar/com.stericsson.sdk.common.jar" />
+
+	<path id="assemble-tool-cli.CLASSPATH">
+		<pathelement location="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" />
+		<pathelement location="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar"/>
+		<pathelement location="${libs_jar}" />
+	</path>
+
+	<target name="assemble-tool-cli.RELEASE" depends="assemble-tool-cli.JAR">
+		<!-- copy libraries produced by this project -->
+		<copy file="${assemble-tool-cli.JAR_FOLDER}/${assemble-tool-cli.JAR_NAME}" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<!-- copy dependency libraries -->
+		<copy file="${assemble-tool-cli.LIB_FOLDER}/commons-cli-1.2.jar" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<copy file="${assemble-tool-cli.LIB_FOLDER}/org.apache.log4j.jar" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<copy file="${libs_jar}" todir="${assemble-tool-cli.RELEASE_FOLDER}" />
+
+		<!--copy scripts to release folder-->
+		<copy todir="${assemble-tool-cli.RELEASE_FOLDER}">
+			<fileset dir="${assemble-tool-cli.SCRIPTS_FOLDER}/" />
+		</copy>
+
+		<!--copy manpages to release folder-->
+		<copy todir="${assemble-tool-cli.RELEASE_FOLDER}">
+			<fileset dir="${assemble-tool-cli.DOC_FOLDER}" >
+				<exclude name="*.txt"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="assemble-tool-cli.JAR" depends="assemble-tool-cli.COMPILE">
+		<!-- create jar of compiled files -->
+		<jar destfile="${assemble-tool-cli.JAR_FOLDER}/${assemble-tool-cli.JAR_NAME}" basedir="${assemble-tool-cli.CLASSES_FOLDER}" />
+	</target>
+
+	<target name="assemble-tool-cli.COMPILE" depends="assemble-tool-cli.INIT">
+		<ant antfile="${common_build}/build-release.xml" inheritAll="false"/>
+		<!-- compile java sources -->
+		<javac srcdir="${assemble-tool-cli.SOURCE_FOLDER}" destdir="${assemble-tool-cli.CLASSES_FOLDER}" classpathref="assemble-tool-cli.CLASSPATH" debug="true" />
+	</target>
+
+
+
+	<target name="assemble-tool-cli.INIT" depends="assemble-tool-cli.CLEAN">
+		<!-- create output directories -->
+		<mkdir dir="${assemble-tool-cli.JAR_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.CLASSES_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.TEST_CLASSES_FOLDER}" />
+		<mkdir dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}" />
+	</target>
+
+	<target name="assemble-tool-cli.CLEAN">
+		<!-- delete output directories -->
+		<delete dir="${assemble-tool-cli.JAR_FOLDER}" />
+		<delete dir="${assemble-tool-cli.CLASSES_FOLDER}" />
+		<delete dir="${assemble-tool-cli.RELEASE_FOLDER}" />
+		<delete dir="${assemble-tool-cli.TEST_CLASSES_FOLDER}" />
+		<delete dir="${assemble-tool-cli.TEST_REPORTS_FOLDER}" />
+	</target>
+
+</project>

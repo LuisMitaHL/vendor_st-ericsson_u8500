@@ -1,0 +1,91 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPS_TESTMODE_HEC__
+#define __CGPS_TESTMODE_HEC__
+
+/*
+* Copyright (C) ST-Ericsson 2009
+*
+* cgpsTestMode.hec
+* Date: 07-09-2009
+* Author: Anshuman Pandey
+* Email : anshuman.pandey@stericsson.com
+*/
+
+#ifdef AGPS_TEST_MODE_FTR
+
+
+
+/**
+* \enum  t_cgps_TestRequest Mask
+* Production test request paramater.
+* sync with e_gpsClient_TREQMask
+*/
+typedef enum
+{
+    CGPS_TREQ_SNR = 1,      /**< @brief Mask for TEST Request Input signal SNR */
+    CGPS_TREQ_ME,           /**< @brief Mask for TEST Request ME oscillator offset test */
+    CGPS_TREQ_RTC,          /**< @brief Mask for TEST Request RTC oscillator test */
+    CGPS_TREQ_INPIN,        /**< @brief Mask for TEST Request Input pin test*/
+    CGPS_TREQ_OUTPIN,       /**< @brief Mask for TEST Request Output pin test*/
+    CGPS_TREQ_ROMCHKSUM,    /**< @brief Mask for TEST Request ROM checksum test*/
+    CGPS_TREQ_PATCHCHKSUM,  /**< @brief Mask for TEST Request Patch checksum test*/
+    CGPS_TREQ_BIST,         /**< @brief Mask for TEST Request BIST test*/
+    CGPS_TREQ_SPECANALYZ    /**< @brief Mask for TEST Request Spectrum Analyzer test*/
+}e_cgps_TREQMask;
+
+/**
+* \enum  t_cgps_Test request error
+*/
+typedef enum
+{
+    CGPS_TREQ_ERROR_INVALID_PARAM,  /*!< one parameter is invalid*/
+    CGPS_TREQ_ERROR_UNKNOWN = 0x7FFFFFFF
+} e_cgps_treq_error;
+
+/**
+* \enum  t_cgps_Test state
+*/
+typedef enum
+{
+    CGPS_TREQ_STATE_NOT_INITIATE    = 0,
+    CGPS_TREQ_STATE_PATCH_DONE      = 1<<0, /**< @brief  1 Production Test Patch download done */
+    CGPS_TREQ_STATE_DOWNLOAD        = 1<<1, /**< @brief  2 Production Test Patch doing download */
+    CGPS_TREQ_STATE_START           = 1<<2, /**< @brief  4 Production Test Start Requset */
+    CGPS_TREQ_STATE_MEASURE         = 1<<3, /**< @brief  8 Production Test doing measurement */
+    CGPS_TREQ_STATE_END             = 1<<4, /**< @brief  16 Production Test measurement done */
+    CGPS_TREQ_STATE_2ND_DOWNLOAD    = 1<<5, /**< @brief  32 Production Test Patch download 2nd time */
+    CGPS_TREQ_STATE_UNKNOWN         = 0xFF
+} e_cgps_TREQstate;
+
+/**
+* \enum e_cgps_SpectrumTestType
+*/
+
+typedef enum
+{
+    CGPS_GPS_WIDEBAND_SCAN = 1,      /**< @brief TREQ 9 1 test for GPS 4 MHz Wideband Scan */
+    CGPS_GPS_NARROWBAND_SCAN,        /**< @brief TREQ 9 2 test for GPS 30 KHz Narrowband Scan */
+    CGPS_GLONASS_WIDEBAND_SCAN,      /**< @brief TREQ 9 3 test for GLONASS 9.5 MHz Wideband Scan */
+    CGPS_GLONASS_NARROWBAND_SCAN,    /**< @brief TREQ 9 4 test for GLONASS 30 KHz Narrowband Scan */
+    CGPS_READ_PGA_AGC_VALUE,         /**< @brief TREQ 9 5 test for reading RF parameters-PGA(Programmable gain amplifier)/AGC(Automatic Gain Control) values */
+    CGPS_SET_PGA_AGC_VALUE,          /**< @brief TREQ 9 6 test for setting PGA/AGC values */
+    CGPS_RESET_RF                    /**< @brief TREQ 9 7 test for Resetting RF */
+}e_cgps_SpectrumTestType;
+
+
+#define CGPS_MAX_TREQ_FREQ_LEN    15    /** Input frequency max string size */
+#define CGPS_MAX_PGA_VALUE_LEN    20    /** Max length of parameters in Set PGA/AGV value test for Spectrum Analyzer */
+#define CGPS_MIN_TRES_RESP_RECVD   2
+#define CGPS_MAX_TREQ_MSG_LEN     40    /** Max length of TREQ message that can be sent to ME */
+
+
+
+#endif /* AGPS_TEST_MODE_FTR */
+
+#endif /*__CGPS_TESTMODE_HEC__*/

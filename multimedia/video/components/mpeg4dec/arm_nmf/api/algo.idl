@@ -1,0 +1,37 @@
+/*****************************************************************************/
+/*
+ *  © ST-Ericsson, 2009 - All rights reserved
+ *  Reproduction and Communication of this document is strictly
+ *  prohibited
+ *  unless specifically authorized in writing by ST-Ericsson
+ *
+ * \brief   interface function declaration 
+ * \author  ST-Ericsson
+ */
+/*****************************************************************************/
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_mpeg4.idt>
+
+interface mpeg4dec.arm_nmf.api.algo { 
+
+
+void configureAlgo(t_uint32 addr_in_frame_buffer,
+                    t_uint32 addr_out_frame_buffer,
+                    t_uint32 addr_internal_buffer,
+                    t_uint32 addr_in_bitstream_buffer,
+                    t_uint32 addr_out_bitstream_buffer,
+                    t_uint32 addr_in_parameters,
+                    t_uint32 addr_out_parameters,
+                    t_uint32 addr_in_frame_parameters,
+                    t_uint32 addr_out_frame_parameters);
+
+
+void controlAlgo(t_t1xhv_command command, t_uint16 channelNumber, t_uint16 param);
+
+
+void updateAlgo(t_t1xhv_command command);
+
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint32 param1, t_uint32 param2);
+} // interface mpeg4dec_sw.mpc.api.algo
+

@@ -1,0 +1,31 @@
+###SETUP SINK1
+OMX_GetHandle   renderer1 OMX.ST.HAPTICS_RENDERER.PCM.VIBL
+
+OMX_SetParameter    renderer1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer1 0 MEM ./vibra_stream.pcm 0 0 0
+
+MMTE_DispatchState OMX_StateIdle renderer1:0
+
+###SETUP SINK2
+OMX_GetHandle   renderer2 OMX.ST.HAPTICS_RENDERER.PCM.VIBR
+
+OMX_SetParameter    renderer2 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer2 0 MEM ./vibra_stream.pcm 0 0 0
+
+MMTE_DispatchState OMX_StateIdle renderer2:0
+
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer1
+MMTE_DispatchState OMX_StateExecuting renderer2
+
+# Playback...
+mmte_sleep 4000
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer2
+MMTE_DispatchState OMX_StateLoaded renderer2
+MMTE_DispatchState OMX_StateIdle renderer1
+MMTE_DispatchState OMX_StateLoaded renderer1
+
+ens_network_destroy
+MMTE_CheckMemoryStatus

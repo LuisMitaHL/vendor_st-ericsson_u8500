@@ -1,0 +1,550 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSMAIN_HIV__
+#define __CGPSMAIN_HIV__
+/**
+* \file cgpsmain.hiv
+* \date 02/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain internal variables needed by cgps0main.c..\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 02.04.08</TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+#ifdef __CGPS0MAIN_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS0MAIN_C__*/
+
+/**
+*\var a_CGPSInitState
+*\brief External declaration of a_CGPSInitState 
+* 
+* This is the init state of FSM table
+*/
+extern const t_OperationDescriptor a_CGPSInitState[];
+
+/**
+*\var a_CGPSRunState
+*\brief External declaration of a_CGPSRunState 
+* 
+* This is the normal state of FSM table
+* the process CGPS is running
+*/
+extern const t_OperationDescriptor a_CGPSRunState[];
+
+/**
+*\var a_CGPSTATState
+*\brief External declaration of a_CGPSTATState 
+* 
+* This is the TAT mode state of FSM table
+*/
+extern const t_OperationDescriptor a_CGPSTATState[];
+
+#ifndef __RTK_E__
+/* +LMSqc13768 */
+GLOBAL t_OsaSemHandle /*t_OsaBinSemHandle*/ CGPS_SEM1
+#ifdef __CGPS0MAIN_C__
+= OSA_DEFAULT_SEM_HANDLE /* OSA_DEFAULT_BIN_SEM */
+#endif
+;
+
+GLOBAL t_OsaSemHandle /*t_OsaBinSemHandle*/ CGPS_SEM2
+#ifdef __CGPS0MAIN_C__
+= OSA_DEFAULT_SEM_HANDLE /* OSA_DEFAULT_BIN_SEM */
+/* -LMSqc13768 */
+#endif
+;
+
+#endif /* __RTK_E__ */
+
+/**
+* \var vg_CGPS_GpsState
+* \brief State of CGPS module
+*
+* GPS can be started, in sleep, COMA/Off...
+*/
+GLOBAL uint32_t vg_CGPS_GpsState
+#ifdef __CGPS0MAIN_C__
+= K_CGPS_GPS_OFF
+#endif
+;
+
+
+/**
+* \var vg_CGPS_State
+* \brief State of CGPS module
+*
+* CGPS can be inactive, active - running at high frequency or low frequency
+*/
+GLOBAL uint32_t vg_CGPS_State
+#ifdef __CGPS0MAIN_C__
+= K_CGPS_INACTIVE
+#endif
+;
+
+
+/**
+*\var vg_CGPSNafSessionConfig
+*\brief It is the configuration each NAF session would take on Single Shot / Periodice fix request.
+*/
+GLOBAL uint8_t vg_CGPSNafSessionConfig
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+
+/**
+* \var vg_PatchVersion
+* \brief Store the patch version
+*
+* When the library request to load the patch, the patch version is memorized.
+* The patch version is used to TAT software.
+*/
+GLOBAL uint32_t vg_PatchVersion;
+
+/**
+* \var s_CgpsNaf
+* \brief Array containing context of each internal application
+*
+* Limited by \ref K_CGPS_MAX_NUMBER_OF_NAF
+*/
+GLOBAL t_CgpsNaf s_CgpsNaf[K_CGPS_MAX_NUMBER_OF_NAF];
+
+/**
+* \var vg_CgpsTestall
+* \brief used for test only
+*
+* containing information about the application registered via  CGPS_TEST_REGISTER_CALLBACK_FOR_ALL
+*/
+GLOBAL t_CgpsNaf vg_CgpsTestall;
+
+/**
+* \var vg_Nav_Data
+* \brief latest navigation data
+*/
+GLOBAL s_GN_GPS_Nav_Data vg_Nav_Data;
+
+/**
+* \var vg_Latest_Fix_Nav_Data
+* \brief latest navigation data with a fix
+*/
+GLOBAL s_GN_GPS_Nav_Data vg_Latest_Fix_Nav_Data;
+
+
+/**
+* \var vg_CGPS_Configuration
+* \brief Set to TRUE if Ms assited must be used by CGPS
+*/
+GLOBAL uint32_t vg_CGPS_Configuration
+#ifdef __CGPS0MAIN_C__
+= K_CGPS_CONFIG_MS_POS_TECH_MSASSISTED | K_CGPS_CONFIG_MS_POS_TECH_MSBASED | K_CGPS_CONFIG_MS_POS_TECH_AUTONOMOUS |
+#ifdef GPS_FREQ_AID_FTR
+K_CGPS_CONFIG_FREQ_AIDING |
+#endif /*GPS_FREQ_AID_FTR*/
+#ifdef AGPS_UP_FTR
+K_CGPS_CONFIG_AGPS_TRANSPORT_UPLANE | K_CGPS_CONFIG_MS_POS_TECH_ECID | K_CGPS_CONFIG_SUPL_MULTI_SESSION |
+#endif /* AGPS_UP_FTR */
+#ifdef AGPS_FTR
+K_CGPS_CONFIG_AGPS_TRANSPORT_CPLANE |
+#ifdef AGPS_TIME_SYNCH_FTR
+K_CGPS_CONFIG_AGPS_FTA |
+#endif /*AGPS_TIME_SYNCH_FTR*/
+#endif /* AGPS_FTR */
+#if defined AGPS_UP_FTR || defined AGPS_FTR
+K_CGPS_CONFIG_AGPS_SESSION_MO_ALLOWED | K_CGPS_CONFIG_AGPS_SESSION_MT_ALLOWED | 
+#endif /* AGPS_UP_FTR || AGPS_FTR */
+#if defined AGPS_UP_FTR && defined AGPS_FTR
+K_CGPS_CONFIG_AGPS_TRANSPORT_PREF_UPLANE |
+#endif /* AGPS_UP_FTR && AGPS_FTR */
+
+
+#ifdef LBS_GLONASS
+//GLONASS & GPS are enabled only if the macro LBS_GLONASS is defined
+K_CGPS_CONFIG_GPS_ENABLED | K_CGPS_CONFIG_GLONASS_ENABLED | 
+#endif /* LBS_GLONASS */
+
+#ifdef LBS_QZSS
+K_CGPS_CONFIG_QZSS_ENABLED|
+#endif
+
+0
+#endif
+;
+
+
+/**
+* \var vg_CGPS_Naf_Count
+* \brief Number of registered applications
+*/
+GLOBAL uint8_t vg_CGPS_Naf_Count
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+/**
+* \var a_CGPS_StateAsEnum
+*
+* Used for logging variables of type e_cgps_state \ref e_cgps_state
+*/
+GLOBAL char*  a_CGPS_StateAsEnum[]
+#ifdef __CGPS0MAIN_C__
+= {
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_INACTIVE),
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_ACTIVE_GPS_ON),
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_ACTIVE_GPS_OFF),
+  }
+#endif
+;
+
+
+/**
+* \var a_CGPS_StateAsEnum
+*
+* Used for logging variables of type e_gps_state \ref e_gps_state
+*/
+GLOBAL char*  a_GPS_StateAsEnum[]
+#ifdef __CGPS0MAIN_C__
+= {
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_GPS_OFF),
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_GPS_RUNNING),
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_GPS_COMA),
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_GPS_SLEEP),
+  }
+#endif
+;
+
+
+
+/**
+* \var a_CGPS_RelativePositionasEnum
+*
+* Used for logging variables of type e_cgps_RelativePosition \ref e_cgps_RelativePosition
+*/
+GLOBAL char*  a_CGPS_RelativePositionasEnum[]
+#ifdef __CGPS0MAIN_C__
+= {
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_POSITION_INSIDE), 
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_POSITION_OUTSIDE), 
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_POSITION_UNKNOWN)
+  }
+#endif
+;
+
+
+/**
+* \var a_CGPS_ShapeTypeasEnum
+*
+* Used for logging variables of type e_cgps_ShapeType \ref e_cgps_ShapeType
+*/
+GLOBAL char*  a_CGPS_ShapeTypeasEnum[]
+#ifdef __CGPS0MAIN_C__
+= {
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_CIRCULAR_AREA), 
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_ELLIPTICAL_AREA), 
+    MC_CGPS_ADD_ENUM_AS_STRING(K_CGPS_POLYGON_AREA)
+  }
+#endif
+;
+
+
+#ifdef AGPS_UP_FTR
+/**
+* \var vg_CGPS_LSIMUP_Session_Handle
+* \brief Used to know if CGPS has been suspended by a PGNV command
+*/
+GLOBAL t_lsimup_SessionHandle vg_CGPS_LSIMUP_Session_Handle;
+
+/**
+* \var vg_CGPS_SUPL_Bearer
+* \brief Used to store bearer informations
+*/
+GLOBAL t_CgpsSuplBearer vg_CGPS_SUPL_Bearer;
+
+/**
+* \var s_CgpsSupl
+* \brief Array containing context of each SUPL application
+*
+* Limited by \ref K_CGPS_MAX_NUMBER_OF_SUPL
+*/
+GLOBAL t_CgpsSuplAppli s_CgpsSupl[K_CGPS_MAX_NUMBER_OF_SUPL];
+
+/**
+* \var vg_CGPS_Supl_Count
+* \brief Number of registered SUPL applications
+*/
+GLOBAL uint8_t vg_CGPS_Supl_Count
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+
+/**
+* \var vg_CGPS_Supl_Location_Id
+* \brief Information about the current cell
+*/
+GLOBAL s_LocationId vg_CGPS_Supl_Location_Id;
+
+/**
+* \var vg_CGPS_Supl_Slp_Config
+* \brief contains the SUPL server IP Details
+*/
+GLOBAL t_cgps_ServerConfig vg_CGPS_Supl_Slp_Config;
+
+/**
+* \var vg_CGPS_Supl_AutoSlp_Config
+* \brief contains the Auto SUPL server IP Details
+*/
+GLOBAL t_cgps_ServerConfig vg_CGPS_Supl_AutoSlp_Config;
+
+/**
+* \var vg_CGPS_Supl_Eslp_Config
+* \brief contains the Eslp server IP Details
+*/
+GLOBAL t_cgps_ServerConfig vg_CGPS_Supl_Eslp_Config;
+/**
+* \var vg_CGPS_Supl_AutoEslp_Config
+* \brief contains the Auto Eslp server IP Details
+*/
+GLOBAL t_cgps_ServerConfig vg_CGPS_Supl_AutoEslp_Config;
+
+/**
+* \var vg_CGPS_Eslp_whitelist_Address
+* \brief contains the Eslp address
+*/
+GLOBAL t_cgps_ESLP_ServerConfig vg_CGPS_Eslp_whitelist_Address;
+
+/**
+* \var vg_CGPS_Supl_MSISDN
+* \brief MSISDN value
+*/
+GLOBAL int8_t* vg_CGPS_Supl_MSISDN;
+
+/**
+* \var vg_CGPS_Supl_IMSI
+* \brief IMSI value
+*/
+GLOBAL int8_t* vg_CGPS_Supl_IMSI;
+
+
+#ifdef CMCC_LOGGING_ENABLE
+/**
+* \var vg_CGPS_Supl_IMSI
+* \brief Register value
+*/
+GLOBAL uint8_t vg_CGPS_Supl_Network_Registered
+#ifdef __CGPS0MAIN_C__
+= FALSE
+#endif
+;
+#endif  //#ifdef CMCC_LOGGING_ENABLE
+
+/**
+* \var vg_CGPS_Supl_Pending_Connection
+* \brief Index in s_CgpsSupl[] of the pending connection
+*/
+GLOBAL int8_t vg_CGPS_Supl_Pending_Connection
+#ifdef __CGPS0MAIN_C__
+= -1
+#endif
+;
+
+/* +LMSqc18414 */
+GLOBAL uint8_t *pg_CGPS_Supl_Init;
+
+GLOBAL uint16_t vg_CGPS_Supl_Init_Length
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+/* -LMSqc18414 */
+
+
+
+
+#endif /* AGPS_UP_FTR */
+
+#ifdef AGPS_FTR
+
+
+/**
+* \var vg_CGPS_Cp_Count
+* \brief Number of registered CP applications
+*/
+GLOBAL uint8_t vg_CGPS_Cp_Count
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+
+/**
+* \var vg_CGPS_Cp_Assitance_No_Request
+* \brief Holds the time since assistance was delivered and no CP position request was received.
+* \        This variable also acts as a flag to indicate that GPS needs to be running as some assistance is delivered.
+* \        The flag is unset if a new CP positioning request is received or timeout has been attained.
+*/
+GLOBAL uint32_t vg_CGPS_Cp_Assitance_No_Request
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+
+/**
+* \var vg_CGPS_Cp_Mo_Count
+* \brief Number of registered Mobile originated CP applications
+*/
+GLOBAL uint8_t vg_CGPS_Cp_Mo_Count
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+
+/**
+* \var s_CgpsCpMo
+* \brief Array containing context of each CP Mobile originated application
+*
+* Limited by \ref K_CGPS_MAX_NUMBER_OF_CP
+*/
+GLOBAL t_CgpsCpMoAppli s_CgpsCpMo[K_CGPS_MAX_NUMBER_OF_CP]; 
+
+
+
+/**
+* \var s_CgpsCp
+* \brief Array containing context of each CP application
+*
+* Limited by \ref K_CGPS_MAX_NUMBER_OF_CP
+*/
+GLOBAL t_CgpsCpAppli s_CgpsCp[K_CGPS_MAX_NUMBER_OF_CP+1];/*add 1 special session to manage emergency call */ 
+
+#endif /* AGPS_FTR */
+
+#if defined(AGPS_UP_FTR) || defined(AGPS_FTR) 
+
+/**
+* \var vg_NotificationCallback
+* \brief Function called by CGPS to notify user when an external application try to connect
+*/
+GLOBAL t_cgps_NotificationCallback vg_NotificationCallback
+#ifdef __CGPS0MAIN_C__
+= NULL
+#endif
+;
+
+/* ++ LMSqb95626    ANP 03/07/2009 */
+/* ++ LMSqb93693 */
+/**
+* \var vg_DataCntNotificationCallback
+* \brief Function called by CGPS to notify user when a data connection is active
+*/
+GLOBAL t_cgps_DataCntNotificationCallback vg_DataCntNotificationCallback
+#ifdef __CGPS0MAIN_C__
+= NULL
+#endif
+;
+/* -- LMSqb93693 */
+/* -- LMSqb95626    ANP 03/07/2009 */
+/**
+* \var s_CgpsNotification
+* \brief Array containing context of each SUPL notification
+*
+* Limited by \ref K_CGPS_MAX_NUMBER_OF_NOTIFICATIONS
+*/
+GLOBAL t_CgpsPendingNotification s_CgpsNotification[K_CGPS_MAX_NUMBER_OF_NOTIFICATIONS];
+
+/**
+* \var vg_CGPS_Supl_Count
+* \brief Number of registered external applications
+*/
+GLOBAL uint8_t vg_CGPS_Notification_Count
+#ifdef __CGPS0MAIN_C__
+= 0
+#endif
+;
+
+/**
+*\var vg_ClockFreqData
+*\brief Variable to store clock frequency data across 2 positioning sessions.
+*/
+GLOBAL s_GN_AGPS_ClkFreq  vg_ClockFreqData;
+
+#endif /*defined(AGPS_UP_FTR) || defined(AGPS_FTR)*/
+
+GLOBAL e_cgps_ColdStartMode vg_CGPS_ColdStartMode
+#ifdef __CGPS0MAIN_C__
+= K_CGPS_COLD_START_DEFAULT
+#endif
+;
+
+
+/**
+*\var vg_ClockFreqRestorePending
+*\brief Set to TRUE If clock frequency has to be applied to GPS library on Wake-Up.
+*/
+GLOBAL uint8_t  vg_ClockFreqRestorePending
+#ifdef __CGPS0MAIN_C__
+= FALSE
+#endif
+;
+
+/* +LMSqc20169 */
+/**
+* \var vg_CGPS_MCC_With_3Digit_MNC_List
+* \brief contains the auto configured SUPL address length
+*  Refer Annex to ITU Operational Bulletin No. 932 – 15.V.2009
+*/
+GLOBAL uint16_t vg_CGPS_MCC_With_3Digit_MNC_List[]
+#ifdef __CGPS0MAIN_C__
+= { 365,344,722,342,348,346,732,708,338,334,374,376,310,311,316,0}
+#endif
+;
+/* -LMSqc20169 */
+
+
+/**
+* \var vg_Lbs_Host_Version
+* \brief contains the software release version details
+*/
+GLOBAL int8_t vg_Lbs_Host_Version[K_CGPS_LBS_HOST_SW_VER];
+
+
+/**
+* \var vg_CGPS_Config_Ver_flag
+* \brief contains the configuration tool release version details
+*/
+GLOBAL uint8_t vg_CGPS_Config_Ver_flag
+#ifdef __CGPS0MAIN_C__
+= FALSE
+#endif
+;
+
+/**
+* \var vg_CgpsEvtNotify
+* \brief contains the NI Notification call back
+*/
+GLOBAL t_cgps_NotifyEventsCallback vg_CgpsEvtNotify
+#ifdef __CGPS0MAIN_C__
+= FALSE
+#endif
+;
+
+#undef GLOBAL
+
+#endif /* __CGPSMAIN_HIV__ */

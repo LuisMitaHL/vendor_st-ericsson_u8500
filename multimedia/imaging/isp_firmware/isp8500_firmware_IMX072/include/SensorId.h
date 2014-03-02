@@ -1,0 +1,1 @@
+#define LOW_LEVEL_API_SENSOR 2

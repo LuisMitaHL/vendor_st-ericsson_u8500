@@ -1,0 +1,142 @@
+menu "General Setup"
+
+config KERNELVERSION
+	string "Hats version"
+	default "Please declare me !"
+config ENABLE_EXTRA_CFLAGS
+	bool "Enable Extra Flags"
+	default n
+	help
+		Activate extra compiler options.
+config EXTRA_CFLAGS
+	string "Extra Cflags"
+	default "-Wall -Werror -Wextra -O2"
+	depends on ENABLE_EXTRA_CFLAGS
+	help
+		By default, it will enable theses arguments in CFLAGS variables :
+		-Wall -Werror -Wextra -O2
+endmenu
+
+menu "Hardware revisions"
+choice
+ prompt "Analog Baseband revision"
+ default AB_HW_REVISION_2.0
+ help
+  This define the reference hardware revision of Analog Baseband chip.
+config AB_HW_REVISION_1.0
+ bool "1.0"
+config AB_HW_REVISION_2.0
+ bool "2.0"
+config AB_HW_REVISION_3.0
+ depends on AB_LIB_8500
+ bool "3.0"
+endchoice
+
+choice
+ prompt "Digital Baseband revision"
+ default DB_HW_REVISION_8500
+ help
+  This define the reference hardware revision of Digital Baseband chip.
+config DB_HW_REVISION_8500
+ bool "8500"
+config DB_HW_REVISION_9540
+ bool "9540"
+config DB_HW_REVISION_X600
+ bool "x600"
+endchoice
+
+choice
+ prompt "Analog Baseband library"
+ default AB_LIB_8500
+ help
+  This define the reference hardware revision of Analog Baseband chip.
+config AB_LIB_8500
+ bool "lAB8500"
+config AB_LIB_8505
+ bool "lAB8505"
+config AB_LIB_9540
+ bool "lAB9540"
+config AB_LIB_X600
+ bool "lABX600"
+endchoice
+
+choice
+ prompt "Modem type"
+ default MODEM_TYPE_U8500
+ help
+  This define the reference hardware modem chip.
+config MODEM_TYPE_U8500
+ bool "u8500 integrated modem"
+config MODEM_TYPE_NONE
+ bool "No modem"
+endchoice
+endmenu
+
+menu "Debug options"
+config COMPILE_LOGS
+	bool "Enable compile logs per module"
+	default n
+	help
+		This switch will enable log generation for each module compiled.
+		All these logs will be placed in $(HATS_OBJ)/logs directory.
+endmenu
+
+menu "Toolchain"
+ config ENABLE_TOOLCHAIN
+	bool "Copy libraries from CodeSourcery toolchain"
+	default y
+	help
+		This switch will copy standard C libraries from CodeSourcery toolchain
+		for HATS.
+ config STRIP_TOOLCHAIN
+	bool "Strip toolchain libraries"
+	default y
+	depends on ENABLE_TOOLCHAIN
+	help
+		This switch will strip toolchain libraries to save disk space.
+endmenu
+
+source "connectivityservices/Kconfig" skippable
+
+menu "Hats Packages"
+source "tools/autotest/Kconfig"
+source "busybox/Kconfig"
+source "gdb/Kconfig"
+source "genext2fs/Kconfig"
+source "iptables/Kconfig"
+source "libpng/Kconfig"
+source "libxml2/Kconfig"
+source "LpDDR2/Kconfig"
+source "memtester/Kconfig"
+source "modemfs/Kconfig"
+source "ncurses/Kconfig"
+source "openssl/Kconfig"
+source "ppp/Kconfig"
+source "strace/Kconfig"
+source "tools/sk-utils/Kconfig"
+source "zlib/Kconfig"
+endmenu
+
+if MODEM_TYPE_U8500
+source "miniape/Kconfig" skippable
+source "modemservices/Kconfig" skippable
+endif
+
+source "multimediaservices/Kconfig" skippable
+
+source "powerservices/Kconfig" skippable
+
+menu "DTH Services Packages"
+source "../tat/tat/Kconfig" skippable
+source "../hats_userland/dthservices/Kconfig" skippable
+
+source "../tat/DthFramework/Kconfig" skippable
+source "../hats_userland/dthframework/Kconfig" skippable
+
+source "../tat/application/Kconfig" skippable
+source "../hats_userland/application/Kconfig" skippable
+
+source "../tat/generalservices/Kconfig" skippable
+source "../hats_userland/hats_sharedlib/Kconfig" skippable
+endmenu
+

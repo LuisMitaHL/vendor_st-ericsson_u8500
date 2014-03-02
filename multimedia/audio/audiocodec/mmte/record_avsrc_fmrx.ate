@@ -1,0 +1,63 @@
+OMX_GetHandle   hset OMX.ST.AFM.NOKIA_AV_SOURCE
+OMX_GetHandle   fm   OMX.ST.AFM.FM_SOURCE
+
+OMX_SetParameter    hset OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter    fm OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+ate_attach_io       hset 0 MEM rec_hset.wav 2000000 0 0
+ate_attach_io       fm 0 MEM rec_fm.wav 2000000 0 0
+
+###OMX_SetConfig hset ENS_IndexConfigTraceSetting nTraceEnable=65535
+###OMX_SetConfig fm ENS_IndexConfigTraceSetting nTraceEnable=65535
+
+MMTE_DispatchState OMX_StateIdle hset:0
+MMTE_DispatchState OMX_StateIdle fm:0
+
+MMTE_DispatchState OMX_StatePause hset
+MMTE_DispatchState OMX_StatePause fm
+
+OMX_SetConfig hset OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=90
+OMX_SetConfig hset OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+#Start
+MMTE_DispatchState OMX_StateExecuting hset
+
+mmte_sleep 2000
+MMTE_DispatchState OMX_StateExecuting fm
+
+###RECORD ONGOING
+
+mmte_sleep 2000
+
+MMTE_DispatchState OMX_StateIdle fm
+MMTE_DispatchState OMX_StateLoaded fm:0
+
+mmte_sleep 4000
+
+#Stop
+MMTE_DispatchState OMX_StateIdle hset
+MMTE_DispatchState OMX_StateLoaded hset:0
+
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+ate_attach_io       renderer 0 MEM rec_hset.wav 0 0
+MMTE_DispatchState OMX_StateIdle renderer:0
+MMTE_DispatchState OMX_StateExecuting renderer
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0 bLinear=OMX_TRUE sVolume.nValue=90 sVolume.nMin=0 sVolume.nMax=100
+OMX_SetConfig renderer OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_FALSE
+
+# Playback...
+mmte_sleep 8000
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer
+MMTE_DispatchState OMX_StateLoaded renderer
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+

@@ -1,0 +1,63 @@
+; #####################################################################
+; # DB8500 debug & Trace script file: write_ind_reg.cmm               #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2009-03-05
+; Contact jingyi-xiaoyan.lu@st.com
+
+;-------------------------------------------------------------------------------------
+; This command, available in Trace32-MMDSP, writes a indirect MMDSP+ host register.
+;-------------------------------------------------------------------------------------
+
+&Usage="Usage: do write_ind_reg <ind_reg_addr> <reg_val>"
+
+ENTRY &ind_host_addr &ind_host_val
+
+if (string.mid(cpu(),0,3)!="STN")&&(string.mid(cpu(),0,2)!="DB")
+(
+  print ""
+  print "This command is only available in Trace32 for MMDSP+ cores"
+  print "Nothing to do."
+  enddo
+)
+
+if "&ind_host_addr"==""||"&ind_host_val"==""
+(
+  print ""
+  print "&Usage"
+  enddo
+)
+
+&uaddrl=0x28
+&uaddrm=0x29
+&uaddrh=0x36
+&udata0=0x20
+&udata1=0x21
+&udata2=0x22
+&udata3=0x23
+&udata4=0x24
+&udata5=0x25
+&udata6=0x26
+&udata7=0x27
+&ucmd=0x2A
+&W_cmd=0x10
+
+;planning an access of the indirect host reg &ind_host_addr
+data.out dbg:&uaddrl &ind_host_addr&0xFF
+data.out dbg:&uaddrm (&ind_host_addr>>8)&0xFF
+data.out dbg:&uaddrh (&ind_host_addr>>16.)&0xFF
+
+;with the value &ind_host_va
+data.out dbg:&udata0 &ind_host_val&0xFF
+data.out dbg:&udata1 (&ind_host_val>>8)&0xFF
+data.out dbg:&udata2 (&ind_host_val>>16.)&0xFF
+data.out dbg:&udata3 (&ind_host_val>>24.)&0xFF
+data.out dbg:&udata4 (&ind_host_val>>32.)&0xFF
+data.out dbg:&udata5 (&ind_host_val>>40.)&0xFF
+data.out dbg:&udata6 (&ind_host_val>>48.)&0xFF
+data.out dbg:&udata7 (&ind_host_val>>56.)&0xFF
+
+;write access
+data.out dbg:&ucmd &W_cmd
+
+enddo DONE

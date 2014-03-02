@@ -1,0 +1,135 @@
+#do $(IMAGING_PATH)/ite_nmf/script/debug/CSIoneBML.ite
+
+# Initialisation
+#LogPE disable
+#startenv grab_vpip_display_01_01 _BACKUPFW_LRoutVGA_HRoutVGA_SENSOR0 
+#BMS STILL like (Pipe is stop and restart for BMS, with Full FOV)
+setusecase HR VGA YUV422RI
+setusecase LR VGA RGB565
+setusecase BMS 8MEGA RAW8
+bmsmode STILL
+bmsout BAYERSTORE0
+bmlin BAYERLOAD1
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+storeFOVX
+bms prepare
+getusecase
+bms start
+bms stop
+bml prepare
+bml start
+display LR
+########## RESULT ############
+colorbartest BMS
+colorbartest HR
+colorbartest LR
+bml stop
+bms free
+bml free
+LR free
+HR free
+#################
+setusecase HR VGA YUV422RI
+setusecase LR VGA RGB565
+setusecase BMS 8MEGA RAW12
+bmsmode STILL
+bmsout BAYERSTORE0
+bmlin BAYERLOAD1
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+storeFOVX
+bms prepare
+getusecase
+bms start
+bms stop
+bml prepare
+bml start
+display LR
+########## RESULT ############
+colorbartest BMS
+colorbartest HR
+colorbartest LR
+bml stop
+bms free
+bml free
+LR free
+HR free
+#################
+setusecase HR VGA YUV422RI
+setusecase LR VGA RGB565
+setusecase BMS 8MEGA RAW8
+bmsmode STILL
+bmsout BAYERSTORE2
+bmlin BAYERLOAD2
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+storeFOVX
+bms prepare
+# write PE ChannelGains_Control_e_Flag_EnableChannelGains_Byte0 to FALSE
+writePE 0x1280 0x0
+getusecase
+bms start
+bms stop
+bml prepare
+bml start
+display LR
+########## RESULT ############
+colorbartest BMS
+colorbartest HR
+colorbartest LR
+bml stop
+bms free
+bml free
+LR free
+HR free
+# write PE ChannelGains_Control_e_Flag_EnableChannelGains_Byte0 back to TRUE
+writePE 0x1280 0x1
+#################
+setusecase HR VGA YUV422RI
+setusecase LR VGA RGB565
+setusecase BMS 8MEGA RAW12
+bmsmode STILL
+bmsout BAYERSTORE2
+bmlin BAYERLOAD2
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+storeFOVX
+bms prepare
+# write PE ChannelGains_Control_e_Flag_EnableChannelGains_Byte0 to FALSE
+writePE 0x1280 0x0
+getusecase
+bms start
+bms stop
+bml prepare
+bml start
+display LR
+########## RESULT ############
+colorbartest BMS
+colorbartest HR
+colorbartest LR
+bml stop
+bms free
+bml free
+LR free
+HR free
+# write PE ChannelGains_Control_e_Flag_EnableChannelGains_Byte0 back to TRUE
+writePE 0x1280 0x1
+stopenv
+

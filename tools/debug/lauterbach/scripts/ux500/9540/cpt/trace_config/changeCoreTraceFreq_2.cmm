@@ -1,0 +1,138 @@
+
+
+entry &atb_freq &tpiu_freq &ldf &odf &idf
+; Values for the entry parameters 181MHz
+;--180. 360. 188. 1. 5.
+; values for the entry parameter with 160MHz
+;--120. 121. 94. 1. 5.
+
+; the AHB is not supported by the 8500ED, configure the memory access prefix:
+&mem_acc_prefix="eahb"
+if string.mid(cpu(),0,8)=="CortexA9"
+	&mem_acc_prefix="a"
+
+; change the PLLSoC
+&cur_PLLSOC1_freq=d.l(&mem_acc_prefix:0x80157084)
+if "&idf"!=""&&"&odf"!=""&&"&ldf"!=""
+(
+	//set the new freq
+	if &ldf<=12.||&ldf<0||&ldf%2!=0
+	(
+		print "LDF must be pair and greater than or equal to 12"
+		enddo
+	)
+	if &idf>=8.||&idf<0
+	(
+		print "IDF must be smaller than 8"
+		enddo
+	)
+	if &odf>=64.||&odf<0
+	(
+		print "ODF must be smaller than 64"
+		enddo
+	)
+	Print "Configuring with &ldf &odf &idf"
+	data.set &mem_acc_prefix:0x80157084 %l &cur_PLLSOC1_freq&0xFFF8C000|&idf<<16.|&odf<<8.|&ldf/2
+	; Start PLL SOC1
+	data.set &mem_acc_prefix:80157094 %l 1
+		; Wait for PLL Lock
+	wait 1ms
+	; Set SOC1 active
+	&CLKACTIV=data.long(&mem_acc_prefix:0x80157538)|0x00020008
+	print &CLKACTIV
+	data.set &mem_acc_prefix:0x80157538  %l &CLKACTIV
+)
+&pllsoc1=0
+&pllsoc1_r=0
+
+
+gosub ReadCurPLLSOC1Freq
+
+// Trace clock
+&MODECLK_addr=0x801570E8
+&APEATCLK_MGT_addr=0x8015705C
+&APETRACECLK_MGT_addr=0x80157060
+&APEATCLK_MGT_val=d.l(&mem_acc_prefix:&APEATCLK_MGT_addr)
+&APETRACECLK_MGT_val=d.l(&mem_acc_prefix:&APETRACECLK_MGT_addr)
+
+if "&atb_freq"!=""||"&tpiu_freq"!=""
+(
+	&atb_div=&pllsoc1_r/&atb_freq
+//print "&atb_div"
+	&tpiu_div=&pllsoc1_r/&tpiu_freq
+//print "&tpiu_div"
+	; make sure the mode is div
+	if d.l(&mem_acc_prefix:&MODECLK_addr)!=0x4
+		data.set &mem_acc_prefix:&MODECLK_addr %long 0x4
+	
+	; set the ATCLK
+	data.set &mem_acc_prefix:&APEATCLK_MGT_addr %long &APEATCLK_MGT_val&0xFFFFFE00|1<<8|2<<5|&atb_div
+	
+	; set the TRACECLK
+	data.set &mem_acc_prefix:&APETRACECLK_MGT_addr %long &APETRACECLK_MGT_val&0xFFFFFE00|1<<8|2<<5|&tpiu_div
+	
+	print "DONE."
+)
+
+gosub PrintCurPLLSOC1Freq
+gosub ReadPrintCurTraceFreq
+
+enddo
+
+ReadCurPLLSOC1Freq:
+	&cur_PLLSOC1_freq=d.l(&mem_acc_prefix:0x80157084)
+	&SELDIV2=&cur_PLLSOC1_freq>>24.&1
+	&ldf=(&cur_PLLSOC1_freq&0xFF)*2
+	//print %DECIMAL &ldf
+	&odf=&cur_PLLSOC1_freq>>8&0x3F
+	//print %DECIMAL &odf
+	&idf=&cur_PLLSOC1_freq>>16.&7
+	//print %DECIMAL &idf
+	&pllsoc1=(38.4*&ldf)/((2<<&SELDIV2)*&odf*&idf)
+	&pllsoc1_r=v.value(&pllsoc1+0.5)
+	return
+
+PrintCurPLLSOC1Freq:
+	print "PLLSOC1:"
+	print "The current value is ", %DECIMAL &pllsoc1, "Mhz (", %DECIMAL &pllsoc1_r, "Mhz)"
+	return
+
+	
+ReadPrintCurTraceFreq:
+	&APEATCLK_MGT_val=d.l(&mem_acc_prefix:&APEATCLK_MGT_addr)
+	&APETRACECLK_MGT_val=d.l(&mem_acc_prefix:&APETRACECLK_MGT_addr)
+	; read the current value
+	print "ATCLK:"
+	if (&APEATCLK_MGT_val&0x100)!=0x100
+		print "Disabled."
+	else
+	(
+		if (&APEATCLK_MGT_val&0xE0)!=0x40
+			print "The source clock is not PLLSOC1"
+		else
+		(	
+			&atb_div=&APEATCLK_MGT_val&0x1F
+			if &atb_div==0
+				&atb_div=1
+			print "The current value is ", %decimal &pllsoc1_r/&atb_div, "Mhz"
+		)
+	)
+	
+	
+	print "TRACECLK:"
+	if (&APETRACECLK_MGT_val&0x100)!=100
+		print "Disabled."
+	else
+	(
+		if (&APETRACECLK_MGT_val&0xE0)!=0x40
+			print "The source clock is not PLLSOC1"
+		else
+		(
+			&tpiu_div=&APETRACECLK_MGT_val&0x1F
+			if &tpiu_div==0
+				&tpiu_div=1
+			print "The current value is ", %decimal &pllsoc1_r/&tpiu_div, "Mhz"
+		)
+	)
+	return
+

@@ -1,0 +1,146 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+/** @addtogroup vdcMpeg4Group MPEG4 Decoder NMF Component
+ *  \brief This part shows a MPEG4 Decoder NMF Component description (in term
+ *  of configuration and interfaces)
+ *  @{
+ *   
+ * \image html algo-overview.jpg
+ *  with <algo_name> = mpeg4_decoder \n
+ *  and  <algo> = Mpeg4Decoder
+ *   
+ *
+ * \section data_flow_sec Mpeg4 decoder dataflow description
+ * \n
+ * \n
+ * \image html mpeg4_decoder_global_dataflow.jpg
+ * \n
+ * \section memory_desc_sec Memory needs description
+ * \n
+ * \n The following diagram shows the different needed buffers, their respective location and the way their
+ * address is given as parameter to the algo component.
+ * \image html mpeg4_decoder_dataflow.jpg
+ */ 
+
+/** @addtogroup vdcMpeg4ConfigurationGroup NMF Configuration file
+ *  \brief Source code of the configuration file of the component \ref vdcMpeg4Group 
+ *  @{
+ *  \include mpeg4_decoder_algo.conf
+ */ 
+/** @} */ // end of vdcMpeg4ConfigurationGroup
+
+
+/** @addtogroup vdcMpeg4ProvidedInterfaceGroup Provided interface(s)
+ *  \brief Description of all provided interfaces of NMF component \ref vdcMpeg4Group 
+ *  @{
+ */ 
+
+/** @} */ // end of vdcMpeg4ProvidedInterfaceGroup
+
+/** @addtogroup vdcMpeg4RequiredInterfaceGroup Required interface(s)
+ *  \brief Description of all required interfaces of NMF component \ref vdcMpeg4Group  
+ *  @{
+ */ 
+
+/** @} */ // end of vdcMpeg4RequiredInterfaceGroup
+
+#ifndef  _t1xhv_vdc_mpeg4_idt
+#define _t1xhv_vdc_mpeg4_idt
+
+#include <t1xhv_vdc.idt>
+#include <t1xhv_retarget.idt>
+
+
+/** \brief This structure defines a MPEG4 Decode input parameter buffers. */
+typedef struct {
+  t_ushort_value picture_coding_type;           /**<\brief Type of the picture to be decoded*/
+  t_ushort_value quant;                         /**<\brief Quantization parameter (i.e. value of the initial quantizer of the picture to be decoded). */
+  t_ushort_value quant_type;                    /**<\brief Inverse quantization method flag (ASP specific). */ 
+  t_ushort_value intra_quant_mat[64];           /**<\brief Inverse intra quantization matrix (ASP specific).  */
+  t_ushort_value nonintra_quant_mat[64];        /**<\brief Inverse non intra quantization matrix (ASP specific). */
+  t_ushort_value low_delay;                     /**<\brief Low delay flag (ASP specific).*/
+  t_ushort_value interlaced;                    /**<\brief Interlaced mode (ASP specific).*/
+  t_ushort_value rounding_type;                 /**<\brief Rounding type (i.e. value of the rounding control parameter */
+  t_ushort_value intra_dc_vlc_thr;              /**<\brief Threshold to consider DC as AC coeff (i.e. value of the intra_dc_vlc_thr field */
+  t_ushort_value vop_fcode_forward;             /**<\brief Fcode to decode MV (i.e. value of the vop_fcode_forward field of the "Video Object Plane"*/
+  t_ushort_value vop_fcode_backward;            /**<\brief Fcode to decode MV (ASP specific) (i.e. value of the vop_fcode_backward field of the */
+  t_ushort_value frame_width;                   /**<\brief Destination frame width (i.e. width of the destination frame for an MPEG4/H263 decode.*/
+  t_ushort_value frame_height;                  /**<\brief Destination frame height (i.e. number of luminance pixels contained in the vertical dimension */
+  t_ushort_value flag_short_header;             /**<\brief Short Header flag (i.e. value of the short_video_header "internal flag" of the "Video Object*/
+  t_ushort_value modulo_time_base;              /**<\brief Modulo time base (ASP specific / needed for TRB and TRD computation) (i.e. value of the */
+  t_ushort_value vop_time_increment;            /**<\brief VOP time increment (ASP specific / needed for TRB and TRD computation) (i.e. represents the */
+  t_ushort_value vop_time_increment_resolution; /**<\brief VOP time increment (i.e. value of the vop_time_increment_resolution field of the "Video*/
+  t_ushort_value resync_marker_disable;         /**<\brief Resync Marker Disable (i.e. value of the resync_marker_disable field of the "Video Object*/
+  t_ushort_value data_partitioned;              /**<\brief Data Partitioned flag (i.e. value of the data_partitioned field of the "Video Object Layer"*/ 
+  t_ushort_value reversible_vlc;                /**<\brief Reversible VLC (i.e. value of the reversible_vlc field of the "Video Object Layer" structure*/
+  t_ushort_value error_concealment_config;      /**<\brief Error Concealment MPEG4 mode (i.e. allows to configure the error concealment algorithm in an */
+  t_ushort_value flag_sorenson;                 /**<\brief Sorenson stream if = 1      */
+  t_ulong_value flv_version;                   /**<\brief FLV version 0(H263) or 1    */
+  t_ulong_value quarter_sample;
+  t_ushort_value source_frame_width;            /**<\brief YCbCr input pict width in pixels  */ //Samanta: we will discard these two later on 
+  t_ushort_value source_frame_height;           /**<\brief YCbCr input pict height in pixels */
+  t_ushort_value output_format;                 /**<\brief Output format */
+  t_ushort_value deblock_flag;               //decide whether integrated decode and deblock will be called*/
+  t_ulong_value decode_flag;          //to decide whether the current frame needs to be deblocked or not*/
+  t_ushort_value sprite_enable;               /* whether GMC or not*/
+  t_ushort_value no_of_sprite_warping_points;  /* no_of_sprite_warping_points for GMC*/
+  t_ushort_value sprite_warping_accuracy;      /*sprite_warping_accuracy for GMC */
+  t_ushort_value sprite_brightness_change;     /*sprite_brightness_change for GMC */
+  t_short_value difftraj_x;                          /*Global motion vectors x */
+  t_short_value difftraj_y;                   /*Global motion vectors x */
+  t_ushort_value  advanced_intra;                     /**<\brief Advanced Intra mode (Annex I)             */
+  t_ushort_value  deblocking_filter;                     /**<\brief Deblocking filter mode (Annex J)            */
+  t_ushort_value  slice_structure;                     /**<\brief Slice Structure (Annex K)             */
+  t_ushort_value  modified_quantizer;                     /**<\brief Modified Quantizer (Annex T)            */
+
+} ts_t1xhv_vdc_mpeg4_param_in;
+
+typedef ts_t1xhv_vdc_mpeg4_param_in *tps_t1xhv_vdc_mpeg4_param_in;
+
+/** \brief This structure defines a MPEG4 Decode input/output parameter buffers. */
+typedef struct {
+
+    t_ushort_value future_reference_vop ;           /* =0 => future ref is =I => future ref is P */
+    t_ushort_value reserved_1;
+    t_long_value  forward_time;                     /**<\brief ASP forward time           */
+    t_long_value  backward_time;                     /**<\brief ASP backward time            */
+    t_ulong_value  reserved_2;                     /**<\brief Reserved 32            */
+ 
+} ts_t1xhv_vdc_mpeg4_param_inout;
+
+typedef ts_t1xhv_vdc_mpeg4_param_inout *tps_t1xhv_vdc_mpeg4_param_inout;
+
+/** \brief This structure defines a MPEG4 Decode output parameter buffers. */
+typedef struct {
+
+    t_ushort_value error_type;             /**<\brief Return bitstream error type (see t_t1xhv_decoder_info for details in \ref vdcMpeg4endAlgoGroup) */
+    t_ushort_value picture_loss;           /**<\brief Picture loss flags (i.e. set to 1 when a picture loss is detected during the 
+                                              decode process (more than 8 slice loss detections). */
+    t_ushort_value slice_loss_first_mb[8]; /**<\brief Slice lost first macroblock (i.e. position of the first macroblock of a "slice" that has been concealed,
+                                              when a slice loss is detected during the decode subtask. */
+    t_ushort_value slice_loss_mb_num[8];   /**<\brief Slice loss MB number (i.e. number of macroblocks of a "slice" that has been concealed, when
+                                              a slice loss is detected during the decode subtask. It is equal to 0 when no slice loss is detected.)*/
+    t_ushort_value concealed_mb_num;       /**<\brief NB of Concealed MacroBlock (i.e. number of MacroBlock that have been 
+                                              concealed during a MPEG4 decode.*/
+    t_ushort_value concealed_vp_num;       /**<\brief NB of video packets concealed (i.e. number of video packets that have been 
+                                              concealed during a MPEG4 decode.
+                                              \n Constraints : Only used if flag_short_header=0 */
+    t_ushort_value decoded_vp_num;         /**<\brief NB of video packets decoded (i.e. number of video packets that have been 
+                                              decoded during a MPEG4 decode.
+                                              \n Constraints : Only used if flag_short_header=0 */
+        t_ushort_value  error_map[225];    /**<\brief Return a 450B OMX error map (720p) */
+    t_ulong_value  reserved_2;             /**<\brief Reserved 32                    */    
+
+} ts_t1xhv_vdc_mpeg4_param_out;
+
+typedef ts_t1xhv_vdc_mpeg4_param_out *tps_t1xhv_vdc_mpeg4_param_out;
+
+
+/** @} */ // end of vdcMpeg4Group
+
+#endif /* _t1xhv_vdc_mpeg4_idt */

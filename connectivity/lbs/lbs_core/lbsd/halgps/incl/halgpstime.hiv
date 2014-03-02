@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSTIME_HIV__
+#define __HALGPSTIME_HIV__
+/**
+* \file halgpstime.hiv
+* \date 25/01/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain internal variable needed by halgps3time.c..\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.01.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __HALGPS3TIME_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__HALGPS3TIME_C__*/
+
+/**
+*\var Diff_GPS_C_Time
+*
+* Difference [seconds] between the GPS epoch (06 Jan 1980) and the 'C' epoch
+* (01 Jan 1970) is:( 10 years + 2 leap year days + 5 days in Jan ) * seconds in a day 
+* 
+*/
+GLOBAL const U4 Diff_GPS_C_Time = ( (365*10 + 2 + 5) * (24*60*60) );
+
+
+/**
+*\var Days_to_Month
+*
+* An array containing the Number of day in the year up to the of last day of
+*  the previous month in a non-leap year. 
+*/
+GLOBAL const U2 Days_to_Month[12] =
+      { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+
+/**
+*\var Days_to_Month
+*
+* Number of Days in a Month look up table.
+*/
+GLOBAL const U1 Days_in_Month[12] =
+{
+   31,   /* Jan*/
+   28,   /* Feb*/
+   31,   /* Mar*/
+   30,   /* Apr*/
+   31,   /* May*/
+   30,   /* Jun*/
+   31,   /* Jul*/
+   31,   /* Aug*/
+   30,   /* Sept*/
+   31,   /* Oct*/
+   30,   /* Nov*/
+   31    /* Dec*/
+};
+
+#undef GLOBAL
+
+#endif /* __HALGPSTIME_HIV__ */

@@ -1,0 +1,62 @@
+test_start mix_0000
+
+# This script test only the synchronized parameter
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+
+
+
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=0
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=1
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=2
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=3
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=4
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=5
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=6
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=7
+OMX_GetParameter  mixer OMX_IndexParamPortDefinition nPortIndex=8
+
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=1
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=2
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=3
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=4
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=5
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=6
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=7
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolume nPortIndex=8
+
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=1
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=2
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=3
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=4
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=5
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=6
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=7
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioMute nPortIndex=8
+
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=1
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=2
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=3
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=4
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=5
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=6
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=7
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioBalance nPortIndex=8
+
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=1
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=2
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=3
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=4
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=5
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=6
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=7
+OMX_GetConfig 0 mixer OMX_IndexConfigAudioVolumeRamp nPortIndex=8
+
+
+OMX_FreeHandle mixer
+
+mmte_check_CBmessage
+
+MMTE_CheckMemoryStatus
+
+
+test_end

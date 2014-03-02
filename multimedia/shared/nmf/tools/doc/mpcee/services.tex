@@ -1,0 +1,35 @@
+\chapter{Services}
+Services module implement code that will be call by CM driver to insure execution
+of components lifecycle methods but also some MPCEE maintenance operation.
+\section{Construct}
+Construct services is always call after code and data component have been loaded
+even if component does't implement lifecycle.constructor interface.
+
+Before calling component constructor we invalidate instruction cache and then
+data cache to insure component code and data use will not come from cache. Then
+generic callMethodAndAck() function is call to execute constructer and
+acknowledge communication.
+
+\section{Starter, stopper and destructor}
+These services are only call when component implement corresponding lifecycle.*
+interface. Then generic callMethodAndAck() function is call to execute interface
+method and acknowledge communication.
+
+\section{Update stack}
+Update stack service will be call each time CM driver detect we have to resize
+component stack size (either to increase or to decrease it). In that case we
+just call sched\_updateStack() with the new stack size as argument which will be
+responsible to update stack checker hardware to detect stack overflow or
+underflow.
+
+\section{Lock and Unlock cache}
+Lock and Unlock cache will be call each time CM driver as detected it need to
+lock or unlock a MMDSP way after it has load/unload a new NMF component that
+use code cache lock capability.
+
+\section{Ulp force wakeup and allow sleep}
+Ulp services will be call when CM driver is configure to use Ultra Low Power
+features. This means that in that case MMDSP can be power off with TCM in
+retention without CM driver being aware of this. So to be sure MMDSP is powered
+when CM driver want to access MMDSP memory it use a force wakeup service, then
+perform memory access and then allow MMDSP to sleep using allow sleep service.

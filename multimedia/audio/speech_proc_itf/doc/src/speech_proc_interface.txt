@@ -1,0 +1,181 @@
+/**
+   \mainpage
+
+   <H2> Introduction </H2>
+   This documentation aims to describe both interfaces (Processing and OMX) to be impleted by one library in order to be used
+   as processing library inside ST-Ericsson OMX Speech Processing component.
+
+   <H2> \anchor context Context </H2>
+   The speech proc library will be used as the algorithm part of ST-Ericsson's implementattion of OMX Speech Processing Component.\n
+   This OMX component (OMX.ST.AFM.speech_proc) contains 5 audio ports and is made of 2 main parts (as almost all ST-Ericsson OMX components):
+
+   \image html speech_proc_omx.png
+   \image latex speech_proc_omx.eps "speech_proc OMX component"
+
+   <ul>
+   <li> An ENS Component :\n This part implements all the OMX stuff (State machine, command ...).
+        For complete details refer to ENS documentation.</li>
+   <li> A Processing Component :\n This, as implied by its name, implements the processing part based on a network of NMF components. \n
+        In our case, this NMF network is made of 3 main NMF components (plus other miscellaneous ones, not mentioned here for clarity. Refer to speech_proc documentation for more detail). </li>
+
+		\image html speech_proc_nmf.png
+		\image latex speech_proc_nmf.eps "NMF network of speech_proc component"
+
+   	   - Uplink Wrapper   :\n
+	   This component reads data from time alignment component, call speech processing library and write output buffer on uplink output port.
+
+   	   - Downlink wrapper :\n
+	   This component reads data from downlink input port, call speech processing library and write output buffer on downlink output port.
+
+	   - Time alignment   :\n
+	   This component reads data from uplink input port and uplink reference port, align them temporally and give them to uplink wrapper.\n
+	   It will also resample the reference port data to the uplink port frequency, and "pack" both input (uplink + reference) into one buffer.
+   </ul>
+
+   <H2> Shared library </H2>
+   Both interfaces have to be implemented in a .so file called \b libspeech_processing.so. \n
+   This library will be loaded when the speech_proc_component is loaded.
+
+   <H2> Processing Interface description </H2>
+   The processing interface is composed of several C functions. The init function is responsible to allocate the library
+   instance context, and then all other interface functions will be called with this context as parameter.\n
+
+   <H3> Call sequence </H3>
+   The call sequence of interface functions is as follow (click in the graph to get detailled description of one function): \n
+
+   \dot
+   digraph speech_proc_loop
+   {
+   	    size ="50,50";
+	    clusterrank = local;
+	    graph [truecolor bgcolor="#f4f4f45f"];
+        node [shape=box, fontcolor="#44697d",fontsize=8,fontname="lucida-sans"];
+
+   	    init  [label="speech_proc_init", URL ="\ref speech_proc_init"];
+        subgraph cluster_init {
+          style=dotted
+		  color="#c55d19"
+		  labeljust="l"
+		  label="Init section"
+		  fontcolor="#c55d19"
+
+		  set_config		[label="speech_proc_set_config", URL="\ref speech_proc_set_config"];
+		  set_param 		[label="speech_proc_set_parameter", URL="\ref speech_proc_set_parameter"];
+		  set_mode		[label="speech_proc_set_mode", URL="\ref speech_proc_set_mode", style="dashed"];
+		  open            [label="speech_proc_open", URL="\ref speech_proc_open"];
+	    }
+
+	    init -> set_mode;
+	    set_mode -> set_param;
+	    set_param -> set_config;
+		set_config -> open;
+    }
+    \enddot
+
+	\dot
+	digraph speech_proc_loop
+    {
+   	    size ="50,50";
+	    clusterrank = local;
+	    graph [truecolor bgcolor="#f4f4f45f"];
+        node [shape=box, fontcolor="#44697d",fontsize=8,fontname="lucida-sans"];
+
+	    subgraph cluster_process {
+		  style=dotted
+		  color="#c55d19"
+		  labeljust="l"
+		  label="Process section"
+		  fontcolor="#c55d19"
+
+		  process			    [label="speech_proc_process", URL="\ref speech_proc_process"];
+		  get_processing_info	[label="speech_proc_get_processing_info", URL="\ref speech_proc_get_processing_info"];
+		  set_processing_info	[label="speech_proc_set_processing_info", URL="\ref speech_proc_set_processing_info", style="dashed"];
+		  set_config_2		[label="speech_proc_set_config", URL="\ref speech_proc_set_config", style="dashed"];
+		  set_mode_2		    [label="speech_proc_set_mode", URL="\ref speech_proc_set_mode", style="dashed"];
+		  get_sidetone_gain   [label="speech_proc_get_sidetone_gain", URL="\ref speech_proc_get_sidetone_gain", style="dashed"];
+	    }
+
+
+	close			[label="speech_proc_close" URL="\ref speech_proc_close"];
+	{rank=max;close}
+
+
+	set_processing_info -> process;
+	process -> get_processing_info;
+	get_processing_info -> get_sidetone_gain;
+	get_sidetone_gain -> set_config_2;
+	set_config_2 -> set_mode_2;
+	set_mode_2 -> close ;
+
+   }
+
+   \enddot
+
+   <H3> Init section </H3>
+   - speech_proc_set_mode is not call during init if port are not enabled (and then not configured) when going to idle.
+
+   <H3> Process section </H3>
+   - The process section is repeated for each input frame.
+   - The speech_proc_set_processing_info function may be called or not and not necessarily in the same order.\n
+   Nevertheless when call is established the sequence should be respected.
+   - speech_proc_set_mode will be called eacht time port (at OMX level) are reconfigured.
+   - speech_proc_set_config may be called at any time an undetermined number of times (including zero).
+   - speech_proc_get_sidetone_gain will no longer be called if library return \ref SP_ERROR_UNSUPPORTED.
+
+
+   For a complete description of the processing API, check \ref speech_proc_interface.h "here".
+
+   <H2> OMX Interface Description </H2>
+   As different speech processing library will require different configuration paramaters, a second interface has been added. This
+   interface is at OMX level and is supposed to "convert" OMX indexes and configuration structures into processing library structures. This
+   interface is used for OMX configuration calls (i.e. OMX_SetConfig, OMX_SetParameter, OMX_GetConfig and OMX_GetParameter) and when OMX
+   component is passing from OMX_StateLoaded to OMX_StateIdle, since speech_proc library is actually instantiated when leaving
+   OMX_StateLoaded state.
+
+   <H3> SpeechProcLibrary Class </H3>
+   As all proxy code is written in C++, OMX interface is defined as an abstract class.\n
+   Full details on the class definition is available \ref SpeechProcLibrary "here"
+
+   <H3> Factory Method </H3>
+   In order to keep proxy completely independant, the library should also provide a function \ref speech_proc_getOMXInterface that
+   will return a pointer of the class implementing the OMX interface. Thus proxy does not have to know the definition of the subclass
+   and then changing the libspeech_processing.so is enough to change the processing library (although above layer ADM will also have
+   to be updated to send correct configuration for the library).
+
+   <H3> Call sequence of OMX interface </H3>
+   You can find here after call sequence of the OMX interface.\n
+   Before reading the following graphs please note the following points: \n
+   - do NOT except respect of some graph standard (sorry for that, i don't know them), nevertheless I use mine that is :
+		- normal arrows are method calls.
+		- dotted arrows are returned of method.
+		- double arrows are function calls trough NMF interfaces.
+		- UL & DL means that method is called twice once for Downlink algorithms and once for Uplink ones.
+		- When same parameter name is used for 2 method (or NMF itf) calls it means that this is the same value.
+   - SpeechProcComponent and SpeechProcNmf_ProcessincComp are the two main classes that compose what we call ENS Component \ref context "here"
+   - There is \b NO direct connection between SpeechProcNmf_ProcessincComp and speech_proc_library.
+   Even if graphs do not show it, connection actually pass through NMF components before reaching processing library. They have been omitted for clarity.
+
+   <H4> OMX_GetParameter and OMX_GetConfig </H4>
+   \image html speech_proc_omx_getParameter.png
+   \image latex speech_proc_omx_getParameter.eps "sequence for OMX_GetParameter and OMX_GetConfig call" width=17cm
+
+   <H4> OMX_SetParameter </H4>
+   \image html speech_proc_omx_setParameter.png
+   \image latex speech_proc_omx_setParameter.eps "sequence for OMX_SetParameter call" width=17cm
+
+   <H4> OMX_SetConfig </H4>
+   \image html speech_proc_omx_setConfig.png
+   \image latex speech_proc_omx_setConfig.eps "sequence for OMX_SetConfig call" width=17cm
+
+   <H4> OMX_GetExtensionIndex </H4>
+   \image html speech_proc_omx_getExtensionIndex.png
+   \image latex speech_proc_omx_getExtensionIndex.eps "sequence forOMX_GetExtensionIndex call" width=17cm
+
+   <H4> Transition from OMX_StateLoaded to OMX_StateIdle </H4>
+   \image html speech_proc_omx_idle_transition.png
+   \image latex speech_proc_omx_idle_transition.eps "sequence for transition form OMX_StateLoaded to OMX_StateIdle" width=17cm
+
+   <H4> Enabling port in state other than OMX_StateIdle </H4>
+   \image html speech_proc_omx_sendcommand_portenable.png
+   \image latex speech_proc_omx_sendcommand_portenable.eps "sequence for port enabling" width=17cm
+*/

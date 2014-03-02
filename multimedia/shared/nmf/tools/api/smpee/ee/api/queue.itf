@@ -1,0 +1,21 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/queue.idt>
+
+interface ee.api.queue {
+    IMPORT_SHARED t_queue nmfQueueCreate(void);
+    IMPORT_SHARED void nmfQueueDestroy(t_queue pQueue);
+    IMPORT_SHARED void nmfQueuePush(t_queue pQueue, t_queue_link *pElem);
+    void nmfQueuePushAndExecute(t_queue pQueue, t_queue_link *pElem, void *pExecuteFunction);
+    IMPORT_SHARED t_queue_link *nmfQueuePop(t_queue pQueue);
+    t_queue_link *nmfQueuePopMatching(t_queue pQueue, void* pMatchingFunction, void* pMatchingFunctionArgs);
+    t_queue_link *nmfQueuePopMatchingAndExecute(t_queue pQueue, void* pMatchingFunction, void* pMatchingFunctionArgs, void *pExecuteFunction, void *pExecuteFunctionArgs);
+    void nmfQueueLock(t_queue pQueue);
+    void nmfQueueUnlock(t_queue pQueue);
+}
+

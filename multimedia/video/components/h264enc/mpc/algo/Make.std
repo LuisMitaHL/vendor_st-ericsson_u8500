@@ -1,0 +1,93 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MMROOT)/video/makefiles/Make.std.config
+
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh h264enc
+
+VPATH = ./src/$(SVA_SUBSYSTEM) ./src ../main/src/$(SVA_SUBSYSTEM) ../main/src $(MODULE)/../scheduler/src/$(SVA_SUBSYSTEM) $(MODULE)/../scheduler/src
+EXENAME = h264enc
+
+EXEOBJ = t1xhv_main_h264e sm_encoder_h264 sm_common t1xhv_interrupt
+
+ifeq ($(SVA_SUBSYSTEM),ndk20)
+EXEOBJ += \
+	h264e_mecc_control \
+	inst_dump \
+	t1xhv_h264e \
+	t1xhv_mecc_interface \
+	hamac_aircir \
+	hamac_block \
+	hamac_cbr \
+	hamac_cdme8815 \
+	hamac_deblocking \
+	hamac_header \
+	hamac_macroblock \
+	hamac_main \
+	hamac_mb_access \
+	hamac_mv_search \
+	hamac_rdopt \
+	hamac_slice \
+	hamac_vbr \
+	hamac_vlc
+endif
+
+
+ifeq ($(SVA_SUBSYSTEM),ndk8500_ed)
+EXEOBJ += \
+	fhe_encode_macroblock \
+	fhe_encode_slice \
+	fhe_intra_mode \
+	fhe_algo \
+	fhe_brc \
+	fhe_cdme \
+	fhe_h264e \
+	fhe_header
+endif
+ifeq ($(SVA_SUBSYSTEM),ndk8500_a0)
+EXEOBJ += \
+	fhe_encode_macroblock\
+	fhe_encode_slice \
+	fhe_imc \
+	fhe_algo \
+	fhe_ime \
+	fhe_h264e \
+	fhe_fle \
+	fhe_cbr \
+	fhe_newvbr \
+	fhe_header
+endif
+
+ifeq ($(findstring svp8500_v2,$(PLATFORM)),svp8500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+ifeq ($(findstring u8500_v2,$(PLATFORM)),u8500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+ifeq ($(findstring mop500_v2,$(PLATFORM)),mop500_v2)
+CPPFLAGS += -D_8500_V2_
+endif
+
+ifeq ($(FLAVOR),hdtv)
+	EXENAME = h264enc_hdtv
+	VPATH := ./src/$(SVA_SUBSYSTEM)/$(FLAVOR) $(VPATH)
+	CPPFLAGS += -DOPTIM_HDTV 
+endif
+
+OBJ_DIR      := $(OBJ_DIR)/$(FLAVOR)
+DEP_DIR      := $(DEP_DIR)/$(FLAVOR)
+BIN_DIR      := $(BIN_DIR)/$(FLAVOR)
+
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT)
+CPPFLAGS += -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DT1XHV_ME -DT1XHV_TASK_ENCODE -DT1XHV_TASK_ENCODE_H264 -DSTANDALONE_VERSION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION)
+CPPFLAGS += -I$(MODULE)/../scheduler/inc -I./inc/$(SVA_SUBSYSTEM) -I./inc -I../share/$(SVA_SUBSYSTEM) -I../share
+
+MEMORYCFG = $(MMROOT)/video/components/common/memconfig/video_esr.$(MEMCFG_EXT)
+STACK = 1000
+SSTACK = 1000
+ACFLAGS += cc='-no_fpu'
+
+todo: exe
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

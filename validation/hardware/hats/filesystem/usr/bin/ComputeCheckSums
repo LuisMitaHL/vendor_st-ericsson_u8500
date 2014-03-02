@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Copyright (c) ST-Ericsson, 2010
+# Author: Gerald Lejeune <gerald.lejeune@stericsson.com>
+#
+if [ $# -gt 1 ]
+    then
+    echo "Usage:" >&2
+    echo -e "\t$0 [pathToFiles]" >&2
+    exit 1
+fi
+echo Pondering...
+hashFile="hashes"
+if [ "$1" ]
+    then
+    hashFile=$1/$hashFile
+fi
+if [ -e $hashFile ]
+    then rm $hashFile
+fi
+files=`find $1 -type f`
+cat /dev/null > $hashFile
+for file in $files
+do
+  echo `sha1sum $file` >> $hashFile
+done
+cat $hashFile
+echo $hashFile is up to date

@@ -1,0 +1,201 @@
+Component: ArmIVProc
+Release  11.2.4
+Date: 2011-August 30
+
+Changes:
+- change symbian export path for extension
+- Revert to previous OUTR format
+- Verify resolution for yuv420
+______________________________________________________________________________________________
+Release  11.2.3
+Date: 2011-August 23
+
+Changes:
+- Change include dir 'stdlib' to 'stdapi' for symbian
+- Verify resolution before reading YUV
+- remove 1 compilation warning on symbian
+- Remove unnecessary IN OUT msg (getRotation, GetFormat)
+______________________________________________________________________________________________
+Release  11.2.2
+Date: 2011-July 01
+
+Changes:
+- [ER349419] Fix compil pb with android (offsetof not defined)
+______________________________________________________________________________________________
+Release  11.2.1
+Date: 2011-June 29
+
+Changes:
+- Xti new system trace
+- [ER349419] Fix YUV color order
+______________________________________________________________________________________________
+Release  11.2.0
+Date: 2011-June 28
+
+Changes:
+- Totally rework stride management for generating output
+- Replace OMXCOMPONENT macro for symbian GetComponentName() to "Armivproc"
+- set OPTION ARMCC --fpmode ieee_full and armfpu vfpv2  for symbian config
+- [ER349419]Convert RGB to YUV input buffer (if needed) before saving to YUV format
+____________________________________________________________________________________________
+Release  11.1.1
+Date: 2011-May 20
+
+Changes:
+- prealloc internal memory during idle to execute transition
+- Replace some ASSERT by reportError
+- Fix symbian compil (pb with strcmp in proxy)
+______________________________________________________________________________________________
+Release  11.1.0
+Date: 2011-May 10
+
+Changes:
+- support of OMX_COLOR_Format32bitBGRA8888 and OMX_COLOR_Format32bitARGB8888, rgb with alpha component
+- Rework composant order for RGB and YUV for having correct version
+- Fix symbian compil with snprintf and warning with unused variable
+______________________________________________________________________________________________
+Release  11.0.9
+Date: 2011-May 06
+
+Changes:
+- fix coverity warnings
+- Management of "OMX.Symbian.Index.Config.Common.AutoRotationControl" name
+______________________________________________________________________________________________
+Release  11.0.8
+Date: 2011-April 22
+
+Changes:
+- fix warning with symbian compil
+______________________________________________________________________________________________
+Release  11.0.7
+Date: 2011-April 19
+
+Changes:
+- Fix stride management versus buffer allocation
+______________________________________________________________________________________________
+Release  11.0.6
+Date: 2011-April 12
+
+Changes:
+- CR 333244 remove winscw target
+- fix yuv420 color order -> now blue first for OMX_COLOR_FormatYUV420PackedPlanar (in fact NO mismatch between spec and output)
+- Make default initialisation for OMX_CONFIG_ROTATIONTYPE m_Rotation.nSize and  OMX_CONFIG_MIRRORTYPE m_Rotation
+- Fix pb with setImageSize and wrong Assert condition
+______________________________________________________________________________________________
+Release  11.0.4 and duplicate 11.0.5 (publish mistake)
+Date: 2011-March 28
+
+Changes:
+- [bug fix ER332303] in 422mb 420mb check of height and width wasn't correct (permutation of x & y)
+- implementation of OMX_SYMBIAN_INDEX_CONFIG_COMMON_AUTOROTATIONCONTROL_NAME for taking in account autorotation from extradata
+______________________________________________________________________________________________
+Release  11.0.3
+Date: 2011-March 23
+
+Changes:
+- send callback on buffer flag only for EOS
+- [bug fix ER329535]Remove Downscaling error message during init 
+- [bug fix]Fix change resolution in executing with disable/enable port
+
+______________________________________________________________________________________________
+Release  11.0.2
+Date: 2011-March 13
+
+Changes:
+- Fix symbian ECOM instantiantion of ArmIVPRoc (name replaced by STE.VISUAL.... by mystake)
+- Fix RGB888 (composant order)
+______________________________________________________________________________________________
+Release  11.0.1
+Date: 2011-March 10
+
+Changes:
+- Fix copy of flag buffer to output (not well placed).
+- ReportError for symbian (use RDebub::Printf instead of printf)
+______________________________________________________________________________________________
+Release  11.0.0
+Date: 2011-February, 18
+
+Changes:
+- Remove EOS callback for Input.
+- Add missing files for symbian (ImageStream, ImageEngine) in mmp
+- Port callback to componet for checking parameters
+______________________________________________________________________________________________
+Release  10.48.8
+Date: 2011-February, 08
+
+Changes:
+- Optimize read routines, rotate, flip.
+- Separate files for Stream and engine
+______________________________________________________________________________________________
+Release  10.48.7
+Date: 2011-February, 08
+
+Changes:
+- [bug fix] Fix write for NV12 and NV21.
+- [bug fix] Fix write output in 420mb.
+- [bug fix] Fix YUV flag propagation in rotate, downscale routines
+- [bug fix] Fix read in 422mb.
+- [bug fix] Check size for write and read macro block formats and reject incompatible one.
+
+____________________________________________________________________________________________
+Release  10.48.6
+Date: 2011-February, 03
+
+Changes:
+- Management of stride for write (verification done)
+- Optimisation of write 420mb and 422mb
+- [bug fix]Fix downscale factor not multiple of 2
+
+_____________________________________________________________________________________________
+Release  10.48.5
+Date: 2011-February, 02
+
+Changes:
+- Fix warning on symbian
+- Enhancement of read/write format (verify that read and write routines are compatible together)
+_____________________________________________________________________________________________
+Release  10.48.3
+Date: 2011-January, 27
+
+Changes:
+- [ER321543] Fix order of color For all YCbYCr family
+- Add support of yuv422 planar format
+_____________________________________________________________________________________________
+Release  10.44.9
+Date: 2011-January, 25
+
+Changes:
+- [bug fix] GetExtraData crash (not checking return code)
+_____________________________________________________________________________________________
+Release  10.44.8
+Date: 2011-January, 24
+
+Changes:
+- Add partially management of orientation in metadata
+- [bug fix] Fix order of composite red and blue for I420 (fido 32560)
+- [bug fix] Support of 420mb instead of 422mb (Fido 32559) 
+_____________________________________________________________________________________________
+Release  10.44.6
+Date: 2010-January, 12
+
+Changes:
+- Support of OMX_SYMBIAN_COLOR_FormatYUV420MBPackedSemiPlanar index format
+_____________________________________________________________________________________________
+Release  10.44.5
+Date: 2010-December, 7
+
+Changes:
+- Add files and dirs for svnbranch management
+_____________________________________________________________________________________________
+version  : 10.40
+Date     : November 2010
+
+General description: Omx component that make format translation/rotation/down scalling for images
+
+New features:
+	- Mirroring implemented via OMX_IndexConfigCommonMirror index
+	- Add support of extradata
+
+Limitations: 
+	- Still probem with ifm allocation
+	- Automatic rotation not supported

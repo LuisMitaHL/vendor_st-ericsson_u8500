@@ -1,0 +1,47 @@
+# This script tests the CS-Call in non-tunneled mode:
+# cscall ports configured in 16KHZ -> specific test for AMR-WB
+# only static ports configurations are supported today!
+# --> this script is in two parts:
+# 		- "cscall_16khz_start.ate" : when cscall is in executing
+#		state, you can launch one or several calls
+#		- "cscall_16khz_end.ate" : allows to stop the test when 
+#		there is no more call ongoing
+#
+# Audio Network Description:
+# 
+#   +--------------+
+#   |              |
+#   |             0| <-- INPUT_FILE
+#   |   CS-Call    |
+#   |             1| --> OUTPUT_FILE
+#   |              |
+#   +--------------+
+#
+# Script's arguments:
+#   None
+
+OMX_SendCommand	 CSCALL OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	 CSCALL OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers CSCALL IN
+MMTE_FreeBuffers CSCALL OUT
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle   CSCALL
+
+MMTE_CheckMemoryStatus
+
+unalias PROTO
+unalias PROTOCOL
+unalias TRACE_LEVEL
+unalias SAMPLING_RATE
+unalias NB_CHANNELS 
+unalias INPUT_FILE
+unalias OUTPUT_FILE
+unalias OUTPUT_SIZE
+unalias INPUT_BUFFERCOUNT
+unalias OUTPUT_BUFFERCOUNT
+unalias IN
+unalias OUT
+test_end

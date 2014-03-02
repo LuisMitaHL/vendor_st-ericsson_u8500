@@ -1,0 +1,134 @@
+
+if SYMBIAN == 1
+	OMX_GetHandle camera OMX.ST.CAMERA
+	OMX_GetHandle splitter OMX.ST.IMAGESPLITTER
+	OMX_GetHandle my_sink_splitter_1 OMX.ST.FAKESINK
+	OMX_GetHandle my_sink_splitter_2 OMX.ST.FAKESINK
+	if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+		OMX_GetHandle my_sink_splitter_3 OMX.ST.FAKESINK
+		OMX_GetHandle my_sink_splitter_4 OMX.ST.FAKESINK
+	endif
+	OMX_GetHandle my_sink_VPB1 OMX.ST.FAKESINK
+	OMX_GetHandle my_sink_VPB2 OMX.ST.FAKESINK
+else
+	OMX_GetHandle camera OMX.ST.HSMCamera
+	OMX_GetHandle splitter OMX.ST.ImageSplitter
+	OMX_GetHandle my_sink_splitter_1 OMX.ST.Fakesink
+	OMX_GetHandle my_sink_splitter_2 OMX.ST.Fakesink
+	if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+		OMX_GetHandle my_sink_splitter_3 OMX.ST.Fakesink
+		OMX_GetHandle my_sink_splitter_4 OMX.ST.Fakesink
+	endif
+	OMX_GetHandle my_sink_VPB1 OMX.ST.Fakesink 
+	OMX_GetHandle my_sink_VPB2 OMX.ST.Fakesink 
+endif
+
+OMX_SetParameter camera OMX_IndexParamCommonSensorMode  nPortIndex=OMX_ALL bOneShot=OMX_TRUE
+
+if TEST_CHANGE_FRAMERATE == yes
+alias P_CURRENT_FRAMERATE 4
+# frame rate is coded in Q16
+arithmeticalias P_CURRENT_FRAMERATE* 0x10000
+OMX_SetParameter camera OMX_IndexParamPortDefinition nPortIndex=0   format.video.xFramerate=P_CURRENT_FRAMERATE
+OMX_SetParameter camera OMX_IndexParamPortDefinition nPortIndex=1   format.video.xFramerate=P_CURRENT_FRAMERATE
+OMX_SetParameter camera OMX_IndexParamPortDefinition nPortIndex=2   format.video.xFramerate=P_CURRENT_FRAMERATE
+endif
+
+MMTE_PropagateSettings camera 0 splitter 0 OMX_IndexParamPortDefinition
+MMTE_PropagateSettings splitter 0 splitter 1 OMX_IndexParamPortDefinition
+MMTE_PropagateSettings splitter 0 splitter 2 OMX_IndexParamPortDefinition
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_PropagateSettings splitter 0 splitter 3 OMX_IndexParamPortDefinition
+	MMTE_PropagateSettings splitter 0 splitter 4 OMX_IndexParamPortDefinition
+endif
+MMTE_PropagateSettings splitter 1 my_sink_splitter_1 0 OMX_IndexParamPortDefinition
+MMTE_PropagateSettings splitter 2 my_sink_splitter_2 0 OMX_IndexParamPortDefinition
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_PropagateSettings splitter 3 my_sink_splitter_3 0 OMX_IndexParamPortDefinition
+	MMTE_PropagateSettings splitter 4 my_sink_splitter_4 0 OMX_IndexParamPortDefinition
+endif
+MMTE_PropagateSettings camera 1 my_sink_VPB1 0 OMX_IndexParamPortDefinition
+MMTE_PropagateSettings camera 2 my_sink_VPB2 0 OMX_IndexParamPortDefinition
+
+OMX_SetupTunnel camera 0 splitter 0
+OMX_SetupTunnel splitter 1 my_sink_splitter_1 0
+OMX_SetupTunnel splitter 2 my_sink_splitter_2 0
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	OMX_SetupTunnel splitter 3 my_sink_splitter_3 0
+	OMX_SetupTunnel splitter 4 my_sink_splitter_4 0
+endif
+OMX_SetupTunnel camera 1 my_sink_VPB1 0
+OMX_SetupTunnel camera 2 my_sink_VPB2 0
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	OMX_SendCommand splitter OMX_CommandPortDisable 3
+	MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandPortDisable 3
+	OMX_SendCommand splitter OMX_CommandPortDisable 4
+	MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandPortDisable 4
+endif
+
+if TEST_ALLOC == 1 
+	OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=1 eBufferSupplier=OMX_BufferSupplyOutput
+	OMX_SetParameter my_sink_splitter_1 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+	OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=2 eBufferSupplier=OMX_BufferSupplyOutput
+	OMX_SetParameter my_sink_splitter_2 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput 
+	if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=3 eBufferSupplier=OMX_BufferSupplyOutput
+		OMX_SetParameter my_sink_splitter_3 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=4 eBufferSupplier=OMX_BufferSupplyOutput
+		OMX_SetParameter my_sink_splitter_4 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput 
+	endif
+# type: alias TEST_ALLOC_SPLITTER fakesink
+	if TEST_ALLOC_SPLITTER == fakesink
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=1 eBufferSupplier=OMX_BufferSupplyInput
+		OMX_SetParameter my_sink_splitter_1 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=2 eBufferSupplier=OMX_BufferSupplyInput
+		OMX_SetParameter my_sink_splitter_2 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput 
+		if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+			OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=3 eBufferSupplier=OMX_BufferSupplyInput
+			OMX_SetParameter my_sink_splitter_3 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+			OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=4 eBufferSupplier=OMX_BufferSupplyInput
+			OMX_SetParameter my_sink_splitter_4 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput 
+		endif
+	endif
+endif
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateIdle camera splitter my_sink_VPB1 my_sink_VPB2  my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateIdle camera splitter my_sink_VPB1 my_sink_VPB2  my_sink_splitter_1 my_sink_splitter_2
+endif
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateExecuting camera splitter my_sink_VPB1 my_sink_VPB2  my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateExecuting camera splitter my_sink_VPB1 my_sink_VPB2  my_sink_splitter_1 my_sink_splitter_2
+endif
+
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateIdle camera splitter my_sink_VPB1 my_sink_VPB2 my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateIdle camera splitter my_sink_VPB1 my_sink_VPB2  my_sink_splitter_1 my_sink_splitter_2
+endif
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateLoaded camera splitter my_sink_VPB1 my_sink_VPB2  my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateLoaded camera splitter my_sink_VPB1 my_sink_VPB2  my_sink_splitter_1 my_sink_splitter_2
+endif
+
+OMX_FreeHandle camera
+OMX_FreeHandle splitter
+OMX_FreeHandle my_sink_splitter_1
+OMX_FreeHandle my_sink_splitter_2
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	OMX_FreeHandle my_sink_splitter_3
+	OMX_FreeHandle my_sink_splitter_4
+endif
+OMX_FreeHandle my_sink_VPB1
+OMX_FreeHandle my_sink_VPB2

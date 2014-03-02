@@ -1,0 +1,178 @@
+################################## 0011_speech_proc_time_align_gap_on_ul.ate #####################################
+# Test speech proc in non tunneled and bypass mode with time alignment ON
+#
+# Audio Network Description:
+#
+#                          +--------------+
+#                          |             4| --> DL_OUT_FILE
+#                          |              |
+#          DL_IN_FILE  --> |1             |
+#                          |  speechproc 2| <-- REF_IN_FILE
+#        UL_OUT_FILE  <-- |3             |
+#                          |              |
+#                          |             0| <-- UL_IN_FILE
+#                          +--------------+
+#
+#
+# Script's arguments:
+#   None
+#######################################################################################################
+alias TEST_ID SP_0011
+
+test_start SP_0011 speech_proc_time_align_gap_on_ul
+goto_end_on_error
+
+#I/Os parameters
+alias DL_IN_FILE   $(AUDIO_STREAMS)/speech_proc/streams/T04.INP
+alias UL_IN_FILE   $(AUDIO_STREAMS)/speech_proc/streams/T04.INP
+alias REF_IN_FILE  $(AUDIO_STREAMS)/speech_proc/streams/T04_st_48.INP
+
+alias DL_OUT_FILE  $(OUTPUT_DIR)/$(TEST_ID).downlink.pcm
+alias DL_OUT_SIZE  3000000
+alias DL_OUT_REF   $(AUDIO_STREAMS)/speech_proc/streams/T04_16.INP
+
+if "$($2)" != ""
+  alias TYPE $($2)
+else
+  alias TYPE dsp
+endif
+
+alias UL_OUT_FILE  $(OUTPUT_DIR)/$(TEST_ID).uplink_ref.pcm
+alias UL_OUT_SIZE  3000000
+alias UL_OUT_REF   $(AUDIO_STREAMS)/speech_proc/streams/T04_time_align_ref.gap_ul.$(TYPE).ref
+
+# port indexes
+alias SP_UL_IN  0
+alias SP_DL_IN  1
+alias SP_REF_IN 2
+alias SP_UL_OUT 3
+alias SP_DL_OUT 4
+alias SP_CTRL   5
+
+# trace level
+# Generic  : 1-ERROR  2-WARNING  4-FLOW  8-DEBUG  16-API  32-OMX-API  64-OMX-BUFFER  128-RESERVED
+# specific : 256-PCM-DL-IN  512-PCM-DL-OUT  1024-PCM-UL-IN  2048-PCM-REF-IN  4096-PCM-UL-OUT
+if "$($1)" != ""
+  alias TRACE_LEVEL $($1)
+else
+  alias TRACE_LEVEL 0
+endif
+
+# clean previous OMX event if any
+MMTE_FlushReceivedEvent
+
+## instantiate components
+# Speech Processing
+OMX_GetHandle    speechproc  OMX.ST.AFM.speech_proc
+
+# activate trace
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig speechproc ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+# configure ports
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_UL_IN)  nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_DL_IN)  nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_REF_IN) nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_UL_OUT) nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_DL_OUT) nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_UL_IN)  nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000  eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_DL_IN)  nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000  eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_REF_IN) nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_UL_OUT) nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000  eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_DL_OUT) nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000  eChannelMapping[0]=OMX_AUDIO_ChannelCF
+
+# Disable Ports
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_UL_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_UL_IN)
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_DL_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_DL_IN)
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_REF_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_REF_IN)
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_UL_OUT)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_UL_OUT)
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_DL_OUT)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_DL_OUT)
+#OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_CTRL)
+#MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_CTRL)
+
+OMX_SetParameter  speechproc AFM.Param.SpeechProc bBypassUplink=OMX_TRUE bBypassDownlink=OMX_TRUE bOutputReference=OMX_TRUE bRealTimeReference=OMX_FALSE
+
+OMX_SendCommand	speechproc OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent speechproc OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_DL_IN)
+MMTE_AllocateBuffers speechproc  $(SP_DL_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_DL_IN)
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_UL_OUT)
+MMTE_AllocateBuffers speechproc  $(SP_UL_OUT)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_UL_OUT)
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_DL_OUT)
+MMTE_AllocateBuffers speechproc  $(SP_DL_OUT)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_DL_OUT)
+
+
+ate_attach_io speechproc $(SP_DL_IN)  MEM         $(DL_IN_FILE)  0              0
+ate_attach_io speechproc $(SP_DL_OUT) MEM         $(DL_OUT_FILE) $(DL_OUT_SIZE) 0
+ate_attach_io speechproc $(SP_UL_IN)  SKIP_PCM_TS $(UL_IN_FILE)  0              0
+ate_attach_io speechproc $(SP_REF_IN) PCM_TS      $(REF_IN_FILE) 0              1
+ate_attach_io speechproc $(SP_UL_OUT) MEM         $(UL_OUT_FILE) $(UL_OUT_SIZE) 0
+
+# Start speech_proc
+OMX_SendCommand speechproc OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent speechproc OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_REF_IN)
+MMTE_AllocateBuffers speechproc  $(SP_REF_IN)
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_UL_IN)
+MMTE_AllocateBuffers speechproc $(SP_UL_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_REF_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_UL_IN)
+
+
+# Wait EOS
+MMTE_WaitEvent speechproc OMX_EventBufferFlag  $(SP_DL_OUT) 1 0
+MMTE_WaitEvent speechproc OMX_EventBufferFlag  $(SP_UL_OUT) 1 0
+
+OMX_SendCommand	 speechproc OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	 speechproc OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers speechproc $(SP_UL_IN)
+MMTE_FreeBuffers speechproc $(SP_DL_IN)
+MMTE_FreeBuffers speechproc $(SP_REF_IN)
+MMTE_FreeBuffers speechproc $(SP_UL_OUT)
+MMTE_FreeBuffers speechproc $(SP_DL_OUT)
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle   speechproc
+
+MMTE_CheckMemoryStatus
+
+# clean remaining OMX event
+MMTE_FlushReceivedEvent
+
+# check result
+file_comp $(DL_OUT_FILE) $(DL_IN_FILE)
+file_comp $(UL_OUT_FILE) $(UL_OUT_REF)
+
+# remove aliases
+unalias DL_IN_FILE
+unalias UL_IN_FILE
+unalias REF_IN_FILE
+unalias DL_OUT_FILE
+unalias DL_OUT_SIZE
+unalias UL_OUT_FILE
+unalias UL_OUT_SIZE
+unalias SP_UL_IN
+unalias SP_DL_IN
+unalias SP_REF_IN
+unalias SP_UL_OUT
+unalias SP_DL_OUT
+unalias SP_CTRL
+unalias TEST_ID
+test_end
+

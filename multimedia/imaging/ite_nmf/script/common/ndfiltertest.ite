@@ -1,0 +1,31 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/ndfiltertest.ite
+#***************************************************************************
+#THIS TEST CHECKS FOR NDFILTER SUPPORT
+#***************************************************************************
+setusecase default
+LogPE disable
+# ------------------------------------------------
+# -------- First test : ND Filter Support --------
+# ------------------------------------------------
+setusecase LR VGA YUV422RI
+setusecase HR VGA YUV420MB_D
+usagemode vf
+manualfps 30 NIL
+
+LR prepare
+LR start
+LogPE enable
+TestNDFilterSupport
+LogPE disable
+LR stop
+LR free
+# ------------------------------------------------
+# ---- Second test : Disable/Enable ND Filter ----
+# ------------------------------------------------
+usagemode video
+HR prepare
+HR start
+LogPE enable
+EnableNDFilter
+HR stop
+HR free

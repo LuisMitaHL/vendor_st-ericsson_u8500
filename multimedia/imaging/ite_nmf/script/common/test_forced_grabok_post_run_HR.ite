@@ -1,0 +1,18 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/test_forced_grabok_post_run_HR.ite
+
+LogPE disable
+
+setusecase LR VGA YUV422RI
+setusecase HR VGA YUV420MB_D
+
+##### Start HR #####
+HR prepare
+getusecase
+HR start
+wait 2
+configureForcedGrabMode 1
+wait 10
+TestForcedGrabMode 1
+##### Quit HR Env #####
+HR stop
+HR free

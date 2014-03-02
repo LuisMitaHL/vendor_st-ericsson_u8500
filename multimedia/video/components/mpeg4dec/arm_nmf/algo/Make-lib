@@ -1,0 +1,69 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+MMBOARD=x
+MMSYSTEM=x
+USE_OPT_COMPILER=true
+include $(MM_MAKEFILES_DIR)/SharedConfig.mk
+COMPONENT_TOP_DIR=../..
+
+CPPFLAGS+= -DFORCEINLINE= -DINLINE= 
+
+#CPPFLAGS+= -D_CB_CR_INTERLEAVE_
+#CPPFLAGS+= -D__ARM_NEON_FAST_IDCT__
+#CPPFLAGS+= -mfloat-abi=softfp -mfpu=neon	  
+
+CPPFLAGS+= -D__NMF
+CPPFLAGS+=  -I$(COMPONENT_TOP_DIR)/arm_nmf/inc 
+CPPFLAGS+=  -I$(COMPONENT_TOP_DIR)/arm_nmf/share
+
+
+CPPFLAGS+=  -I$(MMROOT)/video/components/common/nmf/idt
+CPPFLAGS+=  -I$(MMROOT)/shared/nmf/linux/api/inc
+
+
+ifneq ($(PLATFORM),x86-linux)
+CPPFLAGS+= -DCA9 
+CPPFLAGS+= -D__ARM_NEON_IDCT__ 
+CPPFLAGS+= -I$(RVCT40INC)
+CFLAGS+= --vectorize -Otime --asm
+LIBOBJ += videocodecGmc_ARM_NEON videocodecIDCT_ARM_NEON videocodecMotionCompensation_ARM_NEON videocodecMotionCompensationQpel_ARM_NEON
+#remove for android build
+#LIBOBJ +=benchmark
+endif
+CPPFLAGS+= -DENABLE_SORENSON
+#CPPFLAGS+= -DERC_SUPPORT -DMV_ERC -DIQ_ERC -DERC_COPY_INTRA
+CPPFLAGS+= -DERC_SUPPORT -DMV_ERC -DERC_COPY_INTRA
+#This is for print usages Default: Disabled
+#CPPFLAGS+= -D_ALGO_DEBUG
+#This was done similiar to ref code not used currently  Default: Disabled
+#CPPFLAGS+= -DREINIT_ERC
+#This should be used to check bit match with ref code Default: Disabled
+#CPPFLAGS+= -DIDCT_HW
+
+VPATH += src/NEON
+
+LIBNAME  = mpeg4swcodec
+#INSTALL_HEADER    = videocodecDecApi.h
+
+LIBOBJ   += videocodecGmc videocodecAicModeDec videocodecConceal videocodecDeblockingFilter \
+videocodecDecode videocodecDecodeCoeff videocodecDecodePict\
+videocodecDecoderApi videocodecIdctInt videocodecInstreamBuffer  \
+videocodecMotionCompensation videocodecMotionCompensationQpel videocodecMpeg4IntraDec \
+videocodecParseMpeg4 videocodecReconstruct videocodecSymbolDecH263 videocodecSymbolDecMpeg4 
+
+#LIBOBJ += videocodecDecodeDCI videocodecSymbolDecSorenson videocodecNewYUVImage videocodecPostFilter videocodecSMP videocodecMemHandle
+#LIBOBJ +=benchmark
+
+todo: lib
+
+INSTALL_LIB = libmpeg4swcodec.a
+
+conf-clean: 
+all: remove_obj
+remove_obj:
+	rm -rf ../obj/*
+	
+include $(MM_MAKEFILES_DIR)/SharedRules.mk
+
+

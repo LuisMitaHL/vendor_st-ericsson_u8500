@@ -1,0 +1,19 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+
+OST_COMPONENT_ID = 537072977
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmfil
+OST_SRC_DIR = nmfil
+INSTALL_DICO = $(OST_DICO_NAME).xml
+CPPFLAGS+=-DNVERBOSE
+
+USER2MPCITFS_CPP=stereowidener.nmfil.effect.configure
+
+
+COMPONENTS= stereowidener.effect.libstereoenhancer \
+            stereowidener.nmfil.effect
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

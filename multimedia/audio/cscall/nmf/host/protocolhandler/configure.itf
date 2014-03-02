@@ -1,0 +1,24 @@
+#include <armnmf_buffer.idt>
+#include <cscall/nmf/host/protocolhandler/codecreq.idt>
+
+typedef struct {
+  // Timing req Margin for NB codecs
+  t_uint32  nbMargin;
+  t_uint32  wbMargin;
+} UlTimingReqMargin_t;
+
+
+void setProtocol(CsCallProtocol_t protocol);
+  
+void setModemBuffer(t_uint16 uplinkBufferCount,   OMX_BUFFERHEADERTYPE_p *uplinkBuffer,
+					t_uint16 downlinkBufferCount, OMX_BUFFERHEADERTYPE_p *downlinkBuffer);
+
+void initTimeMeasurement(void *ptr, t_uint32 duration_ms);
+
+void setModemLoopbackMode(Cscall_ModemLoop_Config_t * loop_config);
+
+void resetTimeMeasurement();
+
+void setTimingReqMargins(UlTimingReqMargin_t margins);
+
+

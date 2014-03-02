@@ -1,0 +1,48 @@
+/** 
+ * \file comfortnoise_interface.doxy
+ * \brief Main documentation page
+ *
+ * \mainpage
+ * \section intro_sec Introduction
+ *
+ * Comfort Noise Generation(CNG) is synthetic background noise used in radio and wireless communications
+ * to fill the artificial silence in a transmission resulting from voice activity detection or 
+ * from the audio clarity of modern digital lines.
+ *
+ * The result of receiving total silence, especially for a prolonged period, has a number of 
+ * unwanted effects on the listener, including the following:
+ *
+ * - the listener may believe that the transmission has been lost, and therefore hang up prematurely.
+ * - the speech may sound "choppy" and difficult to understand.
+ * - the sudden change in sound level can be jarring to the listener.
+ *
+ * To counteract these effects, comfort noise is added, usually on the receiving end point, to fill
+ * in the silent portions of transmissions with artificial noise. The noise generated is at a low but 
+ * audible volume level, and can vary based on the average volume level of received signals to minimize
+ * jarring transitions.
+ *
+ * The CNG Proxy Component realizes the OMXIL component interface and manages the CNG Processing 
+ * Component that realizes the processing part by means of NMF. The PcmProc Wrapper is common to
+ * all PCM Processors. It is associated with the actual algorithm, in this case the CNG PcmProc 
+ * Algo component that implements the CNG algorithm. The processing component is responsible for
+ * establishing this association. The figure shows the internal design in the ENS/NMF framework.
+ *
+ * This documentation aims to describe the interface to be implemented by one library in order to
+ * be used as processing library inside the ST-Ericsson OMX Comfort Noise Generation component.
+ *
+ * \image html ste_comfortnoise.jpg
+ *
+ * \section cases_sec Use Case
+ *
+ *   - Speech processing
+ *
+ * \section req_sec	Implementation Features
+ *
+ *   - 16-bit PCM audio streams
+ *   - inplace and non-inplace processing.
+ *   - Interleaved or non-interleaved signal processing
+ *   - Mono and stereo output at any sample rates.
+ *   - Level power range of at least -90 to -50 dBovl
+ *   - The perceived loudness of speech signals without introducing saturation increases.
+ *
+ */ 

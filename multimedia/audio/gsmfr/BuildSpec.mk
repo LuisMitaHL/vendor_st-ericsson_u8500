@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_audio/gsmfr=bin
+NO_STD_BUILD_audio/gsmfr=1
+BUILD_MMDSP_NMF_audio/gsmfr=bin
+BUILD_ARM_PROC_audio/gsmfr=bin
+BUILD_ARM_CODE_audio/gsmfr=src
+BUILD_ARM_NMF_audio/gsmfr=src
+BUILD_XP70_SIA_CODE_audio/gsmfr=false

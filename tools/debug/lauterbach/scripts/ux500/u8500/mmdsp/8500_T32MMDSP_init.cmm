@@ -1,0 +1,223 @@
+; #####################################################################
+; # DB8500 debug & Trace script file: 8500_T32MMDSP_init.cmm          #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2009-04-09
+; 2009-11-20: add full support of DB8500I & DB8500V new naming
+
+;==============================================================
+; = = = INFORMATIONAL HEADER = = =
+;
+; Default startup program for TRACE32 MMDSP on STn8500 SoC
+; This startup program can be modified according to your needs.
+;
+; Typical usage
+;------------->>>
+; 8500ED SVA : do 8500_T32MMDSP_init.cmm ed 8820v
+; 8500ED SIA : do 8500_T32MMDSP_init.cmm ed 8820i
+; 8500V1 SVA : do 8500_T32MMDSP_init.cmm v1 8500v
+; 8500V1 SIA : do 8500_T32MMDSP_init.cmm v1 8500i
+;
+;<<<------------
+; Optional: 
+; .........
+;
+; When using T32MMDSP only (master on CLTAP)
+; 1) ensure "CORE=1" in .t32 config file
+; 2) add "master" as last parameter
+;
+; When using T32MMDSP as master on cJTAG 2pins
+; 	8500V1 SIA : do 8500_T32MMDSP_init.cmm v1+cjtag2pin 8500i master
+;	8500V1 SVA : do 8500_T32MMDSP_init.cmm v1+cjtag2pin 8500v master
+; NOTE : If T32MARM is already master, no need to configure cjtag on MMDSP side
+;
+; When no DAP Modem on APE Jtag chain (ex: PEPS_SIA platform) :
+;	do 8500_T32MMDSP_init.cmm v1+no_modem 8820i slave ; old peps_sia
+;	do 8500_T32MMDSP_init.cmm v1+no_modem 8500i slave ; new peps_sia
+;
+; INFO : +cjtag2pin & +no_modem parameters can be combined
+;==============================================================
+
+ENTRY	&debug_path &mmdsp_core &jtck &slave_master
+
+; ============================= Target CPU check ==========================================
+if (string.mid(cpu(),0,3)!="STN")&&(string.mid(cpu(),0,2)!="DB")
+(
+	print ""
+	print "ERROR : This script can not be executed on non-ST cores!"
+	print ""
+	enddo
+)
+
+
+; ============================= parameter check ===========================================
+&debug_path=string.upr("&debug_path")
+&mmdsp_core=string.upr("&mmdsp_core")
+&slave_master=string.lwr("&slave_master")
+&mem_type=string.upr("&mem_type")
+
+&target_version=""
+if (!string.find("&debug_path","ED"))&&(!string.find("&debug_path","V1"))&&(!string.find("&debug_path","V2"))
+(
+	print "Specified DB8500 version is not supported. [ED|V1|V2]"
+	enddo
+)
+else
+(
+	if string.find("&debug_path","ED")
+	(
+		&target_version="ED"
+	)
+	if string.find("&debug_path","V1")
+	(
+		&target_version="V1"
+  )	
+	if string.find("&debug_path","V2")
+	(
+		&target_version="V2"
+	)	
+)
+
+// mmdsp_cores is v, i in the case of Trace32-MMDSP
+if ("&mmdsp_core"!="8820V")&&("&mmdsp_core"!="8820I")&&("&mmdsp_core"!="8500V")&&("&mmdsp_core"!="8500I")
+(
+	print "Specified MMDSP Core [&mmdsp_core] is not supported. [8820V|8820I|8500V|8500I]"
+	enddo
+)
+
+if (("&mmdsp_core"=="8820I")||("&mmdsp_core"=="8820V"))&&("&target_version"!="ED")
+(
+	print "ERROR : MMDSP Core 8820I||8820V is for DB8500_ED only !!"
+	enddo
+)
+
+if ("&slave_master"!="master")
+(
+	&slave_master="slave"
+)
+
+print ">>Params= &debug_path &mmdsp_core &slave_master"
+
+; ============================= JTAG FREQUENCY ============================================
+&jtag_clock="2Mhz" ; default, but can be modified by user
+if ("&jtck"!="")
+(
+	&jtag_clock="&jtck"
+)
+
+; ==========================================================================================
+; Setting target CPU
+; ==========================================================================================
+if ("&target_version"!="ED")
+(
+	sys.o.PWRCHECK OFF //Temporarily needed, waiting validation of powerawareness on 8500V1 board
+)
+
+if string.mid("&mmdsp_core",0,4)=="8500"
+(
+	sys.CPU DB&mmdsp_core
+)
+else
+(
+	sys.CPU STN&mmdsp_core
+)
+&temp=cpu()
+&selected_cpu="&temp"
+&ed_comp_info=""
+print ""
+if ("&selected_cpu"=="STN8820I")||("&selected_cpu"=="STN8820V")
+(
+	&ed_comp_info="(8500ED <=> 8820 MMDSP Core architecture)"
+)
+print "Selected target core : &selected_cpu &ed_comp_info"
+print ""
+
+; ==========================================================================================
+; Setting JTAG Options
+; ==========================================================================================
+//sys.mc.tapstate 7.     ; select-dr-scan, works around problems with TAP controller out of sync, mcr213
+//sys.mc.tcklevel 0
+//if ("&slave_master"=="slave")
+//(
+//	sys.mc.slave on  ; Debugger will never pull reset line
+//)
+//else
+//(
+//	sys.mc.slave off
+//	if ("&target_version"=="V1")
+//	(
+//		sys.config.multitap stcltap
+//	)
+//	if ("&target_version"=="V2")
+//	(
+//		sys.config.multitap stcltap2
+//	)
+//)
+sys.JTAGCLOCK &jtag_clock
+print "T32MMDSP &(slave_master). JTAG_Clock= &jtag_clock"
+
+; ==========================================================================================
+; TAP Chain configuration
+; ==========================================================================================
+&debug_path=string.lwr("&debug_path")
+&connect_opt="&slave_master"
+&jtag_mode="jtag"
+&test=string.scan("&debug_path","cjtag",0)
+if &test>0
+(
+	&jtag_mode="cjtag2pin"
+)
+&temp="&connect_opt"
+&connect_opt="&temp"+" &jtag_mode"+" &target_version"
+
+&test=string.scan("&debug_path","no_modem",0)
+if &test>0
+(
+	&temp="&connect_opt"
+	&connect_opt="&temp"+" pal_wo_dap_mod"
+) 
+
+&test=string.scan("&debug_path","v1",0)
+&test2=string.scan("&debug_path","v2",0)
+if &test>=0||&test2>=0
+(
+	&temp="&connect_opt"
+	&connect_opt="&temp"+" ape mmdsp"
+)
+
+&test=string.scan("&debug_path","prcmu",0)
+if &test>0
+(
+	&temp="&connect_opt"
+	&connect_opt="&temp"+" prcmu"
+)
+
+&test=string.scan("&debug_path","mod",0)
+if &test>0
+(
+	&temp="&connect_opt"
+	&connect_opt="&temp"+" mod"
+)
+print ">> DBGCFG parameters : &connect_opt"
+&8500_dbgcfg_dir=os.ppd()
+do &8500_dbgcfg_dir/8500_dbgcfg.cmm &connect_opt
+
+print "&selected_cpu TAP Chain set!"
+	
+ 
+; ==========================================================================================
+; connection
+; ==========================================================================================
+print "Testing HOST_ID reading before connecting on core..."
+if string.find("&mmdsp_core","V")
+(
+	diag 0x3082 1
+)
+if string.find("&mmdsp_core","I")
+(
+	diag 0x3082 2
+)
+
+print "done"
+
+enddo

@@ -1,0 +1,270 @@
+; #####################################################################
+; # DB5500 debug & Trace script file: dbg_through_reset.cmm           #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script performs the "debug through reset" sequence.
+; Crated by HED/CSP/CPT/ACT on 2010-06-10
+; Contact Jingyi-xiaoyan.lu@st.com
+; 2010-10-19: CLTAP register addresses are changed in new Trace32 version since 19th Oct 2010
+
+;------ Example:
+;	do dbg_through_reset   //without parameter, the script does not insert wait latency after release the PORn before requesting the core stop.
+;	do dbg_through_reset 0.1  // the script inserts a 0.1s after release the PORn before requesting the core stop.
+;----------------------
+
+entry &waitReset &reset_core &sys_rst &platform &sequence
+local &cur_dir
+&cur_dir=os.ppd()
+
+if (string.upr(cpu())=="DB5500MOD")
+(
+	print "This script can only be run on a A9SS debugger!"
+	enddo
+)
+
+if "&reset_core"!=""&&(string.upr("&reset_core")!="DB5500"&&string.upr("&reset_core")!="DB5500APE-CORE0"&&string.upr("&reset_core")!="DB5500APE-CORE1"&&string.upr("&reset_core")!="DB5500MOD")
+(
+	print "Unknown core name: &reset_core"
+	enddo
+)
+if "&reset_core"==""
+(
+	if (string.upr(cpu())!="DB5500"&&string.upr(cpu())!="DB5500APE-CORE0"&&string.upr(cpu())!="DB5500APE-CORE1"&&string.upr(cpu())!="DB5500MOD")
+	(
+		print "Unknown cpu name: ", cpu()
+		enddo
+	)
+	&reset_core=cpu()
+)
+
+&reset_core=string.upr("&reset_core")
+
+if "&reset_core"!="DB5500MOD"&&"&reset_core"!=string.upr(cpu())
+(
+	print "The current CPU is ", cpu(), ". Please change it to &reset_core firstly."
+	enddo
+)
+
+if "&reset_core"=="DB5500MOD"
+(
+	if !Intercom.ping(localhost:10001)
+	(
+	  print "No answer from the Trace32-DB5500MOD-ARM926, supposed port number: 10001!"
+	  print ""
+	  enddo
+	)
+	intercom.execute localhost:10001 sys.down
+)
+
+&sys_rst=string.upr("&sys_rst")
+if "&sys_rst"==""
+	&sys_rst="POR"
+else if "&sys_rst"!="POR"&&"&sys_rst"!="SRST"
+(
+	print "Unknown system reset method: &sys_rst, expected value: POR|SRST"
+	enddo
+)
+
+&platform=string.upr("&platform")
+if "&platform"==""
+	&platform="B5500"
+else if "&platform"!="B5500"&&"&platform"!="S5500"&&"&platform"!="EVB"&&"&platform"!="PALLADIUM"
+(
+	print "Unknown platform: &platform! Expected value: B5500|S5500|EVB|palladium"
+	enddo
+)
+
+if "&sequence"==""
+	&sequence="core_reset"
+else if (string.upr("&sequence")!="DBGREQ")
+(
+	print "Unknown sequence! &sequence"
+	enddo
+)
+
+if "&waitReset"!=""&&!string.find("&waitReset","s")&&!string.find("&waitReset","S")
+	&waitReset="&waitReset"+"s"
+
+print "Performing the debug through reset for the cpu: &reset_core, using &sequence."
+&sequence=string.upr("&sequence")
+
+&exectl_addr=0x50003A10
+if version.build()<26058.
+	&exectl_addr=0x30003A10
+
+
+sys.down
+sys.m.prepare
+
+&w_val=0
+if "&sequence"=="DBGREQ"
+(
+	; --- assert dbg req
+	if "&reset_core"=="DB5500APE-CORE0"
+		&w_val=0x20
+	else if "&reset_core"=="DB5500APE-CORE1"
+		&w_val=0x40
+	else if "&reset_core"=="DB5500"
+		&w_val=0x60
+	else //MOD-ARM926
+		&w_val=0xF3
+	
+	d.s edbg:&exectl_addr %l &w_val
+)
+else
+(
+	; --- assert the core reset
+	if "&reset_core"=="DB5500APE-CORE0"
+		&w_val=0x1
+	else if "&reset_core"=="DB5500APE-CORE1"
+		&w_val=0x2
+	else if "&reset_core"=="DB5500"
+		&w_val=0x3
+	else //MOD-ARM926
+		&w_val=0x13
+
+	d.s edbg:&exectl_addr %l &w_val
+)
+
+if "&sys_rst"=="SRST"
+(
+	; --- assert SRSTn
+	jtag.lock
+	jtag.pin enable 
+	jtag.pin nreset 0
+	//jtag.unlock
+
+	; --- deassert the SRSTn
+	//jtag.lock
+	jtag.pin nreset 1
+	jtag.unlock
+
+	if "&waitReset"!=""
+		wait &waitReset
+)
+
+if "&sys_rst"=="POR"
+(
+	; --- assert PORn
+	d.s edbg:&exectl_addr %l &w_val|0x1000
+
+	; --- deassert the PORn
+	d.s edbg:&exectl_addr %l &w_val&~0x1000
+	if "&waitReset"!=""
+		wait &waitReset
+)
+
+if "&sequence"=="DBGREQ"
+(
+	; --- deassert dbg req
+	if "&reset_core"!="DB5500MOD"
+		d.s edbg:&exectl_addr %l 0
+	else
+		d.s edbg:&exectl_addr %l &w_val&~0x63
+)
+else
+(
+	; --- program the DRCR
+	if "&reset_core"=="DB5500APE-CORE0"
+		d.s eapb:0x801C8090 %l d.l(eapb:0x801C8090)|1
+	else if "&reset_core"=="DB5500APE-CORE1"
+		d.s eapb:0x801CA090 %l d.l(eapb:0x801CA090)|1
+	else if "&reset_core"=="DB5500"||"&reset_core"=="DB5500MOD"
+	(
+		d.s eapb:0x801C8090 %l d.l(eapb:0x801C8090)|1
+		d.s eapb:0x801CA090 %l d.l(eapb:0x801CA090)|1
+	)
+	
+	; --- deassert the core reset
+	d.s edbg:&exectl_addr %l 0
+	
+)
+
+; --- init modem if necessary
+if "&reset_core"=="DB5500MOD"
+(	
+	sys.down
+	sys.up
+	if "&platform"=="PALLADIUM"
+	(
+		do "&cur_dir/palladium/system_init.cmm"
+		do "&cur_dir/palladium/modem_init.cmm"
+	)
+	else
+	(
+		do "db5500_top_script.cmm"
+		do "db5500_init_modem.cmm"
+	)
+	if "&sequence"=="DBGREQ"
+		d.s edbg:&exectl_addr %l 0
+	else
+	(
+		; by the CTI-ARM926
+		d.s eapb:0x801B6000 %l 1  //CTL
+		d.s eapb:0x801B60A0 %l 1  //CTIOUTEN	
+		d.s eapb:0x801B601C %l 1  //APPPULSE
+		d.s edbg:&exectl_addr %l 0
+	)
+)
+
+if "&reset_core"!="DB5500MOD"
+(
+	sys.down
+	tronchip.set.reset off
+	sys.m.a
+)
+else
+(
+	intercom.execute localhost:10001 sys.down
+	intercom.execute localhost:10001 tronchip.set.reset off
+	intercom.wait localhost:10001
+	intercom.execute localhost:10001 sys.m.a
+)
+
+
+;--- check the PC
+if "&reset_core"!="DB5500MOD"
+(
+	&current_core=0
+	if "&reset_core"=="DB5500"
+	(
+		&current_core=core()
+		&failed=0
+		core 0
+		if run()||r(pc)!=0
+		(
+			print "FAILED! The CORE0 did not stop at 0x0!"
+			&failed=1
+		)
+		core 1
+		if run()||r(pc)!=0
+		(
+			print "FAILED! The CORE1 did not stop at 0x0!"
+		)
+		core &current_core
+		if &failed==1
+			enddo
+	)
+	else if run()||r(pc)!=0
+	(
+		print "FAILED! The core did not stop at 0x0!"
+		enddo
+	)
+)
+else
+(
+	intercom.wait localhost:10001
+	intercom.evaluate localhost:10001 d.l(c15:1)
+	intercom.wait localhost:10001
+	&ctrl_reg=eval()
+	&boot_addr=0
+	if (&ctrl_reg>>13.&1)==1
+		&boot_addr=0xFFFF0000
+	intercom.evaluate localhost:10001 r(pc)
+	intercom.wait localhost:10001
+	&pc=eval()
+	if &pc!=&boot_addr
+		print "FAILED! The MODEM core did not stop at 0x0!"
+)	
+print "DONE."
+enddo

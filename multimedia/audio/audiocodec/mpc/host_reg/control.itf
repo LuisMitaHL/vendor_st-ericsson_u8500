@@ -1,0 +1,16 @@
+
+// TODO: put this in AFM
+
+interface audiocodec.mpc.host_reg.control unmanaged {
+    unsigned long getArmPhysicalAddr(unsigned int * dspAddr);
+    void * getMmdspAddr(unsigned long ArmPhyAddr);
+    void * getMmdspAddr16(unsigned long ArmPhyAddr);
+    void * getMmdspAddr24(unsigned long ArmPhyAddr);
+    void read_indirect(unsigned long addr, unsigned char tab_result[8] );
+    unsigned long read_indirect_msb32(unsigned long addr);
+    unsigned long read_indirect_lsb32(unsigned long addr);
+    unsigned long read_indirect_8(unsigned long addr, int offset_in_byte);
+    unsigned long read_indirect_10(unsigned long addr, int offset_in_byte);
+    void setSTBUS_ExtIOAddr(unsigned long addrbase, unsigned long addrtop);
+    void write_indirect(unsigned long addr, unsigned char tab[8] );
+}

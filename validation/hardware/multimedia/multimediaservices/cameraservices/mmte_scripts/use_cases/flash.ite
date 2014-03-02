@@ -1,0 +1,168 @@
+alias VF_CAMPRT 0
+alias VF_SIZE_W 480
+alias VF_SIZE_H 360
+alias VF_STRIDE 960
+alias VF_FORMAT OMX_COLOR_FormatCbYCrY
+alias VF_FRRATE 15
+alias RB_CAMPRT 1
+alias RB_SIZE_W 2608
+alias RB_SIZE_H 1962
+alias RB_STRIDE 3912
+#alias RB_FORMAT OMX_COLOR_FormatRawBayer10bit
+alias RB_FORMAT OMX_COLOR_FormatRawBayer8bit
+alias RB_FRRATE 5
+alias SC_INPORT 0
+alias LR_OTPORT 1
+alias LR_SIZE_W 1024
+alias LR_SIZE_H 768
+alias LR_STRIDE 2048
+alias LR_FORMAT OMX_COLOR_FormatCbYCrY
+alias HR_OTPORT 2
+alias HR_SIZE_W 2604
+alias HR_SIZE_H 1958
+alias HR_STRIDE 5208
+alias HR_FORMAT OMX_COLOR_FormatCbYCrY
+alias HR_SIZE_W 1920
+alias HR_SIZE_H 1088
+alias HR_STRIDE 2880
+alias HR_FORMAT OMX_SYMBIAN_COLOR_FormatYUV420MBPackedSemiPlanar
+alias NU_CAMPRT 2
+
+OMX_GetHandle		camera		OMX.ST.HSMCamera
+OMX_GetHandle		sink_vf		OMX.ST.Fakesink
+#OMX_GetHandle		sink_vf		OMX.ST.VFM.DISPLAY.SINK
+OMX_GetHandle		sink_lr		OMX.ST.Fakesink
+OMX_GetHandle		sink_hr		OMX.ST.Fakesink
+OMX_GetHandle		ispproc		OMX.ST.IspProc
+
+OMX_SetParameter	camera		OMX_IndexParamPortDefinition nPortIndex=VF_CAMPRT format.video.nFrameWidth=VF_SIZE_W format.video.nFrameHeight=VF_SIZE_H format.video.nStride=VF_STRIDE format.video.eColorFormat=VF_FORMAT format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.xFramerate=VF_FRRATE eDomain=OMX_PortDomainVideo nBufferCountActual=1
+OMX_SetParameter	camera		OMX_IndexParamPortDefinition nPortIndex=RB_CAMPRT format.video.nFrameWidth=RB_SIZE_W format.video.nFrameHeight=RB_SIZE_H format.video.nStride=RB_STRIDE format.video.eColorFormat=RB_FORMAT format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.xFramerate=RB_FRRATE eDomain=OMX_PortDomainVideo nBufferCountActual=1
+
+OMX_SetConfig		camera		OMX_IndexConfigCommonFrameStabilisation nPortIndex=OMX_ALL bStab=OMX_FALSE
+#OMX_SetParameter	camera		OMX_IndexParamCommonSensorMode nPortIndex=OMX_ALL bOneShot=OMX_TRUE
+OMX_SetParameter	camera		OMX_IndexParamCommonSensorMode nPortIndex=0 nFrameRate=30 bOneShot=0
+ 
+OMX_SetParameter	ispproc		OMX_IndexParamPortDefinition nPortIndex=SC_INPORT format.video.nFrameWidth=RB_SIZE_W format.video.nFrameHeight=RB_SIZE_H format.video.nStride=RB_STRIDE format.video.eColorFormat=RB_FORMAT format.video.eCompressionFormat=OMX_VIDEO_CodingUnused eDomain=OMX_PortDomainVideo
+OMX_SetParameter	ispproc		OMX_IndexParamPortDefinition nPortIndex=LR_OTPORT format.video.nFrameWidth=LR_SIZE_W format.video.nFrameHeight=LR_SIZE_H format.video.nStride=LR_STRIDE format.video.eColorFormat=LR_FORMAT format.video.eCompressionFormat=OMX_VIDEO_CodingUnused eDomain=OMX_PortDomainVideo
+OMX_SetParameter	ispproc		OMX_IndexParamPortDefinition nPortIndex=HR_OTPORT format.video.nFrameWidth=HR_SIZE_W format.video.nFrameHeight=HR_SIZE_H format.video.nStride=HR_STRIDE format.video.eColorFormat=HR_FORMAT format.video.eCompressionFormat=OMX_VIDEO_CodingUnused eDomain=OMX_PortDomainVideo
+
+OMX_SetParameter	sink_vf		OMX_IndexParamPortDefinition nPortIndex=0 format.video.nFrameWidth=VF_SIZE_W format.video.nFrameHeight=VF_SIZE_H format.video.nStride=VF_STRIDE format.video.eColorFormat=VF_FORMAT format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.pNativeWindow=0 eDomain=OMX_PortDomainVideo nBufferCountActual=2
+OMX_SetParameter	sink_lr		OMX_IndexParamPortDefinition nPortIndex=0 format.video.nFrameWidth=LR_SIZE_W format.video.nFrameHeight=LR_SIZE_H format.video.nStride=LR_STRIDE format.video.eColorFormat=LR_FORMAT format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.pNativeWindow=0 eDomain=OMX_PortDomainVideo nBufferCountActual=2
+OMX_SetParameter	sink_hr		OMX_IndexParamPortDefinition nPortIndex=0 format.video.nFrameWidth=HR_SIZE_W format.video.nFrameHeight=HR_SIZE_H format.video.nStride=HR_STRIDE format.video.eColorFormat=HR_FORMAT format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.pNativeWindow=0 eDomain=OMX_PortDomainVideo nBufferCountActual=2
+
+OMX_SetParameter    sink_lr	    OMX_IndexParamContentURI contentURI=/sdcard/kanna/lr.yuv
+OMX_SetConfig       sink_lr	    OMX_IndexParamActiveStream nU32=4
+OMX_SetConfig       sink_lr	    OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE bFrameLimited=OMX_TRUE nFrameLimit=1
+OMX_SetConfig       sink_lr		OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+OMX_SetParameter    sink_hr	    OMX_IndexParamContentURI contentURI=/sdcard/kanna/hr.yuv
+OMX_SetConfig       sink_hr	    OMX_IndexParamActiveStream nU32=4
+OMX_SetConfig       sink_hr	    OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE bFrameLimited=OMX_TRUE nFrameLimit=1
+OMX_SetConfig       sink_hr	    OMX_IndexConfigCapturing bEnabled=OMX_TRUE
+
+OMX_SendCommand		camera		OMX_CommandPortDisable NU_CAMPRT
+MMTE_WaitEvent		camera		OMX_EventCmdComplete OMX_CommandPortDisable NU_CAMPRT
+
+OMX_SetupTunnel		camera		VF_CAMPRT sink_vf	0
+OMX_SetupTunnel		camera		RB_CAMPRT ispproc	SC_INPORT
+OMX_SetupTunnel		ispproc		LR_OTPORT sink_lr	0
+OMX_SetupTunnel		ispproc		HR_OTPORT sink_hr	0
+
+OMX_SendCommand		sink_hr		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		sink_lr		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		sink_vf		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		ispproc		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		camera		OMX_CommandStateSet OMX_StateIdle
+
+MMTE_WaitEvent		camera		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		ispproc		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		sink_vf		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		sink_lr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		sink_hr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand		sink_hr		OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand		sink_lr		OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand		sink_vf		OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand		ispproc		OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand		camera		OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent		camera		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent		ispproc		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent		sink_vf		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent		sink_lr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent		sink_hr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+mmte_sleep 3000
+
+OMX_SetConfig		camera		OMX_IndexConfigCommonExposure eExposureControl=OMX_ExposureControlAuto
+mmte_sleep 1000
+
+OMX_SetConfig		camera		OMX_IndexConfigCommonWhiteBalance eWhiteBalControl=OMX_WhiteBalControlAuto
+mmte_sleep 1000
+
+OMX_SetConfig		camera		OMX_Symbian_IndexConfigSceneMode eSceneType=OMX_SYMBIAN_SceneAuto
+mmte_sleep 1000
+
+OMX_SetConfig		camera		OMX_Symbian_IndexConfigFlickerRemoval eFlickerRemoval=OMX_SYMBIAN_FlickerRemoval50
+mmte_sleep 1000
+
+OMX_SetConfig		camera		OMX_IndexConfigCommonImageFilter eImageFilter=OMX_ImageFilterNone
+mmte_sleep 1000
+
+OMX_SetConfig		camera		OMX_Symbian_IndexConfigSharpness nValue=0
+mmte_sleep 1000
+
+OMX_SetConfig		camera		OMX_Symbian_IndexConfigFocusRange eFocusRange=OMX_SYMBIAN_FocusRangeAuto
+mmte_sleep 1000
+OMX_SetConfig		camera		OMX_Symbian_IndexConfigFlashControl eFlashControl=OMX_IMAGE_FlashControlOn
+mmte_sleep 3000
+
+OMX_SetConfig		camera		OMX_IndexConfigFocusControl eFocusControl=OMX_IMAGE_FocusControlOn nFocusSteps=DEFAULT_FOCUS_STEP nFocusStepIndex=0
+
+mmte_sleep 3000
+
+OMX_SetConfig		camera		OMX_IndexAutoPauseAfterCapture bEnabled=OMX_FALSE
+
+#OMX_SetConfig		camera		IFM_IndexExtConfigCapturing nPortIndex=1 bEnabled=OMX_TRUE
+OMX_SetConfig		camera	OMX_Symbian_IndexConfigCommonExtCapturing  nPortIndex=1 bEnabled=OMX_TRUE
+
+MMTE_WaitEvent		camera		OMX_EventBufferFlag 1
+MMTE_WaitEvent		ispproc		OMX_EventBufferFlag 2
+MMTE_WaitEvent		sink_lr		OMX_EventBufferFlag 0
+MMTE_WaitEvent		sink_hr		OMX_EventBufferFlag 0
+
+mmte_sleep 5000
+
+OMX_SendCommand		sink_hr		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		sink_lr		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		sink_vf		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		ispproc		OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand		camera		OMX_CommandStateSet OMX_StateIdle
+
+MMTE_WaitEvent		camera		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		ispproc		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		sink_vf		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		sink_lr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent		sink_hr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand		sink_hr		OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand		sink_lr		OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand		sink_vf		OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand		ispproc		OMX_CommandStateSet OMX_StateLoaded
+OMX_SendCommand		camera		OMX_CommandStateSet OMX_StateLoaded
+
+MMTE_WaitEvent		camera		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent		ispproc		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent		sink_vf		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent		sink_lr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent		sink_hr		OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle		camera
+OMX_FreeHandle		ispproc
+OMX_FreeHandle		sink_vf
+OMX_FreeHandle		sink_lr
+OMX_FreeHandle		sink_hr
+
+ens_network_destroy
+

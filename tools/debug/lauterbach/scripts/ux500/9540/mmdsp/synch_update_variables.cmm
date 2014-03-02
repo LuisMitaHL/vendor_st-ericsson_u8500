@@ -1,0 +1,22 @@
+;------------------------------------------------------------
+; synch_update_variables.cmm
+;------------------------------------------------------------
+; Used by synch_setup to synchronize on both MMDSP and App
+;
+; 090527 - NJ Initial version
+;-----------------------------------------------------------
+
+ENTRY &entry1
+
+if (STR.SCAN(OS.ID(),"SVA",0)>=0)
+(
+&SynchMmdspSva="&entry1"
+)
+else if (STR.SCAN(OS.ID(),"SIA",0)>=0)
+(
+&SynchMmdspSia="&entry1"
+)
+else
+(
+	print "unknown ID = " OS.ID()
+)

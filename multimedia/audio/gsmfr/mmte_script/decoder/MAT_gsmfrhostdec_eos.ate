@@ -1,0 +1,8 @@
+test_start GSMFR_008 
+test_property  TEST_NAME  gsmfrhostdec_eos
+
+do $(NOMADIK)/gsmfr/mmte_script/decoder/gsmfr_dec_nodtx_reformatted_payload_host.ate gsmfr input_reference output_reference
+
+do $(NOMADIK)/afm/mmte_script/test_oes.ate gsmfr INPUT_FILE 0 gsmfr_dec_nodtx_reformatted_payload_host.out OUTPUT_SIZE $(NOMADIK)/afm/mmte_script/none.ate REF_FILE REF_FILE
+
+test_end

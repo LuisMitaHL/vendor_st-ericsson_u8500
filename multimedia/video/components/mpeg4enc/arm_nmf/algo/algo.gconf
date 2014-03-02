@@ -1,0 +1,11 @@
+
+provides lifecycle.constructor                               as constructor
+provides mpeg4enc.arm_nmf.api.algo                        as iAlgo
+requires mpeg4enc.arm_nmf.api.end_algo                    as oEndAlgo
+
+//- Source files
+sources src/algo.cpp
+
+//-std=c99 -mfloat-abi=softfp -mfpu=neon 
+option CPPFLAGS " -DCA9 -O3 -g -D__NMF -I$(MMROOT)/video/components/mpeg4enc/arm_nmf/algo/inc -I$(MMROOT)/video/components/mpeg4enc/arm_nmf/share -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/mpeg4enc/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc"  
+

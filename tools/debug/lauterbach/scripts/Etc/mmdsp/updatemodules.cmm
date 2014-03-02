@@ -1,0 +1,33 @@
+if run()
+	break
+
+; disable the data cache if necessary.
+&save_dcache_mode_val=data.tbyte(x:0xEC05)
+&need_dcache_restore=0
+if ((&save_dcache_mode_val&0x1)==0x1)
+(
+	d.s x:0xEC05  &save_dcache_mode_val&0x3E
+	&need_dcache_restore=1
+)
+
+; perform the check now; will execute all autoload.cmm scripts
+; only when these are finished the program continues
+y.al.check
+
+;restore the data cache
+if &need_dcache_restore==1
+(
+	d.s x:0xEC05 &save_dcache_mode_val
+)
+
+; Set breaks on newly loaded modules
+&cur_dir=os.ppd()
+if os.file("&cur_dir/nmf_updatebreaks.cmm")
+(
+	do nmf_updatebreaks.cmm
+)
+
+; resume after hitting the constructor / destructor break
+go
+
+enddo

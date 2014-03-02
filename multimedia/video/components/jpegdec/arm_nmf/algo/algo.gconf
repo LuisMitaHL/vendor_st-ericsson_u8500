@@ -1,0 +1,28 @@
+//
+//       Configuration file for      algo (JPEG decode)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive jpegdec.arm_nmf.algo
+{
+provides lifecycle.constructor                              as constructor
+
+// Provided interfaces to a jpeg_decoder_ddep component
+provides jpegdec.arm_nmf.api.algo                 as iAlgo
+
+// Required interfaces to a jpeg_decoder_ddep component
+requires jpegdec.arm_nmf.api.end_algo                     as oEndAlgo
+
+//      --------------
+//      - Source files
+sources src/algo.cpp
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+//-Otime --vectorize
+option CPPFLAGS "-g -DCA9  --asm  -O3 -D__NMF -DCORTEX -DCORTEX_PROFILE -DCORTEX_FRAME_CYCLES -I$(MMROOT)/video/components/jpegdec/arm_nmf/algo/inc -I$(MMROOT)/video/components/common/inc -I$(MMROOT)/video/components/jpegdec/arm_nmf/api -I$(MMROOT)/video/components/common/nmf/idt -I../../../common/inc/ndk8500_ed -I../../../common/inc" 
+
+}

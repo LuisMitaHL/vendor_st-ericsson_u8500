@@ -1,0 +1,72 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPS_HEC__
+#define __HALGPS_HEC__
+/**
+* \file halgps.hec
+* \date 15/04/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all constant used by external application.\n
+*
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 15.04.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+
+/* +LMSQC22162 */
+/**
+* \enum e_halgps_GsmStringStartMode
+*
+* Define HALGPS GSM string start mode\n
+*/
+typedef enum
+{
+    HALGPS_GSM_STRING_REGULAR_START,     /*!< Regular start for assisted sessions enabled using GSM string   */
+    HALGPS_GSM_STRING_COLD_START,        /*!< Warm start for assisted sessions enabled using GSM string   */
+    HALGPS_GSM_STRING_WARM_START,        /*!< COLD start for assisted sessions enabled using GSM string   */
+    HALGPS_GSM_STRING_COLD_START_NAF,   /*!< COLD start for NAF sessions enabled using GSM string   */
+    HALGPS_GSM_STRING_WARM_START_NAF   /*!< WARM start for NAF sessions enabled using GSM string   */
+}e_halgps_GsmStringStartMode;
+/* -LMSQC22162 */
+
+
+/**
+*\addtogroup CGPS
+*\{
+*/
+
+/**
+* \enum e_halgps_state
+*
+* Define HALGPS state\n
+* This state are used on start/stop call.\n
+*/
+typedef enum
+{
+    HALGPS_OK,                  /*!< Operation success */
+    HALGPS_ALREADY_RUN,         /*!< GPS Module is already ON   */
+    HALGPS_ALREADY_STOP,        /*!< GPS Module is already OFF  */
+    HALGPS_NOT_INITIALIZED,     /*!< the init function was not again call by HLINIT  */
+    HALGPS_INITIALIZED_FAILED,  /*!< the init fail due to FILE or UART failure  */
+    HALGPS_GPIO_FAILED,         /*!< Can't turn on/off the GPIO  */
+    HALGPS_UNKNOWN              /*!< unknown error  */
+}e_halgps_state;
+
+/**
+*\}
+*/
+#endif /*__HALGPS_HEC__*/

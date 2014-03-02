@@ -1,0 +1,185 @@
+STE-GIT SOURCE CODE REPOSITORY
+==============================
+Tomas Ljunggren <tomas.ljunggren@tieto.com>
+:Author Initials: 
+
+**************************************************
+Thise document will describe what you may do with
+this file structure and what tool this is.
+
+It's also a good source for information how to
+contribute to the tool.
+**************************************************
+
+THE README FILE
+---------------
+**************************************************
+This section will describe how to edit the README
+file.
+**************************************************
+
+This document has been written in AsciiDoc format,
+please continue to write in that format.
+
+More information regarding AsciiDoc,
+http://www.methods.co.nz/asciidoc/asciidoc.css-embedded.html[AsciiDoc User Guide]
+
+
+THE STRUCTURE
+-------------
+**************************************************
+This section will describe where to put your files
+in the repository.
+**************************************************
+
+..................................................
+sign-tool-cli/                            <1>
+  src/
+    com/
+      stericsson/
+        sdk/
+          signing/                   <2>
+            internal/                <3>
+            cli/
+              Sign.java              <4>
+  doc/                               <5>
+    sign-tool-cli
+  lib/                               <6>
+    commons-cli-1.2.jar              <7>
+    se.ericsson.eab.sdk.signing.jar  <8>
+  test/                              <9>
+    com/
+      stericsson/
+        sdk/
+          signing/
+            internal/
+            cli/
+              SignTest.java          <10>
+  README
+  .project                           <11>
+  .classpath                         <12>
+  build.xml                          <13>
+  ste                                <14>
+..................................................
+
+<1>  Project folder, use suitable name
+
+<2>  This is where we find the interfaces
+     used by the tool and the library.
+
+<3>  This is where we find the implementation
+     for the interfaces used by the tool and
+     the library.
+
+<4>  Good name for CLI entry point class?
+
+<5>  Place your man files here, please use
+     ASCIIDoc as format.
+
+<6>  Place 3rd party libraries here,
+     may also be developed by internal teams.
+     (Shouldn't be developed within this project.)
+
+<7>  Downloaded
+
+<8>  Built by us
+
+<9>  Place you unit tests here.
+
+<10> Unit test for corresponding file from
+     the src folder.
+
+<11> Eclipse project
+
+<12> Classpath for Eclipse project
+
+<13> Ant build script
+
+<14> Better to use sh instead of alias?
+     How will this affect other shells than bash?
+
+
+SOURCE CODE
+-----------
+**************************************************
+This section will describe how you get access to
+the source code and how you work on it.
+**************************************************
+
+To get access to the source code,
+.................................
+> cd /where/to/place/a/copy/
+> git clone /path/to/this/folder
+.................................
+
+To compile the source code,
+.................................
+> cd build
+> ant
+.................................
+
+To update the source code,
+.................................
+> cd /to/your/copy
+> git pull origin
+.................................
+
+When you commit changes, the commit will
+contain an author and an email adress.
+To set these values,
+...................................................................
+> git config --global user.name "Daniel Ekelund"
+> git config --global user.email "daniel.xd.ekelund@stericsson.com"
+...................................................................
+
+You may list the committer field,
+.................................
+> git config -l
+.................................
+
+Build folder
+------------
+************************************************
+This section will describe how you run the tool.
+************************************************
+
+Example: How to print out help
+from the tool.
+............................................................................
+> cd build/release
+> java -classpath ./com.stericsson.sdk.signing.cli.jar:./commons-cli-1.2.jar
+  com.stericsson.sdk.signing.cli.Sign --help
+............................................................................
+
+REQUIREMENTS
+------------
+************************************************
+This section will describe the requirements
+and the KPI's for the build server.
+************************************************
+
+	FILLMEOUT
+
+THE MAN PAGE
+------------
+********************************
+This section will describe how
+to generate a man page from
+the doc/sign-tool-cli.1.txt file.
+********************************
+
+...................................................................................
+> asciidoc -d manpage -b docbook -o ./sign-tool-cli.1.xml sign-tool-cli.1.txt
+> xsltproc --nonet /proj/EMP_Linux/tmp/testing/etc/asciidoc/docbook-xsl/manpage.xsl
+  sign-tool-cli.1.xml
+...................................................................................
+
+AUTHOR
+------
+**************************************************
+This section will list authors of the README file.
+**************************************************
+
+Tomas Ljunggren - tomas.ljunggren@tieto.com
+
+Knut

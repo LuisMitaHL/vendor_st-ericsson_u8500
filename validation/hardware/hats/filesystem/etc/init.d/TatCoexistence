@@ -1,0 +1,20 @@
+#!/bin/sh
+case $1 in
+    start)
+    echo "Starting TatCoexistence"
+    [ -e /usr/local/bin/tat/tatlcoex/mc0 ] || mkdir -p /usr/local/bin/tat/tatlcoex/mc0
+    [ -e /usr/local/bin/tat/tatlcoex/mc2 ] || mkdir -p /usr/local/bin/tat/tatlcoex/mc2
+    [ -e /usr/local/bin/tat/tatlcoex/mc4 ] || mkdir -p /usr/local/bin/tat/tatlcoex/mc4
+    echo "...done"
+    ;;
+    stop)
+    echo "Stopping TatCoexistence..."
+    echo "...nothing to do"
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

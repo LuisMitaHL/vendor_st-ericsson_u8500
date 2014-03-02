@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSCP_HIM__
+#define __CGPSCP_HIM__
+/**
+* \file cgpsTestMode.him
+* \date 19/11/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contains all defines used by cgps7cp.c.\n
+*
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 19.11.09</TD><TD> BALAJI NATAKALA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#define MC_CGPS_ADD_PSTE_TYPE(Buffer, MaxSize, PsteType)  snprintf(Buffer, MaxSize, "%d,", PsteType)
+
+#define MC_CGPS_ADD_OS_TIME(Buffer, Timer, MaxSize)       snprintf(Buffer, MaxSize, "%ld", Timer)
+
+#define MC_CGPS_ADD_SEPERATOR(Buffer, MaxSize)            snprintf(Buffer, MaxSize, ",")
+
+#define MC_CGPS_ADD_INTEGER(Buffer, Value, MaxSize)       snprintf(Buffer, MaxSize, "%d", Value)
+
+#define MC_CGPS_ADD_ALT(Buffer, Value, MaxSize )          snprintf(Buffer, MaxSize, "%6.9f", Value)
+
+#define MC_CGPS_ADD_LATLON(Buffer, Value, MaxSize )       snprintf(Buffer, MaxSize, "%4.11lf", Value)
+
+#define MC_CGPS_ADD_EOM(Buffer, MaxSize)                  snprintf(Buffer, MaxSize, "*")
+
+/* + LMSQC19754 */
+/*#define MC_CGPS_ADD_CS(Buffer, CS, MaxSize)               snprintf(Buffer, MaxSize, "%2x", CS)*/
+#define MC_CGPS_ADD_CS(Buffer, CS, MaxSize)               snprintf(Buffer, MaxSize, "%02X", CS)
+/* - LMSQC19754 */
+
+#endif /* __CGPSTESTMODE_HIM__ */
+

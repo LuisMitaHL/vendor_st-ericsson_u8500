@@ -1,0 +1,11 @@
+test_start mix_0006
+
+# instantiate and configure mixer
+do $(MIXER_SCRIPT)/mixer_1input_notpaced.ate mixer
+do $(MIXER_SCRIPT)/pcm/src/pcm_input_8k_mono.ate mixer 1 input_reference
+do $(MIXER_SCRIPT)/pcm/src/pcm_output_8k_mono_48k_mono.ate mixer output_reference
+
+# test OMX state machine 
+do $(MIXER_SCRIPT)/enable_disable_port_1input.ate mixer
+ens_network_destroy
+test_end

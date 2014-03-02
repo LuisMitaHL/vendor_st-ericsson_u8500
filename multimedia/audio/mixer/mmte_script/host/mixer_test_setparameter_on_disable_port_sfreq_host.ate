@@ -1,0 +1,84 @@
+test_start mix_host_0068
+test_property        TEST_NAME mixer_test_setparameter_on_disable_port_sfreq_host
+
+# This script test only the synchronized parameter
+OMX_GetHandle    mixer OMX.ST.AFM.mixer_host
+
+OMX_SetParameter    mixer OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+#Disable all unused mixer ports
+OMX_SendCommand mixer OMX_CommandPortDisable 2
+OMX_SendCommand mixer OMX_CommandPortDisable 3
+OMX_SendCommand mixer OMX_CommandPortDisable 4
+OMX_SendCommand mixer OMX_CommandPortDisable 5
+OMX_SendCommand mixer OMX_CommandPortDisable 6
+OMX_SendCommand mixer OMX_CommandPortDisable 7
+OMX_SendCommand mixer OMX_CommandPortDisable 8
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 2
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 4
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=8000 eEndian=OMX_EndianBig
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/casta_8.pcm
+ate_attach_io       mixer 0 MEM $(OUTPUT_DIR)/mix_host_0068_48k_mono.out 8000000 0 0
+
+
+# Go to Idle 
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers mixer 0
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Executing 
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+mmte_sleep 1000
+
+# disable input port
+OMX_SendCommand mixer OMX_CommandPortDisable 1
+MMTE_wait_nontunneled_buffers mixer 1
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+MMTE_detach_io mixer 1
+
+
+# change sampling rate of disabled input port
+OMX_SetParameter    mixer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianBig
+
+# change input file to match sampling rate
+ate_attach_io       mixer 1 MEM $(AUDIO_STREAMS)/mixer/streams/techno.pcm
+
+
+# re-enable input port
+OMX_SendCommand mixer OMX_CommandPortEnable  1
+MMTE_AllocateBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+MMTE_WaitEvent mixer OMX_EventBufferFlag 1
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0
+
+OMX_SendCommand mixer  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle mixer
+
+MMTE_CheckMemoryStatus
+
+mmte_check_CBmessage
+
+ens_network_destroy
+test_end

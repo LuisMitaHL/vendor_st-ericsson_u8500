@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Choose Nomadik Kernel tools class path
+#   By default we assume that nmftools.jar was in same directory as this script
+TOOLSDIR=`dirname $0`
+CP=$TOOLSDIR/nmftools.jar
+LD=-Djava.library.path=$TOOLSDIR
+
+java -ea -cp $CP $LD tools.doelf $*

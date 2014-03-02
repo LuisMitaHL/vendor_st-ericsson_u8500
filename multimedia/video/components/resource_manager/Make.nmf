@@ -1,0 +1,57 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENTS += resource_manager
+
+CONFFILES += 	resource_manager/resource_manager.conf 			\
+				resource_manager/allocator/allocator.conf 		\
+				resource_manager/mtf/mtf.conf					\
+				resource_manager/buffers/buffers.conf			\
+				resource_manager/sleep/sleep.conf\
+				resource_manager/tcm_mem_mgr/tcm_mem_mgr.conf			\
+				resource_manager/interrupt/interrupt.conf
+
+IDLLIST = 	resource_manager/api/resource.idl					\
+			resource_manager/api/buffer.idl						\
+			resource_manager/api/inform_resource_status.idl		\
+			resource_manager/api/mtf.idl						\
+			resource_manager/api/mtf_resource.idl				\
+			resource_manager/api/interrupt.idl					\
+			resource_manager/api/signal.idl				\
+			resource_manager/api/sleep.idl \
+			resource_manager/api/intsleep.idl\
+			resource_manager/api/tcm_mem_alloc.idl				\
+			resource_manager/api/common_interface_exports.idl
+
+IDTLIST += resource_manager/idt/t1xhv_resource_manager.idt
+
+SRCPATH+= \
+	idt \
+	$(MM_IDT_DIR) \
+	$(MMROOT)/video/idt
+
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)		\
+	-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc	\
+	-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)		\
+	-I$(MMROOT)/video/components/common/inc
+
+USER2MPCITFS+=resource_manager.api.mtf_resource resource_manager.api.common_interface_exports
+
+MPC2USERITFS+=resource_manager.api.inform_resource_status
+
+ASYNCITFS+=	resource_manager.api.resource					\
+			resource_manager.api.buffer						\
+			resource_manager.api.inform_resource_status		\
+			resource_manager.api.mtf						\
+			resource_manager.api.mtf_resource				\
+			resource_manager.api.interrupt					\
+			resource_manager.api.sleep\
+			resource_manager.api.tcm_mem_alloc					\
+			resource_manager.api.signal
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+include $(MMROOT)/video/makefiles/Make.doc
+

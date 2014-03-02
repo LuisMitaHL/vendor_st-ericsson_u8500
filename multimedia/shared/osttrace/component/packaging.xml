@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages>
+  <fileset id="always-delivered">
+    <include name="component/component.xml" />
+    <include name="component/packaging.xml" />
+    <include name="Makefile" />
+    <include name="include/*.h" />
+  </fileset>
+  <package name="arm-proxy-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="include/*.h" />
+      <include name="api/*.itf" />
+      <include name="arm/lib/cortexA9-x-android-x/*.a" />
+      <include name="api/Makefile" />
+      <include name="./Makefile" />
+      <include name="arm/Makefile" />
+    </fileset>
+  </package>
+  <package name="arm-proxy-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="include/*.h" />
+      <include name="api/*.itf" />
+      <include name="arm/src/linux/*.c" />
+      <include name="api/Makefile" />
+      <include name="./Makefile" />
+      <include name="arm/Makefile" />
+    </fileset>
+  </package>
+  <package name="mmdsp-nmf-bin">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="mmdsp/nmf_repository/**" />
+      <include name="mmdsp/*.conf" />
+      <include name="mmdsp/Makefile" />
+    </fileset>
+  </package>
+  <package name="mmdsp-nmf-src">
+    <fileset idref="always-delivered" />
+    <fileset>
+      <include name="mmdsp/src/*.c" />
+      <include name="mmdsp/*.conf" />
+      <include name="mmdsp/Makefile" />
+    </fileset>
+  </package>
+</packages>

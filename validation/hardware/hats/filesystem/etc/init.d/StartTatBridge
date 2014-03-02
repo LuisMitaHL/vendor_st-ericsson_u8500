@@ -1,0 +1,14 @@
+#!/bin/sh
+case $1 in
+start) 
+	echo "Starting StartTatBridge"
+	echo START_BRIDGE
+	wait_pctool START_BRIDGE tatd-main -pid=4096
+;;
+stop) 	
+	echo "Stopping StartTatBridge..."
+    	nkill tat-dmain
+;;
+esac
+
+exit

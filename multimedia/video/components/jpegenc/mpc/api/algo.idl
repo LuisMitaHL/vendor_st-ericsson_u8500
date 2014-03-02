@@ -1,0 +1,218 @@
+/******************************************************************************
+ Copyright (c) 2009-2011, ST-Ericsson SA
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials
+      provided with the distribution.
+   3. Neither the name of the ST-Ericsson SA nor the names of its
+      contributors may be used to endorse or promote products
+      derived from this software without specific prior written
+      permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ OF THE POSSIBILITY OF SUCH DAMAGE.
+ ******************************************************************************/
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vec_jpeg.idt>
+
+interface jpegenc.mpc.api.algo { 
+
+
+/* This file specifies methods included inside provided interface named iAlgo
+          i.e. :          - configureAlgo
+                          - controlAlgo
+                          - updateAlgo
+                          - setDebug
+*/
+
+/** @addtogroup secJpegConfigureAlgoGroup configureAlgo
+ *  @ingroup secJpegProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+
+ \param[in]  algoId                     Algo Identifier of the ALGO Component.
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vec_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vec_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_internal_buffer       "Internal buffer" structure address (i.e. ts_t1xhv_vec_internal_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_header_buffer      "Input Header buffer" structure address (i.e. ts_t1xhv_vec_header_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_bitstream_buffer  "Output bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vec_jpeg_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vec_jpeg_param_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_frame_parameters   "Input In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_jpeg_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_parameters  "Output In/Out parameter buffer" structure address (i.e. ts_t1xhv_vec_jpeg_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref secJpegConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+
+ * \msc
+    jpeg_encoder_data_dep,jpeg_encoder_algo;
+    jpeg_encoder_data_dep=>jpeg_encoder_algo [label="configureAlgo()"];
+    jpeg_encoder_data_dep<<jpeg_encoder_algo;    
+  \endmsc
+  \n
+ *
+ */ 
+
+void configureAlgo(jpegenc.mpc.api.end_algo *cb,	
+					t_uint32 addr_in_frame_buffer,
+					t_uint32 addr_out_frame_buffer,
+					t_uint32 addr_internal_buffer,
+          t_uint32 addr_in_header_buffer,
+					t_uint32 addr_in_bitstream_buffer,
+					t_uint32 addr_out_bitstream_buffer,
+					t_uint32 addr_in_parameters,
+					t_uint32 addr_out_parameters,
+					t_uint32 addr_in_frame_parameters,
+					t_uint32 addr_out_frame_parameters);
+
+ /** @} */ // end of secJpegConfigureAlgoGroup
+ 
+ /** @addtogroup secJpegControlAlgoGroup controlAlgo
+ *  @ingroup secJpegProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Control a specific NMF algo component.
+ 
+ \param[in]  command  The command to be sent to the component
+ \param[in]  channelNumber  The channel (i.e. instance number) the algo is linked to
+ \param[in]  param    (Not yet implemented) The parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref secJpegConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Normal sequence of a encode
+ *   
+ * \msc
+    jpeg_encoder_data_dep,jpeg_encoder_algo,resource_manager;
+    jpeg_encoder_data_dep=>jpeg_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    jpeg_encoder_data_dep<<jpeg_encoder_algo;
+    jpeg_encoder_algo=>resource_manager [label="...."];
+    jpeg_encoder_algo<<resource_manager;
+    jpeg_encoder_data_dep<<=jpeg_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE)"];
+  \endmsc
+  \n
+ * Abnormal sequence of a encode (error while encoding the bitstream)
+ *  
+ * \msc
+    jpeg_encoder_data_dep,jpeg_encoder_algo;
+    jpeg_encoder_data_dep=>jpeg_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    jpeg_encoder_data_dep<=jpeg_encoder_algo [label="endAlgo(STATUS_JOB_ABORTED, VEC_ERT_BITSTREAM_ERR"];
+  \endmsc
+  \n
+ * Abnormal sequence of a encode (incorrect configuration parameter)
+ *  
+ * \msc
+    jpeg_encoder_data_dep,jpeg_encoder_algo;
+    jpeg_encoder_data_dep=>jpeg_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    jpeg_encoder_data_dep<=jpeg_encoder_algo [label="endAlgo(STATUS_JOB_ABORTED, [error code])"];
+  \endmsc
+ *\n 
+ * @} */
+
+void controlAlgo(t_t1xhv_command command, t_uint16 channelNumber, t_uint16 param);
+
+ /** @} */ // end of secJpegControlAlgoGroup
+ 
+/** @addtogroup secJpegUpdateAlgoGroup updateAlgo
+ *  @ingroup secJpegProvidedInterfaceGroup
+ *  @{
+ */
+/*!
+ Description : (Not yet implemented) Update the configuration of a specific NMF algo component.
+ *   
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref secJpegConfigurationGroup
+ */ 
+//void updateAlgo(t_t1xhv_command command);
+
+/** @} */ // end of secJpegUpdateAlgoGroup
+ 
+/** @addtogroup secJpegSetDebugAlgoGroup setDebug
+ *  @ingroup secJpegProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Set the debug mode of a NMF codec component.
+ 
+ \param[in]  mode     The debug mode the component will enter
+ \param[in]  param1   (reserved for future use) The first parameter associated to the command
+ \param[in]  param2   (reserved for future use) The second parameter associated to the command
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref secJpegConfigurationGroup
+ * 
+ * \note Usage of this interface
+ *  @{  
+ * \n  
+ * Example of normal usage of debug mode. In this particular case, the "VEC_Jpeg" NMF Algo component will copy 
+ * the content of the input bitstream buffer into the ouput image buffer (see \ref secJpegConfigureAlgoGroup for details).
+ * As soon as the copy will be finished, the interface signaling the end of algo will be called.
+ * 
+ * 
+ * \msc
+    Jpeg_encoder_data_dep,Jpeg_encoder_algo;
+    Jpeg_encoder_data_dep=>Jpeg_encoder_algo [label="setDebug(DBG_MODE_PATTERN, 0x00, 0x00)"];
+    Jpeg_encoder_data_dep<<Jpeg_encoder_algo;
+    Jpeg_encoder_data_dep=>Jpeg_encoder_algo [label="configureAlgo(VEC_Jpeg, ...)"];
+    Jpeg_encoder_data_dep<<Jpeg_encoder_algo;
+    Jpeg_encoder_data_dep=>Jpeg_encoder_algo [label="controlAlgo(CMD_START, 0x00)"];
+    Jpeg_encoder_data_dep<=Jpeg_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE"];
+    Jpeg_encoder_data_dep,Jpeg_encoder_algo;
+    Jpeg_encoder_data_dep=>Jpeg_encoder_algo [label="setDebug(DBG_MODE_NORMAL, 0x00, 0x00)"];
+  \endmsc
+  \n
+ * Another exemple of normal usage of debug mode. In this case, the NMF algo component will only
+ * acknowledge the CMD_START command by calling the endAlgo interface.
+ *  
+ * \msc
+    Jpeg_encoder_data_dep,Jpeg_encoder_algo;
+    Jpeg_encoder_data_dep=>Jpeg_encoder_algo [label="setDebug(DBG_MODE_NO_HW, 0x00, 0x00)"];
+    Jpeg_encoder_data_dep<=Jpeg_encoder_algo [label="endAlgo(STATUS_JOB_COMPLETE, VEC_ERT_NONE"];
+  \endmsc
+  \n
+ * @} */
+
+void setDebug(t_t1xhv_debug_mode mode, t_uint32 param1, t_uint32 param2);
+
+ /** @} */ // end of secJpegSetDebugAlgoGroup 
+
+} // interface jpegenc.mpc.api.algo
+

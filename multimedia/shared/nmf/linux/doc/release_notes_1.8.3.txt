@@ -1,0 +1,61 @@
+**************************************************
+* Linux Environment (version 1.8.3) "L'Angelus"  *
+**************************************************
+
+The release comprises one .tgz file holding the following features:
+    - The needed files to develop NMF applications under Linux:
+      (libraries and header)
+    - The binaries to run NMF applications on the target.
+
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/viewvc.php/nmf_linux/tags/release_1_8_3/?roottype=svn&root=nmf
+or
+    http://codex.cro.st.com/svnroot/nmf/nmf_linux/tags/release_1_8_3/
+
+Supported target:
+    - STn8820
+    - mop500_ed
+Supported system:
+    - Linux
+    - Android
+
+Changes:
+--------
+[CM]
+     For general changes (such as CM API update, etc), see the release notes under
+     doc/nmf
+
+[NMF Linux]
+
+Bug fixes:
+---------
+[NMF Linux]
+     * Add C++ version of CM_BindComponentFromUser() and CM_UnbindComponentFromUser()
+     * Update integration on mop500_ed board with the new kernel version
+
+Notes
+-----
+- All warnings/errors of the CMUserProxy are logged through syslog in
+  /var/log/user.log
+  => in case of problems, don't forget to have a look in this file.
+- On 8820, STM traces are not started.
+- Android platform not tested on mop500_ed
+- STn8815-B06 boards are no more supported under linux
+
+
+Known Issues:
+-------------
+- XTI and STM traces not tested.
+- STM is not supported on mop500_ed
+
+Pre-requires:
+-------------
+    - MMENV 1.2.10
+    - Kernel linux 2.6.27, as provided by Nomadik Multimedia Linux
+    [ Both kernels and their config are provided by Nomadik Multimedia Linux
+      (see codex project 'mmdlinux' and its svn tree under module linux_kernel:
+      the easiest way to access this environment is to use mmtools) ]
+    - GCC ARM compiler as provided by mmenv environment
+    - The NMF tools are provided in a separate package:
+      nmf_tools package is required to develop NMF applications.
+

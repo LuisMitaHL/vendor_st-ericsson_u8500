@@ -1,0 +1,84 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MM_MAKEFILES_DIR)/VideoStdConfig.mk
+
+CPPFLAGS+= -DNO_INIT_BSS
+CPPFLAGS += -Iinc/$(SVA_SUBSYSTEM) -Iinc
+
+ifndef NO_STD_BUILD
+ifeq ($(findstring 5500,$(PLATFORM)),5500)
+nonnmf-lib: lib 
+	perl update_interface.pl inc/${SVA_SUBSYSTEM}/host_interface_common.h inc/${SVA_SUBSYSTEM}/t1xhv_host_interface.h
+else
+LIBNAME = common
+LIBOBJ = t1xhv_audiolib_buffer_reset t1xhv_exit t1xhv_bt_utils t1xhv_logutils t1xhv_error vsprintf init_bss
+
+ifeq ($(PLATFORM),x86-linux)
+nonnmf-lib:
+LIBOBJ = # Avoid creating dependencies
+else
+INSTALL_LIB = libcommon.$(LIB_EXT)
+
+nonnmf-lib: lib
+	perl update_interface.pl inc/${SVA_SUBSYSTEM}/host_interface_common.h inc/${SVA_SUBSYSTEM}/t1xhv_host_interface.h
+
+endif
+endif
+else
+nonnmf-lib:
+LIBOBJ = # Avoid creating dependencies
+endif
+
+INSTALL_HEADER = t1xhv_retarget.h \
+                 t1xhv_types.h \
+                 t1xhv_exit.h \
+                 t1xhv_logutils.h \
+                 trace.h \
+                 me_types.h \
+                 t1xhv_audiolib_vector.h \
+                 t1xhv_bt_utils.h 
+
+dir_headers: 
+	$(GEN_LN) -d nmf/arm/inc $(INSTALL_HEADER_DIR)
+	$(GEN_LN) -d nmf/idt $(INSTALL_IDT_DIR)
+	$(GEN_LN) inc/macros.h $(INSTALL_HEADER_DIR)/macros.h
+	$(GEN_LN) inc/me_types.h $(INSTALL_HEADER_DIR)/me_types.h
+	$(GEN_LN) inc/t1xhv_audiolib_vector.h $(INSTALL_HEADER_DIR)/t1xhv_audiolib_vector.h
+	$(GEN_LN) inc/t1xhv_bt_utils.h $(INSTALL_HEADER_DIR)/t1xhv_bt_utils.h
+	$(GEN_LN) inc/t1xhv_exit.h $(INSTALL_HEADER_DIR)/t1xhv_exit.h
+	$(GEN_LN) inc/t1xhv_logutils.h $(INSTALL_HEADER_DIR)/t1xhv_logutils.h
+	$(GEN_LN) inc/t1xhv_retarget.h $(INSTALL_HEADER_DIR)/t1xhv_retarget.h
+	$(GEN_LN) inc/t1xhv_types.h $(INSTALL_HEADER_DIR)/t1xhv_types.h
+	$(GEN_LN) inc/trace.h $(INSTALL_HEADER_DIR)/trace.h
+ifeq ($(findstring 500_a0,$(SVA_SUBSYSTEM)),500_a0)
+	$(GEN_LN) -d inc/$(SVA_SUBSYSTEM) $(INSTALL_HEADER_DIR)/$(SVA_SUBSYSTEM)
+endif
+	$(GEN_LN) -d $(COMPONENT_TOP_DIR)/src $(INSTALL_NMF_COMP_SRC_MMDSP_DIR)/video_common
+	$(GEN_LN) -d splitrom $(INSTALL_HEADER_DIR)
+	$(GEN_LN) -d memconfig $(INSTALL_NMF_COMP_SRC_MMDSP_DIR)/video_common/memconfig
+	$(GEN_LN) update_interface.pl $(INSTALL_TOOLS_DIR)/video_common/update_interface.pl
+	$(GEN_LN) update_codec_interface.csh $(INSTALL_TOOLS_DIR)/video_common/update_codec_interface.csh
+
+INSTALL_IDT +=	t1xhv_common.idt		\
+				t1xhv_post_process.idt	\
+				t1xhv_pp.idt			\
+				t1xhv_retarget.idt		\
+				t1xhv_vdc.idt			\
+				t1xhv_vec.idt			\
+				vfm_common.idt			\
+				vfm_defines.idt			\
+				common_frameinfo.idt	\
+				frameinfo.idt			\
+				arm_codec_type.idt
+
+IDT_DIR = nmf/idt
+
+EXTRA_INSTALL += dir_headers install-idt
+todo: dir_headers nonnmf-lib install 
+#install everything whatever the platform (symbian ....)
+install: dir_headers
+
+
+include $(MM_MAKEFILES_DIR)/VideoStdRules.mk
+

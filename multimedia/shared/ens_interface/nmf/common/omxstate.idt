@@ -1,0 +1,38 @@
+#ifndef __OMXSTATE_H_
+#define __OMXSTATE_H_
+
+typedef enum {
+    // The following enum MUST BE inline with the OMX IL API
+    OMX_StateInvalid,
+    OMX_StateLoaded,
+    OMX_StateIdle,
+    OMX_StateExecuting,
+    OMX_StatePause,
+    OMX_StateWaitForResources,
+    OMX_StateTestForResources,
+
+    // The following enum are used only within the OMX component
+    // for managing the transition between OMX IL states
+    OMX_StateTransientToIdle,
+    OMX_StateTransient,
+    OMX_StateLoadedToIdleHOST,
+    OMX_StateLoadedToIdleDSP,
+    OMX_StateIdleToLoaded,
+    OMX_StateIdleToExecuting,
+    OMX_StateIdleToPause,
+    OMX_StateExecutingToIdle,
+    OMX_StateExecutingToPause,
+    OMX_StatePauseToIdle,
+    OMX_StatePauseToExecuting,
+    OMX_StateTransientToDisable,
+    OMX_StateLoadedToTestForResources,
+    OMX_StateCheckRscAvailability,
+    OMX_StateFlushing,
+
+    // New sub state of Idle or Pause
+    OMX_StateIdleSuspended,
+    OMX_StatePauseSuspended,
+    OMX_StateMax = 0X7FFF
+} OMX_STATETYPE;
+
+#endif // __OMXSTATE_H_

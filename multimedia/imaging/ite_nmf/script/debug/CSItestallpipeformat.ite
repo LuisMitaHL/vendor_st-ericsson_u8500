@@ -1,0 +1,127 @@
+# Initialisation
+#LogPE disable
+#startenv grab_vpip_display_01_01 _BACKUPFW_LRoutVGA_HRoutVGA_SENSOR0 
+setusecase HR VGA YUV422RI
+HR prepare
+sensormode COLORBAR
+HR start
+wait 2
+colorbartest HR
+HR stop
+HR free
+setusecase HR VGA YUV420RP_I420
+HR prepare
+sensormode SOLIDBAR_YELLOW
+HR start
+wait 2
+buffercheck HR YELLOW
+HR stop
+HR free
+setusecase HR VGA YUV420RP_YU12
+HR prepare
+sensormode SOLIDBAR_BLACK
+HR start
+wait 2
+buffercheck HR BLACK
+HR stop
+HR free
+setusecase HR VGA YUV422MB
+HR prepare
+sensormode SOLIDBAR_GREEN
+HR start
+wait 2
+buffercheck HR GREEN
+HR stop
+HR free
+setusecase HR VGA RGB888
+HR prepare
+sensormode SOLIDBAR_MAGENTA
+HR start
+wait 2
+buffercheck HR MAGENTA
+HR stop
+HR free
+setusecase HR VGA RGB30
+HR prepare
+sensormode SOLIDBAR_CYAN
+HR start
+wait 2
+buffercheck HR CYAN
+HR stop
+HR free
+setusecase HR VGA YUV420MB_D
+HR prepare
+sensormode SOLIDBAR_RED
+HR start
+wait 2
+buffercheck HR RED
+HR stop
+HR free
+# some pb with following
+# Cannot be use without grabcache (esram)
+# setusecase HR VGA YUV420MB_F
+# HR prepare
+# sensormode SOLIDBAR_BLUE
+# HR start
+# wait 2
+# buffercheck HR BLUE
+# HR stop
+# HR free
+# LR format check
+setusecase LR VGA YUV422RI
+LR prepare
+sensormode COLORBAR
+LR start
+wait 2
+colorbartest LR
+LR stop
+LR free
+setusecase LR VGA ARGB4444
+LR prepare
+sensormode SOLIDBAR_YELLOW
+LR start
+wait 2
+buffercheck LR YELLOW
+LR stop
+LR free
+setusecase LR VGA ARGB1555
+LR prepare
+sensormode SOLIDBAR_BLACK
+LR start
+wait 2
+buffercheck LR BLACK
+LR stop
+LR free
+setusecase LR VGA RGB565
+LR prepare
+sensormode SOLIDBAR_GREEN
+LR start
+wait 2
+buffercheck LR GREEN
+LR stop
+LR free
+setusecase LR VGA RGB888
+LR prepare
+sensormode SOLIDBAR_BLUE
+LR start
+wait 2
+buffercheck LR BLUE
+LR stop
+LR free
+setusecase LR VGA RGB30
+LR prepare
+sensormode SOLIDBAR_RED
+LR start
+wait 2
+buffercheck LR RED
+LR stop
+LR free
+setusecase LR VGA ARGB8888
+LR prepare
+sensormode SOLIDBAR_MAGENTA
+LR start
+wait 2
+buffercheck LR MAGENTA
+LR stop
+LR free
+stopenv

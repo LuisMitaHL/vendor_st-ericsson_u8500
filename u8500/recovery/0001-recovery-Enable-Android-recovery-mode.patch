@@ -1,0 +1,397 @@
+From a84158e2ea63c49aa0cad3ee5a367c211b937ae7 Mon Sep 17 00:00:00 2001
+From: Johan Rudholm <johan.rudholm@stericsson.com>
+Date: Thu, 9 Feb 2012 15:09:17 +0100
+Subject: [PATCH] recovery: Enable Android recovery mode
+
+Instead of ramdisk.img and uImage, use boot.img and recovery.img. This
+enables the Android recovery mode for uBoot.
+
+Change-Id: I433cd728795797b149bd7fef5078ebe5cda72301
+Signed-off-by: Johan Rudholm <johan.rudholm@stericsson.com>
+---
+ flashconfig/createfilelists-flasher.sh |   70 ++++++++++++++++----------------
+ flashconfig/createfilelists.sh         |   62 +++++++++++++++-------------
+ flashconfig/flasharchive.xml           |   20 +++++-----
+ flashconfig/flashlayout.txt            |    8 ++--
+ uboot_envparameters_android.cfg        |    5 +-
+ 5 files changed, 85 insertions(+), 80 deletions(-)
+
+diff --git a/flashconfig/createfilelists-flasher.sh b/flashconfig/createfilelists-flasher.sh
+index d092164..d779846 100755
+--- a/flashconfig/createfilelists-flasher.sh
++++ b/flashconfig/createfilelists-flasher.sh
+@@ -30,16 +30,26 @@ function createkernellist()
+ 	fi
+ 
+ 	if [ -z "$2" ]; then
+-		echo "Path to kernel not specified"
++		echo "Path to bootimg not specified"
+ 		exit 1
+ 	else
+-		uimagepath="$2"
++		bootimgpath="$2"
++	fi
++
++	if [ -z "$3" ]; then
++		echo "Path to recoveryimage not specified"
++		exit 1
++	else
++		recoveryimgpath="$3"
+ 	fi
+ 
+ 	filelistpath=$1
+ 
+-	echo -n "uImage = " >> $filelistpath
+-	echo $uimagepath >>$filelistpath
++	echo -n "boot.img = " >> $filelistpath
++	echo $bootimgpath >>$filelistpath
++
++	echo -n "recovery.img = " >> $filelistpath
++	echo $recoveryimgpath >>$filelistpath
+ )
+ 
+ function createfilesystemfilelist()
+@@ -50,59 +60,49 @@ function createfilesystemfilelist()
+ 	fi
+ 
+ 	if [ -z "$2" ]; then
+-		echo "Path to ramdisk not specified"
+-		exit 1
+-	else
+-		ramdiskpath="$2"
+-	fi
+-
+-	if [ -z "$3" ]; then
+ 		echo "Path to systemimage not specified"
+ 		exit 1
+ 	else
+-		systemimgpath="$3"
++		systemimgpath="$2"
+ 	fi
+ 
+-	if [ -z "$4" ]; then
++	if [ -z "$3" ]; then
+ 		echo "Path to userdata not specified"
+ 		exit 1
+ 	else
+-		userdataimgpath="$4"
++		userdataimgpath="$3"
+ 	fi
+ 
+-	if [ -z "$5" ]; then
++	if [ -z "$4" ]; then
+ 		echo "Path to cacheimage not specified"
+ 		exit 1
+ 	else
+-		cacheimgpath="$5"
++		cacheimgpath="$4"
+ 	fi
+ 
+-	if [ -z "$6" ]; then
++	if [ -z "$5" ]; then
+ 		echo "Path to modemfs not specified"
+ 		exit 1
+ 	else
+-		modemfsimgpath="$6"
++		modemfsimgpath="$5"
+ 	fi
+ 
+-	if [ -z "$7" ]; then
++	if [ -z "$6" ]; then
+ 		echo "Not specified wheter to exclude the modem or not"
+ 		exit 1
+ 	else
+-		includemodem=$7
++		includemodem="$6"
+ 	fi
+ 
+-	if [ -z "$8" ]; then
++	if [ -z "$7" ]; then
+ 		echo "Path to miscimage not specified"
+ 		exit 1
+ 	else
+-		miscimgpath="$8"
++		miscimgpath="$7"
+ 	fi
+ 
+ 	filelistpath=$1
+ 
+-	echo -n "ramdisk.img = " >> $filelistpath
+-	echo $ramdiskpath >>$filelistpath
+-
+ 	echo -n "system.img = " >> $filelistpath
+ 	echo $systemimgpath >>$filelistpath
+ 
+@@ -210,12 +210,12 @@ fi
+ 
+ destination=""
+ 
+-uimagepath=./uImage
+-ramdiskpath=./ramdisk.img
++bootimgpath=./boot.img
+ systemimgpath=./system.img
+ userdataimgpath=./userdata.img
+ cacheimgpath=./cache.img
+ miscimgpath=./misc.img
++recoveryimgpath=./recovery.img
+ modemfsimgpath=./modemfs.img
+ 
+ includemodem=true
+@@ -237,13 +237,9 @@ while [ "$1" != "" ]; do
+ 			shift
+ 			destination=$1
+ 			;;
+-		-k)
+-			shift
+-			uimagepath=$1
+-			;;
+-		-r)
++		-l)
+ 			shift
+-			ramdiskpath=$1
++			bootimgpath=$1
+ 			;;
+ 		-s)
+ 			shift
+@@ -261,6 +257,10 @@ while [ "$1" != "" ]; do
+ 			shift
+ 			miscimgpath=$1
+ 			;;
++		-j)
++			shift
++			recoveryimgpath=$1
++			;;
+ 		-m)
+ 			shift
+ 			modemfsimgpath=$1
+@@ -318,6 +318,6 @@ fi
+ 	createdntcertfilelist $destination/$filelistname $dntcertpath
+ 	createflashlayoutlist $destination/$filelistname $flashlayoutpath
+ 	createubootfilelist $destination/$filelistname $ubootpath $ubootenvpath $splashpath
+-	createfilesystemfilelist $destination/$filelistname $ramdiskpath $systemimgpath $userdataimgpath $cacheimgpath $modemfsimgpath $includemodem $miscimgpath
+-	createkernellist $destination/$filelistname $uimagepath
++	createfilesystemfilelist $destination/$filelistname $systemimgpath $userdataimgpath $cacheimgpath $modemfsimgpath $includemodem $miscimgpath
++	createkernellist $destination/$filelistname $bootimgpath $recoveryimgpath
+ echo "finished"
+diff --git a/flashconfig/createfilelists.sh b/flashconfig/createfilelists.sh
+index 0260625..43fe825 100755
+--- a/flashconfig/createfilelists.sh
++++ b/flashconfig/createfilelists.sh
+@@ -74,54 +74,44 @@ function createlinuxfilelist()
+ 	fi
+ 
+ 	if [ -z "$2" ]; then
+-		echo "Path to ramdisk not specified"
+-		exit 1
+-	else
+-		ramdiskpath="$2"
+-	fi
+-
+-	if [ -z "$3" ]; then
+ 		echo "Path to systemimage not specified"
+ 		exit 1
+ 	else
+-		systemimgpath="$3"
++		systemimgpath="$2"
+ 	fi
+ 
+-	if [ -z "$4" ]; then
++	if [ -z "$3" ]; then
+ 		echo "Path to userdata not specified"
+ 		exit 1
+ 	else
+-		userdataimgpath="$4"
++		userdataimgpath="$3"
+ 	fi
+ 
+-	if [ -z "$5" ]; then
++	if [ -z "$4" ]; then
+ 		echo "Path to cacheimage not specified"
+ 		exit 1
+ 	else
+-		cacheimgpath="$5"
++		cacheimgpath="$4"
+ 	fi
+ 
+-	if [ -z "$6" ]; then
++	if [ -z "$5" ]; then
+ 		echo "Path to modemfs not specified"
+ 		exit 1
+ 	else
+-		modemfsimgpath="$6"
++		modemfsimgpath="$5"
+ 	fi
+ 
+-	if [ -z "$7" ]; then
++	if [ -z "$6" ]; then
+ 		echo "Path to miscimage not specified"
+ 		exit 1
+ 	else
+-		miscimgpath="$7"
++		miscimgpath="$6"
+ 	fi
+ 
+ 	filelistpath=$1/_filelist_linux.txt
+ 	rm -f $filelistpath
+ 	touch $filelistpath
+ 
+-	echo -n "ramdisk.img = " >> $filelistpath
+-	echo $ramdiskpath >>$filelistpath
+-
+ 	echo -n "system.img = " >> $filelistpath
+ 	echo $systemimgpath >>$filelistpath
+ 
+@@ -212,18 +202,28 @@ function createkernellist()
+ 	fi
+ 
+ 	if [ -z "$2" ]; then
+-		echo "Path to kernel not specified"
++		echo "Path to boot.img not specified"
++		exit 1
++	else
++		bootimgpath="$2"
++	fi
++
++	if [ -z "$3" ]; then
++		echo "Path to recovery.img not specified"
+ 		exit 1
+ 	else
+-		uimagepath="$2"
++		recoveryimgpath="$3"
+ 	fi
+ 
+ 	filelistpath=$1/_filelist_kernel.txt
+ 	rm -f $filelistpath
+ 	touch $filelistpath
+ 
+-	echo -n "uImage = " >> $filelistpath
+-	echo $uimagepath >>$filelistpath
++	echo -n "boot.img = " >> $filelistpath
++	echo $bootimgpath >>$filelistpath
++
++	echo -n "recovery.img = " >> $filelistpath
++	echo $recoveryimgpath >>$filelistpath
+ )
+ 
+ 
+@@ -237,12 +237,12 @@ fi
+ to_parent=""
+ from=""
+ 
+-uimagepath=../../uImage
+-ramdiskpath=../../ramdisk.img
++bootimgpath=../../boot.img
+ systemimgpath=../../system.img
+ userdataimgpath=../../userdata.img
+ cacheimgpath=../../cache.img
+ miscimgpath=../../misc.img
++recoveryimgpath=../../recovery.img
+ modemfsimgpath=../../modemfs.img
+ includemodem=true
+ 
+@@ -264,9 +264,9 @@ while [ "$1" != "" ]; do
+ 			shift
+ 			to_parent=$1
+ 			;;
+-		-k)
++		-l)
+ 			shift
+-			uimagepath=$1
++			bootimgpath=$1
+ 			;;
+ 		-r)
+ 			shift
+@@ -288,6 +288,10 @@ while [ "$1" != "" ]; do
+ 			shift
+ 			miscimgpath=$1
+ 			;;
++		-j)
++			shift
++			recoveryimgpath=$1
++			;;
+ 		-m)
+ 			shift
+ 			modemfsimgpath=$1
+@@ -339,8 +343,8 @@ fi
+ 	createitplist $to_parent/$to/ $itppath
+ 	createflashlayoutlist $to_parent/$to/ $flashlayoutpath
+ 	createubootfilelist $to_parent/$to/ $ubootpath $ubootenvpath $splashpath
+-	createlinuxfilelist $to_parent/$to/ $ramdiskpath $systemimgpath $userdataimgpath $cacheimgpath $modemfsimgpath $miscimgpath
++	createlinuxfilelist $to_parent/$to/ $systemimgpath $userdataimgpath $cacheimgpath $modemfsimgpath $miscimgpath
+ 	createdntcertfilelist $to_parent/$to/ $dntcertpath
+ 	createcspsalist $to_parent/$to/ $cspsapath
+-	createkernellist $to_parent/$to/ $uimagepath
++	createkernellist $to_parent/$to/ $bootimgpath $recoveryimgpath
+ echo "finished"
+diff --git a/flashconfig/flasharchive.xml b/flashconfig/flasharchive.xml
+index fdcddb2..0aa49ef 100644
+--- a/flashconfig/flasharchive.xml
++++ b/flashconfig/flasharchive.xml
+@@ -95,18 +95,18 @@
+ 			<bax:attribute name="TOC-ID">MISC</bax:attribute>
+ 		</bax:entry>
+ 
+-		<bax:entry name="kernel.bin" type="x-empflash/image">
+-			<bax:source>uImage</bax:source>
+-			<bax:attribute name="Target">/flash0/TOC/SUBTOC/KERNEL, 0x00000000</bax:attribute>
+-			<bax:attribute name="TOC-ID">KERNEL</bax:attribute>
+-			<bax:attribute name="TOC-LoadAddress">0x00007FC0</bax:attribute>
++		<bax:entry name="boot.img" type="x-empflash/image">
++			<bax:source>boot.img</bax:source>
++			<bax:attribute name="Target">/flash0/TOC/SUBTOC/BOOT, 0x00000000</bax:attribute>
++			<bax:attribute name="TOC-ID">BOOT</bax:attribute>
++			<bax:attribute name="TOC-LoadAddress">0x03000000</bax:attribute>
+ 		</bax:entry>
+ 
+-		<bax:entry name="ramdisk.img" type="x-empflash/image">
+-			<bax:source>ramdisk.img</bax:source>
+-			<bax:attribute name="Target">/flash0/TOC/SUBTOC/INITRD, 0x00000000</bax:attribute>
+-			<bax:attribute name="TOC-ID">INITRD</bax:attribute>
+-			<bax:attribute name="TOC-LoadAddress">0x02E00000</bax:attribute>
++		<bax:entry name="recovery.img" type="x-empflash/image">
++			<bax:source>recovery.img</bax:source>
++			<bax:attribute name="Target">/flash0/TOC/SUBTOC/RECOVERY, 0x00000000</bax:attribute>
++			<bax:attribute name="TOC-ID">RECOVERY</bax:attribute>
++			<bax:attribute name="TOC-LoadAddress">0x03000000</bax:attribute>
+ 		</bax:entry>
+ 
+ 		<bax:entry name="modemfs.img" type="x-empflash/image">
+diff --git a/flashconfig/flashlayout.txt b/flashconfig/flashlayout.txt
+index b8750a3..d4ebe10 100644
+--- a/flashconfig/flashlayout.txt
++++ b/flashconfig/flashlayout.txt
+@@ -86,14 +86,14 @@ Content-Type: x-empflash/TOC-Partition
+ Start: 0x027FF000
+ End: 0x02800000
+ 
+-Path: /flash0/TOC/SUBTOC/KERNEL
+-Description: Linux kernel
++Path: /flash0/TOC/SUBTOC/BOOT
++Description: Linux kernel + ramdisk
+ Content-Type: x-empflash/TOC-Partition
+ Start: 0x02800000
+ End: 0x03800000
+ 
+-Path: /flash0/TOC/SUBTOC/INITRD
+-Description: Initrd
++Path: /flash0/TOC/SUBTOC/RECOVERY
++Description: Linux kernel + ramdisk, recovery mode
+ Content-Type: x-empflash/TOC-Partition
+ Start: 0x03800000
+ End: 0x04800000
+diff --git a/uboot_envparameters_android.cfg b/uboot_envparameters_android.cfg
+index 5c2bd5a..4688047 100644
+--- a/uboot_envparameters_android.cfg
++++ b/uboot_envparameters_android.cfg
+@@ -1,5 +1,6 @@
+-emmcargs=setenv bootargs ${bootargs} root=/dev/ram0 rw initrd=${initrd},${initrdsize} blkdevparts=mmcblk0:16384@147456,729088@163840,2048@1024,262144@892928,385024@1155072,8@81912 rootwait
+-emmcboot=echo Booting from eMMC ...; boottime_tag load_ramdisk; tocload mmc 0 INITRD; setenv initrd ${loadaddr}; setenv initrdsize ${tocentrysize}; run commonargs extraargs emmcargs addcons memargs; boottime_tag load_kernel; tocload mmc 0 KERNEL; boottime_tag boot_kernel; bootm ${loadaddr}
++emmcargs=setenv bootargs ${bootargs} root=/dev/ram0 rw blkdevparts=mmcblk0:16384@147456,729088@163840,2048@1024,262144@892928,385024@1155072,8@81912 rootwait
++emmcboot=echo Booting from eMMC ...; run commonargs extraargs emmcargs addcons memargs; boottime_tag load_kernel; tocload mmc 0 BOOT; boottime_tag boot_kernel; booti ${loadaddr}
++emmcbootrec=echo Booting from eMMC ...; run commonargs extraargs emmcargs addcons memargs; boottime_tag load_kernel; tocload mmc 0 RECOVERY; boottime_tag boot_kernel; booti ${loadaddr}
+ memargs512=mem=96M@0 mem_mtrace=15M@96M mem_mshared=1M@111M mem_modem=16M@112M mem=104M@128M hwmem=151M@232M mem_issw=1M@383M mem=128M@384M
+ memargs768=mem=96M@0 mem_mtrace=15M@96M mem_mshared=1M@111M mem_modem=16M@112M mem=104M@128M hwmem=151M@232M mem_issw=1M@383M mem=384M@384M vmalloc=256M
+ memargs1024=mem=96M@0 mem_mtrace=15M@96M mem_mshared=1M@111M mem_modem=16M@112M mem=104M@128M hwmem=151M@232M mem_issw=1M@383M mem=640M@384M vmalloc=256M
+-- 
+1.7.7
+

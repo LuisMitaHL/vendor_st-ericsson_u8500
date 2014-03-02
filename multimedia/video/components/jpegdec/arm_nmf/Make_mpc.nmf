@@ -1,0 +1,88 @@
+
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+MODULE_NAME:=jpegdec
+CORE=arm
+COMPONENT_PATH = $(MMROOT)/video/components
+
+SRCPATH += $(MMROOT)/shared/ens
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENTS+= jpegdec.arm_nmf.jpegdeccomparm
+
+CONFFILES =     $(MODULE_NAME)/arm_nmf/parser_mpc/parser_mpc.conf               \
+		$(MODULE_NAME)/arm_nmf/jpegdeccontroller/jpegdeccontroller.conf               \
+                $(MODULE_NAME)/arm_nmf/jpegdeccomparm/jpegdeccomparm.conf
+                		
+CPPPATH += -I$(MMROOT)/shared/ens/components/common
+                
+# OST capability
+include ../make.ost_conf
+OST_SRC_DIR = parser_mpc/src
+OST_SRC_DIR += jpegdeccontroller/src
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_ARM)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_MPC
+CPPFLAGS  += -I$(MMROOT)/video/components/jpegdec/inc/autogentraces
+                
+
+ITFLIST += 	$(MODULE_NAME)/arm_nmf/api/memoryRequirements.idl	\
+		$(MODULE_NAME)/arm_nmf/portSettings.idl		\
+		$(MODULE_NAME)/arm_nmf/computeARMLoad.idl \
+		$(MODULE_NAME)/arm_nmf/sendmemoryContext.idl \
+		$(MODULE_NAME)/arm_nmf/setConfig.idl
+			
+PREBUILD_COMPONENTS = conf-check $(CONFFILES)	
+
+
+#DUMMY:=$(shell echo $(SRCPATH) > org.c)
+#to be removed...taking incorrect path of constructor.idl(from mpcee not form smpee)
+#SRCPATH:=$(shell echo $(SRCPATH) | sed "s/ /\n/g" | sed -n "/mpcee/ !p")
+#DUMMY:=$(shell echo $(SRCPATH) > after.c)
+SRCPATH += $(NMF)/$(MMSYSTEM)/api
+SRCPATH += $(MM_IDT_DIR)
+SRCPATH += $(MMROOT)/shared/ens/nmf/common
+SRCPATH += $(MMROOT)/shared/ens/nmf
+SRCPATH += $(MMROOT)/shared/ens/nmf/mpc/common
+SRCPATH += $(MMROOT)/shared/ens/nmf/mpc
+SRCPATH += $(MMROOT)/shared/ens/nmf/host
+SRCPATH += $(MMROOT)/shared/ens/nmf/host/common
+SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)/mpc/share
+SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)
+SRCPATH += $(MMROOT)/video/components/$(MODULE_NAME)/mpc/share/$(SVA_SUBSYSTEM)
+SRCPATH += $(MMROOT)/shared/nmf/tools/api/mpcee
+
+
+SRCPATH+= \
+        $(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser_mpc/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/jpegdeccontroller/src    \
+	$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/share    
+
+SRCPATH+=$(MM_NMF_COMP_SRC_MMDSP_DIR) $(MM_NMF_COMP_SRC_MMDSP_DIR)/common
+
+CPPFLAGS+= -DMMHWBUFFER        
+CPPFLAGS += -D_CACHE_OPT_
+CPPFLAGS += -D__CACHE_OPTI
+CPPFLAGS +=  -D__JPEGDEC_ARM_NMF -DDBG_PRINT
+CPPFLAGS+= \
+	-I$(MMROOT)/shared/nmf/tools/api/smpee\
+	-I$(MMROOT)/video/components/$(MODULE_NAME)/arm_nmf/parser_mpc/inc\
+	-I$(SHARED_REPOSITORY) \
+	-I$(MMROOT)/shared/ens/proxy/omxil \
+	-I$(MMROOT)/shared/ens/proxy/include \
+       
+ifdef PERF_MEASUREMENT
+CPPFLAGS += -D__PERF_MEASUREMENT
+endif
+
+CPPFLAGS += -DRELEASE -D__RELEASE
+
+CPPFLAGS+= -I$(MMROOT)/video/include
+
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+
+
+    

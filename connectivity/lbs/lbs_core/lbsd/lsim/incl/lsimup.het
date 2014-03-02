@@ -1,0 +1,1178 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+/*****************************************************************************/
+/*!    \file lsimup.het
+ *  \brief External type definition
+ */
+#ifndef LSIMUP_HET
+#define LSIMUP_HET
+
+#ifndef MC_PCC_FILL_STRUCT1
+
+/* These are specific to Doxygen */
+
+#define MC_PCC_FIELD(x,y) x y; /**< */
+#define MC_PCC_BEGIN_STRUC(y) typedef struct{
+#define MC_PCC_END_STRUC(y) } y;
+
+#define MC_PCC_HEADER(x,y,z,t)  enum{ z , /**< */ } ;
+#define MC_RTK_PROCESS_OPERATION(x,y) x|y
+#define MC_PCC_FUNCTION_TYPE( x,y ) x|y
+#define MC_PCC_FILL_STRUCT1  uint8_t  dummy[1] ; /**< dummy 1 byte  */
+#define MC_PCC_FILL_STRUCT2  uint8_t  dummy[2] ; /**< dummy 2 byte  */
+#define MC_PCC_FILL_STRUCT3  uint8_t  dummy[3] ; /**< dummy 3 byte  */
+
+#endif /* DOXYGEN_SPECIFIC_MACROS */
+
+/*======================== Generic structures ================================*/
+
+/*! \addtogroup lsimup_interface */
+/*@{*/
+
+/*!    \typedef t_lsimup_ErrorCode
+    Error value returned by API functions in case of problem calling the
+    service.
+    Allowed values are defined in following enum \ref  e_lsimup_Error.
+*/
+typedef e_lsimup_Error t_lsimup_ErrorCode;
+
+/*! \typedef t_lsimup_RejectionReason
+    Reason value returned in case of rejection.
+    Allowed values are defined in following enum \ref  e_lsimup_RejectionReason.
+*/
+typedef e_lsimup_RejectionReason t_lsimup_RejectionReason;
+
+/*! \typedef t_lsimup_ErrorType
+    Error value returned by Services in case of problem executing the service.
+    Allowed values are defined in following enum \ref  e_lsimup_ErrorType.
+*/
+typedef e_lsimup_ErrorType t_lsimup_ErrorType;
+
+/*! \typedef void* t_lsimup_SessionHandle
+    Handle to an LSIMUP session.
+*/
+typedef int32_t t_lsimup_SessionHandle;
+
+/*! \typedef void* t_lsimup_ConnectionHandle
+    Handle to an LSIMUP connection.
+    - This connection handle can be requested using the \ref CGPS_LSIMUP_TCPIP_CONNECT_REQ
+    service. Then it is provided by the \ref t_lsimup_TcpIpConnectCnfM stucture associated to
+    the \ref CGPS_LSIMUP_TCPIP_CONNECT_CNF message.
+*/
+typedef int32_t t_lsimup_ConnectionHandle;
+/*@}*/ /* end group lsimup_interface */
+
+
+/*======================= Mobile and Network structures ========================*/
+
+/*! \addtogroup lsimup_Mobile_Network_services */
+/*@{*/
+
+/*!
+    \struct t_lsimup_LcsClientId
+    \brief Structure which defines MSISDN of the external client.
+*/
+typedef struct
+{
+    uint8_t v_TonNpi;                                            /**<    TonNpi */
+    uint8_t v_Config;                                            /**<    Config */
+    uint8_t a_PhoneNumber[ K_LSIMUP_MAX_LENGTH_PHONE_NUM ];        /**<    Null-terminated
+        string of characters identifying a phonenumber. Its maximum length,
+        including '+' char and ending '/0', is : \ref K_LSIMUP_MAX_LENGTH_PHONE_NUM. */
+}t_lsimup_LcsClientId;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_LcsClientName
+    \brief Structure which defines Name of the external client.
+*/
+typedef struct
+{
+    uint8_t v_Alphabet;                                            /**<    Alphabet */
+    uint8_t a_String[ K_LSIMUP_LCS_CLIENT_NAME_MAX_LENGTH+1 ];    /**<    String for client.
+        Up to \ref K_LSIMUP_LCS_CLIENT_NAME_MAX_LENGTH characters - truncated
+           if too long. Empty string + 8BitData if parameter not provided. */
+}t_lsimup_LcsClientName;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_LcsRequestorId
+    \brief Structure which defines Identity of the originator of the
+        location request, the Requestor.
+*/
+typedef struct
+{
+    uint8_t v_Alphabet;                                            /**<    Alphabet */
+    uint8_t a_String[ K_LSIMUP_LCS_REQUESTOR_ID_MAX_LENGTH+1 ];    /**<    String for requestor.
+        Up to \ref K_LSIMUP_LCS_REQUESTOR_ID_MAX_LENGTH characters - truncated
+        if too long. Empty string + 8BitData if paramater not provided. */
+}t_lsimup_LcsRequestorId;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_LcsCodeWord
+    \brief Structure which defines Access code that is used by a
+    Requestor or LCS Client to gain acceptance of a location request for
+       a target user equipment.
+*/
+typedef struct
+{
+    uint8_t v_Alphabet;                                            /**<    Alphabet */
+    uint8_t a_String[ K_LSIMUP_LCS_CODEWORD_MAX_LENGTH+1 ];        /**<    String for code.
+        Up to \ref K_LSIMUP_LCS_CODEWORD_MAX_LENGTH characters - truncated
+        if too long. Empty string + 8BitData if paramater not provided.    */
+}t_lsimup_LcsCodeWord;
+
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_NetworkMeasurementResult
+    \brief Structure which defines Network Measurement Results.
+*/
+typedef struct{
+    uint8_t v_Length;    /**<    Number of significant bytes in the corresponding
+                      a_Contents array. */
+    uint8_t a_Contents[ K_LSIMUP_MAX_LEN_NMR ];    /**<    Array of maximum \ref
+                                          K_LSIMUP_MAX_LEN_NMR bytes containing
+                                          the Network Measurement Results (NMR). */
+}t_lsimup_NetworkMeasurementResult;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_BcchChannelList
+    \brief Structure which defines BCCH    Channel list.
+*/
+typedef struct{
+    uint8_t v_Length;    /**<    Number of significant bytes in the corresponding
+                      a_Contents array. */
+    uint8_t a_Contents[ K_LSIMUP_MAX_LEN_BCCH_LIST ];    /**<    Array of maximum
+                                    \ref K_LSIMUP_MAX_LEN_BCCH_LIST bytes
+                                    containing the BCCH Channel List. */
+}t_lsimup_BcchChannelList;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct _t_lsimup_NMR
+    \brief Structure which defines Network Measurement Result.
+*/
+typedef struct _t_lsimup_NMR
+{
+    uint16_t s_ARFCN;            /**<    ARFCN, range: (0..1023) */
+    uint8_t s_BSIC;        /**<    BSIC, range: (0..63) */
+    uint8_t s_RXLev;            /**<    RXLEV, range: (0..63) */
+    struct _t_lsimup_NMR* p_NextNeighbour; /**<    Pointer to a new neigbour NMR*/
+} t_lsimup_NMR;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_TimingAdvance
+    \brief Structure which defines Network timing advance.
+*/
+typedef uint32_t t_lsimup_TimingAdvance;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_MSISDN
+    \brief Structure which defines MSISDN.
+*/
+typedef struct
+{
+    uint8_t a_PhoneNumber[ K_LSIMUP_MAX_LENGTH_PHONE_NUM ];        /**<    Null-terminated
+        string of characters identifying a phonenumber. Its maximum length,
+        including '+' char and ending '/0', is : \ref K_LSIMUP_MAX_LENGTH_PHONE_NUM. */
+}t_lsimup_MSISDN;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_IMSI
+    \brief Structure which defines IMSI.
+*/
+typedef struct
+{
+    uint8_t a_IMSI[ K_LSIMUP_MAX_LENGTH_IMSI_NUM ];        /**<    string of characters
+        identifying an IMSI code. Its maximum length is : \ref K_LSIMUP_MAX_LENGTH_IMSI_NUM. */
+}t_lsimup_IMSI;
+
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_CellInfoType
+    \brief Structure which defines Cell Info type. 
+     Allowed values are defined in following enum \ref e_lsimup_CellInfoType
+*/
+typedef e_lsimup_CellInfoType t_lsimup_CellInfoType;
+
+
+/*----------------------------------------------------------------------*/
+/*!    \Enum e_lsimup_AccessPointType
+    \brief Enum which says the type of wireless network. 
+     Allowed values are defined in following enum \ref e_lsimup_AccessPointType
+*/
+typedef e_lsimup_AccessPointType t_lsimup_AccessPointType;
+
+/*----------------------------------------------------------------------*/
+/*!    \Enum e_lsimup_AccessPointStatus
+    \brief Enum which says the status of Access Point Information.
+     Allowed values are defined in following enum \ref e_lsimup_AccessPointStatus
+*/
+typedef e_lsimup_AccessPointStatus t_lsimup_AccessPointStatus;
+
+/*----------------------------------------------------------------------*/
+/*!    \Enum e_lsimup_MobileInfoType
+    \brief Enum which says the type of network that is present. 
+     Allowed values are defined in following enum \ref e_lsimup_MobileInfoType
+*/
+typedef e_lsimup_MobileInfoType t_lsimup_MobileInfoType;
+
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_FrequencyInfo
+    \brief Structure which defines Frequency Info
+*/
+typedef struct
+{
+  uint16_t    v_ULArfcn;  /**<>*/
+  uint16_t    v_DLArfcn;  /**<>*/
+  uint8_t    v_ULArfcnPresent; /**<>*/
+  MC_PCC_FILL_STRUCT3
+} t_lsimup_FrequencyInfo;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_TimeslotISCPList
+    \brief Structure which defines array of timeslotISCP measurements
+*/
+typedef struct
+{
+    uint8_t v_NumTimeslotISCP; /**<Specifies number of Timeslot ISCPs measured */
+    MC_PCC_FILL_STRUCT3
+    uint8_t *p_TimeslotISCPList;/**<Pointer to array of TimeslotISCP measurements. Length specified by v_NumTimeslotISCP.
+                                            Receiver has to free memory allocated to this pointer */    
+}t_lsimup_TimeslotISCPList;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct _t_lsimup_cellMeasuredResultsList
+    \brief Structure which defines cell measurements. 
+*/
+typedef struct _t_lsimup_cellMeasuredResultsList
+{
+  uint32_t v_CellId;/**< */
+  uint32_t v_ScramblingCode; /**< WCDMA - Scrambling code,  TDSCDMA - cellParametersID */
+  uint8_t v_CellIdPresent;/**< */
+  uint8_t v_CPICH_Bitmap; /**<    Bit 0 - PathLoss valid, Bit 1  - EcNo valid , Bit 2- RSCP valid  */
+  MC_PCC_FILL_STRUCT2
+  uint32_t v_CPICH_EcNo;/**< */
+  uint32_t v_CPICH_RSCP;/**< */
+  uint32_t v_CPICH_PathLoss;/**< */
+  struct _t_lsimup_cellMeasuredResultsList* p_NextCellMeasuredResultsList;/**<Next element*/
+  t_lsimup_TimeslotISCPList v_TimeslotISCPList;/**< This will be valid only for TDSCDMA */
+} t_lsimup_cellMeasuredResultsList;
+
+/*----------------------------------------------------------------------*/
+/*!    \struct _t_lsimup_MeasuredResultsList
+    \brief Structure which defines measured results
+*/
+typedef struct _t_lsimup_MeasuredResultsList
+{
+   t_lsimup_FrequencyInfo v_freqInfo;/**< */
+   uint32_t v_UTRACarrierRSS;/**< */
+   uint32_t v_NumberOfCellsInUARFCN;/**< */
+   t_lsimup_cellMeasuredResultsList* p_cellMeasuredResultsList;/**< */
+   struct _t_lsimup_MeasuredResultsList* p_NextMeasuredResultsList;/**< Next Element*/
+} t_lsimup_MeasuredResultsList;
+
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_MobileInfo
+    \brief Structure which defines mobile information.
+*/
+typedef struct
+{
+    uint32_t v_ValidityField;        /**<    Validity Field. Each bit at 1 corresponds to a valid block in \ref t_lsimup_MobileInfo.
+                              Allowed values are defined in following enum \ref  e_lsimup_ValidityField. */
+    uint16_t v_Mcc;                    /**<    PLMN-MCC value (coding: BCD format). */
+    uint16_t v_Mnc;                    /**<    Universal minute provided by the network. Set to UNDEFINED if not provided by the network. */
+    uint16_t v_Lac;                    /**<    LAC number identifier. */
+    uint16_t v_CellIdentity;            /**<    Cell number identifier for 2G.
+                                 for 3G:Cell number identifier = (  ((uint32_t) v_RNCId  << 16)  |  v_CellIdentity)  */
+    uint32_t v_NeighbouringCells;           /**<    Number of Neighbouring cells. used also for WCDMA/TDSCDMA*/
+    uint32_t s_Primary_Scrambling_Code;  /**<    Valid only for WCDMA.  contains CellParameterID in TDSCDMA*/
+
+    t_lsimup_NMR* p_NMR;            /**<    Network Measurement Results. */
+    t_lsimup_TimingAdvance s_TA;    /**<    Network timing advance. */
+    t_lsimup_FrequencyInfo v_FrequencyInfo;  /**<    Valid only for WCDMA/TDSCDMA. */
+    t_lsimup_MeasuredResultsList* p_MeasuredResultsList;  /**<    Valid only for WCDMA/TDSCDMA*/
+    t_lsimup_IMSI s_IMSI;            /**<    International Mobile Subscriber Identity. */
+   t_lsimup_MSISDN s_MSISDN;        /**<    Mobile Station International ISDN Number. */
+   uint16_t v_RNCId;                /**<    Additionnal network cell information for UMTS, undefined if the RAT is GSM. */
+   t_lsimup_CellInfoType v_Celltype;       /**<    Cell Id type (GSM . WCDMA or TDSCDMA). */
+   uint8_t v_RegistrationState ;    /**<    GSM registration state.
+                                 Allowed values are defined in following enum \ref  e_lsimup_RegistrationState. */
+   MC_PCC_FILL_STRUCT2
+}t_lsimup_MobileInfo;
+
+/*----------------------------------------------------------------------*/
+/*! \struct t_lsimup_WLANAPInfo
+ *  \brief  Structure which defines the mobile information for WLAN Info.
+ */
+typedef struct
+{
+    uint16_t v_MS_Addr;                      /*!<Media Access Control address of WLAN access point (most significant 16 bits)*/
+    uint32_t v_LS_Addr;                      /*!<Media Access Control address of WLAN access point (least significant 32 bits)*/
+    int16_t  v_TransmitPower;                /*!<AP Transmit power in dBm. Optional parameter. INTEGER (-127...128). Invalid Value 0X7FFF*/
+    int16_t  v_AP_AntennaGain;                  /*!<AP antenna gain in dBi,Optional parameter.  INTEGER (-127...128). Invalid Value 0X7FFF*/
+    int16_t  v_SNR;                          /*!<AP Signal to Noise received at the SET in dB,Optional parameter.  INTEGER (-127...128). Invalid Value 0X7FFF*/
+    uint8_t  v_DeviceType;                   /*!<ENUM, 802.11a device or 802.11b device or 802.11g device or Unknown*/
+    int16_t  v_SignalStrength;               /*!<AP signal strength received at the SET in dBm. INTEGER (-127...128).*/
+    uint16_t v_Channel;                      /*!<AP channel/frequency of Tx/Rx.*/
+    uint32_t v_RTDValue;                     /*!<Measured Round Trip Delay value between the SET and AP.*/
+    uint8_t  v_RTDUnits;                     /*!<Units for Round Trip Delay value and Round Trip Delay accuracy*/
+    uint16_t v_Accuracy;                     /*!<Round Trip Delay standard deviation in relative units. INTEGER (0...255).*/
+    int16_t  v_SETTransmitPower;             /*!<SET Transmit power in dBm.*/
+    int16_t  v_SETAntennaGain;               /*!<SET antenna gain in dBi*/
+    int16_t  v_SETSNR;                       /*!<SET Signal to Noise received at the AP in dB. */
+    int16_t  v_SETSignalStrength;            /*!<SET signal strength received at the AP in dBm.*/
+} t_lsimup_WLANAPInfo;
+
+/*----------------------------------------------------------------------*/
+/*! \union  t_lsimup_AccessPointInfo
+ *  \brief  Union which defines the Access Point Information from either WLAN or WIMAX.
+ */
+typedef union
+{
+    t_lsimup_WLANAPInfo           v_WlanApInfo;              /*!< Access Point Information of the WLAN*/
+    /*This structure can be extended for adding WIMAX and other wireless network Info*/
+} t_lsimup_AccessPointInfo;
+
+
+/*----------------------------------------------------------------------*/
+/*!    \struct t_lsimup_WirelessNetworkInfo
+    \brief Structure which defines Access Point Info of the Wireless Network.
+*/
+typedef struct
+{
+   t_lsimup_AccessPointType      v_AccessPointType;       /**<    Wireless Network Type WLAN, WIMAX */
+   t_lsimup_AccessPointStatus    v_AccessPointStatus;     /**<    Access point Info status STALE, CURRENT, UNKNOWN */
+   t_lsimup_AccessPointInfo      v_AccessPointInfo;
+   MC_PCC_FILL_STRUCT2
+}t_lsimup_WirelessNetworkInfo;
+
+/*@}*/ /* End of group lsimup_Mobile_Network_services */
+
+/*========================== SUPL structures ===============================*/
+
+/*!    \addtogroup lsimup_SUPL_services */
+/*@{*/
+
+/*----------------------------------------------------------------------*/
+/*!    \typedef t_lsimup_IPAddress
+    \brief (char*) Structure which defines IP Address for TCP/IP connection services.
+*/
+typedef char* t_lsimup_IPAddress;
+
+/*----------------------------------------------------------------------*/
+/*!    \typedef t_lsimup_AddressType
+    Adress type (URL, IPV4, IPV6).
+    Allowed values are defined in following enum \ref  e_lsimup_AddressType.
+*/
+typedef e_lsimup_AddressType t_lsimup_AddressType;
+
+/*----------------------------------------------------------------------*/
+/*!    \typedef t_lsimup_SocketType
+    Socket type (UDP, TCP).
+    Allowed values are defined in following enum \ref  e_lsimup_SocketType.
+*/
+typedef e_lsimup_SocketType t_lsimup_SocketType;
+
+/*+ CR LMSqb06635*/
+/*----------------------------------------------------------------------*/
+/*!    \typedef t_lsimup_BearerType
+    Bearer type (CSD, GPRS).
+    Allowed values are defined in following enum \ref  e_lsimup_BearerType.
+*/
+typedef e_lsimup_BearerType t_lsimup_BearerType;
+
+/*----------------------------------------------------------------------*/
+/*!    \typedef t_lsimup_SelectedModem
+    Modem type (Analogic, Internet Service Provider).
+    Allowed values are defined in following enum \ref  e_lsimup_SelectedModem.
+*/
+typedef e_lsimup_SelectedModem t_lsimup_SelectedModem;
+
+/*@}*/ /* End of group lsimup_SUPL_services */
+
+/*-----------------------Message parameters for INIT ---------------------------------*/
+
+/*!    \addtogroup lsimup_Init_DeInit_services */
+/*@{*/
+
+#define CGPS_FF_LSIMUP_INIT_REQ            MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_INIT,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Initialize the LSIMUP process.
+        - Message Payload \ref t_lsimup_InitReqM
+        - LSIMUP will return \ref CGPS_LSIMUP_INIT_CNF  or \ref CGPS_LSIMUP_INIT_ERR  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_INIT_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_INIT_REQ))
+/*!    \struct t_lsimup_InitReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_INIT_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_InitReqM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle )    /**<    Session Handle */
+MC_PCC_END_STRUC   (t_lsimup_InitReqM)
+
+
+#define CGPS_FF_LSIMUP_INIT_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_INIT,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Confirmation for the initialization procedure. \ref CGPS_LSIMUP_INIT_REQ
+        - Message payload t_lsimup_InitCnfM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_INIT_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_INIT_CNF))
+/*!    \struct t_lsimup_InitCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_INIT_CNF
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_InitCnfM)
+    MC_PCC_FIELD(t_lsimup_SessionHandle , v_SessionHandle)    /**<    Session Handle */
+   MC_PCC_END_STRUC(t_lsimup_InitCnfM)
+
+#define CGPS_FF_LSIMUP_INIT_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_INIT,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Error in the initialization procedure. \ref CGPS_LSIMUP_INIT_REQ
+        - Message payload t_lsimup_InitErrM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_INIT_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_INIT_ERR))
+/*!    \struct t_lsimup_InitErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_INIT_ERR
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_InitErrM)
+    MC_PCC_FIELD(t_lsimup_SessionHandle , v_SessionHandle)    /**<    Session Handle */
+    MC_PCC_FIELD( t_lsimup_ErrorType , v_ErrorType)        /**<    Error type returned to the requester by the service. */
+    MC_PCC_FILL_STRUCT3
+   MC_PCC_END_STRUC(t_lsimup_InitErrM)
+
+
+
+#define CGPS_FF_LSIMUP_DEINIT_REQ            MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_DEINIT,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Request for deinitialization procedure.
+        - LSIMUP will return \ref CGPS_LSIMUP_DEINIT_CNF or \ref CGPS_LSIMUP_DEINIT_ERR
+        - Message Payload \ref t_lsimup_DeInitReqM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_DEINIT_REQ, MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_DEINIT_REQ))
+/*!    \struct t_lsimup_DeInitReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_DEINIT_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_DeInitReqM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)
+MC_PCC_END_STRUC   (t_lsimup_DeInitReqM)
+
+#define CGPS_FF_LSIMUP_DEINIT_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_DEINIT,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Confirmation for the Deinitialization procedure.\ref CGPS_LSIMUP_DEINIT_CNF
+        - Message Payload \ref t_lsimup_DeInitCnfM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_DEINIT_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_DEINIT_CNF))
+/*!    \struct t_lsimup_DeInitCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_DEINIT_CNF
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_DeInitCnfM)
+       MC_PCC_FIELD(t_lsimup_SessionHandle , v_SessionHandle)    /**<    Session Handle */
+   MC_PCC_END_STRUC(t_lsimup_DeInitCnfM)
+
+
+#define CGPS_FF_LSIMUP_DEINIT_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_DEINIT,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Error in the deinitialization procedure. \ref CGPS_LSIMUP_DEINIT_REQ
+        - Message payload t_lsimup_DeInitErrM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_DEINIT_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_DEINIT_ERR))
+/*!    \struct t_lsimup_DeInitErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_INIT_ERR
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_DeInitErrM)
+    MC_PCC_FIELD(t_lsimup_SessionHandle , v_SessionHandle)    /**<    Session Handle */
+    MC_PCC_FIELD( t_lsimup_ErrorType , v_ErrorType)        /**<    Error type returned to the requester by the service. */
+    MC_PCC_FILL_STRUCT3
+   MC_PCC_END_STRUC(t_lsimup_DeInitErrM)
+
+
+/*@}*/ /* End of group lsimup_Init_DeInit_services */
+
+/*-----------------------Message parameters for SUPL ---------------------------------*/
+
+/*!    \addtogroup lsimup_SUPL_services */
+/*@{*/
+
+#define CGPS_FF_LSIMUP_TCPIP_CONNECT_REQ       MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_CONNECT,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Request to connect to a server specified by an IP connection and open a socket used for TCP or UDP protocol for transport of SUPL data.
+        - Message Payload is \ref t_lsimup_TcpIpConnectReqM
+        - LSIMUP returns \ref CGPS_LSIMUP_TCPIP_CONNECT_CNF or \ref CGPS_LSIMUP_TCPIP_CONNECT_ERR */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_TCPIP_CONNECT_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_TCPIP_CONNECT_REQ))
+/*!    \struct t_lsimup_TcpIpConnectReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_CONNECT_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_TcpIpConnectReqM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_IPAddress , s_IPAddress) /**<    IP address */
+  MC_PCC_FIELD (t_lsimup_AddressType , s_IPAddressType) /**<    IP address type */
+  MC_PCC_FIELD (t_lsimup_SocketType , s_SocketType) /**<    Socket type */
+  MC_PCC_FILL_STRUCT2
+  MC_PCC_FIELD (uint32_t , s_IPPortNum) /**<    Port Number */
+MC_PCC_END_STRUC   (t_lsimup_TcpIpConnectReqM)
+
+#define CGPS_FF_LSIMUP_TCPIP_CONNECT_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_CONNECT,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Success establishment of Data connection. refer \ref CGPS_LSIMUP_TCPIP_CONNECT_REQ
+        - Message Payload is \ref t_lsimup_TcpIpConnectCnfM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_TCPIP_CONNECT_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_TCPIP_CONNECT_CNF))
+/*!    \struct t_lsimup_TcpIpConnectCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_CONNECT_CNF
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_TcpIpConnectCnfM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle */
+  MC_PCC_FIELD (t_lsimup_IPAddress , s_IPAddress) /**<    IP address */
+  MC_PCC_FIELD (t_lsimup_AddressType , s_IPAddressType) /**<    IP address type */
+  MC_PCC_FIELD (t_lsimup_SocketType , s_SocketType) /**<    Socket type */
+  MC_PCC_FILL_STRUCT2
+  MC_PCC_FIELD (uint32_t , s_IPPortNum) /**<    Port Number */
+MC_PCC_END_STRUC(t_lsimup_TcpIpConnectCnfM)
+
+#define CGPS_FF_LSIMUP_TCPIP_CONNECT_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_CONNECT,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Error in establishment of Data connection. Returns reason for error refer \ref CGPS_LSIMUP_TCPIP_CONNECT_REQ.
+        - Message Payload is \ref t_lsimup_TcpIpConnectErrM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_TCPIP_CONNECT_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_TCPIP_CONNECT_ERR))
+/*!    \struct t_lsimup_TcpIpConnectErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_CONNECT_ERR
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_TcpIpConnectErrM)
+      MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+            MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle */
+    MC_PCC_FIELD (uint32_t , s_IPPortNum) /**<    Port Number */
+      MC_PCC_FIELD (t_lsimup_IPAddress , s_IPAddress) /**<    IP address */
+      MC_PCC_FIELD (t_lsimup_AddressType , s_IPAddressType) /**<    IP address type */
+      MC_PCC_FIELD (t_lsimup_SocketType , s_SocketType) /**<    Socket type */
+    MC_PCC_FIELD( t_lsimup_ErrorType , v_ErrorType)        /**<    Error type returned to the requester by the service. */
+      MC_PCC_FILL_STRUCT1
+   MC_PCC_END_STRUC(t_lsimup_TcpIpConnectErrM)
+
+#define CGPS_FF_LSIMUP_TCPIP_DISCONNECT_REQ    MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_DISCONNECT,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Request to disconnect the specified connection from CGPS
+        - Message Payload is \ref t_lsimup_TcpIpDisconnectReqM
+        - LSIMUP responds with  \ref CGPS_LSIMUP_TCPIP_DISCONNECT_CNF or \ref CGPS_LSIMUP_TCPIP_DISCONNECT_ERR*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_TCPIP_DISCONNECT_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_TCPIP_DISCONNECT_REQ))
+/*!    \struct t_lsimup_TcpIpDisconnectReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_DISCONNECT_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_TcpIpDisconnectReqM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)/**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle */
+MC_PCC_END_STRUC   (t_lsimup_TcpIpDisconnectReqM)
+
+#define CGPS_FF_LSIMUP_TCPIP_DISCONNECT_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_DISCONNECT,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Confirmation of disconnecting the specified connection. refer \ref CGPS_LSIMUP_TCPIP_DISCONNECT_REQ
+        - Message Payload is \ref t_lsimup_TcpIpDisconnectCnfM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_TCPIP_DISCONNECT_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_TCPIP_DISCONNECT_CNF))
+/*!    \struct t_lsimup_TcpIpDisconnectCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_DISCONNECT_CNF
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_TcpIpDisconnectCnfM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)/**<    Session Handle */
+      MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle */
+   MC_PCC_END_STRUC(t_lsimup_TcpIpDisconnectCnfM)
+
+
+#define CGPS_FF_LSIMUP_TCPIP_DISCONNECT_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_DISCONNECT,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Error while disconnecting the specified connection. Disconnection might still occur.Returns type of error. refer \ref CGPS_LSIMUP_TCPIP_DISCONNECT_REQ
+        - Message Payload is \ref t_lsimup_TcpIpDisconnectErrM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_TCPIP_DISCONNECT_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_TCPIP_DISCONNECT_ERR))
+/*!    \struct t_lsimup_TcpIpDisconnectErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_DISCONNECT_ERR
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_TcpIpDisconnectErrM)
+    MC_PCC_FIELD( t_lsimup_SessionHandle , v_SessionHandle )    /**<    Session Handle */
+    MC_PCC_FIELD( t_lsimup_ConnectionHandle , v_ConnectionHandle )  /**<    Connection Handle */
+    MC_PCC_FIELD( t_lsimup_ErrorType , v_ErrorType)        /**<    Error type returned to the requester by the service. */
+    MC_PCC_FILL_STRUCT3
+   MC_PCC_END_STRUC(t_lsimup_TcpIpDisconnectErrM)
+
+#define CGPS_FF_LSIMUP_TCPIP_DISCONNECT_IND MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_DISCONNECT,PCC_T_IND)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - LSIMUP notifies CGPS of disconnection of TCP/IP link. Expects \ref CGPS_LSIMUP_TCPIP_DISCONNECT_RSP or \ref CGPS_LSIMUP_TCPIP_DISCONNECT_RJT
+        - Message Payload is \ref t_lsimup_TcpIpDisconnectIndM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_TCPIP_DISCONNECT_IND,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_TCPIP_DISCONNECT_IND))
+/*!    \struct t_lsimup_TcpIpDisconnectIndM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_DISCONNECT_IND
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_TcpIpDisconnectIndM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)/**<    Session Handle */
+      MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle */
+   MC_PCC_END_STRUC(t_lsimup_TcpIpDisconnectIndM)
+
+#define CGPS_FF_LSIMUP_TCPIP_DISCONNECT_RSP    MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_DISCONNECT,PCC_T_RSP)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Positive response to a disconnection indication \ref CGPS_LSIMUP_TCPIP_DISCONNECT_IND . CGPS has managed the disconnection properly.
+        - Message Payload is \ref t_lsimup_TcpIpDisconnectRspM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_TCPIP_DISCONNECT_RSP,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_TCPIP_DISCONNECT_RSP))
+/*!    \struct t_lsimup_TcpIpDisconnectRspM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_DISCONNECT_RSP
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_TcpIpDisconnectRspM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle, v_SessionHandle)    /**<    Session Handle */
+    MC_PCC_FIELD (t_lsimup_ConnectionHandle, v_ConnectionHandle)        /**<    Connection Handle */
+MC_PCC_END_STRUC   (t_lsimup_TcpIpDisconnectRspM)
+
+#define CGPS_FF_LSIMUP_TCPIP_DISCONNECT_RJT    MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_TCPIP_DISCONNECT,PCC_T_RJT)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Negative response to a disconnection indication \ref CGPS_LSIMUP_TCPIP_DISCONNECT_IND . Even if CGPS sends this message, disconnection might occur.
+        - Message Payload is \ref t_lsimup_TcpIpDisconnectRjtM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_TCPIP_DISCONNECT_RJT,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_TCPIP_DISCONNECT_RJT))
+/*!    \struct t_lsimup_TcpIpDisconnectRjtM
+    \brief Message Payload for \ref CGPS_LSIMUP_TCPIP_DISCONNECT_RJT
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_TcpIpDisconnectRjtM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle, v_SessionHandle)    /**<    Session Handle */
+    MC_PCC_FIELD (t_lsimup_ConnectionHandle, v_ConnectionHandle)        /**<    Connection Handle */
+    MC_PCC_FIELD (t_lsimup_RejectionReason, v_RejectionReason)        /**<    Rejection Reason */
+    MC_PCC_FILL_STRUCT3
+MC_PCC_END_STRUC   (t_lsimup_TcpIpDisconnectRjtM)
+
+#define CGPS_FF_LSIMUP_ESTABLISH_BEARER_REQ    MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_ESTABLISH_BEARER,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Request to configure a GPRS or CSD bearer.
+        - Message Payload is \ref t_lsimup_EstablishBearerReqM.
+        - LSIMUP returns \ref CGPS_LSIMUP_ESTABLISH_BEARER_CNF or \ref CGPS_LSIMUP_ESTABLISH_BEARER_ERR*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_ESTABLISH_BEARER_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_ESTABLISH_BEARER_REQ))
+/*!    \struct t_lsimup_EstablishBearerReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_ESTABLISH_BEARER_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_EstablishBearerReqM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_BearerType , v_BearerType)/**<    Bearer type: CSD or GPRS */
+  MC_PCC_FIELD (t_lsimup_SelectedModem , v_SelectedModem) /**<    valid only for CSD*/
+  MC_PCC_FILL_STRUCT2
+  MC_PCC_FIELD (char* , s_APN)/**<    APN: : valid For GPRS (NULL string for CSD)   */
+  MC_PCC_FIELD (char* , s_PhoneCalledNumber)/**< Phone Called number: valid For CSD (NULL string for GPRS) */
+  MC_PCC_FIELD (char* , s_Login)/**< Phone Called number: valid For CSD (NULL string for GPRS) */
+  MC_PCC_FIELD (char* , s_Password) /**<   Password: always terminated by NULL string*/
+MC_PCC_END_STRUC   (t_lsimup_EstablishBearerReqM)
+
+#define CGPS_FF_LSIMUP_ESTABLISH_BEARER_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_ESTABLISH_BEARER,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Success establishment of Data Bearer. Refer \ref CGPS_LSIMUP_ESTABLISH_BEARER_REQ
+        - Message Payload is \ref t_lsimup_EstablishBearerCnfM.*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_ESTABLISH_BEARER_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_ESTABLISH_BEARER_CNF))
+
+/*!    \struct t_lsimup_EstablishBearerCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_ESTABLISH_BEARER_CNF
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_EstablishBearerCnfM)
+    MC_PCC_FIELD( t_lsimup_SessionHandle , v_SessionHandle )  /**<    Session Handle */
+MC_PCC_END_STRUC(t_lsimup_EstablishBearerCnfM)
+
+#define CGPS_FF_LSIMUP_ESTABLISH_BEARER_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_ESTABLISH_BEARER,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Error in establishment of Data Bearer. Refer \ref CGPS_LSIMUP_ESTABLISH_BEARER_REQ
+        - Message Payload is \ref t_lsimup_EstablishBearerErrM.*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_ESTABLISH_BEARER_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_ESTABLISH_BEARER_ERR))
+/*!    \struct t_lsimup_EstablishBearerErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_ESTABLISH_BEARER_ERR
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_EstablishBearerErrM)
+    MC_PCC_FIELD( t_lsimup_SessionHandle , v_SessionHandle )  /**<    Session Handle */
+    MC_PCC_FIELD( t_lsimup_ErrorType , v_ErrorType )           /**<   Error type */
+    MC_PCC_FILL_STRUCT3
+   MC_PCC_END_STRUC(t_lsimup_EstablishBearerErrM)
+
+#define CGPS_FF_LSIMUP_CLOSE_BEARER_REQ        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CLOSE_BEARER,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Request to close the bearer configuration by CGPS
+        - Message Payload is \ref t_lsimup_CloseBearerReqM
+        - LSIMUP returns \ref CGPS_LSIMUP_CLOSE_BEARER_CNF or \ref CGPS_LSIMUP_CLOSE_BEARER_ERR*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_CLOSE_BEARER_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_CLOSE_BEARER_REQ))
+/*!    \struct t_lsimup_CloseBearerReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_CLOSE_BEARER_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_CloseBearerReqM)
+ MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+MC_PCC_END_STRUC   (t_lsimup_CloseBearerReqM)
+
+#define CGPS_FF_LSIMUP_CLOSE_BEARER_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CLOSE_BEARER,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Confirmation for closing Bearer
+        - Message Payload is \ref t_lsimup_CloseBearerCnfM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_CLOSE_BEARER_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_CLOSE_BEARER_CNF))
+/*!    \struct t_lsimup_CloseBearerCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_CLOSE_BEARER_CNF
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_CloseBearerCnfM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+   MC_PCC_END_STRUC(t_lsimup_CloseBearerCnfM)
+
+#define CGPS_FF_LSIMUP_CLOSE_BEARER_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CLOSE_BEARER,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Error closing Bearer
+        - Message Payload is \ref t_lsimup_CloseBearerErrM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_CLOSE_BEARER_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_CLOSE_BEARER_ERR))
+/*!    \struct t_lsimup_CloseBearerErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_CLOSE_BEARER_ERR
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_CloseBearerErrM)
+    MC_PCC_FIELD( t_lsimup_SessionHandle , v_SessionHandle )  /**<    Session Handle */
+    MC_PCC_FIELD( t_lsimup_ErrorType , v_ErrorType )           /**<   Error type */
+    MC_PCC_FILL_STRUCT3
+   MC_PCC_END_STRUC(t_lsimup_CloseBearerErrM)
+
+#define CGPS_FF_LSIMUP_CLOSE_BEARER_IND MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CLOSE_BEARER,PCC_T_IND)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Request to close the bearer configuration by LSIMUP.
+        - Message Payload is \ref t_lsimup_CloseBearerIndM
+        - LSIMUP Expects \ref CGPS_LSIMUP_CLOSE_BEARER_RSP or \ref CGPS_LSIMUP_CLOSE_BEARER_ERR*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_CLOSE_BEARER_IND,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_CLOSE_BEARER_IND))
+/*!    \struct t_lsimup_CloseBearerIndM
+    \brief Message Payload for \ref CGPS_LSIMUP_CLOSE_BEARER_IND
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_CloseBearerIndM)
+    MC_PCC_FIELD( t_lsimup_SessionHandle , v_SessionHandle )  /**<    Session Handle */
+   MC_PCC_END_STRUC(t_lsimup_CloseBearerIndM)
+
+#define CGPS_FF_LSIMUP_CLOSE_BEARER_RSP        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CLOSE_BEARER,PCC_T_RSP)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Positive response to a Close Bearer Indicator \ref CGPS_LSIMUP_CLOSE_BEARER_IND
+        - Message Payload is \ref t_lsimup_CloseBearerRspM */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_CLOSE_BEARER_RSP,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_CLOSE_BEARER_RSP))
+/*!    \struct t_lsimup_CloseBearerRspM
+    \brief Message Payload for \ref CGPS_LSIMUP_CLOSE_BEARER_RSP
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_CloseBearerRspM)
+ MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+MC_PCC_END_STRUC   (t_lsimup_CloseBearerRspM)
+
+#define CGPS_FF_LSIMUP_CLOSE_BEARER_RJT        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CLOSE_BEARER,PCC_T_RJT)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Negative response to a Close Bearer Indicator \ref CGPS_LSIMUP_CLOSE_BEARER_IND
+        - Message Payload is \ref t_lsimup_CloseBearerRjtM */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_CLOSE_BEARER_RJT,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_CLOSE_BEARER_RJT))
+/*!    \struct t_lsimup_CloseBearerRjtM
+    \brief Message Payload for \ref CGPS_LSIMUP_CLOSE_BEARER_RJT
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_CloseBearerRjtM)
+ MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+MC_PCC_END_STRUC   (t_lsimup_CloseBearerRjtM)
+
+
+/*@}*/ /* End of group lsimup_SUPL_services */
+
+/*-----------------------Message parameters for Common services ---------------------------------*/
+
+/*!    \addtogroup lsimup_Mobile_Network_services */
+/*@{*/
+
+#define CGPS_FF_LSIMUP_MOBILE_INFO_REQ         MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_MOBILE_INFO,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Request for Mobile Information. Provide a bitmap for the required mobile information.
+        - Message Payload is \ref t_lsimup_MobileInfoReqM.
+        - LSIMUP will return \ref CGPS_LSIMUP_MOBILE_INFO_CNF or \ref CGPS_LSIMUP_MOBILE_INFO_ERR */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_MOBILE_INFO_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_MOBILE_INFO_REQ))
+/*!    \struct t_lsimup_MobileInfoReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_MOBILE_INFO_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_MobileInfoReqM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)    /**< Session Handle */
+  MC_PCC_FIELD (uint32_t , v_RequiredField) /**<    Required Field. Each bit at 1 corresponds to a valid block in \ref t_lsimup_MobileInfo.
+                                     Allowed values are defined in following enum \ref  e_lsimup_ValidityField. */
+MC_PCC_END_STRUC   (t_lsimup_MobileInfoReqM)
+
+#define CGPS_FF_LSIMUP_MOBILE_INFO_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_MOBILE_INFO,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Confirmation for the \ref CGPS_LSIMUP_MOBILE_INFO_REQ and carries the Mobile Information
+        - Message Payload is \ref t_lsimup_MobileInfoCnfM.*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_MOBILE_INFO_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_MOBILE_INFO_CNF))
+/*!    \struct t_lsimup_MobileInfoCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_MOBILE_INFO_CNF
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_MobileInfoCnfM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**< Session Handle */
+  MC_PCC_FIELD (t_lsimup_MobileInfo , s_MobileInfo )      /**< Mobile Information */
+MC_PCC_END_STRUC(t_lsimup_MobileInfoCnfM)
+
+#define CGPS_FF_LSIMUP_MOBILE_INFO_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_MOBILE_INFO,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Rejection of service for \ref CGPS_LSIMUP_MOBILE_INFO_REQ and provides the error cause.
+        - Message Payload is \ref t_lsimup_MobileInfoErrM.*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_MOBILE_INFO_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_MOBILE_INFO_ERR))
+/*!    \struct t_lsimup_MobileInfoErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_MOBILE_INFO_ERR
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_MobileInfoErrM)
+      MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+    MC_PCC_FIELD (t_lsimup_ErrorType , v_ErrorType ) /**<    Error type returned to the requester by the service. */
+    MC_PCC_FILL_STRUCT3
+MC_PCC_END_STRUC(t_lsimup_MobileInfoErrM)
+
+
+#define CGPS_FF_LSIMUP_MOBILE_INFO_RSP         MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_MOBILE_INFO,PCC_T_RSP)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Message Payload is \ref t_lsimup_MobileInfoRspM.
+        - Confirms CGPS successfully processed Mobile info provided by \ref CGPS_LSIMUP_MOBILE_INFO_IND*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_MOBILE_INFO_RSP,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_MOBILE_INFO_RSP))
+/*!    \struct t_lsimup_MobileInfoRspM
+    \brief Message Payload for \ref CGPS_LSIMUP_MOBILE_INFO_RSP
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_MobileInfoRspM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+MC_PCC_END_STRUC   (t_lsimup_MobileInfoRspM)
+
+#define CGPS_FF_LSIMUP_MOBILE_INFO_RJT         MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_MOBILE_INFO,PCC_T_RJT)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Message Payload is \ref t_lsimup_MobileInfoRjtM.
+        - Rejects processing of \ref CGPS_LSIMUP_MOBILE_INFO_IND and provides the rejection cause.*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_MOBILE_INFO_RJT,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_MOBILE_INFO_RJT))
+/*!    \struct t_lsimup_MobileInfoRjtM
+    \brief Message Payload for \ref CGPS_LSIMUP_MOBILE_INFO_RJT
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_MobileInfoRjtM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)/**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_RejectionReason , v_RejectionReason) /**<    Rejection Reason */
+  MC_PCC_FILL_STRUCT3
+MC_PCC_END_STRUC   (t_lsimup_MobileInfoRjtM)
+
+
+#define CGPS_FF_LSIMUP_MOBILE_INFO_IND MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_MOBILE_INFO,PCC_T_IND)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Update Mobile Information.
+        - Message Payload is \ref t_lsimup_MobileInfoIndM.*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_MOBILE_INFO_IND,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_MOBILE_INFO_IND))
+/*!    \struct t_lsimup_MobileInfoIndM
+    \brief Message Payload for \ref CGPS_LSIMUP_MOBILE_INFO_IND
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_MobileInfoIndM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**< Session Handle */
+  MC_PCC_FIELD (t_lsimup_MobileInfo , s_MobileInfo)      /**< Mobile Information */
+  MC_PCC_FIELD (t_lsimup_WirelessNetworkInfo , s_WirelessNetworkInfo)      /**< Wireless Network Information */
+  MC_PCC_FIELD (t_lsimup_MobileInfoType , s_IsInformationPresent)
+MC_PCC_END_STRUC(t_lsimup_MobileInfoIndM)
+
+/*@}*/ /* End of group lsimup_Mobile_Network_services */
+
+
+/*-----------------------Message parameters for SMS Services---------------------------------*/
+
+/*!    \addtogroup lsimup_SMS_services */
+/*@{*/
+
+#define CGPS_FF_LSIMUP_SMS_PUSH_IND MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_SMS_PUSH,PCC_T_IND)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Provides SMS carrying SUPL INIT message for Network Initiated Session Notification.
+        - Message Payload is \ref t_lsimup_SmsPushIndM.
+        - LSIMUP expects \ref CGPS_LSIMUP_SMS_PUSH_RSP or \ref CGPS_LSIMUP_SMS_PUSH_RJT*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_SMS_PUSH_IND,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_SMS_PUSH_IND))
+/*!    \struct t_lsimup_SmsPushIndM
+    \brief Message Payload for \ref CGPS_LSIMUP_SMS_PUSH_IND
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_SmsPushIndM)
+    MC_PCC_FIELD ( t_lsimup_SessionHandle , v_SessionHandle)    /**<    Session Handle */
+    MC_PCC_FIELD ( uint32_t , v_PayloadLength )    /**<    Payload Length*/
+    MC_PCC_FIELD ( void* , v_pointerToPayload )   /**<    pointer To Payload */
+    MC_PCC_FIELD ( uint32_t , v_HashLength )
+    MC_PCC_FIELD ( void* , v_pointerToHash )
+   MC_PCC_END_STRUC(t_lsimup_SmsPushIndM)
+
+#define CGPS_FF_LSIMUP_SMS_PUSH_RSP            MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_SMS_PUSH,PCC_T_RSP)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Response for handling \ref CGPS_LSIMUP_SMS_PUSH_IND
+        - Message Payload is \ref t_lsimup_SmsPushRspM.*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_SMS_PUSH_RSP,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_SMS_PUSH_RSP))
+/*!    \struct t_lsimup_SmsPushRspM
+    \brief Message Payload for \ref CGPS_LSIMUP_SMS_PUSH_RSP
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_SmsPushRspM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)    /**<    Session Handle */
+MC_PCC_END_STRUC (t_lsimup_SmsPushRspM)
+
+#define CGPS_FF_LSIMUP_SMS_PUSH_RJT            MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_SMS_PUSH,PCC_T_RJT)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Rejects \ref CGPS_LSIMUP_SMS_PUSH_IND and provides the rejection cause.
+        - Message Payload is \ref t_lsimup_SmsPushRjtM.*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_SMS_PUSH_RJT,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_SMS_PUSH_RJT))
+/*!    \struct t_lsimup_SmsPushRjtM
+    \brief Message Payload for \ref CGPS_LSIMUP_SMS_PUSH_RJT
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_SmsPushRjtM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle)    /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_RejectionReason , v_RejectionReason ) /**<    Rejection Reason */
+  MC_PCC_FILL_STRUCT3
+MC_PCC_END_STRUC (t_lsimup_SmsPushRjtM)
+
+/*@}*/ /* End of group lsimup_SMS_services */
+
+/*-----------------------Message parameters for Data Transfer Services ---------------------------------*/
+/*!    \addtogroup lsimup_Data_services */
+/*@{*/
+
+#define CGPS_FF_LSIMUP_SEND_DATA_REQ           MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_SEND_DATA,PCC_T_REQ)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Request to send uplink SUPL message over existing data connection.
+        - Message Payload is \ref t_lsimup_SendDataReqM
+        - LSIMUP responds with \ref CGPS_LSIMUP_SEND_DATA_CNF or \ref CGPS_LSIMUP_SEND_DATA_ERR*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_SEND_DATA_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_SEND_DATA_REQ))
+/*!    \struct t_lsimup_SendDataReqM
+    \brief Message Payload for \ref CGPS_LSIMUP_SEND_DATA_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_SendDataReqM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle*/
+//  MC_PCC_FILL_STRUC
+  MC_PCC_FIELD (uint32_t , v_DataLength) /**<    Data Length */
+  MC_PCC_FIELD (uint8_t* , v_DataPointer)/**<    Data Pointer */
+MC_PCC_END_STRUC   (t_lsimup_SendDataReqM)
+
+#define CGPS_FF_LSIMUP_SEND_DATA_CNF MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_SEND_DATA,PCC_T_CNF)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Confirmation in sending uplink SUPL message. Refer \ref CGPS_LSIMUP_SEND_DATA_REQ
+        - Message Payload is \ref t_lsimup_SendDataCnfM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_SEND_DATA_CNF,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_SEND_DATA_CNF))
+/*!    \struct t_lsimup_SendDataCnfM
+    \brief Message Payload for \ref CGPS_LSIMUP_SEND_DATA_CNF
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_SendDataCnfM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle*/
+MC_PCC_END_STRUC(t_lsimup_SendDataCnfM)
+
+#define CGPS_FF_LSIMUP_SEND_DATA_ERR MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_SEND_DATA,PCC_T_ERR)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Error in sending uplink SUPL message. Refer \ref CGPS_LSIMUP_SEND_DATA_REQ
+        - Message Payload is \ref t_lsimup_SendDataErrM*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_SEND_DATA_ERR,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_SEND_DATA_ERR))
+/*!    \struct t_lsimup_SendDataErrM
+    \brief Message Payload for \ref CGPS_LSIMUP_SEND_DATA_ERR
+    */
+MC_PCC_BEGIN_STRUC(t_lsimup_SendDataErrM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+    MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle*/
+    MC_PCC_FIELD ( t_lsimup_ErrorType , v_ErrorType )  /**<    Error type returned to the requester by the service. */
+        MC_PCC_FILL_STRUCT3
+MC_PCC_END_STRUC(t_lsimup_SendDataErrM)
+
+
+#define CGPS_FF_LSIMUP_RECEIVE_DATA_IND MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_RECEIVE_DATA,PCC_T_IND)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Receive Downlink SUPL message
+        - Message Payload is \ref t_lsimup_ReceiveDataIndM
+        - LSIMUP expects \ref CGPS_LSIMUP_RECEIVE_DATA_RSP or \ref CGPS_LSIMUP_RECEIVE_DATA_RJT*/
+MC_PCC_HEADER(PROCESS_LSIMUP, PROCESS_CGPS, CGPS_LSIMUP_RECEIVE_DATA_IND,
+            MC_RTK_PROCESS_OPERATION(PROCESS_LSIMUP,CGPS_FF_LSIMUP_RECEIVE_DATA_IND))
+/*!    \struct t_lsimup_ReceiveDataIndM
+    \brief Message Payload for \ref CGPS_LSIMUP_RECEIVE_DATA_IND
+    */
+   MC_PCC_BEGIN_STRUC(t_lsimup_ReceiveDataIndM)
+      MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+      MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle*/
+      MC_PCC_FIELD (uint32_t , v_DataLength) /**<    Data Length */
+        MC_PCC_FIELD (uint8_t* , v_DataPointer)/**<    Data Pointer */
+   MC_PCC_END_STRUC(t_lsimup_ReceiveDataIndM)
+
+#define CGPS_FF_LSIMUP_RECEIVE_DATA_RSP        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_RECEIVE_DATA,PCC_T_RSP)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Positive response to the data indication \ref CGPS_LSIMUP_RECEIVE_DATA_IND
+        - Message Payload is \ref t_lsimup_ReceiveDataRspM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_RECEIVE_DATA_RSP,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_RECEIVE_DATA_RSP ))
+/*!    \struct t_lsimup_ReceiveDataRspM
+    \brief Message Payload for \ref CGPS_LSIMUP_RECEIVE_DATA_RSP
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_ReceiveDataRspM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle)/**<    Connection Handle*/
+MC_PCC_END_STRUC   (t_lsimup_ReceiveDataRspM)
+
+#define CGPS_FF_LSIMUP_RECEIVE_DATA_RJT        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_RECEIVE_DATA,PCC_T_RJT)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Negative response to the data indication \ref CGPS_LSIMUP_RECEIVE_DATA_IND. It means that CGPS is not ready to handle incoming data
+        - Message Payload is \ref t_lsimup_ReceiveDataRspM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_RECEIVE_DATA_RJT,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_RECEIVE_DATA_RJT))
+/*!    \struct t_lsimup_ReceiveDataRjtM
+    \brief Message Payload for \ref CGPS_LSIMUP_RECEIVE_DATA_RJT
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_ReceiveDataRjtM)
+  MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+  MC_PCC_FIELD (t_lsimup_ConnectionHandle , v_ConnectionHandle) /**<    Connection Handle*/
+  MC_PCC_FIELD (t_lsimup_RejectionReason , v_RejectionReason ) /**<    Error type returned to the requester by the service. */
+  MC_PCC_FILL_STRUCT3
+MC_PCC_END_STRUC   (t_lsimup_ReceiveDataRjtM)
+
+
+/*@}*/ /* End of group LSIMUP_Data_services */
+
+/* +LMSqc00845 RRR 14-Jul-2009 */    
+/*!    \addtogroup Lsimup_Certificate_Management */
+/*@{*/
+
+#define CGPS_FF_LSIMUP_CERTIFICATE_IND        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CERTIFICATE,PCC_T_IND)
+
+/*! \brief Message received by LSIMUP
+    \note
+        - Message from CGPS indicating new certificate available
+        - Message Payload is \ref t_lsimup_CertificateIndM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_CERTIFICATE_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_CERTIFICATE_IND))
+
+/*!    \struct t_lsimup_CertificateIndM
+    \brief Message Payload for \ref CGPS_LSIMUP_CERTIFICATE_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_CertificateIndM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+    MC_PCC_FIELD (uint32_t , v_CertificateId )
+    MC_PCC_FIELD (uint8_t* , p_Certificate)
+    MC_PCC_FIELD (uint32_t , v_CertificateLen)
+MC_PCC_END_STRUC   (t_lsimup_CertificateIndM)
+
+#define CGPS_FF_LSIMUP_CERTIFICATE_RSP        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CERTIFICATE,PCC_T_RSP)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Message to CGPS indicating certificate accepted.
+        - Message Payload is \ref t_lsimup_CertificateRspM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_CERTIFICATE_RSP,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_CERTIFICATE_RSP))
+
+/*!    \struct t_lsimup_CertificateRspM
+    \brief Message Payload for \ref CGPS_LSIMUP_CERTIFICATE_RSP
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_CertificateRspM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+    MC_PCC_FIELD (uint32_t , v_CertificateId )
+MC_PCC_END_STRUC   (t_lsimup_CertificateRspM)
+
+#define CGPS_FF_LSIMUP_CERTIFICATE_RJT        MC_PCC_FUNCTION_TYPE(CGPS_F_LSIMUP_CERTIFICATE,PCC_T_RJT)
+
+/*! \brief Message sent by LSIMUP
+    \note
+        - Message to CGPS indicating certificate rejected by lsimup.
+        - Message Payload is \ref t_lsimup_CertificateRjtM*/
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMUP, CGPS_LSIMUP_CERTIFICATE_RJT,
+        MC_RTK_PROCESS_OPERATION (PROCESS_CGPS, CGPS_FF_LSIMUP_CERTIFICATE_RJT))
+
+/*!    \struct t_lsimup_CertificateRjtM
+    \brief Message Payload for \ref CGPS_LSIMUP_CERTIFICATE_RJT
+    */
+MC_PCC_BEGIN_STRUC (t_lsimup_CertificateRjtM)
+    MC_PCC_FIELD (t_lsimup_SessionHandle , v_SessionHandle) /**<    Session Handle */
+    MC_PCC_FIELD (uint32_t , v_CertificateId )
+    MC_PCC_FIELD (uint32_t , v_Error )
+MC_PCC_END_STRUC   (t_lsimup_CertificateRjtM)
+
+
+/*@}*/ /* End of group Lsimup_Certificate_Management */
+/* -LMSqc00845 RRR 14-Jul-2009 */
+
+
+#endif /*LSIMUP_HET*/
+

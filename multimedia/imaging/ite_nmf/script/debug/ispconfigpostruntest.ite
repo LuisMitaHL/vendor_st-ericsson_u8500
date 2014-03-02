@@ -1,0 +1,41 @@
+LogPE enable
+
+TestIspBlock RSO            1   skip
+TestIspBlock SDL            1   skip
+TestIspBlock Gridiron       1   skip
+TestIspBlock ChannelGains   1   skip
+TestIspBlock Scorpio        1   skip
+TestIspBlock Dustor         0   skip
+TestIspBlock BinningRepair  1   skip
+TestIspBlock Babylon        1   skip
+TestIspBlock ColourMatrix   1   test
+
+LogPE disable
+
+
+# ------------------------------------------------
+# -------- First test : Without Toggling Coin ----
+# ------------------------------------------------
+HR prepare
+HR start
+LogPE enable
+ConfigureIspBlocks notoggle nowait
+VerifyParamsApplied hr_postrun_without_toggle_datapath wait
+LogPE disable
+HR stop
+HR free
+
+# ------------------------------------------------
+# --- Second test : Toggle Coin and then Test ----
+# ------------------------------------------------
+LR prepare
+LR start
+
+LogPE enable
+ConfigureIspBlocks toggle wait
+VerifyParamsApplied hr_postrun_with_toggle_datapath wait
+LogPE disable
+
+LR stop
+LR free
+stopenv

@@ -1,0 +1,34 @@
+#
+# DthFilter configuration
+#
+
+menuconfig DTHFILTER
+	bool "DthFilter"
+	help
+
+
+if DTHFILTER
+
+config DTHFILTER_DIR
+	string
+	default ../tat/DthFramework/dthfilter
+
+config DTHFILTER_DEPS
+	string
+	default ""
+
+config DTHFILTER_STRIP_DISABLED
+	bool "Disable strip"
+	depends on DTHFILTER
+	default n
+	help
+	  This will disable strip for this module
+
+config DTHFILTER_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on DTHFILTER
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # DTHFILTER

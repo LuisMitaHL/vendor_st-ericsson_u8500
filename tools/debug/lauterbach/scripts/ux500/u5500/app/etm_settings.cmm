@@ -1,0 +1,98 @@
+local &gpio_en
+
+if analyzer()
+(
+
+	;#############################################################################
+	;#	Configure GPIOs to output PTM
+	;#	GPIOs 132 to 148 in ALTB (148 is clk,147 is TP0, 140 is TP7, TP0 is 132, TCTL is 131)
+	;#############################################################################
+
+	if ID.PREPRO()==70			;LA-7991
+	(
+
+		print "It is not possible to trace a B5500/S5500 with a LA-7991"
+		enddo
+	)
+	else ID.PREPRO()==71			;LA-7992
+	(
+		&prcmu_per3clk=data.long(eahb:0x80157034)
+		;Enable clock to GPIO4 & periph3
+		data.set eahb:0x80157034 %long 0x00000126
+		if ((data.long(eahb:0x8014F010)&0x4)!=0x4)
+		(
+			;Periph3 PRCC settings
+			data.set eahb:0x8014F000 %long 0x00000004	; Enable bus clock (GPIO)
+			&gpio_en="TRUE"
+		)
+
+		if "&EtmPortSize"=="16."
+		(
+			;GPIOs 132 to 148 ALTA (AFSLA) disabled
+			d.s eahb:0x8014E020 %l (d.l(eahb:0x8014E020)&0xFFE0000F)
+
+			;GPIOs 132 to 148 ALTB (AFSLB) enabled
+			d.s eahb:0x8014E024 %l (d.l(eahb:0x8014E024)|0x001FFFF0)
+
+			print "16 bit trace port padmux configured"
+		)
+		else
+		(
+			;GPIOs 140 to 148 ALTA (AFSLA) disabled
+			d.s eahb:0x8014E020 %l (d.l(eahb:0x8014E020)&0xFFE00FFF)
+
+			;GPIOs 140 to 148 ALTB (AFSLB) enabled
+			d.s eahb:0x8014E024 %l (d.l(eahb:0x8014E024)|0x001FF000)
+
+			print "8 bit trace port padmux configured"
+		)
+
+		etm.portmode CONTINUOUS
+	)
+
+	;Disable clock to GPIO4
+	if "&gpio_en"=="TRUE"
+	(
+		;Periph3 PRCC settings
+		data.set eahb:0x8014F004 %long 0x00000004	; Disable bus clock (GPIO)
+	)
+	;Set back periph3 clock value
+	data.set AD:0x80157034 %LONG &prcmu_per3clk
+
+	; release the SOC_NRESETDBG(TPIU etc)
+	d.s eahb:0x801572A0 %l d.l(eahb:0x801572A0)|0x10000
+
+
+	trace.method analyzer
+	if "&EtmPortSize"!=""
+		etm.portsize &EtmPortSize
+	else
+		etm.portsize 8.
+
+	etm.traceid 1.
+	etm.tracepriority 1.
+	etm.contextid 32.
+
+	;Trace clock
+	data.in eahb:0x80157060 /long
+	data.set eahb:0x80157060 %long 0x123	;133MHz
+	wait 500ms
+	data.in eahb:0x80157060 /long
+
+	t.disable	;Disable trace during a.af since execution could be running
+
+	a.af
+
+	if "&EtmApp"=="False"
+		etm.off
+	else
+		etm.on
+	if run()
+	(
+		t.init
+
+		t.arm
+	)
+)
+
+enddo

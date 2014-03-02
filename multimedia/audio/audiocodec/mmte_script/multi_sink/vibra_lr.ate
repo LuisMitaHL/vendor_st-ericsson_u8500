@@ -1,0 +1,71 @@
+test_start SINKS_512 Playback_Vibra_Left_Right
+
+alias TIMEOUT 0
+
+
+OMX_GetHandle    vibl OMX.ST.HAPTICS_RENDERER.PCM.VIBL
+
+
+OMX_SetParameter vibl OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_GetParameter  vibl OMX_IndexParamAudioHapticsDriverProperties 
+ate_attach_io       vibl 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/vibra_stream.pcm 0 0 0
+
+OMX_GetHandle    vibr OMX.ST.HAPTICS_RENDERER.PCM.VIBR
+
+
+OMX_SetParameter vibr OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_GetParameter  vibr OMX_IndexParamAudioHapticsDriverProperties 
+ate_attach_io       vibr 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/vibra_stream.pcm 0 0 0
+
+
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers vibl 0
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers vibr 0
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+MMTE_NMF_ListComponent
+
+
+#Start Playback
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+
+#Wait EOS
+MMTE_WaitEvent vibl OMX_EventBufferFlag 0 TIMEOUT
+MMTE_WaitEvent vibr OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop Playback
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateIdle
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateIdle
+
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand vibl OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers vibl 0
+MMTE_WaitEvent vibl OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand vibr OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers vibr 0
+MMTE_WaitEvent vibr OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+
+#check_test
+
+test_end
+
+# end test

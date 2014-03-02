@@ -1,0 +1,35 @@
+#
+# Tatlab configuration
+#
+
+menuconfig TATLAB
+	bool "Tatlab"
+	depends on DTHSRVHELPER && TATTOOLS && LIBTREEDYN && AB_APE && DTHTREEDYN
+	help
+	  depends on DTHSRVHELPER, TATTOOLS, LIBTREEDYN, DTHTREEDYN and AB_APE
+
+if TATLAB
+
+config TATLAB_DIR
+	string
+	default ../tat/tat/tatlab
+
+config TATLAB_DEPS
+	string
+	default "DTHSRVHELPER TATTOOLS LIBTREEDYN DTHTREEDYN AB_APE"
+
+config TATLAB_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLAB
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLAB_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLAB
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLAB

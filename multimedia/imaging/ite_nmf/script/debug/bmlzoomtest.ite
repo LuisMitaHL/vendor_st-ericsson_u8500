@@ -1,0 +1,20 @@
+alias MAXDZ $1
+alias MAXFPS 15
+###################### pour essai
+setusecase HR VGA YUV422RI
+setusecase BMS 8MEGA RAW8
+bmsmode VIDEO
+bmsout BAYERSTORE0
+bmlin BAYERLOAD1
+zoominit MAXDZ
+manualfps 2
+HR prepare
+HR start
+HR stop
+manualfps MAXFPS
+HR start
+wait 1
+zoomtestfullrange HR MAXDZ video
+HR stop
+HR free
+stopenv

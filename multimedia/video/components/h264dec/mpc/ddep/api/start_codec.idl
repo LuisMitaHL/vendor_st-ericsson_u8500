@@ -1,0 +1,126 @@
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc_h264.idt>
+
+interface h264dec.mpc.ddep.api.start_codec { 
+
+/** @addtogroup h264decDdepStartCodecGroup startCodecHed
+ *  @ingroup h264decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Configure a specific NMF algo component.
+ \param[in]  addr_in_frame_buffer       "Input frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_buffer      "Output frame buffer" structure address (i.e. ts_t1xhv_vdc_frame_buf_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_internal_buffer       "Internal buffer" structure address (i.e. ts_t1xhv_vdc_internal_buf)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_bitstream_buffer   "Input bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_bitstream_buffer  "Output bitstream buffer" structure address (i.e. ts_t1xhv_bitstream_buf_pos)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_parameters         "Input parameter buffer" structure address (i.e. ts_t1xhv_vdc_h264_param_in)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_parameters        "Output parameter buffer" structure address (i.e. ts_t1xhv_vdc_h264_param_out)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_in_frame_parameters   "Input In/Out parameter buffer" structure address (i.e. ts_t1xhv_vdc_h264_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  addr_out_frame_parameters  "Output In/Out parameter buffer" structure address (i.e. ts_t1xhv_vdc_h264_param_inout)
+                                        \n(Alignment : Multiple of 16).
+ \param[in]  enable_preproc             if set to 3, it means that HED preprocessing has to be performed
+ \param[in]  bitstream_start            for HED, input bitstream start addr
+ \param[in]  bitstream_end              for HED, input bitstream end addr
+ \param[in]  ib_start                   for HED, intermediate buffer start address
+ \param[in]  hed_cfg                    for HED, value to be programmed in CFG register
+ \param[in]  hed_picwidth               for HED, value to be programmed in PICWIDTH register
+ \param[in]  hed_codelength             for HED, value to be programmed in CODELENGTH register
+ *
+ * For all thoses addresses, the lowest bit will have to be set if the given address is refering to an external system memory area.
+ * It'll remain reset if it refers a HAMAC Video MMDSP+ data memory area.
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref h264decConfigurationGroup
+ * 
+ * \Note Usage of this interface
+ * \n  
+ *
+ */ 
+
+void startCodecHed(	
+					t_uint32 addr_in_frame_buffer,
+					t_uint32 addr_out_frame_buffer,
+					t_uint32 addr_internal_buffer,
+					t_uint32 addr_in_bitstream_buffer,
+					t_uint32 addr_out_bitstream_buffer,
+					t_uint32 addr_in_parameters,
+					t_uint32 addr_out_parameters,
+					t_uint32 addr_in_frame_parameters,
+					t_uint32 addr_out_frame_parameters,
+          t_uint32 enable_preproc,
+          t_uint32 bitstream_start,
+          t_uint32 bitstream_end,
+          t_uint32 ib_start,
+          t_uint32 hed_cfg,
+          t_uint32 hed_picwidth,
+          t_uint32 hed_codelength);
+
+
+ /** @} */ // end of h264decDdepStartCodecGroup
+
+
+
+/** @addtogroup h264decDdepFlushGroup flush
+ *  @ingroup h264decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Flush ddep queue.
+ */ 
+
+void flush();
+
+ /** @} */ // end of h264decDdepFlushGroup
+
+
+
+/** @addtogroup h264decDdepVoidFrameGroup voidFrame
+ *  @ingroup h264decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Send an endCodec synchronized with the hamac pipe, without launching the codec.
+ */ 
+
+void voidFrameHed();
+
+ /** @} */ // end of h264decDdepVoidFrameGroup
+  
+
+
+
+  /** @addtogroup h264decDdepallowSleepGroup allowSleep
+ *  @ingroup h264decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Inform DSP components that they can allow sleep, this happens if we are in pause state
+ */ 
+
+void allowSleep();
+
+ /** @} */ // end of h264decDdeppreventSleepGroup   
+
+
+  /** @addtogroup h264decDdeppreventSleepGroup preventSleep
+ *  @ingroup h264decDdepProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Inform DSP components that they cannot allow sleep, this happens if we are in executing state
+ */ 
+
+void preventSleep();
+
+ /** @} */ // end of h264decDdeppreventSleepGroup   
+
+
+}

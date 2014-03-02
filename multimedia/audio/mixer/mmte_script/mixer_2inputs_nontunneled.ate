@@ -1,0 +1,74 @@
+# This script creates the following audio network:
+# (2) mixer
+#
+# Script's arguments:
+#   1: script name for mixer
+#   2: script name for input 1 PCM (contains specific configuration for a given stream)
+#   3: script name for input 2 PCM (contains specific configuration for a given stream)
+#   4: script name for output PCM (contains specific configuration for a given stream)
+#   5: script name for commands sent while playing
+
+alias TIMEOUT 0
+
+do $1 mixer
+do $2 mixer 1 input_reference
+do $3 mixer 2 input_reference
+do $4 mixer output_reference
+
+
+# Disable output port so as to control when mixing starts
+OMX_SendCommand mixer OMX_CommandPortDisable 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+
+# Go to Idle
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers mixer 1
+MMTE_AllocateAndUseBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Start in Paused in order to send buffers in each mixer input port
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+mmte_sleep 100
+
+# Go to Executing
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+OMX_SendCommand mixer OMX_CommandPortEnable 0
+MMTE_AllocateAndUseBuffers mixer 0
+MMTE_WaitEvent  mixer OMX_EventCmdComplete OMX_CommandPortEnable 0
+
+#do $5 mixer
+
+#Wait EOS
+MMTE_WaitEvent mixer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand mixer OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers mixer 0
+MMTE_FreeBuffers mixer 1
+MMTE_FreeBuffers mixer 2
+MMTE_WaitEvent mixer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+file_comp OUTPUT_FILE REF_FILE
+
+
+ens_network_destroy
+
+
+MMTE_CheckMemoryStatus
+
+unalias OUTPUT_FILE
+unalias REF_FILE
+unalias REF_DIGEST
+unalias TIMEOUT

@@ -1,0 +1,35 @@
+#
+# TatlSim configuration
+#
+
+menuconfig TATLSIM
+	bool "TatlSim"
+	depends on DTHSRVHELPER && TATLMODEMSRV && TATTOOLS && LIBAB && LIBTATASYNC
+	help
+	  depends on DTHSRVHELPER, TATLMODEMSRV, TATTOOLS and LIBAB && LIBTATASYNC
+
+if TATLSIM
+
+config TATLSIM_DIR
+	string
+	default ../tat/tat/tatlsim
+
+config TATLSIM_DEPS
+	string
+	default "DTHSRVHELPER TATLMODEMSRV TATTOOLS LIBAB LIBTATASYNC"
+
+config TATLSIM_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLSIM
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLSIM_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLSIM
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLSIM

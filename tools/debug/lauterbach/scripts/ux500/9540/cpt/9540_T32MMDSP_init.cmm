@@ -1,0 +1,175 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: 9540_T32MMDSP_init.cmm          #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; Created by HED/CSP/CPT/ACT on 2009-04-09
+; 2009-11-20: add full support of DB8500I & DB8500V new naming
+; 2011-03-10: reworked.
+
+;==============================================================
+; = = = INFORMATIONAL HEADER = = =
+;
+; Default startup program for TRACE32 MMDSP on 9540 SoC
+; This startup program can be modified according to your needs.
+;
+; Typical usage
+;------------->>>
+; 8500V1 SVA : do 9540_T32MMDSP_init.cmm v1 v
+; 8500V1 SIA : do 9540_T32MMDSP_init.cmm v1 i
+;
+;<<<------------
+; Optional: 
+; .........
+;
+; When using T32MMDSP only (master on CLTAP)
+; 1) ensure "CORE=1" in .t32 config file
+; 2) add "master" as last parameter
+;
+; When using T32MMDSP as master on cJTAG 2pins
+; 	9540V1 SIA : do 9540_T32MMDSP_init.cmm v1+cjtag2pin i master
+;	9540V1 SVA : do 9540_T32MMDSP_init.cmm v1+cjtag2pin v master
+; NOTE : If T32MARM is already master, no need to configure cjtag on MMDSP side
+;
+; INFO : +cjtag2pin & +no_modem parameters can be combined
+;==============================================================
+
+ENTRY	&debug_path &mmdsp_core &jtck &slave_master
+
+; ============================= Target CPU check ==========================================
+if (string.mid(cpu(),0,3)!="STN")&&(string.mid(cpu(),0,2)!="DB")
+(
+	print ""
+	print "ERROR : This script can not be executed on non-ST cores!"
+	print ""
+	enddo
+)
+
+
+; ============================= parameter check ===========================================
+&debug_path=string.upr("&debug_path")
+&mmdsp_core=string.upr("&mmdsp_core")
+&slave_master=string.lwr("&slave_master")
+&mem_type=string.upr("&mem_type")
+
+&target_version=""
+if (!string.find("&debug_path","V1"))
+(
+	print "Specified 9540 version is not supported. [V1]"
+	enddo
+)
+else
+(
+	if string.find("&debug_path","V1")
+		&target_version="V1"
+)
+
+// mmdsp_cores is v, i in the case of Trace32-MMDSP
+if ("&mmdsp_core"!="V")&&("&mmdsp_core"!="I")
+(
+	print "Specified MMDSP Core [&mmdsp_core] is not supported. [V|I]"
+	enddo
+)
+
+if ("&slave_master"!="master")
+(
+	&slave_master="slave"
+)
+
+print ">>Params= &debug_path &mmdsp_core &slave_master"
+
+; ============================= JTAG FREQUENCY ============================================
+&jtag_clock="2Mhz" ; default, but can be modified by user
+if ("&jtck"!="")
+(
+	&jtag_clock="&jtck"
+)
+
+; ============================= PATH ======================================================
+&cur_dir=os.ppd()
+do "&cur_dir/general_path_setting.cmm"
+
+; ============================== Misc ======================================================
+do "&cur_dir/general_gui_setting.cmm"
+
+&cjtag2pin=0
+if string.scan("&debug_path","CJTAG",0)>0
+	&cjtag2pin=1
+do "&cur_dir/debugPortCfg" &cjtag2pin
+
+; ==========================================================================================
+; Setting target CPU
+; ==========================================================================================
+sys.o.PWRCHECK OFF //Temporarily needed, waiting validation of powerawareness on 9540V1 board
+
+sys.CPU DB8500&mmdsp_core
+print ""
+print "Selected target core : DB8500&mmdsp_core"
+print ""
+
+; ==========================================================================================
+; Setting JTAG Options
+; ==========================================================================================
+sys.JTAGCLOCK &jtag_clock
+print "T32MMDSP &(slave_master). JTAG_Clock= &jtag_clock"
+
+; ==========================================================================================
+; TAP Chain configuration
+; ==========================================================================================
+&mod=0
+&prcmu=0
+if string.scan("&debug_path","MOD",0)>0
+	&mod=1
+if string.scan("&debug_path","PRCMU",0)>0
+	&prcmu=1
+gosub ScanChainCfg
+
+; ==========================================================================================
+; connection
+; ==========================================================================================
+print "Testing HOST_ID reading before connecting on core..."
+if string.find("&mmdsp_core","V")
+	diag 0x3082 1
+if string.find("&mmdsp_core","I")
+	diag 0x3082 2
+
+area
+
+;; +STE patch
+;; ATTACH is done to load_target.cmm
+;; => removed in CPT script
+enddo
+;; -STE patch
+
+sys.m.attach
+print ""
+if system.up()
+(
+	print "ATTACH - OK!"
+
+	; ==========================================================================================
+	; Semihosting terminal and area messages window popup
+	; ==========================================================================================
+	do mmterm
+)
+else
+(
+    print "ERROR : SYS.UP FAILED."
+	print ">> If all HOST_ID[x]=0x0, MMDSP is Power-Off."
+)
+
+enddo
+
+
+
+;--- configure the JTAG/cJTAG, TAPs topology and the TAP position
+ScanChainCfg:
+	if system.up()
+		sys.down
+	print "Configuring the scan chain topology for 9540 ..."
+	sys.config.MULTITAP STCLTAP2
+	&cfg_connect_val=0xC3
+	if &prcmu==1
+	       	&cfg_connect_val=&cfg_connect_val&0xFC
+	sys.config.cfgconnect &cfg_connect_val
+	print "DONE."
+	return

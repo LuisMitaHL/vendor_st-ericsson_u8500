@@ -1,0 +1,1032 @@
+<?xml version="1.0"?>
+<dthapi>
+  <module name="tatlpws">
+  	<argument path="/DTH/PWS/config/menus/menu_pws.xml" type="FILE" user_data="ACT_PWS_MENU_CONFIG_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws/config/menus\nFilename=menu_pws.xml</info> 
+	  </argument>
+	  <argument path="/DTH/PWS/config/panels/pws_db8500.xml" type="FILE" user_data="ACT_PWS_DB8500_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws/config/panels\nFilename=pws_db8500.xml</info> 
+	  </argument>
+	  <argument path="/DTH/PWS/config/panels/pws_ab8500.xml" type="FILE" user_data="ACT_PWS_AB8500_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws/config/panels\nFilename=pws_ab8500.xml</info> 
+	  </argument>
+	  <argument path="/DTH/PWS/config/panels/power_mode.xml" type="FILE" user_data="ACT_PWS_MODE_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws/config/panels\nFilename=power_mode.xml</info> 
+	  </argument>
+	  <argument path="/DTH/PWS/config/panels/dvfs.xml" type="FILE" user_data="ACT_PWS_DVFS_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws/config/panels\nFilename=dvfs.xml</info> 
+	  </argument>
+	  <argument path="/DTH/PWS/config/panels/reset_management.xml" type="FILE" user_data="ACT_PWS_RESET_MNGT_PANEL_FILE">
+	  <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws/config/panels\nFilename=reset_management.xml</info> 
+	  </argument>
+	
+    <action path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs" type="U32" user_data="ACTION_GPIO_SETTINGS:0" get="tatpws1_GPIO_Settings_Result" exec="tatpws1_GPIO_Settings_Execute">
+      <info>Horizontal:1\n9ptimeout:10000</info>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/In_Mode" type="U8" user_data="ACTION_GPIO_SETTINGS_MODE:0" set="tatpws1_GPIO_Settings_SetMode">
+        <enum>
+          <enum_item value="TATPWS_GPIOSETTINGS_GET">GetConfig</enum_item>
+          <enum_item value="TATPWS_GPIOSETTINGS_SET">SetConfig</enum_item>
+          <enum_item value="TATPWS_GPIOSETTINGS_SAVE">SaveConfigInFile</enum_item>
+	  <enum_item value="TATPWS_GPIOSETTINGS_LOAD">LoadConfigFromFile</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Mode</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_DATS" type="U32" user_data="TATPWS_GPIO_DATS:1" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_DATC" type="U32" user_data="TATPWS_GPIO_DATC:2" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_PDIS" type="U32" user_data="TATPWS_GPIO_PDIS:3" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_DIRS" type="U32" user_data="TATPWS_GPIO_DIRS:5" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_DIRC" type="U32" user_data="TATPWS_GPIO_DIRC:6" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_SLMP" type="U32" user_data="TATPWS_GPIO_SLMP:7" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_AFSELA" type="U32" user_data="TATPWS_GPIO_AFSELA:8" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_AFSELB" type="U32" user_data="TATPWS_GPIO_AFSELB:9" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_RWMSC" type="U32" user_data="TATPWS_GPIO_RWMSC:10" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO0_FWMSC" type="U32" user_data="TATPWS_GPIO_FWMSC:11" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO0_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_DATS" type="U32" user_data="TATPWS_GPIO1_DATS:TATPWS_GPIO_DATS + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_DATC" type="U32" user_data="TATPWS_GPIO1_DATC:TATPWS_GPIO_DATC + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_PDIS" type="U32" user_data="TATPWS_GPIO1_PDIS:TATPWS_GPIO_PDIS + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_DIRS" type="U32" user_data="TATPWS_GPIO1_DIRS:TATPWS_GPIO_DIRS + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_DIRC" type="U32" user_data="TATPWS_GPIO1_DIRC:TATPWS_GPIO_DIRC + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_SLMP" type="U32" user_data="TATPWS_GPIO1_SLMP:TATPWS_GPIO_SLMP + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_AFSELA" type="U32" user_data="TATPWS_GPIO1_AFSELA:TATPWS_GPIO_AFSELA + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_AFSELB" type="U32" user_data="TATPWS_GPIO1_AFSELB:TATPWS_GPIO_AFSELB + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_RWMSC" type="U32" user_data="TATPWS_GPIO1_RWMSC:TATPWS_GPIO_RWMSC + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO1_FWMSC" type="U32" user_data="TATPWS_GPIO1_FWMSC:TATPWS_GPIO_FWMSC + 1 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO1_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_DATS" type="U32" user_data="TATPWS_GPIO2_DATS:TATPWS_GPIO_DATS + 2 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_DATC" type="U32" user_data="TATPWS_GPIO2_DATC:TATPWS_GPIO_DATC + 2 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_PDIS" type="U32" user_data="TATPWS_GPIO2_PDIS:TATPWS_GPIO_PDIS + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_DIRS" type="U32" user_data="TATPWS_GPIO2_DIRS:TATPWS_GPIO_DIRS + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_DIRC" type="U32" user_data="TATPWS_GPIO2_DIRC:TATPWS_GPIO_DIRC + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_SLMP" type="U32" user_data="TATPWS_GPIO2_SLMP:TATPWS_GPIO_SLMP + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_AFSELA" type="U32" user_data="TATPWS_GPIO2_AFSELA:TATPWS_GPIO_AFSELA + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_AFSELB" type="U32" user_data="TATPWS_GPIO2_AFSELB:TATPWS_GPIO_AFSELB + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_RWMSC" type="U32" user_data="TATPWS_GPIO2_RWMSC:TATPWS_GPIO_RWMSC + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO2_FWMSC" type="U32" user_data="TATPWS_GPIO2_FWMSC:TATPWS_GPIO_FWMSC + 2 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO2_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_DATS" type="U32" user_data="TATPWS_GPIO3_DATS:TATPWS_GPIO_DATS + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_DATC" type="U32" user_data="TATPWS_GPIO3_DATC:TATPWS_GPIO_DATC + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_PDIS" type="U32" user_data="TATPWS_GPIO3_PDIS:TATPWS_GPIO_PDIS + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_DIRS" type="U32" user_data="TATPWS_GPIO3_DIRS:TATPWS_GPIO_DIRS + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_DIRC" type="U32" user_data="TATPWS_GPIO3_DIRC:TATPWS_GPIO_DIRC + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_SLMP" type="U32" user_data="TATPWS_GPIO3_SLMP:TATPWS_GPIO_SLMP + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_AFSELA" type="U32" user_data="TATPWS_GPIO3_AFSELA:TATPWS_GPIO_AFSELA + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_AFSELB" type="U32" user_data="TATPWS_GPIO3_AFSELB:TATPWS_GPIO_AFSELB + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_RWMSC" type="U32" user_data="TATPWS_GPIO3_RWMSC:TATPWS_GPIO_RWMSC + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO3_FWMSC" type="U32" user_data="TATPWS_GPIO3_FWMSC:TATPWS_GPIO_FWMSC + 3 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO3_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_DATS" type="U32" user_data="TATPWS_GPIO4_DATS:TATPWS_GPIO_DATS + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_DATC" type="U32" user_data="TATPWS_GPIO4_DATC:TATPWS_GPIO_DATC + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_PDIS" type="U32" user_data="TATPWS_GPIO4_PDIS:TATPWS_GPIO_PDIS + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_DIRS" type="U32" user_data="TATPWS_GPIO4_DIRS:TATPWS_GPIO_DIRS + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_DIRC" type="U32" user_data="TATPWS_GPIO4_DIRC:TATPWS_GPIO_DIRC + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_SLMP" type="U32" user_data="TATPWS_GPIO4_SLMP:TATPWS_GPIO_SLMP + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_AFSELA" type="U32" user_data="TATPWS_GPIO4_AFSELA:TATPWS_GPIO_AFSELA + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_AFSELB" type="U32" user_data="TATPWS_GPIO4_AFSELB:TATPWS_GPIO_AFSELB + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_RWMSC" type="U32" user_data="TATPWS_GPIO4_RWSMC:TATPWS_GPIO_RWMSC + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO4_FWMSC" type="U32" user_data="TATPWS_GPIO4_FWSMC:TATPWS_GPIO_FWMSC + 4 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO4_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_DATS" type="U32" user_data="TATPWS_GPIO5_DATS:TATPWS_GPIO_DATS + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_DATC" type="U32" user_data="TATPWS_GPIO5_DATC:TATPWS_GPIO_DATC + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_PDIS" type="U32" user_data="TATPWS_GPIO5_PDIS:TATPWS_GPIO_PDIS + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_DIRS" type="U32" user_data="TATPWS_GPIO5_DIRS:TATPWS_GPIO_DIRS + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_DIRC" type="U32" user_data="TATPWS_GPIO5_DIRC:TATPWS_GPIO_DIRC + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_SLMP" type="U32" user_data="TATPWS_GPIO5_SLMP:TATPWS_GPIO_SLMP + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_AFSELA" type="U32" user_data="TATPWS_GPIO5_AFSELA:TATPWS_GPIO_AFSELA + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_AFSELB" type="U32" user_data="TATPWS_GPIO5_AFSELB:TATPWS_GPIO_AFSELB + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_RWMSC" type="U32" user_data="TATPWS_GPIO5_RWMSC:TATPWS_GPIO_RWMSC + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO5_FWMSC" type="U32" user_data="TATPWS_GPIO5_FWMSC:TATPWS_GPIO_FWMSC + 5 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO5_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_DATS" type="U32" user_data="TATPWS_GPIO6_DATS:TATPWS_GPIO_DATS + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_DATC" type="U32" user_data="TATPWS_GPIO6_DATC:TATPWS_GPIO_DATC + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_PDIS" type="U32" user_data="TATPWS_GPIO6_PDIS:TATPWS_GPIO_PDIS + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_DIRS" type="U32" user_data="TATPWS_GPIO6_DIRS:TATPWS_GPIO_DIRS + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_DIRC" type="U32" user_data="TATPWS_GPIO6_DIRC:TATPWS_GPIO_DIRC + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_SLMP" type="U32" user_data="TATPWS_GPIO6_SLMP:TATPWS_GPIO_SLMP + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_AFSELA" type="U32" user_data="TATPWS_GPIO6_AFSELA:TATPWS_GPIO_AFSELA + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_AFSELB" type="U32" user_data="TATPWS_GPIO6_AFSELB:TATPWS_GPIO_AFSELB + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_RWMSC" type="U32" user_data="TATPWS_GPIO6_RWSMC:TATPWS_GPIO_RWMSC + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO6_FWMSC" type="U32" user_data="TATPWS_GPIO6_FWMSC:TATPWS_GPIO_FWMSC + 6 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO6_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_DATS" type="U32" user_data="TATPWS_GPIO7_DATS:TATPWS_GPIO_DATS + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_DATC" type="U32" user_data="TATPWS_GPIO7_DATC:TATPWS_GPIO_DATC + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_PDIS" type="U32" user_data="TATPWS_GPIO7_PDIS:TATPWS_GPIO_PDIS + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_DIRS" type="U32" user_data="TATPWS_GPIO7_DIRS:TATPWS_GPIO_DIRS + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_DIRC" type="U32" user_data="TATPWS_GPIO7_DIRC:TATPWS_GPIO_DIRC + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_SLMP" type="U32" user_data="TATPWS_GPIO7_SLMP:TATPWS_GPIO_SLMP + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_AFSELA" type="U32" user_data="TATPWS_GPIO7_AFSELA:TATPWS_GPIO_AFSELA + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_AFSELB" type="U32" user_data="TATPWS_GPIO7_AFSELB:TATPWS_GPIO_AFSELB + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_RWMSC" type="U32" user_data="TATPWS_GPIO7_RWSMC:TATPWS_GPIO_RWMSC + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO7_FWMSC" type="U32" user_data="TATPWS_GPIO7_FWSMC:TATPWS_GPIO_FWMSC + 7 * TATPWS_MAX_GPIO " get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO7_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_DATS" type="U32" user_data="TATPWS_GPIO8_DATS:TATPWS_GPIO_DATS + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_DATS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_DATC" type="U32" user_data="TATPWS_GPIO8_DATC:TATPWS_GPIO_DATC + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_DATC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_PDIS" type="U32" user_data="TATPWS_GPIO8_PDIS:TATPWS_GPIO_PDIS + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_PDIS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_DIRS" type="U32" user_data="TATPWS_GPIO8_DIRS:TATPWS_GPIO_DIRS + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_DIRS\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_DIRC" type="U32" user_data="TATPWS_GPIO8_DIRC:TATPWS_GPIO_DIRC + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_DIRC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_SLMP" type="U32" user_data="TATPWS_GPIO8_SLMP:TATPWS_GPIO_SLMP + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_SLMP\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_AFSELA" type="U32" user_data="TATPWS_GPIO8_AFSELA:TATPWS_GPIO_AFSELA + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_AFSELA\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_AFSELB" type="U32" user_data="TATPWS_GPIO8_AFSELB:TATPWS_GPIO_AFSELB + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_AFSELB\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_RWMSC" type="U32" user_data="TATPWS_GPIO8_RWSMC:TATPWS_GPIO_RWMSC + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_RWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/Actions/ActOnDigitalBasebandGPIOs/GPIO8_FWMSC" type="U32" user_data="TATPWS_GPIO8_FWSMC:TATPWS_GPIO_FWMSC + 8 * TATPWS_MAX_GPIO" get="tatpws1_GPIO_Settings_Get" set="tatpws1_GPIO_Settings_Set">
+        <range min="0" max="4294967295"/>
+        <info>Label Box:GPIO8_FWMSC\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+     <argument path="/DTH/PWS/PowerDown/Actions/File" type="FILE" user_data="ACT_DBGPIO_FILE">
+        <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws\nFilename=DBgpios.csv</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs" type="U32" user_data="ACTION_GPIO_SETTINGS" get="tatpws4_ABGPIO_Settings_Result" exec="tatpws4_ABGPIO_Settings_Execute">
+      <info>Horizontal:1</info>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/In_Mode" type="U8" user_data="ACTION_GPIO_SETTINGS_MODE" set="tatpws4_ABGPIO_Settings_SetMode">
+        <enum>
+          <enum_item value="TATPWS_GPIOSETTINGS_GET">GetConfig</enum_item>
+          <enum_item value="TATPWS_GPIOSETTINGS_SET">SetConfig</enum_item>
+	  <enum_item value="TATPWS_GPIOSETTINGS_SAVE">SaveConfigInFile</enum_item>
+	  <enum_item value="TATPWS_GPIOSETTINGS_LOAD">LoadConfigFromFile</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Mode</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_SEL1" type="U8" user_data="TATPWS_GPIO_SEL1:0" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_SEL1\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_SEL2" type="U8" user_data="TATPWS_GPIO_SEL2:1" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_SEL2\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_SEL3" type="U8" user_data="TATPWS_GPIO_SEL3:2" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_SEL3\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_SEL4" type="U8" user_data="TATPWS_GPIO_SEL4:3" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_SEL4\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_SEL5" type="U8" user_data="TATPWS_GPIO_SEL5:4" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_SEL5\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_SEL6" type="U8" user_data="TATPWS_GPIO_SEL6:5" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_SEL6\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_DIR1" type="U8" user_data="TATPWS_GPIO_DIR1:6" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_DIR1\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_DIR2" type="U8" user_data="TATPWS_GPIO_DIR2:7" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_DIR2\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_DIR3" type="U8" user_data="TATPWS_GPIO_DIR3:8" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_DIR3\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_DIR4" type="U8" user_data="TATPWS_GPIO_DIR4:9" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_DIR4\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_DIR5" type="U8" user_data="TATPWS_GPIO_DIR5:10" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_DIR5\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_DIR6" type="U8" user_data="TATPWS_GPIO_DIR6:11" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_DIR6\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_OUT1" type="U8" user_data="TATPWS_GPIO_OUT1:12" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_OUT1\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_OUT2" type="U8" user_data="TATPWS_GPIO_OUT2:13" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_OUT2\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_OUT3" type="U8" user_data="TATPWS_GPIO_OUT3:14" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_OUT3\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_OUT4" type="U8" user_data="TATPWS_GPIO_OUT4:15" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_OUT4\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_OUT5" type="U8" user_data="TATPWS_GPIO_OUT5:16" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_OUT5\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_OUT6" type="U8" user_data="TATPWS_GPIO_OUT6:17" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_OUT6\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_PUD1" type="U8" user_data="TATPWS_GPIO_PUD1:18" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_PUD1\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_PUD2" type="U8" user_data="TATPWS_GPIO_PUD2:19" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_PUD2\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_PUD3" type="U8" user_data="TATPWS_GPIO_PUD3:20" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_PUD3\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_PUD4" type="U8" user_data="TATPWS_GPIO_PUD4:21" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_PUD4\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_PUD5" type="U8" user_data="TATPWS_GPIO_PUD5:22" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_PUD5\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_PUD6" type="U8" user_data="TATPWS_GPIO_PUD6:23" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_PUD6\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsAB/ActOnAnalogBasebandGPIOs/GPIO_ALT_FCT" type="U8" user_data="TATPWS_GPIO_ALT_FCT:24" get="tatpws4_ABGPIO_Settings_Get" set="tatpws4_ABGPIO_Settings_Set">
+        <range min="0" max="255"/>
+        <info>Label Box:GPIO_ALT_FCT\nPrefered Format : hexa and binary\nHorizontal:1 </info>
+      </argument>
+     <argument path="/DTH/PWS/PowerDown/ActionsAB/File" type="FILE" user_data="ACT_ABGPIO_FILE">
+        <info>Automatic Procedure\nFilepath=/var/local/tat/tatlpws\nFilename=ABgpios.csv</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsSetAPMode/SetAPMode" type="U32" user_data="ACTION_SET_AP_MODE:1" get="tatpws2_SetMode_Result" exec="tatpws2_SetMode_Execute">
+      <info>9ptimeout:4294967295</info>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetAPMode/SetAPMode/In_APMode" type="U8" user_data="ACTION_SET_AP_MODE" set="tatpws2_Set_Mode">
+        <enum>
+          <enum_item value="ENUM_AP_MODE_NORMAL">NORMAL(power, wfi)</enum_item>
+          <enum_item value="ENUM_AP_MODE_EXECUTE">EXECUTE(no power, no wfi)</enum_item>
+          <enum_item value="ENUM_AP_MODE_RUNNING">RUNNING(CPUs executing infinite thread)</enum_item>
+          <enum_item value="3">IDLE</enum_item>
+          <enum_item value="4">SLEEP</enum_item>
+          <enum_item value="5">DEEP_SLEEP_ESRAM0_RET</enum_item>
+          <enum_item value="6">DEEP_SLEEP_ESRAM0_OFF</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Mode</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetAPMode/SetAPMode/Out_Status" type="U8" user_data="ACTION_SET_AP_MODE" get="tatpws2_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetAPMode/SetAPMode/In_APExitCondition" type="U8" user_data="ACTION_SET_AP_EXIT_CONDITION" set="tatpws2_Set_Mode">
+        <enum>
+          <enum_item value="AP_EXIT_CONDITION_GPIO">GPIO</enum_item>
+          <enum_item value="AP_EXIT_CONDITION_TIMER">TIMER - warning: has to wait for predefined timeout</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Exit Condition</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsSetHwAccMode/SetHwAccMode" type="U32" user_data="ACTION_SET_HW_ACC_MODE:2" get="tatpws2_SetMode_Result" exec="tatpws2_SetMode_Execute">
+      <argument path="/DTH/PWS/PowerDown/ActionsSetHwAccMode/SetHwAccMode/In_HwAccName" type="U8" user_data="ACTION_SET_HW_ACC_MODE" set="tatpws2_Set_HwAcc">
+        <enum>
+          <enum_item value="0">SIAMMDSP</enum_item>
+          <enum_item value="1">SIAPIPE</enum_item>
+          <enum_item value="2">SVAMMDSP</enum_item>
+          <enum_item value="3">SVAPIPE</enum_item>
+          <enum_item value="4">SGA</enum_item>
+          <enum_item value="5">ESRAM1</enum_item>
+          <enum_item value="6">ESRAM2</enum_item>
+          <enum_item value="7">ESRAM3</enum_item>
+          <enum_item value="8">ESRAM4</enum_item>
+          <enum_item value="9">B2R2MCDE</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Hw Accelerator Name</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetHwAccMode/SetHwAccMode/In_HwAccMode" type="U8" user_data="ACTION_SET_HW_ACC_MODE" set="tatpws2_Set_Mode">
+        <enum>
+          <enum_item value="0">ON</enum_item>
+          <enum_item value="1">OFF</enum_item>
+          <enum_item value="2">RETENTION</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: Hw Accelerator Mode</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetHwAccMode/SetHwAccMode/Out_Status" type="U8" user_data="ACTION_SET_HW_ACC_MODE" get="tatpws2_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsSetModemMode/SetModemMode" type="U32" user_data="ACTION_SET_MODEM_MODE:3" get="tatpws2_SetMode_Result" exec="tatpws2_SetMode_Execute">
+      <argument path="/DTH/PWS/PowerDown/ActionsSetModemMode/SetModemMode/In_ModemMode" type="U8" user_data="ACTION_SET_MODEM_MODE" set="tatpws2_Set_Mode">
+        <enum>
+          <enum_item value="ENUM_SET_MODEM_MODE_LP_DISABLE">LP_DISABLE</enum_item>
+          <enum_item value="ENUM_SET_MODEM_MODE_LP_ENABLE">LP_ENABLE</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: Modem Mode</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetModemMode/SetModemMode/Out_Status" type="U8" user_data="ACTION_SET_MODEM_MODE" get="tatpws2_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint" type="U32" user_data="ACTION_SET_APE_OPP:4" get="tatpws3_SetOpp_Result" exec="tatpws3_SetOpp_Execute">
+      <info>9ptimeout:2000</info>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/In_Opp" type="U8" user_data="ACTION_SET_APE_OPP" set="tatpws3_Set_Opp">
+        <enum>
+          <enum_item value="ENUM_PWS_50_IF_USB_UNPLUGGED:0">50% - only if USB cable not plugged</enum_item>
+          <enum_item value="1">100%</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: Opp</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetAPEOpp/SetAPEOperatingPoint/Out_Status" type="U8" user_data="ACTION_SET_APE_OPP" get="tatpws3_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint" type="U32" user_data="ACTION_SET_ARM_OPP:5" get="tatpws3_SetOpp_Result" exec="tatpws3_SetOpp_Execute">
+      <info>9ptimeout:2000</info>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/In_Opp" type="U8" user_data="ACTION_SET_ARM_OPP" set="tatpws3_Set_Opp">
+        <enum>
+          <enum_item value="0">30%</enum_item>
+          <enum_item value="1">50%</enum_item>
+          <enum_item value="2">100%</enum_item>
+          <enum_item value="3">125%</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: Opp</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetArmOpp/SetARMOperatingPoint/Out_Status" type="U8" user_data="ACTION_SET_ARM_OPP" get="tatpws3_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint" type="U32" user_data="ACTION_SET_DDR_OPP:6" get="tatpws3_SetOpp_Result" exec="tatpws3_SetOpp_Execute">
+      <info>9ptimeout:2000\nLabel action: WARNING: Modem should be in Low Power mode</info>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/In_Opp" type="U8" user_data="ACTION_SET_DDR_OPP" set="tatpws3_Set_Opp">
+        <enum>
+          <enum_item value="0">25%</enum_item>
+          <enum_item value="1">50%</enum_item>
+          <enum_item value="2">100%</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: Opp</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetDdrOpp/SetDDROperatingPoint/Out_Status" type="U8" user_data="ACTION_SET_DDR_OPP" get="tatpws3_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint" type="U32" user_data="ACTION_SET_MODEM_OPP:7" get="tatpws3_SetOpp_Result" exec="tatpws3_SetOpp_Execute">
+      <argument path="/DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/In_Opp" type="U8" user_data="ACTION_SET_MODEM_OPP" set="tatpws3_Set_Opp">
+        <enum>
+          <enum_item value="0">50%</enum_item>
+          <enum_item value="1">100%</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: Opp</info>
+      </argument>
+      <argument path="/DTH/PWS/PowerDown/ActionsSetModemOpp/SetModemOperatingPoint/Out_Status" type="U8" user_data="ACTION_SET_MODEM_OPP" get="tatpws3_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/Reset/ActionResetAP/ResetAP" type="U32" user_data="ACTION_RESET_AP:8" get="tatpws5_Get_Status" exec="tatpws5_Reset_Execute">
+      <argument path="/DTH/PWS/Reset/ActionResetAP/ResetAP/In_ResetMode" type="U8" user_data="ACTION_RESET_AP" set="tatpws5_Set_ResetMode">
+        <enum>
+          <enum_item value="0">SW_APE_RESET</enum_item>
+          <enum_item value="1">SW_ARM_RESET</enum_item>
+          <enum_item value="2">WD_ARM_RESET</enum_item>
+          <enum_item value="4">AB8500_WD_RESET</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: ResetMode</info>
+      </argument>
+      <argument path="/DTH/PWS/Reset/ActionResetAP/ResetAP/Out_Status" type="U8" user_data="ACTION_RESET_AP" get="tatpws5_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+    <action path="/DTH/PWS/Reset/ActionResetModem/ResetModem" type="U32" user_data="ACTION_RESET_MODEM:9" get="tatpws5_Get_Status" exec="tatpws5_Reset_Execute">
+      <argument path="/DTH/PWS/Reset/ActionResetModem/ResetModem/In_ResetMode" type="U8" user_data="ACTION_RESET_MODEM" set="tatpws5_Set_ResetMode">
+        <enum>
+          <enum_item value="0">SW_RESET</enum_item>
+          <enum_item value="1">WD_RESET</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box: ResetMode</info>
+      </argument>
+      <argument path="/DTH/PWS/Reset/ActionResetModem/ResetModem/Out_Status" type="U8" user_data="ACTION_RESET_MODEM" get="tatpws5_Get_Status">
+        <enum>
+          <enum_item value="0">INIT_VAL</enum_item>
+          <enum_item value="1">ERR_FILE_ERROR</enum_item>
+          <enum_item value="2">ERR_UNKNOWN_MODE</enum_item>
+          <enum_item value="3">ERR_UNKNOWN_OPP</enum_item>
+          <enum_item value="4">ERR_UNKNOWN_RESSOURCE</enum_item>
+          <enum_item value="5">AP_NORMAL_OK</enum_item>
+          <enum_item value="6">ERR_AP_NORMAL_KO</enum_item>
+          <enum_item value="7">AP_EXECUTE_OK</enum_item>
+          <enum_item value="8">ERR_AP_EXECUTE_KO</enum_item>
+          <enum_item value="9">AP_RUNNING_OK</enum_item>
+          <enum_item value="10">ERR_AP_RUNNING_KO</enum_item>
+          <enum_item value="11">AP_IDLE_OK</enum_item>
+          <enum_item value="12">ERR_AP_IDLE_KO</enum_item>
+          <enum_item value="13">AP_SLEEP_OK</enum_item>
+          <enum_item value="14">ERR_AP_SLEEP_KO</enum_item>
+          <enum_item value="15">AP_DEEPSLEEP_ESRAM0_RET_OK</enum_item>
+          <enum_item value="16">ERR_AP_DEEPSLEEP_ESRAM0_RET_KO</enum_item>
+          <enum_item value="17">AP_DEEPSLEEP_ESRAM0_OFF_OK</enum_item>
+          <enum_item value="18">ERR_AP_DEEPSLEEP_ESRAM0_OFF_KO</enum_item>
+          <enum_item value="19">MODEM_LP_DISABLED_OK</enum_item>
+          <enum_item value="20">ERR_MODEM_LP_DISABLED_KO</enum_item>
+          <enum_item value="21">MODEM_LP_ENABLED_OK</enum_item>
+          <enum_item value="22">ERR_MODEM_LP_ENABLED_KO</enum_item>
+          <enum_item value="23">HWACC_MODE_OK</enum_item>
+          <enum_item value="24">ERR_HWACC_MODE_KO</enum_item>
+          <enum_item value="25">ARM_OPP_OK</enum_item>
+          <enum_item value="26">ERR_ARM_OPP_KO</enum_item>
+          <enum_item value="27">APE_OPP_OK</enum_item>
+          <enum_item value="28">ERR_APE_OPP_KO</enum_item>
+          <enum_item value="29">DDR_OPP_OK</enum_item>
+          <enum_item value="30">ERR_DDR_OPP_KO</enum_item>
+          <enum_item value="31">MODEM_OPP_OK</enum_item>
+          <enum_item value="32">ERR_MODEM_OPP_KO</enum_item>
+          <enum_item value="33">MODEM_RESET_OK</enum_item>
+          <enum_item value="34">ERR_MODEM_RESET_KO</enum_item>
+          <enum_item value="35">AP_RESET_OK</enum_item>
+          <enum_item value="36">ERR_AP_RESET_KO</enum_item>
+        </enum>
+        <range min="0" max="255"/>
+        <info>Label Box:Status</info>
+      </argument>
+    </action>
+  </module>
+</dthapi>

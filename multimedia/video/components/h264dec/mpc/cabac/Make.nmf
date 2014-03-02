@@ -1,0 +1,46 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENT_TOP_DIR=../..
+ITF_PREFIX := video_h264dec_cabac
+
+COMPONENTS += h264dec.mpc.cabac
+
+CONFFILES =	h264dec/mpc/cabac/cabac.conf
+
+SRCPATH+= \
+	$(MM_IDT_DIR) \
+	$(MMROOT)/video/idt 				\
+	$(MMROOT)/video/components/h264dec/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/h264dec/mpc/share
+
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc		\
+	-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/common/inc
+
+# OST trace capability
+include ../../make.ost_conf
+OST_SRC_DIR = src 
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_DSP1)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_dsp_cabac
+CPPFLAGS  += -I$(MMROOT)/video/components/h264dec/inc/autogentraces
+CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/mpc/fsm/generic/include
+CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/common
+CPPFLAGS  += -I$(MMROOT)/video/components/resource_manager/allocator/inc
+USER2MPCITFS +=	
+MPC2USERITFS +=	h264dec.mpc.api.end_cabac
+ASYNCITFS += h264dec.mpc.api.cabac h264dec.mpc.api.end_cabac
+
+# host FSM != mpc fsm  (ORDER: mpc first!!!)
+CPPFLAGS  += -I$(MM_NMF_COMP_SRC_MMDSP_DIR)/fsm/generic/include
+CPPFLAGS  += -I$(MM_NMF_REPO_DIR)/$(MMDSPCORE)
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+

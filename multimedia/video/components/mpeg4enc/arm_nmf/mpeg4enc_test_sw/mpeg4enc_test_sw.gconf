@@ -1,0 +1,15 @@
+composite mpeg4enc.arm_nmf.mpeg4enc_test_sw
+{
+contains mpeg4enc.arm_nmf.algo as cAlgo
+
+// Provided interfaces
+provides mpeg4enc.arm_nmf.api.algo as iAlgo
+requires mpeg4enc.arm_nmf.api.end_algo as oEndAlgo
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo                                      to cAlgo.iAlgo
+binds cAlgo.oEndAlgo								  to this.oEndAlgo
+
+option CPPFLAGS " -DCA9 --asm  -O0 -D__NMF -DINLINE=  -DFORCEINLINE= -I$(MMROOT)/video/components/mpeg4enc_sw/arm_nmf/algo/inc -I$(MMROOT)/video/components/mpeg4enc_sw/arm_nmf/share -I../../../common/inc/ndk8500_ed -I../../../common/inc"  
+
+}

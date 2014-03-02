@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+#ifndef _VFM_VDC_MPEG2_H_
+#define _VFM_VDC_MPEG2_H_
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc.idt>
+#include <t1xhv_vdc_mpeg2.idt>
+#include <vfm_common.idt>
+/* to be moved to vfm_vdc_mpeg2.h */
+
+#define COUNT_HEADER_BUFFERS 8
+
+typedef struct
+{
+	ts_t1xhv_vdc_frame_buf_in	s_in_frame_buffer;     
+	ts_t1xhv_vdc_frame_buf_out      s_out_frame_buffer;     
+	ts_t1xhv_vdc_internal_buf       s_internal_buffer;     
+	ts_t1xhv_bitstream_buf_pos      s_in_out_bitstream_buffer; 
+	ts_t1xhv_bitstream_buf_pos      s_out_bitstream_buffer;
+	ts_t1xhv_vdc_mpeg2_param_in     s_in_parameters;       
+	ts_t1xhv_vdc_mpeg2_param_out    s_out_parameters;      
+	ts_t1xhv_vdc_mpeg2_param_inout  s_in_out_frame_parameters; 
+	ts_t1xhv_vdc_mpeg2_param_inout  s_out_frame_parameters;
+} ts_ddep_vdc_mpeg2_param_desc;
+
+typedef ts_ddep_vdc_mpeg2_param_desc *tps_ddep_vdc_mpeg2_param_desc;
+
+typedef struct
+{
+	ts_t1xhv_vdc_mpeg2_param_in     	s_in_parameters;
+        t_ulong_value  buffer_p;
+	t_ulong_value  bitOffsetAddress;
+        t_ulong_value  physicalAddressParamIn;         
+	t_ulong_value  headerBufferMpcAddress;
+	t_ushort_value errormap[225];
+	t_ushort_value  reserved_1;
+	t_ulong_value  reserved_2;
+	t_uint16 reserved[4];
+} ts_ddep_vdc_mpeg2_header_desc;
+
+typedef ts_ddep_vdc_mpeg2_header_desc *tps_ddep_vdc_mpeg2_header_desc;
+#endif // _VFM_VDC_MPEG2_H_
+

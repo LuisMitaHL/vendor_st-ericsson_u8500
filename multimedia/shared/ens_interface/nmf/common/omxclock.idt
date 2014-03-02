@@ -1,0 +1,30 @@
+#ifndef __OMXCLOCK_H_
+#define __OMXCLOCK_H_
+
+/** Enumeration of possible reference clocks to the media time. */
+typedef enum {
+    OMX_TIME_UpdateRequestFulfillment,      /**< Update is the fulfillment of a media time request. */
+    OMX_TIME_UpdateScaleChanged,                /**< Update was generated because the scale chagned. */
+    OMX_TIME_UpdateClockStateChanged,       /**< Update was generated because the clock state changed. */
+    OMX_TIME_UpdateMax = 0x7FFF
+} OMX_TIME_UPDATETYPE;
+
+/** Enumeration of possible reference clocks to the media time. */
+typedef enum {
+    OMX_TIME_RefClockNone,      /**< Use no references. */
+    OMX_TIME_RefClockAudio,     /**< Use references sent through OMX_IndexConfigTimeCurrentAudioReference */
+    OMX_TIME_RefClockVideo,     /**< Use references sent through OMX_IndexConfigTimeCurrentVideoReference */
+    OMX_TIME_RefClockMax = 0X7FFF
+} OMX_TIME_REFCLOCKTYPE;
+
+/** Enumeration of clock states. */
+typedef enum {
+    OMX_TIME_ClockStateRunning,               /**< Clock running. */
+    OMX_TIME_ClockStateWaitingForStartTime,   /**< Clock waiting until the
+                                               *   prescribed clients emit their
+                                               *   start time. */
+    OMX_TIME_ClockStateStopped,               /**< Clock stopped. */
+    OMX_TIME_ClockStateMax = 0X7FFF
+} OMX_TIME_CLOCKSTATE;
+
+#endif

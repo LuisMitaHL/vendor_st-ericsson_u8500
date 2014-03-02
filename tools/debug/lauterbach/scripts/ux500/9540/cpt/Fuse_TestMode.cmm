@@ -1,0 +1,113 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: Fuse_TestMode.cmm               #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for Trace32 debug configuration on 9540.
+; Crated by HED/CSP/CPT/ACT on 2009-11-03
+; Contact jingyi-xiaoyan.lu@st.com
+; 2011-11-03: initial version.
+
+entry &lock &unfused_dbgreq
+
+local &fuse_v_low &fuse_v_mid &fuse_v_high &testmode_shift_v_str
+
+if (&lock==1)
+(
+	jtag.lock
+	jtag.pin enable
+)
+
+&por_v=jtag.pin(nreset)
+
+if version.build()<33256.&&combiprobe()
+	&por_v=1-&por_v
+
+//print "POR = &por_v"
+&por_toggled=0
+if (&por_v==0)
+(
+        jtag.pin nreset 1 
+	&por_toggled=1
+	wait 0.5s
+	print "Released the PORn."
+)
+
+gosub readTestMode
+gosub readFuse
+if (&fuse_v_low==0&&&fuse_v_mid==0&&&fuse_v_high==0)
+(
+	print "Detected NOT FUSED."
+       	jtag.pin nreset 0 
+	; set testmode to be "HW config"
+	&testmode_shift_v_str="1 1 0"
+	gosub setTestMode &testmode_v
+	print "Forced HW config mode."
+
+	; force the debug mode to A9
+	if "&unfused_dbgreq"!=""
+		gosub dbgreq
+
+       	jtag.pin nreset 1 
+	wait 0.5s
+	print "Activated and released the PORn."
+	&por_toggled=1
+	&testmode_v=0x3
+)
+else
+	print "Detected FUSED."
+
+; Pass to functional mode by a CLTAP instruction 
+
+if (&lock==1)
+(
+	jtag.pin disable
+	jtag.unlock
+)
+enddo
+
+
+readFuse:
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 1 1 0 1 0 1
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shifttdi %l 0
+	&fuse_v_low_0=jtag.shift()
+	jtag.shifttdi %l 0
+	&fuse_v_low_1=jtag.shift()
+	&fuse_v_low=&fuse_v_low_1<<32.|&fuse_v_low_0
+	jtag.shifttdi %ll 0
+	&fuse_v_mid=jtag.shift()
+	jtag.shiftreg %ll 0
+	&fuse_v_high=jtag.shift()
+	jtag.shifttms 1 0 0 1
+//	print "FUSE ENGI = 0x", %HEX &fuse_v_high &fuse_v_mid &fuse_v_low
+	return
+
+setTestMode:
+	; shift in IR=0b000111
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 1 1 1 0 0 0
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg &testmode_shift_v_str
+	jtag.shifttms 1 0 0 1
+	return
+
+readTestMode:
+	; shift in IR=0b000111
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 1 1 1 0 0 0
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg 0 0 0
+	&testmode_v=jtag.shift()
+	jtag.shifttms 1 0 0 1
+	return
+
+dbgreq:
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 0 1 0 1 1 1
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg 1 1 0 0
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg %s 0x0060
+	jtag.shifttms 1 0 0 1
+	return

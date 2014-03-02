@@ -1,0 +1,97 @@
+Splitter
+Bugs to be fixed:
+- Sequential splitter without BufferSharing works only if nBufferCountActual=1!
+
+_____________________________________________________________________________________________
+Release  11.0.7
+Date: 2011-May xx
+
+Changes:
+- Fix some coverity warnings
+_____________________________________________________________________________________________
+Release  11.0.6
+Date: 2011-May 10
+
+Changes:
+- Enable by default buffer sharing for sequential mode
+_____________________________________________________________________________________________
+Release  11.0.5
+Date: 2011-April 22
+
+Changes:
+- by default no buffer sharing for sequential splitter
+- remove function bufferSentToSharingPort & forwardOutputBuffer because not exported in the ens by symbian
+_____________________________________________________________________________________________
+Release  11.0.4
+Date: 2011-April 22
+
+Changes:
+- disable  USE_BUFFERSHARING_SEQUENTIAL for symbian
+_____________________________________________________________________________________________
+Release  11.0.3
+Date: 2011-April 20
+
+Changes:
+- CR 333244 remove winscw target
+- Implementation of buffer sharing for Sequential mode. This require a modified version of the ens (disable by default). For enabling it define CPPFLAGS +=USE_BUFFERSHARING_SEQUENTIAL
+- Add 2 unused output ports that must be disabled.
+- New mechanism in port for increasing alloc size during tunnelingInit
+- Change management of names for MSG and traces
+- fix ER336390 in conjonction with wrapper_openmax[11.0.9].
+_____________________________________________________________________________________________
+Release  11.0.2
+Date: 2011-March 23
+
+Changes:
+- call on buffer flag only for EOS
+- setbuffer sharing for Broadcast mode (via a -DUSE_BUFFERSHARING) Limited to 2 output ports
+_____________________________________________________________________________________________
+Release  11.0.1
+Date: 2011-March 10
+
+Changes:
+- Extend port size check (between output and input)
+
+_____________________________________________________________________________________________
+Release  11.0.0
+Date: 2011-February, 24
+
+Changes:
+- Add callback from port to component to check buffer size
+- Change computation of buffersize
+- Remove duplication of EOS flag callback and EOS on input port
+
+_____________________________________________________________________________________________
+Release  10.48.5
+Date: 2011-February, 11
+
+Changes:
+- Fix solib generation for symbian -> nothing to  do
+
+_____________________________________________________________________________________________
+Release  10.48.4
+Date: 2011-February, 10
+
+Changes:
+- RPM fixes
+_____________________________________________________________________________________________
+Release  10.44.12
+Date: 2011-January, 15
+
+Changes:
+- Fix memory leak with fsm_init mContext (J Planeix)
+_____________________________________________________________________________________________
+Release  10.44.7
+Date: 2010-December, 15
+
+Changes:
+- add test target in bdf file
+- Add getExtensionIndex management
+
+_____________________________________________________________________________________________
+Release  10.44.6
+Date: 2010-December, 7
+
+Changes:
+- Fix component dependencies for symbian (component.xml)
+_____________________________________________________________________________________________

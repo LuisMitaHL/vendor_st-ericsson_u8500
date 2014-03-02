@@ -1,0 +1,1298 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+/*F(***************************************************************************
+* File name  : lsimcp.het
+* Module     : LSIMCP
+*----------------------------------------------------------------------------*
+*----------------------------------------------------------------------------*
+*                             DESCRIPTION
+*  This file contains the internal structures used by the module.
+*
+*
+*----------------------------------------------------------------------------*
+***************************************************************************)F*/
+/* == HISTORY ===============================================================*/
+/*  Name     |    Date       |     Action                                    */
+/*---------------------------------------------------------------------------*/
+/*  Balaji   | 16-JUL-2008   | Creation                                      */
+/*  Balaji   | 19-AUG-2008   | Modified - changed structure for padding  */
+/*  Balaji   | 22-AUG-2008   | Modified - changed tabbing           */
+/*---------------------------------------------------------------------------*/
+
+
+
+#ifndef LSIMCP_HET
+#define LSIMCP_HET
+
+
+
+
+/*======================= Parameter description SIGNALS TO GPS ========================*/
+
+/*! \addtogroup STRUCTURES_TO_GPS */
+/*@{*/
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_PosInstruct
+    \brief Expected QoP, measure response time, Environmental Characteristic
+    \note Macros used :
+                    - \ref Bitmask_for_t_lsimcp_PosInstruct
+                    - \ref Type_of_Environmental_Characteristic
+*/
+
+typedef struct {
+    uint8_t                  v_OptField;     /**<Carry the information about optional elements.
+                                            \ref Bitmask_for_t_lsimcp_PosInstruct */
+    uint8_t                  v_EnvChar;      /**<Environmental Characterization.
+                                            \ref Type_of_Environmental_Characteristic*/
+    uint32_t                 v_Timeout;      /**<In milliseconds*/
+    uint8_t                  v_HorAccuracy;  /**< Horizontal Accuracy is optional in MS-Assisted Mode of Operation */
+    uint8_t                  v_VertAccuracy; /**< Vertical Accuracy is optional in MS-Assisted Mode of Operation 
+                                                                                        default/unknown value 0xFF LSIMCP_U8_UNKNOWN   */
+    MC_PCC_FILL_STRUCT2
+}t_lsimcp_PosInstruct;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_TowAssist
+    \brief GPS TOW Assist consists of TLM message, Anti-spoof flag, Alert flag, and 2 reserved bits in TLM Word
+*/
+
+typedef struct {
+    uint8_t                  v_Satid;    /**<Satellite Id. 0-31 indicating GPS satellites. 1-32, 32-63 indicating augmentation systems*/
+    uint8_t                  v_AntiSpoof;/**<Anti Spoof Flag */
+    uint8_t                  v_Alert;    /**<Alert Flag*/
+    uint8_t                  v_TlmRes;   /**<TLM Reserved Bits*/
+    uint16_t                 v_TlmWord;  /**<TLM World*/
+    MC_PCC_FILL_STRUCT2                /*!< Padding to align on 32 */
+}t_lsimcp_TowAssist;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_SatEphemData
+    \brief Satellite Ephemeris Data
+    \note Macros used :
+                        - \ref Type_of_Navigation_Model
+*/
+
+typedef struct {
+    uint8_t                  v_SatId;        /**<Satellite Id. 0-31 indicating GPS satellites 1-32, 32-63 indicating augmentation systems*/
+    uint8_t                  v_ExtBit;       /**<CN Interface backward compatibility*/
+    uint16_t                 v_SatStatus;    /**<Satellite Status.
+                                            \ref Type_of_Navigation_Model */
+    uint8_t                  v_EphemCodeOnL2;/**<CA or P on L2*/
+    uint8_t                  v_EphemURA;     /**<URA(User Range Accuracy) Index*/
+    uint8_t                  v_EphemSvHealth;/**<SV Health*/
+    uint8_t                  v_Epheml2pFlag; /**<L2P data flag*/
+    uint16_t                 v_EphemIodc;    /**<IODC (Issue of Data Clock)*/
+    uint16_t                 v_EphemToc;     /**<Apparent clock correction*/
+    uint32_t                 v_Reserved1;    /**<SF(Sub-Frame) 1 Reserved*/
+    uint32_t                 v_Reserved2;    /**<SF 1 Reserved*/
+    uint32_t                 v_Reserved3;    /**<SF 1 Reserved*/
+    uint32_t                 v_Reserved4;    /**<SF 1 Reserved*/
+    int8_t                  v_EphemTgd;     /**<Estimated Group Delay differential*/
+    int8_t                  v_EphemAf2;     /**<Apparent clock correction */
+    int16_t                 v_EphemAf1;     /**<apparent clock correction*/
+    int32_t                 v_EphemAf0;     /**<apparent clock correction*/
+    int16_t                 v_EphemCrs;     /**<Amplitude of the Sine Harmonic Correction Term to the Orbit Radius */
+    int16_t                 v_EphemDeltaN;  /**<Mean Motion Difference From Computed Value */
+    int32_t                 v_EphemMo;      /**<Mean Anomaly at Reference Time */
+    int16_t                 v_EphemCuc;     /**<Amplitude of the Cosine Harmonic Correction Term To The Argument Of Latitude */
+    int16_t                 v_EphemCus;     /**<Amplitude of the Sine Harmonic Correction Term To The Argument Of Latitude */
+    uint32_t                 v_Epheme;       /**<Eccentricity*/
+    uint32_t                 v_EphemAPowerhalf;  /**<Semi-Major Axis */
+    uint16_t                 v_EphemToe;     /**<Reference Time Ephemeris*/
+    uint8_t                  v_EphemFitFlag; /**< */
+    uint8_t                  v_EphemAODO;    /**<Age Of Data Offset*/
+    int16_t                 v_EphemCic;     /**<Amplitude of the Cosine Harmonic Correction Term To The Angle Of Inclination */
+    int16_t                 v_EphemCis;     /**<Amplitude of the Sine Harmonic Correction Term To The Angle Of Inclination */
+    int32_t                 v_EphemOmegaA0; /**<Longitude of Ascending Node of Orbit Plane at Weekly Epoch*/
+    int32_t                 v_EphemIo;      /**<Inclination Angle at Reference Time*/
+    int16_t                 v_EphemIdot;    /**<Rate of Inclination Angle */
+    int16_t                 v_EphemCrc;     /**<Amplitude of the Cosine Harmonic Correction Term to the Orbit Radius */
+    int32_t                 v_EphemW;       /**<Argument of Perigee */
+    int32_t                 v_EphemOmegaAdot;   /**<Longitude of Ascending Node of Orbit Plane at Weekly Epoch */
+}t_lsimcp_SatEphemData;
+
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_NavModel
+    \brief All Satellites Ephemeris data
+*/
+
+typedef struct {
+    t_lsimcp_SatEphemData   a_NavData[LSIMCP_MAX_SAT_NR];       /**< \ref LSIMCP_MAX_SAT_NR*/
+    uint8_t                      v_NrOfSats;                         /**< */
+    MC_PCC_FILL_STRUCT3                                            /*!< Padding to align on 32 */
+}t_lsimcp_NavModel;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AssistBData
+    \brief Navigation Model
+*/
+
+typedef struct {
+    t_lsimcp_NavModel       s_NavModel;     /**< */
+}t_lsimcp_AssistBData;
+
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AcquisData
+    \brief ---
+    \note Macros used : \ref Type_of_UNKNOWN
+*/
+
+typedef struct {
+    uint8_t                  v_SatId;        /**<Satellite Id. 0-31 indicating GPS satellites 1-32, 32-63 indicating augmentation systems */
+    uint8_t                  v_Doppler1;     /**<Actual  (-0.966 .. 0.483 by step of 0.023)
+                                            0 - Unknown \ref Type_of_UNKNOWN*/
+    int16_t                 v_Doppler0;     /**<Mapped to (-5120 .. 5117.5 by step of 2.5)*/
+    uint8_t                  v_DopplerUncert;/**<0 - Unknown \ref Type_of_UNKNOWN*/
+    uint8_t                  v_IntCodePhase; /**<1023 chip segments Range*/
+    uint16_t                 v_CodePhase;    /**<Chips, specifies the centre of the search window.*/
+    uint8_t                  v_GpsBitNumber; /**<Specifies GPS bit number (20 1023 chip segments) */
+    uint8_t                  v_SearchWindow; /**<Specifies the width of the search window*/
+    uint8_t                  v_Azimuth;      /**<Actual (0 .. 348.75 by step of 11.25) In Degree.
+                                            255 - Unknown \ref Type_of_UNKNOWN*/
+    uint8_t                  v_Elevation;    /**<Actual (0 .. 78.75 by step of 11.25) In Degree
+                                            255 - Unknown \ref Type_of_UNKNOWN*/
+}t_lsimcp_AcquisData;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AcquisList
+    \brief ---
+    \note Macros used : \ref Type_of_UNKNOWN
+*/
+
+typedef struct {
+    uint32_t                 v_GpsTow;                       /**<Millisecond
+                                                            Range (0 .. 604799920)
+                                                            In GSM the received value need to be multiplies by 80 to convert to this range.
+                                                            0xFFFFFFFF - Not Present/Unknown. */
+    uint32_t                 v_Prec;                         /**<Microsecond
+                                                            Precision of the time calibration required in RMS.*/
+    int32_t                 v_RefDeltaCellTime;             /**<This parameter shall store the Delta time with respect to GPS time when the Assistance had been obtained.
+                                                            Delta is the difference of the UTRAN/GSM time sent by Network to when synchronization pulse sent to the GPS baseband chip
+                                                            0x7FFFFFFF- Unknown \ref Type_of_UNKNOWN*/
+    t_lsimcp_AcquisData a_AcquisElement[LSIMCP_MAX_SAT_NR]; /**< \ref LSIMCP_MAX_SAT_NR */
+    uint8_t                    v_NrOfSats;                     /**<Number of Satellite*/
+    MC_PCC_FILL_STRUCT3                                    /*!< Padding to align on 32 */
+}t_lsimcp_AcquisList;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AssistAData
+    \brief Acquisition Assistance
+*/
+
+typedef struct {
+    t_lsimcp_AcquisList     s_AcquisAssist;     /**< */
+}t_lsimcp_AssistAData;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AlmanacElement
+    \brief Contains Almanac data for each satellite
+    \note Macros used : \ref Type_of_UNKNOWN
+*/
+
+typedef struct {
+    uint8_t                  v_SatId;            /**<Satellite Id 0-31 indicating GPS satellites 1-32, 32-63 indicating augmentation systems */
+    uint8_t                  v_DataId;           /**<Data Id (Only Present in RRC)
+                                                255 - Unknown \ref Type_of_UNKNOWN*/
+    uint16_t                 v_AlmanacE;         /**<Eccentricity */
+    uint8_t                  v_AlmanacToa;       /**<Reference Time of Almanac */
+    uint8_t                  v_AlmanacSVhealth;  /**<SV Health*/
+    int16_t                 v_AlmanacDeltai;    /**<Ksii
+                                                Delta Inclination Angle*/
+    uint32_t                 v_AlmanacAsqrt;     /**<Semi-Major Axis*/
+    int32_t                 v_AlmanacOmega0;    /**<Longitude of Ascending Node of Orbit Plane at Weekly Epoch*/
+    int32_t                 v_AlmanacOmega;     /**<Argument of Perigee*/
+    int32_t                 v_AlmanacM0;        /**<Mean Anomaly at Reference Time */
+    int16_t                 v_AlmanacOmegaDot;  /**<Longitude of Ascending Node of Orbit Plane at Weekly Epoch Range */
+    int16_t                 v_AlmanacAF0;       /**<Satellite clock bias*/
+    int16_t                 v_AlmanacAF1;       /**<Satellite clock drift*/
+    MC_PCC_FILL_STRUCT2                        /*!< Padding to align on 32 */
+}t_lsimcp_AlmanacElement;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AlmanacData
+    \brief Almanac Data
+*/
+
+typedef struct {
+    t_lsimcp_AlmanacElement a_AlmanacList[LSIMCP_MAX_ALM_SAT_NR];   /**<Contains Almanac data for each satellite. \ref LSIMCP_MAX_SAT_NR */
+    uint8_t                      v_AlmanacWNA;               /**<Almanac Reference Week Number*/
+    uint8_t                      v_NrOfSats;                 /**<Number of Satellite*/
+    uint8_t                      v_SvGlobalHeathFlag;            /**<0-  Invalid 1-  Valid RRLP shall set this value to 0*/
+    uint8_t                      a_SvGlobalHealth[LSIMCP_SV_HEALTH_LENGTH];      /**<This enables GPS time recovery and possibly extended GPS correlation intervals. It is specified in page 25 of subframes 4 and 5 (RRC Only)First 45.5 Bytes shall store 364 bits.*/
+    MC_PCC_FILL_STRUCT3                        /*!< Padding to align on 32 */
+}t_lsimcp_AlmanacData;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_RefTime
+    \brief GPS Reference Time
+    \note Macros used : \ref Type_of_UNKNOWN
+*/
+
+typedef struct {
+    t_lsimcp_TowAssist      a_TowAssist[LSIMCP_MAX_SAT_NR];     /**<GPS TOW Assist consists of TLM message, Anti-spoof flag, Alert flag, and 2 reserved bits in TLM Word. \ref LSIMCP_MAX_SAT_NR*/
+    uint32_t                     v_GpsTow;                       /**<Time of Week (milliseconds)
+                                                                Note: In GSM the received value need to be multiplies by 80ms to convert to this range.
+                                                                In UTRAN no change is required.*/
+    uint32_t                     v_Prec;                         /**<Microseconds
+                                                                Precision of the time calibration required in RMS.*/
+    int32_t                     v_RefDeltaCellTime;             /**<This parameter shall store the Delta time with respect to GPS time when the Assistance had been obtained.
+                                                                Delta is the difference of the UTRAN/GSM time sent by Network to when synchronization pulse is sent to the GPS baseband chip.
+                                                                0x7FFFFFFF  Unknown \ref Type_of_UNKNOWN
+                                                                If no UTRAN/GSM Time available, the value shall be set to 0*/
+    uint16_t                     v_GpsWeek;                      /**<GPS Week Number*/
+    uint8_t                      v_SfnTowUnc ;                   /**<SFN-TOW Uncertainty.
+                                                                255  Unknown \ref Type_of_UNKNOWN*/
+    int8_t                      v_UtranGpsDriftRate;            /**<TUTRAN-GPS drift rate.
+                                                                128  Unknown \ref Type_of_UNKNOWN*/
+    uint8_t                      v_NumTowAssist;                 /**<Number of TOW assist for each visible satellite*/
+    MC_PCC_FILL_STRUCT3                                     /*!< Padding to align on 32 */
+}t_lsimcp_RefTime;
+
+/*----------------------------------------------------------------------*/
+/*!
+ *  \struct s_gnsCP_FtaRsp
+ *  \brief  A-GPS Control Plane Fine TimeData.
+ */
+typedef struct {
+
+     uint32_t   v_FrameNumber;      /*!<  frame_number    Value range: 0 to 2715647 */
+     uint16_t   v_QBitNumber;        /*!<   Bit number (in Quarterbits) Valid Range [0 to 625]. Represent the quadra bit value.*/
+     uint16_t   v_BCCHCarrier;      /*!<   bcch_carrier     Valid Rane: [0 to 1023] */
+     uint8_t    v_TimeSlot;         /*!<   time_slot   Valid Range [0 to 7] */
+     uint8_t    v_TimingAdvance;    /*!<   Valid Range [0 to 63] */
+     uint8_t    v_BSIC;             /*!<   bsic  Value range: 0 to 63 */
+ } t_lsimCP_GsmCellTime;
+
+
+/*----------------------------------------------------------------------*/
+/*!
+ *  \struct s_gnsCP_FtaRsp
+ *  \brief  A-GPS Control Plane Fine TimeData.
+ */
+typedef struct {
+
+
+    uint16_t   v_CellFrameTimeMS;
+    uint32_t   v_CellFrameTimeLS; 
+    uint8_t    v_OperationStatus;   /*status    Constant: MODEM_LCS_W_CS_STATUS (from 001.000)
+                                                             Unspecified values for "Operation status"should be treated as unknown failure reasons */
+    uint16_t   v_Sfn;               /*sfn    0x0000-0x0FFF: Real_val = Field_val
+                                                 0x1000-0xFFFE: Illegal SFN
+                                                  0xFFFF-0xFFFF: MODEM_LCS_NOT_AVAILABLE */
+    uint16_t   v_Psc;        /*!<  PSC used for SFN timing 
+                                                  valid range [0...511] according to  TS25 213
+                                                  0xFFFF Field is unkown range*/
+    uint16_t   v_RoundTripTime;
+    
+    
+} t_lsimCP_WcdmaFddCellTime;
+/*!
+ *  \union u_gnsCP_CellTime
+*  \brief  This union defines the Cell Time in Cellular frame format.
+ */
+typedef union
+    {
+     t_lsimCP_GsmCellTime v_GsmCellTime;/*!< Structure to define the Gsm cell time*/
+     t_lsimCP_WcdmaFddCellTime v_WcdmaFddCellTime;/*!< Structure to define the Wcdma fdd cell time*/
+}u_lsimcp_CellTime; 
+
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AssistIono
+    \brief IONO Model
+*/
+
+typedef struct {
+    int8_t                  v_Alpha0;   /**<The parameters n are the coefficients of a cubic equation representing the amplitude of the vertical delay*/
+    int8_t                  v_Alpha1;   /**< */
+    int8_t                  v_Alpha2;   /**< */
+    int8_t                  v_Alpha3;   /**< */
+    int8_t                  v_Beta0;    /**<The parameters n are the coefficients of a cubic equation representing the period of the ionospheric model*/
+    int8_t                  v_Beta1;    /**< */
+    int8_t                  v_Beta2;    /**< */
+    int8_t                  v_Beta3;    /**< */
+}t_lsimcp_AssistIono;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AssistUtcm
+    \brief UTC Model
+*/
+
+typedef struct {
+    int32_t                 v_UtcA1;            /**< */
+    int32_t                 v_UtcA0;            /**< */
+    uint8_t                  v_UtcTot;           /**< */
+    uint8_t                  v_UtcWnT;           /**< */
+    int8_t                  v_UtcDeltaTLs;      /**< */
+    uint8_t                  v_UtcWnLsf;         /**< */
+    int8_t                  v_UtcDn;            /**< */
+    int8_t                  v_UtcDeltaTLsf;     /**< */
+    MC_PCC_FILL_STRUCT2                     /*!< Padding to align on 32 */
+
+}t_lsimcp_AssistUtcm;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_SatRtiData
+    \brief RTI list
+*/
+
+typedef struct {
+    uint8_t                  v_BadSatId;         /**< */
+    MC_PCC_FILL_STRUCT3                     /*!< Padding to align on 32 */
+}t_lsimcp_SatRtiData;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AssistRti
+    \brief Real Time Integrity
+*/
+
+typedef struct {
+    t_lsimcp_SatRtiData     a_RtiList[LSIMCP_MAX_SAT_NR];   /**<RTI list. \ref LSIMCP_MAX_SAT_NR*/
+    uint8_t                      v_NrOfSats;                     /**<Number of Satellites*/
+    MC_PCC_FILL_STRUCT3                                     /*!< Padding to align on 32 */
+}t_lsimcp_AssistRti;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_SatDgpsData
+    \brief DGPS list
+*/
+
+typedef struct {
+    uint8_t                  v_SatId;        /**<Satellite Id 0-31 indicating GPS satellites 1-32, 32-63 indicating augmentation systems*/
+    uint8_t                  v_Iode;
+    uint8_t                  v_Urde;         /**<The value in this field shall be multiplied by the UDRE Scale Factor in the information element Status/Health to determine the final UDRE estimate for the particular satellite.
+                                            Enum*/
+    int8_t                  v_Rrc;          /**<Pseudo Range Rate Correction
+                                            Real(-4.064 .. 4.064 by step of 0.032) in Meters/sec*/
+    int16_t                 v_Prc;          /**<Pseudo Range Correction
+                                            Real(-655.04 .. 655.04 by step of 0.32)
+                                            In Meters*/
+    MC_PCC_FILL_STRUCT2                 /*!< Padding to align on 32 */
+}t_lsimcp_SatDgpsData;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_AssistDgpsCorr
+    \brief DGPS Correction
+*/
+
+typedef struct {
+    t_lsimcp_SatDgpsData    a_DgpsList[LSIMCP_MAX_SAT_NR];      /**<DGPS list*/
+    uint32_t                     v_GpsTow;       /**<GPS TOW (in milliseconds) when DGPS Correction was calculated*/
+    uint8_t                      v_Health;       /**< */
+    uint8_t                      v_NrOfSats;     /**<Number of Satellites*/
+    MC_PCC_FILL_STRUCT2                     /*!< Padding to align on 32 */
+}t_lsimcp_AssistDgpsCorr;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_LocNotification
+    \brief MTLR parameters
+*/
+
+typedef struct {
+    uint8_t                         v_MtlrTypeVerify;      /**<MTLR request type - Verify or Notify. \ref Type_of_MTLR_Request */
+    uint8_t                         v_NotificationType;    /**<Notification Type. \ref Type_of_Notification*/
+    t_lsimcp_LocNotificationType    v_LocationType;        /**<Location Type. \ref Type_of_Location */
+    uint8_t                         v_LcsServiceTypeId;    /**< LCS service Type ID.\ref Type_of_LCS_Service_Id */
+    uint8_t                         v_TonNpi;              /**< Type of Number and number Plan identification. Refer 3GPP TS 24.008, section 10.5.4.7. */
+    uint8_t                         v_TonNpiConfig;        /**<Indicates if v_TonNpi has been populated.  */
+    uint8_t                         a_PhoneNumber[LSIMCP_MAX_PHONE_NUM_LENGTH];     /**<Phone Number. If content is NULL string, not valid. */
+    uint8_t                         a_ClientName[LSIMCP_MAX_CLIENT_NAME_LENGTH];    /**<Client Name.If content is NULL string, not valid */
+    uint8_t                         v_ClientNameAlphabet;  /**<Data Coding Scheme for Client name. \ref Type_of_Data_Coding_Scheme */
+    uint8_t                         v_ClientNameLen;       /**<Length of the string a_ClientName */
+    uint8_t                         a_RequestorId[LSIMCP_MAX_REQUESTOR_ID_LENGTH];  /**<Requestor ID.If content is NULL string, not valid */
+    uint8_t                         v_RequestorIdAlphabet; /**<Data Coding scheme for Requestor ID. \ref Type_of_Data_Coding_Scheme */
+    uint8_t                         v_RequestorIdLen;      /**<Length of the string a_ClientName */
+    uint8_t                         a_CodeWord[LSIMCP_MAX_CODE_WORD_LENGTH];        /**<Code word.If content is NULL string, not valid */
+    uint8_t                         v_CodeWordAlphabet;    /**<Data Coding scheme for Code word. \ref Type_of_Data_Coding_Scheme */
+    uint8_t                         v_CodeWordLen;         /**<Length of the string a_CodeWord */
+    MC_PCC_FILL_STRUCT2                                    /**< Padding to align on 32 */
+}t_lsimcp_LocNotification;
+
+
+/*@}*/   /* End of group STRUCTURES_TO_GPS */
+
+/*======================= Parameter description SIGNALS FROM GPS ========================*/
+
+/*! \addtogroup STRUCTURES_FROM_GPS */
+/*@{*/
+
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_MsrElement
+    \brief Measurement results from each satellite
+*/
+
+typedef struct {
+    uint8_t                  v_SatId;        /**<Satellite Id. 0-31 indicating GPS satellites. 1-32, 32-63 indicating augmentation systems*/
+    uint8_t                  v_CNo;          /**<The estimate of the carrier-to-noise ratio of the received signal from the particular satellite used in the measurement. It is given in units of dB-Hz (typical levels will be in the range of 20 - 50 dB-Hz)*/
+    int16_t                 v_Doppler;      /**< */
+    uint16_t                 v_WholeChips;   /**< */
+    uint16_t                 v_FracChips;    /**< */
+    uint8_t                  v_MpathIndic;   /**< */
+    uint8_t                  v_PseudoRmsErr; /**< */
+      MC_PCC_FILL_STRUCT2                    /*!< Padding to align on 32 */
+}t_lsimcp_MsrElement;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_MsrRes
+    \brief GPS Raw measurements
+    \note  Macros used :
+                        - \ref Type_of_STATUS
+                        - \ref Type_of_UNKNOWN
+*/
+
+typedef struct {
+    uint8_t                  v_Status;                   /**<Returns CGPS_LSIMCP_OK, CGPS_LSIMCP_ERR \ref Type_of_STATUS*/
+    uint8_t                  v_NrOfSats;                 /**< */
+
+    uint8_t                  v_Delta_TOW;                /**< Delta Tow Field
+                                                                                                       Valid range 0-127, Value interpretation:ms, 255 - Unknown \ref Type_of_UNKNOWN */
+                                                                                                       
+    uint16_t                 v_RefFrame;                 /**<GSM Reference Time
+                                                        65535 - Unknown \ref Type_of_UNKNOWN*/
+    int32_t                  v_RefDeltaCellTime;         /**<Microsecond
+                                                        This shall store the reference cell time with respect to the time of synchronization pulse input to the GPS baseband chip
+                                                        0x7FFFFFFFF- Unknown \ref Type_of_UNKNOWN*/
+    uint32_t                 v_GpsTow;                   /**<GPS Reference Time (milliseconds)
+                                                        Range(0 .. 604799990)*/
+    uint8_t                  v_GpsTowUnc;                /**<GPS Reference Time Uncertainty in microseconds
+                                                        0xFF - Unknown \ref Type_of_UNKNOWN*/
+    t_lsimcp_MsrElement      a_MsrElement[LSIMCP_MAX_SAT_NR];    /**<Measurement results from each satellite \ref LSIMCP_MAX_SAT_NR*/
+}t_lsimcp_MsrRes;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_GpsPosition
+    \brief Position estimate
+    \note  Macros Used :
+                        - \ref Type_of_FIX
+                        - \ref Type_of_Shape
+                        - \ref Type_of_Latitude_Sign
+                        - \ref Type_of_Altitude_Direction
+                        - \ref Type_of_UNKNOWN
+*/
+
+typedef struct {
+    uint8_t                  v_Status;           /**<Position Validity Status,Returns CGPS_LSIMCP_OK, CGPS_LSIMCP_ERR*/
+    uint8_t                  v_FixType;          /**<cPosMode geographical information 0-2D, 1-3D \ref Type_of_FIX*/
+    uint16_t                 v_RefFrame;         /**<GSM Reference Time
+                                                65535 - Unknown \ref Type_of_UNKNOWN*/
+
+
+    uint16_t                v_GpsTowSubms;      /*GPS Reference Time in microseconds
+                                                                                              Valid range:0-9999
+                                                                                              Value interpretation:TOW in ms=GPS TOW + .0001*GPSTOWSubms
+                                                                                              Value not present:0xFFFF */
+    MC_PCC_FILL_STRUCT2                         /*!< Padding to align on 32 */
+    int32_t                 v_RefDeltaCellTime; /**<Microsecond
+                                                This shall store the reference cell time with respect to the time of synchronization pulse input to the GPS baseband chip
+                                                0x7FFFFFFF- Unknown \ref Type_of_UNKNOWN*/
+    uint32_t                 v_GpsTow;           /**<Measurement GPS Time of Week (milliseconds).  INTEGER (0..604799999).
+                                                            **/
+    
+
+    uint32_t                 v_GpsTowUnc;        /**<GPS Reference Time Uncertainty in microseconds
+                                                                                        0xFFFFFFFF - Unknown \ref Type_of_UNKNOWN
+                                                0xFFFFFFFF - Unknown \ref Type_of_UNKNOWN*/                                                                                     
+    uint32_t                 v_Latitude;         /*!< Latitude (90/2^23 degrees).  INTEGER (0..8388607).  Represents 0..90 degrees.
+                                                            Value as per the GAD format used in the RRC and RRLP specifications. */
+    int32_t                 v_Longitude;       /*!< Longitude (180/2^23 degrees).  INTEGER (-8388608..8388607).   Represents -180..+180 degrees.
+                                                            Value as per the GAD format used in the RRC and RRLP specifications. */
+    uint8_t                  v_ShapeType;        /**<\ref Type_of_Shape
+                                                0 - Ellipsoid Point
+                                                1 - EP with uncertainty circle
+                                                3 - EP with uncertainty Ellipse
+                                                8 - EP with altitude
+                                                9 - EP with altitude and uncertainty Ellipsoid
+                                                10 - EP arc*/
+    uint8_t                  v_SignOfLat;        /**<0 - North ,
+                                                1 - South \ref Type_of_Latitude_Sign Value as per the GAD format used in the RRC and RRLP specifications. */
+    uint8_t                  v_UncertSemiMajor;  /**<Valid Shapes: 1,3,9,10 Shape 1: Major Axis shall store Uncertainity Code   INTEGER (0..127). Shape 10: Major Axis shall be interpreted as Uncertainity Radius 255 - Unknown \ref Type_of_UNKNOWN Value as per the GAD format used in the RRC and RRLP specifications. */
+    uint8_t                  v_UncertSemiMinor;  /**<Valid Shapes: 3,9.   INTEGER (0..127).  255 - Unknown \ref Type_of_UNKNOWN Value as per the GAD format used in the RRC and RRLP specifications*/
+    uint32_t                 v_Altitude;         /**<Valid Shapes: 8,9. < Altitude (metres).  INTEGER (0..32767).
+                                                            <br>Value as per the GAD format used in the RRC and RRLP specifications. */
+    uint32_t                 v_InnerRadius;      /**<Valid Shapes: 10. Meters 0xFFFFFFFF - Unknown \ref Type_of_UNKNOWN */
+    uint8_t                  v_AxisAngle;        /**<Valid Shapes: 3,9.255 - Unknown \ref Type_of_UNKNOWN*/
+    uint8_t                  v_DirectOfAlt;      /**<Valid Shapes: 8,9.
+                                                0 - height,
+                                                1 - depth \ref Type_of_Altitude_Direction
+                                                -1=Altitude not present*/
+
+    uint8_t                  v_UncertAltitude;   /**<Valid Shapes: 9. INTEGER (0..127)  255 - Unknown \ref Type_of_UNKNOWN Refer 3GPP 23.032 for Scaling factor,Value as per the GAD format used in the RRC and RRLP specifications.*/
+    uint8_t                  v_Confidence;       /**<Valid Shapes: 1,3,9,10.  Percent    255  Unknown \ref Type_of_UNKNOWN,Value as per the GAD format used in the RRC and RRLP specifications*/
+    uint8_t                  v_IncludedAngle;    /**<Valid Shapes: 10. 255 - Unknown \ref Type_of_UNKNOWN  2 N <= ai < 2 (N+1)       Accepted values for ai(angle included) are within the range from 0 to 359,9...9 degrees.Where N is coded number provided in Offset Angle ,Value as per the GAD format used in the RRC and RRLP specifications*/
+    uint8_t                  v_OffsetAngle;      /**<Valid Shapes: 10. 255 - Unknown \ref Type_of_UNKNOWN  2 N <= ao < 2 (N+1)       Accepted values for ao(angle offset) are within the range from 0 to 359,9...9 degrees.Where N is coded number provided in Offset Angle Value as per the GAD format used in the RRC and RRLP specifications*/
+
+    uint8_t                  v_PolygonNumOfPoints;  /**<Valid Shapes: 5. This can vary from 3 to 15 if polygon is the valid shape type. If value is 0, invalid polygon */
+    uint8_t                  a_PolygonSignOfLat[LSIMCP_MAX_POLYGON_POINTS];  /**<Valid Shapes: 5. 0 - North , 1 - South \ref Type_of_Latitude_Sign*/
+         
+    uint32_t                 a_PolygonLatitude[LSIMCP_MAX_POLYGON_POINTS];   /**<Valid Shapes: 5. Latitude in radian*/
+    int32_t                 a_PolygonLongitude[LSIMCP_MAX_POLYGON_POINTS];  /**<Valid Shapes: 5. Longitude in radian*/
+
+
+}t_lsimcp_GpsPosition;
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_GpsAidRequest
+    \brief Aid identification
+    \note  Macros Used : \ref Bitmask_for_t_lsimcp_AidRequest
+                         \ref Type_of_UNKNOWN
+*/
+
+typedef struct {
+    uint32_t                 v_Latitude;     /**<Latitide in radian*/
+    int32_t                 v_Longitude;    /**<Latitude in radian*/
+    uint32_t                 v_Altitude;     /**<Altitude in meters*/
+    uint16_t                 v_AidMask;      /**<Bitmask for requested aiding data \ref Bitmask_for_t_lsimcp_AidRequest
+                                        Bit 0-Almanac
+                                        Bit 1-UTC Model
+                                        Bit 2-Ionospheric model
+                                        Bit 3-Navigation Model
+                                        Bit 4-DGPS Corrections
+                                        Bit 5-Reference Location
+                                        Bit 6-Reference Time
+                                        Bit 7-Acquisition Assistance
+                                        Bit 8-Real-Time Integrity
+                                        Bit 9-15 reserved
+                                        Note: Below fields are valid if Bit 3 are set.*/
+    uint16_t                 v_GpsWeek;      /**<GPS Week*/
+    uint8_t                  v_GpsTow;       /**<GPS time of ephemeris in hours of the latest ephemeris set contained by the UE.*/
+    uint8_t                  v_NrOfSats;     /**<Number of Satellite Information*/
+    uint8_t                  v_TTOELimit;    /**<ephemeris age tolerance of the UE to UTRAN in hours
+                                        255 - Unknown \ref Type_of_UNKNOWN*/
+    uint8_t                  a_SatID[LSIMCP_MAX_SAT_NR];/**<Satellite Id. \ref LSIMCP_MAX_SAT_NR*/
+    uint8_t                  a_Iode[LSIMCP_MAX_SAT_NR];  /**<Issue of Data Ephemeris for SatID. \ref LSIMCP_MAX_SAT_NR */
+    uint8_t                  v_LocationMethod;   /**<Indicates the Location Method. \ref Type_of_Location_Method */
+}t_lsimcp_GpsAidRequest;
+
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_LocNotifyRes
+    \brief User response to MTLR Notification
+*/
+
+typedef struct {
+    uint8_t                 v_MtlrTypeVerify;   /**<MTLR request type - Verify or Notify. \ref Type_of_MTLR_Request */
+    uint8_t                 v_UserRsp;          /**<User Response. \ref Type_of_User_Response*/
+    MC_PCC_FILL_STRUCT2                    /*!< Padding to align on 32 */
+}t_lsimcp_LocNotifyRes;
+
+
+/*----------------------------------------------------------------------*/
+/*!
+    \struct t_lsimcp_3rdPartyClient
+    \brief 3rd party client information to which position need to be forwarded
+*/
+
+typedef struct {
+    uint8_t             v_ClientIdTonNpi;         /**< Client ID Type of Number and number Plan identification. Refer 3GPP TS 24.008, section 10.5.4.7. */
+    uint8_t             v_ClientIdConfig;         /**<Indicates if v_TonNpi has been populated.  */
+    uint8_t             v_ClientIdPhoneNumber[LSIMCP_MAX_PHONE_NUM_LENGTH];  /**<Client ID phone number */
+    uint8_t             v_ClientIdPhoneNumberLen;  /**< Indicates length of variable v_ClientIdPhoneNumber. If this variable is set to 0, indicates self location requested*/
+    uint8_t             v_MlcNumTonNpi;              /**< MLC Number Type of Number and number Plan identification. Refer 3GPP TS 24.008, section 10.5.4.7. */
+    uint8_t             v_MlcNumConfig;              /**< Indicates if v_TonNpi has been populated.  */
+    uint8_t             v_MlcNumPhoneNumber[LSIMCP_MAX_PHONE_NUM_LENGTH];    /**<MLC Phone Number */
+    uint8_t             v_MlcNumPhoneNumberLen;    /**< Indicates the length of variable v_MlcNumPhoneNumber. If this variable is set to 0, indicates self location requested */
+
+    MC_PCC_FILL_STRUCT1                            /*!< Padding to align on 32 */
+}t_lsimcp_3rdPartyClient;
+
+/*!
+    \struct t_lsimcp_QoP
+    \brief Quality of Position Required by Application
+*/
+
+typedef struct {
+   uint8_t v_Horacc    ;   ///< Horizontal accuracy       INTEGER (0..127).
+   int8_t  v_Veracc    ;   ///< Vertical accuracy         INTEGER (0..127)   OPTIONAL (-1 = Not present).
+   int32_t v_MaxLocAge ;   ///< Maximum age of location[seconds]   INTEGER (0..65535) OPTIONAL (-1 = Not present).
+   uint8_t v_Delay     ;   ///< Maximum permissible delay INTEGER (0..7)     OPTIONAL (-1 = Not present).
+}t_lsimcp_QoP;
+
+
+//typedef struct {
+//
+//} ;
+
+/*@}*/   /* End of group STRUCTURES_FROM_GPS */
+
+/*========================= Message structures ===========================*/
+
+/*-----------------------Messages description (Signal To GPS)---------------------------------*/
+
+/*! \addtogroup MESSAGES_TO_GPS */
+/*@{*/
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MS_BASED_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MS_BASED_REQ                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MS_BASED_REQ, PCC_T_REQ)
+/*! \brief Depending on the Positioning Instruction Element this message is generated.
+    \note
+        GPS will respond with: -
+             - \ref CGPS_LSIMCP_MS_BASED_CNF to confirm/reject the location request
+             - \ref CGPS_LSIMCP_POS_IND in case of successful or unsuccessful position estimate.
+             - Message Payload is \ref t_lsimcp_MSBasedReqM
+        - This message is generated if Method type is set to
+         - 1’ (MS Based) in case both MS Based and MS Assisted is supported, or
+         - 2’ (MS based is preferred, but MS assisted is allowed) in case both MS Based and MS Assisted is supported or
+         - 3’ (MS assisted is preferred, but MS based is allowed) in case only MS based is supported in the device.
+
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_MS_BASED_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MS_BASED_REQ))
+/*! \struct t_lsimcp_MSBasedReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_MS_BASED_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MSBasedReqM)
+      MC_PCC_FIELD (uint32_t , v_PeriodicInterval)                   /**< Periodic Interval [mSec], 0 for single shot CGPS shall covert this value to the nearest multiple of supported periodic rate.*/
+      MC_PCC_FIELD (t_lsimcp_PosInstruct , v_PosInstruct)       /**< Expected QoP, measure response time, Environmental Characteristic*/
+      MC_PCC_FIELD (uint8_t , v_SessionID)                           /**< Session_id. 255 - Unknown \ref Type_of_UNKNOWN.201-254 Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+      MC_PCC_FIELD(uint8_t , v_AssistanceReqGrant)                /**< If information not available as in case of RRLP, would be set to Allowed. Allowed =0, Not Allowed = 1*/
+    MC_PCC_FIELD (uint8_t , v_NoReporting)
+/*    +LMSqc34406 */
+    MC_PCC_FIELD (uint8_t,  v_ReportingAmount)                    /**< Valid only if Periodic Interval is set to value other than 0. Gives the amount of reporting for periodic cases.INTEGER(1, 2, 4, 8, 16, 32, 64, 0=Infinity)*/
+/*    MC_PCC_FILL_STRUCT2                             */
+    MC_PCC_FILL_STRUCT1                                     /*!< Padding to align on 32 */
+/* -LMSqc34406*/
+MC_PCC_END_STRUC   (t_lsimcp_MSBasedReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MS_ASSISTED_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MS_ASSISTED_REQ                  MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MS_ASSISTED_REQ, PCC_T_REQ)
+/*! \brief Depending on the positioning Instruction element this message is generated.
+    \note
+            GPS will respond with: -
+             - \ref CGPS_LSIMCP_MS_ASSISTED_CNF to confirm/reject the location request
+             - \ref CGPS_LSIMCP_MSR_RESULT_IND in case of successful or unsuccessful measurement.
+             - Message Payload is \ref t_lsimcp_MSAssistedReqM
+        - This message is generated if Method type is set to
+         - 0’ (MS Assisted) in case both MS Based and MS Assisted is supported, or
+         - 2’ (MS based is preferred, but MS assisted is allowed ) in case only MS assisted  is supported in the device or
+         - 3’ (MS assisted is preferred, but MS based is allowed) in case both MS Based and MS Assisted is supported.
+
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_MS_ASSISTED_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MS_ASSISTED_REQ))
+/*! \struct t_lsimcp_MSAssistedReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_MS_ASSISTED_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MSAssistedReqM)
+     MC_PCC_FIELD (uint32_t , v_PeriodicInterval)                   /**< Periodic Interval [mSec], 0 for single shot CGPS shall covert this value to the nearest multiple of supported periodic rate.  */
+       MC_PCC_FIELD (t_lsimcp_PosInstruct , v_PosInstruct)       /**< Timeout, Environmental Characteristic, QoP  */
+       MC_PCC_FIELD (uint8_t , v_SessionID)                          /**< Session_id .255 - Unknown \ref Type_of_UNKNOWN 201-254. Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+       MC_PCC_FIELD(uint8_t , v_AssistanceReqGrant)               /**< If information not available as in case of RRLP, would be set to Allowed. Allowed =0, Not Allowed = 1*/
+     MC_PCC_FIELD (uint8_t , v_NoReporting)
+/*  +LMSqc34406 */
+    MC_PCC_FIELD (uint8_t,  v_ReportingAmount)                    /**< Valid only if Periodic Interval is set to value other than 0. Gives the amount of reporting for periodic cases.INTEGER(1, 2, 4, 8, 16, 32, 64, 0=Infinity)*/
+/*    MC_PCC_FILL_STRUCT2                                */
+    MC_PCC_FILL_STRUCT1                                        /*!< Padding to align on 32 */
+/* -LMSqc34406*/
+MC_PCC_END_STRUC   (t_lsimcp_MSAssistedReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ABORT_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ABORT_REQ                        MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ABORT_REQ, PCC_T_REQ)
+/*! \brief Abort the in progress position fix.
+    \note
+            - GPS should confirm with \ref CGPS_LSIMCP_ABORT_CNF.
+            - Message Payload is \ref t_lsimcp_AbortReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ABORT_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ABORT_REQ))
+/*! \struct t_lsimcp_AbortReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ABORT_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AbortReqM)
+      MC_PCC_FIELD (uint8_t , v_SessionID)         /**< Session_id.255 - Unknown 201-254. Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+      MC_PCC_FILL_STRUCT3                     /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_AbortReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ASSIST_DATA_B_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ASSIST_DATA_B_REQ                MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ASSIST_DATA_B_REQ, PCC_T_REQ)
+/*! \brief This message shall forward the Navigation model for ms-based GPS mode of operation.
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_AssistDataBReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ASSIST_DATA_B_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ASSIST_DATA_B_REQ))
+/*! \struct t_lsimcp_AssistDataBReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ASSIST_DATA_B_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AssistDataBReqM)
+      MC_PCC_FIELD (t_lsimcp_AssistBData , v_AssistBData)   /**< Navigation Model */
+MC_PCC_END_STRUC   (t_lsimcp_AssistDataBReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ASSIST_DATA_A_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ASSIST_DATA_A_REQ                MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ASSIST_DATA_A_REQ, PCC_T_REQ)
+/*! \brief This message shall forward Acquisition Assistance for ms-assisted GPS mode of operation.
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_AssistDataAReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ASSIST_DATA_A_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ASSIST_DATA_A_REQ))
+/*! \struct t_lsimcp_AssistDataAReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ASSIST_DATA_A_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AssistDataAReqM)
+      MC_PCC_FIELD (t_lsimcp_AssistAData , v_AssistAData)   /**< Acquisition Assistance */
+MC_PCC_END_STRUC   (t_lsimcp_AssistDataAReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ALMANAC_DATA_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ALMANAC_DATA_REQ                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ALMANAC_DATA_REQ, PCC_T_REQ)
+/*! \brief This message shall forward Almanac Data for GPS
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_AlmanacDataReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ALMANAC_DATA_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ALMANAC_DATA_REQ))
+/*! \struct t_lsimcp_AlmanacDataReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ALMANAC_DATA_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AlmanacDataReqM)
+      MC_PCC_FIELD (t_lsimcp_AlmanacData , v_AlmanacData) /**< Almanac Data */
+MC_PCC_END_STRUC   (t_lsimcp_AlmanacDataReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_TIME_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_TIME_REQ                         MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_TIME_REQ, PCC_T_REQ)
+/*! \brief This message shall forward GPS Reference TIME
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_TimeReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_TIME_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_TIME_REQ))
+/*! \struct t_lsimcp_TimeReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_TIME_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_TimeReqM)
+      MC_PCC_FIELD (t_lsimcp_RefTime , v_RefTime)   /**< GPS Reference Time */
+      MC_PCC_FIELD (uint8_t , v_Src)   /**< GPS Assistance Source 0-CP, 1-SUPL, 2-WIFI, 3-APPLI, 4-UKNOWN \ref Type_of_Assistance_Source*/
+MC_PCC_END_STRUC   (t_lsimcp_TimeReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ASSIST_IONO_MODEL_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ASSIST_IONO_MODEL_REQ            MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ASSIST_IONO_MODEL_REQ, PCC_T_REQ)
+/*! \brief This message shall forward the Ionospheric Model.
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_AssistIonoModelReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ASSIST_IONO_MODEL_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ASSIST_IONO_MODEL_REQ))
+/*! \struct t_lsimcp_AssistIonoModelReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ASSIST_IONO_MODEL_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AssistIonoModelReqM)
+      MC_PCC_FIELD (t_lsimcp_AssistIono , v_AssistIono) /**< IONO Model */
+MC_PCC_END_STRUC   (t_lsimcp_AssistIonoModelReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ASSIST_UTC_MODEL_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ASSIST_UTC_MODEL_REQ         MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ASSIST_UTC_MODEL_REQ, PCC_T_REQ)
+/*! \brief This message shall forward the UTC Model
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_AssistUtcModelReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ASSIST_UTC_MODEL_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ASSIST_UTC_MODEL_REQ))
+/*! \struct t_lsimcp_AssistUtcModelReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ASSIST_UTC_MODEL_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AssistUtcModelReqM)
+      MC_PCC_FIELD (t_lsimcp_AssistUtcm , v_AssistUtcm) /**< UTC Model */
+MC_PCC_END_STRUC   (t_lsimcp_AssistUtcModelReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ASSIST_RTI_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ASSIST_RTI_REQ                   MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ASSIST_RTI_REQ, PCC_T_REQ)
+/*! \brief This message shall forward the Real Time Integrity.
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_AssistRtiReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ASSIST_RTI_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ASSIST_RTI_REQ))
+/*! \struct t_lsimcp_AssistRtiReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ASSIST_RTI_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AssistRtiReqM)
+      MC_PCC_FIELD (t_lsimcp_AssistRti , v_AssistRti)   /**< Real Time Integrity. */
+MC_PCC_END_STRUC   (t_lsimcp_AssistRtiReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ASSIST_DGPS_CORRECTION_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ASSIST_DGPS_CORRECTION_REQ   MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ASSIST_DGPS_CORRECTION_REQ, PCC_T_REQ)
+/*! \brief This message shall forward the DGPS Correction
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_AssistDgpsCorrectionReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_ASSIST_DGPS_CORRECTION_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ASSIST_DGPS_CORRECTION_REQ))
+/*! \struct t_lsimcp_AssistDgpsCorrectionReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_ASSIST_DGPS_CORRECTION_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AssistDgpsCorrectionReqM)
+      MC_PCC_FIELD (t_lsimcp_AssistDgpsCorr , v_AssistDgpsCorr)     /**< DGPS Correction */
+MC_PCC_END_STRUC   (t_lsimcp_AssistDgpsCorrectionReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_REF_POS_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_REF_POS_REQ                  MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_REF_POS_REQ, PCC_T_REQ)
+/*! \brief This message shall forward the Reference Position.
+    \note
+            - GPS will not respond.
+            - Message Payload is \ref t_lsimcp_RefPosReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_REF_POS_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_REF_POS_REQ))
+/*! \struct t_lsimcp_RefPosReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_REF_POS_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_RefPosReqM)
+      MC_PCC_FIELD (t_lsimcp_GpsPosition , v_GpsPosition)       /**< Reference Location */
+MC_PCC_END_STRUC   (t_lsimcp_RefPosReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_LOC_NOTIFY_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_LOC_NOTIFY_REQ                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_LOC_NOTIFY_REQ, PCC_T_REQ)
+/*! \brief Message shall indicate to CGPS that a Mobile Terminated Location Request (MTLR) has been received.
+    \note
+            - GPS should respond with \ref CGPS_LSIMCP_LOC_NOTIFY_CNF
+            - Message Payload is \ref t_lsimcp_LocNotifyReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_LOC_NOTIFY_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_LOC_NOTIFY_REQ))
+/*! \struct t_lsimcp_LocNotifyReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_LOC_NOTIFY_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_LocNotifyReqM)
+      MC_PCC_FIELD (uint32_t , v_SsSessionID)       /**< SS Session id. SS Session Id shall be tagged to every message which manages a MOLR/MTLR session between LSIMCP and CGPS.*/
+      MC_PCC_FILL_STRUCT3                     /*!< Padding to align on 32 */
+      MC_PCC_FIELD (t_lsimcp_LocNotification , v_LocNotification)          /**< MTLR parameters.*/
+MC_PCC_END_STRUC   (t_lsimcp_LocNotifyReqM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_LOC_NOTIFY_ABORT_IND message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_LOC_NOTIFY_ABORT_IND                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_LOC_NOTIFY_ABORT_IND, PCC_T_IND)
+/*! \brief Message shall indicate to CGPS that a Mobile Terminated Location Notification has Timed out.
+    \note
+            - CGPS maintains default notification timeout of 20s for CP.
+            - If there is an external input about notification being timed out is indicated with this API.
+            - In case the timeout at CGPS has already occured, the notification timeout received through this message is ignored.
+            - Message Payload is \ref t_lsimcp_LocNotifyReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_LOC_NOTIFY_ABORT_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_LOC_NOTIFY_ABORT_IND))
+/*! \struct t_lsimcp_LocNotifyReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_LOC_NOTIFY_ABORT_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_LocNotifyAbortIndM)
+      MC_PCC_FIELD (uint32_t , v_SsSessionID)       /**< SS Session id. SS Session Id shall be tagged to every message which manages a MOLR/MTLR session between LSIMCP and CGPS.*/
+      MC_PCC_FILL_STRUCT3                           /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_LocNotifyAbortIndM)
+
+
+
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MOLR_START_RSP message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MOLR_START_RSP                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MOLR_START_RSP, PCC_T_REQ)
+/*! \brief Message shall indicate to CGPS that a location has been received in response to its MOLR request.
+    \note
+            - Message Payload is \ref t_lsimcp_MolrStartRspM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_MOLR_START_RSP,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MOLR_START_RSP))
+/*! \struct t_lsimcp_MolrStartRspM
+    \brief Message Payload for \ref CGPS_LSIMCP_MOLR_START_RSP
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MolrStartRspM)
+      MC_PCC_FIELD (uint8_t , v_SsSessionID)       /**< SS Session id. Range - 31 to 50. SS Session Id shall be tagged to every message which manages a MOLR/MTLR session between LSIMCP and CGPS.*/
+      MC_PCC_FILL_STRUCT3                     /*!< Padding to align on 32 */
+      MC_PCC_FIELD (t_lsimcp_GpsPosition , v_GpsPosition)          /**< Location information.*/
+MC_PCC_END_STRUC   (t_lsimcp_MolrStartRspM)
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MOLR_ABORT_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MOLR_ABORT_REQ                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MOLR_ABORT_REQ, PCC_T_REQ)
+/*! \brief Message shall indicate to CGPS that the network has rejected the CGPS request for assistance (which was triggered by CGPS sending GPS_AID_REQU_IND).
+    \note
+            - Message Payload is \ref t_lsimcp_MolrAbortReqM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_MOLR_ABORT_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MOLR_ABORT_REQ))
+/*! \struct t_lsimcp_MolrAbortReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_MOLR_ABORT_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MolrAbortReqM)
+    MC_PCC_FIELD (uint8_t , v_SsSessionID)       /**< SS Session id. */
+    MC_PCC_FIELD (uint8_t , v_Error)     /**<If this variable is set to 1, indicates that the network has rejected the assistance data request from GPS  */
+    MC_PCC_FIELD (uint8_t , v_MolrType)     /**<0-MOAR, 1-MOLR, 2-MOLR_3RD_PARTY, 0xFF-Not Set*/
+    MC_PCC_FILL_STRUCT1             /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_MolrAbortReqM)
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MOLR_ABORT_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MOLR_STOP_IND                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MOLR_STOP_IND, PCC_T_IND)
+/*! \brief Message shall indicate from CGPS to indicate to the network that MOLR procedure is not required any more.
+    \note
+            - Message Payload is \ref t_lsimcp_MolrStopIndM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_MOLR_STOP_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MOLR_STOP_IND))
+/*! \struct t_lsimcp_MolrStopIndM
+    \brief Message Payload for \ref CGPS_LSIMCP_MOLR_STOP_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MolrStopIndM)
+    MC_PCC_FIELD (uint8_t , v_SsSessionID)       /**< SS Session id. */
+    MC_PCC_FIELD (uint8_t , v_Error)     /**<If this variable is set to 1, indicates that the network has rejected the assistance data request from GPS  */
+    MC_PCC_FIELD (uint8_t , v_MolrType)     /**<0-MOAR, 1-MOLR, 2-MOLF, 0xFF-Not Set*/
+    MC_PCC_FILL_STRUCT1             /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_MolrStopIndM)
+
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_RESET_GPS_DATA_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_RESET_GPS_DATA_REQ                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_RESET_GPS_DATA_REQ, PCC_T_REQ)
+/*! \brief Message shall indicate to CGPS that the network has rejected the CGPS request for assistance (which was triggered by CGPS sending GPS_AID_REQU_IND).
+    \note
+            - Message Payload is \ref t_lsimcp_MoarErrorM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_RESET_GPS_DATA_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_RESET_GPS_DATA_REQ))
+/*! \struct t_lsimcp_MoarErrorM
+    \brief Message Payload for \ref CGPS_LSIMCP_RESET_GPS_DATA_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_ResetGpsDataReqM)
+MC_PCC_END_STRUC   (t_lsimcp_ResetGpsDataReqM)
+
+/*@}*/   /* End of group MESSAGES_TO_GPS */
+
+/*-----------------------Messages description (Signal From GPS)---------------------------------*/
+
+/*! \addtogroup MESSAGES_FROM_GPS */
+/*@{*/
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MSR_RESULT_IND message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MSR_RESULT_IND                   MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MSR_RESULT_IND, PCC_T_REQ)
+/*! \brief This message shall carry the GPS Satellite measurement report
+    \note
+            - This message shall be sent in response to \ref CGPS_LSIMCP_MS_ASSISTED_REQ
+            - Message Payload is \ref t_lsimcp_MsrResultIndM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_MSR_RESULT_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MSR_RESULT_IND))
+/*! \struct t_lsimcp_MsrResultIndM
+    \brief Message Payload for \ref CGPS_LSIMCP_MSR_RESULT_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MsrResultIndM)
+      MC_PCC_FIELD (t_lsimcp_MsrRes , v_MsrRes)   /**< GPS Raw measurements */
+      MC_PCC_FIELD (uint8_t , v_SessionID)             /**< Session_id .255 - Unknown \ref Type_of_UNKNOWN 201-254 .Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+    MC_PCC_FIELD (uint8_t , v_FinalReport)             /**<Indicates if the report sent is final report for that session. 1 Indicates final report, 0 indicates more reports to follow.*/
+    MC_PCC_FILL_STRUCT2                         /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_MsrResultIndM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_POS_IND message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_POS_IND                          MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_POS_IND, PCC_T_REQ)
+/*! \brief This message shall carry the Estimated Position of the device.
+    \note
+            - This message shall be sent in response to the \ref CGPS_LSIMCP_MS_BASED_REQ
+            - Message Payload is \ref t_lsimcp_PosIndM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_POS_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_POS_IND))
+/*! \struct t_lsimcp_PosIndM
+    \brief Message Payload for \ref CGPS_LSIMCP_POS_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_PosIndM)
+      MC_PCC_FIELD (t_lsimcp_GpsPosition , v_GpsPosition)       /**< Position estimate */
+      MC_PCC_FIELD (uint8_t , v_SessionID)                           /**< Session_id .255 - Unknown \ref Type_of_UNKNOWN .201-254 Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+    MC_PCC_FIELD (uint8_t , v_FinalReport)                         /**<Indicates if the report sent is final report for that session. 1 Indicates final report, 0 indicates more reports to follow.*/
+      MC_PCC_FILL_STRUCT2                                     /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_PosIndM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_AID_REQU_IND message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_AID_REQU_IND                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_AID_REQU_IND, PCC_T_REQ)
+/*! \brief This message shall be sent to request for additional assistance data from Network.
+    \note
+            - Message Payload is \ref t_lsimcp_AidRequIndM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_AID_REQU_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_AID_REQU_IND))
+/*! \struct t_lsimcp_AidRequIndM
+    \brief Message Payload for \ref CGPS_LSIMCP_AID_REQU_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AidRequIndM)
+      MC_PCC_FIELD (t_lsimcp_GpsAidRequest , v_GpsAidRequest)   /**< Aid identification */
+MC_PCC_END_STRUC   (t_lsimcp_AidRequIndM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_ABORT_CNF message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_ABORT_CNF                            MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_ABORT_CNF, PCC_T_REQ)
+/*! \brief This message is sent to confirm the abortion of a fix.
+    \note
+            - This message is a response to the \ref CGPS_LSIMCP_ABORT_REQ
+            - Message Payload is \ref t_lsimcp_AbortCnfM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_ABORT_CNF,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_ABORT_CNF))
+/*! \struct t_lsimcp_AbortCnfM
+    \brief Message Payload for \ref CGPS_LSIMCP_ABORT_CNF
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_AbortCnfM)
+      MC_PCC_FIELD (uint8_t , v_SessionID)            /**< Session_id.255 - Unknown \ref Type_of_UNKNOWN. 201-254 Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+      MC_PCC_FILL_STRUCT3                     /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_AbortCnfM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MS_ASSISTED_CNF message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MS_ASSISTED_CNF                  MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MS_ASSISTED_CNF, PCC_T_REQ)
+/*! \brief Message confirms the accept or reject of location request at CGPS.
+    \note
+            - This message shall be sent in response to \ref CGPS_LSIMCP_MS_ASSISTED_REQ
+            - Macros used : \ref Type_of_STATUS
+            - Message Payload is \ref t_lsimcp_MsAssistedCnfM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_MS_ASSISTED_CNF,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MS_ASSISTED_CNF))
+/*! \struct t_lsimcp_MsAssistedCnfM
+    \brief Message Payload for \ref CGPS_LSIMCP_MS_ASSISTED_CNF
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MsAssistedCnfM)
+      MC_PCC_FIELD (uint8_t , v_SessionID)     /**< Session_id.255 - Unknown \ref Type_of_UNKNOWN. 201-254 Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+      MC_PCC_FIELD (uint8_t , v_Result)        /**< Cause 0-Success 1-Failure \ref Type_of_STATUS*/
+      MC_PCC_FILL_STRUCT2                 /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_MsAssistedCnfM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MS_BASED_CNF message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MS_BASED_CNF                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MS_BASED_CNF, PCC_T_REQ)
+/*! \brief Message confirms the accept or reject of location request at CGPS.
+    \note
+            - This message shall be sent in response to \ref CGPS_LSIMCP_MS_BASED_REQ
+            - Macros used : \ref Type_of_STATUS
+            - Message Payload is \ref t_lsimcp_MsBasedCnfM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_MS_BASED_CNF,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MS_BASED_CNF))
+/*! \struct t_lsimcp_MsBasedCnfM
+    \brief Message Payload for \ref CGPS_LSIMCP_MS_BASED_CNF
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MsBasedCnfM)
+      MC_PCC_FIELD (uint8_t , v_SessionID)       /**< Session_id. 255 - Unknown \ref Type_of_UNKNOWN 201-254. Reserved for future use Session Id shall be tagged to every message which manages a session between ADP and CGPS.*/
+      MC_PCC_FIELD (uint8_t , v_Result)          /**< Cause 0-Success 1-Failure \ref Type_of_STATUS*/
+      MC_PCC_FILL_STRUCT2                     /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_MsBasedCnfM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_LOC_NOTIFY_CNF message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_LOC_NOTIFY_CNF                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_LOC_NOTIFY_CNF, PCC_T_REQ)
+/*! \brief Message confirms that a MTLR request was obtained. In case of MTLR request type being 'Verify', this message will also indicate if the mobile user accepted or rejected the MTLR request.
+    \note
+            - This message shall be sent in response to \ref CGPS_LSIMCP_LOC_NOTIFY_REQ
+            - Message Payload is \ref t_lsimcp_LocNotifyCnfM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_LOC_NOTIFY_CNF,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_LOC_NOTIFY_CNF))
+/*! \struct t_lsimcp_LocNotifyCnfM
+    \brief Message Payload for \ref CGPS_LSIMCP_LOC_NOTIFY_CNF
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_LocNotifyCnfM)
+    MC_PCC_FIELD (uint32_t , v_SsSessionID)       /**< SS Session id. Range - 31 to 50. SS Session Id shall be tagged to every message which manages a MOLR/MTLR session between LSIMCP and CGPS.*/
+    MC_PCC_FIELD (t_lsimcp_LocNotifyRes , v_LocNotifyRes)  /**< Contains response of the UE user to notification*/
+    MC_PCC_FILL_STRUCT3                     /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_LocNotifyCnfM)
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_MOLR_START_IND message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_MOLR_START_IND                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_MOLR_START_IND, PCC_T_IND)
+/*! \brief Message indicates the start of a MOLR session
+    \note
+            - Message Payload is \ref t_lsimcp_MolrStartIndM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_MOLR_START_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_MOLR_START_IND))
+/*! \struct t_lsimcp_MolrStartIndM
+    \brief Message Payload for \ref CGPS_LSIMCP_MOLR_START_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_MolrStartIndM)
+    MC_PCC_FIELD (uint8_t , v_SsSessionID)       /**< SsSessionId shall be 0xFF if that is initiated during a CP session*/
+    MC_PCC_FIELD (uint8_t , v_Option)     /**<Optinal parameters and validity
+                                                                      Bit 0 - v_GpsAidRequest
+                                                                      Bit 1 - v_QopRequest
+                                                                      Bit 2 - v_ServiceType
+                                                                      Bit 3 - v_3rdPartyRequest*/
+    MC_PCC_FIELD (uint8_t , v_MolrType)     /**<0-MOAR, 1-MOLR, 2-MOLR_3RD_PARTY, 0xFF-Not Set*/
+    MC_PCC_FILL_STRUCT1                     /*!< Padding to align on 32 */
+    MC_PCC_FIELD (t_lsimcp_GpsAidRequest , v_GpsAidRequest)   /**< OPTIONAL - Valid for MOAR */
+    MC_PCC_FIELD (t_lsimcp_QoP ,    v_QopRequest)                    /**< OPTIONAL - Valid for MOLR & MOLF*/
+    MC_PCC_FIELD (uint8_t , v_ServiceType)                                /**< OPTIONAL - Valid for MOLF \ref e_cgps_LcsServiceType */
+    MC_PCC_FIELD (uint16_t , v_SupportedGADShapesMask)           /**< OPTIONAL - Indicates supported GAD shapes*/
+    MC_PCC_FIELD (t_lsimcp_3rdPartyClient , v_3rdPartyRequest)  /**< OPTIONAL - Valid for MOLF*/
+MC_PCC_END_STRUC   (t_lsimcp_MolrStartIndM)
+
+
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_POS_CAPABILITY_IND message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_POS_CAPABILITY_IND                 MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_POS_CAPABILITY_IND, PCC_T_IND)
+/*! \brief Message indicates the capability of the GPS which need to be sent to network
+    \note
+            - Message Payload is \ref t_lsimcp_PosCapabilityIndM
+  */
+MC_PCC_HEADER (PROCESS_CGPS, PROCESS_LSIMCP, CGPS_LSIMCP_POS_CAPABILITY_IND,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_POS_CAPABILITY_IND))
+/*! \struct t_lsimcp_PosCapabilityIndM
+    \brief Message Payload for \ref CGPS_LSIMCP_POS_CAPABILITY_IND
+    */
+MC_PCC_BEGIN_STRUC (t_lsimcp_PosCapabilityIndM)
+    MC_PCC_FIELD (uint8_t , v_Initial)        /**< Dummy field for future*/
+    MC_PCC_FILL_STRUCT3                     /*!< Padding to align on 32 */
+MC_PCC_END_STRUC   (t_lsimcp_PosCapabilityIndM)
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_FTA_PULSE_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_FTA_PULSE_REQ                MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_FTA_PULSE_REQ, PCC_T_REQ)
+/*! \brief Message shall indicate to LSIMCP that CGPS request for a pulse on the FTA pin and associated accurate reference time
+    \note
+            - Message Payload is \ref t_lsimcp_MoarErrorM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_FTA_PULSE_REQ,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_FTA_PULSE_REQ))
+/*! \struct t_lsim_FtaPulseReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_FTA_PULSE_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsim_FtaPulseReqM)
+MC_PCC_END_STRUC   (t_lsim_FtaPulseReqM)
+
+
+/*----------------------------------------------------------------------*/
+/* CGPS_LSIMCP_FTA_PULSE_REQ message definition.                     */
+/*----------------------------------------------------------------------*/
+
+#define CGPS_LSIMCP_FF_FTA_PULSE_CNF                MC_PCC_FUNCTION_TYPE(CGPS_LSIMCP_F_FTA_PULSE_REQ, PCC_T_CNF)
+/*! \brief Message shall indicate to LSIMCP that CGPS request for a pulse on the FTA pin and associated accurate reference time
+    \note
+            - Message Payload is \ref t_lsimcp_MoarErrorM
+  */
+MC_PCC_HEADER (PROCESS_LSIMCP, PROCESS_CGPS, CGPS_LSIMCP_FTA_PULSE_CNF,
+        MC_RTK_PROCESS_OPERATION (PROCESS_LSIMCP, CGPS_LSIMCP_FF_FTA_PULSE_CNF))
+/*! \struct t_lsim_FtaPulseReqM
+    \brief Message Payload for \ref CGPS_LSIMCP_FTA_PULSE_REQ
+    */
+MC_PCC_BEGIN_STRUC (t_lsim_FtaPulseCnfM)
+    MC_PCC_FIELD (uint8_t , v_IsRefTimeValid )         /**< Indicates if valid FTA is available */
+    MC_PCC_FIELD (t_lsimcp_RefTime , v_RefTime)   /**< GPS Reference Time */
+MC_PCC_END_STRUC   (t_lsim_FtaPulseCnfM)
+
+
+
+
+
+/*@}*/   /* End of group MESSAGES_FROM_GPS */
+
+#endif

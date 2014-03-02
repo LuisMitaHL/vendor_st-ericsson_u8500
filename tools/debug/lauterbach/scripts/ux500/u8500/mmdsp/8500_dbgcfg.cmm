@@ -1,0 +1,455 @@
+; #####################################################################
+; # DB8500 debug & Trace script file: 8500_dbgcfg.cmm                 #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script configures the 8500 debug mode (JTAG/cJTAG) and TAPs topology. For the usage, see the "usage" sub-function below.
+; Created by HED/CSP/CPT/ACT on 2009-02-26 
+; Contact jingyi-xiaoyan.lu@st.com
+; 2009-11-04: The SECR_CR register address is no more under protection. Got green light from Gille Gaillet. ==> removed the encryption.
+; 2009-11-12: Support new 8500 CPU names.
+; 2009-12-01: Support 5500 jtag chain configuration.
+; 2010-02-12: Support new cpu names for DB5500.
+; 2010-04-28: Support DB8500V2.
+; 2010-06-15: Support cJTAG new options.
+; 2010-08-12: Support Jenny.
+; 2010-09-29: Support T5008
+; 2010-10-21: now only DB85xx(ED/V1/V2) is supported. All other SoC supports have been removed.
+
+
+entry &master_slave &debug_mode &proj_ver &tap1 &tap2 &tap3 &tap4 &verbose
+
+print ""
+
+&dbgcfg_ver=0x121
+
+; ----- check the parameters
+&prcmu_tap=0
+&mmdsp_tap=0
+&ape_dap=0
+&mod_dap=0
+&dap=0
+if (string.upr("&tap1")!="PRCMU")&&(string.upr("&tap1")!="MMDSP")&&(string.upr("&tap1")!="APE")&&(string.upr("&tap1")!="MOD")&&(string.upr("&tap1")!="DAP")&&("&tap1"!="")&&("&tap1"!="pal_wo_dap_mod")&&("&tap1"!="-")
+(
+   print "Invalid parameter ""tap1"": &tap1"
+   gosub usage
+)
+&tap1=string.upr("&tap1")
+
+if (string.upr("&tap2")!="PRCMU")&&(string.upr("&tap2")!="MMDSP")&&(string.upr("&tap2")!="APE")&&(string.upr("&tap2")!="MOD")&&(string.upr("&tap2")!="DAP")&&("&tap2"!="")&&("&tap2"!="-")
+(
+   print "Invalid parameter ""tap2"": &tap2"
+   gosub usage
+)
+&tap2=string.upr("&tap2")
+
+if (string.upr("&tap3")!="PRCMU")&&(string.upr("&tap3")!="MMDSP")&&(string.upr("&tap3")!="APE")&&(string.upr("&tap3")!="MOD")&&("&tap3"!="")&&("&tap3"!="-")
+(
+   print "Invalid parameter ""tap3"": &tap3"
+   gosub usage
+)
+&tap3=string.upr("&tap3")
+
+if (string.upr("&tap4")!="PRCMU")&&(string.upr("&tap4")!="MMDSP")&&(string.upr("&tap4")!="APE")&&(string.upr("&tap4")!="MOD")&&("&tap4"!="")&&("&tap4"!="-")
+(
+   print "Invalid parameter ""tap4"": &tap4"
+   gosub usage
+)
+&tap4=string.upr("&tap4")
+
+if (string.upr("&proj_ver")!="ED")&&(string.upr("&proj_ver")!="V1")&&(string.upr("&proj_ver")!="8500ED")&&(string.upr("&proj_ver")!="8500V1")&&(string.upr("&proj_ver")!="V2")
+(
+	print "Unknown project and version name: &proj_ver !"
+	enddo
+)
+&proj_ver=string.upr("&proj_ver")
+if "&proj_ver"=="ED"
+	&proj_ver="8500ED"
+if "&proj_ver"=="V1"
+	&proj_ver="8500V1"
+if "&proj_ver"=="V2"
+	&proj_ver="8500V2"
+
+; ----- check the cpu name
+if (string.mid(cpu(),0,6)!="DB8500")&&(string.mid(cpu(),0,8)!="CortexA9")&&(string.mid(cpu(),0,8)!="CortexR4")&&(cpu()!="STN8820I")&&(cpu()!="STN8820V")
+(
+	print "Unknown target! Please set system.cpu firstly!"
+	enddo
+)
+
+
+; ----- tap selection
+if "&tap1"=="PRCMU"||"&tap2"=="PRCMU"||"&tap3"=="PRCMU"||"&tap4"=="PRCMU"
+   &prcmu_tap=1
+if "&tap1"=="MMDSP"||"&tap2"=="MMDSP"||"&tap3"=="MMDSP"||"&tap4"=="MMDSP"
+   &mmdsp_tap=1
+if "&tap1"=="APE"||"&tap2"=="APE"||"&tap3"=="APE"||"&tap4"=="APE"
+   &ape_dap=1
+if "&tap1"=="MOD"||"&tap2"=="MOD"||"&tap3"=="MOD"||"&tap4"=="MOD"
+   &mod_dap=1
+
+
+; ----- master or slave debugger
+&master_slave=string.upr("&master_slave")
+if "&master_slave"!="MASTER"&&"&master_slave"!="SLAVE"
+  gosub usage
+
+; ----- debug mode
+&cjtag2pin=0
+if string.upr("&debug_mode")=="CJTAG2PIN"
+(
+	if "&proj_ver"=="8500ED"
+	(
+		print "cJTAG 2pin mode is not available in DB8500 ED. Quit."
+		enddo
+	)
+	&debug_mode="CJTAG"
+	&cjtag2pin=1
+)
+else if (string.upr("&debug_mode")!="JTAG")&&(string.upr("&debug_mode")!="CJTAG")
+	gosub usage
+&debug_mode=string.upr("&debug_mode")
+
+; ----- verbose
+if "&verbose"==""||string.upr("&verbose")=="N"
+	&verbose="N"
+else if string.upr("&verbose")=="Y"
+	&verbose="Y"
+else
+(
+	print "Unknown parameter &verbose. Quit."
+	enddo
+)
+
+; ----- JTAG vs CJTAG
+&SECR_CR_reg=0x80155000
+&cJTAGEn_bit_pos=28.
+if "&master_slave"=="MASTER" // only the master debugger change the JTAG/cJTAG mode.
+( 
+   if system.up()
+   (
+   	if "&debug_mode"=="JTAG"
+   	(
+	    print "Seleted mode: JTAG"
+            if (d.l(ZSD:&SECR_CR_reg)>>&cJTAGEn_bit_pos&0x1)==0x0
+       	    (
+       	      print "The current JTAG/CJTAG mode is JTAG, nothing to do! Quit"
+	      print "To change the scan chain topology without changing JTAG/CJTAG mode, do sys.down firstly. Then redo this command."
+       	      enddo
+       	    )
+       	    else
+       	    (
+       	      print "Change to the JTAG mode ..."
+       	      on ERROR goto continue_1
+       	      data.set ZSD:&SECR_CR_reg %long d.l(ZSD:&SECR_CR_reg)&(~(1<<&cJTAGEn_bit_pos))
+continue_1:  
+       	      print "DONE."
+       	    )
+   	)
+   	else //CJTAG
+   	(
+	    print "Seleted mode: CJTAG"
+   	    if (d.l(ZSD:&SECR_CR_reg)>>&cJTAGEn_bit_pos&0x1)==0x1
+   	    (
+       	      print "The current JTAG/CJTAG mode is cJTAG, nothing to do!"
+	      print "To change the scan chain topology without changing JTAG/CJTAG mode, do sys.down firstly. Then redo this command."
+       	      enddo
+   	    )
+   	    else	
+   	    (
+       	      print "Change to the CJTAG mode ..."
+   	      on ERROR goto continue_2
+   	      data.set ZSD:&SECR_CR_reg %long d.l(ZSD:&SECR_CR_reg)|(1<<&cJTAGEn_bit_pos)
+continue_2:	  
+   	      print "DONE."
+   	    )
+   	)
+   )
+)
+
+
+; ----- activate the cJTAG 2pin mode
+if "&master_slave"=="MASTER"
+(
+	if system.up()
+		sys.down
+	gosub SystemDownOtherGUIs
+	if &cjtag2pin==1
+	(
+		print "Configuring cJTAG 2PIN ..."
+		sys.config.debugporttype cjtag
+		if version.build()>=23589.
+			sys.config.cjtagflags 0xF
+		print "DONE."
+	)
+	else
+		sys.config.debugporttype jtag
+)
+else if &cjtag2pin==1
+	gosub SystemAttachOtherGUIs
+
+; ----- IS CLTAP is present on the debug chain? (differ from 8500ED to 8500V1)
+&cltap_present="Y"
+if "&proj_ver"=="8500ED"&&"&debug_mode"=="JTAG"
+(
+	&cltap_present="N"
+  	sys.config.multitap none //PEG: advices the debugger that there is no CLTAP. The debugger works as if there is a normal JTAG chain. It does not handle the CLTAP. But it will cause a JTAG reset (which would reset the CLTAP) when you try e.g. a system.up.
+	if "&verbose"=="Y"
+		print "The CLTAP is not present."
+)
+else if "&proj_ver"=="8500V2"
+(
+	sys.config.multitap stcltap2
+	if "&verbose"=="Y"
+		print "The CLTAP is present."
+)
+else
+( 
+  	sys.config.multitap stcltap  // activate the cltap even for the slave, because the power awareness needs the "stcltap"'s presence. The scan chain topo is not performed by the slave thanks to the "sys.config.slave on".
+	if "&verbose"=="Y"
+		print "The CLTAP is present."
+)
+
+
+; ----- TAPs Topology config
+&cfg_connect_val=0
+// only the master debugger configure the TAPs topology; if the new CPU name (DB8500...) is used, the slave need the CFGCONNECT value too to configure the tap position (but it should not configure the scan chain).
+if "&cltap_present"=="Y"
+(
+     &cjtag_jtag_string=""
+     if "&proj_ver"=="8500ED" //For scan chain topo: distinguish the cJTAG from JTAG only on the 8500ED.
+     	&cjtag_jtag_string="&debug_mode"
+     print "Configuring the scan chain topology for &proj_ver &cjtag_jtag_string ..."
+     if &prcmu_tap==0
+     	&cfg_connect_val=&cfg_connect_val|0x03
+     if &mmdsp_tap==0
+     	&cfg_connect_val=&cfg_connect_val|0x0C
+     if &ape_dap==0
+     	&cfg_connect_val=&cfg_connect_val|0x30
+     if &mod_dap==0
+        	&cfg_connect_val=&cfg_connect_val|0xC0
+     sys.config.cfgconnect &cfg_connect_val
+     print "DONE."
+     if "&verbose"=="Y"
+     	print "set CFG_CONNECT by ",&cfg_connect_val
+)
+else
+(
+	print "Skip scan chain topology configuration."
+)
+
+
+
+; ----- indicate the TAP position
+if string.mid(cpu(),0,6)!="DB8500"
+(
+	print "Configuring the current TAP position on the scan chain..."
+	&irpre_val=0.
+	&irpost_val=0.
+	&drpre_val=0.
+	&drpost_val=0.
+	if "&cltap_present"=="Y"
+	(
+		&irpost_val=6.
+		&drpost_val=1.
+	)
+	if string.mid(cpu(),0,8)=="CortexA9"
+	(
+	    if "&cltap_present"=="Y"
+	    (
+		if &prcmu_tap==1
+		(
+		  &irpost_val=&irpost_val+5
+		  &drpost_val=&drpost_val+1
+		)
+		if &mmdsp_tap==1
+		(
+		  &irpost_val=&irpost_val+4
+		  &drpost_val=&drpost_val+1
+		)
+		if &mod_dap==1
+		(
+		  &irpre_val=&irpre_val+4
+		  &drpre_val=&drpre_val+1
+		)
+	    )
+	    else
+	    (
+		&irpost_val=9
+		&drpost_val=2
+		&irpre_val=4
+		&drpre_val=1
+		if "&tap1"=="pal_wo_dap_mod"
+		(
+		   &irpre_val=0
+		   &drpre_val=0
+		)
+	    )
+	)
+	else if string.mid(cpu(),0,8)=="CortexR4"
+	(
+	    if "&cltap_present"=="Y"
+	    (
+		if &prcmu_tap==1
+		(
+		  &irpost_val=&irpost_val+5
+		  &drpost_val=&drpost_val+1
+		)
+		if &mmdsp_tap==1
+		(
+		  &irpost_val=&irpost_val+4
+		  &drpost_val=&drpost_val+1
+		) 
+		if &ape_dap==1
+		(
+		  &irpost_val=&irpost_val+4
+		  &drpost_val=&drpost_val+1
+		) 
+	    )
+	    else
+	    (
+		&irpost_val=13.
+		&irpre_val=0
+		&drpost_val=3
+		&drpre_val=0
+	    )
+	)
+	else if cpu()=="STN8820I"||cpu()=="STN8820V"  // MMDSP 
+	(
+	    if "&cltap_present"=="Y"
+	    (
+		if &prcmu_tap==1
+		(
+		  &irpost_val=&irpost_val+5
+		  &drpost_val=&drpost_val+1
+		)	
+		if &ape_dap==1
+		(
+		  &irpre_val=&irpre_val+4
+		  &drpre_val=&drpre_val+1
+		) 
+		if &mod_dap==1
+		(
+		  &irpre_val=&irpre_val+4
+		  &drpre_val=&drpre_val+1
+		)
+	    )
+	    else
+	    (
+		&irpost_val=5
+		&irpre_val=8
+		&drpost_val=1
+		&drpre_val=2
+		if "&tap1"=="pal_wo_dap_mod"
+		(
+		   &irpre_val=4
+		   &drpre_val=1
+		)
+	    )
+	)
+	
+	if string.mid(cpu(),0,8)=="CortexA9"||string.mid(cpu(),0,8)=="CortexR4"
+	(
+	   sys.config.dapirpre &irpre_val
+	   sys.config.dapirpost &irpost_val
+	   sys.config.dapdrpre &drpre_val
+	   sys.config.dapdrpost &drpost_val
+	)
+	else // mmdsp
+	(
+	   sys.config.irpre &irpre_val
+	   sys.config.irpost &irpost_val
+	   sys.config.drpre &drpre_val
+	   sys.config.drpost &drpost_val
+	)
+print "DONE."
+)
+
+enddo
+
+SystemDownOtherGUIs:
+	if version.build()>=28432.
+	(
+		&nbOtherGUIs=intercom.podportnumber()
+		&portIdx=0
+		while (&portIdx<&nbOtherGUIs)
+		(
+			&portValue=intercom.podport(&portIdx)
+			intercom.execute localhost:&portValue sys.down
+			intercom.wait localhost:&portValue
+			&portIdx=&portIdx+1
+		)
+	)
+	return
+
+SystemAttachOtherGUIs:
+	if version.build()>=28432.
+	(
+		&nbOtherGUIs=intercom.podportnumber()
+		&portIdx=0
+		&sysUpStat=0
+		while (&portIdx<&nbOtherGUIs)
+		(
+			&portValue=intercom.podport(&portIdx)
+			intercom.evaluate localhost:&portValue system.up()
+			&sysUpStat=eval()
+			if &sysUpStat==0
+			(
+				intercom.execute localhost:&portValue print "Attempt to restore the connection ..."
+				// reconfigure the port type by the first GUI
+				if &portIdx==0
+				(
+					intercom.execute localhost:&portValue sys.config.debugporttype cjtag
+					intercom.execute localhost:&portValue sys.config.cjtagflags 0xF
+					intercom.wait localhost:&portValue
+				)
+				intercom.execute localhost:&portValue sys.m.a
+				intercom.wait localhost:&portValue
+				intercom.evaluate localhost:&portValue system.up()
+				&sysUpStat=eval()
+				if &sysUpStat==1
+					intercom.execute localhost:&portValue print "SYS.M.ATTACH OK (connection is restored)."
+				else
+					intercom.execute localhost:&portValue print "FAILED to restore the connection!"
+					
+
+			)
+			&portIdx=&portIdx+1
+		)
+	)
+	return
+
+usage:
+area
+print "Parameter error! See usage below:"
+print "------------------------------------------------------------------------------------------------------- "
+print " Version: &dbgcfg_ver"
+print " The 8500_dbgcfg command allows configuring the 8500 debug mode (JTAG/cJTAG) and TAPs topology.         "
+print " It configures the TAP position for the connection; The system.up can be called after this command.     "
+print " Usage: do 8500_dbgcfg <master_slave> <debug_mode> <proj_ver> [<tap1> <tap2> <tap3> <tap4>]                   "
+print " <master_slave>: Indicate if the current debugger serves as a master debugger or a slave debugger."
+print "             master: The current debugger acts as a master debugger. It can configure the TAPs topology by CLTAP."
+print "                     It can also change the JTAG/cJTAG debug mode."
+print "                     Only one debugger can be assigned as master debugger."
+print "             slave: The current debugger acts as a slave debugger. It can NEITHER configure the TAPs topology NOR change the debug mode."
+print " <debug_mode>: Indicate the debug mode JTAG or CJTAG. "
+print "             jtag: Select JTAG mode. If the current mode is cJTAG, change to the JTAG mode.  "
+print "             cjtag: Select cJTAG mode. If the current mode is JTAG, change to the cJTAG mode.                                       "
+print " <proj_ver>: Indicate the 8500 version.     "
+print "             8500ed or ed: 8500 Early Drop version "
+print "             8500v1 or v1: 8500 V1 version "
+print "             8500v2 or v1: 8500 V2 version "
+print " <tap1>, <tap2>, <tap3> and <tap4>: Ignored in JTAG mode in the Early Drop version. "
+print "             Indicate the TAPs need to be included onto the debug chain. They can be one of the values below:"
+print "             prcmu: If one of these parameter gives this value, the PRCMU-TAP is included."
+print "             mmdsp: If one of these parameter gives this value, the MMDSP-TAP is included."
+print "             ape: If one of these parameter gives this value, the APE-DAP is included."
+print "             mod: If one of these parameter gives this value, the MOD-DAP is included."
+print " "
+print " Example: Trace32-CortexA9 is resigned as the master debugger, all other debuggers are slave."
+print " The 8500 version is V1 and CortexA9 and CortexR4 debugging are needed. Use the 8500_dbgcfg command:"
+print " In Trace32-CortexA9:"
+print "             do 8500_dbgcfg master cjtag 8500v1 ape mod"
+print " In Trace32-CortexR4:"
+print "             do 8500_dbgcfg slave cjtag 8855v1 ape mod" 
+print "------------------------------------------------------------------------------------------------------- "
+enddo

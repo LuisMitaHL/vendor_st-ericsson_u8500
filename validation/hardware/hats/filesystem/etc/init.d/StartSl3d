@@ -1,0 +1,14 @@
+#!/bin/sh
+case $1 in
+start) 
+	echo "Starting StartSl3d"
+	#sl3d -debug modem=/dev/null  &
+	sl3d &
+;;
+stop) 	
+	echo "Stopping StartSl3d..."
+	nkill sl3d
+;;
+esac
+
+exit

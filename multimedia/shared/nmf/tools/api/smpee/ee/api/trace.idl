@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+#include <ee/api/panic.idt>
+
+#include <inc/nmf-tracedescription.h>
+
+/*!
+ * \brief Tracing facilities API
+ */
+interface ee.api.trace unmanaged
+{
+    IMPORT_SHARED void nmfTraceInit();
+    IMPORT_SHARED void nmfTraceDone();
+
+    void  nmfTraceSetMode(t_bool onoff);
+
+    IMPORT_SHARED void nmfRegisterComposite(void* _this, void* traceDumper);
+    IMPORT_SHARED void nmfUnregisterComposite(void* _this);
+
+    IMPORT_SHARED void nmfTraceReset();
+    IMPORT_SHARED void nmfTraceComponent(t_nmfTraceComponentCommandDescription command, void* _this, const char* _name, const char* _templateName);
+    IMPORT_SHARED void nmfTraceBind(t_nmfTraceBindCommandDescription command, void* _thisfrom, const char* _namefrom, void* _thisto, const char* _nameto);
+    IMPORT_SHARED void nmfTraceInterfaceMethod(void* _this, const char* _name, unsigned int _itfmethidx);
+    IMPORT_SHARED void nmfTraceActivity(t_nmfTraceActivityCommandDescription command, void* _this, unsigned int _itfmethidx);
+    IMPORT_SHARED void nmfTracePanic(t_panic_reason reason, void* faultingComponent, t_uint32 info1, t_uint32 info2);
+}

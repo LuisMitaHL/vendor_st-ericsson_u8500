@@ -1,0 +1,52 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+## The MMDSP code is board specific
+MMDSP_CODE_IS_BOARD_SPECIFIC:=true
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+COMPONENT_TOP_DIR=../..
+
+ITF_PREFIX := video_vc1dec_vc1dec
+
+COMPONENTS += vc1dec.mpc.vc1dec
+
+CONFFILES =	vc1dec/mpc/vc1dec/vc1dec.conf		\
+			vc1dec/mpc/algo/algo.conf
+
+SRCPATH+= \
+	$(MM_IDT_DIR) \
+	$(MMROOT)/video/idt 				\
+	$(MMROOT)/video/components/vc1dec/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/vc1dec/mpc/share
+SRCPATH += $(MM_IDT_DIR)
+SRCPATH += $(MMBUILDIN)/$(NMF_COMP_SRC_COMMON_DIR)
+
+CPPFLAGS+= \
+	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc		\
+	-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	-I$(MMROOT)/video/components/common/inc
+
+CPPFLAGS += -I$(MM_HEADER_DIR)/$(SVA_SUBSYSTEM) -I$(MM_HEADER_DIR)
+#host FSM != mpc fsm  (ORDER: mpc first!!!)
+CPPFLAGS += -I$(MM_NMF_COMP_SRC_MMDSP_DIR)/fsm/generic/include
+CPPFLAGS += -I$(MM_NMF_REPO_DIR)/$(MMDSPCORE)
+
+	# OST trace capability
+include  $(COMPONENT_TOP_DIR)/make.ost_conf
+OST_SRC_DIR = src 
+OST_COMPONENT_ID = $(OST_COMPONENT_ID_NMF_DSP_ALGO)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmf_dsp_algo
+CPPFLAGS  += -I $(COMPONENT_TOP_DIR)/inc/autogentraces
+#CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/mpc/fsm/generic/include
+#CPPFLAGS  += -I$(MMROOT)/shared/ens/nmf/common
+	
+USER2MPCITFS +=	
+
+MPC2USERITFS +=	vc1dec.mpc.api.end_algo
+
+ASYNCITFS += vc1dec.mpc.api.algo vc1dec.mpc.api.end_algo vc1dec.mpc.api.mpc_trace_init
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+

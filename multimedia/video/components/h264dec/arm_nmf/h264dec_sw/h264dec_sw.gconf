@@ -1,0 +1,9 @@
+composite h264dec.arm_nmf.h264dec_sw
+
+contains  h264dec.arm_nmf.hamac as  hamac    
+binds decoder.iStartCodec to hamac.iStartCodec   asynchronous fifo=4
+binds hamac.iEndCodec to decoder.iEndCodec       asynchronous fifo=4
+
+#include "../h264dec/h264dec_common.inc"
+
+

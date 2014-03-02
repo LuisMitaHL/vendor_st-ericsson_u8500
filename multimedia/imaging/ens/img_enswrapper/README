@@ -1,0 +1,152 @@
+
+################################################################################
+# OMX activity tracing
+################################################################################
+# Enable STE OMX warpper traces. Supported levels are
+#  1 : All OMX calls and call backs except Buffer related calls
+#  2 : 1 + dump of OMX Parameter and Config details
+#  3 : 2 + EmptyThisBuffer and FillThisBuffer events
+setprop ste.omx.wrapper.trace <level>
+
+################################################################################
+# OMX Buffer content dump
+################################################################################
+# Provide the number of bytes to dump (trailing 8 bytes are displayed)
+setprop ste.omx.dump.level <Nb total bytes to trace>
+
+# The OMX component name for which to trace the buffers
+setprop ste.omx.dump.name <OMX-name>
+
+# Property to control tracing input or output buffers
+#  0 : input buffers
+#  1 : ouput buffers
+#  2 : input and ouput buffers
+setprop ste.omx.dump.output <value>
+
+################################################################################
+# STE OMX wrapper debug
+################################################################################
+# Enable very verbose trace on the wrapper activity
+setprop ste.omx.wrapper.debug  1
+
+# Enable very verbose trace on the RME related activity
+setprop ste.omx.wrapper.rme 1
+
+################################################################################
+# STE NMF traces
+################################################################################
+# Set verbosity level of the NMF CM driver (dmesg based)
+setprop ste.omx.wrapper.NMF.CM <level>
+
+# Enable NMF HOST EE trace (XTI based)
+setprop ste.omx.nmf.arm.trace 1
+
+# Enable NMF SIA trace (XTI based)
+setprop ste.omx.nmf.sia.trace 1
+
+# Enable NMF SVA trace (XTI based)
+setprop ste.omx.nmf.sva.trace 1
+
+################################################################################
+# STE OSTTrace
+################################################################################
+# By default ENS default level and ERROR + WARNING groups are enabled
+# on all STE OMX components.
+# OSTTrace emitted from the MMDSP are always sent to XTI
+# OSTTrace emitted from the ARM can be routed to logcat
+
+# Enable OSTtrace control by the wrapper
+setprop ste.omx.trace 1
+
+# You can control the components on which to enable OSTTrace using a
+# configuration file. The default file location is /sdcard/STEtraceSpec.txt
+# Groups name are as defined by ostgrp/include/ste_ost_group_map.h header file
+# (without the prefix FIXED_GROUP_TRACE).
+# Below gives you a template file to contol groups to be enabled
+--------------------------------------------------------------------------------
+## Activate all group for component OMX.ST.AFM.decoder.mp3
+OMX.ST.AFM.decoder.mp3
+
+## Activate only specified group for component OMX.ST.AFM.mixer
+OMX.ST.AFM.mixer : ERROR WARNING FLOW DEBUG USER1 USER2
+--------------------------------------------------------------------------------
+
+# You may specify an alternate trace specification file
+setprop STE_TRACE_SPEC_FILE /path/to/mytracespec.txt
+
+# You may send the ARM generated OSTTrace to logcat
+setprop ste.omx.osttrace.tolog 1
+
+# To enable the APE XTI trace on MIPI34 connector the trace driver must be set
+# to do so: interrupt u-boot when it start and enter the following commands
+setenv console 'ttyAMA2,115200n8 stm.mipi34=ape'
+save
+printenv
+boot
+
+################################################################################
+# Debugging memory leaks
+################################################################################
+
+# The tool is comparing the allocation tables dumped from bionic debug function
+# when requested.
+# An allocation entry is recording the entire call stack when reaching a call to
+# malloc. Allocation entries are considered identical only if entire call stack
+# is same. For a given allcation entries number of this entry is computed.
+# The tool will compare the allocation entries between 2 snapshots and identical
+# allocation entries but different in numbers will be explicited as '+dup <nb>'.
+# This clearly identifies leakage: allocation never freed between snapshots.
+
+# In case you want to see all differences between the snapshot and not only the
+# '+dup' you may use the '-a' option. In this case 'dup <nb>' will give the
+# number of instance of a given allocation entry.
+
+# To filter away the allocation that may happen the first time a given use case
+# is executed, allocation not freed at the end as kept for other iterations (not
+# leakage in this case): Execute your use case at least once before performing
+# the first memory allocation table dump.
+
+# Busybox is needed only to allow of 'grep, cut, sed' to retreive mediaserver
+# PID The only real need is to send a signal to mediaserver process to trig
+# memory dump
+
+# Setup busybox (in case you have it)
+cd /data/busybox ; . ./setup.sh ; cd -
+/data/busybox/bin/busybox sh
+
+# Request bionic to use malloc variant allowing debug
+setprop libc.debug.malloc 1
+
+# Restart media server to trace allocation
+stop media
+start media
+
+# Clean the dump mem info file
+rm /data/mediaserver-memstatus.txt
+
+# Run your usecase once to get enswrapper loaded in the mediaserver
+# End the usecase to get an allocation baseline
+
+# Then dump the allocation table
+kill -12 `/system/bin/ps | grep  mediaserver | grep -v logwrapper \
+  | grep -v grep | sed 's,  *, ,g' | cut -d ' ' -f 2`
+
+# Check logcat for dump completion and file used (/data/memstatus-$pid.txt)
+
+# Run your usecase again up to use case closure
+# Dump the allocation table again
+kill -12 `/system/bin/ps | grep  mediaserver | grep -v logwrapper \
+  | grep -v grep | sed 's,  *, ,g' | cut -d ' ' -f 2`
+
+# Retreive the genrated tables from the device
+$ adb pull /data/memstatus-$pid.txt
+
+# Dump the leaking call stacks
+$ perl $ANDROID_BUILD_TOP/vendor/st-ericsson/multimedia/shared/enswrapper/process-mediaserver-memstatus.pl -d memstatus-$pid.txt
+
+# Use '-a' option to get all the allocations differences between the 2 selected snapshot:
+#          default is to display only the +dup ones which is allocation present in both snapshots
+#          but has increased in numbers.
+#
+# Use '-o' option to select an offset in the snapshots (always 2 consecutive snapshots are compared)
+

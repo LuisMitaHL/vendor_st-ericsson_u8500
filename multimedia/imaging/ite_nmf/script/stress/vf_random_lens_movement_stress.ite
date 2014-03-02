@@ -1,0 +1,29 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/vf_random_lens_movement_stress.ite
+
+## LR with random lens movement and focus stats ##
+
+## Randomization of lens movement done in fsw3a ##
+
+alias LOOP_TESTS $1
+alias STATS_LOOP $2
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+loop LOOP_TESTS
+
+    LR prepare
+    LR start
+
+    fzsetper
+    ftorest
+
+    loop STATS_LOOP
+        fsw3a
+    endloop
+
+    LR stop
+    LR free
+
+endloop
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite

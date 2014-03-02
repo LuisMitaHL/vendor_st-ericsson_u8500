@@ -1,0 +1,31 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+case $1 in
+start)
+        isListening=`netstat -atp 2 >/dev/null | grep mid`
+        count=5
+                while [ -z "$isListening" ] && [ "$count" != "0" ]
+                do
+                        sleep 1
+                        isListening=`netstat -atp 2>/dev/null | grep mid`
+                        count=`expr $count - 1`
+                done
+                if [ -n "$isListening" ]
+                then
+                        echo "Starting Rfm"
+                        MODE_M=`/usr/bin/modem_config -M`
+                        /system/bin/rfm-server -n5 -b -r /modemfs/$MODE_M/Phone_FS &
+                        echo "...done"
+                else
+                        echo "...Starting Rfm: timed out"
+                fi
+
+;;
+stop)
+        echo "Stopping Rfm..."
+        nkill /system/hats/bin/rfm-server
+;;
+esac
+
+exit
+

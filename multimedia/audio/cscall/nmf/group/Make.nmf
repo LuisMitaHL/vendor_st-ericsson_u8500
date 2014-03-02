@@ -1,0 +1,36 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+##############
+#   CONFIG   #
+##############
+
+
+NMFPOSTPROC=..\tools\nmfPostProcess
+BUILD=..\host\nmf_repository\generated
+
+#############
+#   RULES   #
+#############
+default: MAKMAKE
+
+MAKMAKE:
+	@echo Make MAKMAKE - Nothing to do for NMF
+	
+LIB:
+	@echo Make LIB - Nothing to do for NMF 
+	
+RESOURCE:
+	@echo Make RESOURCE - Nothing to do for NMF
+
+BLD:
+	@echo Make BLD - Nothing to do for NMF	
+
+FINAL:
+	@echo Make FINAL - Patch NMF source code generation
+	$(NMFPOSTPROC) $(BUILD)\cscall_nmf_host_composite_cscall\src\cscall\nmf\host\composite\cscall.mmh
+	
+CLEAN:
+	@echo Make CLEAN - Nothing to do for NMF
+	
+	

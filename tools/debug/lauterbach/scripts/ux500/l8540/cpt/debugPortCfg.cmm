@@ -1,0 +1,102 @@
+; #####################################################################
+; # L8540 debug & Trace script file: debugPortCfg.cmm                 #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for Trace32 debug port type configuration on 8540.
+; Crated by HED/CSP/CPT/ACT on 2011-12-08
+; Contact jingyi-xiaoyan.lu@st.com
+; 2011-03-08: initial version.
+; 2012-04-12: handle the case that IC is disabled.
+;		removed intercom.wait to avoid eventual deadlock waits.
+
+entry &cjtag2pin
+
+;--- Configure the cJTAG star-2 if needed
+if system.usecore()<=1
+(
+	if system.up()
+		sys.down
+	gosub SystemDownOtherGUIs
+	if &cjtag2pin==1
+	(
+		print "Configuring cJTAG 2PIN ..."
+		sys.config.debugporttype cjtag
+		if version.build()>=23589.
+			sys.config.cjtagflags 0x3
+		print "DONE."
+	)
+	else
+		sys.config.debugporttype jtag
+)
+else if &cjtag2pin==1
+	gosub SystemAttachOtherGUIs
+enddo
+
+
+SystemDownOtherGUIs:
+	if version.build()>=28432.
+	(
+		&nbGUIs=intercom.podportnumber()
+		&portIdx=0
+		while (&portIdx<&nbGUIs)
+		(
+			if intercom.podport(&portIdx)!=intercom.port() //not the current GUI
+			(
+				&portValue=intercom.podport(&portIdx)
+				if &portValue==0.
+					print "InterCom is disabled. Do not handle the Multi GUIs"
+				else
+				(
+					on error continue
+					intercom.execute localhost:&portValue sys.down
+					// do not use "intercom.wait localhost:&portValue" here to avoid any deadlock.
+					intercom.evaluate localhost:&portValue system.up()
+					on error nothing
+					&ret=eval()
+					while &ret!=0
+						intercom.evaluate localhost:&portValue system.up()
+				)
+			)
+			&portIdx=&portIdx+1
+		)
+	)
+	return
+
+
+SystemAttachOtherGUIs:
+	if version.build()>=28432.
+	(
+		&nbOtherGUIs=intercom.podportnumber()
+		&portIdx=0
+		&sysUpStat=0
+		while (&portIdx<&nbOtherGUIs)
+		(
+			&portValue=intercom.podport(&portIdx)
+			intercom.evaluate localhost:&portValue system.up()
+			&sysUpStat=eval()
+			if &sysUpStat==0
+			(
+				intercom.execute localhost:&portValue print "Attempt to restore the connection ..."
+				// reconfigure the port type by the first GUI
+				if &portIdx==0
+				(
+					intercom.execute localhost:&portValue sys.config.debugporttype cjtag
+					intercom.execute localhost:&portValue sys.config.cjtagflags 0x3
+					intercom.wait localhost:&portValue
+				)
+				intercom.execute localhost:&portValue sys.m.a
+				intercom.wait localhost:&portValue
+				intercom.evaluate localhost:&portValue system.up()
+				&sysUpStat=eval()
+				if &sysUpStat==1
+					intercom.execute localhost:&portValue print "SYS.M.ATTACH OK (connection is restored)."
+				else
+					intercom.execute localhost:&portValue print "FAILED to restore the connection!"
+					
+
+			)
+			&portIdx=&portIdx+1
+		)
+	)
+	return
+

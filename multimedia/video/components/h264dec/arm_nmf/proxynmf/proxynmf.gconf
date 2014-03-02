@@ -1,0 +1,17 @@
+composite  h264dec.arm_nmf.proxynmf {
+
+    contains h264dec.arm_nmf.ddep       as  ddep
+    contains h264dec.arm_nmf.h264dec    as  h264dec
+
+#ifndef __ndk5500_a0__
+    requires h264dec.mpc.ddep.api.start_codec                as iStartCodec   optional
+    provides h264dec.mpc.ddep.api.end_codec                    as iEndCodec 
+
+    binds    this.iEndCodec                     to h264dec.iEndCodec asynchronous fifo=4
+    binds    h264dec.iStartCodec                     to this.iStartCodec
+#endif
+
+    #include "../proxynmf/proxynmf_common.inc"
+    
+
+}

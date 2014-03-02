@@ -1,0 +1,24 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/test_forced_grabok.ite
+
+# This test case tests abort-rx functionality provided by ISP FW through PE SystemSetup_e_Flag_abortRx_OnStop_Byte0
+# page element in pre-run case. i.e. frame SystemSetup_e_Flag_abortRx_OnStop_Byte0 is set before START command.
+# important : In abort-rx test case HOST can not know whether a SMIA-Rx abort was actually done or not done. So we are testing
+# that when ISP receives STOP command it processes it gracefully or not.
+setusecase default
+do $(IMAGING_PATH)/ite_nmf/script/common/test_forced_grabok_pre_run.ite
+
+
+# This test case tests abort-rx functionality provided by ISP FW through PE SystemSetup_e_Flag_abortRx_OnStop_Byte0
+# page element in post-run case. i.e. frame SystemSetup_e_Flag_abortRx_OnStop_Byte0 is set after START command.
+# important : In abort-rx test case HOST can not know whether a SMIA-Rx abort was actually done or not done. So we are testing
+# that when ISP receives STOP command it processes it gracefully or not.
+
+do $(IMAGING_PATH)/ite_nmf/script/common/test_forced_grabok_post_run.ite
+
+# This test case tests grab_OK functionality for HR pipe
+
+do $(IMAGING_PATH)/ite_nmf/script/common/test_forced_grabok_pre_run_HR.ite
+
+# This test case tests grab_OK functionality for HR pipe
+
+do $(IMAGING_PATH)/ite_nmf/script/common/test_forced_grabok_post_run_HR.ite

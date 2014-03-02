@@ -1,0 +1,44 @@
+msc {
+		width=1200;
+		Application,SpeechProcComponent,SpeechProcLibrary,SpeechProcNmf_ProcessincComp,speech_proc_library;
+        |||;
+		Application rbox speech_proc_library [label="Transition from OMX_StateLoaded to OMX_StateIdle"];
+		|||;
+		Application => SpeechProcComponent [label ="OMX_sendcommand(OMX_CommandSetState, OMX_StateIdle)"];
+		...;
+
+		SpeechProcComponent => SpeechProcNmf_ProcessincComp [label="instantiateMain()"];
+
+		SpeechProcNmf_ProcessincComp => SpeechProcLibrary [label="getNbParamAndConfig(UL & DL)"];
+		SpeechProcLibrary >> SpeechProcNmf_ProcessincComp;
+		SpeechProcNmf_ProcessincComp -> SpeechProcNmf_ProcessincComp [label="configure\nNMF bindings", linecolor="white"];
+
+		...;
+		SpeechProcComponent => SpeechProcNmf_ProcessincComp [label="configureMain()"];
+
+		SpeechProcNmf_ProcessincComp =>  SpeechProcLibrary [label="isBypass(UL & DL)"];
+	  SpeechProcLibrary >> SpeechProcNmf_ProcessincComp;
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="speech_proc_init()"];
+
+		SpeechProcNmf_ProcessincComp =>  SpeechProcLibrary [label="checkPortSettings(UL & DL)"];
+	  SpeechProcLibrary >> SpeechProcNmf_ProcessincComp;
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="speech_proc_set_mode()\nIf input and ouput ports\nare enabled"];
+		|||;
+
+		SpeechProcLibrary abox speech_proc_library [label="START LOOP: on all parameterss (i.e. while getNextParameter return is not NULL)", textcolour="gray"];
+		SpeechProcNmf_ProcessincComp =>  SpeechProcLibrary [label="getNextParameter(UL & DL)"];
+	  SpeechProcLibrary >> SpeechProcNmf_ProcessincComp [label="index,ptr"];
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="speech_proc_set_parameter(index,ptr)"];
+		SpeechProcLibrary abox speech_proc_library [label="END LOOP", textcolour="gray"];
+
+		SpeechProcLibrary abox speech_proc_library [label="START LOOP: on all configs (i.e. while getNextConfig return is not NULL)", textcolour="gray"];
+		SpeechProcNmf_ProcessincComp =>  SpeechProcLibrary [label="getNextConfig(UL & DL)"];
+	  SpeechProcLibrary >> SpeechProcNmf_ProcessincComp [label="index,ptr"];
+		SpeechProcNmf_ProcessincComp :> speech_proc_library [label="speech_proc_set_config(index,ptr)"];
+		SpeechProcLibrary abox speech_proc_library [label="END LOOP", textcolour="gray"];
+
+		|||;
+		...;
+
+	  SpeechProcComponent =>> Application [label="OMX_Event(OMX_EventCmdComplete, OMX_CommandSetState)"];	 	
+}

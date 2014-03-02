@@ -1,0 +1,289 @@
+#!/bin/sh
+#
+# Copyright (c) ST-Ericsson, 2012
+# Author: Sebastien LOPEZ
+# Modified by Frédéric Pillon
+#
+#
+###############################################################################
+DEBUG_VAR=0
+LOGFILE="/var/log/`basename $0`.log"
+
+###############################################################################
+## Debug function
+debug()
+{
+	if [ $DEBUG_VAR -eq 2 ]; then
+		echo -E $@
+		echo -E $@ >> $LOGFILE
+	elif [ $DEBUG_VAR -eq 1 ]; then
+		echo -E $@ >> $LOGFILE
+	fi
+}
+
+###############################################################################
+## Help function
+usage()
+{
+	echo "############################################################"
+	echo "##"
+	echo "##	$0"
+	echo "##"
+	echo "############################################################"
+	echo "##"
+	echo "##"
+	echo "## Device management"
+	echo "## "
+	echo "## $0"
+	echo "## [-d<1|2>] [-l | -m blockId | --mount blockId "
+	echo "##               | -u blockId | --umount blockId | <cmd>]"
+	echo "##"
+	echo "## Mandatory option(s):"
+	echo "##"
+	echo "## -l: list available device"
+	echo "##"
+	echo "## -m|--mount blockId : mount the specified blockId"
+	echo "##"
+	echo "## -u|--umount blockId : umount the specified blockId"
+	echo "##"
+	echo "## <cmd> : start or stop"
+	echo "##"
+	echo "## Optionnal:"
+	echo "## -d<debug_level> : enable debug mode."
+	echo "##		1->Display debug message"
+	echo "##		2->display and store debug message"
+	echo "##"
+	echo "##"
+	echo "############################################################"
+	exit 0
+}
+
+###############################################################################
+## List device
+make_list()
+{
+	debug "> make_list"
+    mmcBlocks=`ls /sys/block | grep mmcblk`
+    echo -e "index\tdevice\tname\tsize in MB\ttype"
+    n=0
+    for mmcBlock in $mmcBlocks
+      do
+      sizeInBlocks=`cat /sys/block/$mmcBlock/size`
+      sectorSize=`cat /sys/block/$mmcBlock/queue/hw_sector_size`
+      sizeInBytes=`expr $sizeInBlocks \* $sectorSize`
+      sizeInKBytes=`expr $sizeInBytes / 1024`
+      sizeInMBytes=`expr $sizeInKBytes / 1024`
+
+      if [ -f  /sys/block/$mmcBlock/device/name ]
+         then
+         echo -e "$n\t$mmcBlock\t`cat /sys/block/$mmcBlock/device/name`\
+		 \t$sizeInMBytes\t\t`cat /sys/block/$mmcBlock/device/type`"
+         n=`expr $n + 1`
+#      else
+#         echo " this block $mmcBlock is not a real sytem block"
+      fi
+    done
+
+
+		#quit_func $FUNCNAME 1
+
+	debug "< make_list"
+}
+
+###############################################################################
+## choice
+choice()
+{
+	debug "> choice"
+	echo -n "( "
+    index=$1
+    while [ $index -ne $n ]
+      do
+      echo -n "$index "
+      index=`expr $index + 1`
+    done
+    echo -n ")? "
+    read -s -n 1 tmp
+    echo $tmp
+	debug "< choice"
+	return $tmp
+}
+
+###############################################################################
+## start
+start()
+{
+	debug "> start"
+	if [ $# != 1 ]; then
+        echo Please choose a block device index among the following ones:
+		make_list
+		choice 0
+		blockId=$?
+	else
+		blockId=$1
+	fi
+    if [ `ls /sys/block/mmcblk$blockId/ | grep mmcblk | wc -l` -eq 1 ]
+	then
+		partitionId=1
+	elif [ `ls /sys/block/mmcblk$blockId/ | grep mmcblk | wc -l` -gt 1 ]
+	then
+        mmcPartitions=`ls /sys/block/mmcblk$blockId/ | grep mmcblk${blockId}p`
+		echo Please choose a partition index among the following ones:
+        echo -e "index\tpartition\tsize in MB\ttype"
+        n=1
+        for mmcPartition in $mmcPartitions
+		do
+            sizeInBlocks=`cat /sys/block/mmcblk$blockId/$mmcPartition/size`
+            sectorSize=`cat /sys/block/mmcblk$blockId/queue/hw_sector_size`
+			sizeInBytes=`expr $sizeInBlocks \* $sectorSize`
+			sizeInKBytes=`expr $sizeInBytes / 1024`
+			sizeInMBytes=`expr $sizeInKBytes / 1024`
+			echo -e "$n\t$mmcPartition\t$sizeInMBytes\t\t`fdisk \
+			-l /dev/mmcblk$blockId | grep $mmcPartition |\
+			awk '{print $6" "$7" "$8" "$9}' | sed '/^$/d'`"
+			n=`expr $n + 1`
+        done
+        choice 1
+		partitionId=$?
+    fi
+    if [ -e "/sys/block/mmcblk$blockId" ]
+	then
+		if [ ! -z "`mount | grep /dev/mmcblk${blockId}p$partitionId`" ]
+	    then
+			echo "Device already mounted!"
+		else
+			if [ -z "`lsmod | grep g_file_storage`" ]
+			then
+				mount /dev/mmcblk${blockId}p$partitionId
+			else
+                echo "g_file_storage is used.Please stop Usb Mass Storage"
+			fi
+		fi
+		if [ ! -z "`mount | grep /dev/mmcblk${blockId}p$partitionId`" ]
+		then
+			echo "Device mounted on `cat /etc/fstab |\
+			grep mmcblk${blockId}p$partitionId | awk '{print $2}'`"
+		else
+			echo "a problem occured, device isn't mounted"
+		fi
+	else
+		echo "Device not found"
+	fi
+
+	debug "< start"
+}
+
+###############################################################################
+## stop
+stop()
+{
+	debug "> stop"
+	if [ $# != 1 ]; then
+        echo Please choose a block device index among the following ones:
+		make_list
+		choice 0
+		blockId=$?
+	else
+		blockId=$1
+	fi
+	np=`mount | grep -c mmcblk$blockId`
+	mountPartitions=`mount | grep mmcblk$blockId | awk '{print $1}' |\
+	sed 's/^\/dev\///'`
+	if [ $np -gt 1 ]; then
+	echo Please choose a partition index among the following ones:
+	fi
+
+	echo -e "index\tpartition\tsize in MB\ttype"
+	for mountPartition in $mountPartitions
+	do
+		n=`echo $mountPartition | sed 's/^mmcblk[0-9]p//'`
+        sizeInBlocks=`cat /sys/block/mmcblk$blockId/$mountPartition/size`
+        sectorSize=`cat /sys/block/mmcblk$blockId/queue/hw_sector_size`
+		sizeInBytes=`expr $sizeInBlocks \* $sectorSize`
+		sizeInKBytes=`expr $sizeInBytes / 1024`
+		sizeInMBytes=`expr $sizeInKBytes / 1024`
+		echo -e "$n\t$mountPartition\t$sizeInMBytes\t\t`fdisk \
+		-l /dev/mmcblk$blockId | grep $mountPartition |\
+		awk '{print $6" "$7" "$8" "$9}' | sed '/^$/d'`"
+	done
+	if [ $np -gt 1 ]; then
+		echo -n "( "
+		for mountPartition in $mountPartitions
+		do
+			index=`echo $mountPartition | sed 's/^mmcblk[0-9]p//'`
+			echo -n "$index "
+		done
+		echo -n ")? "
+		read -s -n 1 partitionId
+		echo $partitionId
+	elif [ $np -eq 1 ]; then
+		partitionId=`echo $mountPartitions | sed 's/^mmcblk[0-9]p//'`
+	fi
+	if [ a$partitionId != a ]; then
+		echo "Unmount Device..."
+		if [ -z "`mount | grep /dev/mmcblk${blockId}p$partitionId`" ]
+		then
+			echo "Device is already unmounted"
+		else
+			umount /dev/mmcblk${blockId}p$partitionId
+		fi
+		if [ -z "`mount | grep /dev/mmcblk${blockId}p$partitionId`" ]
+		then
+			echo "Device unmounted"
+	    else
+			echo "a problem occured, Device isn't unmounted"
+	    fi
+	else
+		echo "Device not Mounted"
+	fi
+	debug "< stop"
+}
+
+###############################################################################
+## Main Script beginning
+#options may be followed by one colon to indicate they have a required argument
+options=`getopt -o hd:lm:u: --long mount: -- "$@"`
+
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+if [ $# -lt 1 ] ; then usage ; fi
+
+eval set -- "$options"
+
+while true ; do
+    case "$1" in
+	-d) echo "Debug activated"
+		DEBUG_VAR=$2
+		shift 2;;
+	-h) usage
+		shift;;
+	-\?) usage
+		shift;;
+	-l) make_list
+		shift;;
+	-m|--mount)
+		echo "Mount block $2"
+		start $2
+		shift 2;;
+	-u|--umount)
+		echo "unmount block $2"
+		stop $2
+		shift 2;;
+	--) shift; break;;
+    *) break;;
+    esac
+done
+
+#Parse last arguments:
+for arg do
+	case "$arg" in
+	start) start
+		;;
+	stop) stop
+		;;
+	*) usage;;
+	esac
+done
+
+
+
+exit 0

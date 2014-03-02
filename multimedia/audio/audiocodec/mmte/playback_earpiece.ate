@@ -1,0 +1,29 @@
+OMX_GetHandle   renderer OMX.ST.AFM.EARPIECE
+
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer 0 MEM ./doriano48m_low.wav 0 0
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=90 sVolume.nMin=0 sVolume.nMax=100
+MMTE_DispatchState OMX_StateIdle renderer:0
+
+#MMTE_NMF_ListComponent
+
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0 bLinear=OMX_TRUE sVolume.nValue=90 sVolume.nMin=0 sVolume.nMax=100
+OMX_SetConfig renderer OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_FALSE
+
+# Playback...
+mmte_sleep 8000
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer
+ 
+MMTE_DispatchState OMX_StateLoaded renderer
+
+ens_network_destroy
+MMTE_CheckMemoryStatus

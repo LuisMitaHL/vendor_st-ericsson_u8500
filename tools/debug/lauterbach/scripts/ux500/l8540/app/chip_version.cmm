@@ -1,0 +1,60 @@
+;------------------------------------------------------------
+; chip_version.cmm
+;------------------------------------------------------------
+; Script that reads out chip version from CLTAP of DB8540
+;
+;-----------------------------------------------------------
+
+local &idcode_addr
+
+; CLTAP IDCODE
+&idcode_addr=0x50000600
+
+read_cltap:
+
+on error goto error1_edbg
+
+; try with access through EDBG (JTAG)
+if data.long(edap:&idcode_addr)==0x122AD041
+(
+	print "DB8540 Version V1 detected"
+        &chip_version="v1"
+)
+else
+(
+	print "warning: Can't detect version, default DB8540 version is v1"
+	&chip_version="v1"
+)
+
+script_end:
+on error
+
+
+enddo
+
+;-----------------------------------------------------------------------
+error1_edbg:
+	on error goto error2_edbg
+
+	; first error => try target attach
+	sys.reset
+	if "&SmpDebug"=="TRUE"
+		sys.cpu DB8540
+	else
+		sys.cpu DB8540APE-CORE0
+
+	sys.config.cfgconnect 0xCF
+	sys.o.enreset off
+	sys.o.waitreset off
+	sys.o.resbreak off
+	sys.mode prepare
+
+	; retry read
+	goto read_cltap
+
+error2_edbg:
+	on error
+	; second error : force v1 to avoid error on other scripts
+	print "error: edbg access to chip, assumed DB8540 version is v1"
+	&chip_version="v1"
+	goto script_end

@@ -1,0 +1,231 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+Author:         Jean-Philippe Fassino & NMF Team
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.3.0 "Belzebuth"
+Date:           December 9th 19th, 2009
+
+*** Warning ***
+This version will be delivered during 8500 V1 wake-up. 
+
+1.2 Board configuration:
+
+    Successfully tested configuration:
+        - STn8820 SAA & SVA & SIA
+            * Cut A0
+        - STn8500 SVA & SIA
+            * PEPS 8500
+                PEPS SIA with an ED mapping + MMDSP V1
+            * MOP500-ED
+                Only flash board without normal application in flash image
+                    (use -Normal_Appli 0 on command line flasher)
+                Flash with NPT referenced in nmf/workstation.txt
+            * HREF-ED V1.0
+                Only flash board without normal application in flash image
+                (use -Normal_Appli 0 on command line flasher)
+                Flash with NPT referenced in nmf/workstation.txt
+
+    Not 100% successfully tested configuration:
+        - STn8500 SVA & SIA
+            * SVP 3.2.0
+                Issue in MMDSP simulator where code execution in ESRAM failed
+
+    Not (or no more) supported configuration:
+        - STn8500 SVA & SIA
+            * SVP 2.0 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                STM IP trace not available
+            * SVP 2.2 (only 90% of test suite passed !)
+                Issue in TLM IP HSEM
+                Argc/Argv not supported
+            * SVP 2.3 (No more tested)
+            * SVP 2.4 (No more tested)
+            * MOP500-ED & HREF-ED V1.0 (No more tested)
+                Board not flash or flash with normal application in flash image
+
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version:
+        - RVCT 2.2-sp1-593 for 8815 & 8820
+        - RVCT 4.0_build529 for 8500
+
+    MMDSP compiler version
+        - MMDSP Toolset 4.3.0
+
+    - Lauterbach trace32 ref_patch_p20090717
+
+    - Java SE Runtime Environment
+        http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - RODOS
+        http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+    - Week delivery
+        Ready to use components.txt for Linux & Think environments (com.stericsson.nmf/components.txt)
+            # RODOS components.txt
+            include rod+package://com.stericsson.nmf:{year MMD delivery}.{week MMD delivery}.{patch}/component.txt
+
+        Ready to use components.txt Think environments (com.stericsson.nmf.think/components.txt)
+            # RODOS components.txt
+            include rod+package://com.stericsson.nmf.think:2.3.0/component.txt
+
+
+3   RELEASE CONTENT
+
+    See tools/doc/file_hierarchies.txt about file tree organization !
+
+    - Toolbox
+
+    - Component Manager
+
+    - Execution Engine
+
+    - Think
+
+    - LOS
+
+
+3.1 Component Manager
+
+    - Dedicated CM configuration to ULP feasibility study
+        All MPC segments allocated in ESRAM
+        On Think, this configuration can be activated, either:
+            * by adding in the code:
+                t_bool cfgDDR_in_ESRAM = TRUE;
+            * or by setting cfgDDR_in_ESRAM to 1 in Lauterbach before starting Think
+        Default configuration could be change by defining in the code:
+                t_uint32 cfgDDR_SIA_CodeSize = 220;
+                t_uint32 cfgDDR_SVA_CodeSize = 68;
+                t_uint32 cfgDDR_DataSize = 155;
+                Note: Sum of sizes must not exceed 3.5 Banks (128KB)
+                
+    - Take into account that on ELF executable alignment is already compute by Linker and
+        CM don't need to managed it. CM just need to load at the specified place.  
+
+
+3.2 MPC Execution Engine
+
+3.3 Host Execution Engine
+
+3.4 OS integration guidelines
+
+3.5 Tools
+
+    -  VI 24840   Warning in generated code in hostee
+        Null interface generate code that cast NULL pointer to the right method signature
+         
+
+3.6 Programming model
+
+3.7 Think
+
+    - In order that medias don't do wrong assumption about ESRAM size availability, like in
+        Symbian, Think reserve DMA & MCDE ESRAM memories. Thus, medias can't use it !!!
+        Note: for experimentation purpose, you can ask Think to not reseve it by defining in your code:
+            t_bool cfgESRAM_ReserveMcde = FALSE;
+            t_bool cfgESRAM_ReserveDMA = FALSE;
+
+
+3.8 Linux & Symbian
+
+3.9 Examples
+
+3.10 Packaging
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+    24840   Warning in generated code in hostee
+    25763   NMF MPC Hybrid EE preempts interface of same priority
+    
+    Alignment Issue when loading Execution Engine containing double word.
+
+
+4.2 Active defect list
+
+    24428   auto-generated wrapper component does not consider extended components
+    23816   CPPFLAGS issue when defined in a ARM-composite and used in multiple component included in the composite
+    23488   Assert in mmte_testStart when leading '/' in logdir
+    23121   setConfig argument passing by pointer instead of structure
+    22408   resetting/stopping mmdsp core on mop500 stop mtu timers
+    22218   provided interface are not inside the code, no problem at compilation ????
+    22182   test api: flush of results before test_end
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+
+    For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+    - Component manager
+        All warnings and errors removed.
+
+
+6.2 Code Static analysis result
+
+    - Component manager
+        Coverity done (each remaining issue could be explained).
+
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Done.
+
+6.4 Confidentiality safe
+
+    Done.
+
+7   DOCUMENTS
+
+    Test report available at:
+        http://gnx2487:9000/

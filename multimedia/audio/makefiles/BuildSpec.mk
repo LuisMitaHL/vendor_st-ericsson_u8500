@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_audio/makefiles=bin
+NO_STD_BUILD_audio/makefiles=1
+BUILD_MMDSP_NMF_audio/makefiles=bin
+BUILD_ARM_PROC_audio/makefiles=bin
+BUILD_ARM_CODE_audio/makefiles=bin
+BUILD_ARM_NMF_audio/makefiles=bin
+BUILD_XP70_SIA_CODE_audio/makefiles=false

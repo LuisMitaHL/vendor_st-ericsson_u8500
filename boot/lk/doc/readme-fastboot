@@ -1,0 +1,153 @@
+STE fastboot manual:
+====================
+
+usage: fastboot [ <option> ] <command>
+
+commands:
+  update <filename>                        reflash device from update.zip
+  flashall                                 flash boot + recovery + system
+  flash <partition> [ <filename> ]         write a file to a flash partition
+  erase <partition>                        erase a flash partition
+  getvar <variable>                        display a bootloader variable
+  boot <kernel> [ <ramdisk> ]              download and boot kernel
+  flash:raw boot <kernel> [ <ramdisk> ]    create bootimage and flash it
+  devices                                  list all connected devices
+  continue                                 continue with autoboot
+  reboot                                   reboot device normally
+  reboot-bootloader                        reboot device into bootloader
+  help                                     show this help message
+
+options:
+  -w                                       erase userdata and cache
+  -s <serial number>                       specify device serial number
+  -p <product>                             specify product name
+  -c <cmdline>                             override kernel commandline
+  -i <vendor id>                           specify a custom USB vendor id
+  -b <base_addr>                           specify a custom kernel base address
+  -n <page size>                           specify the nand page size. default: 2048
+
+
+
+1. Start target in fastboot mode
+2. Fastboot command usage
+2.1. Fastboot devices
+2.2. Fastboot getvar <variable>
+2.3. Fastboot boot <kernel> <ramdisk>
+2.4. Fastboot erase <partition>
+2.5. Fastboot flash <partition> <filename>
+2.6. Fastboot flash:raw boot <kernel> <ramdisk>
+2.7. Fastboot flashall
+2.8. Fastboot update <filename>
+2.9. Fastboot continue
+2.10. Fastboot reboot
+2.11. Fastboot reboot-bootloader
+3. Create boot image
+
+1. Start target in fastboot mode
+
+    There are 3 ways to start target in fastboot mode on power ON:
+       - Keep BACK/CLEAR key pressed during target boot
+       - Keep VOLUMEDOWN key pressed during target boot
+       - Press any key in the console to stop autoboot, then run command fastboot in the console
+
+
+2. Fastboot command usage
+
+    Target shall be connected to host PC using USB cable.
+    Host PC shall have fastboot application installed, in a complete build view fastboot application is available in out/host/linux-x86/bin/
+    Run fastboot command in out/target/product/uxxxx/ directory when using partition images in fastboot command parameters.
+    For kernel image, always use zImage file, uImage file is dedicated to uboot bootloader.
+
+
+2.1. Fastboot devices
+
+    This command list all connected devices in fastboot mode:
+    $ fastboot devices
+    08500-00-00	fastboot
+
+
+2.2. Fastboot getvar <variable>
+
+    This command display the value of a bootloader variable:
+    $ fastboot getvar version
+    version: 0.5
+    List of bootloader variables:
+    version: fastboot version
+    product: product ID
+    apdieid: AP die ID
+    version-baseband: baseband version
+    max-download-size: max downloadable size
+    version-bootloader: LK bootloader version
+    serialno: product serial number
+    model-id: product model ID
+    secure: R&D or Product
+
+
+2.3. Fastboot boot <kernel> <ramdisk>
+
+    This command download and boot kernel image with ramdisk (no flashing).
+    $ fastboot -b 0 boot zImage ramdisk.img
+
+    boot image can also be used in this command:
+    $ fastboot boot boot.img
+
+
+2.4. Fastboot erase <partition>
+
+    This command erase a flash partition:
+    $ fastboot erase boot
+
+
+2.5. Fastboot flash <partition> <filename>
+
+    This command write a file to a flash partition
+    $ fastboot flash boot boot.img
+    List of available partitions in fastboot mode:
+    boot, system, userdata, cache, modemfs, recovery
+
+
+2.6. Fastboot flash:raw boot <kernel> <ramdisk>
+
+    This command create bootimage and flash it:
+    $ fastboot -b 0 flash:raw boot zImage ramdisk.img
+    This command is useful to flash and test a new kernel image.
+
+
+2.7. Fastboot flashall
+
+    This command flash boot, recovery and system images:
+    $ fastboot flashall
+    reminder: this command shall be run in out/target/product/uxxxx/ directory.
+    At the beginning of the procedure, a product check is made between product ID and board defined in android-info.txt.
+
+
+2.8. Fastboot update <filename>
+
+    This command reflash device from update.zip containing boot, recovery and system partitions:
+    $ fastboot update update.zip
+    update.zip file can be created using zip command:
+    $ zip update.zip android-info.txt boot.img recovery.img system.img
+
+
+2.9. Fastboot continue
+
+    This command allow to leave fasboot mode and continue target autoboot.
+    $ fastboot continue
+
+
+2.10. Fastboot reboot
+
+    This command reboot device normally:
+    $ fastboot reboot
+
+
+2.11. Fastboot reboot-bootloader
+
+    This command reboot device in fastboot mode:
+    $ fastboot reboot-bootloader
+
+
+3. Create boot image
+
+    boot image file is generated during complete build, but can also be generated manually using mkbootimg:
+    $ mkbootimg --base 0 --kernel zImage --ramdisk ramdisk.img -o new_boot.img

@@ -1,0 +1,70 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+#PLATFORM=x86-linux
+export PLATFORM
+export MODULE
+MODULE:=..
+COMPONENT_PATH = $(MMROOT)/video/components
+
+CORE=arm
+include $(MMROOT)/video/makefiles/Make.nmf.config
+PREBUILD_COMPONENTS = conf-check $(CONFFILES)	
+
+# to create a lib
+NMFCONFC +=  #--cpp 
+
+CFLAGS += #--cpp
+ifeq ($(SELECTED_CONF),_sw) 
+CPPFLAGS +=  -DNO_HAMAC
+endif
+
+ifeq ($(SELECTED_CONF),_pipe)
+CPPFLAGS +=  -DNO_HAMAC
+endif
+
+ifeq ($(SELECTED_CONF),_gcc) 
+CPPFLAGS +=  -DNO_HAMAC -x #c++ 
+endif
+
+COMPONENTS+= jpegenc.arm_nmf.jpegenc_test_sw 
+CONFFILES = jpegenc/arm_nmf/jpegenc_test_sw/jpegenc_test_sw.conf \
+           jpegenc/arm_nmf/algo/algo.conf
+#CONFFILES = jpegenc_sw/arm_nmf/algo/algo.conf
+INSTALL_LIB = jpegenc_test_sw.a 
+
+CPPFLAGS+= -DCA9 -D__NMF -D__T1XHV_NMF_ENV -DNMF_BUILD \
+           -I$(MMROOT)/shared/nmf/think/api \
+           -I$(MMROOT)/shared/nmf/tools/api/smpee\
+	   -I$(MMROOT)/shared/nmf/tools/api/c/inc \
+	   -I$(MMROOT)/video/include \
+	   -I$(MMROOT)/video/components/jpegenc/arm_nmf/algo/inc \
+	   -I$(MMROOT)/video/components/jpegenc/arm_nmf/api \
+	   -I$(MMROOT)/video/components/jpegenc/arm_nmf/share \
+	   -I$(MMROOT)/video/components/common/inc \
+		-I$(MMROOT)/video/components/jpegenc/common/inc \
+	   -I$(MMROOT)/video/components/common/nmf/idt \
+	   -I$(MMROOT)/shared/nmf/think/src/share/inc \
+	   -I$(TMPDIR)/jpegenc_arm_nmf_encoder/src/jpegenc/arm_nmf \
+           -I$(TMPDIR)/jpegenc_arm_nmf_encoder/src/jpegenc/arm_nmf/api \
+		-DCORTEX -DCORTEX_PROFILE -DCORTEX_FRAME_CYCLES
+             
+SRCPATH+= 	$(MM_IDT_DIR) \
+                $(MMROOT)/video/idt/$(MMDSPCORE) \
+                $(MMROOT)/video/components/jpegenc/arm_nmf/api \
+                $(MMROOT)/video/components/jpegenc/arm_nmf/share \
+                $(MMROOT)/video/components/jpegenc/arm_nmf/algo/inc \
+                $(TMPDIR)/jpegenc_arm_nmf_encoder/src/jpegenc/arm_nmf \
+		$(NMF)/$(MMSYSTEM)/api
+                
+# Hack until finding a way to have subsystem dependant compilation for ARM components (same for SVA_SUBSYSTEM forcing)
+SRCPATH+=  $(NMF)/tools/api/smpee $(PWD)
+
+ifneq ($(findstring dsp,$(TARGET)),dsp)
+SRCPATH :=$(shell echo "$(SRCPATH)" | sed 's/mpcee/smpee/g')
+endif
+
+first_target : $(CONFFILES) all
+#include $(MMROOT)/video/makefiles/Make.nmf.rules
+ 
+ 
+

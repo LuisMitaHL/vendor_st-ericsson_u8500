@@ -1,0 +1,61 @@
+test_start src_0001
+test_property        TEST_NAME SRC_standalone_8k_mono_16k_mono
+
+alias TIMEOUT 0
+
+alias INPUT_FILE $(NOMADIK)/samplerateconv/streams/Portal_8m.pcm 
+alias OUTPUT_FILE   $(OUTPUT_DIR)/src_pcm_8k_mono_16k_mono.out
+alias REF_FILE   $(NOMADIK)/samplerateconv/streams/Portal_8_16m.pcmref
+
+OMX_GetHandle    samplerateconv OMX.ST.AFM.src
+
+
+OMX_SetParameter    samplerateconv OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+ate_attach_io       samplerateconv 0 MEM $(INPUT_FILE) 0 0 0
+
+OMX_SetParameter    samplerateconv OMX_IndexParamAudioPcm nPortIndex=1 nChannels=1 nSamplingRate=16000 eEndian=OMX_EndianBig eChannelMapping[0]=OMX_AUDIO_ChannelCF
+ate_attach_io       samplerateconv 1 MEM $(OUTPUT_FILE) 2000000 0 0
+
+
+
+OMX_SendCommand samplerateconv OMX_CommandStateSet OMX_StateIdle
+
+MMTE_AllocateAndUseBuffers samplerateconv 0
+MMTE_AllocateAndUseBuffers samplerateconv 1
+MMTE_WaitEvent samplerateconv OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_NMF_ListComponent
+
+#Start
+OMX_SendCommand samplerateconv OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent samplerateconv OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+#Wait EOS
+MMTE_WaitEvent samplerateconv OMX_EventBufferFlag 1 TIMEOUT
+
+#Stop
+OMX_SendCommand samplerateconv OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent samplerateconv OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+
+OMX_SendCommand samplerateconv OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers samplerateconv 0
+MMTE_FreeBuffers samplerateconv 1
+MMTE_WaitEvent samplerateconv OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+file_comp OUTPUT_FILE REF_FILE
+
+unalias OUTPUT_FILE
+unalias INPUT_FILE
+unalias REF_FILE
+unalias TIMEOUT
+
+
+test_end

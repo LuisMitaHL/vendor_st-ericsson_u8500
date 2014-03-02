@@ -1,0 +1,18 @@
+#!/bin/sh
+case $1 in
+    start)
+    echo "Starting Shrm interface"
+    ifconfig shrm0 up
+    echo "...done"
+    ;;
+    stop)
+    echo "Stopping ISI..."
+    echo "Nothing to be done"
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

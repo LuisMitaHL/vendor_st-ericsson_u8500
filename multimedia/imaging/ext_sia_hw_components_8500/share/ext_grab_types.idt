@@ -1,0 +1,139 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   Interface Description Type file: common declaration types that can be shared between nmf component and host
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#ifndef _grab_types_idt
+#define _grab_types_idt
+
+/* 1 client for grabctl "LR", 1 for grabctl "HR", 1 for direct ARM binding for debug */
+#define GRB_NUM_CLIENTS 3
+
+enum e_grabInfo {
+    GRBINF_GRAB_LAUNCHED 			= 0x1,
+    GRBINF_GRAB_COMPLETED 			= 0x2,
+    GRBINF_GRAB_ABORTED   			= 0x3,
+    GRBINF_GRAB_TO_REPROG_BY_MMDSP	= 0x4,
+    GRBINF_GRAB_STOPPED				= 0x5,
+    
+    GRBINF_DEBUG_MODE_ON			= 0x777,
+    GRBINF_DEBUG_MODE_OFF			= 0x0FF
+};
+
+/* +ER341188 */
+enum e_grabError {
+    GRBERR_NONE               = 0x00,
+    GRBERR_FIFO_OVERFLOW      = 0x01,
+    GRBERR_RAW_BUF_OVERFLOW   = 0x02,
+    GRBERR_FMT_UNSUPPORTED    = 0x04,
+    GRBERR_PIPE_UNSUPPORTED   = 0x08,
+    GRBERR_WATCHDOG_RELOAD    = 0x0b, /* Not an error but use to reload watchdog when skipping frame*/
+    GRBERR_GRB_IN_PROGRESS    = 0x10,
+	GRBERR_UNKNOWN            = 0x20, /* unhandled hardware error (see buffer_id field for IPP_SD_ERROR value) */
+	GRBERR_STAGINGFULL        = 0x40, /* error in grabctl, when stagingOut is already full on IT */
+    GRBERR_FIFO_STA_NOT_EMPTY = 0x77,
+
+	IPP_CD_ERROR_CCP		               = 0x80,	    /* to inform host an error occured from IPP HW Block */
+    IPP_CD_ERROR_RAW_DATA_NOT_X8_BYTES	   = 0x100,	    /* to inform host an error occured from IPP HW Block */
+	IPP_CD_ERROR_RAW_DATA_OVERFLOW		   = 0x101,	    /* to inform host an error occured from IPP HW Block */
+	IPP_CD_ERROR_LUMA_NOT_X8_BYTES		   = 0x200,	    /* to inform host an error occured from IPP HW Block */
+	IPP_CD_ERROR_LUMA_OVERFLOW		       = 0x201,	    /* to inform host an error occured from IPP HW Block */
+    IPP_CD_ERROR_CHROMA_NOT_X16_BYTES_3BUF = 0x400,	    /* to inform host an error occured from IPP HW Block */
+	IPP_CD_ERROR_CHROMA_NOT_X8_BYTES_2BUF  = 0x401,	    /* to inform host an error occured from IPP HW Block */
+	IPP_CD_ERROR_CHROMA_OVERFLOW		   = 0x402,	    /* to inform host an error occured from IPP HW Block */
+	IPP_CD_CSI2_DPHY_ERROR		           = 0x800,	    /* to inform host an error occured from IPP HW Block */
+	IPP_CD_CSI2_PACKET_ERROR	           = 0x1000,	/* to inform host an error occured from IPP HW Block */
+
+	STBUS_PLUG_ERROR		               = 0x2000,	/* to inform host an error occured from stbus Block */
+
+    ERROR_RECOVERY_FRONT_END               = 0x4001,    /* to inform host a front end error recovery occured */
+    ERROR_RECOVERY_BACK_END                = 0x4002     /* to inform host a back  end error recovery occured */
+};
+/* -ER341188 */
+
+enum e_IPP_CSI2_DPHY_Error {
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_EOT_SYNC_HS_DL1	= 0x0001, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_EOT_SYNC_HS_DL2	= 0x0002, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_EOT_SYNC_HS_DL3	= 0x0004, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_SOT_HS_DL1			= 0x0008, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_SOT_HS_DL2			= 0x0010, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_SOT_HS_DL3			= 0x0020, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_SOT_SYNC_HS_DL1	= 0x0040, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_SOT_SYNC_HS_DL2	= 0x0080, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_SOT_SYNC_HS_DL3	= 0x0100, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_CONTROL_DL1		= 0x0200, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_CONTROL_DL2		= 0x0400, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI0_ERR_CONTROL_DL3		= 0x0800, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI1_ERR_EOT_SYNC_HS_DL1	= 0x1000, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI1_ERR_SOT_HS_DL1			= 0x2000, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI1_ERR_SOT_SYNC_HS_DL1	= 0x4000, /*  */
+	IPP_CSI2_DPHY_ERROR_CSI1_ERR_CONTROL_DL1		= 0x8000U /*  */
+};
+
+enum e_IPP_CSI2_PACKET_Error {
+
+	IPP_CSI2_PACKET_ERROR_CSI2_PACKET_PAYLOAD_CRC_ERROR		= 0x0001, /*  */
+	IPP_CSI2_PACKET_ERROR_CSI2_PACKET_HEADER_ECC_ERROR		= 0x0002  /*  */
+};
+
+enum e_grabDebug {
+	GRBDBG_REGVALUE=0x1,    /* data1 contains adress of register, data2 contains value */
+													 /* debug message contains a register value read through set_debug.readRegister() */
+	GRBDBG_EXECUTE_METHOD					= 0x2,	/* To trace execute method */
+	GRBDBG_ABORT_METHOD						= 0x3,	/* To trace abort method */
+	GRBDBG_SUBSCRIBE_METHOD					= 0x4,	/* To trace subscribe method */
+	GRBDBG_UNSUBSCRIBE_METHOD				= 0x5,	/* To trace unsubscribe method */
+	GRBDBG_GRAB_HANDLE_DMA_EOT_IT_CALLED	= 0x6,	/* To trace grab_dma_eot_it handler */
+	GRBDBG_GRAB_HANDLE_IPP_ERROR_IT_CALLED	= 0x7,	/* To trace grab_handle_ipp_err_it handler */
+	GRBDBG_GRAB_BMS_FRAME_IT_CALLED			= 0x8,	/* To trace Isp_ITM3_handler handler */
+	GRBDBG_STBUS_PLUG_ERROR_IT_CALLED		= 0x9,	/* To trace stbus_plug_error_handler handler */
+    GRBDBG_SET_FRAME_SKIP_METHOD			= 0xa   /* To trace set_frame_skip method */
+};
+
+/* \note: index of pipe ID must be same as bit in IPP_SD_PIPES_OUT_EN */
+enum e_grabPipeID {
+    GRBPID_PIPE_LR 		= 0, 	/**< pipe 1 in HW docs, Low Resolution (max width 1024 pixels). sensor input */
+    GRBPID_PIPE_HR, 			/**< pipe 0 in HW docs, High Resolution (max width 4080 pixels). sensor input */
+    GRBPID_PIPE_RAW_OUT, 		/**< pipe 2a in HW docs (BMS), used for getting data for preprocessing. sensor input */
+    GRBPID_PIPE_RAW_IN, 		/**< pipe 2b in HW docs (BML), used for reinjecting preprocessed data. */
+    GRBPID_PIPE_CAM 			/**< pipe 3 in HW docs, camera input */
+};
+
+enum e_grabFormat {
+    GRBFMT_YUV422_RASTER_INTERLEAVED,      	/**< pipe3 useful for preview and take picture*/
+    GRBFMT_YUV420_RASTER_SEMI_PLANAR,      	/**< pipe3 useful for preview and video record and take picture*/
+    GRBFMT_YUV420_RASTER_PLANAR_I420,      	/**< pipe3 useful for ?*/
+    GRBFMT_YUV420_RASTER_PLANAR_YV12,      	/**< pipe3 useful for ?*/
+    GRBFMT_YUV420_MB_SEMIPLANAR_DECIMATED, 	/**< pipe3 useful for preview and video record*/
+	GRBFMT_JPEG            	                /**< pipe3 useful for JPEG grab (external ISP) */
+};
+
+struct s_grabParams
+{
+    enum e_grabFormat output_format; 	/**< the format the pipe is producing */
+    t_uint16 x_window_size;          	/**< horizontal size of the picture coming from the pipe */
+    t_uint16 y_window_size;          	/**< vertical size of the picture coming from the pipe */
+    t_uint16 x_window_offset;        	/**< horizontal offset for the picture inside a larger buffer, for insertion */
+    t_uint16 y_window_offset;        	/**< vertical offset for the picture inside a larger buffer, for insertion */
+    t_uint16 x_frame_size;           	/**< horizontal size of the larger buffer, for insertion, otherwise must be equal to x_window_size */
+    t_uint16 y_frame_size;           	/**< vertical size of the larger buffer, for insertion, otherwise must be equal to y_window_size */
+    t_uint32 dest_buf_addr;          	/**< address of the buffer to put image in (original address of larger buffer, in case of insertion). Address of source data, in case of BML */
+    t_uint16 buf_id;                 	/**< for DataDependacy accounting */
+    t_uint16 rotation_cfg;         		/**< To validate hw rotation on HR pipe for specific format. Contains if rotation is left or right*/
+    t_uint8 disable_grab_cache;         /**< whether to use Grab Cache method, necessary for eliminating penalties when storing in Macroblock format, and necessary if Stabilization is performed. Incompatible with insertion!*/
+    t_uint32 cache_buf_addr;         	/**< address of width*2*16 bytes-sized internal buffer used for Grab Cache, must be in ESram! */
+    t_uint8 enable_stab;             	/**< whether to enable accumulation curve generation, used by STAB component */
+    t_uint32 proj_h_buf_addr;        	/**< address of buffers used to store 2 horizontal projection curves ('horizontal' is for the curve, not the projection) used for stabilization algorithm. Buffer must be in ESRAM (modified once per pixel) Size=2x2x(width*Word32) bytes (extra x2 multiplier due to implementation problem on 8820 hw)*/
+	t_uint32 proj_v_buf_addr;		 	/**< address of buffer used to store 2 vertical projection curves ('vertical' is for the curve, not the projection) used for stabilization algorithm. Buffer can be placed in DDR (modified once per line). Size=2x(width*Word32) bytes */
+	t_uint32 buffer_size;               /**< used when JPEG is grab via pipe3 (external ISP) */
+    t_uint8 frameSkip;                  /**< used when frame skip is engaged */
+};
+
+#endif /* _grab_types_idt */

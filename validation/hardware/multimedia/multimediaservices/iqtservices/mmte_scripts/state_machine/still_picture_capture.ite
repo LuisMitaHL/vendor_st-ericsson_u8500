@@ -1,0 +1,35 @@
+
+#OMX_SetConfig imgfilter IFM_IndexConfigCommonSaveImage nPortIndex=IMGFILTER_PORT_INPUT_2 Index=0
+OMX_SetConfig imgfilter IFM_IndexConfigCommonSaveImage nPortIndex=IMGFILTER_PORT_INPUT_VPB1_1 Index=0
+OMX_SetConfig my_sink_VPB1_1 OMX_IndexParamFakesinkPathname contentURI=FAKE_SINK_PATH_BACKUP_IMAGE
+OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigIqtCaptureMode nSaveMode=STILL_SAVE_MODE bSaveFrameCount=STILL_SAVE_FRAME_COUNT nSaveFirstFrame=STILL_SAVE_FIRST_FRAME bSaveFrameByFrame=SAVING_FRAME_BY_FRAME
+
+if STILL_SAVE_ACTIVATION == OMX_TRUE
+	OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigCapturing bEnabled=STILL_SAVE_RESOLUTION_RAW
+
+	if STILL_SAVE_RESOLUTION_LR == OMX_TRUE
+		echo LR resolution for STILL not yet available
+	endif
+	if STILL_SAVE_RESOLUTION_HR == OMX_TRUE
+		echo HR resolution for STILL not yet available
+	endif
+
+else
+	OMX_SetConfig my_sink_VPB1_1 OMX_IndexConfigCapturing bEnabled=STILL_SAVE_ACTIVATION
+endif
+
+do $(IMG_SCRIPT)/unitary/features/cam_stillpicture.ite OMX_FALSE SINK_PORT_INPUT SINK_PORT_INPUT
+  
+EventExpected /tmp/Bmp_Saved 20
+
+if STILL_SAVE_ACTIVATION == OMX_TRUE
+	if STILL_SAVE_RESOLUTION_RAW == OMX_TRUE
+		EventExpected /tmp/Raw_Saved_N1 20
+	endif
+endif
+
+echo File_saved
+
+
+
+

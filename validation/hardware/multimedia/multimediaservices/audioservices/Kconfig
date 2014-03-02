@@ -1,0 +1,35 @@
+#
+# Audioservices configuration
+#
+
+menuconfig AUDIOSERVICES
+	bool "Audioservices Configuration"
+	depends on (AB_APE && (AB_LIB_9540 || AB_LIB_X600 || AB_LIB_8500 || AB_LIB_8505))
+	help
+	  This module provides audio tools to control and test Ux500 board
+
+if AUDIOSERVICES
+
+config AUDIOSERVICES_DIR
+	string
+	default ./multimediaservices/audioservices
+
+config AUDIOSERVICES_DEPS
+	string
+	default "AB_APE"
+
+config AUDIOSERVICES_STRIP_DISABLED
+	bool "Disable strip"
+	depends on AUDIOSERVICES
+	default n
+	help
+	  This will disable strip for this module
+
+config AUDIOSERVICES_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on AUDIOSERVICES
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # AUDIOSERVICES

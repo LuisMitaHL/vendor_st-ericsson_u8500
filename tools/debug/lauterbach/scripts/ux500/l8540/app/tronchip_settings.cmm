@@ -1,0 +1,34 @@
+;------------------------------------------------------------
+; tronchip_settings.cmm
+;------------------------------------------------------------
+; Setup catch vector, must be called before sys.mode attach
+;
+;-----------------------------------------------------------
+
+
+; Tronchip settings is lost if CPU selection is changed, make sure CPU is already selected before CPT script is called
+if "&SmpDebug"=="TRUE"
+	sys.cpu DB8540
+else
+(
+	sys.cpu DB8540APE-CORE0
+)
+
+if "&LinuxDebug"=="TRUE"
+(
+TrOnchip.Set DABORT OFF		; used by Linux for page miss!
+TrOnchip.Set PABORT OFF		; used by Linux for page miss!
+TrOnchip.Set UNDEF OFF		; used by Linux
+TrOnchip.Set StepVector OFF	; used by Linux
+TrOnchip.Set SWI OFF		; used by Linux
+)
+else
+(
+TrOnchip.Set DABORT ON
+TrOnchip.Set PABORT ON
+TrOnchip.Set UNDEF ON
+TrOnchip.Set StepVector OFF
+TrOnchip.Set SWI OFF
+)
+
+enddo

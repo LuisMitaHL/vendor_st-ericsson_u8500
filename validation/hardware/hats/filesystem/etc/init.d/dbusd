@@ -1,0 +1,15 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+case $1 in
+start)
+	echo "Starting Dbus"
+	/system/bin/dbus-daemhats --system --nofork &
+	sleep 1
+	;;
+stop)
+	echo "Stopping Dbus..."
+	nkill /system/bin/dbus-daemhats
+	;;
+esac
+
+exit

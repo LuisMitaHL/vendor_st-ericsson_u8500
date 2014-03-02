@@ -1,0 +1,26 @@
+test_start SINKS_801 Avsink Locked when no buffer is exchanged
+
+OMX_GetHandle   renderer_hs OMX.ST.AFM.NOKIA_AV_SINK
+
+OMX_SetParameter    renderer_hs OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+OMX_SendCommand renderer_hs OMX_CommandPortDisable 1
+MMTE_WaitEvent renderer_hs OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SendCommand renderer_hs OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers renderer_hs 0
+MMTE_WaitEvent renderer_hs OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+MMTE_DispatchState OMX_StateExecuting renderer_hs
+MMTE_DispatchState OMX_StateIdle renderer_hs
+
+OMX_SendCommand renderer_hs OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers renderer_hs 0
+MMTE_WaitEvent renderer_hs OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle  renderer_hs
+ens_network_destroy
+MMTE_CheckMemoryStatus
+
+
+test_end

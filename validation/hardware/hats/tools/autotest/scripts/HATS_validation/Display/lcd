@@ -1,0 +1,96 @@
+#!/bin/sh
+# Author: Guillaume Camus
+echo "*****************************************************************************"
+echo "********************************* LCD Display *******************************"
+echo "*****************************************************************************"
+
+# test Display a picture on main LCD:
+echo "*** Step1: Display a picture on main LCD ***"
+VideoTests -m=0 -d=0 -dinit
+VideoTests -m=0 -d=0 -dgprop
+VideoTests -m=0 -d=0 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed corectly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Display a picture on main screen test done" ; LCD1="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Display a picture on main screen test done" ; LCD1="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+
+
+# test Backlight on main screen:
+echo "*** Step2: Backlight on main creen ***"
+echo "!!! Look backlight on main screen !!!"
+BACK=600
+while [ "$BACK" != 0 ]
+do
+	RET=$(VideoTests -m=0 -d=0 -dpwm=$BACK)
+	BACK=`expr $BACK - 3`
+done
+BACK=0
+while [ "$BACK" != 600 ]
+do
+	RET=$(VideoTests -m=0 -d=0 -dpwm=$BACK)
+	BACK=`expr $BACK + 3`
+done
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "Have you seen a change in the backlight of the main screen (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Backlight on main screen test done" ; BACKL1="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Backlight on main screen test done" ; BACKL1="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo "$BACKL1"
+
+
+
+# Ambient Light Sensor
+echo "*** Step 5: Ambient Light Sensor ***"
+AMB=$(VideoTests -m=0 -dgals)
+echo "First measurement: $AMB"
+
+echo "!!! change the ambient light in the room !!!"
+echo "!!! if ambient light in the room is not changed, the test can be failed !!!"
+Flag1=false
+while [ "$Flag1" != "true" ]
+do
+	echo "Ambient light in the room has been changed (y/n) ?"
+	read Resp1
+	if [ "$Resp1" == "y" ]; then
+		Flag1=true
+	else
+		echo "sorry, Ambient light in the room is not changed or your enter is incorrect"
+	fi
+done
+
+AMB2=$(VideoTests -m=0 -dgals)
+echo "second measurement: $AMB2"
+
+if [ "$AMB" != "$AMB2" ]; then
+	AMBL="*** PASSED ***" ; echo "Ambient Light Sensor test done"
+else
+	AMBL="!!! FAILED !!!" ; echo "Ambient Light Sensor test done"
+fi
+echo "$AMBL"
+
+
+
+# Verdict result
+echo " "
+echo "************************************RESULT***********************************"
+echo "Display a picture on main LCD:................................ $LCD1"
+echo "Change Backlight PWM value on the main screen:................ $BACKL1"
+echo "Get Ambient Light Sensor:..................................... $AMBL"
+echo "***********************************TEST END**********************************"

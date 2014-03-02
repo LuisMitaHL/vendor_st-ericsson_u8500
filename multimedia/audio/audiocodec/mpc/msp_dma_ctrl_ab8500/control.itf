@@ -1,0 +1,24 @@
+#include <dma_registers.h>
+#include <msp_registers.h>
+
+interface audiocodec.mpc.msp_dma_ctrl_ab8500.control unmanaged {
+    void start_DMA_MSP(void);
+    void stop_DMA_MSP (void);
+   
+    t_uint16 overrideTxInterruptHandler(void * handler);
+    void     releaseTxInterruptHandler (t_uint16 frame_count);
+   
+    void switchAb8500_FifoWaterMarkHandler(void * handler);
+
+    t_uint32* get_timestamp_address(void);
+    
+    void setMspChannelEnableTx(int mask, int nb_slot);
+    void setMspChannelEnableRx(int mask, int nb_slot);
+
+    void wake_up_save_configuration(void);
+    void wake_up_reconfiguration(void);
+
+
+    t_uint16 msp_dma_getIndex(void);
+    
+}

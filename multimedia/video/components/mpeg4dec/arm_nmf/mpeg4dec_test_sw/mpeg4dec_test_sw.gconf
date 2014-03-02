@@ -1,0 +1,22 @@
+composite mpeg4dec.arm_nmf.mpeg4dec_test_sw
+{
+contains mpeg4dec.arm_nmf.algo                      as  cAlgo
+contains mpeg4dec.arm_nmf.algo_deblock                      as  cAlgoDeblock
+
+// Provided interfaces
+provides mpeg4dec.arm_nmf.api.algo                  as iAlgo
+requires mpeg4dec.arm_nmf.api.end_algo                    as oEndAlgo
+
+provides mpeg4dec.arm_nmf.api.algo_deblock                  as iAlgoDeblock
+requires mpeg4dec.arm_nmf.api.end_algodeblock                    as oEndAlgoDeblock
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo                                      to cAlgo.iAlgo
+binds cAlgo.oEndAlgo to this.oEndAlgo
+
+binds this.iAlgoDeblock                                      to cAlgoDeblock.iAlgoDeblock
+binds cAlgoDeblock.oEndAlgoDeblock to this.oEndAlgoDeblock
+
+option CPPFLAGS " -DCA9 --asm -D__NMF -DINLINE=  -DFORCEINLINE= -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/algo/inc -I$(MMROOT)/video/components/mpeg4dec/arm_nmf/share -I../../../common/inc/ndk8500_ed -I../../../common/inc"  
+
+}

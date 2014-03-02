@@ -1,0 +1,115 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This header is based on files found on Ericsson intranet.
+%
+
+\documentclass[a4paper,11pt]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LaTeX package inclusion and PDFtex-specific stuff
+%% USUALLY, NO NEED TO EDIT THIS 
+
+\usepackage{makeidx}
+
+\usepackage{a4wide}
+\usepackage{tabularx}
+\usepackage{times}            % replace roman fonts by postscript equivs
+\usepackage{helvet}           % replace helvetica fonts by postscript equivs
+\usepackage[latin1]{inputenc} % accept latin1 characters
+\usepackage{ifpdf}            % '\ifpdf' macro to check whether pdftex is used
+
+
+% needed for automatic pdflatex/latex support, not needed if
+% just latex is used:
+\ifpdf
+  \usepackage[pdftex]{graphicx} % graphicx w/ pdf support
+  \usepackage[pdftex,
+              pagebackref=true,
+              colorlinks=true,
+              linkcolor=blue]{hyperref} % hyperref makes useful hyperlinks 
+  \pdfcompresslevel=9
+\else
+  \usepackage[dvips]{graphicx}  % graphicx w/ dvips support
+  \newcommand{\href}[2]{#2}     % pseudo-\href, just prints link text
+\fi
+\usepackage{url}            % typeset URLs (and make link if hyperref is used)
+
+\renewcommand{\familydefault}{\sfdefault} % use \sf as default document font
+
+%%% Doxygen specific commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{CompactList}
+{\begin{list}{}{
+  \setlength{\leftmargin}{0.5cm}
+  \setlength{\itemsep}{0pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\topsep}{0pt}
+  \renewcommand{\makelabel}{}}}
+{\end{list}}
+\newenvironment{CompactItemize}
+{
+  \begin{itemize}
+  \setlength{\itemsep}{-3pt}
+  \setlength{\parsep}{0pt}
+  \setlength{\topsep}{0pt}
+  \setlength{\partopsep}{0pt}
+}
+{\end{itemize}}
+\newcommand{\PBS}[1]{\let\temp=\\#1\let\\=\temp}
+\newlength{\tmplength}
+\newenvironment{TabularC}[1]
+{
+\setlength{\tmplength}
+     {\linewidth/(#1)-\tabcolsep*2-\arrayrulewidth*(#1+1)/(#1)}
+      \par\begin{tabular*}{\linewidth}
+             {*{#1}{|>{\PBS\raggedright\hspace{0pt}}p{\the\tmplength}}|}
+}
+{\end{tabular*}\par}
+\newcommand{\entrylabel}[1]{
+   {\parbox[b]{-4pt}{\makebox[0pt][l]{\textbf{#1}}\\}}}
+\newenvironment{Desc}
+{\begin{list}{}
+  {
+    \settowidth{\labelwidth}{40pt}
+    \setlength{\leftmargin}{\labelwidth}
+    \setlength{\parsep}{0pt}
+    \setlength{\itemsep}{-4pt}
+    \renewcommand{\makelabel}{\entrylabel}
+  }
+}
+{\end{list}}
+\newenvironment{Indent}
+  {\begin{list}{}{\setlength{\leftmargin}{0.5cm}}
+      \item[]\ignorespaces}
+  {\unskip\end{list}}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0.2cm}
+\addtocounter{secnumdepth}{1}
+\sloppy
+\usepackage[T1]{fontenc}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Ericsson document header declarations
+%% CHANGE TO SUIT
+
+%\usepackage[mmo]{eusdoc2}   % ericsson document template, with 'MMO' logo
+\usepackage{eusdoc2}
+
+\eusdocauthor{M/TL/SL Marija Beleska}
+\eusdocapprove{M/TL/S Johan Ekenstierna}
+\eusdocloc{155 19-CXA 110 3348}
+\eusdocrev{A}
+\eusdocfile{LIMITED INTERNAL\\ INTERFACE DESCRIPT}
+\title{Interface Description\\ Loader Security Library}
+
+%%% here we go %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeindex
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+
+

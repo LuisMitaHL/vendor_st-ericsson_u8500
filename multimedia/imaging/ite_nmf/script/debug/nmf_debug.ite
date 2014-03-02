@@ -1,0 +1,50 @@
+# Initialisation
+setusecase LR QVGAPLUS RGB565
+setusecase HR QVGAPLUS YUV422RI
+setusecase BMS VGA RAW12
+bmsmode STILL
+bmsout BAYERSTORE0
+bmlin BAYERLOAD2
+LR prepare
+LR start
+sensormode COLORBAR
+wait 3
+LR stop
+bms prepare
+bms start
+colorbartest BMS
+bms stop
+bml prepare
+bml start
+colorbartest LR 
+colorbartest HR
+bml stop
+bml free
+bms free
+HR free
+LR free
+setusecase LR VGA RGB565
+setusecase HR SUBQCIF YUV422RI
+setusecase BMS VGA RAW8
+bmsmode STILL
+bmsout BAYERSTORE0
+bmlin BAYERLOAD1
+LR prepare
+LR start
+sensormode COLORBAR
+wait 3
+LR stop
+bms prepare
+bms start
+colorbartest BMS
+bms stop
+bml prepare
+bml start
+colorbartest LR 
+colorbartest HR
+bml stop
+bml free
+bms free
+HR free
+LR free
+stopenv

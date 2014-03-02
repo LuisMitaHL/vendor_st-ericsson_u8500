@@ -1,0 +1,209 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/rgb2yuvcoder_post_run_tests.ite
+
+## This test is testing following Rgb2YuvCoder modes in post-run case
+## LR => Transform_e_YCbCr_Rec709_FULL_RANGE 
+##       Transform_e_YCbCr_Custom => Custom signal range, and custom stock matrix 
+## HR => Transform_e_YCbCr_Rec709_FULL_RANGE 
+##       Transform_e_YCbCr_Custom => Custom signal range, and custom stock matrix 
+##
+## BML => Transform_e_YCbCr_Rec709_FULL_RANGE 
+##        Transform_e_YCbCr_Custom => Custom signal range, and custom stock matrix 
+
+LogPE disable
+
+################## Test for HR pipe
+
+# Transform_e_YCbCr_Rec709_FULL_RANGE == 2
+usagemode video
+HR prepare
+HR start
+configure_rgb2yuvcoder 0 2 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+# Transform_e_YCbCr_Custom == 4
+# below stock matrix corresponds to ITU BT REC601
+HR start
+set_custom_stock_matrix 0 0.299 0.587 0.114 -0.169 -0.331 0.5 0.5 -0.419 -0.081
+set_custom_signal_range 0 255 255 255 255
+configure_rgb2yuvcoder 0 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+# Transform_e_YCbCr_Custom == 4
+# below stock matrix corresponds to ITU BT REC709
+HR start
+set_custom_stock_matrix 0 0.2126 0.7152 0.0722 -0.1146 -0.3854 0.5 0.5 -0.4542 -0.0458
+set_custom_signal_range 0 255 255 255 255
+configure_rgb2yuvcoder 0 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+HR start
+set_custom_stock_matrix 0 0.2 0.25 0.55 -0.1 -0.3 0.4 0.6 -0.25 -0.35
+set_custom_signal_range 0 255 255 255 255
+configure_rgb2yuvcoder 0 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+HR start
+set_custom_stock_matrix 0 0.2 0.25 0.55 -0.1 -0.3 0.4 0.6 -0.25 -0.35
+# set a different value of custom signal range
+set_custom_signal_range 0 240 240 220 260
+configure_rgb2yuvcoder 0 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+HR start
+set_custom_stock_matrix 0 0.4 0.5 0.1 -0.2 -0.6 0.8 0.4 -0.15 -0.25
+set_custom_signal_range 0 255 255 255 255
+configure_rgb2yuvcoder 0 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+HR start
+set_custom_stock_matrix 0 0.4 0.5 0.1 -0.2 -0.6 0.8 0.4 -0.15 -0.25
+# set a different value of custom signal range
+set_custom_signal_range 0 240 260 220 260
+configure_rgb2yuvcoder 0 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+
+##
+## Test for LR
+##
+
+## Set YUV usecase for LR pipe. If not set LR pipe is being configured for RGB.
+setusecase LR VGA YUV422RI
+usagemode vf
+################## Test for LR pipe
+# Transform_e_YCbCr_Rec709_FULL_RANGE == 2
+LR prepare
+LR start
+configure_rgb2yuvcoder 1 2 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 1
+LR stop
+
+# Transform_e_YCbCr_Custom == 4
+# below stock matrix corresponds to ITU BT REC601
+LR start
+set_custom_stock_matrix 1 0.299 0.587 0.114 -0.169 -0.331 0.5 0.5 -0.419 -0.081
+set_custom_signal_range 1 255 255 255 255
+configure_rgb2yuvcoder 1 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 1
+LR stop
+
+
+# Transform_e_YCbCr_Custom == 4
+# below stock matrix corresponds to ITU BT REC709
+LR start
+set_custom_stock_matrix 1 0.2126 0.7152 0.0722 -0.1146 -0.3854 0.5 0.5 -0.4542 -0.0458
+set_custom_signal_range 1 255 255 255 255
+configure_rgb2yuvcoder 1 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 1
+LR stop
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+LR start
+set_custom_stock_matrix 1 0.2 0.25 0.55 -0.1 -0.3 0.4 0.6 -0.25 -0.35
+set_custom_signal_range 1 255 255 255 255
+configure_rgb2yuvcoder 1 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 1
+LR stop
+
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+LR start
+set_custom_stock_matrix 1 0.2 0.25 0.55 -0.1 -0.3 0.4 0.6 -0.25 -0.35
+# set a different value of custom signal range
+set_custom_signal_range 1 240 240 220 260
+configure_rgb2yuvcoder 1 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 1
+LR stop
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+LR start
+set_custom_stock_matrix 1 0.4 0.5 0.1 -0.2 -0.6 0.8 0.4 -0.15 -0.25
+set_custom_signal_range 1 255 255 255 255
+configure_rgb2yuvcoder 1 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 1
+LR stop
+
+# Transform_e_YCbCr_Custom == 4
+# test for an arbitrary custom matrix
+LR start
+set_custom_stock_matrix 1 0.4 0.5 0.1 -0.2 -0.6 0.8 0.4 -0.15 -0.25
+# set a different value of custom signal range
+set_custom_signal_range 1 240 260 220 260
+configure_rgb2yuvcoder 1 4 110 200 150 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 1
+LR stop
+
+# Transform_e_YCbCr_JFIF == 0
+HR prepare
+HR start
+configure_rgb2yuvcoder 0 0 100 200 100 200
+echo wait for 2 seconds
+wait 2
+test_rgb2yuvcoder 0
+HR stop
+
+######################################################################
+##  Now test BML
+######################################################################
+################## Test for BML
+## NO BML testing in post-boot case
+
+LR free
+HR free
+
+###############################################################
+##############BRIGHTNESS CONTROL TEST##########################
+###############################################################
+setusecase LR VGA RGB565
+setusecase HR VGA YUV420MB_D
+
+br_control LR 20
+
+br_control HR 20

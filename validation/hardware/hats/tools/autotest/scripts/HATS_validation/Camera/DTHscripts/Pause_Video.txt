@@ -1,0 +1,23 @@
+#DTH script
+#Author: Guillaume Camus
+
+
+#-> Primary Sensor
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+BEGIN Pause_Video
+
+WRITE /VIDEO/Camera/Staticconf/Shot/shotmode 0
+WRITE /VIDEO/Camera/Staticconf/Shot/burstmode 0
+WRITE /VIDEO/Camera/Staticconf/Shot/nFrameLimited 2
+WRITE /VIDEO/Camera/Staticconf/Shot 3
+EXEC /VIDEO/Camera/Staticconf/Shot EXEC /DTH/VIDEO/Camera/Staticconf/Shot
+READ /VIDEO/Camera/Staticconf/Shot/CurrentState  5
+READ /VIDEO/Camera/Staticconf/Shot/shotmode  0
+READ /VIDEO/Camera/Staticconf/Shot/burstmode  0
+READ /VIDEO/Camera/Staticconf/Shot/nFrameLimited  2
+
+END Pause_Video
+#-------------------------------------------------------------------------------------------------------------
+
+

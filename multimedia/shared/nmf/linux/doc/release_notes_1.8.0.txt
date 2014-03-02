@@ -1,0 +1,65 @@
+**************************************************
+* Linux Environment (version 1.8.0) "L'Angelus"  *
+**************************************************
+
+The release comprises one .tgz file holding the following features:
+    - The needed files to develop NMF applications under Linux:
+      (libraries and header)
+    - The binaries to run NMF applications on the target.
+
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/viewvc.php/nmf_linux/tags/release_1_8_0/?roottype=svn&root=nmf
+or
+    http://codex.cro.st.com/svnroot/nmf/nmf_linux/tags/release_1_8_0/
+
+Supported target:
+    - STn8820
+    
+Changes:
+--------
+[CM]
+     For general changes (such as CM API update, etc), see the release notes under
+     doc/nmf
+
+[NMF Linux]
+     * Add locking support in the OSAL for the CM User Proxy.
+     * The CM User Proxy library has been updated due to CM API changes
+       (again, see NMF release notes for detailes)
+     * The LOS has been updated (The unsupported API LOS_NmfGetPowerStatus() has been
+       definitively removed)
+     * Add support to transfer the panic messages from MPC to the user proxy.
+     * Now the Proxy/driver uses two devices:
+       - /dev/cm0 for all control commands (Most of the CM API are passed through this channel)
+       - /dev/cm1 is used only for callback channels.
+
+Bug fixes:
+---------
+[NMF Linux]
+
+Notes
+-----
+- All warnings/errors of the CMUserProxy are logged through syslog in
+  /var/log/user.log
+  => in case of problems, don't forget to have a look in this file.
+- On 8820, STM traces are not started.
+- STn8815-B06 boards are no more supported under linux
+  
+
+Known Issues:
+-------------
+- XTI and STM traces not tested.
+- mop500_ed not supported in this release
+
+Pre-requires:
+-------------
+    - MMENV 1.0.11 or later
+    - Kernel linux 2.6.24_stm23_0024 derived from STLinux 2.3 distribution
+      for target STn8820
+    - Kernel linux 2.6.27 for target STn8500
+    [ Both kernels and their config are provided by Nomadik Multimedia Linux
+      (see codex project 'mmdlinux' and its svn tree under module linux_kernel:
+      the easiest way to access this environment is to use mmtools) ]
+    - GCC ARM compiler 4.2.1 from STLinux 2.3 distribution
+    - The NMF tools are provided in a separate package:
+      nmf_tools package is required to develop NMF applications.
+      

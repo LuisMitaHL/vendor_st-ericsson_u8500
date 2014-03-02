@@ -1,0 +1,90 @@
+# This script sends commands to a Mixer component while playing.
+#
+# Script's arguments:
+#   1: component name
+
+mmte_sleep 2000
+
+#change input 2 volume
+OMX_SetConfig $1 OMX_IndexConfigAudioVolume nPortIndex=2 sVolume.nValue=-900
+mmte_sleep 1000
+
+#change input 1 volume
+OMX_SetConfig $1 OMX_IndexConfigAudioVolume nPortIndex=1 sVolume.nValue=-1200
+mmte_sleep 1000
+
+#restore input 1 volume
+OMX_SetConfig $1 OMX_IndexConfigAudioVolume nPortIndex=1 sVolume.nValue=0
+mmte_sleep 1000
+
+#mute input 1
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_TRUE
+mmte_sleep 1000
+
+#unmute input 1
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_FALSE
+mmte_sleep 1000
+
+#mute input 2
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=2 bMute=OMX_TRUE
+mmte_sleep 1000
+
+#unmute input 2
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=2 bMute=OMX_FALSE
+mmte_sleep 1000
+
+#mute input 1
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_TRUE
+mmte_sleep 1000
+
+
+#set input 1 balance to all left
+#OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=1 nBalance=-100
+#mmte_sleep 1000
+
+#set input 1 balance to all right
+#OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=1 nBalance=100
+#mmte_sleep 1000
+
+#set input 1 balance to middle left
+#OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=1 nBalance=-50
+#mmte_sleep 1000
+
+#set input 1 balance to middle right
+#OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=1 nBalance=50
+#mmte_sleep 1000
+
+#set input 1 balance to center 
+#OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=1 nBalance=0
+#mmte_sleep 1000
+
+
+#set input 2 balance to all left
+OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=2 nBalance=-100
+mmte_sleep 1000
+
+#set input 2 balance to all right
+OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=2 nBalance=100
+mmte_sleep 1000
+
+#set input 2 balance to middle left
+OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=2 nBalance=-50
+mmte_sleep 1000
+
+#set input 2 balance to middle right
+OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=2 nBalance=50
+mmte_sleep 1000
+
+#set input 2 balance to center 
+OMX_SetConfig $1 OMX_IndexConfigAudioBalance nPortIndex=2 nBalance=0
+mmte_sleep 1000
+
+
+#unmute input 1
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=1 bMute=OMX_FALSE
+mmte_sleep 1000
+
+#mute input 2
+OMX_SetConfig $1 OMX_IndexConfigAudioMute nPortIndex=2 bMute=OMX_TRUE
+mmte_sleep 1000
+

@@ -1,0 +1,144 @@
+# Initialisation
+#LogPE disable
+#startenv grab_vpip_display_01_01 _BACKUPFW_LRoutVGA_HRoutVGA_SENSOR0 
+#BMS Video like (whitout stopping pipe, using current sensor output)
+setusecase BMS 8MEGA RAW8
+bmsmode VIDEO
+bmsout BAYERSTORE0
+getusecase
+LR prepare
+LR start
+sensormode SOLIDBAR_YELLOW
+bms prepare
+getusecase
+bms start
+#wait 1
+buffercheck BMS YELLOW
+bms stop
+bms free
+LR stop
+LR free
+# BMS video Like BAYERSTORE 2
+setusecase BMS 8MEGA RAW8
+bmsmode VIDEO
+bmsout BAYERSTORE2
+getusecase
+LR prepare
+LR start
+sensormode SOLIDBAR_YELLOW
+bms prepare
+getusecase
+bms start
+#wait 1
+buffercheck BMS YELLOW
+bms stop
+bms free
+LR stop
+LR free
+#BMS STILL like BAYERSTORE0 (Pipe is stop and restart for BMS, with Full FOV)
+setusecase BMS 8MEGA FASTRAW8
+bmsmode STILL
+bmsout BAYERSTORE0
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+bms prepare
+getusecase
+bms start
+#wait 1
+colorbartest BMS
+bms stop
+bms free
+LR free
+#BMS STILL like BAYERSTORE2 (Pipe is stop and restart for BMS, with Full FOV)
+setusecase BMS 8MEGA FASTRAW8
+bmsmode STILL
+bmsout BAYERSTORE2
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+bms prepare
+getusecase
+bms start
+#wait 1
+colorbartest BMS
+bms stop
+bms free
+LR free
+#BMS Video like (whitout stopping pipe, using current sensor output)
+setusecase BMS 8MEGA RAW12
+bmsmode VIDEO
+bmsout BAYERSTORE0
+getusecase
+LR prepare
+LR start
+sensormode SOLIDBAR_YELLOW
+bms prepare
+getusecase
+bms start
+#wait 1
+buffercheck BMS YELLOW
+bms stop
+bms free
+LR stop
+LR free
+# BMS video Like BAYERSTORE 2
+setusecase BMS 8MEGA RAW12
+bmsmode VIDEO
+bmsout BAYERSTORE2
+getusecase
+LR prepare
+LR start
+sensormode SOLIDBAR_YELLOW
+bms prepare
+getusecase
+bms start
+#wait 1
+buffercheck BMS YELLOW
+bms stop
+bms free
+LR stop
+LR free
+#BMS STILL like BAYERSTORE0 (Pipe is stop and restart for BMS, with Full FOV)
+setusecase BMS 8MEGA FASTRAW12
+bmsmode STILL
+bmsout BAYERSTORE0
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+bms prepare
+getusecase
+bms start
+#wait 1
+colorbartest BMS
+bms stop
+bms free
+LR free
+#BMS STILL like BAYERSTORE2 (Pipe is stop and restart for BMS, with Full FOV)
+setusecase BMS 8MEGA FASTRAW12
+bmsmode STILL
+bmsout BAYERSTORE2
+getusecase
+LR prepare
+LR start
+sensormode COLORBAR
+wait 2
+LR stop
+bms prepare
+getusecase
+bms start
+#wait 1
+colorbartest BMS
+bms stop
+bms free
+LR free
+stopenv

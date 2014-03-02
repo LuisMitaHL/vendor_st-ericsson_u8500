@@ -1,0 +1,82 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: ptm_config.cmm                  #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for debug and SoC configuration on AP9540.
+; Created by HED/CSP/CPT/ACT on 2011-11-08
+; Contact: jingyi-xiaoyan.lu@st.com
+; 2011-11-08: initial version.
+
+&mem_acc_prefix="eahb"
+
+print "Configuring PTM..."
+
+;---------------- GPIO muxing config
+; GPIO 70-77 ALt-C1: PTM_DATA[2316]
+; GPIO 151-168 Alt-C2: PTMCTL, PTMCLK, PTM_DATA[15:0]
+
+data.set &mem_acc_prefix:0x8000E020  %long 0x00003FC0     ;GPIO2_AFSLA altC on GPIO70-77 
+data.set &mem_acc_prefix:0x8000E024  %long 0x00003FC0     ;GPIO2_AFSLB altC on GPIO70-77 
+
+data.set &mem_acc_prefix:0x8000E120 %long  0xFF800000      ;GPIO2_AFSLA altC on GPIO151-159
+data.set &mem_acc_prefix:0x8000E124 %long 0xFF800000      ;GPIO2_AFSLB altC on GPIO151-159
+	
+data.set &mem_acc_prefix:0x8000E1A0 %long 0x000001FF      ;GPIO2_AFSLA altC on GPIO160-168 
+data.set &mem_acc_prefix:0x8000E1A4 %long 0x000001FF      ;GPIO2_AFSLB altC on GPIO160-168 
+
+;-----------------PRCM_GPIOCR config
+
+; -- case1: PTM only 8/16/24 bits
+data.set &mem_acc_prefix:0x80157138 %long d.l(&mem_acc_prefix:0x80157138)|0x00004060  ;[5] DBG_PTM_A9_CMD0: altC1 on GPIO70-77
+                                         		  ;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+					                  ;[14] DBG_PTM_A9_CMD2: altC2 on GPIO153-160
+
+// -- BELOW IS NOT UPDATED FOR 9540 ---
+
+; -- case2: STM MOD (GPIO70-74 probe1/mipi34) + 16 bits PTM
+;data.set &mem_acc_prefix:0x80157138 %long 0x00004841		;[11] DBG_STM_MOD_CMD1: altC3 on GPIO70-74
+                                            ;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+				             ;[14] DBG_PTM_A9_CMD2: altC2 on GPIO153-160
+
+; -- case3: STM MOD (GPIO155-159 probe2) + 8 bits PTM
+;data.set &mem_acc_prefix:0x80157138 %long  0x2040		;[13] DBG_STM_MOD_CMD2: altC1 on GPIO155-GPIO159
+						;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+
+; -- case4: STM APE (GPIO70-74 probe1/mipi34) + 16 bits PTM
+;data.set &mem_acc_prefix:0x80157138 %long 0x4040 	  ;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+				          ;[14] DBG_PTM_A9_CMD2: altC2 on GPIO153-160
+
+; -- case5: STM APE (GPIO155-159 probe2) + 8 bits PTM
+;data.set &mem_acc_prefix:0x80157138 %long 0x40    ;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+
+; -- case6: STM MOD (GPIO70-74, probe1) + STM APE (GPIO155-159, probe2) + 8 bits PTM
+;data.set &mem_acc_prefix:0x80157138 %long 0x840 	; set [11] DBG_STM_MOD_CMD1: altC3 on GPIO70-74
+
+; -- case7: STM APE (GPIO70-74, probe1) + STM MOD (GPIO155-159, probe2)
+;data.set &mem_acc_prefix:0x80157138 %long 0x2000       ;[13] DBG_STM_MOD_CMD2: altC1 on GPIO155-GPIO159
+
+; -- case8: STM APE (GPIO155-159, probe2) + STM MOD (GPIO163-167, probe3)
+; nothing to do for this case because the GPIOs are already in alt-C.
+
+; -- case9: STM APE (GPIO70-74, probe1/mipi34) + STM MOD (GPIO163-167)
+;data.set &mem_acc_prefix:0x80157138 d.l(&mem_acc_prefix:0x80157138)&~0x8975  //clean PRCM_GPIUCR concerning the GPIO70-74 and GPIO163-167
+
+; -- case10: STM APE (GPIO155-159, probe2) + STM MOD (GPIO70-74, probe1) + PTM 8 bits
+;data.set &mem_acc_prefix:0x80157138 %long 0x00000840		;[11] DBG_STM_MOD_CMD1: altC3 on GPIO70-74
+						;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+
+// ------------------------
+
+//print "Checking 8bits port size..."
+//ETM.PortSize 8
+//Analyzer.AutoFocus
+
+//print "Checking 16bits port size..."
+//ETM.PortSize 16
+//Analyzer.AutoFocus
+
+//print "Checking 24bits port size..."
+//ETM.PortSize 24
+//Analyzer.AutoFocus /alternate
+
+enddo

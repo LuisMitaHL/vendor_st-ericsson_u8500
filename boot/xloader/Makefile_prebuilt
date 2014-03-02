@@ -1,0 +1,14 @@
+
+build :
+	@echo dummy >>/dev/null
+
+.PHONY: install
+install: XLOADERBINPATH := $(PRIVATE_OUT_DIR)/boot/bootimages
+
+install:
+	@echo "copy xloader to "$(XLOADERBINPATH)
+	$(if $(wildcard $(XLOADERBINPATH)),,mkdir -p $(XLOADERBINPATH);) \
+	cp -f ./*.bin $(XLOADERBINPATH)
+clean:
+	@echo "all is done"
+

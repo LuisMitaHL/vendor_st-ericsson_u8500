@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema targetNamespace="http://www.stericsson.com/refman/ste-uml-export.xsd" elementFormDefault="qualified" xmlns="http://www.stericsson.com/refman/ste-uml-export.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- The ste-uml-export element -->
+  <xs:element name="ste-uml-export">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="export-meta-data" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="interfaces" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="drivers" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The export-meta-data element -->
+  <xs:element name="export-meta-data">
+    <xs:complexType>
+      <xs:attribute name="date" use="optional" />
+      <xs:attribute name="time" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The interfaces element -->
+  <xs:element name="interfaces">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="interface" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="drivers">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="driver" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The interface element -->
+  <xs:element name="interface">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="platforms" minOccurs="1" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" />
+      <xs:attribute name="package" use="optional" />
+      <xs:attribute name="stack" use="optional" />
+      <xs:attribute name="guid" use="optional" />
+      <xs:attribute name="classification" use="optional" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Standard" />
+            <xs:enumeration value="Proprietary" />
+            <xs:enumeration value="ProprietaryExtension" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The interface element -->
+  <xs:element name="driver">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="platforms" minOccurs="1" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="name" use="required" />
+      <xs:attribute name="package" use="optional" />
+      <xs:attribute name="stack" use="optional" />
+      <xs:attribute name="guid" use="optional" />
+      <xs:attribute name="kerneldocbookfilename" use="optional" />
+      <xs:attribute name="classification" use="optional" >
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="Standard" />
+            <xs:enumeration value="Proprietary" />
+            <xs:enumeration value="ProprietaryExtension" />
+            <xs:enumeration value="FOSSClosed" />
+            <xs:enumeration value="NonCompliantProprietaryExtension" />
+            <xs:enumeration value="" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The platforms element -->
+  <xs:element name="platforms">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="platform" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- The platform element -->
+  <xs:element name="platform">
+    <xs:complexType>
+      <xs:attribute name="name" use="required" />
+      <xs:attribute name="interface_internal_only" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="yes" />
+            <xs:enumeration value="no" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="part_of" use="optional">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="1" />
+            <xs:enumeration value="0" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

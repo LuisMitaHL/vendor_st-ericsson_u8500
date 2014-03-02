@@ -1,0 +1,10 @@
+type fsm.controller.armnmf_controller
+
+// To/From host
+provides    fsminit                 as      fsminit
+provides    sendcommand             as      sendcommand
+requires    eventhandler            as      proxy
+
+// To/From binded controllers
+requires    eventhandler            as      controllers_output[2] optional
+provides    eventhandler            as      controllers_input[2] prefix controllers_

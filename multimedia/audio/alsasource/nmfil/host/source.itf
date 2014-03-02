@@ -1,0 +1,36 @@
+#include <samplefreq.idt>
+#include <armnmf_buffer.idt>
+
+typedef struct {
+  t_bool enabled;
+  t_uint32 id;
+} alsasource_pcmprobe_config_t;
+
+typedef struct {
+  t_uint32 sample_rate;
+  t_uint16 nof_channels;
+  t_uint16 nof_bits_per_sample;
+  t_uint16 block_size;
+  t_bool endian_little;
+  t_bool interleaved;
+  t_bool numerical_data_signed;
+  alsasource_pcmprobe_config_t pcmprobe_cfg[1];
+} alsasource_config_t;
+
+typedef enum {
+  SOURCE_RESET_REASON_STOP,
+  SOURCE_RESET_REASON_EOS,
+  SOURCE_RESET_REASON_FLUSH,
+  SOURCE_RESET_REASON_COUNT // Last value
+} t_alsasource_reset_reason;
+
+typedef struct {
+  OMX_BUFFERHEADERTYPE_p buf_hdr;
+} t_alsasource_process_params;
+
+interface alsasource.nmfil.host.source {
+  t_bool open(const alsasource_config_t *config);
+  void reset(t_alsasource_reset_reason reason);
+  t_bool process(t_alsasource_process_params* params);
+  void close(void);
+}

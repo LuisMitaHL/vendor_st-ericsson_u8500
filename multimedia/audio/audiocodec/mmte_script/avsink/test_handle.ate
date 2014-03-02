@@ -1,0 +1,12 @@
+test_start SINKS_101 avsink Test Handle
+
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+mmte_sleep 1000
+
+OMX_FreeHandle   renderer 
+MMTE_CheckMemoryStatus
+
+test_end

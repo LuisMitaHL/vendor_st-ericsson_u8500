@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ *
+ * \brief   Internal common data definitions shared by multi-processors (HOST and MPC)
+ * \author  ST-Ericsson
+ */
+
+#ifndef _VFM_DSP_COMMON_H_
+#define _VFM_DSP_COMMON_H_
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vec.idt>
+#include <t1xhv_vec_mpeg4.idt>
+#include <vfm_common.idt>
+
+typedef struct
+{
+	t_uint16 profile;		//< simple profile 0, asp 1
+	t_uint16 level;			// L0, 0 .... L6, 6
+	t_ulong_value no_of_p_frames;            /**<\brief No. of P Frames between I frames     */
+	t_uint16 buffering_model;            /**<\brief FIXME reserved  32   */
+	t_uint16 reserved1;
+	t_ulong_value swis_buffer;            /**<\brief FIXME reserved  32   */
+	t_ulong_value vbv_occupancy;            /**<\brief FIXME reserved  32   */
+	t_ulong_value vbv_buffer_size;
+	t_uint16 IPictureQp;
+	t_uint16 PPictureQp;
+	t_uint16 spatial_quality;
+	t_uint16 force_intra;
+	t_uint16 atomic_count;
+	t_ulong_value color_primary;
+	t_uint16 par_horizontal;
+	t_uint16 par_vertical;
+	t_uint16 short_dci_enable;
+
+} ts_ddep_vec_mpeg4_custom_param_in;
+
+/* to be moved to vfm_vec_jpec.h */
+typedef struct
+{
+	ts_t1xhv_vec_frame_buf_in		s_in_frame_buffer;
+	ts_t1xhv_vec_frame_buf_out      s_out_fram_buffer;
+	ts_t1xhv_vec_internal_buf       s_internal_buffer;
+	ts_t1xhv_vec_header_buf 		s_header_buf;
+	ts_t1xhv_bitstream_buf_pos      s_in_out_bitstream_buffer; 
+	ts_t1xhv_bitstream_buf_pos      s_out_bitstream_buffer;
+	ts_t1xhv_vec_mpeg4_param_in     	s_in_parameters;       
+	ts_t1xhv_vec_mpeg4_param_out    	s_out_parameters;      
+	ts_t1xhv_vec_mpeg4_param_inout  	s_in_out_frame_parameters; 
+	ts_t1xhv_vec_mpeg4_param_inout  	s_out_frame_parameters;
+	ts_ddep_vec_mpeg4_custom_param_in	s_in_custom_parameters;
+	ts_ddep_perf_param_out				s_out_perf_parameters;
+} ts_ddep_vec_mpeg4_param_desc;
+
+typedef ts_ddep_vec_mpeg4_param_desc *tps_ddep_vec_mpeg4_param_desc;
+
+//\typedef ts_ddep_vec_mpeg4_custom_param_desc *tps_ddep_vec_mpeg4_custom_param_desc;
+
+typedef struct
+{
+	ts_ddep_vec_mpeg4_param_desc mpc_param_set; /*keep this at first place*/
+	ts_ddep_vec_mpeg4_param_desc host_param_set;
+	ts_ddep_vec_mpeg4_param_desc tmp_param_set;
+	t_uint16 host_param_set_atomic_entry;
+	t_uint16 host_param_set_atomic_exit;
+	t_uint16 reserved[6];
+} ts_ddep_vec_mpeg4_param_desc_dh;
+
+typedef ts_ddep_vec_mpeg4_param_desc_dh *tps_ddep_vec_mpeg4_param_desc_dh;
+
+typedef t_uint48 t_sva_timestamp_value;
+
+#endif // _VFM_COMMON_IDT_
+

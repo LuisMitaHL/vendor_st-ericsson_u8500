@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_imaging/nmx=bin
+NO_STD_BUILD_imaging/nmx=1
+BUILD_MMDSP_NMF_imaging/nmx=bin
+BUILD_ARM_PROC_imaging/nmx=bin
+BUILD_ARM_CODE_imaging/nmx=bin
+BUILD_ARM_NMF_imaging/nmx=bin
+BUILD_XP70_SIA_CODE_imaging/nmx=false

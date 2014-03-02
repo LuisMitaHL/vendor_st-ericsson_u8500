@@ -1,0 +1,19 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#include <tuningloader_types.idt>
+
+interface tuningloader.api.sync
+{
+    t_bool      hasFirmwareTuning();
+    t_bool      hasNvmTuning();
+    t_bool      hasImageQualityTuning();
+    t_bool      hasFlashTuning();
+    const char* cameraConfigFileName();
+    const char* flashConfigFileName();
+    const char* errorCode2String(t_tuningloader_error err);
+}

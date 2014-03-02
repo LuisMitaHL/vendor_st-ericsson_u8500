@@ -1,0 +1,19 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE -DUNIX \
+          -Ieffect/include
+
+ifdef DRC_DEBUG
+CXXFLAGS+=-g -O0
+CPPFLAGS+=-DNMF_DRC_DEBUG
+endif
+
+ITFS_HEADER+= drc.nmfil.host.effect.configure
+
+COMPONENTS= drc.nmfil.host.composite.effect
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

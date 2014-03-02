@@ -1,0 +1,140 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/stats_with_zoom.ite
+LogPE disable
+setusecase default
+# For LR Pipe
+setusecase LR SUBQCIF YUV422RI
+# For HR Pipe
+setusecase HR SUBQCIF YUV420MB_D
+# For BMS
+bmsmode STILL
+bmsout BAYERSTORE2
+setusecase BMS MODE0 RAW12
+
+# Optional
+manualfps 20
+
+StatAndZoomHelp
+
+# ------------------------------------------------
+# ------- first test : Stats Default Test --------
+# ------------------------------------------------
+
+## StatTest: Toggles system coin and waits for glace event.
+## StatTest[Syntax]: StatTest <HR|LR|BMS> <cancel_flag=0>
+
+StatTest HR  0
+StatTest LR  0
+StatTest BMS 0
+
+
+# ------------------------------------------------
+# ------- second test : Stats Cancel Test --------
+# ------------------------------------------------
+
+## AECStatCancelTest: Toggles system coin and issues Rx Stop. Checks whether stats are invalid.
+## AECStatCancelTest[Syntax]: AECStatCancelTest <HR|LR|BMS> <cancel_flag=<0|1>>
+
+AECStatCancelTest HR  0
+AECStatCancelTest LR  0
+AECStatCancelTest BMS 0
+
+AECStatCancelTest HR  0
+AECStatCancelTest LR  0
+AECStatCancelTest BMS 0
+
+AECStatCancelTest HR  1
+AECStatCancelTest LR  1
+AECStatCancelTest BMS 1
+
+# ------------------------------------------------
+# ------- third test : Stats Cancel Test ---------
+# ------------------------------------------------
+
+## AFStatCancelTest: Toggles system coin and issues Rx Stop. Checks whether stats are invalid
+## AFStatCancelTest[Syntax]: AFStatCancelTest <HR|LR> <cancel_flag=<0|1>>
+
+AFStatCancelTest HR  0
+AFStatCancelTest LR  0
+
+AFStatCancelTest HR  0
+AFStatCancelTest LR  0
+
+AFStatCancelTest HR  1
+AFStatCancelTest LR  1
+
+# ------------------------------------------------
+# ------- Fourth test : StatAndZoomTest ----------
+# ------------------------------------------------
+
+## StatAndZoomTest: Sends Stats and Zoom commands together. If zoom arguements are given prior to Stat arguements,
+## then Zoom coin is toggled, and vice-versa.
+## StatAndZoomTest[Syntax]: StatAndZoomTest <HR|LR> <stop|run> <[<zoom zoom_factor> <stat>] | [<stat> <zoom zoom_factor>]>
+
+StatAndZoomTest HR run zoom 2 stat
+StatAndZoomTest LR run stat zoom 2
+StatAndZoomTest HR stop zoom 3 stat
+StatAndZoomTest LR stop stat zoom 3
+StatAndZoomTest BMS stop zoom 4 stat
+StatAndZoomTest BMS stop stat zoom 4
+
+
+# --------------------------------------------------------------
+# --  Fifth test [Stress test]: Start-Stat Request-Stop Test ---
+# --------------------------------------------------------------
+StatTest HR  0
+StatTest HR  0
+StatTest HR  0
+
+StatTest LR  0
+StatTest LR  0
+StatTest LR  0
+
+StatTest BMS 0
+StatTest BMS 0
+StatTest BMS 0
+
+AECStatCancelTest HR 0
+AECStatCancelTest HR 1
+AECStatCancelTest HR 0
+AECStatCancelTest HR 0
+AECStatCancelTest HR 0
+
+AECStatCancelTest LR 0
+AECStatCancelTest LR 0
+AECStatCancelTest LR 0
+AECStatCancelTest LR 0
+AECStatCancelTest LR 0
+
+AECStatCancelTest BMS 0
+AECStatCancelTest BMS 0
+AECStatCancelTest BMS 0
+AECStatCancelTest BMS 1
+AECStatCancelTest BMS 0
+
+AECStatCancelTest HR  0
+AECStatCancelTest LR  1
+AECStatCancelTest BMS 0
+AECStatCancelTest HR  1
+AECStatCancelTest LR  0
+AECStatCancelTest BMS 0
+AECStatCancelTest HR  0
+AECStatCancelTest LR  1
+
+AFStatCancelTest HR 0
+AFStatCancelTest HR 1
+AFStatCancelTest HR 0
+AFStatCancelTest HR 0
+AFStatCancelTest HR 0
+
+AFStatCancelTest LR 1
+AFStatCancelTest LR 0
+AFStatCancelTest LR 0
+AFStatCancelTest LR 0
+AFStatCancelTest LR 1
+
+AFStatCancelTest HR 0
+AFStatCancelTest LR 0
+AFStatCancelTest HR 1
+AFStatCancelTest LR 0
+AFStatCancelTest HR 0
+AFStatCancelTest LR 1

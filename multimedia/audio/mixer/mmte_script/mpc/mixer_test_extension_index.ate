@@ -1,0 +1,20 @@
+test_start Test_for_extension_index
+
+#instantiate mixer
+OMX_GetHandle    mixer OMX.ST.AFM.mixer
+
+
+OMX_SetConfig mixer OMX.Symbian.Index.Config.Audio.PortPause nPortIndex=1 bIsPaused=OMX_TRUE
+OMX_GetConfig 0 mixer OMX.Symbian.Index.Config.Audio.DataAmount nPortIndex=0
+
+OMX_FreeHandle mixer
+
+
+mmte_check_CBmessage
+
+MMTE_CheckMemoryStatus
+
+
+
+test_end
+

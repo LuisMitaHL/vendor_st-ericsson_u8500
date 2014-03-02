@@ -1,0 +1,212 @@
+;------------------------------------------------------------
+; etm_settings.cmm
+;------------------------------------------------------------
+; Startup file to setup etm settings
+;
+; 091207 - KM Initial version
+; 111202 - PDE update for 9540
+;-----------------------------------------------------------
+
+
+local &gpio_en
+
+if analyzer()
+(
+
+	if !run()
+	(
+		;APE A9 PTM 24bits
+		;PTM_A9_CTL at GPIO151 altC2
+		;PTM_A9_CLK at GPIO152 altC2
+		;PTM_A9_D15..D0 at GPIO153-GPIO168 altC2
+		;PTM_A9_D23..D16 at GPIO70-GPIO77 altC2
+		;GPIO64-GPIO95 is configured at 0x8000E000--0x8000E07F
+		;GPIO128-GPIO159 is configured at 0x8000E100--0x8000E17F
+		;GPIO160-GPIO171 is configured at 0x8000E180--0x8000E1FF
+		;SLPM = sleep mode register, at offset 0x1C
+		;AFSLA = alternative function select A register, at offset 0x20
+		;ALSLB = alternative function select B register, at offset 0x24
+
+
+;#############################################################################
+;#	Configure GPIOs to outpout PTM
+;#############################################################################
+
+	if ID.PREPRO()==70			;LA-7991
+	(
+
+		warning " DB9540 trace can content error with LA-7991 at max frequency"
+
+	)
+	if (ID.PREPRO()==70)||(ID.PREPRO()==71)	;LA-7992
+	(
+		&prcmu_per3clk=data.long(eahb:0x80157034)
+		;Enable clock
+		data.set AD:0x80157034 %LONG 0x12C		; force enable PER3CLK
+		if ((data.long(eahb:0x8000F010)&0x100)!=0x100)
+		(
+			;force GPIOCTRL clock = PRCC_PCKEN : CLK_P3_GPIOCTRL = 1 (bit 8)
+			data.set eahb:0x8000F000 %long 0x100	; Enable bus clock (GPIO)
+			&gpio_en="TRUE"
+		)
+
+		if ("&EtmPortSize"=="")
+			&EtmPortSize=8.
+
+		if ("&EtmPortSize"=="8.")
+		(
+			data.set A:0x8000E120 %LE %LONG d.l.le(A:0x8000E120)|0x01800000 ;GPIO2_AFSLA altC2 on GPIO151-152
+			data.set A:0x8000E124 %LE %LONG d.l.le(A:0x8000E124)|0x01800000 ;GPIO2_AFSLB altC2 on GPIO151-152
+			data.set A:0x8000E11C %LE %LONG d.l.le(A:0x8000E11C)|0x01800000 ;SLPM on GPIO151-152
+
+			data.set A:0x8000E1A0 %LE %LONG d.l.le(A:0x8000E1A0)|0x000001FE	;GPIO2_AFSLA altC2 on GPIO161-168
+			data.set A:0x8000E1A4 %LE %LONG d.l.le(A:0x8000E1A4)|0x000001FE ;GPIO2_AFSLB altC2 on GPIO161-168
+			data.set A:0x8000E19C %LE %LONG d.l.le(A:0x8000E19C)|0x000001FE ;SLPM on GPIO161-168
+
+			;PRCMU_GPIOCR GPIO muxing control register
+			;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+			data.set A:0x80157138 %LE %LONG d.l.le(A:80157138)|0x00000040
+
+		)
+		else if "&EtmPortSize"=="16."
+		(
+			data.set A:0x8000E120 %LE %LONG d.l.le(A:0x8000E120)|0xFF800000 ;GPIO2_AFSLA altC2 on GPIO151-159
+			data.set A:0x8000E124 %LE %LONG d.l.le(A:0x8000E124)|0xFF800000 ; GPIO2_AFSLB altC2 on GPIO151-159
+			data.set A:0x8000E11C %LE %LONG d.l.le(A:0x8000E11C)|0xFF800000 ;SLPM on GPIO151-159
+
+			data.set A:0x8000E1A0 %LE %LONG d.l.le(A:0x8000E1A0)|0x000001FF	;GPIO2_AFSLA altC2 on GPIO160-168
+			data.set A:0x8000E1A4 %LE %LONG d.l.le(A:0x8000E1A4)|0x000001FF ;GPIO2_AFSLB altC2 on GPIO160-168
+			data.set A:0x8000E19C %LE %LONG d.l.le(A:0x8000E19C)|0x000001FF ;SLPM on GPIO160-168
+
+			;PRCMU_GPIOCR GPIO muxing control register
+			;[6] DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+			;[14] DBG_PTM_A9_CMD2: altC2 on GPIO153-160
+			data.set A:0x80157138 %LE %LONG d.l.le(A:80157138)|0x00004040
+
+		)
+		else if "&EtmPortSize"=="24."
+		(
+			data.set A:0x8000E020 %LE %LONG d.l.le(A:0x8000E020)|0x00003FC0 ;GPIO2_AFSLA altC1 on GPIO70-77
+			data.set A:0x8000E024 %LE %LONG d.l.le(A:0x8000E024)|0x00003FC0 ;GPIO2_AFSLB altC1 on GPIO70-77
+			data.set A:0x8000E01C %LE %LONG d.l.le(A:0x8000E01C)|0x00003FC0 ;SLPM on GPIO70-77
+
+			data.set A:0x8000E120 %LE %LONG d.l.le(A:0x8000E120)|0xFF800000 ;AFSLA altC2 on GPIO151-159
+			data.set A:0x8000E124 %LE %LONG d.l.le(A:0x8000E124)|0xFF800000 ;AFSLB altC2 on GPIO151-159
+			data.set A:0x8000E11C %LE %LONG d.l.le(A:0x8000E11C)|0xFF800000 ;SLPM on GPIO151-159
+
+			data.set A:0x8000E1A0 %LE %LONG d.l.le(A:0x8000E1A0)|0x000001FF ;GPIO2_AFSLA altC2 on GPIO160-168
+			data.set A:0x8000E1A4 %LE %LONG d.l.le(A:0x8000E1A4)|0x000001FF ;GPIO2_AFSLB altC2 on GPIO160-168
+			data.set A:0x8000E19C %LE %LONG d.l.le(A:0x8000E19C)|0x000001FF ;SLPM on GPIO160-168
+
+			;PRCMU_GPIOCR GPIO muxing control register
+			;1=>[5]  DBG_PTM_A9_CMD0: altC1 on GPIO70-77
+			;1=>[6]  DBG_PTM_A9_CMD1: altC2 on GPIO151-152 & 161-168
+			;1=>[14] DBG_PTM_A9_CMD2: altC2 on GPIO153-160
+			; deactivate STM trace for MODEM
+			;0=>[0]  DBG_UARTMOD_CMD0: altC3 on GPIO75_76
+			;0=>[11] DBG_STM_MOD_CMD1: altC3 on GPIO70-74
+			data.set A:0x80157138 %LE %LONG (d.l.le(A:80157138)&~0x00000801)|0x00004060
+		)
+		else
+		(
+			print "etm_settings.cmm: EtmPortSize=&EtmPortSize not supported"
+			enddo
+		)
+
+		;Disable clock
+		if "&gpio_en"=="TRUE"
+		(
+			;Periph3 PRCC settings
+			data.set eahb:0x8000F004 %long 0x00000100	; Disable bus clock (GPIO)
+		)
+		data.set AD:0x80157034 %LONG &prcmu_per3clk		; reset PER3CLK
+
+		etm.portmode CONTINUOUS
+
+
+	)
+	else
+	(
+		print "etm_settings.cmm: ID.PREPRO() not supported"
+		enddo
+	)
+	print "trace port = &EtmPortSize"
+
+	;Setup etm clock
+	&APETRACECLK=d.l.le(A:0x80157060)
+	&APETRACECLK_OP1=&APETRACECLK
+	if "&EtmTraceClk"=="Default"
+	(
+		if ((&APETRACECLK&0x1F)>=6)
+		(
+			print "APETRACECLK : keep default (OPP 50% detected)"
+			// autofocus on OP1 : frequency multiply by 2
+			&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|((&APETRACECLK&0x1F)>>1)
+		)
+		else
+		(
+			print "APETRACECLK : keep default"
+		)
+	)
+	else if "&EtmTraceClk"=="200MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0x4 ; Divide 800 Mhz by 4
+	else if "&EtmTraceClk"=="160MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0x5 ; Divide 800 Mhz by 5
+	else if "&EtmTraceClk"=="133MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0x6 ; Divide 800 Mhz by 6
+	else if "&EtmTraceClk"=="80MHz"
+		&APETRACECLK_OP1=(&APETRACECLK&~0x1F)|0xA ; Divide 800 Mhz by 10
+	else
+	(
+		print "unknown EtmTraceClk=&EtmTraceClk"
+	)
+	&APETRACECLK_DIV=800./(&APETRACECLK_OP1&0x1F)
+	print "APETRACECLK : &APETRACECLK_DIV MHz"
+	data.set A:0x80157060 %LE %LONG &APETRACECLK_OP1
+
+	trace.method analyzer
+	if "&EtmPortSize"!=""
+		etm.portsize &EtmPortSize
+	else
+		etm.portsize 8.
+
+	etm.traceid 1.
+	etm.tracepriority 1.
+	etm.contextid 32.
+
+	t.disable	;Disable trace during a.af since execution could be running
+
+	// autofocus on OP1 : max frequency
+	a.af
+
+	// autofocus on OP2 : frequency divided by 2
+	&APETRACECLK_OP2=(&APETRACECLK_OP1&~0x1F)|((&APETRACECLK_OP1&0x1F)<<1)
+	data.set A:0x80157060 %LE %LONG &APETRACECLK_OP2
+	a.af /accumulate
+
+	// restore OP1 frequency
+	data.set A:0x80157060 %LE %LONG &APETRACECLK_OP1
+
+	if "&EtmApp"=="False"
+		etm.off
+	else
+		etm.on
+
+	t.init
+
+	t.arm
+
+	if ("&LinuxDebug"=="TRUE")
+	(
+		; perhaps need to force STM deactivation for APE and MODEM
+		; V mipi60 = "none"
+		; V mipi34 = "none"
+	)
+	)
+	else
+	(
+		print "Can't run this script while the CPU is running"
+	)
+)
+
+enddo

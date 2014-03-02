@@ -1,0 +1,19 @@
+menu.rp
+(
+	add
+	menu
+	(
+		POPUP "L8540"
+		(
+			menuitem "RELOAD" "do scripts/init [L8540_XMIP_DCPU]"
+			menuitem "palladium XMIP DCPU attach on running target"
+			(
+				do init_8540_XMIP v1 palladium attach dcpu default
+			)
+			menuitem "palladium XMIP DCPU reset"
+			(
+				do init_8540_XMIP v1 palladium up+dbg_thr_reset+waitboot500ms dcpu default
+			)
+		)
+	)
+)

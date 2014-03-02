@@ -1,0 +1,49 @@
+This project uses GNU Make project (http://www.gnu.org/software/make/). In order to build OS dependent shared library used in java project you need to use platform specific Makefile. It's good to be aware of fact that because of cross platform portability libusb API compliant with version 0.1.x.x has to be used on both platforms. 
+
+Makefiles under jni folder in bundle root:
+
+1. Makefile-windows
+    This file defines windows OS dependent settings and handle some pre-build actions. To build shared library (libusb_jni.dll) successfuly Microsoft compiler is needed. From this makefile is internally called Makefile-core which handles common rules like build, clean_build, install etc. It's possible to create build without installed libusb driver in OS. For running application using libusb_jni.dll dependency to libusb driver dll must be satisfied. This is the reason for need to install libusb drivers if you want to run application which is loading libusb_jni.dll.
+    
+  1.1 Prerequisites:
+    It's highly recommended to check if Microsoft compiler is present and available for example by typing 'cl /?' on CLI. If message about not recognized command appears you haven't set appropriate environment and build will not successed.
+
+    Note: If you are sure that compiler is present in the system you probably need to only set appropriate C/C++ environment. This you can do by calling batch file often stored under bin subfolder of your .NET or Visual Studio. Batch file is mostly named VCVARS32.BAT or similary.
+    
+  1.2 Installing libusb drivers
+    The simplest way how to do it is to use libusb driver filter installer which you can find under libusb_win32 in project root. If you want to use ME with libusb you have to register libusb driver for your device. You can find some of them (for U335 and U380) under libusb_win32\drivers in project root. Under libusb_win32 in project root you can find some *.tar.gz files which containes source files and binaries for libusb as well as some useful utilities for producing inf files etc. For more information see project webpage: http://libusb-win32.sourceforge.net/.
+
+2. Makefile-linux
+    This file defines linux OS dependent settings and handle some pre-build actions. To build shared library (libusb_jni.so) successfuly g++ compiler is needed as well as libusb driver installed in your linux. From this makefile is internally called Makefile-core which handles common rules like build, clean_build, install etc. 
+
+  2.1 Prerequisites:
+    To be able to build shared library libusb drivers must be installed in OS, for more information see following section 2.2.
+    
+  2.2 Installing libusb drivers
+    You can use driver stored under libusb_linux in project root or download new one compliant with API in version 0.1.x.x. Unpack driver tar.gz file and call with administrator right following:
+     -> sudo ./configure
+     -> sudo make
+     -> sudo make install     
+  
+3. Makefile-core
+    This file defines common tasks which are platform independent but intended to call only from platform dependent makefiles (see section 1. and 2. above). All targets defined in this file could be called within platform dependent files. See section 4. using build files.
+    
+4. Using build files
+  After build all files are stored under appropriate subfolder under jni/build in bundle root.
+  Recomended building procedure is following:
+    -> make -f Makefile-[platform]
+    -> make -f Makefile-[platform] install
+
+  4.1 Platform dependent building:
+    make -f Makefile-[platform] [target]
+    
+  4.2 Targets
+    4.2.1 'clean_build' - default target which will do exactly what saying. Clean all previously build files and build again from scratch.
+    
+    4.2.2 'build' - do only incremental building what means that will rebuild only changed files and of course produce shared library.
+    
+    4.2.3 'clean' - these target is used internally when doing clean_build but could be explictly called for cleaning appropriate subfolders under build in project root.
+    
+    4.2.4 'install' - this target depends on incremental build and serves for deploying shared library into appropriate java project which is using libusb_jni. If environment variable ${DIST_DIR} is defined in the OS it will be used in this target otherwise default location (java folder under project root) will be used.
+    
+    4.2.5 'uninstall' - it's mirrored target to 'install' which will remove deployed shared library from either default location or location pointed by ${DIST_DIR}.

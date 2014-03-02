@@ -1,0 +1,35 @@
+#
+# TatlVideo configuration
+#
+
+menuconfig TATLVIDEO
+	bool "TatlVideo"
+	depends on DTHSRVHELPER && TATLIQTUNING && TATTOOLS && VIDEOSERVICES && CAMERASERVICES
+	help
+	  depends on DTHSRVHELPER, TATLIQTUNING, TATTOOLS, VIDEOSERVICES and CAMERASERVICES
+
+if TATLVIDEO
+
+config TATLVIDEO_DIR
+	string
+	default ../tat/tat/tatlvideo
+
+config TATLVIDEO_DEPS
+	string
+	default "DTHSRVHELPER TATLIQTUNING TATTOOLS VIDEOSERVICES CAMERASERVICES"
+
+config TATLVIDEO_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLVIDEO
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLVIDEO_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLVIDEO
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLVIDEO

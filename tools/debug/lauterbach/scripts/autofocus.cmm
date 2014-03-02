@@ -1,0 +1,32 @@
+
+
+if "&LinuxDebug"=="TRUE"
+(
+	&i=0
+	a.af
+	while &i<5
+	( 
+	  a.tf /accumulate
+	  &i=&i+1
+	)
+)
+else
+(
+	&i=0
+	a.af 0++1000
+	while &i<5
+	( 
+	  a.tf 0++1000 /accumulate
+	  &i=&i+1
+	)
+)
+;Check if maximum frequency
+diag 0x4006 0x03
+&tmp=DIAG.Value(1)
+&frequency=(&tmp&0xFFFF0000)>>16.
+
+;ETM frequency should be half CPU frequency(208/2=104MHz)
+if &frequency!=104.
+	dialog.ok "Your CPU might not be running on maximum frequency(208 MHz). It is important that it is when autofocus is used, otherwise trace might fail if running faster than the current speed."
+enddo 
+ 

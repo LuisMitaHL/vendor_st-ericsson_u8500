@@ -1,0 +1,14 @@
+type common.dma 
+
+requires audiocodec.mpc.msp_dma_controller.control  as mspDmaControl       static
+requires audiocodec.mpc.host_reg.control            as hostReg             static
+requires osttrace.api.osttrace                      as osttrace            static
+
+provides common.configure                           as configure
+
+
+
+requires    rtos.api.panic          as      panic static
+provides    postevent               as      postevent
+requires    postevent               as      me
+

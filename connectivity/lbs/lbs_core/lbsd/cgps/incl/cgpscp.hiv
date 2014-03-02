@@ -1,0 +1,77 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __CGPSCP_HIV__
+#define __CGPSCP_HIV__
+/**
+* \file cgpscp.hiv
+* \date 22/07/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain all variables used by cgps7cp.c.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 22.07.08 </TD><TD> Y.DESAPHI </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+#ifdef __CGPS7CP_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__CGPS7CP_C__*/
+
+
+/**
+*\var vg_IsEmergencyCall
+*\brief TRUE if the next control plane registration is dedicated to an emergency call
+*/
+GLOBAL bool vg_IsEmergencyCall
+#ifdef __CGPS7CP_C__
+= FALSE
+#endif
+;
+
+/**
+*\var vg_AssistanceAidMask
+*\brief Variable to keep track of the assistance data received from LSIMCP
+*/
+GLOBAL uint16_t vg_AssistanceAidMask
+#ifdef __CGPS7CP_C__
+= CGPS_ASSISTANCE_MASK
+#endif
+;
+
+
+/**
+*\var vg_askForAssistanceData
+*\brief TRUE if CGPS is allowed to request assistance data in a CP session
+*/
+GLOBAL uint8_t  vg_AskForAssistanceData
+#ifdef __CGPS7CP_C__
+= TRUE
+#endif
+;
+
+
+#ifdef AGPS_TIME_SYNCH_FTR
+GLOBAL uint32_t vg_TimeSynchRequest_ms
+#ifdef __CGPS7CP_C__
+= 0
+#endif
+;
+#endif /* AGPS_TIME_SYNCH_FTR */
+
+#undef GLOBAL
+#endif /* __CGPSCP_HIV__ */

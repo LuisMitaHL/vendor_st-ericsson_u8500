@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# this script:
+# - start ModemStorageAgent
+# - copy cspsa data to modemfs
+# - start and monitor modem-supervisor
+
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+case $1 in
+	start)
+		echo "Starting $0..."
+		ln -sf /mnt/modemfs /
+		ln -sf /data/misc/trace_auto.conf /etc/trace_auto.conf
+		sh /system/etc/ste_modem.sh&
+		MonitorMSA.sh&
+		/system/bin/modem-supervisor -r -f /dev/dbx500_mloader_fw -i /sys/devices/platform/ab8505-i2c.0/chip_id,/sys/devices/platform/ab8500-i2c.0/chip_id -c monitor&
+		/system/bin/modem_log_relay --ctrl_port=2001 --data_port=2002 --inv_port=2003 --report_port=2005 --hats=1&
+		;;
+	stop)
+		;;
+esac
+
+exit 0

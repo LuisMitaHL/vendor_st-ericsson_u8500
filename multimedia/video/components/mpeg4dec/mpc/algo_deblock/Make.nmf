@@ -1,0 +1,48 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+MODULE_NAME:=mpeg4dec
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+COMPONENTS+= $(MODULE_NAME).mpc.algo_deblock
+
+CPPPATH += -I$(MMROOT)/shared/ens/components/common
+CONFFILES = $(MODULE_NAME)/mpc/algo_deblock/algo_deblock.conf
+
+
+ITFLIST += 	$(MODULE_NAME)/mpc/api/algo_deblock.itf							\
+			$(MODULE_NAME)/mpc/api/end_algodeblock.itf						\
+			$(MODULE_NAME)/arm_nmf/ddep/ddep.itf              \
+
+SRCPATH+= \
+	$(MM_IDT_DIR)									\
+	$(MMROOT)/shared/ens/nmf/mpc \
+	$(MMROOT)/shared/ens/nmf/mpc/common \
+        $(MMROOT)/video/components/common/nmf/idt \
+	$(MMROOT)/video/vfm/common									\
+	$(MMROOT)/video/components/resource_manager/share			\
+        $(MMROOT)/video/components/vpp/mpc/share			\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/$(MODULE_NAME)/mpc/share	\
+	$(MMROOT)/video/components/	\
+	$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)	\
+	$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc	\
+	$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)			\
+	$(MMROOT)/video/components/common/inc
+	
+
+USER2MPCITFS_CPP += $(MODULE_NAME).mpc.api.algo_deblock	\
+                        
+                        
+
+MPC2USERITFS_CPP += $(MODULE_NAME).mpc.api.end_algodeblock	\
+                                                
+
+
+$(MODULE_NAME).mpc.algo_deblock: $(CONFFILES)
+
+ITF_PREFIX=video_mpe4dec_sw
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+
+.PHONY: $(MODULE_NAME).mpc.algo_deblock

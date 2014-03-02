@@ -1,0 +1,137 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSMAIN_HIV__
+#define __HALGPSMAIN_HIV__
+/**
+* \file halgpsmain.hiv
+* \date 25/01/2008
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain internal variable needed by halgps0main.c..\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 25.01.08</TD><TD> M.BELOU </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\var vg_HALGPS_UARTInitData
+*\brief UART driver initialisation
+* This varaible is used to parameters the UART driver.
+* All UART register can be configure : Interrupt enable, Fifo control, Line control, Modem control, Timed IRQ/DMA, UART speed.
+*/
+
+
+#ifdef __HALGPS0MAIN_C__
+#define GLOBAL
+#else
+#define GLOBAL extern
+#endif /*__HALGPS0MAIN_C__*/
+
+
+#ifdef UTS_CPR
+/**
+*\var g_HALGPS_OSTimer
+*\brief OS timer started at init
+* 
+* This OS timer is used instead of tick system to get an average of 1 ms
+*/
+GLOBAL uint32_t g_HALGPS_OSCounter;
+
+#endif // UTS_CPR
+
+#ifdef AGPS_LINUX_FTR
+GLOBAL char gn_Port_GNB[]
+#ifdef __HALGPS0MAIN_C__
+   = GN_PORT_GNB;
+#else
+;
+#endif
+
+GLOBAL int gn_CLK_TCK;
+
+GLOBAL int gn_iPort_GNB
+#ifdef __HALGPS0MAIN_C__
+= -1
+#endif /* __HALGPS0MAIN_C__ */
+;                      // Index to the GN Baseband Com Port
+#endif   /* AGPS_LINUX_FTR */
+
+#if defined LBS_INTRPT_BB_READ
+/**
+* \var vg_HALGPS_LantencyTimer
+* \brief latency of system value\n
+*
+* This variable is set when the fisrt trame byte is received with the OS time.\n
+* This variable is used to calculate the system lantency\n
+*/
+GLOBAL uint32_t vg_HALGPS_LantencyTimer;
+
+/**
+* \var vg_HALGPS_LantencyTimer
+* \brief latency of system value\n
+*
+* This variable is used to reset the latency timer value.\n
+* When a trame is comlpeted, an new one start the vg_HALGPS_LantencyTimer must be reset.
+*/
+
+GLOBAL uint32_t vg_HALGPS_ResetLantencyTimer;
+#endif
+
+/**
+* \var vg_HALGPS_ErrorNumber
+* \brief Count the number of error
+*
+* Must be equal to zero if there aren't error
+*/
+GLOBAL uint32_t vg_HALGPS_ErrorNumber;
+
+/**
+* \var vg_HALGPS_CalibrationFullPathFileName
+* \brief containing the full path and file name used to store the RTC calibration data from GPS library
+*/
+GLOBAL uint8_t * vg_HALGPS_CalibrationFullPathFileName
+#ifdef __HALGPS0MAIN_C__
+= NULL
+#endif
+;
+
+/**
+* \var vg_HALGPS_StoreFullPathFileName
+* \brief containing the full path and file name used to store the navigation data from GPS library
+*/
+GLOBAL uint8_t * vg_HALGPS_StoreFullPathFileName
+#ifdef __HALGPS0MAIN_C__
+= NULL
+#endif
+;
+
+/**
+* \var vg_HALGPS_State
+* \brief State of HAL module
+*
+* HALGPS can be started, shut down , initialised...
+*/
+GLOBAL uint32_t vg_HALGPS_State
+#ifdef __HALGPS0MAIN_C__
+= HALGPS_NOT_INITIALIZED_INTERNAL_STATE
+#endif
+;
+
+
+
+#undef GLOBAL
+
+#endif /* __HALGPSMAIN_HIV__ */

@@ -1,0 +1,300 @@
+;*****************************************************************************
+;*  ST-Ericsson                                                              *
+;*  Reproduction and Communication of this document is strictly prohibited   *
+;*  unless specifically authorized in writing by ST-Ericsson.                *
+;*---------------------------------------------------------------------------*/
+
+;****************************************************************************
+;* Author        : Emmanuel EDDI
+;* Description   : This Code/Script is for Folllowing Board Configuration:
+;*
+;*                 Board            :   Maja Validation Board.
+;*                 Nomadik          :   DB5500V1 (Maja)
+;*                 DDR              :   Elpida 2x2Gbits --> ECB240ABACN (400Mhz) in TYC0DH231234LA10 Toshiba package (DDR+eMMC)
+;*		   		    :			--> EDB4032B1PB (333MHz) in Elpida package (DDR standalone)
+;*		   DDR_IF_Frequency :   200MHz.
+;*                 Flash Memory     :   .
+;*                 MuxOneNAND       :   .
+;*                 Ethernet         :   .
+;*                 SRAM             :   .
+;*                 NOR              :   .
+;*                 Code/Script for  :   Lauterbach / Trace32
+;*                 Version          :   V1.3
+;*
+;*
+;* File Name     : DB5500_SoC_settings_200mhz_noabb.cmm
+;*----------------------------------------------------------------------------*/
+LOCAL &FW_version &API_version
+
+;#######################################
+;#    Check PRCMU FW and API version
+;#######################################
+&FW_version="(d.l(d:&pfw_prcmu_fw_version))"
+&API_version="(d.b(d:&pfw_prcmu_api_version))"
+print "PRCMU FW version 0x" &FW_version " loading for DB5500V1..."
+print "PRCMU API version: 0x" &API_version
+
+if &FW_version<0xD
+(
+	print "PRCMU FW version is not the proper one (for DDR init Work-Around)"
+	print "ERROR you NEED to download a PRCMU FW with version greater than or equal to 0xD !!!"	
+	if &FW_version<0x8
+	(
+		print "PRCMU API version is not the proper one (for SWDOG Work-Around)"
+		print "ERROR you NEED to download a PRCMU Fw with PRCMU API greater than or equal to version 0x8 !!!"	
+	)
+)	
+else if &API_version!=&CMM_API_VERSION
+(
+	print "PRCMU API version is not in line with the one specified in prcmu_mailbox_setup.cmm"
+)
+else
+(
+	;#######################################
+	;#         Release some resets/GPIOs
+	;#######################################
+	;# Release reset for all GPIOs
+	data.set 0x80157208 %long 0xFFFF
+	
+	
+	;#######################################
+	;#         Re-program ICN registers
+	;#######################################
+	data.set 0x8015BE10 %long 0x7F		;TO grant access to all ICN Masters
+	
+	
+	;###################################################
+	;#     Modify DDR PLL value (to run at 200MHz) 
+	;###################################################
+	print "Modify DDR PLL value (to run at 200MHz) with PRCMU Fw dedicated service..."
+	data.set &pfw_memory_speed_frequency %long 200.
+	
+	
+	;#######################################
+	;#         Switch xP70 Fw in ApExecute
+	;#######################################
+	print "Switch xP70 Fw in ApExecute..."
+	
+	data.set &pfw_reqMb0_H %byte 0x01			; header->Req
+	data.set &pfw_req_mb_0_ap_pwr_st_tr %byte 0x01		; ApExecute mode requested (Boot to Execute mode transition)
+	data.set 0x80157100 %long 0x00000001			; Sent IT to xP70
+	
+	&loop=1
+	while ((((d.b(d:&pfw_pwr_current_state_var))!=0x02)||((d.b(d:&pfw_ap_pwr_st_tr_status))!=0xFF))&&&loop<200.)		;APS_EXECUTE in ShVar1 or BootToExecuteOk in AckMB0
+	(
+		&loop=&loop+1
+	)
+	if &loop>=200.
+	(
+		print "ERROR: XP70 didn't send any IT to CA9 !"
+	)
+	else
+	(
+	  	print " ApsExecute state reached..."
+		; No IT sent from XP70 to CA9
+	)
+	
+	
+	;###################################################
+	;#         Fill LpDDR2 settings into XP70 data area 
+	;###################################################
+	print "Fill LpDDR2 settings into xp70 data area ..."
+	; Mask configuration
+	data.set 0x80168000 %long 0x4DFFFFFF; 	// no param into DENALI_CTL_25/28/29/31 
+	data.set 0x80168004 %long 0x9800F1FF; 	// no param into DENALI_CTL_41/42/43/48to58 /61/62 
+	data.set 0x80168008 %long 0xFFFFF309; 	// no param into DENALI_CTL_65/66/68to71/74/75 
+	data.set 0x8016800C %long 0xFFFFFE7F; 	// no param into DENALI_CTL_103/104  
+	data.set 0x80168010 %long 0x0001E01F; 	// no param into DENALI_CTL_133to140
+	
+	
+	// REG_CONFIG_0 databahn registers
+	data.set 0x80168014 %long 0x00000101   ; DENALI_CTL_0
+	data.set 0x80168018 %long 0x01010100   ; DENALI_CTL_1
+	data.set 0x8016801c %long 0x00000001   ; DENALI_CTL_2
+	data.set 0x80168020 %long 0x00010100   ; DENALI_CTL_3
+	data.set 0x80168024 %long 0x01010100   ; DENALI_CTL_4
+	data.set 0x80168028 %long 0x01000100   ; DENALI_CTL_5
+	data.set 0x8016802c %long 0x00000000   ; DENALI_CTL_6
+	data.set 0x80168030 %long 0x00000001   ; DENALI_CTL_7
+	data.set 0x80168034 %long 0x00000101   ; DENALI_CTL_8
+	data.set 0x80168038 %long 0x02020301   ; DENALI_CTL_9
+	data.set 0x8016803c %long 0x03030303   ; DENALI_CTL_10
+	data.set 0x80168040 %long 0x01030303   ; DENALI_CTL_11
+	data.set 0x80168044 %long 0x00030301   ; DENALI_CTL_12
+	data.set 0x80168048 %long 0x00000000   ; DENALI_CTL_13
+	data.set 0x8016804c %long 0x00030207   ; DENALI_CTL_14
+	data.set 0x80168050 %long 0x03000000   ; DENALI_CTL_15
+	data.set 0x80168054 %long 0x02020202   ; DENALI_CTL_16
+	data.set 0x80168058 %long 0x06000f02   ; DENALI_CTL_17
+	data.set 0x8016805c %long 0x00000f06   ; DENALI_CTL_18
+	data.set 0x80168060 %long 0x00070000   ; DENALI_CTL_19
+	data.set 0x80168064 %long 0x00020008   ; DENALI_CTL_20
+	data.set 0x80168068 %long 0x00030403   ; DENALI_CTL_21
+	data.set 0x8016806c %long 0x05000909   ; DENALI_CTL_22
+	data.set 0x80168070 %long 0x32002e0d   ; DENALI_CTL_23
+	data.set 0x80168074 %long 0x23003200   ; DENALI_CTL_24
+	;data.set 0x80168078 %long 0x00000000   ; DENALI_CTL_25		=> dummy value
+	data.set 0x8016807C %long 0x04090000   ; DENALI_CTL_26
+	data.set 0x80168080 %long 0x0000001a   ; DENALI_CTL_27
+	;data.set 0x80168084 %long 0x00000000   ; DENALI_CTL_28		=> dummy value
+	;data.set 0x80168088 %long 0x03040304   ; DENALI_CTL_29		=> dummy value ?? (latest update)
+	data.set 0x8016808C %long 0x03040304   ; DENALI_CTL_30
+	;data.set 0x80168090 %long 0x00000000   ; DENALI_CTL_31		=> dummy value
+	data.set 0x80168094 %long 0xffff0000   ; DENALI_CTL_32
+	data.set 0x80168098 %long 0xffffffff   ; DENALI_CTL_33
+	data.set 0x8016809C %long 0x0000ffff   ; DENALI_CTL_34
+	data.set 0x801680A0 %long 0x00100100   ; DENALI_CTL_35
+	data.set 0x801680A4 %long 0x00000000   ; DENALI_CTL_36
+	data.set 0x801680A8 %long 0x00030000   ; DENALI_CTL_37
+	data.set 0x801680AC %long 0x001d1b4e   ; DENALI_CTL_38
+	data.set 0x801680B0 %long 0x0000001e   ; DENALI_CTL_39
+	data.set 0x801680B4 %long 0x00000014   ; DENALI_CTL_40
+	;data.set 0x801680B8 %long 0x00000000   ; DENALI_CTL_41		=> dummy value
+	;data.set 0x801680BC %long 0x00000000   ; DENALI_CTL_42		=> dummy value
+	;data.set 0x801680C0 %long 0x00000000   ; DENALI_CTL_43		=> dummy value
+	data.set 0x801680C4 %long 0x00000000   ; DENALI_CTL_44
+	data.set 0x801680C8 %long 0x00000000   ; DENALI_CTL_45
+	data.set 0x801680CC %long 0x00000000   ; DENALI_CTL_46
+	data.set 0x801680D0 %long 0x00000000   ; DENALI_CTL_47
+	;data.set 0x801680D4 %long 0x00000000   ; DENALI_CTL_48		=> dummy value
+	;data.set 0x801680D8 %long 0x00000000   ; DENALI_CTL_49		=> dummy value
+	;data.set 0x801680DC %long 0x00000000   ; DENALI_CTL_50		=> dummy value
+	;data.set 0x801680E0 %long 0x00000000   ; DENALI_CTL_51		=> dummy value
+	;data.set 0x801680E4 %long 0x00000000   ; DENALI_CTL_52		=> dummy value
+	;data.set 0x801680E8 %long 0x00000000   ; DENALI_CTL_53		=> dummy value
+	;data.set 0x801680EC %long 0x00000000   ; DENALI_CTL_54		=> dummy value
+	;data.set 0x801680F0 %long 0x00000000   ; DENALI_CTL_55		=> dummy value
+	;data.set 0x801680F4 %long 0x00000000   ; DENALI_CTL_56		=> dummy value
+	;data.set 0x801680F8 %long 0x00000000   ; DENALI_CTL_57		=> dummy value
+	;data.set 0x801680FC %long 0x00000000   ; DENALI_CTL_58		=> dummy value
+	data.set 0x80168100 %long 0x00000000   ; DENALI_CTL_59
+	data.set 0x80168104 %long 0x00000000   ; DENALI_CTL_60
+	;data.set 0x80168108 %long 0x00000000   ; DENALI_CTL_61		=> dummy value
+	;data.set 0x8016810C %long 0x00000000   ; DENALI_CTL_62		=> dummy value
+	data.set 0x80168110 %long 0x05000001   ; DENALI_CTL_63
+	data.set 0x80168114 %long 0x00050003   ; DENALI_CTL_64
+	;data.set 0x80168118 %long 0x00000000   ; DENALI_CTL_65		=> dummy value
+	;data.set 0x8016811C %long 0x00000000   ; DENALI_CTL_66		=> dummy value
+	data.set 0x80168120 %long 0x00000000   ; DENALI_CTL_67
+	;data.set 0x80168124 %long 0x00000000   ; DENALI_CTL_68		=> dummy value
+	;data.set 0x80168128 %long 0x00000000   ; DENALI_CTL_69		=> dummy value
+	;data.set 0x8016812C %long 0x00000000   ; DENALI_CTL_70		=> dummy value
+	;data.set 0x80168130 %long 0x00000000   ; DENALI_CTL_71		=> dummy value
+	data.set 0x80168134 %long 0x00000000   ; DENALI_CTL_72
+	data.set 0x80168138 %long 0x00007c40   ; DENALI_CTL_73
+	;data.set 0x8016813C %long 0x00000000   ; DENALI_CTL_74		=> dummy value
+	;data.set 0x80168140 %long 0x00000000   ; DENALI_CTL_75		=> dummy value
+	data.set 0x80168144 %long 0x01000100   ; DENALI_CTL_76
+	data.set 0x80168148 %long 0x01000102   ; DENALI_CTL_77
+	data.set 0x8016814C %long 0x02010000   ; DENALI_CTL_78
+	data.set 0x80168150 %long 0x02000102   ; DENALI_CTL_79
+	data.set 0x80168154 %long 0x0a000100   ; DENALI_CTL_80
+	data.set 0x80168158 %long 0x0001b040   ; DENALI_CTL_81
+	data.set 0x8016815C %long 0x00480000   ; DENALI_CTL_82
+	data.set 0x80168160 %long 0x00c80012   ; DENALI_CTL_83
+	data.set 0x80168164 %long 0x0000000a   ; DENALI_CTL_84
+	data.set 0x80168168 %long 0x00000000   ; DENALI_CTL_85
+	data.set 0x8016816C %long 0x00000000   ; DENALI_CTL_86
+	data.set 0x80168170 %long 0x00220000   ; DENALI_CTL_87
+	data.set 0x80168174 %long 0x00010022   ; DENALI_CTL_88
+	data.set 0x80168178 %long 0x00020001   ; DENALI_CTL_89
+	data.set 0x8016817C %long 0x00000002   ; DENALI_CTL_90
+	data.set 0x80168180 %long 0x00000000   ; DENALI_CTL_91
+	data.set 0x80168184 %long 0x00009c40   ; DENALI_CTL_92
+	data.set 0x80168188 %long 0x000000c8   ; DENALI_CTL_93
+	data.set 0x8016818C %long 0x000007d0   ; DENALI_CTL_94
+	data.set 0x80168190 %long 0x00010100   ; DENALI_CTL_95
+	data.set 0x80168194 %long 0x01000001   ; DENALI_CTL_96
+	data.set 0x80168198 %long 0x0a020201   ; DENALI_CTL_97
+	data.set 0x8016819C %long 0x0005050a   ; DENALI_CTL_98
+	data.set 0x801681A0 %long 0x0fff0000   ; DENALI_CTL_99
+	data.set 0x801681A4 %long 0x00000fff   ; DENALI_CTL_100
+	data.set 0x801681A8 %long 0x03021000   ; DENALI_CTL_101
+	data.set 0x801681AC %long 0x00050304   ; DENALI_CTL_102
+	;data.set 0x801681B0 %long 0x03040304   ; DENALI_CTL_103		=> dummy value ?? (latest update)
+	;data.set 0x801681B4 %long 0x00000304   ; DENALI_CTL_104		=> dummy value ?? (latest update)
+	data.set 0x801681B8 %long 0x00080403   ; DENALI_CTL_105
+	data.set 0x801681BC %long 0x00110905   ; DENALI_CTL_106
+	data.set 0x801681C0 %long 0x39341a0d   ; DENALI_CTL_107
+	data.set 0x801681C4 %long 0x0304017e   ; DENALI_CTL_108
+	data.set 0x801681C8 %long 0x000f0610   ; DENALI_CTL_109
+	data.set 0x801681CC %long 0x0039001d   ; DENALI_CTL_110
+	data.set 0x801681D0 %long 0x001e0010   ; DENALI_CTL_111
+	data.set 0x801681D4 %long 0x0089003a   ; DENALI_CTL_112
+	data.set 0x801681D8 %long 0x0030c6c9   ; DENALI_CTL_113
+	data.set 0x801681DC %long 0x03494288   ; DENALI_CTL_114
+	data.set 0x801681E0 %long 0x00012009   ; DENALI_CTL_115
+	data.set 0x801681E4 %long 0x00048024   ; DENALI_CTL_116
+	data.set 0x801681E8 %long 0x00090024   ; DENALI_CTL_117
+	data.set 0x801681EC %long 0x125224a4   ; DENALI_CTL_118
+	data.set 0x801681F0 %long 0x00110022   ; DENALI_CTL_119
+	data.set 0x801681F4 %long 0x00410082   ; DENALI_CTL_120
+	data.set 0x801681F8 %long 0x00110022   ; DENALI_CTL_121
+	data.set 0x801681FC %long 0x00008001   ; DENALI_CTL_122
+	data.set 0x80168200 %long 0x00020004   ; DENALI_CTL_123
+	data.set 0x80168204 %long 0x00008001   ; DENALI_CTL_124
+	data.set 0x80168208 %long 0x02491001   ; DENALI_CTL_125
+	data.set 0x8016820C %long 0x02ca1001   ; DENALI_CTL_126
+	data.set 0x80168210 %long 0x044b36c9   ; DENALI_CTL_127
+	data.set 0x80168214 %long 0x019130c6   ; DENALI_CTL_128
+	data.set 0x80168218 %long 0x1c7334c6   ; DENALI_CTL_129
+	data.set 0x8016821C %long 0x0c31a906   ; DENALI_CTL_130
+	data.set 0x80168220 %long 0x0c31a083   ; DENALI_CTL_131
+	data.set 0x80168224 %long 0x0201a347   ; DENALI_CTL_132
+	;data.set 0x80168228 %long 0x00000000   ; DENALI_CTL_133		=> dummy value
+	;data.set 0x8016822C %long 0x00000000   ; DENALI_CTL_134		=> dummy value
+	;data.set 0x80168230 %long 0x00000000   ; DENALI_CTL_135		=> dummy value
+	;data.set 0x80168234 %long 0x00000000   ; DENALI_CTL_136		=> dummy value
+	;data.set 0x80168238 %long 0x00000000   ; DENALI_CTL_137		=> dummy value
+	;data.set 0x8016823C %long 0x00000000   ; DENALI_CTL_138		=> dummy value
+	;data.set 0x80168240 %long 0x00000000   ; DENALI_CTL_139		=> dummy value
+	;data.set 0x80168244 %long 0x00000000   ; DENALI_CTL_140		=> dummy value
+	data.set 0x80168248 %long 0x03cb1001   ; DENALI_CTL_141
+	data.set 0x8016824C %long 0x00010003   ; DENALI_CTL_142
+	data.set 0x80168250 %long 0x00008001   ; DENALI_CTL_143
+	data.set 0x80168254 %long 0x00010003   ; DENALI_CTL_144
+	;data.set 0x80168258 %long 0x00000000   ; DENALI_CTL_145		=> dummy value
+	;data.set 0x8016825C %long 0x00000000   ; DENALI_CTL_146		=> dummy value
+	;data.set 0x80168260 %long 0x00000000   ; DENALI_CTL_147		=> dummy value
+	                          
+	;Lpddr2 phy
+	data.set 0x80168264 %long 0x02ca1001   ; DENALI_CTL_72
+	
+	
+	print "Start LpDDR2 init (200MHz) ..."
+	
+	data.set 0x80157438 %long 0x00000000		; LpDDR2 start at 200Mhz
+	data.set &pfw_reqMb4_H %byte 0x1			; mailbox for DDR init (MB4)
+	;No parameter for DDR init/MB4
+	data.set 0x80157100 %long 0x00000010			; Sent IT16 to xP70
+	
+	&loop=1
+	while (d.b(d:0x80157494)&0x10)!=0x10&&&loop<200.
+	(
+		&loop=&loop+1
+	)
+	if &loop>=200.
+	(
+		print "ERROR: XP70 didn't send any IT to CA9 !"
+	)
+	else 
+	(
+		if (d.b(d:&pfw_ack_mb_4_rc))!=0x00&&&loop<200.		; as RC_SUCCESS == 0x0
+			print "ERROR: LpDDR2 init failed"
+		else
+			print "LpDDR2 init OK ..."
+		data.set 0x8015748C %byte 0x10				; CLEAR CA9 IT
+	)
+	
+	
+	;##############################################
+	;#         Re-Program AB5500V1 (Petra) 
+	;##############################################
+	print "Petra NOT programmed here (R15 targetted script)"
+	
+	
+	;#######################################
+	;#         Modem start-up
+	;#######################################
+	print "Access Sub-System (Modem) start up is not covered by this settings initialization file !!!"
+)

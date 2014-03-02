@@ -1,0 +1,290 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 1.3.1)      *
+**********************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Component manager binary & api
+    - Synchronous & Hybrid execution engine binaries
+    - Component tool chain binary
+    - Light ARM component-based environment configured for NMF test and development 
+        This environment is based on Think OS.
+    - Light Operating System services API specification
+    - Example source codes (Hello World's, Training, Mandelbrot's, Jpeg)
+        Jpeg fully based on Host local execution domain
+    - Documentations (User guide, programming model, CM API, MPC API)
+        User guide not fully in line with delivery
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Supported target:
+    - STn8815 SAA & SVA Cut A0/B0/C0
+    - STn8820 SAA & SVA & SIA Cut A0/A2
+    
+Supported environments:
+    - nmf_Think:    based on Think open source component-based OS
+
+Changes:
+--------
+[CM]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    - User FIFO API no more supported and will be removed in next delivery
+      (1.3.2).
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    - Update inrospection API for returning interface require state.
+
+
+[MPC Executive Engine]
+    - Add traceUser(t_uint32 key) method for generating XTI/STM trace.
+    - Add malloc support. See malloc.itf for provided methods. Be aware of the 
+      following limitation when using these methods :
+       - Only one call to a method of malloc.itf at a time or you will 
+         generate an INTERNAL_PANIC.
+       - Increase stack usage since caller of a malloc.itf will be suspend
+         during memory allocation from host side. During this time a new reaction
+         can occur. So stack usage can be double compare to today usage.
+       - Executive Engine malloc.api.send and alloc.api.reveive interfaces must be
+         binded and implementated by user code.
+       - No simulation support today.
+    
+[OS integration]
+    
+[NMF Think]
+    - ILOS API specified but only partially implemented.
+    - Update memory memory mapping in order to detect not allowed access.
+    - Update memory management with memory leak mechanism and memory corruption.
+    - Add test API in environments.
+    - For 8820 target Think entry point must be call in non secure mode. This implies the
+      following :
+       - Think can be flash.
+       - Think can be start in a 2nd boot scenario.
+       - Think can be use on secure chip.
+       - you MUST boot on boot rom code (setup your REMAP switch).
+       - your board MUST be flash with an xloader that will setup l2cc IP.
+       - on 8820a0 cut due to a bug you must wait around 7 seconds before loading Think
+         so the l2cc has been setup.
+    
+[Tools]
+    - Allow compiler to allow intra-composite binding optimization by declaring
+      such binding as static const in the .nmf generated file.
+      On RVCT, this allow to remove interface descriptor and indirection due to
+      interface calling.
+         
+    - Recompile whole component composition in case of file description modification
+      either for sub-components.
+
+    - Update C source dependencies computation for no more use
+      arm-none-eabi-gcc (the Nomadik Toolset don't need to be installed
+      anymore for compiling components). Thus, a ligth gcc parser has been added.
+    
+    
+[Programming model]
+    - Allow component to be declared like that :
+        primitive componentName 
+        {
+            ...
+        }
+        composite componentName 
+        {
+            ...
+        }
+        type typeName
+        {
+            ...
+        }
+      Old syntax also available, but deprecated.
+        
+    - Allow such declaration in IDT/IDL files:
+        #define M literalValue
+        #define M Identifier
+        #define M (literalValue)
+        #define M (Type)(literalValue)
+        
+    - Allow interface to be declared like that for clarity reason:
+        #include <...>
+        typedef ...;
+        interface MyInterface {
+            void foo(...);
+        }
+        
+    - Allow provided interface to be referenced through interface descriptor in C.
+      To do that, you have to declared your provided interface like that:
+        provides interfaceType as interfaceName referenced
+      Thus tools declare the corresponding interface descriptor for this interface.
+      This is know as an ersatz of interface delegation for passing interface
+      descriptor to server as callback.
+      
+    - Allow composite component to extend other composite component as well as
+      component type.
+      Furthermore an extendable composite component could be declared as generic
+      where you have to specify fix component when overriding the generic composite
+      component.
+        composite componentName<A a, ...> extends templateComponent<B, ...> 
+        { 
+            ...
+        }
+      Furthermore, you have the possibility to assign attribute value if specified
+      as parameter
+        composite componentName extends compositeComponent<1, ...> 
+        {
+            ...
+        } 
+        composite compositeComponent(Type _t) 
+        {
+            attributes Type t = _t 
+        }
+        
+    - Add unmanaged interface concept which allow to pass whatever type declared
+      in .h files which is not parsed by tools. Nevertheless, no communication 
+      allowed for such interface. Legacy is the purpose for such enhancement.
+      Unmanaged interface could be declared like that:
+        MyInterface.itf file :
+            /* */
+            #include <xxx.h>
+            interface MyInterface unmanaged {
+                void ME(struct toto ll, type t, struct titi YMEM **m, enum rr* o);
+            }
+         
+
+Bug fixes:
+---------
+    - [ Defect #44546 ] NME_Alloc with option "...CREATE_UNCACHED" does not allocate a 
+      no-cacheable memory area
+    - [ Defect #41118 ] [CM] Invalid handle is not checked
+        When switching CM in DEBUG mode, the CM check if component handle exist in the 
+        component list. 
+    - [ Defect #44900 ] [tools] error if parameter in an interface is called "event"
+    - [ Defect #41156 ] Can't return a YMEM* form an interface
+    - Correctly restore mode24 in hybrid execution engine.
+    - Bogus memory issue introduced in release candidate due to thread reentrency issue.
+    - Fix a memory leak in case of out of memory
+    - Fix "SP 6001" issue.
+      Power management drive on STn8815 to make a soft reset on MMDSP which seem to be bugged.
+      A workaround consists to do add little delay after reset in order to not write MPC
+      register just after reset and let hardware to finish reseting.
+    - Remove macros defined in type.h in order to not break customers
+      compilation.
+    - Marshall enumeration as 32bits integer in order to allow large enum.
+
+
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+    - Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        
+    - MP3 example supported only on nmf_bare environment.
+        This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+        Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+    - Some link issue with GNU toolchain could occur in examples until HCL/Services compiled with 
+        correct flags. 
+
+    - nmf_Bare environment has been removed from delivery.
+    
+    
+Pre-requires:
+-------------
+    - At least Nomadik Toolset 1.0.0 final release.
+        Patched with MMDSP Binutils compiler.
+        At least MMDSP Debugger 4.0.0.
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment :
+------------------
+    - Environments:
+        Board: 
+            NDK15 Cut B0
+            NDK20 Cut A0
+        MPC: 
+            SAA & SVA on NDK15
+            SAA & SVA & SIA on NDK20
+        Execution Engine: Synchronous, Hybrid
+        Semaphores: local, hardware
+        Environment: bare, think, tlm
+        Nomadik Toolset 1.0.0 final release patch with MMDSP bin utils
+        ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593
+
+    - Tests:
+        * 'ADL' class
+            check 'Architecture Description Language' features from programming model
+            test limit of some ADL features (name length, collection size,...)
+            check error codes returned by ADL tool
+
+        * 'Attribute' class
+            operations on attributes inside component (mpc side)
+            check attribute api on host side
+            api error management
+
+        * 'Binding' class
+            synchronous/asynchronous intra-MPC communication
+            ARM -> MPC
+            MPC -> ARM
+            inter MPCs (asynchronous)
+            MPC -> MPC (on 8815B0)
+            Static intra-MPC optimized binding
+            interruption
+            error management
+
+        * 'Collection' class :
+            Behavior with binds between primitives component using collections interfaces
+            Primitive collections interface introspection
+
+        * 'Composite' class:
+            Behavior with binds between composites component using collections interfaces
+            Behavior with binds defined in composites components (conf. files) using collections interfaces
+            Composite collections interfaces introspection
+
+        * 'Dynamic loading' class: 
+            segment loading (RO, RW, ZI)
+                Mono-instance
+                Multi-instances on same DSP
+                Multi-instances on both DSP
+            error management
+
+        * 'Fifo' class
+            creation/destruction of network with fifo use
+            fifo connectivity (host side and mpc side)
+            check flush/status/notify features
+            api error management
+
+        * 'IDL' class
+            check 'Interface Description Language' features from programming model
+            check error codes returned by ADL tool
+
+        * 'Interface' class
+            interfaces introspection for primitives and composites components (except collections interfaces)
+
+        * 'Lifecycle' class
+            check the behavior using the lifecycle API
+
+        * 'Memory' class
+            allocate/free api management for SDRAM and MPC memories
+            check address/status features
+            api error management
+
+        * 'Misc' class
+            'singleton' features (network construction/destruction)
+            communication stressing (mandelbrot applications)
+            multiple instantiation to fill memory
+            component priority inside network
+
+        * 'Network' class
+            components (primitives or composites) introspection (without interfaces)
+
+        * 'Panic' class
+            Behavior upon each Panic (reason) detection and after the detection.
+
+        * 'Properties' class
+            Get property information in component network (primitive/composite)
+            api error management
+
+        * 'Stack' class
+            check the MPC stack evolution combined with the TCM_X MPC dynamic allocation
+

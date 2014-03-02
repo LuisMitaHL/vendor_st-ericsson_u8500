@@ -1,0 +1,59 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   Interface Description Type file: common declaration types that can be shared between nmf component and host
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+#ifndef _grabctl_types_idt
+#define _grabctl_types_idt
+
+/* Possible values for grabctl.configure.setConfig(idx) */
+enum e_grabctlCfgIdx {
+	 GRABCTL_CFG_ALPHA = 0x1, /**< associated data will be the 8-bit value to set the Alpha component when grabbing an ARGB format. For formats with Alpha depth smaller than 8bits, the MSB is used */
+	 GRABCTL_CFG_CAPTURING = 0x2 /**< associated data: 1 to enable HR port (for capturing, following OMX convention), 0 to disable it. When capturing is disabled, it will still return one buffer with flags |= EOS to signal that this is the last buffer (following OMX Camera implementation), so ensure there are still buffers in queue or being processed! */
+};
+
+
+/*  */
+enum e_grabctlPortID {
+    GRBCTLPID_PORT_0 		= 0, 	/**< port 0	*/
+    GRBCTLPID_PORT_1, 				/**< port 1 */
+    GRBCTLPID_PORT_2, 				/**< port 2 */
+    GRBCTLPID_PORT_3 				/**< port 3 */
+};
+
+/* grabtctl mode */
+enum e_capturing {
+    GRBCTL_CAPT_NOTCAPTURING = 0,
+    GRBCTL_CAPT_PENDING_EOS = 1,
+    GRBCTL_CAPT_CAPTURING = 2,
+    GRBCTL_CAPT_ONE_SHOT = 3,
+    GRBCTL_CAPT_STOP_NOW = 4,
+    GRBCTL_CAPT_CAPTURING_KEEP_BUFFERS = 5,
+    GRBCTL_CAPT_BURST = 6,
+	GRBCTL_CAPT_AFTERBML_1=7,
+	GRBCTL_CAPT_AFTERBML_2=8
+};
+
+enum e_AbortRequestType
+{
+    GRABCTL_ABORT_NONE =0,
+    GRABCTL_ABORT_CLIENT,
+    GRABCTL_ABORT_INTERNAL
+};
+enum e_WhatNextAfterAbort
+{
+    GARBCTL_INFORM_NONE=0,
+    GARBCTL_INFORM_CLIENT, //  GRABCTL_ABORT_CLIENT
+    GRABCTL_PORT_FLUSH,    //  GRABCTL_ABORT_INTERNAL 
+    GRABCTL_PRECAPTURE,     //  GRABCTL_ABORT_INTERNAL
+    GRABCTL_CMD_IDLE       //  GRABCTL_ABORT_INTERNAL
+};
+
+#endif /* _grabctl_types_idt */

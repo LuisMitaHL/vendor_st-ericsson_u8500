@@ -1,0 +1,31 @@
+#include <cscall/nmf/host/protocolhandler/codecreq.idt>
+
+
+/**
+ * Select protocol to use
+ */
+void SetProtocol(CsCallProtocol_t protocol);
+
+/**
+ * force loopbackmodem to genereate MSG_CODING_FORMAT_REQUEST message,
+ * in the specified protocol.
+ */
+void SpeechCodecReq(CsCallCodecReq_t config);
+
+/**
+ * force loopbackmodem to genereate MSG_TIMING_REPORT message,
+ * in the specified protocol.
+ */
+void SpeechTimingRequest(t_uint32 timing, t_uint32 cause);
+
+/**
+ * force loopbackmodem to genereate MSG_VOICE_CALL_STATUS message,
+ * in the specified protocol.
+ */
+void VoiceCallStatus(t_uint32 connected);
+
+/**
+ * initialize modem replay mode. (protocol independant)
+ */
+void MRePInit(t_uint32 timing, t_uint16 *pBuffer, t_uint32 outBufferSize, t_uint16 *pBufferOutput);
+

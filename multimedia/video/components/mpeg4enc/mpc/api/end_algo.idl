@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ *
+ * \brief   Contains the source for the development of OMX mpeg4enc video component
+ * \author  ST-Ericsson
+ *
+ */
+
+#include <t1xhv_common.idt>
+#include <t1xhv_vec.idt>
+
+interface mpeg4enc.mpc.api.end_algo {
+
+/** @addtogroup vecMpeg4endAlgoGroup endAlgo
+ *  @ingroup vecMpeg4RequiredInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Report the end of a NMF ALGO component.
+ \param[in]  status		      Status of the process done.
+ \param[in]  info           Information on process completion.
+                            \n It'll characterize the good job completion (STATUS_JOB_COMPLETE) : VEC_ERT_NONE or VEC_INFO_SKIP for instance.
+                            \n or it'll indicate possible error sources if status is STATUS_JOB_ABORTED.
+ \param[in]  durationInTicks  Duration (in SVA's timer ticks unit, i.e. 90kHz) of the algo process that have been done 
+                            (i.e. between a CMD_START of the algo and its completion).
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vecMpeg4ConfigurationGroup
+ * 
+ */
+
+void endAlgo(t_t1xhv_status status, t_t1xhv_encoder_info info, t_uint32 durationInTicks);
+
+/** @} */ // end of vecMpeg4endAlgoGroup
+}

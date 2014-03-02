@@ -1,0 +1,22 @@
+OMX_SetupTunnel	my_source_1			0 tested_component	0
+OMX_SetupTunnel	tested_component	1 my_sink_1			0
+OMX_SetupTunnel	tested_component	2 my_sink_2			0
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+OMX_SetupTunnel	tested_component	3 my_sink_3			0
+OMX_SetupTunnel	tested_component	4 my_sink_4			0
+endif
+
+OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=1	eBufferSupplier=OMX_BufferSupplyOutput
+OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=2	eBufferSupplier=OMX_BufferSupplyOutput
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=3	eBufferSupplier=OMX_BufferSupplyOutput
+OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=4	eBufferSupplier=OMX_BufferSupplyOutput
+endif
+if TEST_ALLOC_SPLITTER == fakesink
+	OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=1	eBufferSupplier=OMX_BufferSupplyInput
+	OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=2	eBufferSupplier=OMX_BufferSupplyInput
+	if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=3	eBufferSupplier=OMX_BufferSupplyInput
+	OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier   nPortIndex=4	eBufferSupplier=OMX_BufferSupplyInput
+	endif
+endif

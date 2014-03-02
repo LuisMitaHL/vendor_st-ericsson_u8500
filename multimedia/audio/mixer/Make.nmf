@@ -1,0 +1,20 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+
+OST_COMPONENT_ID = $(KUidDicStAudioMixerNmf)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmfil_mpc
+OST_SRC_DIR = nmfil/wrapper effect/libPcmProcessings 
+INSTALL_DICO = $(OST_DICO_NAME).xml
+
+CPPFLAGS+=-DNVERBOSE
+CPPFLAGS+=-I$(COMPONENT_TOP_DIR)/effect/include
+
+USER2MPCITFS_CPP=mixer.nmfil.wrapper.configure
+
+MPC2USERITFS_CPP=mixer.nmfil.wrapper.setConfigApplied
+
+COMPONENTS= mixer.nmfil.wrapper
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

@@ -1,0 +1,72 @@
+#DTH script
+#Powersaving v1.0
+#Author: Guillaume Camus
+
+
+
+#-------------------------------------------------------------------------------------------------------------
+#Reset Management
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Reset AP1/5
+FEATURE ResetAP
+BEGIN ResetAP1-5
+
+WRITE /PWS/Reset/ActionResetAP/ResetAP/In_ResetMode 0
+EXEC /PWS/Reset/ActionResetAP/ResetAP EXEC /DTH/PWS/Reset/ActionResetAP/ResetAP
+WAIT 1
+READ /PWS/Reset/ActionResetAP/ResetAP/Out_Status  35
+
+END ResetAP1-5
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Reset AP2/5
+FEATURE ResetAP
+BEGIN ResetAP2-5
+
+WRITE /PWS/Reset/ActionResetAP/ResetAP/In_ResetMode 1
+EXEC /PWS/Reset/ActionResetAP/ResetAP EXEC /DTH/PWS/Reset/ActionResetAP/ResetAP
+WAIT 1
+READ /PWS/Reset/ActionResetAP/ResetAP/Out_Status  35
+
+END ResetAP2-5
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Reset AP3/5
+FEATURE ResetAP
+BEGIN ResetAP3-5
+
+WRITE /PWS/Reset/ActionResetAP/ResetAP/In_ResetMode 2
+EXEC /PWS/Reset/ActionResetAP/ResetAP EXEC /DTH/PWS/Reset/ActionResetAP/ResetAP
+WAIT 1
+READ /PWS/Reset/ActionResetAP/ResetAP/Out_Status  35
+
+END ResetAP3-5
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Reset AP4/5
+FEATURE ResetAP
+BEGIN ResetAP4-5
+
+WRITE /PWS/Reset/ActionResetAP/ResetAP/In_ResetMode 3
+EXEC /PWS/Reset/ActionResetAP/ResetAP EXEC /DTH/PWS/Reset/ActionResetAP/ResetAP
+WAIT 1
+READ /PWS/Reset/ActionResetAP/ResetAP/Out_Status  35
+
+END ResetAP4-5
+
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#Reset AP5/5
+FEATURE ResetAP
+BEGIN ResetAP5-5
+
+WRITE /PWS/Reset/ActionResetAP/ResetAP/In_ResetMode 4
+EXEC /PWS/Reset/ActionResetAP/ResetAP EXEC /DTH/PWS/Reset/ActionResetAP/ResetAP
+WAIT 1
+READ /PWS/Reset/ActionResetAP/ResetAP/Out_Status  35
+
+END ResetAP5-5
+

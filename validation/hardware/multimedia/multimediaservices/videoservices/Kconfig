@@ -1,0 +1,35 @@
+#
+# Videoservices configuration
+#
+
+menuconfig VIDEOSERVICES
+	bool "Videoservices Configuration"
+	depends on LIBPNG && LIBAB
+	help
+	  This module provides video tools to control and test Ux500 board
+
+if VIDEOSERVICES
+
+config VIDEOSERVICES_DIR
+	string
+	default ./multimediaservices/videoservices
+
+config VIDEOSERVICES_DEPS
+	string
+	default "LIBPNG LIBAB"
+
+config VIDEOSERVICES_STRIP_DISABLED
+	bool "Disable strip"
+	depends on VIDEOSERVICES
+	default n
+	help
+	  This will disable strip for this module
+
+config VIDEOSERVICES_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on VIDEOSERVICES
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # VIDEOSERVICES

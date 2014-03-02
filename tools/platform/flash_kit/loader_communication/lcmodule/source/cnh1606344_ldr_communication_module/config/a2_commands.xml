@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+* Copyright (C) ST-Ericsson SA 2011
+* License terms: 3-clause BSD license
+-->
+<?xml-stylesheet type="text/xml" href="a2_command_ids_h.xsl"?>
+<?xml-stylesheet type="text/xml" href="a2_command_marshal.xsl"?>
+<?xml-stylesheet type="text/xml" href="a2_commands_h.xsl"?>
+<?xml-stylesheet type="text/xml" href="a2_commands_impl_h.xsl"?>
+<?xml-stylesheet type="text/xml" href="a2_common.xsl"?>
+
+<commandspec>
+
+  <AuthenticationList>
+    <value number="1" name="A1">A1</value>
+    <value number="2" name="CA">CA</value>
+  </AuthenticationList>
+
+  <PermissionList>
+    <value number="0" name="Permission1">Permission1</value>
+    <value number="2" name="Permission2">Permission2</value>
+    <value number="3" name="Permission3">Permission3</value>
+    <value number="4" name="Permission4">Permission4</value>
+    <value number="5" name="Permission5">Permission5</value>
+    <value number="6" name="Permission6">Permission6</value>
+    <value number="7" name="Permission7">Permission7</value>
+    <value number="8" name="Permission8">Permission8</value>
+    <value number="9" name="Permission9">Permission9</value>
+    <value number="10" name="Permission10">Permission10</value>
+  </PermissionList>
+
+<!--
+  Predefine generic type of data are: uint32, string and buffer.
+  All A2 commands use only one buffer as an input and one buffer as an output parametar.
+ -->
+
+  <group number="1" name="A2 System group">
+    <documentation>
+      A2 System commands group (0x01)
+    </documentation>
+    <interface type="loader" name="A2_System"/>
+
+    <command number="101" name="TestCommand" source="PC">
+      <interface type="loader" name="TestCommand"/>
+      <documentation>
+        Performs controlled power down of the ME.
+      </documentation>
+      <input>
+        <value type="uint32" name="EnglandLength"/>
+        <value type="string" name="Sweden"/>
+        <value type="uint32" name="GermanyLength"/>
+        <value type="uint32" name="France"/>
+        <value type="buffer" name="Germany" length="GermanyLength"/>
+        <value type="buffer" name="England" length="EnglandLength"/>
+      </input>
+      <output>
+        <value type="uint32" name="AfricaLength"/>
+        <value type="string" name="Europa"/>
+        <value type="uint32" name="America"/>
+        <value type="string" name="Asia"/>
+        <value type="buffer" name="Africa" length="AfricaLength"/>
+      </output>
+    </command>
+
+    <command number="1" name="Shutdown" source="PC">
+      <interface type="loader" name="Shutdown"/>
+      <documentation>
+        The Loader shuts down in a controlled fashion and proceeds to shut down the ME itself.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="ShutdownIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="ShutdownOutLenght">Loader version length</value>
+        <value type="buffer" name="ShutdownOut" length="ShutdownOutLenght">No data</value>
+      </output>
+    </command>
+
+    <command number="2" name="Loader Version" source="PC">
+      <interface type="loader" name="LoaderVersion"/>
+      <documentation>
+        The Loader Version command is sent by the PC to request version information from the loader. The ME responds with a Loader Version information coded as ASCII characters in the data field.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="LoaderVersionIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="LVLength">Loader version length</value>
+        <value type="buffer" name="LoaderVersionOut" length="LVLength">Loader version identifier</value>
+      </output>
+    </command>
+
+    <command number="3" name="Protocol Version" source="PC">
+      <interface type="loader" name="ProtocolVersion"/>
+      <documentation>
+        The Protocol Version command is sent by the PC to request the application protocol version information from the loader. The ME responds with two bytes holding the major and the minor version respectively.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="ProtocolVersionIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="PVLength">Protocol version length</value>
+        <value type="buffer" name="ProtocolVersionOut" length="PVLength">Protocol version identifier</value>
+      </output>
+    </command>
+
+    <command number="5" name="System Supported Command groups" source="PC">
+      <interface type="loader" name="SupportedCommandGroups"/>
+      <documentation>
+        The Loader returns a list of implemented command groups and whether they are permitted to execute in the current Loader state.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="CommandGroupsIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="CommandGroupsOutLength">Supported Groups length</value>
+        <value type="buffer" name="CommandGroupsOut" length="CommandGroupsOutLength">Each byte of the string represents a supported command group.</value>
+      </output>
+    </command>
+
+    <command number="6" name="Get Platform Property" source="PC">
+      <interface type="loader" name="GetPlatformProperty"/>
+      <documentation>
+        This command is sent by the PC to request a Platform Property, by sending a PropertyID in the data field. The ME responds with the Property value.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="GetPropertyIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="GetPropertyOutLength">The size of the PropertyValue depends on the PropertyID</value>
+        <value type="buffer" name="GetPropertyOut" length="GetPropertyOutLength"/>
+        </output>
+    </command>
+
+    <command number="8" name="Get Memory Property" source="PC">
+      <interface type="loader" name="GetMemoryProperty"/>
+      <documentation>
+        This command is sent by the PC to request a Memory Property. The ME responds with the Memory Property value.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="GetMemPropertyIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="GetMemPropertyOutLength">The size of the PropertyValue depends on the PropertyID</value>
+        <value type="buffer" name="GetMemPropertyOut" length="GetMemPropertyOutLength"/>
+      </output>
+    </command>
+
+    <command number="9" name="Set Memory Property" source="PC">
+      <interface type="loader" name="SetMemoryProperty"/>
+      <documentation>
+        This command is sent by the PC to set a Memory Property.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="SetMemPropertyIn" length="CmdData_p-&gt;Payload.Size">The MemoryPropertyPayload buffer holds the Memory Propertiy ID and the Memory Property value. The size of the MemoryPropertyValue depends on the PropertyID</value>
+      </input>
+      <output>
+        <value type="uint32" name="SetMemPropertyOutLength">The size of the PropertyValue depends on the PropertyID</value>
+        <value type="buffer" name="SetMemPropertyOut" length="SetMemPropertyOutLength"/>
+      </output>
+    </command>
+
+    <command number="15" name="Read Security Data" source="PC">
+      <interface type="loader" name="ReadSecurityData"/>
+      <documentation>
+        This command is used in a Flashless bridge configuration. It returns the Static data and all dinamic variables cretaed during the signing process.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="SecurityDataIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="SecurityDataOutLength"/>
+        <value type="buffer" name="SecurityDataOut" length="SecurityDataOutLength"/>
+      </output>
+    </command>
+
+    <command number="17" name="Loader on Loader" source="PC">
+      <interface type="loader" name="LoaderOnLoader"/>
+      <documentation>
+        This command is used to transfer a new Loader to the ME. The data should hold either Header or Payload.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="LOLIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="LOLOutLength"/>
+        <value type="buffer" name="LOLOut" length="LOLOutLength"/>
+      </output>
+    </command>
+
+    <command number="19" name="Reset" source="PC">
+      <interface type="loader" name="Reset"/>
+      <documentation>
+        The Reset command is used to instruct the Loader to reset the ME. Upon receiving this command, the Loader shuts down in a controlled fashion and restarts the ME.
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="ResetIn" length="CmdData_p-&gt;Payload.Size">The ResetTimeout value is in ms.</value>
+      </input>
+      <output>
+        <value type="uint32" name="ResetOutLength"/>
+        <value type="buffer" name="ResetOut" length="ResetOutLength"/>
+      </output>
+    </command>
+
+    <command number="20" name="Simlock Authentication Request" source="PC">
+      <interface type="loader" name="SimlockAuthenticationRequest"/>
+      <documentation>
+        This command is sent by the PC to set the SIM Lock Keys.
+      </documentation>
+    <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="SIMLockAuthReqIn" length="CmdData_p-&gt;Payload.Size">There are 12 SIM Lock Keys, each represented with a 16 bytes long string.</value>
+      </input>
+      <output>
+        <value type="uint32" name="SIMLockAuthReqOutLength"/>
+        <value type="buffer" name="SIMLockAuthReqOut" length="SIMLockAuthReqOutLength"/>
+      </output>
+    </command>
+  </group>
+
+  <group number="2" name="A2 Flash group">
+    <documentation>
+        A2 Flash Commands group (0x02)
+    </documentation>
+    <interface type="loader" name="A2_Flash"/>
+
+    <command number="1" name="Verify Signed Header" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="VerifySignedHeader"/>
+      <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="VerifyHeaderIn" length="CmdData_p-&gt;Payload.Size"/>
+        </input>
+        <output>
+          <value type="uint32" name="VerifyHeaderOutLength"/>
+          <value type="buffer" name="VerifyHeaderOut" length="VerifyHeaderOutLength"/>
+      </output>
+    </command>
+
+    <command number="2" name="Software Block Address" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="SoftwareBlockAddress"/>
+      <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="SoftBlockAddIn" length="CmdData_p-&gt;Payload.Size">There are two parameters in the input buffer: Start address and Block size, both 4 bytes long.</value>
+        </input>
+        <output>
+          <value type="uint32" name="SoftBlockAddOutLength"/>
+          <value type="buffer" name="SoftBlockAddOut" length="SoftBlockAddOutLength"/>
+      </output>
+    </command>
+
+    <command number="3" name="Program Flash" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="ProgramFlash"/>
+      <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="ProgramFlashIn" length="CmdData_p-&gt;Payload.Size"/>
+        </input>
+        <output>
+          <value type="uint32" name="ProgramFlashOutLength"/>
+          <value type="buffer" name="ProgramFlashOut" length="ProgramFlashOutLength"/>
+        </output>
+    </command>
+
+    <command number="4" name="Verify Software Flash" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="VerifySoftwareFlash"/>
+        <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="VerifySoftwareFlashIn" length="CmdData_p-&gt;Payload.Size"/>
+        </input>
+        <output>
+          <value type="uint32" name="VerifySoftwareFlashOutLength"/>
+          <value type="buffer" name="VerifySoftwareFlashOut" length="VerifySoftwareFlashOutLength"/>
+        </output>
+    </command>
+
+    <command number="5" name="Dump Flash Image" flag="true1" source="PC">
+      <documentation>
+        This command is used to readp from the flash. The input parameters buffer holds: Logical Unit number = 4 bits, Start address = 28 bits and End address = 4 bytes.
+      </documentation>
+      <interface type="loader" name="DumpFlashImage"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="DumpFlashImageIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="DumpFlashImageOutLength"/>
+        <value type="buffer" name="DumpFlashImageOut" length="DumpFlashImageOutLength"/>
+      </output>
+    </command>
+  </group>
+
+  <group number="3" name="A2 GDFS group">
+    <documentation>
+      A2 GDFS Commands Group (0x03)
+    </documentation>
+    <interface type="loader" name="A2_GDFS"/>
+
+    <command number="1" name="Get GDFS Property" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="GetGDFSProperty"/>
+      <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="GetGDFSPropertyIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="GetGDFSPropertyOutLength"/>
+        <value type="buffer" name="GetGDFSPropertyOut" length="GetGDFSPropertyOutLength"/>
+      </output>
+    </command>
+  </group>
+
+  <group number="4" name="File system group">
+    <documentation>
+      A2 File system commands Group (0x04)
+    </documentation>
+    <interface type="loader" name="A2_File_System"/>
+
+    <command number="1" name="Get File System Property" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="GetFileSystemProperty"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="GetFSPropertyIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="GetFSPropertyOutLength"/>
+        <value type="buffer" name="GetFSPropertyOut" length="GetFSPropertyOutLength"/>
+      </output>
+    </command>
+  </group>
+
+  <group number="5" name="Signature group">
+    <documentation>
+      A2 Signature Commands Group (0x05)
+    </documentation>
+    <interface type="loader" name="A2_Signature"/>
+
+    <command number="1" name="Set Control Keys" flag="true1" source="PC">
+      <documentation>
+        This command is used to write the SIM Lock control keys.
+      </documentation>
+      <interface type="loader" name="SetControlKeys"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="SetControlKeysIn" length="CmdData_p-&gt;Payload.Size">There are 12 SIM Lock Keys, each represented with a 16 bytes long string.</value>
+      </input>
+      <output>
+        <value type="uint32" name="SetControlKeysOutLength"/>
+        <value type="buffer" name="SetControlKeysOut" length="SetControlKeysOutLength"/>
+      </output>
+  </command>
+
+  <command number="2" name="Set Platform Property" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="SetPlatformProperty"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="SetPlatformPropertyIn" length="CmdData_p-&gt;Payload.Size">The SetPlatformPropertyIn buffer holds the Platform Property ID and the Platform property value. The size of the Platform Property ID is 4 bytes and the size of the Platform Property Value depends on the PropertyID</value>
+      </input>
+      <output>
+        <value type="uint32" name="SetPlatformPropertyOutLength"/>
+        <value type="buffer" name="SetPlatformPropertyOut" length="SetPlatformPropertyOutLength"/>
+      </output>
+    </command>
+
+    <command number="3" name="Write and Lock OTP" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="WriteAndLockOTP"/>
+      <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="WriteAndLockOTPIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+          <value type="uint32" name="WriteAndLockOTPOutLength"/>
+          <value type="buffer" name="WriteAndLockOTPOut" length="WriteAndLockOTPOutLength"/>
+      </output>
+    </command>
+
+    <command number="4" name="Write Default Data" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="WriteDefaultData"/>
+      <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="WriteDefaultDataIn" length="CmdData_p-&gt;Payload.Size">The WriteDefaultDataIn buffer holds the Unit number,the Unit size and Unit data</value>
+        </input>
+      <output>
+          <value type="uint32" name="WriteDefaultDataOutLength"/>
+          <value type="buffer" name="WriteDefaultDataOut" length="WriteDefaultDataOutLength"/>
+      </output>
+    </command>
+
+    <command number="5" name="Write Full Signature" flag="true1" source="PC">
+        <documentation>
+        </documentation>
+        <interface type="loader" name="WriteFullSignature"/>
+        <input>
+          <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="WriteFullSignIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+          <value type="uint32" name="WriteFullSignOutLength"/>
+          <value type="buffer" name="WriteFullSignOut" length="WriteFullSignOutLength"/>
+      </output>
+    </command>
+
+    <command number="6" name="Write CID" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="WriteCID"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="WriteCIDIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="WriteCIDOutLength"/>
+        <value type="buffer" name="WriteCIDOut" length="WriteCIDOutLength"/>
+      </output>
+    </command>
+
+  <command number="7" name="Write Test Signature" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="WriteTestSignature"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="WriteTestSignIn" length="CmdData_p-&gt;Payload.Size"/>
+    </input>
+    <output>
+        <value type="uint32" name="WriteTestSignOutLength"/>
+        <value type="buffer" name="WriteTestSignOut" length="WriteTestSignOutLength"/>
+    </output>
+    </command>
+
+    <command number="8" name="Erase Security Data" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="EraseSecurityData"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="EraseSecDataIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="EraseSecDataOutLength"/>
+        <value type="buffer" name="EraseSecDataOut" length="EraseSecDataOutLength"/>
+      </output>
+    </command>
+
+    <command number="9" name="Key Sharing Stage 1 Request" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="KeySharingStage1Request"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="KeySharStage1ReqIn" length="CmdData_p-&gt;Payload.Size">The KeySharStage1ReqIn buffer holds the Version (1 byte), the ID (4 bytes) and Random Value (24 bytes)</value>
+      </input>
+      <output>
+        <value type="uint32" name="KeySharStage1ReqOutLength"/>
+        <value type="buffer" name="KeySharStage1ReqOut" length="KeySharStage1ReqOutLength"/>
+      </output>
+    </command>
+
+    <command number="10" name="Key Sharing Stage 2 Request" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="KeySharingStage2Request"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="KeySharStage2ReqIn" length="CmdData_p-&gt;Payload.Size">The KeySharStage2ReqIn buffer holds the ID (4 bytes), the Cipher (1 byte), the CertificateLength (4 bytes) and  Certificate (CertificateLength)</value>
+      </input>
+      <output>
+        <value type="uint32" name="KeySharStage2ReqOutLength"/>
+        <value type="buffer" name="KeySharStage2ReqOut" length="KeySharStage2ReqOutLength"/>
+      </output>
+    </command>
+
+    <command number="11" name="Key Sharing Stage 3 Request" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="KeySharingStage3Request"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="KeySharStage3ReqIn" length="CmdData_p-&gt;Payload.Size">The KeySharStage3ReqIn buffer holds the ID (4 bytes), C2 (16 bytes) and MAC (20 bytes).</value>
+      </input>
+      <output>
+        <value type="uint32" name="KeySharStage3ReqOutLength"/>
+        <value type="buffer" name="KeySharStage3ReqOut" length="KeySharStage3ReqOutLength"/>
+      </output>
+    </command>
+
+    <command number="12" name="DRM Secure Storage Request" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="DRMSecureStorageRequest"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="DRMSecStorReqIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="DRMSecStorReqOutLength"/>
+        <value type="buffer" name="DRMSecStorReqOut" length="DRMSecStorReqOutLength"/>
+      </output>
+    </command>
+
+    <command number="14" name="Verify Control Keys" flag="true1" source="PC">
+      <documentation>
+        This command is used to compare received SIM Lock keys against the SIM Lock keys stored in the ME.
+      </documentation>
+      <interface type="loader" name="VerifyControlKeys"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="VerifyControlKeysIn" length="CmdData_p-&gt;Payload.Size">There are 12 SIM Lock Keys, each represented with a 16 bytes long string.</value>
+      </input>
+      <output>
+        <value type="uint32" name="VerifyControlKeysOutLength"/>
+        <value type="buffer" name="VerifyControlKeysOut" length="VerifyControlKeysOutLength"/>
+      </output>
+  </command>
+
+  <command number="16" name="Secure Storage Request" flag="true1" source="PC">
+      <documentation>
+      </documentation>
+      <interface type="loader" name="SecureStorageRequest"/>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+        <value type="buffer" name="SecStorReqIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+        <value type="uint32" name="SecStorReqOutLength"/>
+        <value type="buffer" name="SecStorReqOut" length="SecStorReqOutLength"/>
+      </output>
+    </command>
+  </group>
+
+  <group number="7" name="Reset group">
+    <documentation>
+      A2 Reset Commands group (0x07)
+    </documentation>
+
+    <interface type="loader" name="A2_Reset"/>
+
+    <command number="1" name="Init Request" flag="true1" source="PC">
+      <interface type="loader" name="InitRequest"/>
+      <documentation>
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="InitRequestIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+          <value type="uint32" name="InitRequestOutLength"/>
+          <value type="buffer" name="InitRequestOut" length="InitRequestOutLength"/>
+      </output>
+    </command>
+
+    <command number="2" name="Update Request" flag="true1" source="PC">
+      <interface type="loader" name="UpdateRequest"/>
+      <documentation>
+      </documentation>
+      <input>
+        <value type="uint32" name="PayloadSize">Application packet length</value>
+          <value type="buffer" name="UpdateRequestIn" length="CmdData_p-&gt;Payload.Size"/>
+      </input>
+      <output>
+          <value type="uint32" name="UpdateRequestOutLength"/>
+          <value type="buffer" name="UpdateRequestOut" length="UpdateRequestOutLength"/>
+     </output>
+    </command>
+  </group>
+
+  <group number="16" name="Control massage">
+    <documentation>
+      A2 Control massage (0x10)
+    </documentation>
+
+    <interface type="loader" name="A2_Control"/>
+
+    <command number="1" name="Loader Started" source="ME">
+      <interface type="loader" name="LoaderStarted"/>
+      <documentation>
+      </documentation>
+      <input>
+        <value type="uint32" name="LoaderStartedInLength"/>
+        <value type="buffer" name="LoaderStartedIn" length="LoaderStartedInLength"/>
+      </input>
+      <output>
+        <value type="buffer" name="LoaderStartedOut" length="CmdData_p-&gt;Payload.Size"/>
+      </output>
+    </command>
+
+    <command number="5" name="Loader Not Started" source="ME">
+      <interface type="loader" name="LoaderNotStarted"/>
+      <documentation>
+      </documentation>
+      <input>
+    <value type="uint32" name="LoaderNotStartedInLength"/>
+    <value type="buffer" name="LoaderNotStartedIn" length="LoaderNotStartedInLength"/>
+      </input>
+      <output>
+    <value type="buffer" name="LoaderNotStartedOut" length="CmdData_p-&gt;Payload.Size"/>
+      </output>
+    </command>
+  </group>
+
+</commandspec>

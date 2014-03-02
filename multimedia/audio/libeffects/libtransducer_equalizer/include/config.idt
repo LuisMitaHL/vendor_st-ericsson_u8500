@@ -1,0 +1,90 @@
+#ifndef _TRANSDUCER_EQUALIZER_CONFIG_H_
+#define _TRANSDUCER_EQUALIZER_CONFIG_H_
+
+
+#define NB_MAX_TRANSDUCER_EQUALIZER_BIQUAD_CELLS 40
+#define NB_MAX_TRANSDUCER_EQUALIZER_FIR_COEFS    400
+
+#define TEQ_FIFO_CONFIG_SIZE                     3
+
+typedef struct
+{
+    t_uint16 iMemoryPreset;
+    t_uint16 istereo;                  /* STATIC, 0 : mono, 1 : stereo, default 0 */
+    t_uint16 inb_alloc_biquad_cells_per_channel;
+    t_uint16 inb_alloc_FIR_coefs_per_channel;
+    t_uint16 ialert_on;
+} TransducerEqualizerParams_t;
+
+
+typedef struct
+{
+    t_uint16 b_exp;
+    t_uint16 b0_low;    // 16 LSB
+    t_uint16 b0_high;   // 16 MSB
+    t_uint16 b1_low;    // 16 LSB
+    t_uint16 b1_high;   // 16 MSB
+    t_uint16 b2_low;    // 16 LSB
+    t_uint16 b2_high;   // 16 MSB
+    t_uint16 a1_low;    // 16 LSB
+    t_uint16 a1_high;   // 16 MSB
+    t_uint16 a2_low;    // 16 LSB
+    t_uint16 a2_high;   // 16 MSB
+} t_transducer_equalizer_biquad_cell_params;
+
+
+typedef struct
+{
+    t_uint16 coef_low;  // 16 LSB
+    t_uint16 coef_high; // 16 MSB
+} t_transducer_equalizer_FIR_coef_params;
+
+
+typedef struct
+{
+    t_uint16                                  iEnable;
+    t_uint16                                  iautomatic_transition_gain;
+    t_uint16                                  iaverage_gain_exp_l;
+    t_uint16                                  iaverage_gain_mant_l_low;                 // 16 LSB
+    t_uint16                                  iaverage_gain_mant_l_high;                // 16 MSB
+    t_uint16                                  iaverage_gain_exp_r;
+    t_uint16                                  iaverage_gain_mant_r_low;                 // 16 LSB
+    t_uint16                                  iaverage_gain_mant_r_high;                // 16 MSB
+    t_uint16                                  itransition_gain_exp_l;
+    t_uint16                                  itransition_gain_mant_l_low;              // 16 LSB
+    t_uint16                                  itransition_gain_mant_l_high;             // 16 MSB
+    t_uint16                                  itransition_gain_exp_r;
+    t_uint16                                  itransition_gain_mant_r_low;              // 16 LSB
+    t_uint16                                  itransition_gain_mant_r_high;             // 16 MSB
+    t_uint16                                  ismoothing_delay_low;                     // 16 LSB
+    t_uint16                                  ismoothing_delay_high;                    // 16 MSB
+    t_uint16                                  iFIR_smoothing_delay_granularity;
+    t_uint16                                  inb_biquad_cells_per_channel;
+    t_uint16                                  inb_FIR_coefs_per_channel;
+    t_uint16                                  isame_biquad_l_r;
+    t_uint16                                  isame_FIR_l_r;
+    t_uint16                                  ibiquad_first;
+    t_uint16                                  ibiquad_gain_exp_l;
+    t_uint16                                  ibiquad_gain_mant_l_low;                  // 16 LSB
+    t_uint16                                  ibiquad_gain_mant_l_high;                 // 16 MSB
+    t_uint16                                  ibiquad_gain_exp_r;
+    t_uint16                                  ibiquad_gain_mant_r_low;                  // 16 LSB
+    t_uint16                                  ibiquad_gain_mant_r_high;                 // 16 MSB
+    t_uint16                                  iFIR_gain_exp_l;
+    t_uint16                                  iFIR_gain_mant_l_low;                     // 16 LSB
+    t_uint16                                  iFIR_gain_mant_l_high;                    // 16 MSB
+    t_uint16                                  iFIR_gain_exp_r;
+    t_uint16                                  iFIR_gain_mant_r_low;                     // 16 LSB
+    t_uint16                                  iFIR_gain_mant_r_high;                    // 16 MSB
+    t_transducer_equalizer_biquad_cell_params ibiquad_cells[NB_MAX_TRANSDUCER_EQUALIZER_BIQUAD_CELLS];
+    t_transducer_equalizer_FIR_coef_params    iFIR_coefs   [NB_MAX_TRANSDUCER_EQUALIZER_FIR_COEFS];
+} TransducerEqualizerConfig_t;
+
+typedef struct
+{
+    t_uint16                    write_index;                    // host read/write, mpc read
+    t_uint16                    read_index;                     // host read,       mpc read/write (host write at init only)
+    TransducerEqualizerConfig_t config[TEQ_FIFO_CONFIG_SIZE];   // host write,      mpc read
+} TransducerEqualizerConfigStructFifo_t;
+
+#endif

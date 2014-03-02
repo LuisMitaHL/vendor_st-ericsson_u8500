@@ -1,0 +1,319 @@
+***************************************
+* Nomadik Multiprocessing Framework   *
+***************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+ 
+Author:         Jean-Philippe Fassino & NMF Team    
+Organization:   MMD
+
+1   GENERAL INFORMATIONS
+
+1.1 Release number:
+
+Release number: 2.1.0 "Desperados"
+Date:           October 09th, 2009
+
+*** Warning *** 
+Think has been deprecated and will be replace by Linux for OSI development.
+It will only been partially supported for 8500 V1 board.
+Please switch to this new environment as soon as possible.
+
+1.2 Board configuration supported:
+
+    - STn8815 SAA & SVA
+        * Cut A0
+            Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        * Cut B0
+        * Cut C0
+    - STn8820 SAA & SVA & SIA 
+        * Cut A0
+    - STn8500 SVA & SIA
+        * SVP 
+            2.2 (Argc/Argv not supported)
+            2.3.0
+            2.4.1
+        * PEPS 8500
+            PEPS SIA with an ED mapping + MMDSP V1
+        * MOP500-ED
+            Only flash board without normal application in flash image 
+              (use -Normal_Appli 0 on command line flasher)
+            Flash with NPT referenced in nmf/workstation.txt
+        * HREF-ED V1.0
+            Only flash board without normal application in flash image 
+              (use -Normal_Appli 0 on command line flasher)
+            Flash with NPT referenced in nmf/workstation.txt
+
+1.3 Board configuration unsupported:
+
+    - STn8500 SVA & SIA
+        * SVP 2.0 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+            STM IP trace not available          
+        * SVP 2.1 (only 90% of test suite passed !)
+            Issue in TLM IP HSEM 
+        * svp8500_v1-think not supported until MMDSP simulator code execution in ESRAM fixed
+        * MOP500-ED
+            Board not flash or flash with normal application in flash image
+
+1.3 First level support contact:
+
+1.4 Symbian baseport version:
+
+    Not relevant
+
+1.5 Tools versioning:
+
+    See MMENV for more information.
+
+    ARM compiler version: 
+        - RVCT 2.2-sp1-593 for 8815 & 8820 
+        - RVCT 4.0_build529 for 8500 
+    
+    MMDSP compiler version
+        - MMDSP Toolset 4.2.0 Patch 3
+
+
+2   COMMON COMPONENT LIST VERSIONING:
+
+    - RODOS 
+        http://gnx772:8080/dokuwiki/doku.php?id=mmf:tools:rodos
+
+    - Internal MMD dependencies (See nmf/workstation.txt RODOS dependencies for version)
+        * Launcher
+        * MMENV
+        * Platform script
+        
+        # RODOS components.txt
+        include rod+package://com.stericsson.nmf:2.1.0/workstation.txt
+    
+    - Lauterbach trace32 ref_patch_p20090717
+    
+    - Java SE Runtime Environment  
+        http://java.sun.com
+        At least JRE 1.5 or JRE 6 (on Linux please use at least JRE 6 due to JVM bug regarding execution access rights)      
+
+
+3   RELEASE CONTENT
+
+    See nmf/doc/file_hierarchies.txt about file tree organization !
+
+    - Toolbox
+    
+    - Component Manager
+
+    - Execution Engine
+
+    - Think
+    
+        # RODOS components.txt
+        include rod+package://com.stericsson.nmf.think:2.1.0/components.txt
+        # Examples
+        com.stericsson.nmf.examples                     [ro::version=2.1.0,       path=examples]
+    
+
+    - LOS
+
+
+3.1 Component Manager
+
+	- The MPC component network could be trace during construction and dump when required.
+		Today dump is partial since we dump only component not binding.
+		Use CM_SetMode(CM_CMD_MPC_TRACE_ON)
+		
+	- Add CM_BindComponentTrace API in order to trace through XTI/STM each call on this interface on DSP.
+		-> These traces is exploited by tool profile.
+		
+	- Check that loaded component have been compile with the right NMF version.
+		-> Error if major.minnor version differ.
+		-> Warning if not only patch version differ.
+		
+	- Deprecated API CM_BindComponentToHost & CM_BindComponentFromHost have been removed.
+		-> User CM_BindComponentToUser & CM_BindComponentFromUser instead.
+	
+	- Add CM_FlushChannel() API. This API allow to send a CM_FLUSH_MESSAGE error to CM_GetMessage(), this
+	  allow user to avoid to use a channel whereas it destroy it using CM_CloseChannel().
+
+	- Add CM_GetComponentMemoryInfo() API. This API allows to calculate
+	  component memory usage (on first instantiate, and on the following
+	  ones). The implementation is on the user-side.
+	  
+	- CM_RegisterVirtualInterrupt -> EE_RegisterVirtualInterrupt
+		Either if not clean, stay in CM for simplicity reason!!!
+	
+
+3.2 MPC Execution Engine
+
+	- Homogenize MPC & Host STM trace format
+
+	- Basic Ultra Low Power implementation (rely on Think implementation)
+	
+	- Add Synchronous trace in ADL for Host EE, like that:
+		CM_BindComponentTrace(...) instead of CM_BindComponent()
+	  Trace binding component used in this API must be generated through
+	  	nmfitfc -trace <interface>
+
+
+3.3 Host Execution Engine
+
+	- Add STM trace in order to analyze execution engine scheduling activity through NMF tool profile.
+
+	- Homogenize MPC & Host STM trace format
+	
+	- The ARM composite component network could be trace during construction and dump when required.
+		Today dump is partial since the inter-composite binding is not trace.
+		Note: Today API is not User, will be fixed later !
+		
+	- Add Synchronous trace in ADL for Host EE, like that:
+		binds A.a to B.b trace
+
+	- Dynamic execution thread creation priority by priority when launching composite
+	
+    - Add EE_FlushChannel() API. This API allow to send a EE_FLUSH_MESSAGE error to EE_GetMessage(), this
+      allow user to avoid to use a channel whereas it destroy it using EE_CloseChannel().
+      
+    - Check that event FIFO was really empty when destroying it and that event was not currently queued in 
+      execution engine scheduler.
+    	-> If not Panic generated
+    	
+    - Trace on workstation is dump through stdout.
+
+    
+3.4 OS integration guidelines
+
+	- OSAL_Write32 -> OSAL_Write64 in order to provide best bandwidth usage.
+	
+	- Host EE OSAL enhancement
+		-> ee.api.configuration removed
+		-> ee.api.priority added 
+		
+	- Add CM_BindComponentTrace API which imply an extra parameter on CM_OS/ENGINE_bindComponent:
+		CM_ENGINE_BindComponent(...., t_bool traced);
+	
+	- Update CM_OS_GetRequiredComponentFiles() behaviors.
+		Now, fileList & listSize parameters only fill for loading EE in CM_INTERNAL_Init.
+		Elsewhere in each binding API, these parameters are NULL.
+	
+	- Implement CM_FlushChannel().
+	
+	- Implement EE_FlushChannel().
+
+3.5 Tools
+
+	- STM trace format has been update, please switch to new NMF tool profiler.
+	
+	- Update parser (IDL, ADL & CPP) in order to not interpret unicode \u character which break it.
+	
+	- Generate trace binding component through:
+		nmfitfc -trace <interface>
+		
+
+3.6 Programming model
+
+	- Add Synchronous trace in ADL for Host EE, like that:
+		binds A.a to B.b trace
+
+3.7 Think
+
+	- 8815 XTI IP no more supported since not 64bits.
+		-> CM, Host EE & DSP EE trace no more generated
+		
+	-  Variable cfgComponentRepositoryPath must be declared in user code in order to set 
+	   NMF CM component repository path.
+ 	   Component repository path is directory separate by ";".
+		
+		char   cfgComponentRepositoryPath[] = "Path1;Path2;Path3";
+	
+	-  Basic Ultra Low Power implementation for ED (will be removed in V1)
+	
+	-  Add ILOS_CleanDestroyedJob()
+
+3.8 Linux & Symbian
+    
+3.9 Examples
+
+3.10 Packaging
+
+4   DEFECT STATUS
+
+    Defects must be logged on VI:
+        http://gnb500137.gnb.st.com/VIWebDev/default.asp
+            /Dev/OS and Platform/Multimedia/COMMON/NMF/**
+            _Support if category unknown
+
+
+4.1 Fixed defect list
+
+	24554   increase memory for camera VPB1 (BMS) to 8Mpix
+	24500	[user api] The availability of a service CM channel is not checked during the call of an CM_xxx method
+	24495	warnings in cpp.hpp
+	24293	Including \u inside a comment in a cpp file crashes the ARM-NMF compiler
+	23516   CM_ENGINE_SetMode() with CM_CMD_MPC_TRACE_xx or CM_CMD_MPC_PRINT_xx crash if ee not started
+    21851   Asynchronously bound composite component : trace contains corrupted 'this' addresses
+
+
+4.2 Active defect list
+
+	24717	Default domains should not be destroyed
+	24713	CM_GetMpcMemoryStatus & destroyed domain
+	24598	name C++ interface headers as .hpp instead of .h
+	24580	NMF think 2.0.4 fails to boot on mop500ed version1.0
+	24428	auto-generated wrapper component does not consider extended components
+	23853	Compiler: 2-D arrays issues on MMDSP for .IDT files
+	23816	CPPFLAGS issue when defined in a ARM-composite and used in multiple component included in the composite
+    23488   Assert in mmte_testStart when leading '/' in logdir
+    23483   smpe ee scheduler can modify targetInUse component variable whereas component has been destroy leading to potential crash
+    23121   setConfig argument passing by pointer instead of structure
+    22408   resetting/stopping mmdsp core on mop500 stop mtu timers
+    22218   provided interface are not inside the code, no problem at compilation ????
+    22182   test api: flush of results before test_end
+    20810   "#pragma interface" is not set automatically by the nmf toolset when calling a method in a referenced interface
+    20440   No way to compile some files with specific options
+ 
+
+5   COMPILATION RULES
+
+5.1 Compilation procedure & options
+
+    Compilation options is fully based on MMENV.
+    
+
+5.2 Compilation configurability
+
+    EXPORT_SHARED: can be re-defined for exporting API in a specific manner
+    IMPORT_SHARED: can be re-defined for importing API in a specific manner
+    
+    For Think dynamic configuration, see doxygen documentation (think/doc/nmfthink/index.html).
+
+    
+5.3 Installation
+
+    Please define components.txt using RODOS.
+
+
+6   QA CHECK STATUS
+
+6.1 Compilation warning / error
+
+6.2 Code Static analysis result
+
+    Not done.
+
+6.3 Symbian Creasy scheduler check (valid until dual core ED mode supported)
+
+    Done.
+
+6.4 Confidentiality safe
+
+	Done.
+
+7   DOCUMENTS
+    
+    Test report available at:
+        http://gnx2487:9000/
+
+    Source codes can be found in :
+        Clearcase
+            /vobs/nmf
+        Codex SVN site: 
+            http://codex.cro.st.com/svn/?group_id=598

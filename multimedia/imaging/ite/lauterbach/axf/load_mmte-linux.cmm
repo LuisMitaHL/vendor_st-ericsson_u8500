@@ -1,0 +1,49 @@
+
+GLOBAL &usb &platform
+
+do ../../imaging/ite/lauterbach/config_terminal.cmm
+
+;y.spath.setrecursedir ../../../../shared/mmte
+;y.spath.setrecursedir ../../../../shared/cli
+;y.spath.setrecursedir ../../../../shared/ens
+;y.spath.setrecursedir ../../../../shared/enscore
+;y.spath.setrecursedir ../../../../shared/enswrapper
+;y.spath.setrecursedir ../../../../shared/nmf/think
+;y.spath.setrecursedir ../../../../shared/omxpointer
+;y.spath.setrecursedir ../../../../shared/displaysink/proxy
+;y.spath.setrecursedir ../../../../shared/displaysink/nmf
+;y.spath.setrecursedir ../../../../shared/fakesink/proxy
+;y.spath.setrecursedir ../../../../shared/clocksource/proxy
+;y.spath.setrecursedir ../../../../shared/fakesink/nmf
+;y.spath.setrecursedir ../../../../shared/clocksource/nmf
+
+;y.spath.setrecursedir ../../../ite_omx_use_cases/proxy
+;y.spath.setrecursedir ../../../ite_omx_use_cases/nmf
+;y.spath.setrecursedir ../../../hsmcamera
+;y.spath.setrecursedir ../../../ifm
+;y.spath.setrecursedir ../../../ite
+;y.spath.setrecursedir ../../../tunning
+
+;y.spath.setrecursedir ../../../../imaging/sia_hw_components_8500ed/
+
+sys.JTAGCLOCK 20Mhz
+
+;cd ../../imaging/ite/lauterbach/axf/
+
+menu.REPROGRAM ../../imaging/ite/lauterbach/linux_cmd.men
+menu.REPROGRAM ../../imaging/ite/lauterbach/omx_script_cam.men
+menu.REPROGRAM ../../imaging/ite/lauterbach/omx_script_interaction.men
+menu.REPROGRAM ../../imaging/ite/lauterbach/sia_periphs.men
+
+cd ../../shared/lauterbach/util
+
+sys.JTAGCLOCK 20Mhz
+
+if ("&usb"=="")
+(
+    ;PRINT "No USB >&usb<"
+    term.write term_out_omx.txt
+)
+
+; active next line if you want symbols for debugging
+;do app_debug mmte

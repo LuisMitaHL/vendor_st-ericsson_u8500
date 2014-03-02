@@ -1,0 +1,57 @@
+//
+//       Configuration file for      algo (MPEG2 deocder)
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Constructor of this component
+primitive mpeg2dec.mpc.algo extends debug.mpc.printf_type singleton
+{
+
+provides lifecycle.constructor                              as constructor
+provides mpeg2dec.mpc.api.algo                              as iAlgo
+provides mpeg2dec.mpc.api.configure_algo	  as iConfigureAlgo
+provides mpeg2dec.mpc.api.update_algo	  as iUpdateAlgo
+provides resource_manager.api.signal                        as iSignal referenced
+
+requires resource_manager.api.buffer                        as iBuffer
+requires resource_manager.api.mtf                           as iMtf
+requires resource_manager.api.interrupt						as iInterrupt
+
+//      --------------
+//      - Source files
+
+sources src/algo.c
+sources src/m2d_error.c
+sources src/m2d_getblk.c
+sources src/m2d_gethdr.c
+sources src/m2d_getmv.c
+sources src/m2d_getpic.c
+sources src/m2d_getvlc.c
+sources src/m2d_hvcfg.c
+sources src/m2d_procmvh.c
+sources src/t1xhv_m2d.c
+
+
+//      ----------------------------------------
+//      - Necessary paths (mainly for inclusion)
+
+//option CPPFLAGS "-ICONF_ROOT/inc/SVA_SUBSYSTEM \
+//		 -ICONF_ROOT/inc -D__T1XHV_NMF_ENV=1 -DT1XHV_TASK_DECODE -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP \
+//                 -DMMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DSTANDALONE_VERSION \
+//                 -DT1XHV_IDN_FW=COMPONENT_VERSION -DT1XHV_IDN_HW=HW_VERSION"
+
+option incdir   "./inc"
+
+option CPPFLAGS " \
+		 -D__T1XHV_NMF_ENV=1 -DT1XHV_TASK_DECODE -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP \
+                 -DMMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DSTANDALONE_VERSION \
+                 -DT1XHV_IDN_FW=COMPONENT_VERSION -DT1XHV_IDN_HW=HW_VERSION"
+
+option CFLAGS "-O3 -g -mode16"
+//option CFLAGS "-g -mode16 "
+option stack= 1024
+option memories EXT16RAM|EMB24RAM|EMB16RAM|YRAM
+
+}

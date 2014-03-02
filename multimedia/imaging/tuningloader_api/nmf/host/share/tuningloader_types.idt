@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+
+#ifndef _tuningloader_types_idt_
+#define _tuningloader_types_idt_
+
+// Tuning loader error codes
+typedef enum {
+    TUNING_LOADER_OK,
+    TUNING_LOADER_BAD_ARGUMENT,
+    TUNING_LOADER_NOT_IMPLEMENTED,
+    TUNING_LOADER_ALREADY_LOADED,
+    TUNING_LOADER_INTERNAL_ERROR,
+    TUNING_LOADER_MALLOC_FAILED,
+    TUNING_LOADER_FILE_IO_ERROR,
+    TUNING_LOADER_FILE_NOT_FOUND,
+    TUNING_LOADER_TUNING_ERROR,
+    TUNING_LOADER_CAMERA_ID_MISMATCH,
+    TUNING_LOADER_REDUCTION_ERROR,
+    TUNING_LOADER_TRANSLATION_ERROR,
+    TUNING_LOADER_DECODE_ERROR
+} t_tuningloader_error;
+
+
+//numeration of possible levels of RAW processing
+typedef enum {
+ImageUnprocessed =0,
+Imageprocessed,
+ImageVendorStartUnused= 0x70000000,
+ImageMax = 0x7FFFFFFF
+}preset_type;
+
+
+// Sensor module information
+typedef struct {
+   t_uint8   manufId;
+   t_uint16  modelId;
+   t_uint8   revNum;
+   t_uint8   Fuse_Id[3]; // FuseId 1 to 3
+   t_uint32  Fuse_Id4;   // FuseID 4
+   preset_type ePreset; 
+} t_camera_info;
+
+
+
+// Firmware blocks information
+typedef struct {
+   t_uint16   subBlockCount;
+   t_uint16*  pSubBlockId;
+} t_fw_blocks_info;
+
+// Flash module information
+typedef struct {
+   t_uint8   driverType;
+   t_uint8   driverVersion;
+   t_uint8   ledType;
+   t_uint8   reserved;
+} t_flash_info;
+
+// NVM operation additional info
+typedef struct {
+   t_bool  bRawImageUnprocessed;
+} t_nvm_op_info;
+
+#endif /* _tuningloader_types_idt_ */

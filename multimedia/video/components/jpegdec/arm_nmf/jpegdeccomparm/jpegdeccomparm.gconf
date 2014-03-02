@@ -1,0 +1,105 @@
+// Prefix or Suffix Interpretations
+// - ARM : NMF component on ARM domain
+// - MPC : NMF component on MPC domain
+// - HOST : External Processing component
+// - E(F)BD : Empty(Fill) Buffer Done
+// - E(F)TB : Empty(Fill) This Buffer
+
+
+composite jpegdec.arm_nmf.jpegdeccomparm{
+
+	contains jpegdec.arm_nmf.parser_mpc as cJpegdecParser
+	contains jpegdec.arm_nmf.jpegdeccontroller as cJpegdecController
+	contains nmf.host.shared_bufin  as cSharedBufInARM
+	contains nmf.host.shared_bufout as cSharedBufOutARM
+
+	#include "../../mpc/composite/jpegdecmpc/jpegdecmpc.inc"
+	
+	//Exposed Interfaces for Processing component
+
+	// Input Bitstream Buffer Port
+	provides armnmf_emptythisbuffer   as      emptythisbuffer
+	binds this.emptythisbuffer to 	cJpegdecParser.emptythisbuffer
+
+	requires armnmf_fillthisbuffer    as      inputport
+	binds cJpegdecParser.inputport to 	this.inputport
+	
+	// Output Image Buffer Port
+	requires armnmf_emptythisbuffer   as      outputport
+	binds cJpegdecParser.outputport to 	this.outputport
+
+	provides armnmf_fillthisbuffer    as      fillthisbuffer
+	binds this.fillthisbuffer to 	cJpegdecParser.fillthisbuffer
+	
+	// FSM interfaces
+	provides fsminit          as      fsminit
+	binds this.fsminit to 	cJpegdecController.fsminit
+
+	provides sendcommand      as      sendcommand
+	binds this.sendcommand to 	cJpegdecController.sendcommand
+
+	requires eventhandler     as      proxy
+	binds cJpegdecController.proxy to 	this.proxy
+	
+
+	// Custom Interfaces
+	provides jpegdec.arm_nmf.api.memoryRequirements as iMemoryRequirements
+	binds this.iMemoryRequirements to cJpegdecParser.iMemoryRequirements
+	
+	provides jpegdec.arm_nmf.api.sendmemoryContext as iSendContextRequirements	
+	binds this.iSendContextRequirements to cJpegdecParser.iSendContextRequirements
+	
+	provides jpegdec.arm_nmf.api.setConfig as iSetConfig
+	binds this.iSetConfig to cJpegdecParser.iSetConfig
+
+	provides jpegdec.arm_nmf.api.computeARMLoad as icomputeARMLoad
+	binds this.icomputeARMLoad to cJpegdecParser.icomputeARMLoad
+
+	requires jpegdec.arm_nmf.api.portSettings    as      iChangePortSettingsSignal
+	binds cJpegdecParser.iChangePortSettingsSignal to this.iChangePortSettingsSignal
+
+	
+	// Bindings within 
+	binds cJpegdecParser.me    to  cJpegdecParser.postevent asynchronous fifo=8
+
+	//Binding custom ddep interfaces
+	binds cJpegdecParser.iDdep to cJpegdecDdep.iDdep		asynchronous fifo=8
+	
+	//Bindings shared buffer components
+	//Input port bindings with MPC Component
+	binds cSharedBufInARM.mpc to cSharedBufInMPC.emptythisbuffer	        asynchronous fifo=8 
+	binds cSharedBufInMPC.host to cSharedBufInARM.fillthisbuffer	asynchronous fifo=8
+
+	//Output port bindings MPC Component
+	binds cSharedBufOutARM.mpc to cSharedBufOutMPC.fillthisbuffer	asynchronous fifo=8
+	binds cSharedBufOutMPC.host to cSharedBufOutARM.emptythisbuffer	asynchronous fifo=8
+
+	//Input port bindings with Parser component
+	binds cJpegdecParser.emptythisbufferSharedBufIn to cSharedBufInARM.emptythisbuffer
+	binds cSharedBufInARM.host to cJpegdecParser.sharedBufInEBD asynchronous fifo=8
+
+	//Output port bindings with parser component
+	binds cJpegdecParser.fillthisbufferSharedBufOut to cSharedBufOutARM.fillthisbuffer
+	binds cSharedBufOutARM.host to cJpegdecParser.sharedBufOutFBD  asynchronous fifo=8
+
+
+	//Bindings of headers port
+	binds cJpegdecParser.emptythisheader to cJpegdecDdep.emptythisheader	asynchronous fifo=8
+	binds cJpegdecDdep.headerport to cJpegdecParser.returnconsumedheader	asynchronous fifo=8
+
+	//Binding custom ddep interfaces
+	//binds cJpegdecParser.iDdep to cJpegdecDdep.iDdep		asynchronous fifo=8
+
+	//Binding of JpegdecController with other NMF components
+	binds cJpegdecController.parserSendcommand to cJpegdecParser.sendcommand	asynchronous fifo=8
+	binds cJpegdecController.jpegdecMPCSendcommand to cJpegdecDdep.sendcommand	asynchronous fifo=8
+
+	binds cJpegdecParser.proxy to 	cJpegdecController.parserHandler	asynchronous fifo=8
+	binds cJpegdecDdep.proxy to 	cJpegdecController.jpegdecMPCHandler	asynchronous fifo=8
+
+	binds cJpegdecController.parserFSMinit to cJpegdecParser.fsminit	asynchronous fifo=8
+	binds cJpegdecController.jpegdecMPCFSMinit to cJpegdecDdep.fsminit	asynchronous fifo=8
+	
+
+	option CPPFLAGS "-g -O3 -D__CACHE_OPTI"
+}

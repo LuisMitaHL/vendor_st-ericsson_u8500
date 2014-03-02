@@ -1,0 +1,7 @@
+BUILD_MMDSP_PROC_imaging/ste3a=bin
+NO_STD_BUILD_imaging/ste3a=1
+BUILD_MMDSP_NMF_imaging/ste3a=bin
+BUILD_ARM_PROC_imaging/ste3a=bin
+BUILD_ARM_CODE_imaging/ste3a=bin
+BUILD_ARM_NMF_imaging/ste3a=bin
+BUILD_XP70_SIA_CODE_imaging/ste3a=false

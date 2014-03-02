@@ -1,0 +1,74 @@
+#do $(IMAGING_PATH)/ite_nmf/script/debug/gnd_test_VariableFrameRate_VGA_LRHR_secondary.ite
+
+LogPE disable
+#startenv grab_vpip_display_01_01 _HRoutVGA_HRoutVGA_SENSOR0 
+
+setusecase HR VGA YUV422RI 
+setusecase LR VGA YUV422RI 
+usagemode video
+
+VariableFramerate_Set 1
+manualfps 10
+SetMaximumFrameRate 22
+
+LRHR prepare
+LRHR start
+
+# test on start-stop 
+TestVariableFrameRate
+
+zoomset 3
+manualfps 15
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+## test zoom alone
+zoomset 6
+getfps HR
+TestVariableFrameRate
+
+### test fps alone
+manualfps 22
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+LRHR stop
+
+## Now test in case of BMS
+setusecase BMS VGA RAW12
+usagemode still
+bmsmode STILL
+bmsout BAYERSTORE2
+
+VariableFramerate_Set 1
+manualfps 5
+SetMaximumFrameRate 5
+usagemode still
+bms prepare
+getusecase          
+bms start
+wait 1
+TestVariableFrameRate
+bms stop
+
+## now back to streaming
+SetMaximumFrameRate 22
+usagemode video
+LRHR start
+getfps HR
+TestVariableFrameRate
+
+## test zoom alone
+zoomset 6
+getfps HR
+TestVariableFrameRate
+
+## test framerate alone
+manualfps 22
+glacehistoexp req
+getfps HR
+TestVariableFrameRate
+
+LRHR stop

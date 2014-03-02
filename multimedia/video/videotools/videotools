@@ -1,0 +1,29 @@
+    if ("$1" == "fw") then
+        echo Standalone firmware, disables NMF/OMX build 
+        unsetenv NO_STD_BUILD
+        setenv NO_NMF_BUILD 1
+        setenv NO_OMX_BUILD 1
+    else if ("$1" == "nmf") then
+        echo "NMF development settings (disable OMX and standalone build)" 
+        unsetenv NO_NMF_BUILD
+        setenv NO_STD_BUILD 1
+        setenv NO_OMX_BUILD 1
+    else if ("$1" == "omx") then
+        echo "omx proxy settings (disable standalone build)"
+        unsetenv NO_NMF_BUILD
+        setenv NO_STD_BUILD 1
+        unsetenv NO_OMX_BUILD
+    else if ("$1" == "all") then
+        echo "Build everything from standalone FW up to OMX proxy (default option)"
+        unsetenv NO_NMF_BUILD
+        unsetenv NO_STD_BUILD
+        unsetenv NO_OMX_BUILD
+    else
+        echo "Unknown build type $1"
+    endif
+
+    # TLM
+    setenv SVA_TLM_DIR_ndk8500_ed_ttv /prj/multimedia_shared/common/TOOLS/Linux/internals/TLM/TTV/8820.B0.1.9.47
+    setenv SVA_TLM_DIR_ndk8500_a0_ttv /prj/multimedia_shared/common/TOOLS/Linux/internals/TLM/TTV/8500.A0.1.0.65
+    setenv SVA_TLM_DIR_ndk8500_ed_svp /prj/multimedia_shared/common/TOOLS/Linux/internals/TLM/SVP/NVP_8820_1.4.666-RedHatEnterpriseWS_3-x86_64-gcc_3.4.6
+

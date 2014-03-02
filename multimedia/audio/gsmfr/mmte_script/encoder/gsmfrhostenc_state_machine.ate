@@ -1,0 +1,13 @@
+test_start GSMFR_001 
+test_property  TEST_NAME  gsmfrhostenc_omx_state_machine
+
+# instantiate and configure GSMFR encoder
+do $(NOMADIK)/gsmfr/mmte_script/encoder/gsmfr_enc_nodtx_reformatted_payload_host.ate gsmfr input_reference output_reference
+
+MMTE_CheckParameter gsmfr OMX_IndexParamAudioPortFormat nPortIndex=0 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM  
+MMTE_CheckParameter gsmfr OMX_IndexParamAudioPortFormat nPortIndex=1 nIndex=0 eEncoding=OMX_AUDIO_CodingGSMFR  
+
+# test OMX state machine 
+do $(NOMADIK)/afm/mmte_script/state_machine.ate gsmfr 
+
+test_end

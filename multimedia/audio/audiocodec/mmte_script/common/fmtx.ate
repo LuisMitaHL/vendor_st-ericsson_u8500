@@ -1,0 +1,30 @@
+test_start	CODEC_0009
+test_property	TEST_NAME FMTX
+   
+alias TIMEOUT 0                               
+
+OMX_GetHandle        Fmtx OMX.ST.AFM.FM_SINK
+OMX_SetParameter     Fmtx OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+
+ate_attach_io   Fmtx 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/48k_stereo_ok_le.pcm 0 0 0
+
+
+MMTE_DispatchState OMX_StateIdle Fmtx
+
+#Start
+MMTE_DispatchState OMX_StateExecuting Fmtx
+
+
+#Wait EOS
+MMTE_WaitEvent Fmtx OMX_EventBufferFlag 0 TIMEOUT 
+
+
+#Stop
+MMTE_DispatchState OMX_StateIdle Fmtx
+MMTE_DispatchState OMX_StateLoaded Fmtx
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+unalias TIMEOUT
+test_end

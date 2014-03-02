@@ -1,0 +1,16 @@
+OMX_SendCommand	my_sink_1			OMX_CommandStateSet		OMX_StatePause
+OMX_SendCommand	my_sink_2			OMX_CommandStateSet		OMX_StatePause
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+OMX_SendCommand	my_sink_3			OMX_CommandStateSet		OMX_StatePause
+OMX_SendCommand	my_sink_4			OMX_CommandStateSet		OMX_StatePause
+endif
+OMX_SendCommand	tested_component	OMX_CommandStateSet		OMX_StatePause
+OMX_SendCommand	my_source_1			OMX_CommandStateSet		OMX_StatePause
+MMTE_WaitEvent	my_source_1			OMX_EventCmdComplete	OMX_CommandStateSet	OMX_StatePause
+MMTE_WaitEvent	tested_component	OMX_EventCmdComplete	OMX_CommandStateSet OMX_StatePause
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+MMTE_WaitEvent	my_sink_4			OMX_EventCmdComplete	OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent	my_sink_3			OMX_EventCmdComplete	OMX_CommandStateSet OMX_StatePause
+endif
+MMTE_WaitEvent	my_sink_2			OMX_EventCmdComplete	OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent	my_sink_1			OMX_EventCmdComplete	OMX_CommandStateSet OMX_StatePause

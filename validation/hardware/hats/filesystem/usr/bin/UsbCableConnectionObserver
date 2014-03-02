@@ -1,0 +1,27 @@
+#!/bin/sh
+echo "Polling USB cable connection status from now"
+firstConnection=0
+cableIsConnected=0
+while [ "for ever" ]
+  do
+  if [ $cableIsConnected -eq 0 ]
+      then
+      if [ `cat /sys/usb_status/cable_connect` -eq 1 ]
+	  then
+	  cableIsConnected=1
+	  if [ $firstConnection -eq 0 ]
+	      then
+	      firstConnection=1
+	      /tmp/UsbCableConnectionCallbacksRunOnce
+	  fi
+	  /tmp/UsbCableConnectionCallbacksRun
+      fi
+  else
+      if [ `cat /sys/usb_status/cable_connect` -eq 0 ]
+	  then
+	  cableIsConnected=0
+	  /tmp/UsbCableDisconnectionCallbacksRun
+      fi
+  fi
+  sleep 1
+done

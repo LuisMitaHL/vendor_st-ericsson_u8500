@@ -1,0 +1,35 @@
+#
+# TatlCoex configuration
+#
+
+menuconfig TATLCOEX
+	bool "TatlCoex"
+	depends on DTHSRVHELPER && LIBAB && LIBI2C && TATTOOLS && AUDIOSERVICES && TATLVIDEO && TATLSIM && TATLRF && LIBCONNSERVICES
+	help
+	  depends on DTHSRVHELPER, LIBAB, LIBI2C, TATTOOLS, AUDIOSERVICES, TATLVIDEO, TATLSIM, TATLRF and LIBCONNSERVICES
+
+if TATLCOEX
+
+config TATLCOEX_DIR
+	string
+	default ../tat/tat/tatlcoex
+
+config TATLCOEX_DEPS
+	string
+	default "DTHSRVHELPER LIBAB LIBI2C TATTOOLS AUDIOSERVICES TATLVIDEO TATLSIM TATLRF LIBCONNSERVICES"
+
+config TATLCOEX_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLCOEX
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLCOEX_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLCOEX
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLCOEX

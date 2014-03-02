@@ -1,0 +1,10 @@
+#!/bin/sh
+RES_FILE=$MY_PATH/checkmid.txt
+netstat -ap | grep mid | grep tcp | grep LISTEN > /dev/null                          
+ if [[ $? -eq 0 ]] ; then
+echo "mid is not started"
+fi                                                                                         
+exit   
+
+
+

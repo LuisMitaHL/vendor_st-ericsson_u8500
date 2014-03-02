@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!-- The following DTD must not be included in every configuration file. It is only used when   -->
+<!-- validating the XML document extra comment                                                  -->
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                    	(bax:flash_archive?, bax:ram_image?)>
+    <!ELEMENT bax:source                              	(#PCDATA)>
+    <!ELEMENT bax:flash_archive                       	(bax:entry*)>
+	<!ELEMENT bax:ram_image								(bax:entry*)>
+    <!ELEMENT bax:entry                               	(bax:source,bax:attribute*)>
+    <!ELEMENT bax:attribute                         	(#PCDATA)>
+
+    <!ATTLIST target_configuration      xmlns:bax       CDATA                                   	#FIXED "TBD">
+    <!ATTLIST bax:entry                 name      		CDATA                         				#REQUIRED>
+    <!ATTLIST bax:entry                 type      		CDATA										#REQUIRED>
+    <!ATTLIST bax:attribute             name      		CDATA                         				#REQUIRED>
+]>
+<target_configuration>
+	<bax:ram_image>
+		<bax:entry name="issw" type="x-empflash/image">
+			<bax:source>issw</bax:source>
+			<bax:attribute name="TOC-ID">ISSW</bax:attribute>
+		</bax:entry>
+
+		<bax:entry name="crkc" type="x-empflash/image">
+			<bax:source>crkc</bax:source>
+			<bax:attribute name="TOC-ID">CRKC</bax:attribute>
+		</bax:entry>
+
+		<bax:entry name="stedntcert" type="x-empflash/image">
+			<bax:source>stedntcert</bax:source>
+			<bax:attribute name="TOC-ID">STE-DNT-CERT</bax:attribute>
+		</bax:entry>
+
+		<bax:entry name="x-loader" type="x-empflash/image">
+			<bax:source>x-loader</bax:source>
+			<bax:attribute name="TOC-ID">X-LOADER</bax:attribute>
+		</bax:entry>
+	</bax:ram_image>
+</target_configuration>
+

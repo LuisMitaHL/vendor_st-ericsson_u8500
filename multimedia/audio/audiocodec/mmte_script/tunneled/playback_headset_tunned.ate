@@ -1,0 +1,60 @@
+test_start playback_headset_tunned Record_Multimic_Playback_Headset
+
+alias TIMEOUT 0
+ 
+OMX_GetHandle   capturer OMX.ST.AFM.MULTI_MIC
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+
+
+# configuration
+OMX_SetParameter    capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+# Tunneling
+OMX_SetupTunnel capturer 0 renderer 0
+
+
+#Go to Idle
+MMTE_DispatchState OMX_StateIdle capturer renderer
+
+
+# Pause Capturer
+MMTE_DispatchState OMX_StatePause capturer
+
+# Adjust volume Renderer
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig renderer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+ 
+mmte_sleep 1000
+MMTE_NMF_ListComponent
+
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+mmte_sleep 1000
+MMTE_DispatchState OMX_StateExecuting capturer
+
+# Adjust volume Capturer 
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=100 
+OMX_SetConfig capturer OMX_IndexConfigAudioMute bMute=OMX_FALSE
+
+
+################
+#RECORD ONGOING#
+################
+mmte_sleep 10000
+ 
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer capturer
+
+ 
+MMTE_DispatchState OMX_StateLoaded renderer:0
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+MMTE_NMF_ListComponent
+unalias TIMEOUT
+
+check_test
+
+test_end

@@ -1,0 +1,42 @@
+//
+//       Configuration file for      jpegenc
+//
+//
+//  Note : iXxxxxxx : interface name
+//         cXxxxxxx : component name
+//
+// Composite type/name
+composite jpegenc singleton
+{
+//singleton
+
+// Sub components
+contains jpegenc.mpc.algo							as  cAlgo
+
+// Provided interfaces
+provides jpegenc.mpc.api.algo						as iAlgo
+provides jpegenc.mpc.api.update_algo 				as iUpdateAlgo
+
+// Required interfaces
+requires resource_manager.api.buffer				as iBuffer
+requires resource_manager.api.mtf					as iMtf
+requires resource_manager.api.tcm_mem_alloc			as iTcmAlloc
+
+// Binds from/to sub components from/to outside
+binds this.iAlgo									to cAlgo.iAlgo
+binds this.iUpdateAlgo								to cAlgo.iUpdateAlgo
+
+binds cAlgo.iBuffer									to this.iBuffer
+binds cAlgo.iMtf									to this.iMtf
+binds cAlgo.iTcmAlloc								to this.iTcmAlloc
+
+
+// - Firmware Version numbers :
+property component_version = COMPONENT_VERSION
+
+// - Hardware Version numbers :
+property hardware_version = HW_VERSION
+
+option stack = 512
+
+}

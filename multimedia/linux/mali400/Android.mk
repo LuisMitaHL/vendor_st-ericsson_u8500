@@ -1,0 +1,1 @@
+#\n# Mali400 is built from the multimedia build system and should not be\n# built by Android's automatic recursion of folders looking for\n# Android.mk files. This auto generated dummy Android.mk prevents further\n# recursion down to driver/Android.mk\n#\n

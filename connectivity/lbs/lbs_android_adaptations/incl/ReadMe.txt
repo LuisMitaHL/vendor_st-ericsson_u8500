@@ -1,0 +1,1 @@
+All include files required for android adaptations should be placed here.

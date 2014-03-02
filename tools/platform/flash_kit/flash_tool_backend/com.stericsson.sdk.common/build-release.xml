@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<project name="common" basedir="." default="common.RELEASE">
+	<!-- Check if out folder for interim files is set correctly. -->
+	<available property="interim_out_dir" file="${TARGET_OUT_INTERMEDIATES}" type="dir"/>
+
+	<condition property="common.BUILD_FOLDER" value="${TARGET_OUT_INTERMEDIATES}/build" else="./build">
+	    <isset property="interim_out_dir"/>
+	</condition>
+
+	<property name="common.WORKSPACE_DIR" value="${basedir}/../" />
+	<property name="common.TARGET_DEPENDENCIES_DIR" value="${common.WORKSPACE_DIR}/com.stericsson.sdk.backend.build/dependencies" />
+	<property name="common.TARGET_CONFIGURATION_DIR" value="${common.WORKSPACE_DIR}/com.stericsson.sdk.backend.build/configuration" />
+	<property name="common.SOURCE_FOLDER" value="./src" />
+	<!--property name="common.BUILD_FOLDER" value="./build" /-->
+	<property name="common.CLASSES_FOLDER" value="${common.BUILD_FOLDER}/classes" />
+	<property name="common.TEST_CLASSES_FOLDER" value="${common.BUILD_FOLDER}/tests" />
+	<property name="common.JAR_FOLDER" value="${common.BUILD_FOLDER}/jar" />
+	<property name="common.RELEASE_FOLDER" value="${common.BUILD_FOLDER}/release" />
+	<property name="common.JAR_NAME" value="com.stericsson.sdk.common.jar" />
+	<property name="common.TEST_FOLDER" value="${common.WORKSPACE_DIR}/com.stericsson.sdk.common.test" />
+	<property name="common.TEST_SOURCE_FOLDER" value="${common.TEST_FOLDER}/src" />
+	<property name="common.LIB_FOLDER" value="${common.TEST_FOLDER}/lib" />
+	<property name="common.TEST_REPORTS_FOLDER" value="${common.BUILD_FOLDER}/reports" />
+	<property name="common.COBERTURA_FOLDER" value="${common.TARGET_DEPENDENCIES_DIR}/cobertura" />
+	<property name="common.INSTRUMENTED_CLASSES_FOLDER" value="${common.BUILD_FOLDER}/instrumented" />
+	<property name="common.CHECKSTYLE_CONFIGURATION_FOLDER" value="${common.TARGET_CONFIGURATION_DIR}/checkstyle" />
+	<property name="common.CHECKSTYLE_DEPENDENCIES_FOLDER" value="${common.TARGET_DEPENDENCIES_DIR}/checkstyle" />
+	<property name="common.LOG4J" value="${common.WORKSPACE_DIR}/com.stericsson.sdk.common.log4j/lib/org.apache.log4j.jar" />
+
+	<path id="common.DEPENDENCIES_CLASSPATH">
+		<pathelement location="${common.TARGET_DEPENDENCIES_DIR}/osgi/plugins/org.eclipse.equinox.common_3.5.1.jar" />
+		<pathelement location="${common.TARGET_DEPENDENCIES_DIR}/osgi/plugins/org.eclipse.osgi_3.5.0.jar" />
+		<pathelement location="${common.LOG4J}" />
+		<pathelement location="${common.TARGET_DEPENDENCIES_DIR}/easymock/easymock.jar" />
+		<pathelement location="templib/bcprov-ext-jdk15-143.jar" />
+	</path>
+
+	<path id="common.TEST_CLASSPATH">
+		<pathelement location="${common.LIB_FOLDER}/junit-4.6.jar" />
+		<path refid="common.DEPENDENCIES_CLASSPATH" />
+		<pathelement path="${common.CLASSES_FOLDER}" />
+	</path>
+
+	<target name="common.RELEASE" depends="common.JAR">
+		<!-- copy libraries produced by this project -->
+		<copy file="${common.JAR_FOLDER}/${common.JAR_NAME}" todir="${common.RELEASE_FOLDER}" />
+	</target>
+
+	<target name="common.JAR" depends="common.COMPILE">
+		<!-- create jar of compiled files -->
+		<jar destfile="${common.JAR_FOLDER}/${common.JAR_NAME}" basedir="${common.CLASSES_FOLDER}" />
+	</target>
+
+	<target name="common.COMPILE" depends="common.INIT">
+		<!-- compile java sources -->
+		<javac srcdir="${common.SOURCE_FOLDER}" destdir="${common.CLASSES_FOLDER}" debug="true" classpathref="common.DEPENDENCIES_CLASSPATH" />
+	</target>
+
+	<target name="common.INIT" depends="common.CLEAN">
+		<!-- create output directories -->
+		<mkdir dir="${common.JAR_FOLDER}" />
+		<mkdir dir="${common.CLASSES_FOLDER}" />
+		<mkdir dir="${common.RELEASE_FOLDER}" />
+		<mkdir dir="${common.TEST_CLASSES_FOLDER}" />
+		<mkdir dir="${common.TEST_REPORTS_FOLDER}" />
+	</target>
+
+	<target name="common.CLEAN">
+		<!-- delete output directories -->
+		<delete dir="${common.JAR_FOLDER}" />
+		<delete dir="${common.CLASSES_FOLDER}" />
+		<delete dir="${common.RELEASE_folder}" />
+		<delete dir="${common.TEST_CLASSES_FOLDER}" />
+		<delete dir="${common.TEST_REPORTS_FOLDER}" />
+	</target>
+
+</project>

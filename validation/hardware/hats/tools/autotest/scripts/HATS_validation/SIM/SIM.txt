@@ -1,0 +1,106 @@
+#DTH script
+#Author: GBE
+
+
+#> SelfTest
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE SelfTest
+BEGIN Sim_Self_Test
+EXEC /SMC/SelfTest/I2C/Exec EXEC /DTH/SMC/SelfTest/I2C/Exec 
+READ /SMC/SelfTest/I2C/Exec/Status
+EXEC /SMC/SelfTest/UICC/Exec EXEC /DTH/SMC/SelfTest/UICC/Exec 
+READ /SMC/SelfTest/UICC/Exec/Status  128
+READ /SMC/SelfTest/UICC/Exec/Results
+END Sim_Self_Test
+#-------------------------------------------------------------------------------------------------------------
+
+
+#> SMC
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE SIM_Activation
+BEGIN Activate_SIM
+#> SIM ACTIVATION
+WRITE /SMC/Card_Activation/Activation/Voltage 1 
+WRITE /SMC/Card_Activation/Activation 0 
+EXEC /SMC/Card_Activation/Activation
+READ /SMC/Card_Activation/Activation/Voltage
+READ /SMC/Card_Activation/Activation/ATR
+END Activate_SIM
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE SIM_Deactivation
+BEGIN Deactivate_SIM
+#> SIM DEACTIVATION
+WRITE /SMC/Card_Activation/Activation/Voltage 1 
+WRITE /SMC/Card_Activation/Activation 1
+EXEC /SMC/Card_Activation/Activation
+READ /SMC/Card_Activation/Activation/Voltage
+READ /SMC/Card_Activation/Activation/ATR
+END Deactivate_SIM
+#-------------------------------------------------------------------------------------------------------------
+
+#> SIM ACTIVATION
+WRITE /SMC/Card_Activation/Activation/Voltage 1 
+WRITE /SMC/Card_Activation/Activation 0 
+EXEC /SMC/Card_Activation/Activation
+READ /SMC/Card_Activation/Activation/Voltage
+READ /SMC/Card_Activation/Activation/ATR
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE PPS
+BEGIN PPS
+WRITE /SMC/Set_PPS/PPS/F 9
+WRITE /SMC/Set_PPS/PPS/D 4
+EXEC /SMC/Set_PPS/PPS
+READ /SMC/Set_PPS/PPS/F  9
+READ /SMC/Set_PPS/PPS/D  4
+READ /SMC/Set_PPS/PPS/Status
+END PPS
+#-------------------------------------------------------------------------------------------------------------
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE SetClockStop
+BEGIN Clock
+WRITE /SMC/CardClock/CardClock/SetClockStop 0
+EXEC /SMC/CardClock/CardClock
+WRITE /SMC/CardClock/CardClock/SetClockStop 1
+EXEC /SMC/CardClock/CardClock
+END Clock
+#-------------------------------------------------------------------------------------------------------------
+
+#> APDU
+
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+FEATURE SendAPDU
+BEGIN Read_SIM_data
+WRITE /SMC/Snd_Cmd/SendAPDU/Class 160 
+WRITE /SMC/Snd_Cmd/SendAPDU/Instruction 164 
+WRITE /SMC/Snd_Cmd/SendAPDU/Parameter1 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/Parameter2 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/Lc 2 
+WRITE /SMC/Snd_Cmd/SendAPDU/LeMSB 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/LeLSB 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/Data 71;226;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0 
+EXEC /SMC/Snd_Cmd/SendAPDU 
+READ /SMC/Snd_Cmd/SendAPDU/DataOut
+READ /SMC/Snd_Cmd/SendAPDU/Sw1  90
+READ /SMC/Snd_Cmd/SendAPDU/Sw2  0
+
+WRITE /SMC/Snd_Cmd/SendAPDU/Class 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/Instruction 164 
+WRITE /SMC/Snd_Cmd/SendAPDU/Parameter1 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/Parameter2 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/Lc 2 
+WRITE /SMC/Snd_Cmd/SendAPDU/LeMSB 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/LeLSB 0 
+WRITE /SMC/Snd_Cmd/SendAPDU/Data 71;226;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0 
+EXEC /SMC/Snd_Cmd/SendAPDU 
+READ /SMC/Snd_Cmd/SendAPDU/DataOut
+READ /SMC/Snd_Cmd/SendAPDU/Sw1  90
+READ /SMC/Snd_Cmd/SendAPDU/Sw2  0
+END Read_SIM_data
+#-------------------------------------------------------------------------------------------------------------
+

@@ -1,0 +1,66 @@
+## do $(IMAGING_PATH)/ite_nmf/script/stress/vr_rand_size_and_param_stress.ite
+
+## Randomly select size, zoom, exposure, analog gain and statistics, focus -> Run for N iterations ##
+
+alias LOOP_TESTS $1
+do $(IMAGING_PATH)/ite_nmf/script/stress/stress_test_config.ite
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+loop LOOP_TESTS
+
+    gen_random_val float FPS_LOWER_LIMIT FPS_UPPER_LIMIT
+    manualfps RANDOM_GENERATED_VALUE
+
+# maximum resolution for LR : XGA (resolution enum index = 17)
+
+    gen_random_val int 0 17
+    getresolution RANDOM_GENERATED_VALUE
+    setresolution LR RESOLUTION YUV420P
+
+    gen_random_val int 0 17
+    getresolution RANDOM_GENERATED_VALUE
+    setresolution HR RESOLUTION YUV420P
+
+    glacehistoexp reqnowait
+
+    LRHR prepare
+    LRHR start
+
+    glacehistoexp waitstatready
+
+    fzsetper
+    ftorest
+    fsw3a
+
+    gen_random_val float ZOOM_LOWER_LIMIT ZOOM_UPPER_LIMIT
+    zoomset RANDOM_GENERATED_VALUE
+
+    glacehistoexp req
+
+# update exposure time and analog gain
+    gen_random_val int EXPOSURE_LOWER_LIMIT EXPOSURE_UPPER_LIMIT
+    alias RANDOM_EXP RANDOM_GENERATED_VALUE
+    gen_random_val int AG_LOWER_LIMIT AG_UPPER_LIMIT 256
+    alias RANDOM_AG RANDOM_GENERATED_VALUE
+
+    set_sensor_param RANDOM_EXP RANDOM_AG
+
+    glacehistoexp req
+
+# update exposure time and analog gain once more..
+    gen_random_val int EXPOSURE_LOWER_LIMIT EXPOSURE_UPPER_LIMIT
+    alias RANDOM_EXP RANDOM_GENERATED_VALUE
+    gen_random_val int AG_LOWER_LIMIT AG_UPPER_LIMIT 256
+    alias RANDOM_AG RANDOM_GENERATED_VALUE
+
+    set_sensor_param RANDOM_EXP RANDOM_AG
+
+    glacehistoexp req
+
+    LRHR stop
+    LRHR free
+
+endloop
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite

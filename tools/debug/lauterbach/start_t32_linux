@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# What to debug?
+choice=0
+echo $1
+if [ $# -gt 0 ] ; then
+choice=$1
+# first argument is used, skip it
+shift
+else
+#try to use global variable to detect the platform
+echo "TARGET_PRODUCT = $TARGET_PRODUCT"
+if [ "$TARGET_PRODUCT" = "ste_u8500" ] ; then
+  choice=1
+fi
+if [ "$TARGET_PRODUCT" = "ste_u9540" ] ; then
+  choice=2
+fi
+if [ "$TARGET_PRODUCT" = "ste_l8540" ] ; then
+  choice=4
+fi
+fi
+
+while [[ $choice -lt 1 ]] || [[ $choice -gt 4 ]]; do
+   echo "Please select platform:"
+   echo -e "\033[1m# t  Chip          Comment\033[0m"
+   echo -e "\033[1m1\033[0m:  Ux500-U8500 "
+   echo -e "\033[1m2\033[0m:  Ux500-L9540 "
+   echo -e "\033[1m3\033[0m:  Ux500-U5500 "
+   echo -e "\033[1m4\033[0m:  Ux500-L8540 "
+
+   # read user input
+   read choice
+done
+
+if [[ $choice = 1 ]] ; then
+        ./start_t32_u8500_linux $@
+elif [[ $choice = 2  ]] ; then
+        ./start_t32_l9540_linux $@
+elif [[ $choice = 3 ]] ; then
+	./start_t32_u5500_linux $@
+elif [[ $choice = 4  ]] ; then
+	./start_t32_l8540_linux $@
+fi

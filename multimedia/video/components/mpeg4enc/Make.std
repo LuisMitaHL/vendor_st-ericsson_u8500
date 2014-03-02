@@ -1,0 +1,73 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+export MODULE
+MODULE=./
+
+include $(MMROOT)/video/makefiles/Make.std.config
+
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh mpeg4enc
+
+VPATH = ./mpc/algo/src/$(SVA_SUBSYSTEM) ./mpc/main/src ../scheduler/src/
+EXENAME = mpeg4enc
+EXEOBJ = \
+t1xhv_main_mme \
+sm_encoder_mp4 \
+t1xhv_interrupt \
+sm_common \
+m4e_air_cir \
+m4e_mecc_control \
+m4e_constant_rate_control \
+m4e_rate_control \
+m4e_dc_prediction \
+m4e_noratecontrol \
+m4e_variable_rate_control \
+m4e_encode_picture \
+m4e_vbv \
+m4e_generate_mv \
+m4e_vlc \
+m4e_header \
+m4e_mb_fifo \
+m4e_segmented \
+t1xhv_m4e \
+
+ifeq ($(FLAVOR),hdtv)
+EXENAME = mpeg4enc_hdtv
+CPPFLAGS += -DHDTV_MP4VEC
+else
+EXENAME = mpeg4enc
+#EXEOBJ += m4d_error
+endif
+
+OBJ_DIR      = ./obj/$(MMDSPPROCESSOR)/$(FLAVOR)
+DEP_DIR      = ./dep/$(UNAME)/$(MMDSPPROCESSOR)/$(FLAVOR)
+BIN_DIR      = ./bin/$(MMDSPPROCESSOR)/$(FLAVOR)
+
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT)
+
+CPPFLAGS += -D__HAHA__ -DSTATIC_CONF_5 -DMMDSP -DFINAL_IMPLEMENTATION -DT1XHV_FIRMWARE -DFINAL_IMPLEMENTATION -DT1XHV_TASK_ENCODE -DMPEG4_ENCODER -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION)
+
+ifeq ($(SVA_SUBSYSTEM),ndk8500_ed)
+CPPFLAGS += -D__PLATFORM_ndk8500_ed__ -D__ndk8500_ed__
+endif
+ifeq ($(SVA_SUBSYSTEM),ndk8500_a0)
+CPPFLAGS += -D__PLATFORM_ndk8500_a0__ -D__ndk8500_a0__
+endif
+
+CPPFLAGS += -I../scheduler/inc -I../common/inc -I../hardware/inc -I./mpc/algo/inc/$(SVA_SUBSYSTEM) -I./mpc/main/inc -I./mpc/share/$(SVA_SUBSYSTEM) -I./mpc/share
+
+$(OBJ_DIR)/m4e_%.$(OBJ_EXT):CFLAGS+= -O3 -forceesramfn
+
+$(OBJ_DIR)/t1xhv_m4e.$(OBJ_EXT):CFLAGS+=  -forceesramfn
+
+
+
+MEMORYCFG = $(MMROOT)/video/components/common/memconfig/video.$(MEMCFG_EXT)
+
+
+STACK=500
+SSTACK=500
+
+todo: exe 
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

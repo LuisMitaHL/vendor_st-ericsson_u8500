@@ -1,0 +1,23 @@
+#! /bin/sh
+case "$1" in
+    start)
+    echo "Starting $0..."
+    echo /sbin/mdev > /proc/sys/kernel/hotplug
+    if [ -z "`mount | grep " on /dev "`" ]
+	then
+	mount -t tmpfs tmpfs /dev
+    fi
+    mdev -s
+    echo "...done"
+    ;;
+    stop)
+    echo "Stopping $0..."
+    echo "...nothing to do"
+    ;;
+    *)
+    echo "Usage:" >&2
+    echo -e "\t$0 start" >&2
+    echo -e "\t$0 stop" >&2
+    ;;
+esac
+exit

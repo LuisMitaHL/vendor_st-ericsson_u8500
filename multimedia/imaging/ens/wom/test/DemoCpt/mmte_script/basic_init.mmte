@@ -1,0 +1,53 @@
+# Make a Loaded-Exexute-Loaded cycle on WOMDEMOCPT
+#          -----------------    
+#  --------|0   WOMDEMOCPT    1|----
+#          -----------------    
+
+#Check existence of SIA_ALGO_PATH variable (in fact check if SIA_ALGO_NOTDEFINE has been set to 0 as mmte return for undefined variables)
+if $(SIA_ALGO_NOTDEFINE) != 0
+	alias S_WOMDEMOCPT_CURRENT_PATH .
+else 
+	alias S_WOMDEMOCPT_CURRENT_PATH $(SIA_ALGO_DATA_PATH)/womDemoCpt
+endif
+
+test_logDir $(S_WOMDEMOCPT_CURRENT_PATH)/output
+test_start womDemoCpt_basic_init simple cycle  loaded-executing-loaded
+test_result PASSED
+
+#************************************************************************
+test_next GetHandle
+OMX_GetHandle    Component OMX.ST.WOMDEMOCPT
+OMX_SendCommand  Component OMX_CommandPortDisable 0
+OMX_SendCommand  Component OMX_CommandPortDisable 1
+test_result PASSED
+
+#************************************************************************
+test_next Goto Idle
+OMX_SendCommand Component   OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  Component   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+test_result PASSED
+
+#************************************************************************
+test_next Goto Executing
+OMX_SendCommand Component   OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent  Component   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+test_result PASSED
+
+#************************************************************************
+test_next Return to Idle
+OMX_SendCommand Component   OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  Component   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+test_result PASSED
+
+#************************************************************************
+test_next Return to loaded
+OMX_SendCommand Component   OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent  Component   OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+test_result PASSED
+
+#************************************************************************
+test_next Destroy network
+ens_network_destroy
+test_result PASSED
+
+test_end

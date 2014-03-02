@@ -1,0 +1,28 @@
+#include <t1xhv_common.idt>
+#include <t1xhv_vdc.idt>
+
+interface vc1dec.mpc.ddep.api.end_codec { 
+
+/** @addtogroup vc1decDdepEndCodecGroup endCodec
+ *  @ingroup vc1decDdepRequiredInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Report the end of a NMF ALGO component.
+ \param[in]  status		    Status of the process done.
+ \param[in]  info           Information on process completion.
+                            \n It'll characterize the good job completion (STATUS_JOB_COMPLETE) : VDC_ERT_NONE.
+                            \n or it'll indicate possible error sources if status is STATUS_JOB_ABORTED.
+
+ \param[in]  durationInTicks  Duration (in SVA's timer ticks unit, i.e. 90kHz) of the algo process that have been done 
+                            (i.e. between a CMD_START of the algo and its completion).
+ *
+ * \remarks	For the corresponding ITF server name(s), please refer to \ref vc1decConfigurationGroup
+ * 
+ */
+
+void endCodec(t_t1xhv_status status, t_t1xhv_decoder_info info, t_uint32 durationInTicks);
+
+/** @} */ // end of vc1decDdepEndCodecGroup
+
+}

@@ -1,0 +1,221 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 0.8.7)      *
+**********************************************************
+
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World's, Training, Mandelbrot, User Fifo)
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+	- STn8815 SAA & SVA Cut A0/B0
+
+Changes:
+--------
+[CM]
+	- Add monitoring API accessible from Host with CM API (see documentation).
+		Add new method in CM Public API
+	- Update OSAL in order to be able to disable interruption or lock scheduler.
+	- Remove hardware semaphore usage for communication mutual exclusion 
+	  * Change made for reliability & deadlock reasons
+	  * Keep hardware semaphore usage for core synchronization (for interrupt)
+	  * Remove power of two constraints alignment done internally but one more element allocate for
+		fifo management 
+	- Add CM_StartComponent() and CM_StopComponent() in order to change component state.
+	  * CM_StartComponent() check that all required interface have been bind.
+	  * CM_Bindxxx() and CM_Unbindxxx() can be called only if component stopped.
+	  * Component call from Host allowed only if component started.
+	  * CM_DestroyInstance() can't be called until component stopped and all interface unbinded.
+	- Add Unbinded method that call Panic if called (useful for trap call to unbind required interface)
+	- Rename CM_DestroyInstance by CM_DestroyComponent (old method deprecated since long time)
+		Signature not changed (you could use replace in your code)
+	- Error CM_COMPONENT_NOT_INITIALIZED replace by CM_COMPONENT_WAIT_STOPPED
+	- For allowing debugger to implement deferred breakpoint, always call executive engine
+	  Constructor & Destroyer runners of corresponding life cycle methods. 
+	  If not provided by component, call Void method instead.
+	- NMF_ASSERT internal macro now log assert and block infinitely.
+	- Update CM_getPanicDescription API in order to return information about MPC Panic.
+	  OS integrator can now call arbitrary panic callback.
+	
+[MPC Executive Engine]
+	- Update scheduler in order to support monitoring based on timer0
+	- Special compilation option for Panic compilation in order to force MMDSP compiler to don't 
+	  make wrong optimization and removing infinite loop (such option will be removed when bug 
+	  fixed in MMDSP compiler).
+	- PRIVATE macro will not be defined as static
+	
+[Execution Environment]
+	- Hack bare environment swi handler to add Enable/Disable of interrupt
+	- Add os21 environment
+	- NMF_INSTALL_ROOT environment variable must be defined where delivery unpacked.
+	  (this variable will be set by Nomadik Toolset).
+	- #include <cm/engine/inc/cm_irq.h> must be used for call CM in interrupt handler.	
+	- STn8810 support removed from delivery
+	- Update environment in order to allow user to register an MPC Panic callback by setting
+	  cte_PanicCallBack variable to it's own callback method. 
+	  
+[Tools] 
+	- Update generated elfheader section binary format (need Toolset recompilation)
+	  * Add magic number for singleton (no structure modification)
+	  * Change Life Cycle functions management in t_elf_component_header
+	  * Add minStackSize
+	- Allow parallel compilation for RVCT, GCC and MMDSP target 
+		(Maximum jobs is fixed to 1, used -j <jobs> or NMF_JOBS to set more)
+	- Generate life cycle method for calling each sub-component life cycle method in 
+	  composite component. 
+
+[Programming model]
+	- "static" component keyword replace by "singleton" one in order to prepare next step
+	  Either primitive or composite component could be declared as singleton.
+	  (See NMF programming model documentation for more information).
+	- Add life cycle management and associated interface in order to react on status change:
+	  * lifecycle.constructor: called when component instantiated (CM_InstantiateComponent)
+	  * lifecycle.starter: called when component started (CM_StartComponent)
+	  * lifecycle.stopper: call when component stopped (CM_StartComponent)
+	  * lifecycle.destructor: call when component destroyed (CM_DestroyComponent)
+	- Enhance ADL parser for recognize hexa and octal integer.
+	  For attributes, options, collection indexes and sizes, ... 
+	- Enhance ADL parser for recognize char value.
+
+Bug fixes:
+----------
+ - Memory crash in MMDSP segment loader. 
+ - [ Defect #22702 ] [Tools] pointer to typedef should be allowed in an interface
+ - [ Defect #25790 ] [Doc]user-guide example step0 is not maintained
+   [ Defect #28581 ] [Examples] can no longer compile user-guide examples
+ 	User guide examples no more available (user guide document will change)
+ - [ Defect #28454 ] [CM] erroneous memory status after CM_AddSdramMemorySegment
+ - [ Defect #28480 ] [CM] CM_ILLEGAL_UNBINDING after unbinding of component binded to void
+	Done, use CM_UnbindComponent.
+ - [ Defect #28656 ] [CM] possibility to do multiple bindings on the same interfaces
+ 	Error CM_INTERFACE_ALREADY_BINDED returned.
+	Binding must be unbinded before rebind.
+ - [ Defect #30097 ] [CM] return values of Fifo Management API
+ 	Code now check if fifoid is invalid and return CM_UNKNOWN_FIFO_ID in that case
+ - [ Defect #31256 ] [CM] no error when binding an itf already bound
+ 	CM_INTERFACE_ALREADY_BINDED error will be return now.
+ - [ Defect #31658 ] [CM] on bare machine it is not possible to call an interface from a dsp 
+   to host callback
+	Fixed by disabling IT on bare machine when entering CM.
+	Nevertheless, to do that we must dynamically patch APD services layer which run in user more and is not designed to do such think.
+ - [ Defect #31714 ] [CM] overalignment for mpc memories ESRAM16/SDRAM16
+ 	due to fact that one 16 bits mmdsp word is equivalent to two bytes and not 4.
+	Reduce internal alignement constraints in dsp.c in case of external 16 bits mode.
+ - [ Defect #31956 ] [CM] : user fifo : ee not load during CM_CreateUserFifo if needed
+ 	In CM_CreateUserFifo() insure mpc is well started and that ee has been load
+ - [ Defect #31968 ] [CM] : userfifo : possible memory leak when CM_CreateUserFifo() failed
+ 	Add delete of already allocated fifo or component in case of error
+ - [ Defect #32440 ] [CM] CM_GetMpcMemoryStatus crashes after particular r/w operations
+ 	Crash was due to a test problem. Msg buffer too small
+ - [ Defect #32550 ] [Tools] hexadecimal attribute value is not accepted
+	Done for every integer allowed in ADL (including collection index and size).
+ - [ Defect #32554 ] [Tools] initial value in .conf for char attribute
+ 	Done. Nevertheless char is not integer and you can assign hexa to char.
+	But you can do:
+		attributes char attr_a='A'
+		attributes char attr_c='\035'
+	If you want 1 byte integer you sould use t_uint8.
+ - [ Defect #32638 ] [CM] Composite with a bind between a sub-component required interface 
+ 	and a composite required interface using collection index
+ 	Corrected. The problem occure when binding an interface required by a composite and when 
+ 	this interface was not bind internally. Nevertheless, since it's allowed by programming model, 
+ 	this issue was fixed in CM which now allow composite required interface to have no internal client.
+ - [ Defect #32641 ] [TOOLS] Configured limit insufficient for the allowed tests in a test class
+ - [ Defect #32651 ] [CM] hardware semaphore blocked after multiple NMFCALL
+ - [ Defect #32769 ] [Tools] 'private' macro ignored in composite
+ 	PRIVATE will be define as static now.
+	#define PRIVATE static
+ - [ Defect #32850 ] [CM] NMF_ASSERT triggered if doing a great deal of CM_InstantiateComponent
+ - [ Defect #32937 ] t_uint16 incorrectly passed in interfaces from host to mpc
+	 We assume that MMDSP by make sign extension.
+	Thus, defect solved by adding mask in unsigned integer.
+ - [ Defect #33194 ] [CM] CM_AllocMpcMemory and CM_GetMpcMemoryStatus do not distinguish XMEM from YMEM
+ 	TCM size for x a and y partition was wrong
+ - [ Defect #33229 ] unconsistant trace message when unbinding asynchronous
+ - [ Defect #33236 ] unexpected error when unbinding to void
+ 	Done, no error returned now.
+ - [ Defect #33363 ] [Doc] CM_INVALID_PARAMETER return code for Binding functions not documented in cm_api doc
+ - [ Defect #33475 ] [CM] Callback function needed for the Panic test class non-regression testing
+ 	Update environment in order to allow user to register an MPC Panic callback by setting cte_PanicCallBack 
+ 	variable to it's own callback method.
+	Add this code in your test :
+		#include <nmf_cte/configuration/api/panic.h>
+		....
+		void myPanic(
+		t_nmf_core_id coreId,
+		t_panic_reason panicReason,
+		t_cm_instance_handle faultingComponent,
+		t_uint32 panicInfo1,
+		t_uint32 panicInfo2) {
+		}
+		...
+		cte_PanicCallBack = myPanic;
+ - [ Defect #33494 ] [CM] Behavior with USER_PANIC and INTERNAL_PANIC reason not consistents
+ 	This is the normal behavior USER_PANIC is considered as light Panic and INTERNAL_PANIC as hard panic.
+ 	Thus in the first one we abort current execution and switch to next one, the second stop the MPC.
+ - [ Defect #33546 ] [CM] 'optional' required interface and CM_StartComponent
+ - [ Defect #33553 ] [CM] Network instropection fct. CM_GetComponentListHeader incorrect behavior
+ 	Destroy component are now filtered
+
+
+Notes:
+------
+    - Communication scheme uses active polling when overflow on communication fifos
+			Active polling will be removed in next delivery
+
+	- Synchronous & Hybrid execution engines
+		Priority mechanism not fully tested 
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one memory segment only
+		
+	- MP3 example supported only on nmf_bare environment (not included in Nomadik Toolset delivery).
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+		Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+                
+Pre-requires:
+-------------
+	- At least Nomadik Toolset 1.0.0 Alpha Service Pack 1
+		- Patched with MMGDB debugger 3.9.2 for debugging MMDSP 
+			Available at https://codex.cro.st.com/file/showfiles.php?group_id=310
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment on NDK15:
+--------------------------
+	- Environments:
+		MPC: SAA & SVA
+		Execution Engine: Synchronous, Hybrid
+		Nomadik Toolset 1.0.0: 1.0.0 Alpha SP1
+		ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593, st-armgcc (gcc version 4.1.1)
+	- Tests:
+		* Dynamic loading: 
+			segment loading
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+		* Communication: 
+			synchronous intra-MPC
+			asynchronous intra-MPC
+			ARM -> MPC
+			MPC -> ARM
+			inter MPCs (asynchronous)
+			MPC -> MPC (on 8815B0)
+			error management
+		* Memory 
+			Alloc and free
+		* Network introspection
+			Collections
+			Attributes
+			Properties
+		* User Fifo 
+		* Programming Language
+			IDL
+			ADL

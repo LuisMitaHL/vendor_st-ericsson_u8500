@@ -1,0 +1,26 @@
+typedef struct {
+    t_sint16 enabled;
+    t_sint16 use_separate_channel_settings;
+    
+    t_sint16 adaptive_high_pass_filter;
+    t_sint16 desired_noise_reduction;
+    t_sint16 nr_cut_off_frequency;
+    t_sint16 noise_reduction_during_speech;
+    t_sint16 noise_reduction_tradeoff;
+    t_sint16 noise_floor_power;
+    t_sint16 high_pass_filter_snr_threshold;
+    t_sint16 high_pass_cut_off_margin;
+    
+    t_sint16 adaptive_high_pass_filter_channel2;
+    t_sint16 desired_noise_reduction_channel2;
+    t_sint16 nr_cut_off_frequency_channel2;
+    t_sint16 noise_reduction_during_speech_channel2;
+    t_sint16 noise_reduction_tradeoff_channel2;
+    t_sint16 noise_floor_power_channel2;
+    t_sint16 high_pass_filter_snr_threshold_channel2;
+    t_sint16 high_pass_cut_off_margin_channel2;
+} noise_reduction_config_t;
+
+interface noise_reduction.nmfil.host.effect.configure {
+    void setConfig(noise_reduction_config_t config);
+}

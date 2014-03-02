@@ -1,0 +1,31 @@
+LOAD_REGION 0x00000000 0x00200000
+{
+  ;; Maximum of 256 exceptions (256*4 bytes == 0x400)
+  VECTORS 0x0 0x400
+  {
+    ; First two entries are provided by library
+    
+    * (:gdef:__vectab_stack_and_reset, +FIRST)
+  }
+
+  CODE 0x400 FIXED
+  { 
+    * (+RO)
+  }
+
+  DATA 0x00200000 0x00010000
+  {                     
+    * (+RW, +ZI)
+  }
+
+  ;; Heap grows upwards
+  ARM_LIB_HEAP 0x00300000 EMPTY 0x8000
+  {
+  } 
+
+  ;; Stack grows downwards
+  ARM_LIB_STACK 0x003ffff0 EMPTY -0x8000 
+  {
+  }
+  
+}

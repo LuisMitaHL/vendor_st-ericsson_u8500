@@ -1,0 +1,33 @@
+#
+# LibAB configuration
+#
+
+menuconfig LIBAB
+	bool "LibAB"
+	help
+
+if LIBAB
+
+config LIBAB_DIR
+	string
+	default ../tat/generalservices/libab
+
+config LIBAB_DEPS
+	string
+	default ""
+
+config LIBAB_STRIP_DISABLED
+	bool "Disable strip"
+	depends on LIBAB
+	default n
+	help
+	  This will disable strip for this module
+
+config LIBAB_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on LIBAB
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # LIBAB

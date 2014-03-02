@@ -1,0 +1,160 @@
+#do $(IMAGING_PATH)/ite_nmf/script/common/rxtestpattern_bms8.ite
+
+##############################################################################################################
+# The Use case will test Rx Test Pattern for BMS Store2
+# Pre Requisite :- Set Use Case for BMS Store with Resoultion and Format.
+#  1. Set Required Color Format 
+#  2. Prepare and Start BMS Store2 
+#  3. Once ISP Pipe is sync with frames, write data from BMS Store 2 into sdcard for verification.
+#  
+##############################################################################################################
+# This Use case can configure Following Rx Test Patterns
+# 1. Color Bar
+# 2. Fade 2 Color Bar
+# 3. Horizontal, Veritical and Diagnoal Grey Scale Modes
+# 4. PN9
+# 5. Solid Color with Different R,G1,G2,B Combinations
+# 6. Cursor Position Configuration.
+##############################################################################################################
+
+usagemode still
+bmsmode STILL
+bmsout BAYERSTORE2
+SetCursorPosition 0 0 0 0
+SetRXTestPattern COLORBAR 
+bms prepare
+bms start
+writebmp BMS BMS8_RX_COLORBAR 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern PN9
+bms prepare
+bms start
+writebmp BMS BMS8_RX_PN9 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern NORMAL_MODE
+bms prepare
+bms start
+writebmp BMS BMS8_RX_NORMAL_MODE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern FADETOGREY_COLORBAR
+bms prepare
+bms start
+writebmp BMS BMS8_RX_FADETOGREY_COLORBAR 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern HORIZ_GREY_SCALE
+bms prepare
+bms start
+writebmp BMS BMS8_RX_HORIZ_GREY_SCALE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern VERT_GREY_SCALE
+bms prepare
+bms start
+writebmp BMS BMS8_RX_VERT_GREY_SCALE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern NORMAL_MODE
+SetCursorPosition 50 100 50 150
+bms prepare
+bms start
+writebmp BMS BMS8_RX_NORMAL_CURSOR 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetCursorPosition 0 0 0 0
+SetRXTestPattern SOLIDBAR 1023 1023 0 1023
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_YELLOW 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern SOLIDBAR 0 1023 1023 1023
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_CYAN 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern SOLIDBAR 1023 0 1023 0
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_MAGENTA 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern SOLIDBAR 0 0 0 0
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_BLACK 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern SOLIDBAR 1023 1023 1023 1023
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_WHITE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern SOLIDBAR 1023 0 0 0
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_RED 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern SOLIDBAR 0 0 1023 0
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_BLUE 2
+bms stop
+
+
+bmsmode STILL
+bmsout BAYERSTORE2
+SetRXTestPattern SOLIDBAR 0 1023 0 1023
+bms prepare
+bms start
+writebmp BMS BMS8_RX_SOLIDBAR_GREEN 2
+bms stop
+
+bms free
+
+

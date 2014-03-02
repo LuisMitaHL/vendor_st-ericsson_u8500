@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<!DOCTYPE AUDIOPARAMS [ 
+<!ENTITY ext-param-def SYSTEM "audioparam.xml"> 
+]>
+<dthapi>
+  <module name="tatlaudio" symbol-prefix="TATAUDIO_">
+
+    <!-- Path /DTH/AUDIO/Param is reserved for audio parameters and MUST not be used in this file -->
+    <argument path="/DTH/AUDIO/config/menus/menu_10audio.xml" type="FILE" user_data="ACT_AUDIO_MENU_CONFIG_FILE">
+	<info>Automatic Procedure\nFilepath=/var/local/tat/tatlaudio/config/menus\nFilename=menu_10audio.xml</info> 
+	</argument>
+	<argument path="/DTH/AUDIO/config/panels/panel_audio.xml" type="FILE" user_data="ACT_AUDIO_MAIN_PANEL_FILE">
+	<info>Automatic Procedure\nFilepath=/var/local/tat/tatlaudio/config/panels\nFilename=panel_audio.xml</info> 
+	</argument>
+	<argument path="/DTH/AUDIO/config/panels/panel_audio_param.xml" type="FILE" user_data="ACT_AUDIO_PARAM_PANEL_FILE">
+	<info>Automatic Procedure\nFilepath=/var/local/tat/tatlaudio/config/panels\nFilename=panel_audio_param.xml</info> 
+	</argument>
+
+
+	<argument path="/DTH/AUDIO/Activity" type="U32" user_data="AUDIT_ACTIVITY" get="DthAudio_simple_get">
+      <enum>
+        <enum_item value="READY">Ready</enum_item>
+        <enum_item value="AUDIO_LOOP_ON">Audio loop running</enum_item>
+        <enum_item value="PLAYBACK_ON">Playback running</enum_item>
+      </enum>
+      <info>Label Action:Audio Activity</info>
+    </argument>
+
+
+	<argument path="/DTH/AUDIO/Tests/Setup/GPIO_MICVIDEO_CTRL" type="U32" user_data="AVCONNECTOR" get="DthAudio_simple_get" set="DthAudio_simple_set">
+      <enum>
+        <enum_item value="AVCONN_AUDIO">Audio</enum_item>
+        <enum_item value="AVCONN_VIDEO">Video</enum_item>
+      </enum>
+      <info>Label Box:GPIO_MIC/VIDEO_CTRL\nDynamic Control: TRUE</info>
+    </argument>
+
+	<argument path="/DTH/AUDIO/Tests/Playback/File" type="FILE" user_data="PLAYBACK_FILE" set="DthAudio_simple_set">
+	<info>Label Box:Playback Wav File\nAutomatic Procedure\nFilepath=/var/local/tat/tatlaudio\nFilename=playback.wav</info>
+	</argument>
+
+	<action path="/DTH/AUDIO/Tests/Playback/Action" type="U32" user_data="PLAYBACK" set="DthAudio_simple_set" exec="DthAudio_simple_exec">
+	  <enum>
+		<enum_item value="START">Start</enum_item>
+		<enum_item value="STOP">Stop</enum_item>
+	  </enum>
+	  <info>Label Action:Playback (source=/var/local/tat/tatlaudio/playback.wav)\\n</info>
+		<argument path="/DTH/AUDIO/Tests/Playback/Action/HwDevice" type="U32" user_data="DEVICE" get="DthAudio_simple_get" set="DthAudio_simple_set">
+		<enum>
+		<enum_item value="MAIN_DEVICE">AB</enum_item>
+		<enum_item value="HDMI_DEVICE">HDMI</enum_item>
+		</enum>
+		<info>Label Box:Hardware Device</info>
+		</argument>
+
+		<argument path="/DTH/AUDIO/Tests/Playback/Action/Sink" type="U32" user_data="SINK" get="DthAudio_simple_get" set="DthAudio_simple_set">
+		<enum>
+		<enum_item value="SINK_HEADSET:0">Headset</enum_item>
+		<enum_item value="SINK_EARSET:1">Earpiece</enum_item>
+		<enum_item value="SINK_HANDSFREE:2">Handsfree</enum_item>
+		<enum_item value="SINK_VIBRATOR1:3">Vibrator 1</enum_item>
+		<enum_item value="SINK_VIBRATOR2:4">Vibrator 2</enum_item>
+		<enum_item value="SINK_LINE_OUT:5">LineOut</enum_item>
+		</enum>
+		<info>Label Box:Sink Selection</info>
+		</argument>
+	</action>
+
+
+	<action path="/DTH/AUDIO/Tests/Record/Action" type="U32" user_data="RECORD" set="DthAudio_simple_set" exec="DthAudio_simple_exec">
+	  <enum>
+		<enum_item value="START">Start</enum_item>
+		<enum_item value="STOP">Stop</enum_item>
+	  </enum>
+	  <info>Label Action:Record (dest=/var/local/tat/tatlaudio/record.wav)\\n</info>
+	  <argument path="/DTH/AUDIO/Tests/Record/Action/Source" type="U32" user_data="SRC" get="DthAudio_simple_get" set="DthAudio_simple_set">
+			<enum>
+			<enum_item value="SRC_LINEIN:0">Analog Line in</enum_item>
+			<enum_item value="SRC_MICRO_AN1A:1">Analog Microphone 1A</enum_item>
+			<enum_item value="SRC_MICRO_AN1B:2">Analog Microphone 1B</enum_item>
+			<enum_item value="SRC_MICRO_AN2:3">Analog Microphone 2</enum_item>
+			<enum_item value="SRC_MICRO_DI1:4">Digital Microphone 1 &amp; 2</enum_item>
+			<enum_item value="SRC_MICRO_DI2:5">Digital Microphone 3 &amp; 4</enum_item>
+			<enum_item value="SRC_MICRO_DI3:6">Digital Microphone 5 &amp; 6</enum_item>
+			</enum>
+			<info>Label Box:Source Selection</info>
+		</argument>
+	</action>
+
+	<argument path="/DTH/AUDIO/Tests/Record/File" type="FILE" user_data="RECORD_FILE" get="DthAudio_simple_get">
+	<info>Label Box:Record Wav File\nAutomatic Procedure\nFilepath=/var/local/tat/tatlaudio\nFilename=record.wav</info>
+	</argument>
+
+    <action path="/DTH/AUDIO/Tests/AudioLoop/ABAnalogAudioLoop" type="U32" user_data="ANALOG_LOOP" set="DthAudio_simple_set" exec="DthAudio_simple_exec">
+      <enum>
+        <enum_item value="START">Start</enum_item>
+        <enum_item value="STOP">Stop</enum_item>
+      </enum>
+      <info>Label Action:AB Analog Audio loop (LINEIN->HEADSET)\\n</info>
+    </action>
+
+	<action path="/DTH/AUDIO/Tests/AudioLoop/ABDigitalAudioLoop" type="U32" user_data="DIGITAL_LOOP_IN_AB" set="DthAudio_simple_set" exec="DthAudio_simple_exec">
+      <enum>
+        <enum_item value="START">Start</enum_item>
+        <enum_item value="STOP">Stop</enum_item>
+      </enum>
+      <info>Label Action:AB Digital Audio loop \n\\n(IN->TxDigitalBus->RxDigitalBus->OUT)</info>
+		<argument path="/DTH/AUDIO/Tests/AudioLoop/ABDigitalAudioLoop/Source" type="U32" user_data="SRC" get="DthAudio_simple_get" set="DthAudio_simple_set">
+			<enum>
+			<enum_item value="SRC_LINEIN:0">Analog Line in</enum_item>
+			<enum_item value="SRC_MICRO_AN1A:1">Analog Microphone 1A</enum_item>
+			<enum_item value="SRC_MICRO_AN1B:2">Analog Microphone 1B</enum_item>
+			<enum_item value="SRC_MICRO_AN2:3">Analog Microphone 2</enum_item>
+			<enum_item value="SRC_MICRO_DI1:4">Digital Microphone 1 &amp; 2</enum_item>
+			<enum_item value="SRC_MICRO_DI2:5">Digital Microphone 3 &amp; 4</enum_item>
+			<enum_item value="SRC_MICRO_DI3:6">Digital Microphone 5 &amp; 6</enum_item>
+			</enum>
+			<info>Label Box:Source Selection</info>
+		</argument>
+		<argument path="/DTH/AUDIO/Tests/AudioLoop/ABDigitalAudioLoop/Sink" type="U32" user_data="SINK" get="DthAudio_simple_get" set="DthAudio_simple_set">
+			<enum>
+			<enum_item value="SINK_HEADSET:0">Headset</enum_item>
+			<enum_item value="SINK_EARSET:1">Earpiece</enum_item>
+			<enum_item value="SINK_HANDSFREE:2">Handsfree</enum_item>
+			</enum>
+			<info>Label Box:Sink Selection</info>
+		</argument>
+    </action>
+
+	<action path="/DTH/AUDIO/Tests/AudioLoop/APDigitalAudioLoop" type="U32" user_data="DIGITAL_LOOP_IN_AP" set="DthAudio_simple_set" exec="DthAudio_simple_exec">
+      <enum>
+        <enum_item value="START">Start</enum_item>
+        <enum_item value="STOP">Stop</enum_item>
+      </enum>
+      <info>Label Action:AP Audio loop \n\\n(IN->TxDigitalBus->MSP1AP9540->MSP1AP9540->RxDigitalBus->OUT)</info>
+			<argument path="/DTH/AUDIO/Tests/AudioLoop/APDigitalAudioLoop/Source" type="U32" user_data="SRC" get="DthAudio_simple_get" set="DthAudio_simple_set">
+			<enum>
+			<enum_item value="SRC_LINEIN:0">Analog Line in</enum_item>
+			<enum_item value="SRC_MICRO_AN1A:1">Analog Microphone 1A</enum_item>
+			<enum_item value="SRC_MICRO_AN1B:2">Analog Microphone 1B</enum_item>
+			<enum_item value="SRC_MICRO_AN2:3">Analog Microphone 2</enum_item>
+			<enum_item value="SRC_MICRO_DI1:4">Digital Microphone 1 &amp; 2</enum_item>
+			<enum_item value="SRC_MICRO_DI2:5">Digital Microphone 3 &amp; 4</enum_item>
+			<enum_item value="SRC_MICRO_DI3:6">Digital Microphone 5 &amp; 6</enum_item>
+			</enum>
+			<info>Label Box:Source Selection</info>
+		</argument>
+		<argument path="/DTH/AUDIO/Tests/AudioLoop/APDigitalAudioLoop/Sink" type="U32" user_data="SINK" get="DthAudio_simple_get" set="DthAudio_simple_set">
+			<enum>
+			<enum_item value="SINK_HEADSET:0">Headset</enum_item>
+			<enum_item value="SINK_EARSET:1">Earpiece</enum_item>
+			<enum_item value="SINK_HANDSFREE:2">Handsfree</enum_item>
+			<enum_item value="SINK_VIBRATOR1:3">Vibrator 1</enum_item>
+			<enum_item value="SINK_VIBRATOR2:4">Vibrator 2</enum_item>
+			<enum_item value="SINK_LINE_OUT:5">LineOut</enum_item>
+			</enum>
+			<info>Label Box:Sink Selection</info>
+		</argument>
+    </action>
+
+    <!-- BEGIN audio parameters -->
+
+    &ext-param-def;
+    <!-- END audio parameters -->
+
+  </module>
+</dthapi>

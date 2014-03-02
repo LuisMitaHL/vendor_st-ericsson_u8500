@@ -1,0 +1,41 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+
+case $1 in
+start)
+        MODE_M=`/usr/bin/modem_config -l`;
+        grep 'runtime_mode[ ]*=[ ]*\"itp\"' /etc/Flashless_mid.conf.$MODE_M > /dev/null
+        if [[ $? -eq 0 ]] ; then
+        echo "Starting Itp Proxy"
+		if [ -e /usr/share/dthservices/istunnelingonreboot ]
+		then
+			/system/bin/bridge_relay -i IP -p 5499 -m UTIL -x ITP_Ch0 &
+			/system/bin/bridge_relay -i IP -p 5500 -m UTIL -x ITP_Ch0 &
+			echo 1 > /usr/share/dthservices/iscurrenttunneling
+		else
+			/system/bin/bridge_relay -i IP -p 5499 -m UTIL -x ITP_Ch0 &
+			rm -f /usr/share/dthservices/iscurrenttunneling
+		fi
+        else
+        echo "modem normal mode is running"
+		if [ -e /usr/share/dthservices/istunnelingonreboot ]
+		then
+			/system/bin/bridge_relay -m AT -c &
+			/system/bin/bridge_relay -i IP -p 5499 -m AT &
+			/system/bin/bridge_relay -i IP -p 5500 -m AT &
+			echo 1 > /usr/share/dthservices/iscurrenttunneling
+		else
+			/system/bin/bridge_relay -i IP -p 5499 -m AT &
+			rm -f /usr/share/dthservices/iscurrenttunneling
+		fi
+
+        fi
+
+;;
+stop)
+        echo "Stopping Bridge relay"
+        nkill /system/bin/bridge_relay
+;;
+esac
+exit
+

@@ -1,0 +1,9 @@
+# read PRCMU FW value
+sk-db r 0x801b00a4 >> prcmu_read.txt
+awk '{print $NF}' prcmu_read.txt >> prcmu_val.txt
+rm prcmu_read.txt
+
+# print the value and the explanations
+awk '{print "reading PRCMU version --> " $NF}' prcmu_val.txt
+echo "  i.e. 0xWWXXYYZZ => AB8500 cut[ZZ].0 and PRCMU FW version [YY].[XX].[WW]"
+rm prcmu_val.txt

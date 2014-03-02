@@ -1,0 +1,365 @@
+#######################################################################################################
+# This script tests the Voip test case (without TEQ).
+#
+# Audio Network Description:
+#
+#                        +--------------+     +--------------+        +--------------+
+#         DL_IN_FILE --> |1            4| --> |1   MixerDL  0| -----> |0  Renderer   |
+#                        |              |     +--------------+        +-----1--------+
+#                        |              |                                   |
+#                        |  SpeechProc 2| <---------------------------------+
+#                        |              |                                    
+#                        |              |     +--------------+        +--------------+
+#        UL_OUT_FILE <-- |3            0| <-- |0   MixerUL  1| <----- |0  Capturer   |
+#                        +--------------+     +--------------+        +--------------+
+#
+# Script's arguments:
+#   None
+#######################################################################################################
+
+alias TEST_ID SP_2000
+
+test_start SP_2000  voip
+goto_end_on_error
+
+#I/Os parameters
+alias DL_IN_FILE   $(AUDIO_STREAMS)/speech_proc/streams/T04.INP
+
+alias UL_OUT_FILE  $(OUTPUT_DIR)/$(TEST_ID).uplink.pcm
+alias UL_OUT_SIZE  3000000
+
+goto_end_on_error
+# port indexes
+alias SP_UL_IN  0
+alias SP_DL_IN  1
+alias SP_REF_IN 2
+alias SP_UL_OUT 3
+alias SP_DL_OUT 4
+alias SP_CTRL   5
+
+# trace level
+# Generic  : 1-ERROR  2-WARNING  4-FLOW  8-DEBUG  16-API  32-OMX-API  64-OMX-BUFFER  128-RESERVED
+# specific : 256-PCM-DL-IN  512-PCM-DL-OUT  1024-PCM-UL-IN  2048-PCM-REF-IN  4096-PCM-UL-OUT
+if "$($1)" != ""
+  alias TRACE_LEVEL $($1)
+else
+  alias TRACE_LEVEL 0
+endif
+
+# clean previous OMX event if any 
+MMTE_FlushReceivedEvent
+
+# instantiate components
+# Speech Processing
+OMX_GetHandle speechproc  OMX.ST.AFM.speech_proc
+
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig speechproc ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+# configure port
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_UL_IN)  nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_DL_IN)  nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_REF_IN) nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_UL_OUT) nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamPortDefinition nPortIndex=$(SP_DL_OUT) nBufferCountActual=2
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_UL_IN)  nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000 eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_DL_IN)  nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000 eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_UL_OUT) nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000 eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_DL_OUT) nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000  eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm       nPortIndex=$(SP_REF_IN) nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF
+
+OMX_SendCommand  speechproc OMX_CommandPortDisable $(SP_REF_IN)
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_REF_IN)
+OMX_SendCommand  speechproc OMX_CommandPortDisable $(SP_UL_IN)
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_UL_IN)
+OMX_SendCommand  speechproc OMX_CommandPortDisable $(SP_DL_IN)
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_DL_IN)
+OMX_SendCommand  speechproc OMX_CommandPortDisable $(SP_DL_OUT)
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_DL_OUT)
+OMX_SendCommand  speechproc OMX_CommandPortDisable $(SP_UL_OUT)
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_UL_OUT)
+#OMX_SendCommand  speechproc OMX_CommandPortDisable $(SP_CTRL)
+#MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_CTRL)
+
+# Activate bypass mode
+OMX_SetParameter  speechproc AFM.Param.SpeechProc bBypassUplink=OMX_TRUE bBypassDownlink=OMX_TRUE
+
+
+
+
+# Renderer
+#OMX_GetHandle renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_GetHandle renderer OMX.ST.AFM.IHF
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig renderer ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+# configure port
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+OMX_SetParameter renderer OMX_IndexParamAudioPcm nPortIndex=1 nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+ 
+#disable ref port
+OMX_SendCommand  renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent   renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+# configure volume
+# set volume high to have more echo, in order to test time align
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=90 sVolume.nMin=0 sVolume.nMax=100
+OMX_SetConfig renderer OMX_IndexConfigAudioChannelMute nPortIndex=0 nChannel=OMX_ALL bMute=OMX_FALSE bIsMIDI=0 
+
+
+# Capturer
+#OMX_GetHandle capturer OMX.ST.AFM.MULTI_MIC
+OMX_GetHandle capturer OMX.ST.AFM.NOKIA_AV_SOURCE
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig capturer ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+# configure port
+OMX_SetParameter capturer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+
+# configure volume
+# set volume high to have more echo, in order to test time align
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_FALSE sVolume.nValue=2000
+OMX_SetConfig renderer OMX_IndexConfigAudioChannelMute nPortIndex=0 nChannel=OMX_ALL bMute=OMX_FALSE bIsMIDI=0
+
+
+OMX_SetConfig capturer OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_FALSE sVolume.nValue=2000
+OMX_SetConfig capturer OMX_IndexConfigAudioChannelMute nPortIndex=0 nChannel=OMX_ALL bMute=OMX_FALSE bIsMIDI=0
+
+
+
+#  Downlink Mixer
+OMX_GetHandle  mixerDL OMX.ST.AFM.mixer
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig  mixerDL ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+OMX_SetParameter mixerDL OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+# Disable all unused mixer ports
+OMX_SendCommand mixerDL OMX_CommandPortDisable 2
+MMTE_WaitEvent  mixerDL  OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixerDL OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixerDL  OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixerDL OMX_CommandPortDisable 4 
+MMTE_WaitEvent  mixerDL  OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixerDL OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixerDL  OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixerDL OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixerDL  OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixerDL OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixerDL  OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixerDL OMX_CommandPortDisable 8
+MMTE_WaitEvent  mixerDL  OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+
+OMX_SetParameter mixerDL  OMX_IndexParamAudioPcm   nPortIndex=1 nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000 eChannelMapping[0]=OMX_AUDIO_ChannelCF 
+OMX_SetParameter mixerDL  OMX_IndexParamAudioPcm   nPortIndex=0 nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+
+
+# Mixer Uplink
+OMX_GetHandle mixerUL OMX.ST.AFM.mixer
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig mixerUL ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+OMX_SetParameter mixerUL OMX_IndexParamAudioSynchronized nPortIndex=1 bIsSynchronized=OMX_TRUE
+
+# Disable all unused mixer ports
+OMX_SendCommand mixerUL OMX_CommandPortDisable 2
+MMTE_WaitEvent  mixerUL  OMX_EventCmdComplete OMX_CommandPortDisable 2
+OMX_SendCommand mixerUL OMX_CommandPortDisable 3
+MMTE_WaitEvent  mixerUL  OMX_EventCmdComplete OMX_CommandPortDisable 3
+OMX_SendCommand mixerUL OMX_CommandPortDisable 4 
+MMTE_WaitEvent  mixerUL  OMX_EventCmdComplete OMX_CommandPortDisable 4
+OMX_SendCommand mixerUL OMX_CommandPortDisable 5
+MMTE_WaitEvent  mixerUL  OMX_EventCmdComplete OMX_CommandPortDisable 5
+OMX_SendCommand mixerUL OMX_CommandPortDisable 6
+MMTE_WaitEvent  mixerUL  OMX_EventCmdComplete OMX_CommandPortDisable 6
+OMX_SendCommand mixerUL OMX_CommandPortDisable 7
+MMTE_WaitEvent  mixerUL  OMX_EventCmdComplete OMX_CommandPortDisable 7
+OMX_SendCommand mixerUL OMX_CommandPortDisable 8
+MMTE_WaitEvent  mixerUL  OMX_EventCmdComplete OMX_CommandPortDisable 8
+
+# configure UL ports
+OMX_SetParameter mixerUL  OMX_IndexParamAudioPcm   nPortIndex=1 nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000 eChannelMapping[0]=OMX_AUDIO_ChannelLF eChannelMapping[1]=OMX_AUDIO_ChannelRF 
+OMX_SetParameter mixerUL  OMX_IndexParamAudioPcm   nPortIndex=0 nChannels=1 eEndian=OMX_EndianLittle nSamplingRate=8000 eChannelMapping[0]=OMX_AUDIO_ChannelCF 
+
+
+# connect all
+OMX_SetupTunnel  speechproc SP_DL_OUT 	mixerDL    1
+OMX_SetupTunnel  mixerDL    0           renderer   0
+
+OMX_SetupTunnel  capturer   0           mixerUL    1
+OMX_SetupTunnel  mixerUL    0           speechproc $(SP_UL_IN)
+
+
+ate_attach_io speechproc $(SP_DL_IN)  MEM $(DL_IN_FILE)  0              1
+ate_attach_io speechproc $(SP_UL_OUT) MEM $(UL_OUT_FILE) $(UL_OUT_SIZE) 0
+
+
+# Put network in idle state
+
+OMX_SendCommand	speechproc OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent speechproc OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	mixerDL OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  mixerDL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	mixerUL OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  mixerUL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	renderer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	capturer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  capturer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_UL_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_UL_IN)
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_DL_IN)
+MMTE_AllocateBuffers speechproc  $(SP_DL_IN)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_DL_IN)
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_UL_OUT)
+MMTE_AllocateBuffers speechproc  $(SP_UL_OUT)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_UL_OUT)
+
+OMX_SendCommand speechproc OMX_CommandPortEnable $(SP_DL_OUT)
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_DL_OUT)
+
+
+# Put network in executing state
+
+OMX_SendCommand  renderer   OMX_CommandStateSet OMX_StateExecuting  
+OMX_SendCommand  mixerDL    OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand  speechproc OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand  mixerUL    OMX_CommandStateSet OMX_StateExecuting
+OMX_SendCommand  capturer   OMX_CommandStateSet OMX_StateExecuting
+
+MMTE_WaitEvent   capturer   OMX_EventCmdComplete OMX_CommandStateSet  OMX_StateExecuting
+MMTE_WaitEvent   renderer   OMX_EventCmdComplete OMX_CommandStateSet  OMX_StateExecuting
+MMTE_WaitEvent   mixerDL    OMX_EventCmdComplete OMX_CommandStateSet  OMX_StateExecuting
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandStateSet  OMX_StateExecuting
+MMTE_WaitEvent   mixerUL    OMX_EventCmdComplete OMX_CommandStateSet  OMX_StateExecuting
+
+
+
+# Enable ref channel
+
+OMX_SetParameter speechproc  OMX_IndexParamAudioPcm  nPortIndex=$(SP_REF_IN) nChannels=2 eEndian=OMX_EndianLittle nSamplingRate=48000
+
+OMX_SetupTunnel  renderer 1  speechproc SP_REF_IN
+
+OMX_SendCommand  speechproc OMX_CommandPortEnable $(SP_REF_IN)
+OMX_SendCommand  renderer   OMX_CommandPortEnable 1
+MMTE_WaitEvent   speechproc OMX_EventCmdComplete OMX_CommandPortEnable $(SP_REF_IN)
+MMTE_WaitEvent   renderer   OMX_EventCmdComplete OMX_CommandPortEnable 1
+
+
+mmte_sleep 5000
+
+
+# Disable ports in executing
+OMX_SendCommand capturer   OMX_CommandPortDisable 0
+OMX_SendCommand mixerUL    OMX_CommandPortDisable 1
+MMTE_WaitEvent  capturer   OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent  mixerUL    OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+OMX_SendCommand mixerUL    OMX_CommandPortDisable 0
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_UL_IN)
+MMTE_WaitEvent  mixerUL    OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_UL_IN)
+
+
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_UL_OUT)
+MMTE_wait_nontunneled_buffers speechproc $(SP_UL_OUT)                  
+MMTE_FreeBuffers speechproc $(SP_UL_OUT) 
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable 3
+
+
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_DL_IN)
+MMTE_wait_nontunneled_buffers speechproc $(SP_DL_IN)                  
+MMTE_FreeBuffers speechproc $(SP_DL_IN) 
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_DL_IN)
+
+
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_DL_OUT)
+OMX_SendCommand mixerDL    OMX_CommandPortDisable 1
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_DL_OUT)
+MMTE_WaitEvent  mixerDL    OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+OMX_SendCommand mixerDL    OMX_CommandPortDisable 0
+OMX_SendCommand renderer   OMX_CommandPortDisable 0
+MMTE_WaitEvent  mixerDL    OMX_EventCmdComplete OMX_CommandPortDisable 0
+MMTE_WaitEvent  renderer   OMX_EventCmdComplete OMX_CommandPortDisable 0
+
+OMX_SendCommand renderer   OMX_CommandPortDisable 1
+OMX_SendCommand speechproc OMX_CommandPortDisable $(SP_REF_IN)
+MMTE_WaitEvent  renderer   OMX_EventCmdComplete OMX_CommandPortDisable 1
+MMTE_WaitEvent  speechproc OMX_EventCmdComplete OMX_CommandPortDisable $(SP_REF_IN)
+
+
+
+# Put back network in idle state
+OMX_SendCommand	speechproc OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent speechproc OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	mixerDL OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  mixerDL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	mixerUL OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  mixerUL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	renderer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand	capturer OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  capturer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+# put network in Loaded state
+OMX_SendCommand	speechproc OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent speechproc OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand	mixerDL OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent  mixerDL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand	mixerUL OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent  mixerUL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand	renderer OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_SendCommand	capturer OMX_CommandStateSet OMX_StateLoaded
+MMTE_WaitEvent  capturer OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle speechproc
+OMX_FreeHandle mixerDL
+OMX_FreeHandle mixerUL
+OMX_FreeHandle renderer
+OMX_FreeHandle capturer
+
+MMTE_CheckMemoryStatus
+
+# clean remaining OMX event
+MMTE_FlushReceivedEvent
+
+
+unalias DL_IN_FILE
+unalias UL_OUT_FILE
+unalias UL_OUT_SIZE
+unalias SP_UL_IN
+unalias SP_DL_IN
+unalias SP_REF_IN
+unalias SP_UL_OUT
+unalias SP_DL_OUT
+unalias SP_CTRL  
+unalias TEST_ID
+test_end

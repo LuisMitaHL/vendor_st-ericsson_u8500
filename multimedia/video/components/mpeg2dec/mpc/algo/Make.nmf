@@ -1,0 +1,30 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+include $(MMROOT)/video/makefiles/Make.nmf.config
+
+ITF_PREFIX := video_mpeg2dec_mpeg2dec
+
+COMPONENTS += mpeg2dec.mpc.mpeg2dec
+
+CONFFILES =	mpeg2dec/mpc/mpeg2dec/mpeg2dec.conf             \
+		mpeg2dec/mpc/algo/algo.conf
+
+SRCPATH+=	$(MM_IDT_DIR)                \
+		$(MMROOT)/video/idt                             \
+		$(MMROOT)/video/components/mpeg2dec/mpc/share
+
+CPPFLAGS+=	-I$(MMROOT)/video/components/hardware/inc/$(SVA_SUBSYSTEM)      \
+		-I$(MMROOT)/video/components/registers_def/$(SVA_SUBSYSTEM)/inc \
+		-I$(MMROOT)/video/components/common/inc/$(SVA_SUBSYSTEM)        \
+		-I$(MMROOT)/video/components/common/inc
+
+
+USER2MPCITFS +=	
+
+MPC2USERITFS +=	mpeg2dec.mpc.api.end_algo
+
+ASYNCITFS += mpeg2dec.mpc.api.algo mpeg2dec.mpc.api.end_algo
+
+include $(MMROOT)/video/makefiles/Make.nmf.rules
+

@@ -1,0 +1,21 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE -DUNIX \
+-Inmfil/host/wrapper/inc \
+-Inmfil/host/tonegen/inc \
+-Ieffect/include
+
+ITFS_HEADER+= \
+tonegen.nmfil.host.source \
+tonegen.nmfil.host.wrapper.configure \
+tonegen.nmfil.host.tonegen.configure
+
+COMPONENTS= \
+tonegen.nmfil.host.composite.wrapper \
+tonegen.nmfil.host.composite.tonegen
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

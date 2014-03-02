@@ -1,0 +1,26 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */
+ 
+interface timer.api.timer {
+
+    // Start a timer - times are relative and expressed in microsecond
+    // Any subsequent calls reset and restart the timer
+    // fisrtAlarm: time of the first alarm
+    // period: period of the periodic timer or 0 if none
+    // return 0 or an error code
+    t_uint32 startTimer(t_uint32 fisrtAlarm, t_uint32 period);
+
+    // Start a high precision timer - times are relative and expressed in microsecond
+    // Any subsequent calls reset and restart the timer
+    // fisrtAlarm: time of the first alarm
+    // period: period of the periodic timer or 0 if none
+    // return 0 or an error code
+    t_uint32 startHighPrecisionTimer(t_uint32 fisrtAlarm, t_uint32 period);
+
+    // Stop the timer
+    void stopTimer(void);
+}

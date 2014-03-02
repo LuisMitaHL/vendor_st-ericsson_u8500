@@ -1,0 +1,11 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE
+CPPFLAGS+=-I$(MM_NMF_COMP_SRC_COMMON_DIR)
+
+USER2MPCITFS_CPP=transducer_equalizer.nmfil.effect.configure \
+
+COMPONENTS= transducer_equalizer.nmfil.effect
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

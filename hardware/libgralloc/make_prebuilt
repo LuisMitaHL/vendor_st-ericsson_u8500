@@ -1,0 +1,63 @@
+#!/bin/bash
+
+USAGE="usage: $0 BUILD_SYSTEM=[android|stelp] PRODUCT=[u8500|u5500]"
+
+#Sanity check of arguments
+if [ $# != 2 ]; then
+    echo $USAGE
+    exit
+fi
+
+# split key=value into two separate key and value parameters
+until [ -z $1  ]; do
+  OPTLEN=`expr length "$1"`
+  KEYPOS=`expr index "$1" =`
+  KEY=`expr substr "$1" 1 $((KEYPOS - 1))`
+  VALUE=`expr substr "$1" $((KEYPOS + 1)) $OPTLEN`
+  shift
+
+  case $KEY in
+    BUILD_SYSTEM )
+      BUILD_SYSTEM=$VALUE ;;
+    PRODUCT )
+      PRODUCT=$VALUE ;;
+  esac
+done
+
+# The name from $(TARGET_BOARD_PLATFORM) is selected in MODULE_NAME
+# .montblanc is for u8500. .fairbanks should be used for u5500
+MODULE_NAME="gralloc.montblanc"
+FOLDER_NAME="libgralloc"
+HEADERS_TO_COPY="gralloc_stericsson_ext.h"
+
+mkdir -p ../prebuilt
+mkdir -p ../prebuilt/${FOLDER_NAME}
+cp -v -t ../prebuilt/${FOLDER_NAME} ${HEADERS_TO_COPY} 
+
+case $BUILD_SYSTEM in
+  android )
+    ROOT="../../../.."
+    PRODUCT_DIR="${ROOT}/out/target/product/${PRODUCT}"
+    LIBS="${PRODUCT_DIR}/obj/SHARED_LIBRARIES/${MODULE_NAME}_intermediates/LINKED/*"
+
+    if [ ! -d $PRODUCT_DIR ]; then
+      echo "Product dir ${PRODUCT_DIR} not found!"
+      exit
+    fi
+
+    cp -v ${LIBS} ../prebuilt/${FOLDER_NAME}
+    cp -v Android_prebuilt.mk ../prebuilt/${FOLDER_NAME}/Android.mk
+
+# Clean up all built versions of the lib, so that we later can testl
+# that the prebuilt version is found by all other modules that need it.
+    rm -v ${PRODUCT_DIR}/obj/lib/${MODULE_NAME}.so
+    rm -v ${PRODUCT_DIR}/system/lib/hw/${MODULE_NAME}.so
+    rm -v ${PRODUCT_DIR}/symbols/system/lib/hw/${MODULE_NAME}.so
+    rm -rfv ${PRODUCT_DIR}/obj/SHARED_LIBRARIES/${MODULE_NAME}_intermediates
+    ;;
+  * )
+    echo "Unknown option BUILD_SYSTEM=${BUILD_SYSTEM}"
+    echo $USAGE
+    exit
+    ;;
+esac

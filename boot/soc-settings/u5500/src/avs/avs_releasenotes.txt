@@ -1,0 +1,103 @@
+AVS software - Release notes
+Jérôme Soulard -- jerome.soulard@stericsson.com
+
+
+
+-- Versioning scheme --
+VA.B.C 
+A is the Maja version targeted by the release
+B will be incremented with each major update (new fuse version or feature) 
+C will be incremented with each minor update (change of a parameter or bug fix)
+
+
+
+-- Release history --
+
+Version:  V2.1.0 
+Date:     03/Jan/2012
+PRCMU FW: 5500b0_11_11
+AVS fuse version: 0x2
+AVS specifications: 0.77
+
+Comments:
+AVS is now also used for Vape. WARNING: PRCMU OPP AVS_VAPE_OPP_MAX must not be
+used, this OPP is reserved for grade C devices. Backward compatibility with
+devices fused with AVS revision 0x1 is maintained.
+
+
+----------------------
+
+Version:  V2.0.3 
+Date:     14/Nov/2011
+PRCMU FW: 5500b0_0C_0F
+AVS fuse version: 0x1
+AVS specifications: 0.7
+
+Comments:
+New input parameter: a copy of the PRCMU avs structure.
+AVS software will only fill this structure. The call to the AVS service is
+not anymore managed by the AVS software. 
+The main function now returns in 4 different ways. 
+AVS_EXIT_SUCCESS if AVS is ready to be activated. PRCMU structure is filled.
+AVS_EXIT_UNFUSEDDEVICE if the device is not fused. PRCMU structure is left
+unmodified and default voltages should be applied.
+AVS_EXIT_UNKNOWNREV if the AVS revision is unknown. PRCMU structure is left
+unmodified and policy is to be defined.
+AVS_EXIT_OUTOFLIMITS if at least one requested voltage is above maximum limits. 
+PRCMU structure is left unmodified and policy is to be defined.
+
+
+----------------------
+
+
+Version:  V2.0.2 
+Date:     02/Nov/2011
+PRCMU FW: 5500b0_0C_0F
+AVS fuse version: 0x1
+AVS specifications: 0.7
+
+Comments:
+Changed the way avs_configure() is called.
+The software enabling AVS now has to read the fuses and give them as parameters
+to the avs_configure(int, int) function. 
+
+
+----------------------
+
+
+Version:  V2.0.1 
+Date:     13/Oct/2011
+PRCMU FW: 5500b0_0B_0E
+AVS fuse version: 0x1
+AVS specifications: 0.7
+
+Comments:
+Changed the way the voltage is defined from the fused value to the
+Petra value to reflect last changes in the specification. Previous release was
+applying too low voltages that could lead to unexpected failures.
+
+
+----------------------
+
+
+Version:  V2.0.0 
+Date:     05/Oct/2011
+PRCMU FW: 5500b0_0B_0E
+AVS fuse version: 0x1
+AVS specifications: 0.6
+
+Comments: 
+First AVS release. 
+AVS on Varm @400MHz and Varm @800MHz. No AVS on Vape. Gradual Start not enabled.
+If one voltage is above maximum limit, AVS will NOT be applied AT ALL and a
+generic error will be returned.
+If one voltage is below the minimum limit, it will be set silently to the
+minimum authorized value and AVS will be applied, no error will be reported. 
+If someone tries to apply AVS on a unfused sample or on a sample fused with an
+unknown AVS revision, AVS will NOT be applied and a generic error will be
+returned.
+If the call to the PRCMU service fails, behavior is UNDEFINED (need to talk to 
+PRCMU team) and a generic error will be returned. No further call to the service
+will be done by the software.
+
+

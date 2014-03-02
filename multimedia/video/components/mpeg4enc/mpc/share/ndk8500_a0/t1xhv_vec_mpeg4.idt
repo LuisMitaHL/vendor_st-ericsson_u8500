@@ -1,0 +1,365 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ *
+ * \brief   Common data structure and/or definition for MPEG4 encoder algorithm
+ * \author  ST-Ericsson
+ */
+
+/** @addtogroup vecMpeg4Group MPEG4 Encoder NMF Component
+ *  \brief This part shows a MPEG4 Encoder NMF Component description (in term
+ *  of configuration and interfaces)
+ *  @{
+ *   
+ * \image html algo-overview.jpg
+ *  with <algo_name> = mpeg4_encoder \n
+ *  and  <algo> = Mpeg4Encoder
+ *   
+ *
+ * \section data_flow_sec Mpeg4 encoder dataflow description
+ * \n
+ * \n
+ * \image html mpeg4_encoder_global_dataflow.jpg
+ * \n
+ * \section memory_desc_sec Memory needs description
+ * \n
+ * \n The following diagram shows the different needed buffers, their respective location and the way their
+ * address is given as parameter to the algo component.
+ * \image html mpeg4_encoder_dataflow.jpg
+ */ 
+
+/** @addtogroup vecMpeg4ConfigurationGroup NMF Configuration file
+ *  \brief Source code of the configuration file of the component \ref vecMpeg4Group 
+ *  @{
+ *  \include mpeg4_encoder_algo.conf
+ */ 
+/** @} */ // end of vecMpeg4ConfigurationGroup
+
+
+/** @addtogroup vecMpeg4ProvidedInterfaceGroup Provided interface(s)
+ *  \brief Description of all provided interfaces of NMF component \ref vecMpeg4Group 
+ *  @{
+ */ 
+
+/** @} */ // end of vecMpeg4ProvidedInterfaceGroup
+
+/** @addtogroup vecMpeg4RequiredInterfaceGroup Required interface(s)
+ *  \brief Description of all required interfaces of NMF component \ref vecMpeg4Group  
+ *  @{
+ */ 
+
+/** @} */ // end of vecMpeg4RequiredInterfaceGroup
+
+#ifndef	_t1xhv_vec_mpeg4_idt
+#define _t1xhv_vec_mpeg4_idt
+
+#include <t1xhv_vec.idt>
+#include <t1xhv_retarget.idt>
+
+
+/** \brief This structure defines a MPEG4 Encode input parameter buffers. */
+typedef struct {
+    t_ushort_value picture_coding_type;       /**<\brief Picture type (i.e. type of the picture to be encoded for an MPEG4 or an H263 or an
+                                                    H264 encode subtask. The type can be intra-coded (also called I-frame or Intra frame) or predictive-
+                                                    coded (also called P-frame or Inter frame). The previous reconstructed frame, contained in the forward 
+                                                    reference buffer, is used for motion estimation while encoding either Iframes or P-frames).
+                                                    \n 0: Intra-coded
+                                                    \n 1: Predictive-coded */
+    t_ushort_value flag_short_header;         /**<\brief Short header flag (i.e. encoding mode for an MPEG4 encode subtask. It corresponds to the value of the
+                                                    short_video_header field of the Video Object Layer in MPEG4 bitstreams. 
+                                                    MPEG4 Short Header is equivalent to H263 Baseline).
+                                                    \n 0: “normal” MPEG4 format (Simple Profile)
+                                                    \n 1: “short header” MPEG4 format (equivalent to H263 Baseline) */
+    t_ushort_value frame_width;               /**<\brief Source frame width (i.e. width of the source frame of the encode task. It is equal to the number
+                                                    of luminance pixels contained in the horizontal dimension of the frame).
+                                                    \n Contraints : [16,640] and Multiple of 16 */
+    t_ushort_value frame_height;              /**<\brief Source frame height (i.e. height of the source frame of the encode task. It is equal to the
+                                                    number of luminance pixels contained in the vertical dimension of the frame)
+                                                    \n Contraints : [16,480] and Multiple of 16 */
+    t_ushort_value window_width;              /**<\brief Source window width (i.e. width of the source window of the encode task. It is equal to the
+                                                    number of luminance pixels contained in the horizontal dimension of the window).
+                                                    \n Contraints : [16,frame_width] and Multiple of 16 */
+    t_ushort_value window_height;             /**<\brief Source window height (i.e. height of the source window of the encode task. It is equal to the
+                                                    number of luminance pixels contained in the vertical dimension of the window).
+                                                    \n Contraints : [16,frame_height] and Multiple of 16 */
+    t_ushort_value window_horizontal_offset;  /**<\brief Source window horizontal offset (i.e. horizontal offset of the source window of the encode task 
+                                                    within the source frame. It is pixel-accurate).
+                                                    \n Contraints : [0,frame_width[, window_horizontal_offset+window_width<frame_width and Multiple of 8 */
+    t_ushort_value window_vertical_offset;    /**<\brief Source window vertical offset (i.e. vertical offset of the source window of the encode task within the
+                                                    source frame. It is pixel-accurate).
+                                                    \n Contraints : [0,frame_height[, window_horizontal_offset+window_height<frame_height and Multiple of 8 */
+    t_ushort_value gob_header_freq;           /**<\brief GOB header frequency (i.e. enables the use of GOB headers and specifies their frequency. It is used 
+                                                    only when flag_short_header=1).
+                                                    \n 0: GOB headers disabled
+                                                    \n x: GOB headers enabled and inserted every x macroblock
+                                                    \n Contraints : [0,window_height/16] and Multiple of xx */
+    t_ushort_value gob_frame_id;              /**<\brief GOB frame ID (i.e. specifies the gob_frame_id field of GOB headers. It is used only when gob_header_freq!=0 
+                                                    and flag_short_header=1)*/
+    t_ushort_value data_partitioned;          /**<\brief Data partitioning flag (i.e. enables data partitioning. It is used only when
+                                                    flag_short_header=0).
+                                                    \n 0: no data partitioning
+                                                    \n 1: data partitioning (macroblock motion vector data are separated from texture data)
+                                                    \n Contraints : 0 for frame bigger than CIF format. */
+    t_ushort_value reversible_vlc;            /**<\brief Reversible VLC flag (i.e. enables the use of reversible codes. It is used
+                                                    only when flag_short_header=0 and data_partitioned=1)
+                                                    \n 0: standard VLC tables
+                                                    \n 1: reversible VLC tables */
+    t_ushort_value hec_freq;                  /**<\brief Header Extension Code frequency (i.e. enables the use of Header Extension Codes and associated 
+                                                    information. It is used only when flag_short_header=0 and data_partitioned=1. When hec_freq=0, no HEC 
+                                                    information is inserted. Otherwise, HEC information is inserted in video packet headers once every 
+                                                    hec_freq video packets).
+                                                    \n 0: HEC information disabled
+                                                    \n x: HEC information inserted once every HFR video packets
+                                                    \n Contraints : [0, window_width*window_height/256[ */
+    t_ushort_value modulo_time_base;          /**<\brief Modulo Time Base (for HECs) (i.e. specifies the modulo_time_base field to be 
+                                                    written in HEC information. It is used only when flag_short_header=0 and data_partitioned=1
+                                                    and hec_freq!=0. It is given in seconds).*/
+    t_ushort_value vop_time_increment;        /**<\brief VOP time increment (i.e. specifies the vop_time_increment field to be written in HEC information. 
+                                                    It is used only when flag_short_header=0 and data_partitioned=1 and hec_freq!=0.)*/
+    t_ushort_value vp_size_type;              /**<\brief Video packet size control (i.e. defines the control of the video packet size. It is used only when
+                                                    flag_short_header=0 and data_partitioned=1. It enables the use of vp_bit_size and vp_mb_size parameters. 
+                                                    A video packet is closed as soon as it reaches the corresponding limit or the vp_size_max limit. 
+                                                    Note that the last macroblock of the video packet will be replaced by a “not coded” macroblock if the 
+                                                    vp_size_max limit is reached).
+                                                    \n 0: a video packet is closed as soon as the vp_bit_size limit or the vp_size_max limit is reached
+                                                    \n 1: a video packet is closed as soon as the vp_mb_size limit or the vp_size_max limit is reached
+                                                    \n 2 or 3: a video packet is closed as soon as either the vp_bit_size limit or the vp_mb_size limit 
+                                                    or the vp_size_max limit is reached
+                                                    \n Contraints : [0,3] */
+    t_ushort_value vp_size_max;               /**<\brief Maximum video packet size (i.e. defines the maximum video packet size, in bits. It is used only when
+                                                    flag_short_header=0 and data_partitioned=1. If the vp_size_max limit is reached, the last macroblock is 
+                                                    replaced by a “not coded” macroblock and the video packet is closed, in order to respect the limit).
+                                                    \n Contraints : 
+                                                    \n   - [0,2048] for Simple Profile Level 0
+                                                    \n   - [0,2048] for Simple Profile Level 1
+                                                    \n   - [0,4096] for Simple Profile Level 2
+                                                    \n   - [0,8192] for Simple Profile Level 3*/
+    t_ushort_value vp_bit_size;               /**<\brief Video packet bit size (i.e. defines the minimum video packet size in bits. It is used only when
+                                                    flag_short_header=0 and data_partitioned=1 and vp_size_type=0/2/3. A video packet is closed as soon 
+                                                    as it reaches the corresponding limit or the vp_size_max limit. Note that the last macroblock of the 
+                                                    video packet will be replaced by a “not coded” macroblock if the vp_size_max limit is reached).
+                                                    \n 0:
+                                                    \n 1:
+                                                    \n Contraints : [0,vp_size_max] Some margin with respect to VSM should be used in order to avoid 
+                                                    discarding the last macroblock of video packets, e.g. [0,vp_size_max/2) */
+    t_ushort_value vp_mb_size;                /**<\brief Video packet macroblock size (i.e. defines the minimum video packet size in macroblocks. It is 
+                                                    used only when flag_short_header=0 and data_partitioned=1 and vp_size_type=1/2/3. A video packet 
+                                                    is closed as soon as it reaches the corresponding limit or the vp_size_max limit. Note that the last 
+                                                    macroblock of the video packet will be replaced by a “not coded” macroblock if the vp_size_max limit is reached).
+                                                    \n Contraints : [0,window_width*window_height/256]. Sufficiently small values should be used in order to 
+                                                    avoid discarding the last macroblock of video packets, e.g. window_width/16 */
+    t_ushort_value init_me;                   /**<\brief Motion estimation initialization (i.e. allows to initialize the motion estimation data - null motion vectors 
+                                                    are used)  (e.g. after a scene change detection).
+                                                    \n 0: continue motion estimation using previous encode data
+                                                    \n 1: initialize motion estimation data */
+    t_ushort_value me_type;                   /**<\brief Motion estimation type (i.e. defines the motion estimation algorithm. It can be used to improve quality at 
+                                                    low resolution/frame rate, or improve performance at high resolution/frame rate).
+                                                    \n 0 or 3: normal Slimpeg
+                                                    \n 1: Slimpeg optimized for low resolution/frame rate (improved quality)
+                                                    \n 2: Slimpeg optimized for high resolution/frame rate (improved performance)
+                                                    \n Contraints : [xx,yyyy] and Multiple of xx */
+    t_ushort_value vop_fcode_forward;         /**<\brief VOP FCode forward (i.e. defines the motion vector range (it corresponds to the vop_fcode_forward field of the
+                                                    Video Object Plane in MPEG4 bitstreams). It also enables the use of the search window, to optimize data access
+                                                    during motion estimation, if the search window buffer is large enough (otherwise, predictors are accessed directly
+                                                    in the forward reference frame). It is used only when flag_short_header=0.
+                                                    \n 1: [-16pel, +15.5pel] motion vector range
+                                                    \n 2: [-32pel, +31.5pel] motion vector range
+                                                    \n 3: [-64pel, +63.5pel] motion vector range
+                                                    \n 4: [-128pel, +127.5pel] motion vector range
+                                                    \n 5: [-256pel, +255.5pel] motion vector range
+                                                    \n 6: [-512pel, +511.5pel] motion vector range
+                                                    \n 7: [-1024pel, +1023.5pel] motion vector range
+                                                    \n Contraints : [1,7] */
+    t_ushort_value rounding_type;             /**<\brief Rounding type (i.e. defines the value of the rounding control parameter used for pixel value interpolation
+                                                    in motion compensation for P-frames. It is not used if picture_coding_type=0).
+                                                    \n Contraints : [0,1] */
+    t_ushort_value intra_refresh_type;        /**<\brief Intra refresh type (i.e. enables the Adaptive Intra Refresh (AIR) and/or Cyclic Intra Refresh (CIR) algorithms).
+                                                    \n 0: AIR and CIR disabled
+                                                    \n 1: AIR enabled, CIR disabled
+                                                    \n 2: AIR disabled, CIR enabled
+                                                    \n 3: AIR and CIR enabled
+                                                    \n Contraints : [0,3] */
+    t_ushort_value air_mb_num;                /**<\brief Adaptive Intra Refresh macroblock number (i.e. defines the number of macroblocks per frame to be refreshed in 
+                                                    the AIR algorithm. It is used only if intra_refresh_type=1 or 3).*/
+    t_ushort_value cir_period_max;            /**<\brief Maximum Cyclic Intra Refresh period (i.e. defines the maximum macroblock refresh period in the CIR algorithm.
+                                                    It is used only if intra_refresh_type=2 or 3).*/
+    t_ushort_value quant;                     /**<\brief Quantizer (i.e. defines the quantization parameter. It is used only if brc_type=0/4/5/6/7).
+                                                    \n Contraints : [2,31] */
+    t_ushort_value brc_type;                  /**<\brief Bit Rate Control type (i.e. defines the bit rate control (BRC) algorithm. One of the following modes can be used:
+                                                    \n - constant Quantization Parameter (QP)
+                                                    \n - frame-based control, where the host computes the target size for each frame
+                                                    \n - Constant Bit Rate control (CBR), with low-delay constraint for video-conferencing, or “See-What-I-See” (SWIS)
+                                                    applications
+                                                    \n - Variable Bit Rate control (VBR), for Multimedia Messaging (MMS) or Local Video Recording applications.
+                                                    \n Several buffering models can be used, depending on the standard and the BRC algorithm: Video Buffer Verifier
+                                                    (VBV) (typical of MPEG4 standard), Hypothetic Reference Decoder (HRD) (typical of H263 standard), 3GPP PSS Annex G
+                                                    (for H263)).
+                                                    \n 0: constant QP without buffering model
+                                                    \n 1: frame-based control (no buffering model)
+                                                    \n 2: CBR (with custom VBV for MPEG4 with flag_short_header=0, with HRD for H263 or MPEG4 with flag_short_header=1)
+                                                    \n 3: VBR (with VBV for MPEG4 with flag_short_header=0, with Annex G for H263 or MPEG4 with flag_short_header=1)
+                                                    \n 4 or 5: constant QP with VBV for MPEG4 with flag_short_header=0, with Annex G for H263 or MPEG4 with 
+                                                    flag_short_header=1
+                                                    \n 6 or 7: constant QP with VBV for MPEG4 with flag_short_header=0, with HRD for H263 or MPEG4 with
+                                                    flag_short_header=1
+                                                    \n Contraints : [0,7]*/
+    t_ulong_value  brc_frame_target;          /**<\brief Frame size target (i.e. defines the target number of bits for the frame to be encoded. It is used only if
+                                                    brc_type=1).*/
+    t_ulong_value  brc_target_min_pred;       /**<\brief BRC predicted minimum target (i.e. defines the predicted minimum number of bits to avoid buffer underflow 
+                                                    (on the encoder side). It is used only if brc_type=2/3/4/5/6/7).*/
+    t_ulong_value  brc_target_max_pred;       /**<\brief BRC predicted maximum target (i.e. defines the predicted maximum number of bits to avoid buffer overflow 
+                                                    (on the encoder side). It is used only if brc_type=2/3/4/5/6/7).*/
+    t_ulong_value  skip_count;                /**<\brief Frame skip count (i.e. defines the number of frames that have been skipped consecutively right before the
+                                                    current frame to be encoded. It is used to stretch motion vectors during motion estimation).*/
+    t_ulong_value  bit_rate;                  /**<\brief Bitstream Bit Rate (i.e. defines the bit rate of the bitstream to be encoded. It's used for CBR and VBR).*/
+    t_ushort_value framerate;                 /**<\brief Bitstream Frame Rate (i.e. defines the frame rate of the bitstream to be encoded. It's used for CBR and VBR).*/
+    t_short_value  ts_modulo;                 /**<\brief Current timestamp (modulo) (i.e. current timestamp (modulo) parameter. It's used for CBR and VBR). */
+    t_ushort_value ts_seconds;                /**<\brief Current timestamp (seconds) (i.e. current timestamp (seconds) parameter. It's used for CBR and VBR). */
+    t_ushort_value air_thr;                   /**<\brief threshold for AIR (i.e. defines current timestamp (seconds) parameter. it's used for CBR and VBR). */
+    t_ulong_value  delta_target;              /**<\brief Bitstream Delta Target (i.e. defines distance to target rate. It's used for CBR and VBR. This parameter is
+                                                    signed).*/
+    t_ushort_value minQp;                     /**<\brief Picture minimum Qp (i.e. defines picture minimum allowed quantization parameter. It's used for CBR and VBR).*/
+
+    t_ushort_value maxQp;                     /**<\brief Picture maximum Qp (i.e. defines picture maximum allowed quantization parameter. It's used for CBR and VBR).*/
+    t_ushort_value vop_time_increment_resolution; /**<\brief VOP time increment resolution (i.e. VOP time increment resolution. It's used for CBR, VBR and HEC
+                                                    insertion).*/
+    t_ushort_value fixed_vop_time_increment;  /**<\brief Fixed VOP time increment (i.e. defines fixed VOP time increment. It's used for CBR and VBR).*/
+    t_ulong_value  Smax;                      /**<\brief Texture max size (i.e. defines texture max size. It's used for CBR and VBR).*/
+    t_ushort_value min_base_quality;          /**<\brief Minimum base quality (i.e. defines minimum base quality parameter. It's used for VBR).*/
+    t_ushort_value min_framerate;             /**<\brief Minimum frame rate (i.e. defines minimum frame rate. It's used for VBR).*/
+    t_ulong_value  max_buff_level;            /**<\brief Maximum buffer level (i.e. defines maximum buffer level. It's used for CBR).*/
+    t_ushort_value first_I_skipped_flag;      /**<\brief TBD !!! (i.e. TBD !!!)*/
+    t_short_value init_ts_modulo_old;         /**<\brief Previous modulo timestamp (i.e. defines previous timestamp (modulo). It's used for CBR and VBR).*/
+    t_ushort_value slice_loss_first_mb[8];    /**<\brief Slice loss first macroblock (i.e. defines the positions of the first macroblock of “slices” that have 
+                                                    been concealed by the receiver and that need to be refreshed).*/
+    t_ushort_value slice_loss_mb_num[8];      /**<\brief Slice loss macroblock number (i.e. defines the number of macroblocks of “slices” that have been concealed 
+                                                    by the receiver and that need to be refreshed. It is equal to 0 when no slice refresh is needed).*/
+
+	t_ulong_value yuvformat; // 0 - planar, 1 - semiplanar
+    //for H263_P3 
+	t_ushort_value adv_intra_coding;
+	t_ushort_value mod_quant_mode;
+	t_ushort_value slice_mode;
+	t_ushort_value deblock_filter;
+	t_ushort_value h263_p3;
+	
+	//t_ushort_value reserved[2]; //removed after introduction of yuvformat to fix alignment issue
+} ts_t1xhv_vec_mpeg4_param_in;
+
+typedef ts_t1xhv_vec_mpeg4_param_in *tps_t1xhv_vec_mpeg4_param_in;
+
+/** \brief This structure defines a MPEG4 Encode input/output parameter buffers. */
+typedef struct {
+    t_ulong_value  bitstream_size;            /**<\brief Bitstream size (i.e. as an input, defines the size in bits of the bitstream that has been written 
+                                                    by the previous encode, including the header but not the stuffing bits. As an output, it returns the size 
+                                                    in bits of the bitstream that has been written by the current encode , including the header but not the 
+                                                    stuffing bits. It is valid for all values of brc_type).*/
+    t_ulong_value  stuffing_bits;             /**<\brief Number of stuffing bits (i.e. as an input, defines the number of stuffing bits added in the 
+                                                    bitstream by the previous encode. As an output, it returns the number of stuffing bits added in the bitstream 
+                                                    by the current encode. It is valid only if brc_type=2/3/4/5/6/7).*/
+    t_ulong_value  pictCount;                 /**<\brief Picture Count (i.e. defines picture count for MPEG4 encode. It's used for CBR and VBR).*/
+    t_ushort_value I_Qp;                      /**<\brief Initial quantization parameter for intra picture (i.e. initial quantization parameter for intra picture for
+                                                    MPEG4 encode. it's used for CBR and VBR).*/
+    t_ushort_value P_Qp;                      /**<\brief Initial quantization parameter for inter picture (i.e. initial quantization parameter for inter picture for
+                                                    MPEG4 encode. It's used for CBR and VBR).*/
+    t_ulong_value  last_I_Size;               /**<\brief Last intra picture size (i.e. defines last intra picture size for MPEG4 encode. It's used for CBR and VBR).*/
+    t_ulong_value  comp_SUM;                  /**<\brief comp sum (i.e. defines comp sum parameter for MPEG4 encode. It's used for CBR and VBR).*/
+    t_ulong_value  comp_count;                /**<\brief comp count (i.e. defines comp count parameter for MPEG4 encode. It's used for CBR and VBR).*/
+    t_ulong_value  BUFFER_mod;                /**<\brief Buffer mod (i.e. defines buffer mod parameter for MPEG4 encode. It's used for CBR and VBR).*/
+    t_ulong_value  ts_seconds_old;            /**<\brief Previous timestamp (seconds) (i.e. defines old timestamp (seconds) parameter for MPEG4 encode. It's used for
+                                                    CBR and VBR).*/
+    t_short_value  ts_modulo_old;             /**<\brief Previous timestamp (modulo) (i.e. defines previous timestamp (modulo) for MPEG4 encode. It's used for CBR and
+                                                    VBR).*/
+    t_ushort_value gov_flag;                  /**<\brief Internal flag used for fake timestamp in custom VBV (i.e. defines internal parameter for MPEG4 encode. It's
+                                                    used for CBR with custom VBV).*/
+    t_ulong_value  avgSAD;                    /**<\brief Average SAD (i.e. defines average SAD for MPEG4 encode. It's used for VBR).*/
+    t_ulong_value  seqSAD;                    /**<\brief Sequential SAD (i.e. defines sequential SAD for MPEG4 encode. It's used for VBR).*/
+    t_ushort_value min_pict_quality;          /**<\brief Minimum picture quality (i.e. defines minimum picture quality for MPEG4 encode. It's used for VBR).*/
+    t_ushort_value diff_min_quality;          /**<\brief Difference minimum quality (i.e. defines difference minimum quality for MPEG4 encode. It's used for VBR.
+                                                    This parameter is signed).*/
+    t_ulong_value  TotSkip;                   /**<\brief Total skip (i.e. defines total skip for MPEG4 encode tasks. It's used for VBR).*/
+    t_ulong_value  Skip_Current;              /**<\brief flag indicating that previous picture has been skipped (i.e. defines skip current flag for MPEG4 encode.
+                                                    It's used for VBR and CBR).*/
+    t_ushort_value Cprev;                     /**<\brief Previous header size (i.e. defines previous header size for MPEG4 encode. It's used for CBR).*/
+    t_ushort_value BPPprev;                   /**<\brief Previous bit per pixel (i.e. defines previous bit per pixel parameter for MPEG4 encode. It's used for CBR).*/
+    t_ulong_value  PictQpSum;                 /**<\brief Picture quantization parameter sum (i.e. defines picture quantization parameter sum for MPEG4 encode.
+                                                    It's used for CBR).*/
+    t_ulong_value  S_overhead;                /**<\brief Texture size overhead (i.e. defines texture size overhead for MPEG4 encode. It's used for CBR).*/
+    t_long_value   ts_vector[6];              /**<\brief timestamps vector (i.e. defines timestamps vector for MPEG4 encode. It's used for VBR to compute real
+                                                    framerate through moving average).*/
+    t_long_value   buffer_fullness;           /**<\brief internal BRC variable for VBV/HRD buffer fullness (i.e. defines internal BRC variable for MPEG4 encode).*/
+    t_long_value   buffer_fullness_fake_TS;   /**<\brief used for custom VBV in first GOV (i.e. defines internal BRC parameter for MPEG4 encode).*/
+    t_ulong_value  BUFFER_depletion;          /**<\brief TBD !!! (i.e. defines TBD !!!)*/
+    t_ushort_value buffer_saved;              /**<\brief TBD !!! (i.e. defines )*/
+    t_ushort_value intra_Qp_flag;             /**<\brief TBD !!! (i.e. defines TBD !!!)*/
+    t_ulong_value  BUFFER_depletion_fake_TS;  /**<\brief TBD !!! (i.e. defines TBD !!!)*/
+    t_ushort_value old_P_Qp_vbr;              /**<\brief added for MAINVER2.5c.*/	
+	t_ushort_value mv_field_index;  /**<\brief Added for IME to indicate the MV_field index */
+
+    t_ulong_value  pictCount_prev;            /**<\brief TBD !!! (i.e. defines TBD !!!)*/
+    t_ulong_value  PictQpSumIntra;             /**<\brief TBD !!! (i.e. defines TBD !!!) / added for segmented mode */
+
+
+    t_ushort_value hec_count;                 /**<\brief Header Extension Code counter (i.e. as an input, defines the number of video packets to be written 
+                                                    before the next HEC insertion. It is used only when flag_short_header=0 and data_partitioned=1 and hec_freq!=0.
+                                                    It should be set to the same value as hec_freq at the beginning of the encode, and should be kept equal to the
+                                                    output value of the previous encode afterwards. As an output, it returns the number of video packets to be written
+                                                    before the next HEC insertion).*/
+    t_ushort_value reserved_1;				/**<\brief Reserved to make a long */
+    t_long_value reserved_2;				/**<\brief Reserved to make multiple for 4*16 */
+    t_long_value reserved_3;				/**<\brief Reserved to make multiple for 4*16 */
+    t_long_value reserved_4;				/**<\brief Reserved to make multiple for 4*16 */
+
+	/* GT: enanched MB layer control for better Qp distribution, 02 Apr 07 */
+    t_ushort_value BPPmbPrevAct;/**<\brief added for Enhanced MB quant control */
+    t_ushort_value BPPmbPrevEst;/**<\brief added for Enhanced MB quant control */
+    t_ushort_value CodedMB;/**<\brief added for Enhanced MB quant control */
+    t_ushort_value CodedMB_flag;/**<\brief added for Enhanced MB quant control */
+    t_long_value Lprev;/**<\brief added for Enhanced MB quant control */
+    t_long_value BPPmbErr;/**<\brief added for Enhanced MB quant control */
+	
+
+} ts_t1xhv_vec_mpeg4_param_inout;
+
+typedef ts_t1xhv_vec_mpeg4_param_inout *tps_t1xhv_vec_mpeg4_param_inout;
+
+/** \brief This structure defines a MPEG4 Encode output parameter buffers. */
+typedef struct {
+    t_ushort_value  error_type;               /**<\brief Return bitstream error type (see t_t1xhv_encoder_info for details in \ref vecMpeg4endAlgoGroup) */
+    t_ushort_value  vp_num;                   /**<\brief Video packet count (i.e. returns the number of video packets that have been written by an MPEG4
+                                                  encode. It is used only when flag_short_header=0. Note that there is no video packet header for the first 
+                                                  video packet).*/
+    t_ushort_value  vp_pos[32];               /**<\brief Video packet positions (i.e. returns the positions of the first video packets (up to 32) that have 
+                                                  been written by an MPEG4 encode. It is used only when flag_short_header=0. The positions are given in bytes,
+                                                  relatively to the beginning of the bitstream that has been written, including the header).*/
+    t_ushort_value  brc_skip_prev;            /**<\brief BRC previous frame skip (i.e. returns a flag indicating whether the encoded frame needs to be skipped 
+                                                  or not (it corresponds to the BRC interrupt). It is used only if brc_type=2/3/4/5/6/7. This flag is not set 
+                                                  if the skip decision has been taken before encoding the image (strategic skip)).
+                                                    \n 0: no frame skip
+                                                    \n 1: the encoded frame needs to be skipped
+                                                    \n Contraints : [0,1] */
+    t_ushort_value  reserved_1;               /**<\brief reserved  16  */
+    t_ulong_value   reserved_2;               /**<\brief reserved  32  */
+    t_ulong_value   reserved_3;               /**<\brief reserved  32  */
+
+} ts_t1xhv_vec_mpeg4_param_out;
+
+typedef ts_t1xhv_vec_mpeg4_param_out *tps_t1xhv_vec_mpeg4_param_out;
+
+/* Structure for Motion Vector */
+typedef struct
+{
+    t_sint16    x;			/* Full per coordinates 	*/
+    t_sint16    y;			/* Full per coordinates 	*/
+    t_sint8     hx;     		/* Half pel coordinates 	*/
+    t_sint8     hy;     		/* Half pel coordinates 	*/
+    t_uint8   valid;	    /* Existence of vector          */
+    t_uint32    sad;			/* SAD of the block associated to the vector */
+    t_uint8   zerovector;	/* Set if zerovector is chosen  */
+} motion_vector;
+
+/** @} */ // end of vecMpeg4Group
+
+#endif /* _t1xhv_vec_mpeg4_idt */

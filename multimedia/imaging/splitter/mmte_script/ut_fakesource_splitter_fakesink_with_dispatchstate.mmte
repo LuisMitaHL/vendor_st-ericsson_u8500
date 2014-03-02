@@ -1,0 +1,150 @@
+
+if SYMBIAN == 1
+	OMX_GetHandle fakesource OMX.ST.Fakesource
+	OMX_GetHandle splitter OMX.ST.IMAGESPLITTER
+	OMX_GetHandle my_sink_splitter_1 OMX.ST.FAKESINK
+	OMX_GetHandle my_sink_splitter_2 OMX.ST.FAKESINK
+	if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+		OMX_GetHandle my_sink_splitter_3 OMX.ST.FAKESINK
+		OMX_GetHandle my_sink_splitter_4 OMX.ST.FAKESINK
+	endif
+else
+	OMX_GetHandle fakesource OMX.ST.Fakesource
+	OMX_GetHandle splitter OMX.ST.ImageSplitter
+	OMX_GetHandle my_sink_splitter_1 OMX.ST.Fakesink
+	OMX_GetHandle my_sink_splitter_2 OMX.ST.Fakesink
+	if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+		OMX_GetHandle my_sink_splitter_3 OMX.ST.Fakesink
+		OMX_GetHandle my_sink_splitter_4 OMX.ST.Fakesink
+	endif
+endif
+
+alias S_CURRENT_PATH $(IMAGING_PATH)/splitter/mmte_script
+
+alias S_SOURCE_LOOP_ON_INPUT_FILE OMX_TRUE
+
+# setting for frame rate (coded in Q16), 0 means "as quick as possible"
+alias S_FRAME_RATE 0x50000
+
+alias S_WIDTH_IN_0  320
+alias S_HEIGHT_IN_0 240
+alias S_COLOR_FORMAT_IN_0  OMX_COLOR_Format16bitRGB565
+#alias S_COLOR_FORMAT_IN_0  OMX_COLOR_FormatCbYCrY
+#alias S_COLOR_FORMAT_IN_0  OMX_COLOR_FormatYUV420Planar
+alias S_WIDTH_OUT_0  S_WIDTH_IN_0
+alias S_HEIGHT_OUT_0 S_HEIGHT_IN_0
+alias S_COLOR_FORMAT_OUT_0  S_COLOR_FORMAT_IN_0
+
+alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/saved_image__320_x_240__r_g_b_rgb565.gam
+#alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/saved_image__320_x_240__r_g_b_cbycry.gam
+#alias FILE_NAME_INPUT	$(S_CURRENT_PATH)/input/saved_image__320_x_240__r_g_b_yuv420mb.gam
+
+do $(S_CURRENT_PATH)/compute_stride.mmte S_WIDTH_IN_0 S_COLOR_FORMAT_IN_0
+OMX_SetParameter	fakesource OMX_IndexParamPortDefinition nPortIndex=0  format.video.pNativeRender=0 format.video.nFrameWidth=S_WIDTH_IN_0 format.video.nFrameHeight=S_HEIGHT_IN_0 format.video.nSliceHeight=S_WIDTH_IN_0 format.video.nStride=CURRENT_STRIDE format.video.eCompressionFormat=OMX_IMAGE_CodingUnused format.video.eColorFormat=S_COLOR_FORMAT_IN_0 format.video.pNativeWindow=0
+OMX_SetParameter	fakesource OMX_IndexParamContentURI contentURI=FILE_NAME_INPUT
+# bContinuous indicates mode loop or not
+# bFrameLimited indicates if nb frame is limited or not
+#	OMX_FALSE means that the whole file will be red once (frame by frame)
+#	OMX_TRUE means that only nFrameLimit frames will be red
+# nFrameLimit indicates nb frames 
+if S_SOURCE_LOOP_ON_INPUT_FILE == OMX_TRUE
+	OMX_SetConfig	fakesource OMX_IndexConfigCaptureMode bContinuous=OMX_TRUE bFrameLimited=OMX_FALSE nFrameLimit=0
+else
+	OMX_SetConfig	fakesource OMX_IndexConfigCaptureMode bContinuous=OMX_FALSE bFrameLimited=OMX_FALSE nFrameLimit=0
+endif
+OMX_SetConfig		fakesource	OMX_IndexConfigVideoFramerate xEncodeFramerate=S_FRAME_RATE
+
+
+MMTE_PropagateSettings fakesource 0 splitter 0 OMX_IndexParamPortDefinition
+MMTE_PropagateSettings splitter 0 splitter 1 OMX_IndexParamPortDefinition
+MMTE_PropagateSettings splitter 0 splitter 2 OMX_IndexParamPortDefinition
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_PropagateSettings splitter 0 splitter 3 OMX_IndexParamPortDefinition
+	MMTE_PropagateSettings splitter 0 splitter 4 OMX_IndexParamPortDefinition
+endif
+MMTE_PropagateSettings splitter 1 my_sink_splitter_1 0 OMX_IndexParamPortDefinition
+MMTE_PropagateSettings splitter 2 my_sink_splitter_2 0 OMX_IndexParamPortDefinition
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_PropagateSettings splitter 3 my_sink_splitter_3 0 OMX_IndexParamPortDefinition
+	MMTE_PropagateSettings splitter 4 my_sink_splitter_4 0 OMX_IndexParamPortDefinition
+endif
+
+OMX_SetupTunnel fakesource 0 splitter 0
+OMX_SetupTunnel splitter 1 my_sink_splitter_1 0
+OMX_SetupTunnel splitter 2 my_sink_splitter_2 0
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	OMX_SetupTunnel splitter 3 my_sink_splitter_3 0
+	OMX_SetupTunnel splitter 4 my_sink_splitter_4 0
+endif
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	OMX_SendCommand splitter OMX_CommandPortDisable 3
+	MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandPortDisable 3
+	OMX_SendCommand splitter OMX_CommandPortDisable 4
+	MMTE_WaitEvent  splitter OMX_EventCmdComplete OMX_CommandPortDisable 4
+endif
+ 
+if TEST_ALLOC == 1 
+	OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=1 eBufferSupplier=OMX_BufferSupplyOutput
+	OMX_SetParameter my_sink_splitter_1 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+	OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=2 eBufferSupplier=OMX_BufferSupplyOutput
+	OMX_SetParameter my_sink_splitter_2 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput 
+	if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=3 eBufferSupplier=OMX_BufferSupplyOutput
+		OMX_SetParameter my_sink_splitter_3 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=4 eBufferSupplier=OMX_BufferSupplyOutput
+		OMX_SetParameter my_sink_splitter_4 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput 
+	endif
+# type: alias TEST_ALLOC_SPLITTER fakesink
+	if TEST_ALLOC_SPLITTER == fakesink
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=1 eBufferSupplier=OMX_BufferSupplyInput
+		OMX_SetParameter my_sink_splitter_1 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+		OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=2 eBufferSupplier=OMX_BufferSupplyInput
+		OMX_SetParameter my_sink_splitter_2 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput 
+		if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+			OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=3 eBufferSupplier=OMX_BufferSupplyInput
+			OMX_SetParameter my_sink_splitter_3 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+			OMX_SetParameter splitter OMX_IndexParamCompBufferSupplier nPortIndex=4 eBufferSupplier=OMX_BufferSupplyInput
+			OMX_SetParameter my_sink_splitter_4 OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput 
+		endif
+	endif
+endif
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateIdle fakesource splitter my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateIdle fakesource splitter my_sink_splitter_1 my_sink_splitter_2
+endif
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateExecuting fakesource splitter my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateExecuting fakesource splitter my_sink_splitter_1 my_sink_splitter_2
+endif
+
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateIdle fakesource splitter my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateIdle fakesource splitter my_sink_splitter_1 my_sink_splitter_2
+endif
+
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	MMTE_DispatchState OMX_StateLoaded fakesource splitter my_sink_splitter_1 my_sink_splitter_2 my_sink_splitter_3 my_sink_splitter_4
+else
+	MMTE_DispatchState OMX_StateLoaded fakesource splitter my_sink_splitter_1 my_sink_splitter_2
+endif
+
+OMX_FreeHandle fakesource
+OMX_FreeHandle splitter
+OMX_FreeHandle my_sink_splitter_1
+OMX_FreeHandle my_sink_splitter_2
+if IMG_SPLITTER_NB_PORT_OUTPUT == 4
+	OMX_FreeHandle my_sink_splitter_3
+	OMX_FreeHandle my_sink_splitter_4
+endif
+

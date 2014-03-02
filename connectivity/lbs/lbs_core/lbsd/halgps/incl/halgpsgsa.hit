@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) ST-Ericsson SA 2010. All rights reserved.
+ * This code is ST-Ericsson proprietary and confidential.
+ * Any use of the code for whatever purpose is subject to
+ * specific written permission of ST-Ericsson SA.
+ */ 
+
+#ifndef __HALGPSGSA_HIT__
+#define __HALGPSGSA_HIT__
+
+/**
+* \file halgpsgsa.hit
+* \date 17/07/2009
+* \version 1.0
+*
+* <B>Compiler:</B> ARM ADS\n
+*
+* <B>Description:</B> This file contain structures used by internal module.\n
+* 
+* <TABLE>
+*     <TR>
+*             <TD> Date</TD><TD> Author</TD><TD> Description</TD>
+*     </TR>
+*     <TR>
+*             <TD> 17.07.09 </TD><TD> R. GUPTA </TD><TD> Creation </TD>
+*     </TR>
+* </TABLE>
+*/
+
+/**
+*\struct t_HALGPSAFCStatus
+*\brief AFC status and frequency uncertainty
+* 
+* AFC status and frequency uncertainty
+*
+*/
+typedef struct
+{
+   uint32_t v_FreqError_ppb;       /**< Uncertainty of the known frequency in RMS [ppb]. 
+                              Set the value to  0 if this value is not known.*/
+   uint32_t v_PrevFreqError_ppb;   /**< Previous uncertainty of the known frequency in RMS [ppb]. 
+                              Set the value to  0 if this value is not known.*/   
+   uint8_t  v_Status;              /**< Status of AFC  */
+   
+                        
+}t_HALGPSAFCStatus;
+
+#endif /*__HALGPSGSA_HIT__*/

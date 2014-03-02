@@ -1,0 +1,245 @@
+*********************************************************************
+* Nomadik Multiprocessing Framework (version 1.5.0) "Sublim"        *
+*********************************************************************
+    "Compile, c'est gagne" (M. Guene)
+    "La doc, c'est le code" (J.-P. Fassino)
+
+The release comprises one .tgz file holding the following features:
+    - Component manager binary & api
+    - Synchronous & Hybrid execution engine binaries
+    - Component tool chain binary
+    - Example source codes (Hello World's, Training, Mandelbrot's, Jpeg)
+        Jpeg fully based on Host local execution domain
+    - Documentations (User guide, programming model, CM API, MPC API)
+        User guide not fully in line with delivery
+ 
+Source codes can be found in Codex SVN site: 
+    http://codex.cro.st.com/svn/?group_id=598
+
+Defects must be logged on VI:
+	 http://gnb500137.gnb.st.com/VIWebDev/default.asp
+	 	/Dev/OS and Platform/NMF/**
+	 		_Support if category unknown
+
+Supported target:
+    - STn8815 SAA & SVA 
+    	* Cut A0/B0/C0
+    - STn8820 SAA & SVA & SIA 
+    	* Cut A0/A2
+    - STn8500 SVA & SIA
+    	* SVP 2.1
+    
+Changes:
+--------
+[CM]
+	- Generate LoadMap version 1.2 (which require MMDSP toolset 4.1.0).
+	  Specification could be found here:
+      	  https://codex.cro.st.com/wiki/index.php?pagename=Specification%2FLoadmap%2Fv1.2&group_id=310
+
+    - Remove CM_DestroyRepository() API (renamed into an internal API cm_REP_Destroy())
+    
+	- Add CM_Destroy() API to clean up all resources, stop, and destroy the Component
+	  Manager. This is the pending API of CM_Init()+CM_ConfigureMediaProcessorCore()+etc.
+	  Thus, this API is not exported to user but is a helper to the OS integrator to stop
+	  and destroy the Component Manager.
+	  
+	- Add a new SYSCALL: CM_SYSCALL_FlushComponent(t_cm_instance_handle component) to 
+	  flush a component (again, this is a helper function to the OS integrator to perform
+	  a per component cleanup, see below in [OS integration guidelines])
+	  
+	- Update CM_UserInit() API and behavior:
+   	  . no more fifo size parameter
+	  . when calling CM_UserInit() twice for the same thread, the second call returns the
+	    channel number created at the first call.
+	    
+	- Add CM_UNREGISTER_STUBS_SKELS, CM_UNREGISTER_STUBS and CM_UNREGISTER_SKELS macros.
+	  This macro shall be called to unregister the generated Host stubs and skeletons 
+	  for example before unloading a DLL or at the end of the process.
+	  
+	- Remove generation of FIFO trace which was not used by tools
+	   
+	- Update CM_BindComponentToHost, CM_GetMessage and CM_ExecuteMessage.
+	  Internal skeleton, no more store user interface reference but only a context pointer.
+	  When an callback message is receiver, this context is give back.
+	  This message must be passed through ExecuteMessage with the right user interface
+	  reference. 
+	  Thus, is you wrap this method, you have to store in your context user interface reference.
+	  If you don't wrap this method, the context could be a reference on the interface and thus
+	  no change occur. Think work like that!
+	
+
+[MPC Execution Engine]
+	- Api directory required to compile component is no more "<NMF_ROOT>/api" but "<NMF_ROOT>/api/mpcee".
+	  This modification is required to clarify thing regarding NMF component on ARM.
+    - Add trace for 8500.
+
+[SMP Execution Engine]
+	- Component for SMP EE must be developed according C or C++ component model.
+	- Component must be compile with "nmftools --cpp" options.
+	- Api directory to be include in your SRCPATH must be "<NMF_ROOT>/api/smpee".
+
+
+[OS integration guidelines]
+	- Two new API have been added to help the OS integrator to perform some cleanup.
+	  1. The first one is CM_Destroy() which is the pending function of CM_Init(); its goal is
+	     to free all remaining resources still in use by the Component Manager. In particular:
+	     . it stops all MPC
+	     . it destroys all remaining components
+	     . undo all configuration (free all memories, etc...)
+
+	     CM_Destroy() is not supposed to be called by any user.
+	     After a call to CM_Destroy(), the CM is no more usable and a new full init (through
+	     CM_Init(), etc) is required)
+	     It is up to the OS Integrator to destroy/free all OS specific resources
+
+	  2. A new SYSCALL is added:
+	      t_cm_error CM_SYSCALL_FlushComponent(t_cm_instance_handle component);
+	     This syscall flushes a _stopped_ component, ie:
+	      - unbinds, as possible, all bindings (except HOST -> MPC bindings, as the CM
+	        has no trace of them)
+	      - destroys the component.
+
+	     This API allows the OS integrator to perform a per client cleanup (in Linux for
+	     example, client == process)
+	     To perform a proper 'per client' cleanup, the OS integrator must keep track of all
+	     components handlers, all HOST -> MPC bindings and all skeleton contexts allocated
+	     for a given client.
+	     And then, he must:
+	      - stop all components (CM_SYSCALL_StopComponent())
+	      - flush all components (CM_SYSCALL_FlushComponent())
+	      - unbind all HOST -> MPC bindings (CM_SYSCALL_UnbindComponentFromCMCore())
+	      - free all remaining skeleton contexts
+	      - free all memory area descriptor still in used by the client (CM_SYSCALL_FreeMpcMemory())
+	      - free all OS specific ressources allocated for this client.
+
+	- CM_OS_UserInit() need to be updated to reflect the new CM_UserInit() behaviour (see above section [CM])
+
+[Tools]    
+	- Add --cpp option for compiling C++ component.
+	  Note that, in a C++ project, you can also mixed component in C source code. 
+    
+[Programming model]
+	- Add C++ component programming model for ARM component.
+		See programming model user manual for further informations. 
+         
+
+Bug fixes:
+---------
+	- [VI #20767] NMF component on native platform
+		Use linuxee NMF_ENVIRONMENT target to compile and execute on native platform.
+		
+	- [VI #21646] Wrong values of function pointer passed via referenced type interface 
+	              pointer  in Multi-Instance test  case.
+	              
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+    - Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+        
+            
+Pre-requires:
+-------------
+    - At least MMDSP Toolset 4.1.0.
+    - Recent ARM codesourcery compiler for running examples. 
+    	(http://www.codesourcery.com/gnu_toolchains/arm)
+    - Java Runtime Environment  (http://java.sun.com/)
+        At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+Installation:
+-------------
+	* Create a NMF directory 
+		mkdir <NMF_ROOT>
+	* Go in this directory 
+		cd <NMF_ROOT>
+	* untar tools and Think package
+		tar xvfz nmf_tools-Vx.y.z.tgz
+		tar xvfz nmf_think-Vx.y.z.tgz
+
+Test environment :
+------------------
+    - Environments:
+        Board: 
+            NDK15 Cut B0
+            NDK20 Cut A0
+        MPC: 
+            SAA & SVA on NDK15
+            SAA & SVA & SIA on NDK20
+        Execution Engine: Synchronous, Hybrid
+        Semaphores: local, hardware
+        Environment: think, tlm
+        ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593
+
+    - Tests:
+        * 'ADL' class
+            check 'Architecture Description Language' features from programming model
+            test limit of some ADL features (name length, collection size,...)
+            check error codes returned by ADL tool
+
+        * 'Attribute' class
+            operations on attributes inside component (mpc side)
+            check attribute api on host side
+            api error management
+
+        * 'Binding' class
+            synchronous/asynchronous intra-MPC communication
+            ARM -> MPC
+            MPC -> ARM
+            inter MPCs (asynchronous)
+            MPC -> MPC (on 8815B0)
+            Static intra-MPC optimized binding
+            interruption
+            error management
+
+        * 'Collection' class :
+            Behavior with binds between primitives component using collections interfaces
+            Primitive collections interface introspection
+
+        * 'Composite' class:
+            Behavior with binds between composites component using collections interfaces
+            Behavior with binds defined in composites components (conf. files) using collections interfaces
+            Composite collections interfaces introspection
+
+        * 'Dynamic loading' class: 
+            segment loading (RO, RW, ZI)
+                Mono-instance
+                Multi-instances on same DSP
+                Multi-instances on both DSP
+            error management
+
+        * 'IDL' class
+            check 'Interface Description Language' features from programming model
+            check error codes returned by ADL tool
+
+        * 'Interface' class
+            interfaces introspection for primitives and composites components (except collections interfaces)
+
+        * 'Lifecycle' class
+            check the behavior using the lifecycle API
+
+        * 'Memory' class
+            allocate/free api management for SDRAM and MPC memories
+            check address/status features
+            api error management
+
+        * 'Misc' class
+            'singleton' features (network construction/destruction)
+            communication stressing (mandelbrot applications)
+            multiple instantiation to fill memory
+            component priority inside network
+
+        * 'Network' class
+            components (primitives or composites) introspection (without interfaces)
+
+        * 'Panic' class
+            Behavior upon each Panic (reason) detection and after the detection.
+
+        * 'Properties' class
+            Get property information in component network (primitive/composite)
+            api error management
+
+        * 'Stack' class
+            check the MPC stack evolution combined with the TCM_X MPC dynamic allocation

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="enswrapper">
+  <abstract>OMX OSI wrapper</abstract>
+
+  <!-- component dependency list -->
+  <dependency name="ens" />
+  <dependency name="rme" />
+  <dependency name="osttrace" />
+  <dependency name="ostgrp" />
+  <dependency name="com.stericsson.shared.utils" />
+
+  <!-- dependency on below components for headers used by GenerateOMXdebug -->
+  <dependency name="audio_chipset_apis" optional="true" />
+  <dependency name="video_chipset_apis" optional="true" />
+  <!-- Cannot depend on afm otherwise creating a circular dependency :
+       issue is that we'll not have the audio param and strcutures ... -->
+  <!--  <dependency name="afm" optional="true" /> -->
+  <!--  Breaking dep to vfm and ifm for RPM ... less Config/Parameter known to wrapper -->
+  <dependency name="vfm" optional="true" tag="not-for-rpm" />
+  <dependency name="ifm" optional="true" tag="not-for-rpm" />
+
+  <!-- list of supported platforms -->
+  <property name="tag" value="x86-linux" />
+  <property name="tag" value="u8500_v2-linux" />
+  <property name="tag" value="svp5500_v1-linux" />
+  <property name="tag" value="u5500_v1-linux" />
+
+</component>

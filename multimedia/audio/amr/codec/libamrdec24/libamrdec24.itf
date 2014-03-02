@@ -1,0 +1,9 @@
+#include <amr.h>
+
+interface amr.codec.libamrdec24.libamrdec24 unmanaged {
+    int amr_syncword(int hi, int lo, int *length);
+    RETURN_STATUS_LEVEL_T amr_decode_frame(CODEC_INTERFACE_T *interface_fe);
+    CODEC_INIT_T amr_init_decode_malloc(CODEC_INTERFACE_T *itf_cfg);
+    void amr_decode_reset(CODEC_INTERFACE_T *interface_fe);
+}
+

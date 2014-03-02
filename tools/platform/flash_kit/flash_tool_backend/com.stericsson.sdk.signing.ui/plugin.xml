@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="com.stericsson.sdk.flashkit"
+            name="Flash Kit">
+      </category>
+      <category
+            id="com.stericsson.sdk.signing.ui.certificates"
+            name="Certificates and Licenses"
+            parentCategory="com.stericsson.sdk.flashkit">
+      </category>
+      <category
+            id="com.stericsson.sdk.signing.ui.signpkgs"
+            name="Sign Packages"
+            parentCategory="com.stericsson.sdk.flashkit">
+      </category>
+      <category
+            id="com.stericsson.sdk.signing.ui.signedsoftware"
+            name="Signed Software"
+            parentCategory="com.stericsson.sdk.flashkit">
+      </category>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.signpkgs"
+            class="com.stericsson.sdk.signing.ui.wizards.u5500rootsignpackage.U5500RootSignPackageWizard"
+            icon="icons/pkg_issw.png"
+            id="com.stericsson.sdk.signing.ui.signpkgs.u8500"
+            name="Root Sign Package">
+      </wizard>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.certificates"
+            class="com.stericsson.sdk.signing.ui.wizards.isswcertificate.ISSWCertificateWizard"
+            icon="icons/cert_issw.png"
+            id="com.stericsson.sdk.signing.ui.certificates.issw"
+            name="Initial Secure Software Certificate">
+      </wizard>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.certificates"
+            class="com.stericsson.sdk.signing.ui.wizards.u5500authenticationcertificate.U5500AuthenticationCertificateWizard"
+            icon="icons/cert_auth.png"
+            id="com.stericsson.sdk.signing.ui.certificates.authentication"
+            name="Authentication Certificate">
+      </wizard>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.certificates"
+            class="com.stericsson.sdk.signing.ui.wizards.u5500dt.U5500DTWizard"
+            icon="icons/cert_dt.png"
+            id="com.stericsson.sdk.signing.ui.certificates.dtcertificate"
+            name="Debug &amp; Test Certificate">
+      </wizard>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.signpkgs"
+            class="com.stericsson.sdk.signing.ui.wizards.u5500authenticationsignpackage.U5500AuthenticationSignPackageWizard"
+            icon="icons/pkg_auth.png"
+            id="com.stericsson.sdk.signing.ui.signpkgs.u5500_auth"
+            name="Authentication Sign Package">
+      </wizard>
+      <!--wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.signpkgs"
+            class="com.stericsson.sdk.signing.ui.wizards.tvpsignpackage.TVPSignPackageWizard"
+            icon="icons/pkg_tvp.png"
+            id="com.stericsson.sdk.signing.ui.signpkgs.tvp_sign_package"
+            name="TVP Sign Package">
+      </wizard-->
+      <category
+            id="com.stericsson.sdk.flashkit"
+            name="Flash Kit">
+      </category>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.certificates"
+            class="com.stericsson.sdk.signing.ui.wizards.tvplicense.TVPLicenseWizard"
+            icon="icons/cert_tvp.png"
+            id="com.stericsson.sdk.signing.ui.tvp_license"
+            name="TVP License">
+      </wizard>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.signpkgs"
+            class="com.stericsson.sdk.signing.ui.wizards.crkcsignpackage.U5500CRKCSignPackageWizard"
+            icon="icons/pkg_crkc.png"
+            id="com.stericsson.sdk.signing.ui.signpkgs.u5500_crkc"
+            name="Customer Root Key Certificate Sign Package">
+      </wizard>
+      <wizard
+            category="com.stericsson.sdk.flashkit/com.stericsson.sdk.signing.ui.signedsoftware"
+            class="com.stericsson.sdk.signing.ui.wizards.signedsoftware.SigningWizard"
+            icon="icons/signTool.png"
+            id="com.stericsson.sdk.signing.ui.wizards.SigningWizard"
+            name="Signing">
+      </wizard>
+      <wizard
+            category="com.stericsson.sdk.flashkit"
+            class="com.stericsson.sdk.signing.ui.wizards.tvp.TVPKeygenWizard"
+            icon="icons/keys_generator.png"
+            id="com.stericsson.sdk.signing.ui.wizards.tvp.TVPKeygenWizard"
+            name="RSA Keys Generator">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="com.stericsson.sdk.equipment.ui.preferences.FlashKitPreferencePage"
+            class="com.stericsson.sdk.signing.ui.preferences.SigningPreferencePage"
+            id="com.stericsson.sdk.signing.ui.preferences.SigningPreferencePage"
+            name="Signing">
+      </page>
+   </extension>
+   <extension
+            id="com.stericsson.sdk.signing.ui.menucontribution"
+            point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+         <menu
+               icon="icons/sign_u5500.png"
+               id="com.stericsson.sdk.signing.ui.contextmenu.example"
+               label="Flash Kit Sign">
+            <dynamic
+                  class="com.stericsson.sdk.signing.ui.contextmenu.SignFileMenuContributionItem"
+                  id="com.stericsson.sdk.signing.ui.contextmenu.dynamic1">
+              <visibleWhen
+                  checkEnabled="true">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <or>
+                     <adapt
+                           type="org.eclipse.core.resources.IFile">
+                        <or>
+                           <test
+                                 property="org.eclipse.core.resources.name"
+                                 value="*.bin">
+                           </test>
+                           <test
+                                 property="org.eclipse.core.resources.name"
+                                 value="*.zip">
+                           </test>
+                           <test
+                                 property="org.eclipse.core.resources.name"
+                                 value="*.elf">
+                           </test>
+                        </or>
+                     </adapt>
+                  </or>
+               </iterate>
+            </visibleWhen>
+            </dynamic>
+         </menu>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.stericsson.sdk.signing.ui.contextmenu.SignFileMenuHandler"
+            id="com.stericsson.sdk.signing.ui.contextmenu.signu5500"
+            name="signu5500">
+         <commandParameter
+               id="com.stericsson.sdk.signing.ui.contextmenu.commandPayloadTypeParameter"
+               name="payloadType"
+               optional="true">
+         </commandParameter>
+      </command>
+   </extension>
+
+</plugin>

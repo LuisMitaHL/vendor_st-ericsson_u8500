@@ -1,0 +1,94 @@
+;===================================================
+;
+;  STMicroelectronics confidential
+;  ACT/Physical Debug
+;
+;===================================================
+
+; Script to enable symbol autoloading on MMDSP.
+;
+; Requires to load main program from ARM core before.
+;
+; ATTENTION: call the script only after the ARM loaded at least one module onto the DSP,
+;            because otherwise the NMF Execution Engine will not be in memory.
+;            and we cannot set breakpoints onto Constructer_Run/Destroyer_Run
+;
+
+;===> ENTRY POINT
+local &autoload
+
+
+//<--- Activate NMF Engine in T32MMDSP
+sys.o.nmf ON
+sys.ca enable
+y.al.CHECKNMF "do autoload_nmf.cmm" ;; configure the autoloader
+y.al.list
+//---->//
+
+&runstate=run()
+if &runstate
+(
+	break
+)
+
+; manually trigger autoloading so we get the symbols of constructor/destructor
+; we do _not_ use automatic checking upon stops of the DSP (y.al.check ON).
+y.al.check
+
+; Check if NMF execution engine was loaded into memory...
+; we stop at the END of the constructor, because otherwise the loadmap was not updated
+if y.exist(\\synchronous_hsem\services\Constructer_Run)
+(
+	y.new __InterceptConstructor y.end(\\synchronous_hsem\services\Constructer_Run)
+	y.new __InterceptDestructor        \\synchronous_hsem\services\Destroyer_Run
+)
+else if y.exist(\\synchronous_lsem\services\Constructer_Run)
+(
+	y.new __InterceptConstructor y.end(\\synchronous_lsem\services\Constructer_Run)
+	y.new __InterceptDestructor        \\synchronous_lsem\services\Destroyer_Run
+)
+else if y.exist(\\hybrid_hsem\services\Constructer_Run)
+(
+	y.new __InterceptConstructor y.end(\\hybrid_hsem\services\Constructer_Run)
+	y.new __InterceptDestructor        \\hybrid_hsem\services\Destroyer_Run
+)
+else if y.exist(\\hybrid_lsem\services\Constructer_Run)
+(
+	y.new __InterceptConstructor y.end(\\hybrid_lsem\services\Constructer_Run)
+	y.new __InterceptDestructor        \\hybrid_lsem\services\Destroyer_Run
+)
+else
+(
+	dialog.ok "Attention: did not find symbol for Constructer_Run!" "Is the NMF execution engine already loaded?" "" "Restart script after loading execution engine"
+	stop
+)
+
+; the autoload scripts will only be started from breakpoints these breakpoints
+; deleting and then setting the breaks to avoid multiple copies
+break.delete __InterceptConstructor
+break.delete __InterceptDestructor
+
+if "&UseBrk"=="TRUE"
+(
+	break.set    __InterceptConstructor /cmd "do updatemodules.cmm"
+	break.set    __InterceptDestructor  /cmd "do updatemodules.cmm"
+)
+
+if &runstate
+(
+	go
+)
+
+
+; Add toolbar button so we can edit the deferred breaks a bit more easily
+menu.rp
+(
+	add
+	toolbar
+	(
+		TOOLITEM "Deferred breaks: edit file" ":EDIT" "pedit nmf_updatebreaks.cmm"
+		TOOLITEM "Deferred breaks: edit dialog" ":BREAKNEWADV" "do editbreaks.cmm"
+	)
+)
+
+enddo

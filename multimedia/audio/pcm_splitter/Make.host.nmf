@@ -1,0 +1,35 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+include $(COMPONENT_TOP_DIR)/make.ost_conf
+
+OST_COMPONENT_ID = $(KUidDicStAudioPcmSplitterNmfHost)
+OST_DICO_NAME = $(OST_COMPONENT_NAME)_nmfil_host
+OST_SRC_DIR = nmfil/host/wrapper
+INSTALL_DICO=$(OST_DICO_NAME).xml
+
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+
+SRCPATH += $(COMPONENT_TOP_DIR)/nmfil/host
+ITF_PREFIX = pcm_splitter
+
+#CPPFLAGS+=-DNVERBOSE -g -O0 
+CPPFLAGS+=-DNVERBOSE
+CPPFLAGS+=-I$(MM_HEADER_DIR)/updownmix -I$(MM_HEADER_DIR)/afm
+
+ITFS_HEADER=pcm_splitter.nmfil.host.wrapper.configure
+
+COMPONENTS= pcm_splitter.nmfil.host.wrapper
+
+INSTALL_NMF_COMP_SRC_HOSTEE_PREFIX = pcm_splitter/host/
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk
+
+#TESTLISTS = testlist.lst
+#DATABASE  = host
+#TEST_TAG  = $(PLATFORM)
+#include $(MM_MAKEFILES_DIR)/AudioTest.mk

@@ -1,0 +1,22 @@
+#ifndef _mytype_idt
+#define _mytype_idt
+
+typedef struct 
+{
+    t_uint8 *addr;   /**< current read byte address */
+    t_uint8 *start;  /**< address of the first byte of the buffer */
+    t_uint8 *end;    /**< address of the last byte of the buffer */
+    t_uint16 os;     /**< bit offset inside the current byte */
+    t_uint16 inuse;  /**< marker to know if buffer is currenlty under processing by HW or/and by SW */
+	t_uint32 reserved;
+    void *nal_boundaries;
+	void *next; 
+} t_bit_buffer;
+
+typedef enum { COMMAND_FLUSH, COMMAND_PAUSE } t_command_type; /**< send command to the decoder */
+
+typedef  enum { XON, XOFF ,XOFF_EOS, FLUSH_ACK, PAUSE_ACK } t_handshake; /**< Enable / Disable transmission of NAL buffer*/
+
+typedef  enum { VALID_PIC, INVALID_PIC, INVALID_PIC_FLUSH_ACK } t_picture_output; /** Signal valid output*/
+
+#endif

@@ -1,0 +1,64 @@
+test_start SINKS_005 Playback Test Volume Earpiece
+
+alias TIMEOUT 0
+
+OMX_GetHandle    earpiece OMX.ST.AFM.EARPIECE
+
+
+OMX_SendCommand earpiece OMX_CommandPortDisable 1
+MMTE_WaitEvent  earpiece OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+OMX_SetParameter earpiece OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+
+OMX_SetConfig earpiece OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig earpiece OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_FALSE
+
+
+ate_attach_io       earpiece 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/test_mono_48k_1k.pcm 0 0 0
+
+
+
+OMX_SendCommand earpiece OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateBuffers earpiece 0
+MMTE_WaitEvent earpiece OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+alias volum 0 
+
+MMTE_NMF_ListComponent
+
+
+#Start Playback
+OMX_SendCommand earpiece OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent earpiece OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+
+loop 101
+    OMX_SetConfig earpiece OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=volum
+	arithmeticalias volum+ 1
+	mmte_sleep 100
+
+endloop
+
+
+#Wait EOS
+MMTE_WaitEvent earpiece OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop Playback
+OMX_SendCommand earpiece OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent earpiece OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+
+OMX_SendCommand earpiece OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers earpiece 0
+MMTE_WaitEvent earpiece OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+ens_network_destroy
+
+MMTE_CheckMemoryStatus
+
+
+#check_test
+
+test_end
+

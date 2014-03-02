@@ -1,0 +1,294 @@
+
+All properties are probed upon each STE OMX component creation and destruction.
+
+################################################################################
+# OMX activity tracing
+################################################################################
+# Enable STE OMX wrapper traces. Supported levels are
+#  1 : All OMX calls and call backs except Buffer related calls
+#  2 : 1 + dump of OMX Parameter and Config details
+#  3 : 2 + EmptyThisBuffer and FillThisBuffer events
+setprop ste.omx.wrapper.trace <level>
+
+# In case ste.omx.trace.name is set then only component matching the property
+# value will be traced by the wrapper.
+# All components created while the property is not set will have their wrapper
+# traces enabled.
+setprop ste.omx.trace.name <OMX-name>
+
+################################################################################
+# OMX Buffer content dump
+################################################################################
+# Set the number of bytes to dump ( last 16 bytes are displayed when possible )
+# Minimum value is 32 (any value lower than 32 will remain to 32)
+setprop ste.omx.dump.size <Nb total bytes to trace>
+
+# Set the format of dump
+#  0 : binary
+#  1 : hexa
+setprop ste.omx.dump.hex <value>
+
+# The OMX component name for which to trace the buffers
+setprop ste.omx.dump.name <OMX-name>
+
+# Property to control tracing input or output buffers
+#  0 : input buffers
+#  1 : ouput buffers
+#  2 : input and ouput buffers
+setprop ste.omx.dump.dir <value>
+
+################################################################################
+# OMX Buffer content dump in Binary data format
+################################################################################
+# Set the number of bytes to dump
+setprop ste.omx.dump.size <Nb total bytes to be dumped>
+
+# Set the format of dump
+#  0 : binary
+#  1 : hexa
+setprop ste.omx.dump.hex <value>
+
+# The OMX component name for which to trace the buffers
+setprop ste.omx.dump.name <OMX-name>
+
+# Property to control tracing input or output buffers
+#  0 : input buffers
+#  1 : ouput buffers
+#  2 : input and ouput buffers
+setprop ste.omx.dump.dir <value>
+
+#Property to control the buffer port index
+setprop ste.omx.dump.idx <value>
+
+# Property to set path where binary dump will be saved
+# default path is /data/ste-debug/omx/
+setprop ste.omx.dump.path <path>
+
+# Warning, if dump is made on SD-card, you may face some rights issue.
+# The application running the decoder (e.g. the Gallery) must be granted write access to sdcard.
+# This is done by modifying $ANDROID_BUILD_TOP/vendor/st-ericsson/<product>/init.st-ericsson.rc, as follow:
+# service media /system/bin/logwrapper /system/bin/mediaserver
+# -   group audio camera inet net_bt net_bt_admin net_bw_acct drmrpc
+# +   group audio camera inet net_bt net_bt_admin net_bw_acct drmrpc media_rw sdcard_rw
+
+################################################################################
+# STE OMX wrapper debug
+################################################################################
+# Enable very verbose trace on the wrapper activity (lock, MPC messages, ...)
+setprop ste.omx.wrapper.debug  1
+
+# Enable very verbose trace on the RME related activity
+setprop ste.omx.wrapper.rme 1
+
+################################################################################
+# OMX Component Status Dump - Context Trace
+################################################################################
+# Enable context trace of all OMX components in the system for both active
+# and history components. This is enabled by default.
+setprop ste.omx.ctx 1
+
+# Enable debug mode of the context trace to get verbose context trace logs
+setprop ste.omx.ctx.debug 1
+
+# Configure the history depth of the OMX Component which refers to the number
+# of history instances to be maintained per component. Default is 5
+setprop ste.omx.ctx.history.depth 5
+
+# The main folder for context trace is /data/ste-debug/omx where one file per
+# process is created such as /data/ste-debug/omx/admsrv and /omx/mediaserver.
+# Run the following commands from adb shell to dump the context trace either on
+# on the console using logcat or to a file in /data/ste-debug folder
+# Note: Replace mediaserver by admsrv to get the corresponding commands
+# for audio components
+
+# Clear the history of closed OMX components
+ echo clear > /data/ste-debug/omx/mediaserver
+# Dump to a file in /data/ste-debug the current status (all components)
+ echo dump > /data/ste-debug/omx/mediaserver
+# Dump to log the current status (all components)
+ echo log > /data/ste-debug/omx/mediaserver
+# Dump to a file in /data/ste-debug the current status (all opened components)
+ echo dump-opened > /data/ste-debug/omx/mediaserver
+# Dump to log the current status (all opened components)
+ echo log-opened > /data/ste-debug/omx/mediaserver
+# Dump to a file in /data/ste-debug the current status (all closed components)
+ echo dump-closed > /data/ste-debug/omx/mediaserver
+# Dump to log the current status (all closed components)
+ echo log-closed > /data/ste-debug/omx/mediaserver
+# Print this help menu in logcat
+ echo help > /data/ste-debug/omx/mediaserver
+# Dump to logcat the latest or specific status of a given component
+ echo <component name> > /data/ste-debug/omx/mediaserver
+
+# Example to dump the status of H264 encoder
+ echo OMX.STE.HVA.VIDEO.ENCODER.AVC > /data/ste-debug/omx/mediaserver
+ echo OMX.STE.HVA.VIDEO.ENCODER.AVC_02 > /data/ste-debug/omx/mediaserver
+# Example to dump all active components in mediaserver
+adb shell "echo log-opened > /data/ste-debug/omx/mediaserver"
+&& adb logcat -d *:s CtxTrace:I
+
+################################################################################
+# STE NMF traces
+################################################################################
+# Set verbosity level of the NMF CM driver (dmesg based)
+setprop ste.omx.wrapper.NMF.CM <level>
+
+# Enable NMF HOST EE trace (XTI based)
+setprop ste.omx.nmf.arm.trace 1
+
+# Enable NMF SIA trace (XTI based)
+setprop ste.omx.nmf.sia.trace 1
+
+# Enable NMF SVA trace (XTI based)
+setprop ste.omx.nmf.sva.trace 1
+
+################################################################################
+# STE OST Trace
+################################################################################
+# By default OMX default level are ERROR + WARNING groups are enabled in logcat
+# on all STE OMX components.
+# By default OMX default level are ERROR + WARNING + OMX_API + ALWAYS groups are 
+# enabled in ARM ring buffers on all STE OMX components.
+# OSTTrace emitted from the MMDSP are routed to ARM ring buffer by default
+# OSTTrace emitted from the ARM are routed to ARM ring buffer by default
+
+# Enable OSTtrace controlled by the wrapper
+setprop ste.omx.trace 1
+
+# Enable all groups on all components
+setprop ste.omx.trace.default.mask 0xffff
+
+# You can control the components on which to enable OSTTrace using a
+# configuration file. The default file location is /data/STEtraceSpec.txt
+# Groups name are as defined by ostgrp/include/ste_ost_group_map.h header file
+# (without the prefix FIXED_GROUP_TRACE).
+# Below gives you a template file to contol groups to be enabled
+--------------------------------------------------------------------------------
+## Activate all group for component OMX.ST.AFM.decoder.mp3
+OMX.ST.AFM.decoder.mp3
+
+## Activate only specified group for component OMX.ST.AFM.mixer
+OMX.ST.AFM.mixer : ERROR WARNING FLOW DEBUG USER1 USER2
+
+## Disable all groups for OMX.ST.AFM.mixer
+OMX.ST.AFM.mixer :
+--------------------------------------------------------------------------------
+
+# You may specify an alternate trace specification file
+# !!!! use a boot time mounted filesystem !!!! /sdcard takes time to be mounted
+setprop STE_TRACE_SPEC_FILE /path/to/mytracespec.txt
+
+# You may send the ARM generated OSTTrace to XTI/STM (need Fido-box)
+setprop ste.ost.arm.trace.tostm 1
+
+# To enable the APE XTI trace on MIPI34 connector the trace driver must be set
+# to do so: interrupt u-boot when it start and enter the following commands
+setenv console 'ttyAMA2,115200n8 stm.mipi34=ape'
+save
+printenv
+boot
+
+################################################################################
+# STE OSTTrace from DSP 
+################################################################################
+# All DSP traces with 0,1,2,3,4 parameters are routed on ARM side.
+# Buffer tracing cannot be routed on ARM side
+# By default DSP OST trace are routed on ARM
+
+# To capture DSP trace you need to do:
+# start trace logging for SIA and SVA
+adb shell
+cat /dev/cm_sva_trace > /sdcard/trace_sva.bin&
+cat /dev/cm_sia_trace > /sdcard/trace_sia.bin&
+
+# Execute use case generating DSP traces
+
+# Stop trace logging for SIA and SVA (in adb shell)
+fg
+ctrl+C
+fg
+ctrl+C
+exit
+
+# Upload trace files
+adb pull /sdcard/trace_sia.bin .
+adb pull /sdcard/trace_sva.bin .
+
+# configure DSP trace to be routed on XTI/STM instead
+# You need a specific trace box to capture trace then
+setprop ste.ost.mpc.trace.tostm 1
+
+#To decoder ARM and OST Binary trace please use ostdecoder available in:
+# multimedia/shared/osttools/ostdecoder
+
+
+################################################################################
+# Debugging memory leaks
+################################################################################
+
+# The tool is comparing the allocation tables dumped from bionic debug function
+# when requested.
+# An allocation entry is recording the entire call stack when reaching a call to
+# malloc. Allocation entries are considered identical only if entire call stack
+# is same. For a given allcation entries number of this entry is computed.
+# The tool will compare the allocation entries between 2 snapshots and identical
+# allocation entries but different in numbers will be explicited as '+dup <nb>'.
+# This clearly identifies leakage: allocation never freed between snapshots.
+
+# In case you want to see all differences between the snapshot and not only the
+# '+dup' you may use the '-a' option. In this case 'dup <nb>' will give the
+# number of instance of a given allocation entry.
+
+# To filter away the allocation that may happen the first time a given use case
+# is executed, allocation not freed at the end as kept for other iterations (not
+# leakage in this case): Execute your use case at least once before performing
+# the first memory allocation table dump.
+
+# Busybox is needed only to allow of 'grep, cut, sed' to retreive mediaserver
+# PID The only real need is to send a signal to mediaserver process to trig
+# memory dump
+
+# Setup busybox (in case you have it)
+cd /data/busybox ; . ./setup.sh ; cd -
+/data/busybox/bin/busybox sh
+
+# Request bionic to use malloc variant allowing debug
+setprop libc.debug.malloc 1
+
+# Restart media server to trace allocation
+stop media
+start media
+
+# Create the directory in which the wrapper will dump the status
+mkdir /data/ste-debug
+chmod 777 /data/ste-debug
+
+# Clean the dump mem info file
+rm /data/ste-debug/memstatus-*.txt
+
+# Run your usecase once to get enswrapper loaded in the mediaserver
+# End the usecase to get an allocation baseline
+
+# Then dump the allocation table
+kill -12 `/system/bin/ps | grep  mediaserver | grep -v logwrapper \
+  | grep -v grep | sed 's,  *, ,g' | cut -d ' ' -f 2`
+
+# Check logcat for dump completion and file used (/data/memstatus-$pid.txt)
+
+# Run your usecase again up to use case closure
+# Dump the allocation table again
+kill -12 `/system/bin/ps | grep  mediaserver | grep -v logwrapper \
+  | grep -v grep | sed 's,  *, ,g' | cut -d ' ' -f 2`
+
+# Retreive the genrated tables from the device
+$ adb pull /data/ste-debug/memstatus-$pid.txt
+
+# Dump the leaking call stacks
+$ perl $ANDROID_BUILD_TOP/vendor/st-ericsson/multimedia/shared/enswrapper/process-mediaserver-memstatus.pl -d memstatus-$pid.txt
+
+# Use '-a' option to get all the allocations differences between the 2 selected snapshot:
+#          default is to display only the +dup ones which is allocation present in both snapshots
+#          but has increased in numbers.
+#
+# Use '-o' option to select an offset in the snapshots (always 2 consecutive snapshots are compared)
+

@@ -1,0 +1,27 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file
+* \brief   stab ARM-NMF component description
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+primitive stab extends fsm.component.armnmf_component {
+
+provides grabctl.api.reportcurves as reportcurves
+provides stab.api.configure as configure
+
+//interfaces for input ports
+provides armnmf_emptythisbuffer as emptythisbuffer[3]
+requires armnmf_fillthisbuffer as emptybufferdone[3]
+
+//interfaces for output ports
+provides armnmf_fillthisbuffer as fillthisbuffer[3]
+requires armnmf_emptythisbuffer as fillbufferdone[3]
+
+option CPPFLAGS "-Istab/inc -I../../../include -I../../../../shared/include"
+option CFLAGS "-g -O1"
+}

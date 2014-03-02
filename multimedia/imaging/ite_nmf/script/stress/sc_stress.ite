@@ -1,0 +1,42 @@
+#do $(IMAGING_PATH)/ite_nmf/script/stress/sc_stress.ite
+
+## SC: Start environment -> Start LR -> Stop LR -> Start BMS -> Stop BMS ->  Start BML (output from both LR and HR) -> Stop BML -> Start LR -> Stop LR -> Stop environment ##
+
+alias LOOP_TESTS $1
+
+loop LOOP_TESTS
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/startenv_primary.ite
+
+LR prepare
+LR start
+LR stop
+LR free
+
+bms prepare
+bms start
+bms stop
+
+
+bml prepare
+#since bml prepare does not perform LR prepare..
+LR prepare
+bml start
+
+#TBD: bml stop does not stop Grab (for either LR or HR), so should be implemented.
+#This still works currently as bms and bml take place for 1 frame only, hardcoding in ite_debug.c.
+bml stop
+bml free
+#since bml free does not perform LR free..
+LR free
+bms free
+
+LR prepare
+LR start
+LR stop
+LR free
+
+
+do $(IMAGING_PATH)/ite_nmf/script/sensor_start_stop/stopenv.ite
+
+endloop

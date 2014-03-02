@@ -1,0 +1,35 @@
+#
+# TatlSd configuration
+#
+
+menuconfig TATLSD
+	bool "TatlSd"
+	depends on DTHSRVHELPER && LIBAB && TATTOOLS && POWERSERVICES
+	help
+	  depends on DTHSRVHELPER, LIBAB, TATTOOLS and POWERSERVICES
+
+if TATLSD
+
+config TATLSD_DIR
+	string
+	default ../tat/tat/tatlsd
+
+config TATLSD_DEPS
+	string
+	default "DTHSRVHELPER LIBAB TATTOOLS POWERSERVICES"
+
+config TATLSD_STRIP_DISABLED
+	bool "Disable strip"
+	depends on TATLSD
+	default n
+	help
+	  This will disable strip for this module
+
+config TATLSD_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on TATLSD
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # TATLSD

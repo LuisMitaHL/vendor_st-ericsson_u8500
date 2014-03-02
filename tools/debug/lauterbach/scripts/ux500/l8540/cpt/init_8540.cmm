@@ -1,0 +1,278 @@
+; #####################################################################
+; # L8540 debug & Trace script file: init_8540.cmm                    #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for debug and SoC configuration on 8540.
+; Created by HED/CSP/CPT/ACT on 2011-12-08
+; Contact: jingyi-xiaoyan.lu@st.com
+; 2011-12-08: initial version.
+; 2012-02-14: minor changes for XMIP support.
+; 2012-04-12: added "dbgboot" and "waitboot" options.
+; 2012-05-15: replaced "href" by "ccu" board name.
+; 2012-06-22: call DDR0_XMIP_ACCESS.cmm?
+; 2012-09-05: added "xmip_dbg_thr_reset" parameter for debug_through_reset of XMIP RESET, APE is not reset.
+
+;!!!!!!!!!!!!!!!!!!!!!!!!!!!
+; PLEASE CHECK OR UPDATE THE "SECTION_3" of this script before integrate this script into your working environment.
+;!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;
+; This script is used for debug and SoC configuration on DB8540.
+;
+; ---- Usage and Parameters
+; Usage: do init_8540 <8540_ver> <platform> <dbg_config> <core> <8540_config>
+; Parameters:
+; <8540_ver> indicates the version of DB8540. It can be
+;	v1:		means DB8540-V1.
+; <platform> indicates the name of platform on which this script is executed. It can be
+;	mop:		means MOP500 silicon board.
+;	ccu:		means CCU silicon board.
+;	palladium:	means PXP/Palladium platform
+; <dbg_config> indicates the configuration related to the debugging. It can be one of the following values or a combination of them. Use "+" for the combination, like "attach+cjtag2pin"
+;	attach:		means the "system.mode.attach" command is used to connect the Trace32 debugger to the CortexA9 core(s). 
+;			The system and core status keep intact in this case. It can not be combined with "up".
+;	up:		means the "system.up" Trace32 command is used to connect the Trace32 debugger to the CortexA9 core(s), and a SYSTEM RESET is issued by the script. It can not be combined with "attach".
+;	cjtag2pin:	means configure the debugger to the cJTAG 2-Pin (narrow) mode. Only available from DB8540 V1.
+;			NOTE THAT the cJTAG is in 4-Pin (wide) mode after the DB8540 boot. Without this value, the debugging is run in cJTAG 4-pin mode.
+;	apeprcmu	means the APE PRCMU debugging is needed in DB8540. Consequently the TAP-PRCMU will be added onto the scan chain.
+;	xmipprcmu	means the XMIP PRCMU debugging is needed in DB8540. Consequently the TAP-PRCMU will be added onto the scan chain.
+;	sia		means the MMDSP debugging is needed in DB8540 SIA. Consequently the TAP-MMDSP will be added onto the scan chain.
+;	xp70sia		means the STxP70 debugging is needed in DB8540 SIA. Consequently the TAP-MMDSP will be added onto the scan chain.
+;	dbg_thr_reset	means the "debug through reset" is needed. The debugger is configured correctly in this case and the core enters in debug state right after the cpu reset release.
+;	pwrdwn		means the core power domains can be power down during the debugging session. By default, the power down is disabled.
+;	semihost	means configuration script for the semihosting settings. This parameter opens and configures the terminal window.
+;	jcxxxhz		means the jtag clock frequency. Example "jc40khz", "jc5mhz" ...
+;	dbgboot		means force the CPU0 (A9-0) core to enter in debug state at the beginning of the boot as soon as the debug is enabled.
+;	waitbootxxx	means waiting for "duration" s or ms after PORn release before connecting to the target (DAP). Ex: waitboot5s => wait for 5 seconds.
+; <core> can be
+;	smp:		means SMP debugging. The Trace32 debugger is connected to both CortexA9-0 and CortexA9-1.
+;	cpu0:		means AMP debugging. The Trace32 debugger is Connected to the CortexA9-0.
+;	cpu1:		means AMP debugging. The Trace32 debugger is connected to the CortexA9-1.
+;
+; <8540_config> indicates the scripts related to the DB8540 configuration to be called by init_8540.cmm. It can be one of the following values or a combination of them. Use "+" for the combination, like "default+sia".
+;	NoConfig:	means not any configuration script is called after the connection to the core(s). Can not be combined with other values. 
+;	default:	means the default necessary configuration script needed by the platform specified by <platform>. If necessary, modify the configuration invoked by this parameter value.
+;	xmip:		means configuration script related to XMIP settings is called.
+;	sia:		means configuration script related to SxA is called.
+;			Current version calls script initializing the SxA & XP70[PRCMU] clock, reset and PLL frequency settings.
+;	apeprcmu:	means configuration script related to the APE PRCMU is called.
+;			Current version calls script initializing the SxA & XP70[PRCMU] clock, reset and PLL frequency settings.
+;	ptm:		means configuration script for the PTM trace activation is to be called by init_8540.cmm.
+;	etm:		means configuration script for the ETM trace activation is to be called by init_8540.cmm.
+;	stm_ape:	means configuration script for the APESTM trace capture is to be called by init_8540.cmm. 
+;	stm_xmip:	means configuration script for the MODSTM (XMIP-STM) trace capture is to be called by init_8540.cmm.
+;
+; All parameters are mandatory. Any error in the parameter syntax will cause the execution of the script to quit.
+; 
+
+local &cur_dir &debug_stop_the_other_core &smp &semihost
+local &noconfig &default &sia &apeprcmu &xmip &ptm &etm &stm_ape &stm_xmip &xmip_dbg_thr_reset
+entry &8540_ver &platform &dbg_config &core &8540_config
+area
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_1: 
+// Parameters stuff
+//
+////////////////////////////////////////////////////////////////////
+gosub HandleParameters
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_2: 
+// Debugger configuration (Do not modify)
+//
+////////////////////////////////////////////////////////////////////
+gosub ConfigDebug
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_3:
+// Please give your approriate configuration scripts here below
+//
+////////////////////////////////////////////////////////////////////
+; ---- call configuration scripts 
+if &noconfig==0  // Not NoConfig
+(
+	if &default==1  //the default necessary configuration needed by the platform specified by <platform>.
+	(
+		if "&platform"=="MOP"
+		(
+			// call the default configuration script here if necessary
+		)
+		else if "&platform"=="CCU"
+		(
+			// call the default configuration script here if necessary
+		)
+		else if "&platform"=="SVP"
+		(
+			// call the default configuration script here if necessary
+		)
+		else if "&platform"=="PALLADIUM"
+		(
+			; DDRMOD
+			data.set a:0x8015519C %l 0xFFFF0000
+			do "&cur_dir/palladium/ddr_init.cmm"
+		)
+	)
+	if &xmip==1
+	(
+	 	do &cur_dir/palladium/DDR0_XMIP_ACCESS.cmm
+		wait 1.0s
+		if &xmip_dbg_thr_reset==1
+		(
+			data.set a:0x801572B4 %l 1	
+			data.set a:0x801572B0 %l 1	
+		)	
+		else if (d.l(a:0x801572B8)&1)==0
+		(
+			data.set a:0x801572B0 %l 1	
+			print "Released XMIP reset by init_8540.cmm, option ""xmip"""
+		)
+	)	
+	if &sia==1
+		do init_sxa_prcmu_debug.cmm &8540_ver "SVA_SIA"
+	if &apeprcmu==1
+		do init_sxa_prcmu_debug.cmm &8540_ver "PRCMU"
+	if &ptm==1
+	  	do "ptm_config.cmm"
+	if &etm==1
+		//do "etm_config.cmm"
+	if &stm_ape==1
+	(	
+		//do "&cur_dir/trace_config/stm_config.cmm" ape GPIO23
+		do "&cur_dir/trace_config/stm_config.cmm" ape GPIO70
+		//do "&cur_dir/trace_config/stm_config.cmm" ape GPIO161
+	)
+	if &stm_xmip==1
+	(	
+		//do "&cur_dir/trace_config/stm_config.cmm" xmip GPIO23
+		do "&cur_dir/trace_config/stm_config.cmm" xmip GPIO70
+		//do "&cur_dir/trace_config/stm_config.cmm" xmip GPIO161
+	)
+
+	// other configuration here, if any.
+)
+
+; ---- semihosting settings
+if &semihost==1
+(
+	do "&cur_dir/semihosting_setting.cmm"
+	if "&core"=="CPU0"
+	  term.heapinfo 0x40050000 0x40060000 0x40070000 0x40060000
+	else
+	  term.heapinfo 0x40070000 0x40080000 0x40090000 0x40080000
+)
+
+; ---- set the L2 Cache base address
+//if (d.l(enahb:0x8015601C)>>16.&1)==1
+	sys.o.l2cb 0xA0412000
+
+enddo (0==0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; =================== Sub Functions ===================
+
+
+HandleParameters:
+	; ---- Parameter Check
+	&debug_stop_the_other_core=1 // AMP mode, when cpu0 runs the chip configuration, the cpu1 should be halted.
+	if string.upr("&8540_ver")!="V1"
+	(
+		print "init_8540.cmm: Unknown DB8540 version: &8540_ver !"
+		enddo (1==0)
+	)
+	&8540_ver=string.upr("&8540_ver")
+	if string.upr("&platform")!="MOP"&&string.upr("&platform")!="CCU"&&string.upr("&platform")!="PALLADIUM"
+	(
+		print "init_8540.cmm: Unknown platform: &platform !"
+		enddo (1==0)
+	)
+	&platform=string.upr("&platform")
+	// &dbg_config parameter is checked by the debug config scrips called by this script.
+	&smp=0.
+	if string.upr("&core")=="SMP"
+	(
+		print "SMP debug."
+		&smp=1.
+		&debug_stop_the_other_core=0
+	)
+	else if string.upr("&core")=="CPU0"||string.upr("&core")=="CPU1"
+		&smp=0.
+	else
+	(
+		print "init_8540.cmm: Unknown core name: &core. Expected value: smp, cpu0 or cpu1"
+		enddo (1==0)
+	)
+	&core=string.upr("&core")
+	
+	; --- extract the config values
+	&noconfig=0
+	&default=0
+	&xmip=0
+	&sia=0
+	&apeprcmu=0
+	&ptm=0
+	&etm=0
+	&stm_ape=0
+	&stm_xmip=0
+	while string.len("&8540_config")!=0
+	(
+		&plus_idx=STRING.SCAN("&8540_config","+",0)
+		if &plus_idx==0
+		(
+			print "Invalid parameter: &8540_config !"
+			enddo
+		)
+		if &plus_idx==-1 // there is not any "+", i.e. &8540_config contains only 1 word
+			&plus_idx=string.len("&8540_config")
+	
+		// extract the first parameter
+		&temp=string.mid("&8540_config",0,&plus_idx)
+		&param=string.lwr("&temp")
+	
+		// check the extraited paramter's validity
+		if "&param"!="noconfig"&&"&param"!="default"&&"&param"!="sia"&&"&param"!="apeprcmu"&&"&param"!="ptm"&&"&param"!="etm"&&"&param"!="xmip"&&"&param"!="stm_ape"&&"&param"!="stm_xmip"
+		(
+			print "init_8540.cmm: Invalid configuration parameter: &temp !"
+			enddo (1==0)
+		)
+	
+		&&(param)=1
+	
+		// cut off the first parameter and the "+"
+		&8540_config=string.cut("&8540_config",&plus_idx+1)
+	)
+	return
+
+ConfigDebug:
+	; ---- general GUI settings
+	&cur_dir=os.ppd()
+	do "&cur_dir/general_gui_setting.cmm"
+	
+	; ---- path setting
+	do "&cur_dir/general_path_setting.cmm"
+	
+	; ---- call debug configuration script
+	if &default==0
+		&debug_stop_the_other_core=0
+	do "&cur_dir/8540_debug_config_a9ss.cmm" &8540_ver &platform &dbg_config &core &debug_stop_the_other_core
+	entry &ret
+	if !&ret
+		enddo &ret
+	return

@@ -1,0 +1,42 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+
+export MODULE
+MODULE=./
+include $(MMROOT)/video/makefiles/Make.std.config
+
+POST_BUILD += ;$(MMROOT)/video/components/common/update_codec_interface.csh jpegdec
+VPATH = ./mpc/algo/src/$(SVA_SUBSYSTEM) ./mpc/main/src ../scheduler/src/
+EXENAME = jpegdec
+EXEOBJ = \
+         djpeg_co_bitstream  \
+         djpeg_hv_idct_hamac \
+         djpeg_hamac_interface \
+         djpeg_hv_postproc_any_formats \
+         djpeg_hv_ace_preprocessing \
+         djpeg_hv_postproc_typical_formats \
+         djpeg_hv_bitstream     \
+         djpeg_utils \
+         djpeg_hv_huffman   \
+         t1xhv_djpeg \
+         t1xhv_main_mjd \
+         sm_decoder_jpeg \
+         sm_common \
+         t1xhv_interrupt
+         
+LIBS = libcommon.$(LIB_EXT) libhardware.$(LIB_EXT) libscheduler.$(LIB_EXT)
+CPPFLAGS += -D__LITTLE_ENDIAN_BITFIELD -D_MMDSP -DNOMADIK_VERSION -DFINAL_IMPLEMENTATION -D_FW_IMPLEMENTATION_ -DT1XHV_TASK_DECODE -DSTANDALONE_VERSION -DT1XHV_IDN_FW=$(FW_VERSION) -DT1XHV_IDN_HW=$(HW_VERSION)
+CPPFLAGS += -I../scheduler/inc -I../common/inc -I../hardware/inc -I./mpc/algo/inc/$(SVA_SUBSYSTEM) -I./mpc/main/inc -I./mpc/share/$(SVA_SUBSYSTEM) -I./mpc/share
+
+
+MEMORYCFG = $(MMROOT)/video/components/common/memconfig/video.$(MEMCFG_EXT)
+
+ACFLAGS += -forceesramfn
+
+STACK=1000
+SSTACK=1000
+
+todo: exe
+
+include $(MMROOT)/video/makefiles/Make.std.rules
+

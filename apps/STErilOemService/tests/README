@@ -1,0 +1,37 @@
+
+
+# Tests for STErilOemService
+
+## Introduction
+
+The test package for STErilOemService consists of two parts: `service` and `client`.
+
+* The service part is an android service which is identical to STErilOemService in every way
+  except that it uses our own mockup of the Phone interface and thus runs isolated from Android`s
+  telephony framework. This way, we can module test the whole solution in isolation and gain high
+  test coverage. Since the service is identical to STErilOemService, it will conflict with it when
+  clients try to bind to the service. It is therefore **important to make sure that the test
+  service is only installed during module tests**.
+
+* The client part is the actual test application. It runs as a non-system application in a
+  different process than the service and thus emulates the normal usecase. It contains
+  both module tests and functional tests. The module tests should be run together with
+  the test service (see above). The functional tests run together with the original
+  STErilOemService.
+
+## Build
+
+Make sure you have initialized the build environment by running `source build/envsetup.sh` at
+the top of the android source tree. Finally choose the appropriate `lunch` combo for your product.
+
+build the test package by running `mm` in the `tests` folder of the STErilOemService module.
+
+## Run Tests
+
+Make sure that your environment is setup correctly.  See [Build] above.
+
+The different steps to execute the tests are listed in the test script `run_oemhook_tests.sh`.
+You can either run the test script as a whole or copy individual steps and run them seperately
+as you see fit.
+
+Use 'logcat' to see the details of the test results.

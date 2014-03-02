@@ -1,0 +1,25 @@
+composite vc1dec.arm_nmf.vc1dec_gcc
+
+//itf
+provides vc1dec.arm_nmf.api.compressed_bitstream  	as input
+provides vc1dec.arm_nmf.api.picture_to_fill		as output_buffer
+provides vc1dec.arm_nmf.api.set_decoder_parameter	as set_decoder_parameter
+requires vc1dec.arm_nmf.api.picture    			as output
+requires vc1dec.arm_nmf.api.bitstream_handshake		as nal_ctl
+
+//contains
+contains common.nmf.arm                         as video_common
+contains vc1dec.arm_nmf.decoder	as decoder
+contains vc1dec.arm_nmf.hamac 	as hamac    
+
+
+//internal binding
+binds this.input    		to decoder.input
+binds this.output_buffer    	to decoder.output_buffer
+binds decoder.output		to this.output
+binds decoder.nal_ctl		to this.nal_ctl
+binds this.set_decoder_parameter 	to decoder.set_decoder_parameter
+
+binds decoder.iStartCodec 	to hamac.iStartCodec	 
+binds hamac.iEndCodec 		to decoder.iEndCodec
+

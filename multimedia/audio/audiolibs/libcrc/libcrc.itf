@@ -1,0 +1,19 @@
+#include <audiolibs/common/include/mpeg_crc.h>
+
+interface audiolibs.libcrc.libcrc unmanaged {
+    unsigned short
+    mpeg_calc_crc_bitwise(unsigned short crc_reg,unsigned short val);
+
+    unsigned short
+    mpeg_calc_crc(unsigned short crc_reg,unsigned short val,int length);
+
+    unsigned short
+    mpeg_calc_crc_bytewise(unsigned short crc_reg,unsigned short val);
+
+    unsigned short
+    mpeg_calc_crc_bytewise_table(unsigned short crc_reg,unsigned short val);
+
+    unsigned short
+    mpeg_dab_scf_crc(unsigned short data, unsigned short scrc);
+}
+

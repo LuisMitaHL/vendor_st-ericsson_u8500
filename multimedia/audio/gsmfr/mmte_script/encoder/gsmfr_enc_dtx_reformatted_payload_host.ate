@@ -1,0 +1,24 @@
+OMX_GetHandle       $1 OMX.ST.AFM.encoder.gsmfr_host
+OMX_SetParameter    $1 OMX_IndexParamAudioGsm_FR nPortIndex=1 bDTX=OMX_TRUE bHiPassFilter=OMX_TRUE
+MMTE_CheckParameter $1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=8000 eChannelMapping[0]=OMX_AUDIO_ChannelCF
+OMX_SetParameter    $1 OMX_IndexParamPortDefinition nPortIndex=0 format.audio.bFlagErrorConcealment=OMX_FALSE
+
+if $2 == input_reference
+alias INPUT_FILE    $(AUDIO_STREAMS)/gsmfr/streams/good_sp.inp      
+ate_attach_io       $1 0 MEM INPUT_FILE 0 0 0
+endif
+
+if $3 == output_reference
+alias OUTPUT_GSMFR  $(NOMADIK)/gsmfr/mmte_script/output
+#alias OUTPUT_DIR    OUTPUT_GSMFR
+alias OUTPUT_FILE   $(OUTPUT_DIR)/gsmfr_enc_dtx.out
+alias OUTPUT_SIZE    3000000
+ate_attach_io       $1 1 MEM OUTPUT_FILE OUTPUT_SIZE 0 0
+#alias REF_FILE      $(AUDIO_STREAMS)/gsmfr/streams/good_sp.cod
+alias REF_FILE      $(AUDIO_STREAMS)/gsmfr/streams/good_sp_reformatted.cod
+#alias REF_DIGEST    $(AUDIO_STREAMS)/gsmfr/streams/seq03_su_reformatted_payload_digest.hash
+endif
+
+if $2 == output_record
+ate_attach_io       $1 1 MEM $(OUTPUT_DIR)/gsmfr_enc_dtx.rec 40000 0 0
+endif

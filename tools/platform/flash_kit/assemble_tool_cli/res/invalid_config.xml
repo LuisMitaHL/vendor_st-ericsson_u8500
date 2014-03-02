@@ -1,0 +1,94 @@
+﻿<?xml version="1.0"?>
+<!-- The following DTD must not be included in every configuration file. It is only used when   -->
+<!-- validating the XML document                                                                -->
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                    	(bax:flash_archive?, bax:binary_image?)>
+    <!ELEMENT bax:source                              	(#PCDATA)>  
+    <!ELEMENT bax:flash_archive                       	(bax:entry*)>
+	<!ELEMENT bax:binary_image							(bax:entry*)>
+    <!ELEMENT bax:entry                               	(bax:source,bax:attribute*)>
+    <!ELEMENT bax:attribute                         	(#PCDATA)>
+    
+    <!ATTLIST target_configuration      xmlns:bax       CDATA                                   	#FIXED "TBD">
+    <!ATTLIST bax:entry                 name      		CDATA                         				#REQUIRED>
+    <!ATTLIST bax:entry                 type      		CDATA										#REQUIRED>
+    <!ATTLIST bax:attribute             name      		CDATA                         				#REQUIRED>
+]>
+<target_configuration>
+	<bax:flash_archive>
+		<bax:entry name="mem_init.bin" type="x-empflash/image">
+			<bax:source>mem_init.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x00080000</bax:attribute>
+			<bax:attribute name="TOC-ID">MEM_INIT</bax:attribute>
+		</bax:entry>
+		<bax:entry name="power_management.bin" type="x-empflash/image">
+			<bax:source>power_management.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x000AE400</bax:attribute>
+			<bax:attribute name="TOC-ID">PWR_MGT</bax:attribute>
+		</bax:entry>
+		<bax:entry name="ipl.bin" type="x-empflash/image">
+			<bax:source>ipl.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x000B1800</bax:attribute>
+			<bax:attribute name="TOC-ID">IPL</bax:attribute>
+		</bax:entry>
+		<bax:entry name="mod.bin" type="x-empflash/image">
+			<bax:source>mod.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x000B7000</bax:attribute>
+			<bax:attribute name="TOC-ID">MODEM</bax:attribute>
+		</bax:entry>
+		<bax:entry name="normal.bin" type="x-empflash/image">
+			<bax:source>normal.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x00080800</bax:attribute>
+			<bax:attribute name="TOC-ID">NORMAL</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x10203040</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x00000000</bax:attribute>
+		</bax:entry>
+		<bax:entry name="adl.bin" type="x-empflash/image">
+			<bax:source>adl.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x0008FC00</bax:attribute>
+			<bax:attribute name="TOC-ID">ADL</bax:attribute>
+		</bax:entry>
+		<bax:entry name="production.bin" type="x-empflash/image">
+			<bax:source>production.bin</bax:source>
+			<bax:attribute name="Target">/flash0, 0x0009F000</bax:attribute>
+			<bax:attribute name="TOC-ID">PRODUCTION</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x10101010</bax:attribute>
+		</bax:entry>
+	</bax:flash_archive>
+	
+	<bax:ram_image>
+		<bax:entry name="mem_init" type="x-empflash/image">
+			<bax:source>mem_init.bin</bax:source>
+			<bax:attribute name="TOC-ID">MEM_INIT</bax:attribute>
+		</bax:entry>
+		<bax:entry name="pwr_mgt" type="x-empflash/image">
+			<bax:source>power_management.bin</bax:source>
+			<bax:attribute name="PWR_MGT">ADL</bax:attribute>
+		</bax:entry>
+		<bax:entry name="ipl" type="x-empflash/image">
+			<bax:source>ipl.bin</bax:source>
+			<bax:attribute name="IPL">ADL</bax:attribute>
+		</bax:entry>
+		<bax:entry name="modem" type="x-empflash/image">
+			<bax:source>mod.bin</bax:source>
+		</bax:entry>
+		<bax:entry name="normal" type="x-empflash/image">
+			<bax:source>normal.bin</bax:source>
+			<bax:attribute name="TOC-ID">NORMAL</bax:attribute>
+			<bax:attribute name="TOC-LoadAddress">0x10203040</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x00000000</bax:attribute>
+		</bax:entry>
+		<bax:entry name="adl" type="x-empflash/image">
+			<bax:source>adl.bin</bax:source>
+			<bax:attribute name="TOC-ID">ADL</bax:attribute>
+		</bax:entry>
+		<bax:entry name="production" type="x-empflash/image">
+			<bax:source>production.bin</bax:source>
+			<bax:attribute name="TOC-ID">PRODUCTION</bax:attribute>
+			<bax:attribute name="TOC-EntryPoint">0x10101010</bax:attribute>
+		</bax:entry>
+	</bax:ram_image>
+</target_configuration>

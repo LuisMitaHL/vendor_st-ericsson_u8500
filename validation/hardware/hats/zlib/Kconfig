@@ -1,0 +1,27 @@
+#
+# Zlib configuration
+#
+
+menuconfig ZLIB
+	bool "Zlib Configuration"
+	help
+	  A massively spiffy yet delicately unobtrusive compression library.
+
+if ZLIB
+
+config ZLIB_DIR
+	string
+	default ./zlib
+
+config ZLIB_DEPS
+	string
+	default ""
+
+config ZLIB_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on ZLIB
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # ZLIB

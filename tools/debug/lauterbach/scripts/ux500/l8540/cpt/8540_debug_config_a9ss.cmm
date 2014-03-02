@@ -1,0 +1,628 @@
+; #####################################################################
+; # L8540 debug & Trace script file: 8540_debug_config_a9ss.cmm       #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for Trace32 debug configuration on 8540.
+; Created by HED/CSP/CPT/ACT on 2011-12-08
+; Contact jingyi-xiaoyan.lu@st.com
+; 2011-12-08: initial version.
+; 2012-02-14: minor changes for XMIP support.
+; 2012-03-07: 1) updated "ScanChainCfg" 
+;	2) init_8540_XMIP.cmm "jc" parameter support. 
+;	3) reworked "SecurityCoreStateCheck" function.
+;	4) added xp70sia-tap inclusion and its power status check.
+; 2012-04-12: added "dbgboot" and "waitboot" options
+; 2012-05-16: added "waitboot" for debug_through_reset
+; 2012-09-05: added "xmip_dbg_thr_reset" parameter for debug_through_reset of XMIP RESET, APE is not reset.
+
+local &cur_dir &sia &apeprcmu &xmipprcmu &xp70sia &connection_mode &cjtag2pin &dbg_thr_reset &pwrdwn &secsts1 &xmip_secsts
+local &inv_dbg0_permitted &inv_dbg1_permitted &inv_dbg_permitted &corebase0 &corebase1
+local &idcode_v &jc &ape_pwrsts0 &dbgboot &waitboot
+&cur_dir=os.ppd()
+ENTRY &8540_ver &platform &dbg_config &core &debug_stop_the_other_core
+
+;--- handle the parameters
+gosub HandleParameters
+
+;--- Resets all parameters to their original position
+reset
+sys.reset
+
+;--- jtag clock
+gosub SetJtagClockFreq
+
+;--- dbgboot, IDCODE and top permission check
+gosub jtag_stuffs
+
+;--- cpu setting
+gosub SetCpuName
+
+;--- configure the JTAG/cJTAG, TAPs topology and the TAP position
+gosub ScanChainCfg
+do "&cur_dir/debugPortCfg" &cjtag2pin
+
+;--- disable all vector/exception halt
+gosub DisableVectorHalts
+
+;--- configure the CS components bases addresses
+gosub SetCSBaseAddrs
+
+;--- read the security configuration and the core(s) state(s)
+gosub SecurityCoreStateCheck 
+
+;--- connection
+gosub DoConnection
+
+;--- in case of cjtag2pin, once the connection is successfully done, change the JC to 15Mhz
+if &cjtag2pin==1&&system.up()&&"&platform"!="PALLADIUM"
+	sys.jc ctck 30mhz
+
+;--- AMP mode only: force the other core to enter the debug mode
+gosub ForceOtherCoreHalt
+
+enddo (0==0)
+
+
+
+
+
+
+
+; =================== Sub Functions ===================
+
+lab1:
+	if system.usecore()<=1
+		gosub CheckSecurityOnError 
+	if system.up()&&&default==1
+     		DIALOG.OK "Error in SoC config after SYS.UP!"
+   	else if !system.up()
+ 	     	DIALOG.OK "SYS.UP FAILED"
+   	enddo (1==0)
+
+lab2:
+	 DIALOG.OK "Read APB memory failed!"
+	 enddo (1==0)
+
+lab4:
+	if system.usecore()<=1
+		gosub CheckSecurityOnError 
+	DIALOG.OK "first connection SYS.M.PREPARE/ATTACH failed!"
+	enddo (1==0)
+
+lab5:
+	if system.usecore()<=1
+		gosub CheckSecurityOnError 
+	if !system.up()
+		DIALOG.OK "SYS.M.ATTACH failed!"
+	enddo (1==0)
+
+
+ScanChainCfg:
+	; --- configure the TAPs topology and the TAP position
+	if system.up()
+		sys.down
+	&cfg_connect_val=0x3FFCF
+	if &apeprcmu==1
+		&cfg_connect_val=&cfg_connect_val&~0x3
+	if &sia==1
+     		&cfg_connect_val=&cfg_connect_val&~0xC
+	if &xp70sia==1
+	(
+		if (&ape_pwrsts0>>13.&1)==1
+	     		&cfg_connect_val=&cfg_connect_val&~0x3000
+		else
+			dialog.ok "SIA CORE power domain is off. SIA-XP70 TAP inclusion is ignored. XIA-XP70 debug is not available."
+	)
+	if &xmipprcmu==1
+     		&cfg_connect_val=&cfg_connect_val&~0xC000
+	sys.config.cfgconnect &cfg_connect_val
+	return
+
+
+HandleParameters:
+	;---- transform all parameter to uppercase
+	&8540_ver=string.upr("&8540_ver")
+	&platform=string.upr("&platform")
+	
+	;---- extract the dbg_config parameters
+	&connection_mode=""
+	&cjtag2pin=0
+	&sia=0
+	&apeprcmu=0
+	&xmipprcmu=0
+	&xp70sia=0
+	&dbg_thr_reset=0
+	&xmip_dbg_thr_reset=0
+	&pwrdwn=0
+	&semihost=0
+	&jc=""
+	&dbgboot=0
+	&waitboot=""
+	while string.len("&dbg_config")!=0
+	(
+		&plus_idx=STRING.SCAN("&dbg_config","+",0)
+		if &plus_idx==0
+		(
+			print "init_8540.cmm: Invalid parameter: &dbg_config !"
+			enddo (1==0)
+		)
+		if &plus_idx==-1 // there is not any "+", i.e. &dbg_config contains only 1 word
+			&plus_idx=string.len("&dbg_config")
+	
+		// extract the first parameter
+		&temp=string.mid("&dbg_config",0,&plus_idx)
+		&param=string.lwr("&temp")
+	
+		// check the extraited paramter's validity
+		if "&param"!="attach"&&"&param"!="up"&&"&param"!="cjtag2pin"&&"&param"!="sia"&&"&param"!="apeprcmu"&&"&param"!="xmipprcmu"&&"&param"!="dbg_thr_reset"&&"&param"!="xmip_dbg_thr_reset"&&"&param"!="pwrdwn"&&"&param"!="semihost"&&string.mid("&param",0,2)!="jc"&&"&param"!="xp70sia"&&"&param"!="dbgboot"&&string.mid("&param",0,8)!="waitboot"
+		(
+			print "init_8540.cmm: Invalid configuration parameter: &temp !"
+			enddo (1==0)
+		)
+		if string.mid("&param",0,8)=="waitboot"
+		(
+			&waitboot=string.cut("&param",8)
+			if "&waitboot"==""
+				print "WARNING: ""waitboot"" parameter is ignored. It carries a null duration!"
+		)
+		else if string.mid("&param",0,2)=="jc"
+		(
+			&jc=string.cut("&param",2)
+			if "&jc"==""
+				print "WARNING: ""jc"" parameter is ignored. It carries a null frequence!"
+		)
+		else if "&param"=="up"||"&param"=="attach" // if dbg_config contains several "up" or "attach" at a time, the last "up" or "attach" covers the previous ones.
+			&connection_mode="&param"
+		else
+			&&(param)=1
+	
+	
+		// cut off the first parameter and the "+"
+		&dbg_config=string.cut("&dbg_config",&plus_idx+1)
+	)
+	if "&connection_mode"==""
+	(
+		print "init_8540.cmm: ""up"" or ""attach"" is needed by the parameter ""dbg_config""!"
+		enddo (1==0)
+	)
+	return
+
+SetCpuName:
+	if &smp==1
+		sys.cpu DB8540
+	else if "&core"=="CPU0"
+		sys.cpu DB8540APE-CORE0
+	else //CPU1
+		sys.cpu DB8540APE-CORE1
+	return
+
+SetJtagClockFreq:
+	if combiprobe()
+		sys.jc 25Mhz
+	else
+		sys.jc ctck 40Mhz
+	if &cjtag2pin==1
+		sys.jc ctck 30Mhz
+	if "&platform"=="PALLADIUM"
+		sys.jc 50khz
+	if &cjtag2pin==1&&"&platform"=="PALLADIUM"
+		sys.jc ctck 50Khz
+	if &apeprcmu==1||&xmipprcmu==1
+		sys.jc ctck 20Mhz
+	if "&jc"!=""
+		sys.jc &jc
+	return
+
+
+SecurityCoreStateCheck:
+	&inv_dbg0_permitted=1.
+	&inv_dbg1_permitted=1.
+	&inv_dbg_permitted=1.
+	if &dbg_thr_reset!=1&&system.usecore()<=1
+	(
+		//////////////////////////////////////////////////////////////////
+		// increase the value below if the boot needs bigger latency. 
+		//////////////////////////////////////////////////////////////////
+// ----- to change later when the normal appli is flashed.
+		&MAX_LOOP_TIMES=6000.
+	
+		on ERROR goto lab4
+		sys.o.resbreak off
+		if &dbgboot==0
+		(
+			sys.o.enreset on
+			sys.o.waitreset &waitboot
+		)
+		if &dbgboot==1||"&connection_mode"=="attach"
+		(
+			sys.o.enreset off
+			sys.o.waitreset off
+		)
+		sys.o.pwrcheck off
+		
+		if "&connection_mode"=="up"
+		(
+			sys.mode.prepare
+			if "&waitboot"!=""
+				print "Wait &waitboot after PORn reset."
+		)
+		else
+			sys.mode.attach
+		if !system.up()
+			goto lab4
+		
+		&inv_dbg0_permitted=0.
+		&inv_dbg1_permitted=0.
+		&inv_dbg_permitted=0.
+		&print_security_state0=""
+		&print_security_state1=""
+		
+		; 1) --- determine whether the invasive debug is permitted
+		&ape_secsts1_addr=0x50003A90
+		&ape_secsts1_val=d.l(edbg:&ape_secsts1_addr)
+		&loop=0
+		while &inv_dbg_permitted==0&&&loop<10000.
+		(
+			&dbgen0=&ape_secsts1_val>>8.&1
+			&dbgen1=&ape_secsts1_val>>9.&1
+			
+			if &smp==1.
+				&inv_dbg_permitted=&dbgen0&&dbgen1
+			else if "&core"=="CPU0"
+				&inv_dbg_permitted=&dbgen0
+			else
+				&inv_dbg_permitted=&dbgen1
+			
+			&loop=&loop+1
+			&ape_secsts1_val=d.l(edbg:&ape_secsts1_addr)
+		)
+			
+		//print "After detecting debug permission (", %decimal &loop, " times):"
+		&need_wait_ns=0
+		if &inv_dbg_permitted==0  // 0 X
+		(
+			&locked_chip=1
+			print "Detected LOCKED chip"
+			print "Invasive debugg is DISABLED. Consequently you can not halt the core or change the current core state."
+		)
+		else
+		(
+			&inv_dbg_permitted=1
+			&inv_dbg0_permitted=1
+			&inv_dbg1_permitted=1
+			; read invasive debug in secure
+			&s_inv0=&ape_secsts1_val>>10.&1
+			&s_inv1=&ape_secsts1_val>>11.&1
+			if &s_inv0==1&&&s_inv1==1  // 1 1
+			(
+				print "Detected UNLOCKED chip."
+				print "Invasive debugging is ENABLED."
+			)
+			else // 1 0
+			(
+				&locked_chip=1
+				&need_wait_ns=1
+				print "Detected LOCKED chip"
+				print "Invasive debugging is ENABLED in non-secure mode."
+			)
+		)
+		
+		; 2) --- wait until the debugger can connect to the core
+		on ERROR goto lab2
+		if &need_wait_ns==1
+		(
+			if "&connection_mode"=="attach"
+				&need_wait_ns=0
+			else
+			(
+				&ns_state0=d.l(edap:&corebase0+0x88)>>18.&1
+				&ns_state1=d.l(edap:&corebase1+0x88)>>18.&1
+				if &ns_state0==1&&&ns_state1==1  
+					&need_wait_ns=0
+				else if &ns_state0==1&&"&core"=="CPU0"&&&debug_stop_the_other_core==0
+					&need_wait_ns=0
+			)
+		)
+		if &need_wait_ns==1
+		(
+			if &ns_state0==0&&("&core"=="CPU0"||"&core"=="SMP")
+			(
+				&loop=0
+				print "Wait for the CPU0 to go to non-secure..."
+				while &ns_state0==0&&&loop<&MAX_LOOP_TIMES
+				(
+					&ns_state0=d.l(edap:&corebase0+0x88)>>18.&1
+					&loop=&loop+1
+				)
+				if &ns_state0==0
+				(
+					&inv_dbg_permitted=0
+					&inv_dbg0_permitted=0
+				)	
+			)
+			if &ns_state1==0&("&core"=="CPU1"||"&core"=="SMP"||("&core"=="CPU0"&&debug_stop_the_other_core==1))
+			(	
+				&loop=0
+				print "Wait for the CPU1 to go to non-secure..."
+				while &ns_state1==0&&&loop<&MAX_LOOP_TIMES
+				(
+					&ns_state1=d.l(edap:&corebase1+0x88)>>18.&1
+					&loop=&loop+1
+				)
+				if &ns_state1==0
+				(
+					&inv_dbg_permitted=0
+					&inv_dbg1_permitted=0
+				)	
+			)
+			 
+			&ns_state0=d.l(edap:&corebase0+0x88)>>18.&1
+			&ns_state1=d.l(edap:&corebase1+0x88)>>18.&1
+			if &ns_state0==0
+				&print_security_state0="SECURE"
+			else
+				&print_security_state0="NON-SECURE"
+			if &ns_state1==0
+				&print_security_state1="SECURE"
+			else
+				&print_security_state1="NON-SECURE"
+			
+			if "&core"=="CPU0"||&smp==1
+			   print "CPU0 is currently in &print_security_state0 mode."
+			if "&core"=="CPU1"||&smp==1
+			   print "CPU1 is currently in &print_security_state1 mode."
+		)
+	)
+	on ERROR NOTHING
+	return
+
+SetCSBaseAddrs:
+	&corebase0=0x801A8000
+	&corebase1=0x801AA000
+	return
+
+DoConnection:
+	sys.o.pwrcheck on
+	; allow the debug modify memory domain access permission
+	sys.o.dacr on
+	if &dbg_thr_reset==1&&system.usecore()<=1  // debug through reset use case
+	(
+		sys.o.resbreak on
+		sys.o.enreset on
+		sys.o.waitreset &waitboot
+	)
+	else
+	(
+		sys.o.enreset off
+		sys.o.resBreak off
+		sys.o.waitReset off
+	)
+	
+	if &pwrdwn==1
+		sys.o.pwrdwn on
+	else
+		sys.o.pwrdwn off
+	
+	if "&connection_mode"=="up"
+	(
+		if system.up()
+			sys.down
+		on ERROR goto lab1
+		if &inv_dbg_permitted==1
+		(
+			sys.up
+			if system.up()
+				print "SYS.UP OK!"
+		)
+		else
+		(
+			print "Attach to the target core ..."
+			sys.m.attach
+			if system.up()
+				print "SYS.M.ATTACH OK!"
+		)
+		on ERROR NOTHING
+	)
+	else
+	(
+		if system.up()
+			sys.down
+		on ERROR goto lab5
+		sys.m.attach
+		if system.up()
+			print "SYS.M.ATTACH OK!"
+		on ERROR NOTHING
+	)
+	return
+
+ForceOtherCoreHalt:
+	if &inv_dbg_permitted==1&&&debug_stop_the_other_core==1&&"&connection_mode"=="up"
+	(
+		&dscr_addr=0x801A8088
+		&drcr_addr=0x801A8090
+		&the_other_core="CPU1"
+		&the_other_inv_dbg_permitted=&inv_dbg1_permitted
+		if  string.upr("&core")=="CPU1"
+		(
+		  &dscr_addr=0x801AA088
+		  &drcr_addr=0x801AA090
+		  &the_other_core="CPU0"
+		  &the_other_inv_dbg_permitted=&inv_dbg0_permitted
+		)
+	
+		if &the_other_inv_dbg_permitted==1
+		(
+		  data.set edap:&drcr_addr %long d.l(edap:&drcr_addr)|0x1
+		  &loop=1
+		  while (d.l(edap:&dscr_addr)&0x1)!=0x1&&&loop<100.
+		  (
+		   &loop=&loop+1
+		  )
+		  if &loop>=100.
+		  (
+		   print "Warning: Failed to make the &the_other_core enter in debug state!"
+		  )
+		)
+	)
+	if &xmip_dbg_thr_reset==1
+		d.s edbg:0x50003A10 %word 0x20
+	return
+
+DisableVectorHalts:
+	tronchip.set undef off
+	tronchip.set pabort off
+	tronchip.set dabort off
+	tronchip.set reset off
+	tronchip.set swi off
+	return
+
+
+ReadSecSts:
+	&secsts1=0
+	&xmip_secsts=0
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 0 1 0 1 1 1
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg 0 1 0 0 1
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg %s 0
+	&secsts1=jtag.shift()
+	jtag.shifttms 1 0 0 1
+	//print "APE_secsts1 = 0x",%HEX &secsts1
+	if &xmipprcmu==1
+	(
+		jtag.shifttms 1 0 0
+		jtag.shiftreg 0 1 0 1 1 1
+		jtag.shifttms 1 0 0 1 0 0
+		jtag.shiftreg 0 0 1 0 0 
+		jtag.shifttms 1 0 0 1 0 0
+		jtag.shiftreg %s 0
+		&xmip_secsts=jtag.shift()
+		jtag.shifttms 1 0 0 1
+		//print "XMIP secsts = 0x",%HEX &xmip_secsts
+	)
+	return	
+
+ReadApePwrSts0:
+	&ape_pwrsts0=0
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 0 1 0 1 1 1
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg 0 1 1 1 0
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg %s 0
+	&ape_pwrsts0=jtag.shift()
+	jtag.shifttms 1 0 0 1
+	//print "APE_PWRSTS0 = 0x",%HEX &ape_pwrsts0
+	return
+
+		
+ToggleTRSTn:
+	jtag.pin NTRST 0
+	wait 0.1s
+	jtag.pin NTRST 1
+	; goto Select-DR
+	jtag.shifttms 1 1 1 1 1 1 0 0 1 
+	return
+
+ReadIDCODE:
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 0 1 1 0 0 0
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg %l 0
+	&idcode_v=jtag.shift()
+	jtag.shifttms 1 0 0 1
+	//print "IDCODE = 0x", %HEX &idcode_v
+	return
+
+
+CheckSecurityOnError:
+	if (&secsts1&1)==0  //TOPAPEDBGEN
+	(
+		dialog.ok "The APE debug is disabled by the security control logic."
+		enddo (1==0)
+	)
+	if &apeprcmu==1&&(&secsts1>>3&1)==0
+	(
+		dialog.ok "The APE PRCMU debug is disabled by the security control logic. Cannot include PRCMU-TAP!"
+		enddo (1==0)
+	)
+	if &xmipprcmu==1&&(&xmip_secsts>>13.&1)==0
+	(
+		dialog.ok "The XMIP PRCMU debug is disabled by the security control logic. Cannot include PRCMU-TAP!"
+		enddo (1==0)
+	)
+	return
+
+Write_CLTAP_reg:
+	jtag.shifttms 1 0 0
+	jtag.shiftreg 0 1 0 1 1 1
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg 1 0 0 0 1
+	jtag.shifttms 1 0 0 1 0 0
+	jtag.shiftreg %s 0x20
+	jtag.shifttms 1 0 0 1
+	return
+
+jtag_stuffs:
+	if system.usecore()<=1 // only the master debugger perform this.
+	(
+		if &dbgboot==1&&"&core"!="CPU0"
+		(
+			print "!! WARNING !!: the ""dbgboot"" option is only applicable to ""CPU0"". &core is selected => ""dbgboot"" is ignored!"
+		)
+	
+		&idcode_v=0
+		&secsts1=0
+		if &dbgboot==1&&"&core"=="CPU0"
+		(
+			jtag.pin nreset 0
+			jtag.pin nreset 1
+			print "PORn pulse via SRSTn by ""dbgboot"" parameter."
+			jtag.lock
+			jtag.pin enable
+			gosub ToggleTRSTn 
+			while (&idcode_v&0x0FFFFFFF)!=0x022AD041
+				gosub ReadIDCODE
+			while (&secsts1>>8&1)!=1||(&secsts1&1)!=1
+				gosub ReadSecSts
+			gosub Write_CLTAP_reg
+			jtag.pin disable
+			jtag.unlock
+		)
+		else
+		(
+			jtag.lock
+			jtag.pin enable
+			gosub ToggleTRSTn
+			
+			;--- read security status	
+			gosub ReadSecSts
+		
+			;--- check topdbgen
+			gosub ReadIDCODE
+			if (&idcode_v==0xDEADBEEF)
+			(
+				print "Debug is disabled by the security!"
+				jtag.pin disable
+				jtag.unlock
+				enddo (1==0)
+			)
+			if (&idcode_v==0||(&idcode_v&0x0FFFFFFF)!=0x022AD041)
+			(	
+				print "Invalid IDCODE: 0x", %HEX &idcode_v
+				jtag.pin disable
+				jtag.unlock
+				enddo (1==0)
+			)
+		
+			;--- read APE_PWRSTS0 if xp70sia debug is needed.
+			if &xp70sia==1
+				gosub ReadApePwrSts0
+			jtag.pin disable
+			jtag.unlock
+		)
+	)
+	else if &dbgboot==1
+		print "!! WARNING !!: the ""dbgboot"" option is only applicable to the master GUI. => ""dbgboot"" is ignored!"
+	return

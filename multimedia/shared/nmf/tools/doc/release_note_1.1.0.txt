@@ -1,0 +1,226 @@
+**********************************************************
+* Nomadik Multiprocessing Framework (version 1.1.0)      *
+**********************************************************
+	"Compilé, c'est gagné" (M. Guene)
+	"La doc, c'est le code" (J.-P. Fassino)
+
+This release must be used **carefully** since:
+	- no integration in Nomadik Toolset is planned for this release,
+	- no integration in Host OS (Symbian, Linux) is planned for this release.
+	
+The release comprises one .tgz file holding the following features:
+	- Component manager binary & api
+ 	- Synchronous & Hybrid execution engine binaries
+ 	- Nomadik Multiprocessing Environment API 
+ 	- Component tool chain binary
+ 	- Example source codes (Hello World's, Training, Mandelbrot's, mp3, User Fifo, Jpeg)
+ 		Hello world and mp3 Eclipse project file delivered
+ 	- Documentations (User guide, programming model, CM API, MPC API)
+ 		User guide not fully in line with delivery
+ 
+Sources are delivered in another .tgz.
+
+Supported target:
+	- STn8815 SAA & SVA Cut A0/B0/C0
+	- STn8820 SAA & SVA & SIA Cut A0
+	
+Supported environments:
+	- nmf_Bare: 	based on Nomadik HCL/services libraries (only on STn8815 board)
+		Based on label HCL/services NOI_BASE_V6.16.1
+	- nmf_Think:	based on Think component-based OS
+	- nmf_OS21: 	based on ARM OS21
+		Based on library OS21-3.2.4
+		This environment is deprecated and will be removed in future NMF delivery.
+
+
+Changes:
+--------
+[CM]
+	- Power management that required though OSAL power on/off or used resources.
+		- Add CM_PostCleanUpAndFlush() internal API for delayed network flush and 
+		  power management that must be called periodically in order to flush pending 
+		  destroyed network and power off resources if necessary. This API is not
+		  public, it's an OS integration API.  
+		- Add CM debug mode configuration that switch on MPC during CM initialization 
+		 
+	- OSAL enhancement
+		- Add OSAL_Log for generating printf like traces,
+		- Add OSAL_Write32 for generating XTI/STP traces,
+		- OSAL_DisablePwrRessource to disable a power resource,
+		- OSAL_EnablePwrRessource to enable a power resource.
+		
+	- OSAL evolution
+		- Indirection to OSAL method implementation removed and the linking is based on
+		  well defined name and is fully done by the linker. See documentation for
+		  getting mode information about this evolution. 
+		
+	- CM_Init() updated according OSAL enhancement
+		- Log, Write32 and OSAL description no more required.
+		
+	- Update priority parameter in CM_InstantiateComponent() API for passing
+	  execution engine sub-priority. 
+		
+	- Update and enhance XTI/STM trace format:
+		- Update existing traces,
+		- Add fifo activity and binding traces
+	  See documentation for getting information about nex trace format.
+
+[MPC Executive Engine]
+	- Add sub priority in Synchronous and Hybrid scheduler, this priority could be
+	  set by CM_InstantiateComponent().
+	
+	- Update and enhance XTI/STM trace format.
+	
+	- Shared IRQ handler implementation.
+	  Association of interrupt line with interrupt handler remind in ADL. 
+	  Dynamic association of interrupt line with interrupt handler will be proposed 
+	  in next delivery.
+	
+[OS integration]
+	- Update Think, Bare & OS21 according OSAL enhancement and new OS integration API.	
+	
+[Tools] 
+	
+[Programming model]
+
+
+Bug fixes:
+---------
+ - [ Defect #34755 ] interrupts are implemented in header files (.nmf ) and result in linker problems
+ 	Implementation change to embedded code in .nmf file disappear.
+ 	
+ - [ Defect #32401 ] Usage of DSP interrupts is not clear
+ 	To declare an interrupt handler in a component, you have to :
+	- in the conf file declare tour handle as providing rtos.itdispatcher.handler interface =>
+	'provides rtos.itdispatcher.handler as myItHandler interrupt 2'
+	- in the component implementation declare your handler using macro EE_INTERRUPT =>
+	EE_INTERRUPT void METH(myItHandler)(void)
+	{
+	//insert it handler code here
+	}
+	
+ - [ Defect #39200 ] [CM] Memory handles are not stored - Issues when the EE is destroyed
+ 	Current FIX must be dispatched in the relevant moduels.
+ 	
+ - [ Defect #39198 ] [CM] cachedMemories[x].address structure is not initialized
+ 	Fixed.
+ 	
+
+Known Issues:
+-------------
+
+
+Notes:
+------
+	- Inter-MPC distribution not supported due to hardware limitation on STn8815A0
+	- No cross calling between ESRAM and SDRAM Code
+		A component code must fit in one memory segment only. Split your component into two
+		sub components to achieve that. This limitation will be removed with Gnu Bin Utils.
+		
+	- MP3 example supported only on nmf_bare environment.
+		This example reuse CSD algorithm and must not been distribute outside ST Microelectronics.
+		Today, this example only runs on bare machine (due to APD HCL/Services packages issues).
+	- Some link issue with GNU toolchain could occur in examples until HCL/Services compiled with 
+		correct flags. 
+
+	- Due to unavailability of HCL for STn8820, nmf_Bare runs only on STn8815.
+	
+	
+Pre-requires:
+-------------
+	- At least Nomadik Toolset 1.0.0 final release.
+	- Java Runtime Environment  (http://java.sun.com/)
+		At least JRE 1.5 (on Linux please use at least JRE 1.6 due to JVM bug regarding execution access rights)        
+
+
+Test environment :
+------------------
+	- Environments:
+		Board: 
+			NDK15 Cut B0
+			NDK20 Cut A0
+		MPC: 
+			SAA & SVA on NDK15
+			SAA & SVA & SIA on NDK20
+		Execution Engine: Synchronous, Hybrid
+		Semaphores: local, hardware
+		Environment: bare, think, os21, tlm
+		Nomadik Toolset 1.0.0 Beta
+		ARM: RVCT 3.0 SP1 Build 688, RVCT 2.2 Build 593, st-armgcc (gcc version 4.1.1)
+
+	- Tests:
+		* 'ADL' class
+			check 'Architecture Description Language' features from programming model
+			test limit of some ADL features (name length, collection size,...)
+			check error codes returned by ADL tool
+
+		* 'Attribute' class
+			operations on attributes inside component (mpc side)
+			check attribute api on host side
+			api error management
+
+		* 'Binding' class
+			synchronous/asynchronous intra-MPC communication
+			ARM -> MPC
+			MPC -> ARM
+			inter MPCs (asynchronous)
+			MPC -> MPC (on 8815B0)
+			interruption
+			error management
+
+		* 'Collection' class :
+			Behavior with binds between primitives component using collections interfaces
+			Primitive collections interface introspection
+
+		* 'Composite' class:
+			Behavior with binds between composites component using collections interfaces
+			Behavior with binds defined in composites components (conf. files) using collections interfaces
+			Composite collections interfaces introspection
+
+		* 'Dynamic loading' class: 
+			segment loading (RO, RW, ZI)
+				Mono-instance
+				Multi-instances on same DSP
+				Multi-instances on both DSP
+			error management
+
+		* 'Fifo' class
+			creation/destruction of network with fifo use
+			fifo connectivity (host side and mpc side)
+			check flush/status/notify features
+			api error management
+
+		* 'IDL' class
+			check 'Interface Description Language' features from programming model
+			check error codes returned by ADL tool
+
+		* 'Interface' class
+			interfaces introspection for primitives and composites components (except collections interfaces)
+
+		* 'Lifecycle' class
+			check the behavior using the lifecycle API
+
+		* 'Memory' class
+			allocate/free api management for SDRAM and MPC memories
+			check address/status features
+			api error management
+
+		* 'Misc' class
+			'singleton' features (network construction/destruction)
+			communication stressing (mandelbrot applications)
+			multiple instantiation to fill memory
+			component priority inside network
+
+		* 'Network' class
+			components (primitives or composites) introspection (without interfaces)
+
+		* 'Panic' class
+			Behavior upon each Panic (reason) detection and after the detection.
+
+		* 'Properties' class
+			Get property information in component network (primitive/composite)
+			api error management
+
+		* 'Stack' class
+			check the MPC stack evolution combined with the TCM_X MPC dynamic allocation
+

@@ -1,0 +1,35 @@
+#
+# Ab_APE configuration
+#
+
+menuconfig AB_APE
+	bool "Ab_ape"
+	depends on LIBAB && DTHSRVHELPER
+	help
+	  depends on LIBAB
+
+if AB_APE
+
+config AB_APE_DIR
+	string
+	default ../tat/generalservices/ab_ape
+
+config AB_APE_DEPS
+	string
+	default "LIBAB DTHSRVHELPER"
+
+config AB_APE_STRIP_DISABLED
+	bool "Disable strip"
+	depends on AB_APE
+	default n
+	help
+	  This will disable strip for this module
+
+config AB_APE_DEBUG_ENABLED
+	bool "Enable debug"
+	depends on AB_APE
+	default n
+	help
+	  This will enable debug configuration for this module
+
+endif # AB_APE

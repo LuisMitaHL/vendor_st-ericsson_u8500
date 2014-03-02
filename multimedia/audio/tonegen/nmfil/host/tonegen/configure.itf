@@ -1,0 +1,25 @@
+
+typedef enum {
+  TONEGEN_TONE_TYPE_NORMAL,
+  TONEGEN_TONE_TYPE_DTMF
+} t_tonegen_tone_type;
+
+typedef struct {
+    t_bool               enable;
+    t_tonegen_tone_type  tone_type;
+    t_uint32             frequencies[2];
+    t_uint32             digit;
+} Tone_t;
+
+typedef struct {
+    Tone_t    tone;
+    t_sint16  leftVolume[2];
+    t_sint16  rightVolume[2];
+    t_bool    muteState[2];
+} Config_t;
+
+void setTone(Tone_t tone);
+void setVolume(t_sint16 volume, t_uint32 nChannel);
+void setVolumeRamp(t_sint16 startVolume, t_sint16 endVolume, t_uint32 nChannel);
+void setMute(t_bool muteState, t_uint32 nChannel);
+void setConfig(Config_t config);

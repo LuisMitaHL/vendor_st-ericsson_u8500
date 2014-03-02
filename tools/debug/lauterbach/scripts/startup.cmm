@@ -1,0 +1,706 @@
+;------------------------------------------------------------
+; startup.cmm
+;------------------------------------------------------------
+; Startup file to start dialog
+;
+; 060509 - KM/PH Initial version
+; 060602 - PH adding Flash/RAM load files and paths, saving settings, reload
+; 070405 - PH major changes to the GUI.
+; 070907 - KM Added functionality for multiple configurations
+; 071019 - KM Added support for Linux
+; 081117 - NJ Adding extended Linux debug functionality (StripPart)
+; 090405 - NJ Modified w. Attach option
+;-----------------------------------------------------------
+; NOTE! The cmm-file "generic_menu.cmm" is executed from the T32 shortcut,
+; this file sets up the generic menues and declares variables.
+;-----------------------------------------------------------
+
+&Temp_File=""
+
+if window.name("STE_Dlg_TargetSetup")
+(
+	DIALOG.SELect STE_Dlg_TargetSetup
+	DIALOG.END
+)
+
+dialog
+(&
+		name "STE_Dlg_TargetSetup"
+		header "ST-Ericsson Target Setup Dialog"
+
+		pos 0. 0. 45. 4.
+		box "Target"
+
+		pos 2. 1. 41. 1.
+CurConfig:	pulldown "&ConfigList" "gosub SetCurConfig"
+
+		pos 22. 2. 10. 1.
+NewConfig:	button "New Config" "gosub SetNewConfig"
+
+		pos 33. 2. 10. 1
+DeleteConfig:	button "Delete Config" "gosub DelConfig"
+
+		pos 0. 4. 21. 5.
+		box "Execution memory"
+
+		pos 22. 4. 22. 5.
+		box "Load options"
+
+		pos 1. 5. 9. 1.
+CB1.NAND:	choosebox "NAND" "gosub SetNAND"
+		pos 1. 6. 9. 1.
+CB1.NOR:	choosebox "NOR" "gosub SetNOR"
+		pos 1. 7. 9. 1.
+CB1.RAM:	choosebox "RAM" "gosub SetRAM"
+
+		pos 23. 5. 11. 1.
+LOption:	pulldown " ,/NOCODE,/NosYmbol" ""
+		pos 23. 6. 11. 1.
+LOptionVM:	pulldown " ,/VM,/PlusVM" ""
+		pos 23. 7. 11. 1.
+LOptionStrip:	pulldown "/StripPART 0 ,/StripPART 1,/StripPART 2,/StripPART 3,/StripPART 4,/StripPART 5,/StripPART 6,/StripPART 7,/StripPART 8,/StripPART 9" ""
+
+		pos 0. 9. 44. 11.
+		box "Select load file/source path"
+
+		pos 1. 10. 20. 1.
+		text "Kernel/Main load file:"
+
+		pos 1. 11. 37. 1.
+ElfFile:	edit "" ""
+		pos 39. 11. 2. 1.
+ButtonElf:	button "..." "gosub SetElfPath"
+		pos 41. 11. 2. 1.
+ButtonClearElf:	button "X" "gosub ClearElf"
+
+		pos  1. 12. 9. 1.
+		text "Source path:"
+
+		pos  1. 13. 37. 1.
+SrcPath:	edit "" ""
+		pos  39. 13. 2. 1.
+ButtonSrc:	button "..." "gosub SetSrcPath"
+		pos 41. 13. 2. 1.
+ButtonClearSrc:	button "X" "gosub ClearSrc"
+
+		pos 1. 14. 21. 1.
+CheckRSrcPath:	checkbox "Use recursive source path? " ""
+
+		pos 1. 15. 20. 1.
+		text "OSE load modules:"
+		pos 1. 16. 32. 1.
+LoadMod:	edit "" ""
+		pos 35. 16. 4. 1.
+ButtonCreateMod:button "New" "gosub CreateLoadModFile"
+		pos 39. 16. 2. 1.
+ButtonLoadMod:	button "..." "gosub SetLoadModFile"
+		pos 41. 16. 2. 1.
+ButtonClearMod: button "X" "gosub ClearLoadModFile"
+
+			pos 1. 17. 20. 1.
+			text "Ramdisk:"
+			pos 1. 18. 37. 1.
+RamdiskFile:		edit "" ""
+			pos 39. 18. 2. 1.
+ButtonRamdisk:		button "..." "gosub SetRamdiskFile"
+			pos 41. 18. 2. 1.
+ButtonClearRamdisk:	button "X" "gosub ClearRamdiskFile"
+
+		pos 0. 20. 44. 8.
+		box "Options"
+
+		pos 1. 21. 24. 1.
+LinuxDebug:	Checkbox "Debug Linux on APP side" "gosub SetLinuxDebug"
+
+		pos 27. 21. 16. 1.
+PRCMUDebug:	Checkbox "Enable PRCMU Debug" ""
+
+		pos 1. 22. 24. 1.
+CheckWin:	checkbox "Open default windows after load?" ""
+
+		pos 27. 22. 15. 1.
+SmpDebug:	Checkbox "SMP debugging" ""
+
+		pos 1. 23. 24. 1.
+CheckBrk:	checkbox "Set default breakpoints after load?" ""
+
+		pos 27. 23. 15. 1.
+ModemTapEnabled:checkbox "Modem TAP is on" ""
+
+		pos 1. 24. 24. 1.
+AttachRunning:  checkbox "Attach to a running target?" "gosub SetAttach"
+
+		pos 27. 24. 15. 1.
+PORStop:checkbox "Stop in POR" ""
+
+
+		pos 1. 25. 17. 1.
+CheckUsr:	checkbox "Use custom cmm file?" "gosub SetUsr"
+		pos  1. 26. 37. 1.
+UsrCmm:		edit "" ""
+		pos  39. 26. 2. 1.
+ButtonUsr:	button "..." "dialog.setfile UsrCmm *.cmm"
+		pos 41. 26. 2. 1.
+ButtonClear3:	button "X" "gosub ClearUsr"
+
+		pos 14. 28. 12. 1.
+        defbutton "Save and Close" "gosub ButtonSaveClose"
+		pos 27. 28. 7. 1.
+		button "Save" "gosub ButtonSave"
+		pos 35. 28. 8. 1.
+	    button "Cancel" "gosub ButtonCancel"
+		CLOSE "goto TheEnd"
+)
+
+	gosub InitVariables
+	gosub InitDialog
+	gosub CheckCmdFile
+
+	stop
+
+TheEnd:
+	dialog.end
+	ENDDO
+
+
+InitVariables:
+	&ElfFile=""
+	&SrcPath=""
+	&LOption=""
+	&LOptionVM=""
+	&LOptionStrip=""
+	&LoadModPath=""
+	&&RamdiskFile=""
+	&UsrCmm=""
+	&UseWin=""
+	&UseBrk=""
+	&UseAttach=""
+	&ExeMem=""
+	&RScrPath=""
+	&SmpDebug=""
+	&ModemTapEnabled=""
+	&PORStop=""
+	&PRCMUDebug=""
+	RETURN
+
+InitDialog:
+	dialog.set CurConfig "&CurConfig"
+	dialog.set CB1.NAND
+	dialog.set LOption "/NOCODE"
+	dialog.set LOptionVM "/VM"
+	; disable by default and enable for each project when necessary
+	dialog.disable LOptionStrip
+	dialog.disable SmpDebug
+	dialog.disable ModemTapEnabled
+	dialog.disable LoadMod
+	dialog.disable PRCMUDebug
+	dialog.disable PORStop
+	if (string.scan("&Target", "U8500", 0)!=-1)
+	(
+		dialog.enable LOptionStrip
+		dialog.enable SmpDebug
+		dialog.enable ModemTapEnabled
+	)
+	else if (string.scan("&Target", "U5500", 0)!=-1)
+	(
+		dialog.enable LOptionStrip
+		if (string.scan("&Target", "APP",0)!=-1)
+		(
+			dialog.enable SmpDebug
+			dialog.enable LinuxDebug
+			dialog.enable PRCMUDebug
+		)
+		if (string.scan("&Target", "ACC",0)!=-1)
+		(
+		  dialog.enable LoadMod
+		)
+	)
+	else if (string.scan("&Target", "9540", 0)!=-1)
+	(
+		dialog.enable LOptionStrip
+		if (string.scan("&Target", "APP", 0)!=-1)
+		(
+		  dialog.enable SmpDebug
+		  dialog.enable PRCMUDebug
+		  dialog.enable PORStop
+		)
+	)
+	else if (string.scan("&Target", "L8540", 0)!=-1)
+	(
+		dialog.enable LOptionStrip
+		if (string.scan("&Target", "APP", 0)!=-1)
+		(
+		  dialog.enable SmpDebug
+		  dialog.enable PRCMUDebug
+		  dialog.enable PORStop
+		)
+	)
+	else
+	(
+	  if (string.scan("&Target", "JENNY", 0)!=-1)
+	  (
+		dialog.enable PORStop
+	  )
+	)
+
+	dialog.set CheckRSrcPath "ON"
+
+	if (string.scan("&Target", "U8500", 0)!=-1)
+	(
+		dialog.set LinuxDebug "ON"
+		dialog.set AttachRunning "ON"
+	)
+	else if ((string.scan("&Target", "U5500", 0)!=-1)||(string.scan("&Target", "9540", 0)!=-1)||(string.scan("&Target", "L8540", 0)!=-1))
+	(
+		dialog.set AttachRunning "ON"
+		if (string.scan("&Target", "APP",0)!=-1)
+		(
+			dialog.set LinuxDebug "ON"
+		)
+		else
+		(
+		  dialog.set LinuxDebug "OFF"
+		)
+	)
+	else
+	(
+		dialog.set LinuxDebug "OFF"
+		dialog.set AttachRunning "OFF"
+	)
+
+	dialog.set SmpDebug "OFF"
+	if ((string.scan("&Target", "U5500_APP",0)!=-1)||(string.scan("&Target", "9540_APP", 0)!=-1)||(string.scan("&Target", "L8540_APP", 0)!=-1))
+		(
+			dialog.set SmpDebug "ON"
+		)
+
+	if (string.scan("&Target", "U8500-V2",0)!=-1)
+		dialog.set ModemTapEnabled "ON"
+	else
+		dialog.set ModemTapEnabled "OFF"
+	dialog.set CheckWin "ON"
+	dialog.set CheckBrk "ON"
+
+	dialog.disable UsrCmm
+	dialog.disable ButtonUsr
+	dialog.disable ButtonClear3
+	RETURN
+
+CheckCmdFile:
+	if os.file(&UsrPath/T32_settings.txt)
+		(
+		do readcurrentconfig.cmm
+		if "&TrgExist"=="FALSE"
+		(
+			gosub InitVariables
+			dialog.ok "No default settings found for &Target target! " \
+			          "Use EMP target setup dialog to setup target"
+		)
+		else
+		(
+			if "&ExeMem"=="NAND"
+			(
+				dialog.set CB1.NAND
+				dialog.set LOption "&LOption"
+				dialog.set LOptionVM "&LOptionVM"
+			)
+			if "&ExeMem"=="NOR"
+			(
+				dialog.set CB1.NOR
+				dialog.set LOption "&LOption"
+				dialog.set LOptionVM "&LOptionVM"
+			)
+			if "&ExeMem"=="RAM"
+			(
+				dialog.set CB1.RAM
+				dialog.set LOption "&LOption"
+				dialog.set LOptionVM "&LOptionVM"
+			)
+			if "&ElfFile"!=""
+				dialog.set ElfFile "&ElfFile"
+			else
+				dialog.set ElfFile ""
+
+			if "&SrcPath"!=""
+				dialog.set SrcPath "&SrcPath"
+			else
+				dialog.set SrcPath ""
+
+			if "&RSrcPath"=="TRUE"
+				dialog.set CheckRSrcPath "ON"
+			else
+				dialog.set CheckRSrcPath "OFF"
+
+			if "&LoadModPath"!=""
+				dialog.set LoadMod "&LoadModPath"
+			else
+				dialog.set LoadMod ""
+
+			if "&RamdiskFile"!=""
+				dialog.set RamdiskFile "&RamdiskFile"
+			else
+				dialog.set RamdiskFile
+
+			if "&LinuxDebug"=="TRUE"
+			(
+				dialog.set LinuxDebug "ON"
+				dialog.set LOptionStrip "&LOptionStrip"
+			)
+			else
+			(
+				dialog.set LinuxDebug "OFF"
+				dialog.set LOptionStrip "&LOptionStrip"
+			)
+			if "&UseWin"=="TRUE"
+				dialog.set CheckWin "ON"
+			else
+				dialog.set CheckWin "OFF"
+
+			if "&UseBrk"=="TRUE"
+				dialog.set CheckBrk "ON"
+			else
+				dialog.set CheckBrk "OFF"
+
+			if "&UseAttach"=="TRUE"
+				dialog.set AttachRunning "ON"
+			else
+				dialog.set AttachRunning "OFF"
+
+			if "&UsrCmm"!=""
+			(
+				dialog.set CheckUsr "ON"
+				dialog.set UsrCmm "&UsrCmm"
+			)
+			else
+			(
+				dialog.set CheckUsr "OFF"
+			)
+
+			if "&SmpDebug"=="TRUE"
+				dialog.set SmpDebug "ON"
+			else
+				dialog.set SmpDebug "OFF"
+
+			if "&ModemTapEnabled"=="TRUE"
+				dialog.set ModemTapEnabled "ON"
+			else
+				dialog.set ModemTapEnabled "OFF"
+
+			if "&PORStop"=="TRUE"
+				dialog.set PORStop "ON"
+			else
+				dialog.set PORStop "OFF"
+
+			if "&PRCMUDebug"=="TRUE"
+				dialog.set PRCMUDebug "ON"
+			else
+				dialog.set PRCMUDebug "OFF"
+		)
+	)
+	else
+	(
+		dialog.ok "No default settings found (&UsrPath/T32_settings.txt missing)! " \
+		          "Use EMP target setup dialog to setup target"
+	)
+	gosub SetLinuxDebug
+	gosub SetUsr
+	RETURN
+
+SetCurConfig:
+	&CurConfig=dialog.string(CurConfig)
+	gosub CheckCmdFile
+	RETURN
+
+SetNewConfig:
+	dialog
+	(&
+			header "Create New Configuration"
+
+			pos 0. 0. 22. 4.
+			box "Specify Configuration Name"
+
+			pos 1. 1. 20. 1.
+	ConfigName:	defedit "" ""
+
+			pos 10. 2. 5. 1.
+			DEFBUTTON "OK" "gosub SaveNewConfig"
+
+			pos 16. 2. 5. 1.
+			BUTTON "Cancel" "dialog.end"
+	)
+	stop
+
+SaveNewConfig:
+	&tmptarget=string.cut("&Target",-1)
+	&tmpconfig=dialog.string(ConfigName)
+	&tmpconfig="@&tmpconfig]"
+	&CurConfig="&tmptarget&tmpconfig"
+	&ConfigList="&ConfigList,&CurConfig"
+	dialog.end
+	do writesettings
+	dialog.end
+	run startup
+	goto TheEnd
+	RETURN
+
+DelConfig:
+	do deleteconfig
+	&CurConfig=""
+	&ConfigList=""
+	dialog.end
+	do readsettings
+	run startup
+	goto TheEnd
+	RETURN
+
+
+SetNAND:
+	dialog.set LOption "/NOCODE"
+	dialog.set LOptionVM "/VM"
+	RETURN
+
+SetNOR:
+	dialog.set LOption "/NOCODE"
+	dialog.set LOptionVM "/VM"
+	RETURN
+
+SetRAM:
+	dialog.set LOption " "
+	dialog.set LOptionVM "/PlusVM"
+	RETURN
+
+SetElfPath:
+	&Temp_File=dialog.string(ElfFile)
+	if ("&Temp_File"=="")
+	(
+		if (!dialog.boolean(LinuxDebug)||(OS.env(ANDROID_BUILD_TOP)==""))
+			dialog.setfile ElfFile *
+		else
+		(
+			&Temp_File=OS.ENV(ANDROID_BUILD_TOP)
+			dialog.setfile ElfFile "&Temp_File/images/vmlinux*"
+		)
+	)
+	else
+	(
+		&Temp_File=os.file.path(&Temp_File)
+		dialog.setfile ElfFile "&Temp_File/*"
+	)
+	RETURN
+
+SetRamdiskFile:
+	&Temp_File=dialog.string(RamdiskFile)
+	if ("&Temp_File"=="")
+	(
+		dialog.setfile RamdiskFile *.*
+	)
+	else
+	(
+		&Temp_File=os.file.path(&Temp_File)
+		dialog.setfile RamdiskFile "&Temp_File/*"
+	)
+	RETURN
+
+SetSrcPath:
+	&Temp_File=dialog.string(SrcPath)
+	if ("&Temp_File"=="")
+	(
+		&Temp_File=dialog.string(ElfFile)
+		if ("&Temp_File"=="")
+		(
+			dialog.setdir SrcPath *
+		)
+		else
+		(
+			&Temp_File=os.file.path(&Temp_File)
+			dialog.setdir SrcPath "&Temp_File/*"
+		)
+	)
+	else
+	(
+		dialog.setdir SrcPath "&Temp_File/*"
+	)
+	RETURN
+
+ClearElf:
+	dialog.set ElfFile ""
+	RETURN
+
+ClearSrc:
+	dialog.set SrcPath ""
+	RETURN
+
+ClearUsr:
+	dialog.set UsrCmm ""
+	RETURN
+
+ClearRamdiskFile:
+	dialog.set RamdiskFile ""
+	RETURN
+
+SetUsr:
+	if dialog.boolean(CheckUsr)
+	(
+		dialog.enable UsrCmm
+		dialog.enable ButtonUsr
+		dialog.enable ButtonClear3
+	)
+	else
+	(
+		dialog.disable UsrCmm
+		dialog.disable ButtonUsr
+		dialog.disable ButtonClear3
+	)
+	RETURN
+
+CreateLoadModFile:
+	&LoadModFilePath=".txt"
+	&LoadModFileName=string.cut("&CurConfig",-1)		;[target@name
+	&LoadModFileName=string.cut("&LoadModFileName",1)	;target@name
+	&LoadModFilePath="/&LoadModFileName&LoadModFilePath"	;filename.txt
+	&LoadModFilePath="&UsrPath&LoadModFilePath"
+	os.command notepad "&LoadModFilePath"
+	dialog.set LoadMod "&LoadModFilePath"
+	RETURN
+
+SetLoadModFile:
+	&Temp_File=dialog.string(LoadMod)
+	if ("&Temp_File"=="")
+	(
+		dialog.setfile LoadMod *.*
+	)
+	else
+	(
+		&Temp_File=os.file.path(&Temp_File)
+		dialog.setfile LoadMod "&Temp_File/*"
+	)
+	RETURN
+
+ClearLoadModFile:
+	dialog.set LoadMod ""
+	RETURN
+
+SetLinuxDebug:						;OSE load modules must be disabled when debugging linux
+	if dialog.boolean(LinuxDebug)
+	(
+		dialog.disable LoadMod
+		dialog.disable ButtonCreateMod
+		dialog.disable ButtonLoadMod
+		dialog.disable ButtonClearMod
+		dialog.enable LOptionStrip
+		dialog.disable CheckRSrcPath
+		dialog.enable RamdiskFile
+		dialog.enable ButtonRamdisk
+		dialog.enable ButtonClearRamdisk
+		dialog.set CheckRSrcPath "OFF"
+	)
+	else
+	(
+		dialog.enable LoadMod
+		dialog.enable ButtonCreateMod
+		dialog.enable ButtonLoadMod
+		dialog.enable ButtonClearMod
+		dialog.disable LOptionStrip
+		dialog.enable CheckRSrcPath
+		dialog.enable RamdiskFile
+		dialog.enable ButtonRamdisk
+		dialog.enable ButtonClearRamdisk
+	)
+	RETURN
+
+SetAttach:
+	if dialog.boolean(AttachRunning)
+		dialog.set LOption "/NOCODE"
+	RETURN
+
+
+SaveSettings:
+	&CurConfig=dialog.string(CurConfig)
+	if dialog.boolean(CB1.NAND)
+		&ExeMem="NAND"
+	if dialog.boolean(CB1.NOR)
+		&ExeMem="NOR"
+	if dialog.boolean(CB1.RAM)
+		&ExeMem="RAM"
+
+	&LOption=dialog.string(LOption)
+	&LOptionVM=dialog.string(LOptionVM)
+	&LOptionStrip=dialog.string(LOptionStrip)
+	&ElfFile=dialog.string(ElfFile)
+	&SrcPath=dialog.string(SrcPath)
+
+	if dialog.boolean(CheckRSrcPath)
+		&RSrcPath="TRUE"
+	else
+		&RSrcPath="FALSE"
+
+	if dialog.boolean(LinuxDebug)
+	(
+		&LinuxDebug="TRUE"
+		&LoadModPath=""
+	)
+	else
+	(
+		&LinuxDebug="FALSE"
+		&LoadModPath=dialog.string(LoadMod) ; Only use OSE load modules if no linux debug
+	)
+
+	&RamdiskFile=dialog.string(RamdiskFile)
+
+	if dialog.boolean(CheckWin)
+		&UseWin="TRUE"
+	else
+		&UseWin="FALSE"
+
+	if dialog.boolean(CheckBrk)
+		&UseBrk="TRUE"
+	else
+		&UseBrk="FALSE"
+
+	if dialog.boolean(AttachRunning)
+		&UseAttach="TRUE"
+	else
+		&UseAttach="FALSE"
+
+	if dialog.boolean(CheckUsr)
+		&UsrCmm=dialog.string(UsrCmm)
+	else
+		&UsrCmm=""
+
+	if dialog.boolean(SmpDebug)
+		&SmpDebug="TRUE"
+	else
+		&SmpDebug="FALSE"
+
+	if dialog.boolean(ModemTapEnabled)
+		&ModemTapEnabled="TRUE"
+	else
+		&ModemTapEnabled="FALSE"
+
+	if dialog.boolean(PORStop)
+		&PORStop="TRUE"
+	else
+		&PORStop="FALSE"
+
+	if dialog.boolean(PRCMUDebug)
+		&PRCMUDebug="TRUE"
+	else
+		&PRCMUDebug="FALSE"
+
+	do writesettings.cmm
+
+	print "Settings are saved..."
+	RETURN
+
+ButtonSaveClose:
+	gosub SaveSettings
+	goto TheEnd
+	RETURN
+
+ButtonSave:
+	gosub SaveSettings
+	RETURN
+
+ButtonCancel:
+	goto TheEnd
+	RETURN

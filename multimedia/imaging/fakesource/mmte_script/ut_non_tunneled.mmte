@@ -1,0 +1,54 @@
+alias S_CURRENT_PATH $(IMAGING_PATH)/fakesource/mmte_script
+alias colorformat cbycry
+do $(S_CURRENT_PATH)/init.mmte
+
+if SINK_MODE == display
+	alias S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY OMX_FALSE
+else
+	alias S_USE_FAKE_SINK_INSTEAD_OF_DISPLAY OMX_TRUE
+endif
+
+do $(S_CURRENT_PATH)/network_init_to_loaded.mmte
+
+
+if TUNNEL_MODE == tunneled
+	OMX_SetupTunnel		tested_component 0 my_sink_1 0
+	if BUFFER_SUPPLIER_MODE == input
+		OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+		OMX_SetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyInput
+	else
+		OMX_SetParameter tested_component	OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+		OMX_SetParameter my_sink_1			OMX_IndexParamCompBufferSupplier nPortIndex=0 eBufferSupplier=OMX_BufferSupplyOutput
+	endif
+else
+	MMTE_SetupTunnel	tested_component 0 my_sink_1 0
+endif
+
+MMTE_DispatchState OMX_StateIdle my_sink_1:0 tested_component:0
+
+do $(S_CURRENT_PATH)/network_configure_idle.mmte
+
+mmte_sleep 1000
+
+MMTE_DispatchState OMX_StateExecuting my_sink_1 tested_component
+
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+mmte_sleep 1000
+
+MMTE_DispatchState OMX_StateIdle tested_component my_sink_1 
+
+mmte_sleep 1000
+
+MMTE_DispatchState OMX_StateLoaded my_sink_1 tested_component
+
+do $(S_CURRENT_PATH)/network_clean.mmte
+

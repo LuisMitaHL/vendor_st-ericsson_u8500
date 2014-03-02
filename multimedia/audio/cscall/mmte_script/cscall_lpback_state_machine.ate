@@ -1,0 +1,192 @@
+# This script tests the CS-Call in non-tunneled loopback mode.
+# It checks some basic OpenMax values and all state machine transitions.
+#
+# Audio Network Description:
+# 
+#   +--------------+
+#   |              |
+#   |             0| <-- INPUT_FILE
+#   |   CS-Call    |
+#   |             1| --> OUTPUT_FILE
+#   |              |
+#   +--------------+
+#
+# Script's arguments:
+#   $1 : ISI/MAI select protocol (ISI if not specified)
+#   $2 : select trace level      (0 if not specified)
+
+test_start CSCALL_0005
+test_property TEST_NAME cscall_lpback_state_machine
+
+# script parameter
+if "$($1)" == "MAI"
+  alias PROTOCOL AFM_AUDIO_PROTOCOL_MAI
+  alias PROTO MAI 
+else
+  alias PROTOCOL AFM_AUDIO_PROTOCOL_ISI
+  alias PROTO ISI
+endif
+
+if "$($2)" != ""
+  alias TRACE_LEVEL $($2)
+else
+  alias TRACE_LEVEL 0
+endif
+
+alias INPUT_FILE                $(AUDIO_STREAMS)/cscall/streams/T04.INP
+
+alias OUTPUT_FILE               $(OUTPUT_DIR)/cscall_state_machine.$(PROTO).OUT
+alias OUTPUT_SIZE               3000000
+
+#Input Buffer parameters
+alias INPUT_BUFFERCOUNT         nBufferCountActual=2
+
+#Output Buffer parameters
+alias OUTPUT_BUFFERCOUNT        nBufferCountActual=2
+
+#I/Os parameters
+alias SAMPLING_RATE             8000
+
+alias NB_CHANNELS               1
+
+alias IN         1
+alias OUT        0
+
+# test GetHandle-FreeHandle
+OMX_GetHandle    CSCALL  OMX.ST.AFM.cscall
+OMX_FreeHandle   CSCALL
+
+# instantiate and configure CS-Call
+OMX_GetHandle    CSCALL  OMX.ST.AFM.cscall
+OMX_SendCommand  CSCALL  OMX_CommandPortDisable 2
+MMTE_WaitEvent   CSCALL OMX_EventCmdComplete OMX_CommandPortDisable 2
+
+# activate trace
+if $(TRACE_LEVEL) > 0
+  OMX_SetConfig CSCALL ENS_IndexConfigTraceSetting nTraceEnable=$(TRACE_LEVEL)
+endif
+
+#Setting Config for Loops
+OMX_SetConfig    CSCALL  OMX_Symbian_IndexConfigAudioSpeechLoops bLoopUplinkDownlinkAlg=1
+#Setting Config for Loops Complete
+
+OMX_SetParameter CSCALL  OMX_IndexParamPortDefinition nPortIndex=$(IN) INPUT_BUFFERCOUNT
+OMX_SetParameter CSCALL  OMX_IndexParamPortDefinition nPortIndex=$(OUT) OUTPUT_BUFFERCOUNT
+
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(IN) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianLittle nSamplingRate=$(SAMPLING_RATE)
+OMX_SetParameter CSCALL  OMX_IndexParamAudioPcm nPortIndex=$(OUT) nChannels=$(NB_CHANNELS) eEndian=OMX_EndianBig nSamplingRate=$(SAMPLING_RATE)
+
+OMX_SetParameter CSCALL  AFM_IndexParamCscall nULRealTimeMode=OMX_FALSE nDLRealTimeMode=OMX_FALSE eProtocol=$(PROTOCOL)
+
+ate_attach_io CSCALL IN MEM INPUT_FILE 0 1 0
+ate_attach_io CSCALL OUT MEM OUTPUT_FILE OUTPUT_SIZE 1 0
+
+# test OMX state machine
+# Basic OMX checks
+MMTE_CheckParameter CSCALL OMX_IndexParamAudioInit nPorts=2 nStartPortNumber=0
+MMTE_CheckParameter CSCALL OMX_IndexParamVideoInit nPorts=0
+MMTE_CheckParameter CSCALL OMX_IndexParamImageInit nPorts=0
+MMTE_CheckParameter CSCALL OMX_IndexParamOtherInit nPorts=1 nStartPortNumber=2
+
+MMTE_CheckParameter CSCALL OMX_IndexParamAudioPortFormat nPortIndex=0 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+MMTE_CheckParameter CSCALL OMX_IndexParamAudioPortFormat nPortIndex=1 nIndex=0 eEncoding=OMX_AUDIO_CodingPCM
+
+# Go to Idle
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers CSCALL IN
+MMTE_AllocateAndUseBuffers CSCALL OUT
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand CSCALL OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers CSCALL IN
+MMTE_FreeBuffers CSCALL OUT
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# Go to Idle
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers CSCALL IN
+MMTE_AllocateAndUseBuffers CSCALL OUT
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Executing
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# Go to Pause
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+# Call
+mmte_sleep 3000
+
+# Go to Idle
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand CSCALL OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers CSCALL IN
+MMTE_FreeBuffers CSCALL OUT
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+# TODO with loop mode: file check + re-attach i/o (hash_comp)
+ate_attach_io CSCALL IN MEM INPUT_FILE 0 1 0
+ate_attach_io CSCALL OUT MEM OUTPUT_FILE OUTPUT_SIZE 1 0
+
+# Go to Idle
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateIdle
+MMTE_AllocateAndUseBuffers CSCALL IN
+MMTE_AllocateAndUseBuffers CSCALL OUT
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Pause
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Executing
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+#################################
+# Now a 10s loopback call is made
+#################################
+mmte_sleep 10000
+
+# Go to Pause
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StatePause
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StatePause
+
+# Go to Idle
+OMX_SendCommand CSCALL  OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+# Go to Loaded
+OMX_SendCommand CSCALL OMX_CommandStateSet OMX_StateLoaded
+MMTE_FreeBuffers CSCALL IN
+MMTE_FreeBuffers CSCALL OUT
+MMTE_WaitEvent CSCALL OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+OMX_FreeHandle   CSCALL
+
+# TODO with loop mode: file check (file_comp)
+
+MMTE_CheckMemoryStatus
+
+unalias PROTO
+unalias PROTOCOL
+unalias TRACE_LEVEL
+unalias SAMPLING_RATE
+unalias NB_CHANNELS 
+unalias INPUT_FILE
+unalias OUTPUT_FILE
+unalias OUTPUT_SIZE
+unalias INPUT_BUFFERCOUNT
+unalias OUTPUT_BUFFERCOUNT
+unalias IN
+unalias OUT
+test_end

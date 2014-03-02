@@ -1,0 +1,254 @@
+;------------------------------------------------------------
+; Load.cmm
+;------------------------------------------------------------
+; Startup file to select and setup target
+;
+; 091207 - KM Initial version
+; 110526 - KM Adaption for CPT environment
+; 111019 - PDE adapt for 9540
+;-----------------------------------------------------------
+
+global &FirstLoad
+
+local &core
+local &debug_config
+local &debug_target
+local &config
+
+screen.off
+
+
+;Open some default windows
+if ("&UseWin"=="TRUE")||("&FirstLoad"!="FALSE")
+(
+	do default_windows
+    &FirstLoad="FALSE"
+)
+
+;Check if there are settings for this target
+if os.file(&UsrPath/T32_settings.txt)
+(
+	do readsettings.cmm
+
+	if "&TrgExist"=="FALSE"
+	(
+		dialog.ok "No default settings found for &Target target! " \
+		          "Use EMP target setup dialog to setup target"
+		do startup.cmm
+	)
+)
+else
+(
+	dialog.ok "No default settings found (&UsrPath/T32_settings.txt missing)! " \
+	          "Use EMP target setup dialog to setup target"
+	do startup.cmm
+	enddo
+)
+
+
+; Convert settings
+gosub ConvertSettings
+
+do tronchip_settings
+
+;Check version of chip from CLTAP (V1 or V2)
+do chip_version
+
+;Update variables between debuggers
+if "&MmdspSiaStarted"=="True"
+(
+	intercom.execute &icMmdspSia do update_variable &chip_version &PRCMUDebug
+	wait 100ms
+	intercom.execute &icMmdspSia do writesettings
+	wait 500ms				;Necessary to wait longer to make sure that we don't run write settings in other debugger at the same time
+)
+if "&MmdspSvaStarted"=="True"
+(
+	intercom.execute &icMmdspSva do update_variable &chip_version &PRCMUDebug
+	wait 100ms
+	intercom.execute &icMmdspSva do writesettings
+	wait 100ms
+)
+
+; save current break list
+store &UsrPath/../&targetPlatform/&targetFamily/&targetCpu/TmpBreakList.cmm BREAK
+break.disable /all
+
+if simulator()
+(
+	sys.up
+)
+else
+(
+;Call CPT scripts
+print "+ CPT script ---------------------------------------"
+print "do init_9540 &chip_version &debug_target &debug_config &core &config"
+do init_9540 &chip_version &debug_target &debug_config &core &config
+print "- CPT script ---------------------------------------"
+
+; Make connection possible to MMDSP
+if ("&MmdspSiaStarted"=="True")
+(
+	do init_sxa_prcmu_debug.cmm &chip_version  I
+)
+if ("&MmdspSvaStarted"=="True")
+(
+	do init_sxa_prcmu_debug.cmm &chip_version  V
+)
+
+if !analyzer()
+(
+	; disable trace onchip (ETB) to avoid warning whithout licence (limited to 30min)
+	; integrated in power trace or separatly with LA-7970X (not tested here)
+	; some test on LICENSE.SERIAL(&idx) could be added if needed
+	onchip.disable
+)
+else
+(
+	if !("&EtmApp"=="True")
+	(
+		; PTM not selected => use trace onchip (ETB) by default
+		do etb_settings
+	)
+)
+)
+
+do onchip_break_setup.cmm
+do syncronize_targets.cmm
+if "&LinuxDebug"=="TRUE"
+(
+	y.reset
+	sys.o mmuspaces on
+)
+else
+(
+	y.reset
+	sys.o mmuspaces off
+)
+
+do load_code
+do load_prcmu
+
+do default_pc_set
+
+do post_load
+
+;Functionality for Linux debugging
+if "&LinuxDebug"=="TRUE"
+(
+  do linux
+)
+
+if "&UsrCmm"!=""
+(
+  do &UsrCmm
+)
+
+if !simulator()
+(
+;restore breakpoint
+break.delete /all
+do &UsrPath/../&targetPlatform/&targetFamily/&targetCpu/TmpBreakList.cmm
+)
+if "&UseBrk"=="TRUE"
+  do default_break
+
+
+;Print target setup information, viewable in the AREA window
+print
+print "Target       : &Target"
+print "Memory       : &ExeMem"
+print "Load Options : &LOption &LOptionVM"
+print "Load File    : &ElfFile"
+print "Source Path  : &SrcPath"
+print
+print "Target setup done, ready to debug..."
+
+screen.on
+
+if simulator()
+(
+	do load_trace_and_dump
+)
+else if ((!run())&&("&UseAttach"=="FALSE"))
+(
+	if ("&EtmApp"=="True")
+	(
+		do etm_settings
+	)
+	if "&LinuxDebug"=="TRUE"
+	(
+		print "Starting Linux"
+		go
+	)
+)
+enddo
+
+ConvertSettings:
+	&debug_target="CCU"
+	if (STR.SCAN(OS.ID(),"PALLADIUM",0)>=0)
+		&debug_target="palladium"
+
+	if "&SmpDebug"=="TRUE"
+		&core="smp"
+	else
+		&core="cpu0"
+
+	if "&UseAttach"=="TRUE"
+	(
+		&debug_config="attach"
+		&config="noconfig"
+	)
+	else
+	(
+		&debug_config="up"
+		if ("&PORStop"=="TRUE")&&("&SmpDebug"=="FALSE")
+		(
+			if ("&debug_target"=="palladium")
+			(
+				; enters in debug state right after the cpu reset
+				&debug_config="&debug_config+dbg_thr_reset+waitboot500ms"
+			)
+			else
+			(
+				; debug through reset not possible on secured chip
+				; => use dgboot to stop execution asap
+				&debug_config="&debug_config+dbgboot"
+			)
+		)
+		else
+		(
+			if ("&PORStop"=="TRUE")
+			(
+				if ("&debug_target"=="palladium")
+				(
+					; enters in debug state right after the cpu reset
+					&debug_config="&debug_config+dbg_thr_reset+waitboot500ms"
+				)
+				else
+				(
+					&debug_config="&debug_config+waitboot200ms"
+				)
+			)
+			else
+			(
+				; timing can be adapted : 5s needed to
+				; solve issue for up with USB connected
+				; (USB enumeration in boot ROM)
+				&debug_config="&debug_config+waitboot5s"
+			)
+		)
+		if "&ExeMem"=="RAM"
+			&config="default"
+	)
+	if "&PRCMUDebug"=="TRUE"
+	(
+		&debug_config="&debug_config+prcmu"
+	)
+	if (("&MmdspSiaStarted"=="True")||("&MmdspSvaStarted"=="True"))
+	(
+		&debug_config="&debug_config+sxa"
+	)
+	// workaround before CR446050 delivery: activated by default
+	&debug_config="&debug_config+pwrdwn"
+return

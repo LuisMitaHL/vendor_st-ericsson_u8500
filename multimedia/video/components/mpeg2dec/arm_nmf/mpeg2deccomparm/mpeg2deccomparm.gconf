@@ -1,0 +1,90 @@
+composite mpeg2dec.arm_nmf.mpeg2deccomparm{
+
+	contains mpeg2dec.arm_nmf.parser as cMpeg2decParser
+	contains mpeg2dec.arm_nmf.mpeg2deccontroller as cMpeg2decController
+	contains nmf.host.shared_bufin  as cSharedBufInARM
+	contains nmf.host.shared_bufout as cSharedBufOutARM
+
+	#include "../../mpc/composite/mpeg2decmpc/mpeg2decmpc.inc"
+	
+	//Exposed Interfaces for Processing component
+
+	// Input Bitstream Buffer Port
+	provides armnmf_emptythisbuffer   as      emptythisbuffer
+	binds this.emptythisbuffer to 	cMpeg2decParser.emptythisbuffer
+
+	requires armnmf_fillthisbuffer    as      inputport
+	binds cMpeg2decParser.inputport to 	this.inputport
+	
+	// Output Image Buffer Port
+	requires armnmf_emptythisbuffer   as      outputport
+	binds cMpeg2decParser.outputport to 	this.outputport
+
+	provides armnmf_fillthisbuffer    as      fillthisbuffer
+	binds this.fillthisbuffer to 	cMpeg2decParser.fillthisbuffer
+	
+	// FSM interfaces
+	provides fsminit          as      fsminit
+	binds this.fsminit to 	cMpeg2decController.fsminit
+
+	provides sendcommand      as      sendcommand
+	binds this.sendcommand to 	cMpeg2decController.sendcommand
+
+	requires eventhandler     as      proxy
+	binds cMpeg2decController.proxy to 	this.proxy
+	
+
+	// Custom Interfaces
+	provides mpeg2dec.arm_nmf.api.setConfig as iSetConfig
+	binds this.iSetConfig to cMpeg2decParser.iSetConfig
+	
+	//provides mpeg2dec.arm_nmf.api.setConfig as iSetConfig
+	//binds this.iSetConfig to cMpeg2decParser.iSetConfig
+
+	provides mpeg2dec.arm_nmf.api.sendportSettings as portSettingsInfoSignal
+	binds this.portSettingsInfoSignal to cMpeg2decParser.portSettingsInfoSignal
+	
+	requires mpeg2dec.arm_nmf.api.portSettings    as      iChangePortSettingsSignal
+	binds cMpeg2decParser.iChangePortSettingsSignal to this.iChangePortSettingsSignal
+	
+	// Bindings within 
+	binds cMpeg2decParser.me    to  cMpeg2decParser.postevent asynchronous fifo=8
+
+	//Binding custom ddep interfaces
+	binds cMpeg2decParser.iDdep to cMpeg2decDdep.iDdep		asynchronous fifo=8
+	
+	//Bindings shared buffer components
+	//Input port bindings with MPC Component
+	binds cSharedBufInARM.mpc to cSharedBufInMPC.emptythisbuffer	        asynchronous fifo=8 
+	binds cSharedBufInMPC.host to cSharedBufInARM.fillthisbuffer	asynchronous fifo=8
+
+	//Output port bindings MPC Component
+	binds cSharedBufOutARM.mpc to cSharedBufOutMPC.fillthisbuffer	asynchronous fifo=8
+	binds cSharedBufOutMPC.host to cSharedBufOutARM.emptythisbuffer	asynchronous fifo=8
+
+	//Input port bindings with Parser component
+	binds cMpeg2decParser.emptythisbufferSharedBufIn to cSharedBufInARM.emptythisbuffer
+	binds cSharedBufInARM.host to cMpeg2decParser.sharedBufInEBD    asynchronous fifo=8
+
+	//Output port bindings with parser component
+	binds cMpeg2decParser.fillthisbufferSharedBufOut to cSharedBufOutARM.fillthisbuffer
+	binds cSharedBufOutARM.host to cMpeg2decParser.sharedBufOutFBD  asynchronous fifo=8
+
+
+	//Bindings of headers port
+	binds cMpeg2decParser.emptythisheader to cMpeg2decDdep.emptythisheader	asynchronous fifo=8
+	binds cMpeg2decDdep.headerport to cMpeg2decParser.returnconsumedheader	asynchronous fifo=8
+
+       
+	binds cMpeg2decController.parserSendcommand to cMpeg2decParser.sendcommand	asynchronous fifo=8
+	binds cMpeg2decController.mpeg2decMPCSendcommand to cMpeg2decDdep.sendcommand	asynchronous fifo=8
+
+	binds cMpeg2decParser.proxy to 	cMpeg2decController.parserHandler	asynchronous fifo=8
+	binds cMpeg2decDdep.proxy to 	cMpeg2decController.mpeg2decMPCHandler	asynchronous fifo=8
+
+	binds cMpeg2decController.parserFSMinit to cMpeg2decParser.fsminit	asynchronous fifo=8
+	binds cMpeg2decController.mpeg2decMPCFSMinit to cMpeg2decDdep.fsminit	asynchronous fifo=8
+
+	//option CPPFLAGS "-g -O0"
+	option CPPFLAGS " -O3"
+}

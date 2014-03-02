@@ -1,0 +1,265 @@
+#!/bin/sh
+# Author: Guillaume Camus
+echo "*****************************************************************************"
+echo "**************************** AV8100 HDMI Display ****************************"
+echo "*****************************************************************************"
+
+VideoTests -dinit -m=0 -d=4
+sk-db W 0x8015752C 0x07030101
+
+# Test HDMI init:
+echo "*** Step1: HDMI init ***"
+Pwm=$(VideoTests -m=0 -d=4 -dpwr=1)
+if [ "$Pwm" == "Set Power Mode Done" ]
+then
+HDMIint="*** PASSED ***"
+else
+HDMIint="!!! FAILED !!!"
+fi
+echo "HDMI init test done"
+
+# Test cable detection:
+echo "*** Step2: HDMI cable detection ***"
+Flag1=false
+while [ "$Flag1" != "true" ]
+do
+	echo "Unplug HDMI cable.  HDMI cable is unplugged (y/n) ?"
+	read Resp1
+	if [ "$Resp1" == "y" ]; then
+		Flag1=true
+	else
+		echo "sorry, HDMI cable is not unplugged or your enter is incorrect"
+	fi
+done
+Detect=$(VideoTests -m=0 -d=4 -dplug)
+if [ "$Detect" == "Display plug status 0 => Display is not plugged" ]; then
+	HDMIuplg=passed
+else
+	HDMIuplg=failed
+fi
+echo $HDMIuplg
+Flag1=false
+while [ "$Flag1" != "true" ]
+do
+	echo "plug HDMI cable.  HDMI cable is plugged (y/n) ?"
+	read Resp2
+	if [ "$Resp2" == "y" ]; then
+		Flag1=true
+	else
+		echo "sorry, HDMI cable is not plugged or your enter is incorrect"
+	fi
+done
+Detect=$(VideoTests -m=0 -d=4 -dplug)
+if [ "$Detect" == "Display plug status 1 => Display is plugged" ]; then
+	HDMIplg=passed
+else
+	HDMIplg=failed
+fi
+echo $HDMIplg
+if [ "$HDMIuplg" == "passed" ]; then
+	if [ "$HDMIplg" == "passed" ]; then
+		HDMIdetect="*** PASSED ***"
+	else
+		HDMIdetect="!!! FAILED !!!"
+	fi
+else
+	HDMIdetect="!!! FAILED !!!"
+fi
+echo "HDMI cable detection test done"
+echo "$HDMIdetect"
+
+
+# Test Display a picture on TV with HDMI (640*480p 60Hz):
+echo "*** Step3: Display a picture on TV with HDMI (640*480p 60Hz) ***"
+VideoTests -m=0 -d=4 -dprop=640x480x60xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (640*480p 60Hz) test done" ; HDMI1="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (640*480p 60Hz) test done" ; HDMI1="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI1
+
+
+# Test Display a picture on TV with HDMI (720*480p 60Hz):
+echo "*** Step4: Display a picture on TV with HDMI (720*480p 60Hz) ***"
+VideoTests -m=0 -d=4 -dprop=720x480x60xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (720*480p 60Hz) test done" ; HDMI2="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (720*480p 60Hz) test done" ; HDMI2="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI2
+
+
+# Test Display a picture on TV with HDMI (720*576p 50Hz):
+echo "*** Step5: Display a picture on TV with HDMI (720*576p 50Hz) ***"
+VideoTests -m=0 -d=4 -dprop=720x576x50xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (720*576p 50Hz) test done" ; HDMI3="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (720*576p 50Hz) test done" ; HDMI3="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI3
+
+
+# Test Display a picture on TV with HDMI (1280*720p 50Hz):
+echo "*** Step6: Display a picture on TV with HDMI (1280*720p 50Hz) ***"
+VideoTests -m=0 -d=4 -dprop=1280x720x50xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (1280*720p 50Hz) test done" ; HDMI4="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (1280*720p 50Hz) test done" ; HDMI4="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI4
+
+
+# Test Display a picture on TV with HDMI (1280*720p 60Hz):
+echo "*** Step7: Display a picture on TV with HDMI (1280*720p 60Hz) ***"
+VideoTests -m=0 -d=4 -dprop=1280x720x60xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (1280*720p 60Hz) test done" ; HDMI5="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (1280*720p 60Hz) test done" ; HDMI5="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI5
+
+
+# Test Display a picture on TV with HDMI (1920*1080p 24Hz):
+echo "*** Step8: Display a picture on TV with HDMI (1920*1080p 24Hz) ***"
+VideoTests -m=0 -d=4 -dprop=1920x1080x24xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (1920*1080p 24Hz) test done" ; HDMI6="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (1920*1080p 24Hz) test done" ; HDMI6="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI6
+
+
+# Test Display a picture on TV with HDMI (1920*1080p 25Hz):
+echo "*** Step9: Display a picture on TV with HDMI (1920*1080p 25Hz) ***"
+VideoTests -m=0 -d=4 -dprop=1920x1080x25xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (1920*1080p 25Hz) test done" ; HDMI7="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (1920*1080p 25Hz) test done" ; HDMI7="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI7
+
+# Test Display a picture on TV with HDMI (1920*1080p 30Hz):
+echo "*** Step10: Display a picture on TV with HDMI (1920*1080p 30Hz) ***"
+VideoTests -m=0 -d=4 -dprop=1920x1080x30xP
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (1920*1080p 30Hz) test done" ; HDMI8="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (1920*1080p 30Hz) test done" ; HDMI8="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI8
+
+
+# Test Display a picture on TV with HDMI (1920*1080i 50Hz):
+echo "*** Step11: Display a picture on TV with HDMI (1920*1080i 50Hz) ***"
+VideoTests -m=0 -d=4 -dprop=1920x1080x50xI
+VideoTests -m=0 -d=4 -dpict="//usr/share/multimediaservices/videoservices/image_1920_1080.png"
+FlagDisp=false
+while [ "$FlagDisp" != "true" ]
+do
+	echo "st-ericsson Picture displayed correctly (y/n) ?"
+	read DispResp
+	if [ "$DispResp" == "y" ]; then
+		FlagDisp=true ; echo "Displayed HDMI (1920*1080i 50Hz) test done" ; HDMI9="*** PASSED ***"
+	elif [ "$DispResp" == "n" ]; then
+		FlagDisp=true ;	echo "Displayed HDMI (1920*1080i 50Hz) test done" ; HDMI9="!!! FAILED !!!"
+	else
+		echo "sorry, your enter is incorrect"
+	fi
+done
+echo $HDMI9
+
+
+# Verdict result
+echo " "
+echo "************************************RESULT***********************************"
+echo "HDMI init:.................................................... $HDMIint"
+echo "HDMI cable detection:......................................... $HDMIdetect"
+echo "Display a picture on TV with HDMI (640*480p 60Hz):............ $HDMI1"
+echo "Display a picture on TV with HDMI (720*480p 60Hz):............ $HDMI2"
+echo "Display a picture on TV with HDMI (720*576p 50Hz):............ $HDMI3"
+echo "Display a picture on TV with HDMI (1280*720p 50Hz):........... $HDMI4"
+echo "Display a picture on TV with HDMI (1280*720p 60Hz):........... $HDMI5"
+echo "Display a picture on TV with HDMI (1920*1080p 24Hz):.......... $HDMI6"
+echo "Display a picture on TV with HDMI (1920*1080p 25Hz):.......... $HDMI7"
+echo "Display a picture on TV with HDMI (1920*1080p 30Hz):.......... $HDMI8"
+echo "Display a picture on TV with HDMI (1920*1080i 50Hz):.......... $HDMI9"
+echo "***********************************TEST END**********************************"

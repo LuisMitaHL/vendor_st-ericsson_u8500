@@ -1,0 +1,77 @@
+;ARM Trace Port Interface Unit (TPIU) control registers @(#) Nov 14 2005
+
+config 16. 8.
+width 9.
+
+base edap:per.arg(0) 
+
+group 0x0--0x7
+ textline "Port size: "
+ hexfld.long 0x0 "support ,Supported port size"
+ hexfld.long 0x4 " current ,Current port size"
+
+group 0x100--0x10b
+ line.long 0x0 "Modes,Supported trigger modes"
+  bitfld.long 0x0 17. "TrgRun ,Trigger counter running" "no,yes"
+  bitfld.long 0x0 16. " Triggered ,Trigger has occured & counter==0" "no,yes"
+  bitfld.long 0x0 8 " Tcount8 ,8-bit wide register implemented" "no,yes"
+ textline "                  "
+  bitfld.long 0x0 4 "Mult64K , Multiply by 65536 supported" "no,yes"
+  bitfld.long 0x0 3 " Mult256 , Multiply by 256 supported" "no,yes"
+  bitfld.long 0x0 2 " Mult16 , Multiply by 16 supported" "no,yes"
+  bitfld.long 0x0 1 " Mult4 , Multiply by 4 supported" "no,yes"
+  bitfld.long 0x0 0 " Mult2 , Multiply by 2 supported" "no,yes"
+ line.long 0x4 "Trig cnt ,Trigger counter register"
+  hexmask.long.byte 0x4 0--7 1 "Counter ,Trigger counter value"
+ line.long 0x8 "Mult ,Trigger multiplier"
+  bitfld.long 0x8 4 "Mult64K , Multiply by 65536" "no,yes"
+  bitfld.long 0x8 3 " Mult256 , Multiply by 256" "no,yes"
+  bitfld.long 0x8 2 " Mult16 , Multiply by 16" "no,yes"
+  bitfld.long 0x8 1 " Mult4 , Multiply by 4" "no,yes"
+  bitfld.long 0x8 0 " Mult2 , Multiply by 2" "no,yes"
+
+group 0x200--0x20b
+ line.long 0x0 "Sup test ,Supported test pattern modes"
+  bitfld.long 0x0 17. "PContEn ,Continuous mode supported" "no,yes"
+  bitfld.long 0x0 16. " PTimeEn ,Timed mode supported" "no,yes"
+  bitfld.long 0x0 3 " PatF0 ,Pattern FF/00 supported" "no,yes"
+  bitfld.long 0x0 2 " PatA5 ,Pattern AA/55 supported" "no,yes"
+  bitfld.long 0x0 1 " PatW0 ,Walking 0s pattern supported" "no,yes"
+  bitfld.long 0x0 0 " PatW1 ,Walking 1s pattern supported" "no,yes"
+ line.long 0x4 "Cur test ,Current test pattern modes"
+  bitfld.long 0x4 17. "PContEn ,Continuous mode" "no,yes"
+  bitfld.long 0x4 16. " PTimeEn ,Timed mode" "no,yes"
+  bitfld.long 0x4 3 " PatF0 ,Pattern FF/00" "no,yes"
+  bitfld.long 0x4 2 " PatA5 ,Pattern AA/55" "no,yes"
+  bitfld.long 0x4 1 " PatW0 ,Walking 0s pattern" "no,yes"
+  bitfld.long 0x4 0 " PatW1 ,Walking 1s pattern" "no,yes"
+ line.long 0x8 "Patt cnt ,Pattern counter register"
+  hexmask.long.byte 0x8 0--7 1 "Counter ,Pattern counter value"
+
+group 0x300--0x30b
+ line.long 0x0 "FFSR,Formatter and Flush Status Register" 
+  bitfld.long 0x0 2. "TCP ,TRACECTL pin present" "no,yes"
+  bitfld.long 0x0 1. " FTS ,Formatter stopped" "no,yes"
+  bitfld.long 0x0 0. " FIP ,Flush in progress" "no,yes"
+
+ line.long 0x4 "FFCR,Formatter and Flush Control Register" 
+  bitfld.long 0x4 13. "STOPTRIG ,Stop formatter after Trigger" "no,yes"
+  bitfld.long 0x4 12. "  STOPFL ,Stop formatter after Flush" "no,yes"
+  bitfld.long 0x4 10. "  TRIGFL ,Trigger on Flush completion" "no,yes"
+  bitfld.long 0x4 9. "  TRIGEVT ,Tigger on Trigger Event" "no,yes"
+  bitfld.long 0x4 8. "  TRIGIN ,TRIGIN asserted" "no,yes"
+ textline "                "
+  bitfld.long 0x4 6. "  FONMAN ,Manual Flush" "no,yes"
+  bitfld.long 0x4 5. "  FONTRIG ,Flush on Trigger event" "no,yes"
+  bitfld.long 0x4 4. "  FONFIIN ,Flush on FLUSHIN" "no,yes"
+  bitfld.long 0x4 1. "  ENFCONT ,Enable Continuous Formatting" "no,yes"
+  bitfld.long 0x4 0. "  ENFTC ,Enable Formatting" "no,yes"
+
+ line.long 0x8 "SyncCnt ,Formatter synchronisation register"
+  hexmask.long.word 0x8 0--11. 1 "CycCnt ,Synchronisation counter value"
+
+group 0x400--0x407
+ textline "EXTCTL "
+  hexmask.long.byte 0x0 0--7 1 " InPort ,Input port"
+  hexmask.long.byte 0x4 0--7 1 " OutPort ,Output port"
+

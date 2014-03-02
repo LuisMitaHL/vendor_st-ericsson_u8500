@@ -1,0 +1,200 @@
+;------------------------------------------------------------
+; synch_setup.cmm
+;------------------------------------------------------------
+; Create dialog for configuration of sync between cores
+;
+; 090507 - KM Initial version
+;-----------------------------------------------------------
+
+
+dialog
+(&
+	header "Synchronization"
+	
+	pos 0. 0. 18. 5.
+	box "synch break and go"
+	
+	pos 2. 1. 10. 1.
+App:	checkbox "APP " "gosub SynchApp"
+	pos 2. 2. 10. 1.
+Acc:	checkbox "ACC " "gosub SynchAcc"	
+	pos 2. 3. 10. 1.
+Ceva:	checkbox "Ceva " "gosub SynchCeva"
+	pos 1. 5. 5. 1.
+Button "Save" "gosub ButtonSave"
+	pos 8. 5. 9. 1.
+Button "Save and Close" "gosub ButtonSaveClose"
+	CLOSE "goto winclose"
+)
+
+;What cores are we debugging?
+
+if INTERCOM.PING(&icAcc)
+	&AccStarted="True"	
+else
+	&AccStarted="False"
+
+if INTERCOM.PING(&icApp)
+	&AppStarted="True"
+else
+	&AppStarted="False"
+
+if INTERCOM.PING(&icCeva)
+	&CevaStarted="True"
+else
+	&CevaStarted="False"
+
+
+
+do readcurrentconfig
+gosub InitVariables
+gosub InitDialog
+
+stop
+
+winclose:
+	dialog.end
+	enddo
+
+
+InitVariables:
+	if "&SynchApp"==""
+		&SynchApp="True"
+		
+	if "&SynchAcc"==""
+	(
+		&SynchAcc="True"
+		if ("&AccStarted"=="True")
+		(
+			intercom.execute &icAcc do synch_update_variables True
+			wait 1s
+		)
+		
+	)
+	if "&SynchCeva"==""
+	(
+		&SynchCeva="True"
+		if ("&CevaStarted"=="True")
+		(
+			intercom.execute &icCeva do synch_update_variables True
+			wait 1s
+		)
+	)
+			Return
+
+InitDialog:
+	if "&SynchApp"=="True"
+		dialog.set App "ON"
+	else 
+		dialog.set App "OFF"
+
+	if "&SynchAcc"=="True"
+		dialog.set Acc "ON"
+	else 
+		dialog.set Acc "OFF"
+
+	if "&SynchCeva"=="True"
+		dialog.set Ceva "ON"
+	else 
+		dialog.set Ceva "OFF"
+	
+	Return
+
+SynchApp:
+	if dialog.boolean(App)
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp synch.on			
+		)
+		&SynchApp="True"
+	)
+	else
+	(
+		if ("&AppStarted"=="True")
+		(
+			intercom.execute &icApp synch.off			
+		)
+		&SynchApp="False"
+	)
+	Return
+
+SynchAcc:
+	if dialog.boolean(Acc)
+	(
+		if ("&AccStarted"=="True")
+		(
+			intercom.execute &icAcc synch.on			
+			intercom.execute &icAcc do synch_update_variables True
+			wait 1s
+		)
+		&SynchAcc="True"
+	)
+	else
+	(
+		if ("&AccStarted"=="True")
+		(
+			intercom.execute &icAcc synch.off
+			intercom.execute &icAcc do synch_update_variables False		
+			wait 1s
+		)
+		&SynchAcc="False"
+	)
+	Return
+
+SynchCeva:
+	if dialog.boolean(Ceva)
+	(
+		if ("&CevaStarted"=="True")
+		(
+			intercom.execute &icCeva synch.on
+			intercom.execute &icCeva do synch_update_variables True		
+			wait 1s
+		)
+		&SynchCeva="True"
+	)
+	else
+	(
+		if ("&CevaStarted"=="True")
+		(
+			intercom.execute &icCeva synch.off	
+			intercom.execute &icCeva do synch_update_variables False	
+			wait 1s
+		)
+		&SynchCeva="False"
+	)
+	Return
+	
+ButtonSave:
+	if ("&AccStarted"=="True")
+	(
+		intercom.execute &icAcc do writesettings
+		intercom.wait &icAcc
+		wait 1s
+	)
+	if ("&CevaStarted"=="True")
+	(
+		intercom.execute &icCeva do writesettings
+		intercom.wait &icCeva
+		wait 1s
+	)
+	do writesettings.cmm
+	
+	RETURN
+
+ButtonSaveClose:
+	if ("&AccStarted"=="True")
+	(
+		intercom.execute &icAcc do writesettings
+		intercom.wait &icAcc
+		wait 1s
+	)
+	if ("&CevaStarted"=="True")
+	(
+		intercom.execute &icCeva do writesettings
+		intercom.wait &icCeva
+		wait 1s
+	)
+	do writesettings.cmm
+	goto winclose
+

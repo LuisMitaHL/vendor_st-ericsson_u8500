@@ -1,0 +1,111 @@
+test_start SINKS_119 Low_power_Avsink
+
+OMX_GetHandle   renderer OMX.ST.AFM.NOKIA_AV_SINK
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 0 
+
+
+MMTE_DispatchState OMX_StateIdle renderer
+
+MMTE_NMF_ListComponent
+
+#Start
+MMTE_DispatchState OMX_StateExecuting renderer
+ate_attach_io       renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 0 
+
+
+
+mmte_sleep 2000
+
+#Go to low power
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+
+mmte_sleep 2000
+
+#go to normal mode
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+mmte_sleep 2000
+
+#Go to low power
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+
+mmte_sleep 2000
+
+#go to normal mode
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+mmte_sleep 2000
+
+#Go to low power
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+
+mmte_sleep 2000
+
+#go to normal mode
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+mmte_sleep 2000
+
+#Go to low power
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+
+mmte_sleep 2000
+
+#go to normal mode
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+mmte_sleep 2000
+
+#Go to low power
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+
+mmte_sleep 2000
+
+#go to normal mode
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+mmte_sleep 2000
+
+#Go to low power
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+
+mmte_sleep 2000
+
+#go to normal mode
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+mmte_sleep 2000
+
+#Go to low power
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=1
+
+mmte_sleep 2000
+
+#go to normal mode
+OMX_SetConfig  renderer AFM_IndexLowPowerRenderer nLowPower=0
+
+#Wait EOS
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+
+#Stop
+MMTE_DispatchState OMX_StateIdle renderer
+
+MMTE_PrintMemoryStatus
+
+MMTE_DispatchState OMX_StateLoaded renderer
+
+ens_network_destroy
+
+MMTE_PrintMemoryStatus
+MMTE_CheckMemoryStatus
+
+unalias TIMEOUT
+
+check_test
+
+test_end

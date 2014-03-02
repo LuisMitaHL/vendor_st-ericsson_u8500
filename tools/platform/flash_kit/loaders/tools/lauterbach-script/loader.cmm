@@ -1,0 +1,49 @@
+;using variable for setting sourcepath
+;local &srcpath
+;&srcpath="c:\src"
+;sYmbol.SourcePATH.SetRecurseDir &srcpath
+
+;testing of lauterbach setup and source debuginfo
+;sYmbol.List.SOURCE
+;List mem map
+;sYmbol.List.MAP
+;List directory where source is
+;y.spath.list
+;data.list main 
+
+;adding some nice toolbar things
+menu.rp
+(
+	add toolbar
+  (
+  	;separator
+		;toolitem "Source/List" ":list" "Data.List"
+		;toolitem "Memory Dump" ":dump" "Data.dump"
+		;toolitem "Register" ":reg" "Register /SpotLight"
+		;separator
+		;toolitem "List Breakpoints" ":break" "Break.List"
+		;toolitem "List Symbols" ":symbols" "sYmbol.Browse"
+		toolitem "Break in main" ":break" "break.set main"
+		;separator
+	)
+)
+
+radix hex
+
+reset
+sys.cpu.cortexa9
+sys.up
+
+;\\eseldna003\unix-home\r\qmartol\fairbanks\fairbanks.bin
+d.load.binary * 0x0
+;DWARF, STABS
+;/AnySym /GlobTypes /SingleLine /Include
+;\\eseldna003\unix-home\r\qmartol\fairbanks\fairbanks.elf
+d.load.elf * /gnu /nocode  /StripPART 3 /lowerpath 
+symbol.sourcepath.setrecursedir *
+
+y.list.tree
+Data.List
+
+register.view /spotlight
+var.frame /locals /caller

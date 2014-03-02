@@ -1,0 +1,38 @@
+OMX_GetHandle   renderer1 OMX.ST.AFM.IHF
+OMX_GetHandle   renderer2 OMX.ST.AFM.NOKIA_AV_SINK
+
+OMX_SendCommand renderer1 OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer1 OMX_EventCmdComplete OMX_CommandPortDisable 1
+OMX_SendCommand renderer2 OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer2 OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_SetParameter    renderer1 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer1 0 MEM ./doriano48_low.wav 0 0
+OMX_SetParameter    renderer2 OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer2 0 MEM ./doriano48_low.wav 0 0
+
+OMX_SetConfig renderer1 OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=90 sVolume.nMin=0 sVolume.nMax=100
+MMTE_DispatchState OMX_StateIdle renderer1:0
+OMX_SetConfig renderer2 OMX_IndexConfigAudioVolume nPortIndex=0  bLinear=OMX_TRUE sVolume.nValue=90 sVolume.nMin=0 sVolume.nMax=100
+MMTE_DispatchState OMX_StateIdle renderer2:0
+
+#Start (renderer1, renderer2)
+MMTE_DispatchState OMX_StateExecuting renderer1
+MMTE_DispatchState OMX_StateExecuting renderer2
+
+# Playback...
+mmte_sleep 3000
+
+#Stop (renderer2)
+MMTE_DispatchState OMX_StateIdle renderer2
+MMTE_DispatchState OMX_StateLoaded renderer2
+
+# Playback...
+mmte_sleep 3000
+
+#Stop (renderer2)
+MMTE_DispatchState OMX_StateIdle renderer1
+MMTE_DispatchState OMX_StateLoaded renderer1
+
+ens_network_destroy
+MMTE_CheckMemoryStatus

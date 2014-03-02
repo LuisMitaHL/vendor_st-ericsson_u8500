@@ -1,0 +1,68 @@
+/*****************************************************************************/
+/**
+*  © ST-Ericsson, 2009 - All rights reserved
+*  Reproduction and Communication of this document is strictly prohibited
+*  unless specifically authorized in writing by ST-Ericsson
+*
+* \file    
+* \brief   
+* \author  ST-Ericsson
+*/
+/*****************************************************************************/
+
+interface resource_manager.api.mtf_resource { 
+
+
+/** @addtogroup rmMtfWriteGroup mtfWrite
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Perform a memory copy from INTERNAL area to INTERNAL|EXTERNAL area (depending on lowest bit of dstDataAddress parameter)
+ 
+ Note : This resource has to be previously allocated (please refer to \ref rmAllocResourceGroup).
+ 
+ \param[in]  dstDataAddress   Destination address of the data to be copied ([INTERNAL|EXTERNAL] depending on lowest bit [0|1]).
+ \n <b>Contraints : Multiple of 4 (Word aligned).</b>
+ \param[in]  Size             size (in bytes) of transfer to be done.
+ \n <b>Contraints : Multiple of 16 (4 Words aligned).</b>
+ \param[in]  srcDataAddress   Source address of the data to be copied (INTERNAL).
+ \n <b>Contraints : None.</b>
+ *
+ * \remarks  This method is included inside interface named iMtfResource (Please refer to the corresponding ITF server name(s) : \ref rmConfigurationGroup)
+ * 
+ */
+
+void mtfWrite(t_uint32 dstDataAddress, t_uint16 Size, t_uint32 srcDataAddress);
+/** @} */ // end of rmMtfWriteGroup
+
+
+
+
+/** @addtogroup rmMtfReadGroup mtfRead
+ *  @ingroup rmProvidedInterfaceGroup
+ *  @{ 
+ */
+/*!
+ Description : Perform a memory copy from INTERNAL|EXTERNAL area to INTERNAL area (depending on lowest bit of srcDataAddress parameter)
+ 
+ Note : This resource has to be previously allocated (please refer to \ref rmAllocResourceGroup).
+
+ 
+ \param[in]  srcDataAddress   Source address of the data to be copied ([INTERNAL|EXTERNAL] depending on lowest bit [0|1]).
+ \n <b>Contraints : Multiple of 4 (Word aligned).</b>
+ \param[in]  Size             size (in bytes) of transfer to be done.
+ \n <b>Contraints : Multiple of 16 (4 Words aligned).</b>
+ \param[in]  dstDataAddress   Destination address of the data to be copied (INTERNAL).
+ \n <b>Contraints : None.</b>
+ 
+ *
+ * \remarks  This method is included inside interface named iMtfResource (Please refer to the corresponding ITF server name(s) : \ref rmConfigurationGroup)
+ * 
+ */
+
+void mtfRead(t_uint32 srcDataAddress, t_uint16 Size, t_uint32 dstDataAddress);
+/** @} */ // end of rmMtfReadGroup
+
+
+}

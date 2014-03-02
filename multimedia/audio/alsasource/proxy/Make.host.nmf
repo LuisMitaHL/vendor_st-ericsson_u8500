@@ -1,0 +1,24 @@
+# -*- # -*- Mode: Makefile -*-
+# vim:syntax=make:
+CORE=$(MMPROCESSOR)
+MMSYSTEM=x
+MMBOARD=x
+include $(MM_MAKEFILES_DIR)/AudioNmfConfig.mk
+CPPFLAGS+=-DNVERBOSE -DUNIX \
+-Inmfil/host/wrapper/inc \
+-Inmfil/host/tonegen/inc
+
+CPPFLAGS += -I$(ANDROID_BSP_ROOT)/external/alsa-lib/include
+
+CXXFLAGS+=-g -O0 -ltinyalsa
+
+ITFS_HEADER+= \
+alsasource.nmfil.host.source \
+alsasource.nmfil.host.wrapper.configure \
+alsasource.nmfil.host.alsasource.configure
+
+COMPONENTS= \
+alsasource.nmfil.host.composite.wrapper \
+alsasource.nmfil.host.composite.alsasource
+
+include $(MM_MAKEFILES_DIR)/SharedNmfRules.mk

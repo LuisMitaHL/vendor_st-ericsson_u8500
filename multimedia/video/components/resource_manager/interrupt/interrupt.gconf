@@ -1,0 +1,40 @@
+primitive resource_manager.interrupt 
+{
+//singleton
+
+// Constructor of this component
+provides lifecycle.constructor	                            as constructor
+
+// Destructor of this component
+provides lifecycle.destructor  as  destructor
+
+// Provided interfaces
+provides resource_manager.api.interrupt           			as iInterrupt
+
+// Plus interrupt interfaces (for EOW management)
+// IT12 for EOW Mgt (DMA_IRQ_VCU_EOW).
+// IT26 for encode Mgt (MECC_IRQ).
+provides exception.handler                          		as iIt12Handler prefix IT12 interrupt 12
+provides exception.handler                          		as iIt21Handler prefix IT21 interrupt 21
+provides exception.handler                          		as iIt26Handler prefix IT26 interrupt 26
+provides exception.handler                          		as iIt22Handler prefix IT22 interrupt 22
+provides exception.handler                          		as iIt30Handler prefix IT30 interrupt 30
+
+
+// Required interfaces
+
+
+// Additionnal informations : 
+//    --------------
+//    - Source files
+sources src/interrupt.c
+
+//    ----------------------------------------
+//    - Necessary paths (mainly for inclusion)
+
+option CPPFLAGS "	-ICONF_ROOT/inc \
+					-D__T1XHV_NMF_ENV=1 -DMMDSP=1 -DTARGET=dsp16"
+option CFLAGS "-O3 -g -mode16"
+
+//-D__DEBUG_TRACE_ENABLE=1
+}

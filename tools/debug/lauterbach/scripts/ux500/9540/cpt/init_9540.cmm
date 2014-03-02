@@ -1,0 +1,254 @@
+; #####################################################################
+; # AP9540 debug & Trace script file: init_9540.cmm                   #
+; # Copyright (C) 2011, STMicroelectronics. All Rights Reserved       #
+; #####################################################################
+; This script is used for debug and SoC configuration on AP9540.
+; Created by HED/CSP/CPT/ACT on 2010-11-03
+; Contact: jingyi-xiaoyan.lu@st.com
+; 2010-11-03: initial version.
+; 2011-11-16: seperated prcmu and sxa configuration. Added PTM config.
+; 2012-04-04: added "jc", "dbgboot" and "waitboot" options.
+; 2012-06-11: added "dis_cflush" option.
+
+;!!!!!!!!!!!!!!!!!!!!!!!!!!!
+; PLEASE CHECK OR UPDATE THE "SECTION_3" of this script before integrate this script into your working environment.
+;!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;
+; This script is used for debug and SoC configuration on DB9540.
+;
+; ---- Usage and Parameters
+; Usage: do init_9540 <9540_ver> <platform> <dbg_config> <core> <9540_config>
+; Parameters:
+; <9540_ver> indicates the version of DB9540. It can be
+;	v1:		means DB9540-V1.
+; <platform> indicates the name of platform on which this script is executed. It can be
+;	mop:		means MOP500 silicon board.
+;	ccu:		means CCU board.
+;	svp:		means SVP platform
+; <dbg_config> indicates the configuration related to the debugging. It can be one of the following values or a combination of them. Use "+" for the combination, like "attach+cjtag2pin"
+;	attach:		means the "system.mode.attach" command is used to connect the Trace32 debugger to the CortexA9 core(s). 
+;			The system and core status keep intact in this case. It can not be combined with "up".
+;	up:		means the "system.up" Trace32 command is used to connect the Trace32 debugger to the CortexA9 core(s), and a SYSTEM RESET is issued by the script. It can not be combined with "attach".
+;	cjtag2pin:	means configure the debugger to the cJTAG 2-Pin (narrow) mode. Only available from DB9540 V1.
+;			NOTE THAT the cJTAG is in 4-Pin (wide) mode after the DB9540 boot. Without this value, the debugging is run in cJTAG 4-pin mode.
+;	sxa		means the MMDSP debugging is needed in DB9540 V1 or higher. Consequently the TAP-MMDSP will be added onto the scan chain. In the DB9540 ED, the TAP-MMDSP is on the scan chain by default.
+;	prcmu		means the PRCMU debugging is needed in DB9540 V1 or higher. Consequently the TAP-PRCMU will be added onto the scan chain. In the DB9540 ED, the TAP-PRCMU is on the scan chain by default.
+;	dbg_thr_reset	means the "debug through reset" is needed. The debugger is configured correctly in this case and the core enters in debug state right after the cpu reset release.
+;	pwrdwn		means the core power domains can be power down during the debugging session. By default, the power down is disabled.
+;	semihost	means configuration script for the semihosting settings. This parameter opens and configures the terminal window.
+;	jcxxxhz		means the jtag clock frequency. Example "jc40khz", "jc5mhz" ...
+;	dbgboot		means force the CPU0 (A9-0) core to enter in debug state at the beginning of the boot as soon as the debug is enabled.
+;	waitbootxxx	means waiting for "duration" s or ms after PORn release before connecting to the target (DAP). Ex: waitboot5s => wait for 5 seconds.
+;	dis_cflush	means the debugger does not invalidate the ICache at "go" and "step". This parameter is used when the core does not support ICache invalidating and consequently the software breakpoints are not availble.
+; <core> can be
+;	smp:		means SMP debugging. The Trace32 debugger is connected to both CortexA9-0 and CortexA9-1.
+;	cpu0:		means AMP debugging. The Trace32 debugger is Connected to the CortexA9-0.
+;	cpu1:		means AMP debugging. The Trace32 debugger is connected to the CortexA9-1.
+;
+; <9540_config> indicates the scripts related to the DB9540 configuration to be called by init_9540.cmm. It can be one of the following values or a combination of them. Use "+" for the combination, like "default+sxa".
+;	NoConfig:	means not any configuration script is called after the connection to the core(s). Can not be combined with other values. 
+;	default:	means the default necessary configuration script needed by the platform specified by <platform>. If necessary, modify the configuration invoked by this parameter value.
+;	sxa:		means configuration script related to SxA is called.
+;			Current version calls script initializing the SxA & XP70[PRCMU] clock, reset and PLL frequency settings.
+;	prcmu:		means configuration script related to the PRCMU is called.
+;			Current version calls script initializing the SxA & XP70[PRCMU] clock, reset and PLL frequency settings.
+;	ptm:		means configuration script for the PTM trace activation is to be called by init_9540.cmm.
+;	etm:		means configuration script for the ETM trace activation is to be called by init_9540.cmm.
+;	stm:		means configuration script for the STM trace activation is to be called by init_9540.cmm.
+;
+; All parameters are mandatory. Any error in the parameter syntax will cause the execution of the script to quit.
+; 
+
+local &cur_dir &debug_stop_the_other_core &smp &semihost
+local &noconfig &default &sxa &prcmu &mod &ptm &etm &pal_ddr &stm
+entry &9540_ver &platform &dbg_config &core &9540_config
+area
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_1: 
+// Parameters stuff
+//
+////////////////////////////////////////////////////////////////////
+gosub HandleParameters
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_2: 
+// Debugger configuration (Do not modify)
+//
+////////////////////////////////////////////////////////////////////
+gosub ConfigDebug
+
+////////////////////////////////////////////////////////////////////
+//
+// SECTION_3:
+// Please give your approriate configuration scripts here below
+//
+////////////////////////////////////////////////////////////////////
+; ---- call configuration scripts 
+if &noconfig==0  // Not NoConfig
+(
+	if &default==1  //the default necessary configuration needed by the platform specified by <platform>.
+	(
+		if "&platform"=="MOP"
+		(
+			if r(ns)==1
+			(
+				print "Force the current core to SECURE mode for running DDR init."
+				r.set ns 0
+			)
+			do "&cur_dir/mem_init/ddr_init_ic_533.cmm"
+		)
+		else if "&platform"=="CCU"
+		(
+			// call the default configuration script here if necessary
+		)
+		else if "&platform"=="SVP"
+		(
+			// call the default configuration script here if necessary
+		)
+		else if "&platform"=="PALLADIUM"
+		(
+			// call the default configuration script here if necessary
+		)
+	)
+	if &sxa==1
+		do init_sxa_prcmu_debug.cmm &9540_ver "SVA_SIA"
+	if &prcmu==1
+		do init_sxa_prcmu_debug.cmm &9540_ver "PRCMU"
+	if &ptm==1
+	  	do "ptm_config.cmm"
+	if &etm==1
+		//do "etm_config.cmm"
+	if &pal_ddr==1
+		do "&cur_dir/palladium/ddr_init.cmm"
+	if &stm==1
+		//do "stm_config.cmm"
+
+	// other configuration here, if any.
+)
+
+; ---- semihosting settings
+if &semihost==1
+(
+	do "&cur_dir/semihosting_setting.cmm"
+	if "&core"=="CPU0"
+	  term.heapinfo 0x40050000 0x40060000 0x40070000 0x40060000
+	else
+	  term.heapinfo 0x40070000 0x40080000 0x40090000 0x40080000
+)
+
+; ---- set the L2 Cache base address
+//if (d.l(enahb:0x8015601C)>>16.&1)==1
+	sys.o.l2cb 0xA0412000
+
+enddo (0==0)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+; =================== Sub Functions ===================
+
+
+HandleParameters:
+	; ---- Parameter Check
+	&debug_stop_the_other_core="Y" // AMP mode, when cpu0 runs the chip configuration, the cpu1 should be halted.
+	if string.upr("&9540_ver")!="V1"
+	(
+		print "init_9540.cmm: Unknown DB9540 version: &9540_ver !"
+		enddo (1==0)
+	)
+	&9540_ver=string.upr("&9540_ver")
+	if string.upr("&platform")!="SVP"&&string.upr("&platform")!="MOP"&&string.upr("&platform")!="CCU"&&string.upr("&platform")!="PALLADIUM"
+	(
+		print "init_9540.cmm: Unknown platform: &platform !"
+		enddo (1==0)
+	)
+	&platform=string.upr("&platform")
+	// &dbg_config parameter is checked by the debug config scrips called by this script.
+	&smp=0.
+	if string.upr("&core")=="SMP"
+	(
+		print "SMP debug."
+		&smp=1.
+		&debug_stop_the_other_core="N"
+	)
+	else if string.upr("&core")=="CPU0"||string.upr("&core")=="CPU1"
+	(
+		print "AMP debug."
+		&smp=0.
+	)
+	else
+	(
+		print "init_9540.cmm: Unknown core name: &core. Expected value: smp, cpu0 or cpu1"
+		enddo (1==0)
+	)
+	&core=string.upr("&core")
+	
+	; --- extract the config values
+	&noconfig=0
+	&default=0
+	&sxa=0
+	&prcmu=0
+	&mod=0
+	&ptm=0
+	&etm=0
+	&pal_ddr=0
+	&stm=0
+	while string.len("&9540_config")!=0
+	(
+		&plus_idx=STRING.SCAN("&9540_config","+",0)
+		if &plus_idx==0
+		(
+			print "Invalid parameter: &9540_config !"
+			enddo
+		)
+		if &plus_idx==-1 // there is not any "+", i.e. &9540_config contains only 1 word
+			&plus_idx=string.len("&9540_config")
+	
+		// extract the first parameter
+		&temp=string.mid("&9540_config",0,&plus_idx)
+		&param=string.lwr("&temp")
+	
+		// check the extraited paramter's validity
+		if "&param"!="noconfig"&&"&param"!="default"&&"&param"!="sxa"&&"&param"!="prcmu"&&"&param"!="mod"&&"&param"!="pal_ddr"&&"&param"!="ptm"&&"&param"!="etm"&&"&param"!="stm"
+		(
+			print "init_9540.cmm: Invalid configuration parameter: &temp !"
+			enddo (1==0)
+		)
+	
+		&&(param)=1
+	
+		// cut off the first parameter and the "+"
+		&9540_config=string.cut("&9540_config",&plus_idx+1)
+	)
+	return
+
+ConfigDebug:
+	; ---- general GUI settings
+	&cur_dir=os.ppd()
+	do "&cur_dir/general_gui_setting.cmm"
+	
+	; ---- path setting
+	do "&cur_dir/general_path_setting.cmm"
+	
+	; ---- call debug configuration script
+	do "&cur_dir/9540_debug_config_a9ss.cmm" &9540_ver &platform &dbg_config &core &debug_stop_the_other_core
+	entry &ret
+	if !&ret
+		enddo &ret
+	return

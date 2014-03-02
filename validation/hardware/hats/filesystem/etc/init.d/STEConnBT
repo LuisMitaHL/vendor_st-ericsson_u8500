@@ -1,0 +1,15 @@
+#!/bin/sh
+LD_LIBRARY_PATH=/system/lib:/system/usr/lib:/system/lib/ste_omxcomponents
+case $1 in
+start)
+        echo "Starting lbsd (GPS server daemon)"
+       lbsd
+;;
+
+stop)
+        echo "Stopping lbsd (GPS server daemon)"
+       killall lbsd
+;;
+esac
+
+exit

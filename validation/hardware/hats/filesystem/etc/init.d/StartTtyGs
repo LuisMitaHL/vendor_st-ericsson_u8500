@@ -1,0 +1,15 @@
+#!/bin/sh
+case $1 in
+start) 
+	echo "Starting StartTtyGs"
+	KERNEL_VERSION=`uname -r`
+	TTYGS_MAJOR=`grep ttyGS /proc/devices | busybox awk '{print $1}'`
+	[ -e /dev/ttygs0 ] || ( [ -n "$TTYGS_MAJOR" ] && mknod /dev/ttygs0 c "$TTYGS_MAJOR" 0)
+;;
+stop) 	
+	echo "Stopping StartTtyGs..."
+        [ -e /dev/ttygs0 ] || rm /dev/ttygs0
+;;
+esac
+
+exit

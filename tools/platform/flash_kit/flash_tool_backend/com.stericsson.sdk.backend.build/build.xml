@@ -1,0 +1,425 @@
+<project name="flash-tool-backend" default="flash-tool-backend.RELEASE">
+
+	<property environment="env" />
+	<property name="flash-tool-backend.BUILD_DIR" location="${basedir}/build" />
+	<property name="flash-tool-backend.TEST_DIR" location="${basedir}/test" />
+	<property name="flash-tool-backend.REPORTS_DIR" location="${basedir}/reports" />
+	<property name="flash-tool-backend.TARGET_DEPENDENCIES_DIR" location="${basedir}/dependencies/osgi" />
+	<property name="flash-tool-backend.WORKSPACE_DIR" location="${basedir}/../" />
+	<property name="flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN" location="${flash-tool-backend.WORKSPACE_DIR}/w" />
+	<property name="flash-tool-backend.TARGET_DEPENDENCIES_DIR_WITHOUTWARN" location="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}/osgi" />
+	<property name="flash-tool-backend.RELEASE_DIR" location="${basedir}/release" />
+	<property name="flash-tool-backend.SCRIPTS_DIR" location="${basedir}/scripts" />
+	<property name="flash-tool-backend.DOC_DIR" location="${basedir}/doc" />
+	<property name="flash-tool-backend.BUILD_DEPENDENCIES_DIR" location="${basedir}/dependencies" />
+
+	<condition property="flash-tool-backend.ant4eclipse" value="${env.ANT4ECLIPSE_HOME}">
+		<isset property="env.ANT4ECLIPSE_HOME" />
+	</condition>
+	<!-- propertities are imutable so this is set only if env.ANT4ECLIPSE_HOME is not set-->
+	<property name="flash-tool-backend.ant4eclipse" location="${flash-tool-backend.BUILD_DEPENDENCIES_DIR}/ant4eclipse" />
+
+	<property name="flash-tool-backend.checkstyle" location="${flash-tool-backend.BUILD_DEPENDENCIES_DIR}/checkstyle" />
+	<property name="flash-tool-backend.cobertura" location="${flash-tool-backend.BUILD_DEPENDENCIES_DIR}/cobertura" />
+	<property name="flash-tool-backend.easymock" location="${flash-tool-backend.BUILD_DEPENDENCIES_DIR}/easymock" />
+	<property name="flash-tool-backend.WINDOWS_USB_DRIVER_DIR" location="${basedir}/../windows-usb-driver" />
+	<property name="flash-tool-backend.MACOS_USB_DRIVER_DIR" location="${basedir}/../macos-usb-driver" />
+	
+	<!-- define ant4eclipse tasks -->
+	<path id="ant4eclipse.classpath">
+		<fileset dir="${flash-tool-backend.ant4eclipse}/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<taskdef classpathref="ant4eclipse.classpath" resource="net/sf/ant4eclipse/antlib.xml" />
+
+	<!-- flash tool backend targets -->
+
+	<target name="flash-tool-backend.RELEASE" depends="flash-tool-backend.BUILD_BACKEND_FEATURE">
+		<!-- re-create release folder structure -->
+		<delete dir="${flash-tool-backend.RELEASE_DIR}" />
+
+		<mkdir dir="${flash-tool-backend.RELEASE_DIR}" />
+		<mkdir dir="${flash-tool-backend.RELEASE_DIR}/native" />
+		<mkdir dir="${flash-tool-backend.RELEASE_DIR}/configuration" />
+		<mkdir dir="${flash-tool-backend.RELEASE_DIR}/osgi" />
+		<mkdir dir="${flash-tool-backend.RELEASE_DIR}/osgi/configuration" />
+		<mkdir dir="${flash-tool-backend.RELEASE_DIR}/doc" />
+		<mkdir dir="${flash-tool-backend.RELEASE_DIR}/windows-usb-driver" />
+
+		<!-- copy target dependencies -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}/osgi">
+			<fileset dir="${flash-tool-backend.TARGET_DEPENDENCIES_DIR}/plugins">
+				<include name="*.jar" />
+				<exclude name="*junit*" />
+			</fileset>
+		</copy>
+
+		<!-- copy built bundles -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}/osgi">
+			<fileset dir="${flash-tool-backend.BUILD_DIR}/plugins">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- copy configuration -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}/osgi/configuration" file="${basedir}/configuration/osgi/config-release.ini" />
+		<move tofile="${flash-tool-backend.RELEASE_DIR}/osgi/configuration/config.ini" file="${flash-tool-backend.RELEASE_DIR}/osgi/configuration/config-release.ini" />
+
+		<copy todir="${flash-tool-backend.RELEASE_DIR}/configuration">
+			<fileset file="${basedir}/configuration/log_cfg.xml" />
+			<fileset file="${basedir}/configuration/debug_log_cfg.xml" />
+		</copy>
+
+		<!-- copy scripts -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}">
+			<fileset dir="${flash-tool-backend.SCRIPTS_DIR}">
+				<exclude name="install-linux.sh" />
+			</fileset>
+		</copy>
+
+		<!-- copy documentation -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}/doc">
+			<fileset dir="${flash-tool-backend.DOC_DIR}" />
+		</copy>
+
+		<!-- copy licenses file -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}">
+			<fileset file="${basedir}/../LICENSES-flash-tool-backend.txt" />
+		</copy>
+
+		<!-- copy windows libusb driver -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}/windows-usb-driver">
+			<fileset dir="${flash-tool-backend.WINDOWS_USB_DRIVER_DIR}" />
+		</copy>
+		
+		<!-- copy macos libusb driver -->
+		<copy todir="${flash-tool-backend.RELEASE_DIR}/macos-usb-driver">
+			<fileset dir="${flash-tool-backend.MACOS_USB_DRIVER_DIR}" />
+		</copy>		
+	</target>
+
+	<target name="flash-tool-backend.RELEASE_WITH_KPI" depends="flash-tool-backend.COBERTURA_CHECK" />
+
+	<target name="flash-tool-backend.BUILD_BACKEND_FEATURE" depends="flash-tool-backend.PREPARE_WORKSPACE">
+		<delete dir="${flash-tool-backend.BUILD_DIR}" />
+		<mkdir dir="${flash-tool-backend.BUILD_DIR}" />
+		<buildFeature buildplugintarget="flash-tool-backend.BUILD_PLUGIN" destdir="${flash-tool-backend.BUILD_DIR}" packageAsJar="false" workspace="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}" projectName="com.stericsson.sdk.backend.feature" targetPlatformLocation="${flash-tool-backend.TARGET_DEPENDENCIES_DIR_WITHOUTWARN}" />
+	</target>
+
+	<target name="flash-tool-backend.BUILD_BACKEND_FEATURE_TEST" depends="flash-tool-backend.BUILD_BACKEND_FEATURE">
+		<!--copy easymock.jar to necessary project -->
+		<copy todir="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}/com.stericsson.sdk.backend.build/dependencies/easymock/">
+			<fileset dir="${flash-tool-backend.easymock}" />
+		</copy>
+		<buildFeature buildplugintarget="flash-tool-backend.BUILD_PLUGIN" destdir="${flash-tool-backend.BUILD_DIR}" packageAsJar="false" workspace="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}" projectName="com.stericsson.sdk.backend.feature.test" targetPlatformLocation="${flash-tool-backend.TARGET_DEPENDENCIES_DIR}">
+		</buildFeature>
+	</target>
+
+	<target name="flash-tool-backend.PREPARE_WORKSPACE">
+		<delete dir="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}" />
+		<mkdir dir="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}" />
+
+		<copy todir="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}">
+			<fileset dir="${flash-tool-backend.WORKSPACE_DIR}">
+				<exclude name="com.stericsson.sdk.common.ui/**" />
+				<exclude name="com.stericsson.sdk.common.ui.config/**" />
+				<exclude name="com.stericsson.sdk.equipment.ui/**" />
+				<exclude name="com.stericsson.sdk.equipment.ui.config/**" />
+				<exclude name="com.stericsson.sdk.equipment.ui.help/**" />
+				<exclude name="com.stericsson.sdk.signing.ui/**" />
+
+				<exclude name=".git/**" />
+				<exclude name="com.stericsson.sdk.backend.build/**" />
+				<exclude name="com.stericsson.sdk.application/**" />
+			</fileset>
+		</copy>
+		<mkdir dir="${flash-tool-backend.TARGET_DEPENDENCIES_DIR_WITHOUTWARN}" />
+		<property name="osgi.ws" value="**" />
+		<property name="osgi.os" value="**" />
+		<property name="osgi.arch" value="**" />
+		<copy todir="${flash-tool-backend.TARGET_DEPENDENCIES_DIR_WITHOUTWARN}">
+			<fileset dir="${flash-tool-backend.TARGET_DEPENDENCIES_DIR}">
+				<include name="plugins/com.stericsson.sdk.common.junit_1.0.0.jar" />
+				<include name="plugins/org.eclipse.equinox.common_3.5.1.jar" />
+				<include name="plugins/org.eclipse.osgi_3.5.0.jar" />
+				<include name="plugins/org.eclipse.osgi.services_3.2.0.jar" />
+				<include name="plugins/org.eclipse.swt_3.5.1.v3555a.jar" />
+				<include name="plugins/org.eclipse.swt.${osgi.ws}.${osgi.os}.${osgi.arch}_3.5.1.v3555a.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+
+	<target name="flash-tool-backend.COBERTURA_REPORT" depends="flash-tool-backend.COBERTURA_RUN">
+		<delete dir="${flash-tool-backend.REPORTS_DIR}/code-coverage-report" />
+
+		<!-- create coverage report -->
+		<cobertura-report format="html" destdir="${flash-tool-backend.REPORTS_DIR}/code-coverage-report" datafile="${flash-tool-backend.TEST_DIR}/cobertura.ser">
+			<!-- include every source folder for instrumented classes -->
+			<fileset dir="${basedir}/../com.stericsson.sdk.backend/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.backend.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.brp/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.brp.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.common/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.common.log4j/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.common.log4j.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.common.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.ip/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.ip.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.port/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.usb/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.usb.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.uart/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.uart.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.m7x00/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.m7x00.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.ux500.warm/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u8500/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u8500.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u8500.warm/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u8500.warm.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u5500/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u5500.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u5500.warm/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.u5500.warm.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.l9540/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.l9540.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.equipment.io.tcp/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.loader.communication/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.loader.communication.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.ftp.communication/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.ftp.communication.test/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.signing/src" includes="**/*.java" />
+			<fileset dir="${basedir}/../com.stericsson.sdk.signing.test/src" includes="**/*.java" />
+		</cobertura-report>
+	</target>
+
+	<target name="flash-tool-backend.COBERTURA_RUN" depends="flash-tool-backend.COBERTURA_INSTRUMENT">
+
+		<!-- copy target dependencies -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/osgi">
+			<fileset dir="${flash-tool-backend.TARGET_DEPENDENCIES_DIR}/plugins">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- copy built bundles -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/osgi">
+			<fileset dir="${flash-tool-backend.TEST_DIR}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- copy native libraries -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/native">
+			<fileset dir="${basedir}/../com.stericsson.sdk.loader.communication.test/resources">
+				<include name="*.dll" />
+				<include name="*.so" />
+			</fileset>
+		</copy>
+
+		<!-- copy configuration -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/osgi/configuration" file="${basedir}/configuration/osgi/config-test.ini" />
+		<move tofile="${flash-tool-backend.TEST_DIR}/osgi/configuration/config.ini" file="${flash-tool-backend.TEST_DIR}/osgi/configuration/config-test.ini" />
+
+		<copy todir="${flash-tool-backend.TEST_DIR}/configuration">
+			<fileset file="${basedir}/configuration/backend-test.mesp" />
+			<fileset file="${basedir}/configuration/profile-test.prfl" />
+			<fileset file="${basedir}/configuration/profile-test-m7x00.prfl" />
+			<fileset file="${basedir}/configuration/profile-test-u8500.prfl" />
+			<fileset file="${basedir}/configuration/profile-test-u5500.prfl" />
+			<fileset file="${basedir}/configuration/loader.ldr" />
+		</copy>
+
+		<move tofile="${flash-tool-backend.TEST_DIR}/configuration/backend.mesp" file="${flash-tool-backend.TEST_DIR}/configuration/backend-test.mesp" />
+
+
+
+		<!-- run osgi framework with instrumented classes and a junit runner -->
+		<path id="flash-tool-backend.COBERTURA_BOOTCLASSPATH">
+			<fileset dir="${flash-tool-backend.cobertura}" includes="cobertura.jar" />
+			<fileset dir="${flash-tool-backend.easymock}" includes="easymock.jar" />
+		</path>
+
+		<java fork="true" dir="${flash-tool-backend.TEST_DIR}" jar="${flash-tool-backend.TEST_DIR}/osgi/org.eclipse.osgi_3.5.0.jar" failonerror="true">
+			<sysproperty key="net.sourceforge.cobertura.datafile" file="${basedir}/test/cobertura.ser" />
+			<jvmarg value="-Xbootclasspath/a:${toString:flash-tool-backend.COBERTURA_BOOTCLASSPATH}" />
+			<jvmarg value="-Dosgi.compatibility.bootdelegation=true" />
+			<!-- should be removed java.library.path [release panic fix]-->
+			<jvmarg value="-Djava.library.path=${flash-tool-backend.TEST_DIR}/native" />
+			<jvmarg value="-Dnative.root=${flash-tool-backend.TEST_DIR}/native" />
+			<jvmarg value="-Dconfigurations.root=${flash-tool-backend.TEST_DIR}/configuration/backend.mesp" />
+			<jvmarg value="-Dprofiles.root=${flash-tool-backend.TEST_DIR}/configuration" />
+			<jvmarg value="-Dloaders.root=${flash-tool-backend.TEST_DIR}/configuration" />
+			<jvmarg value="-Dbackend.mode=test" />
+			<jvmarg value="-Dbackend.ignorelongrunning=${backend.ignorelongrunning}" />
+			<!--jvmarg value="-Xdebug" />
+			<jvmarg value="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y" /-->
+		</java>
+	</target>
+
+	<target name="flash-tool-backend.COBERTURA_INSTRUMENT" depends="flash-tool-backend.BUILD_BACKEND_FEATURE_TEST">
+		<!-- define cobertura tasks -->
+
+		<path id="cobertura.classpath">
+			<fileset dir="${flash-tool-backend.cobertura}">
+				<include name="cobertura.jar" />
+				<include name="lib/**/*.jar" />
+			</fileset>
+		</path>
+		<taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
+
+		<delete dir="${flash-tool-backend.TEST_DIR}" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/native" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/configuration" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/osgi" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/osgi/configuration" />
+
+		<!-- execute the instrumentation task on release bundles -->
+		<cobertura-instrument todir="${flash-tool-backend.TEST_DIR}" datafile="${flash-tool-backend.TEST_DIR}/cobertura.ser">
+			<excludeClasses regex="org.apache.log4j.*" />
+			<fileset dir="${flash-tool-backend.BUILD_DIR}/plugins">
+				<include name="*.jar" />
+				<exclude name="*.tray*" />
+				<exclude name="*.test*" />
+				<exclude name="*.dummy*" />
+			</fileset>
+		</cobertura-instrument>
+
+		<copy todir="${flash-tool-backend.TEST_DIR}">
+			<fileset dir="${flash-tool-backend.BUILD_DIR}/plugins">
+				<include name="**/*.jar" />
+				<exclude name="**/*.tray*" />
+				<include name="**/*.uart*" />
+				<include name="**/*.test*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="flash-tool-backend.CHECKSTYLE_REPORT">
+		<!-- define checkstyle tasks -->
+		<taskdef classpath="${flash-tool-backend.checkstyle}/checkstyle-all-4.4.jar" resource="checkstyletask.properties" />
+
+		<property name="checkstyle-supressions-file" value="${basedir}/configuration/checkstyle/supressions.xml" />
+
+		<delete dir="${flash-tool-backend.REPORTS_DIR}/checkstyle-report" />
+		<mkdir dir="${flash-tool-backend.REPORTS_DIR}/checkstyle-report" />
+		<checkstyle config="${basedir}/configuration/kpicfg/ruleset.xml" failOnViolation="false">
+			<!-- every .java file that should be checked -->
+			<classpath>
+				<pathelement location="${basedir}/dependencies/osgi/plugins/org.eclipse.osgi_3.5.0.jar" />
+				<fileset dir="${flash-tool-backend.BUILD_DIR}">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+			<fileset dir="${basedir}/.." includes="**/*.java" excludes="**/RecipeDialogUIControl.java,**/RecipeProperties.java,**/RecipeTaskListElement.java,**/U5500SignedSoftwareWizardAbstractPage.java" />
+			<formatter type="xml" toFile="${flash-tool-backend.REPORTS_DIR}/checkstyle-report/report.xml" />
+		</checkstyle>
+		<xslt in="${flash-tool-backend.REPORTS_DIR}/checkstyle-report/report.xml" out="${flash-tool-backend.REPORTS_DIR}/checkstyle-report/report.html" style="${basedir}/configuration/kpicfg/checkstyle-noframes-sorted.xsl" />
+	</target>
+
+	<!-- generic targets for ant4eclipse plug-in builds -->
+
+	<target name="flash-tool-backend.BUILD_PLUGIN" depends="flash-tool-backend.MAKE_SOURCE_PLUGIN,
+					 flash-tool-backend.MAKE_BINARY_PLUGIN" />
+
+	<target name="flash-tool-backend.MAKE_SOURCE_PLUGIN" if="plugin.isSource">
+		<delete dir="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}/${plugin.id}/bin" />
+		<buildPlugin destDir="${flash-tool-backend.BUILD_DIR}" projectName="${plugin.id}" workspace="${flash-tool-backend.WORKSPACE_DIR_WITHOUTWARN}" packageAsJar="true" targetPlatformLocation="${flash-tool-backend.TARGET_DEPENDENCIES_DIR_WITHOUTWARN}">
+			<javaclibrarycompiler>
+				<compilerSettings debug="true" fork="true" />
+			</javaclibrarycompiler>
+		</buildPlugin>
+	</target>
+
+	<target name="flash-tool-backend.MAKE_BINARY_PLUGIN" unless="plugin.isSource">
+		<copy todir="${flash-tool-backend.BUILD_DIR}">
+			<fileset dir="${plugin.directory}" includes="${plugin.file}" />
+			<fileset dir="${plugin.directory}" includes="${plugin.file}/**" />
+		</copy>
+	</target>
+
+	<target name="flash-tool-backend.COBERTURA_CHECK" depends="flash-tool-backend.COBERTURA_REPORT,
+		 flash-tool-backend.CHECKSTYLE_REPORT">
+		<cobertura-check haltonfailure="false" totalbranchrate="60" totallinerate="80" datafile="${flash-tool-backend.TEST_DIR}/cobertura.ser">
+		</cobertura-check>
+	</target>
+
+	<target name="flash-tool-backend.TEST_RUN" depends="flash-tool-backend.BUILD_BACKEND_FEATURE_TEST">
+		<delete dir="${flash-tool-backend.TEST_DIR}" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/native" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/configuration" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/osgi" />
+		<mkdir dir="${flash-tool-backend.TEST_DIR}/osgi/configuration" />
+
+		<copy todir="${flash-tool-backend.TEST_DIR}">
+			<fileset dir="${flash-tool-backend.BUILD_DIR}/plugins">
+				<include name="**/*.jar" />
+				<exclude name="**/*.tray*" />
+				<include name="**/*.uart*" />
+				<include name="**/*.test*" />
+			</fileset>
+		</copy>
+
+		<!-- copy target dependencies -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/osgi">
+			<fileset dir="${flash-tool-backend.TARGET_DEPENDENCIES_DIR}/plugins">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- copy built bundles -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/osgi">
+			<fileset dir="${flash-tool-backend.TEST_DIR}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+
+		<!-- copy native libraries -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/native">
+			<fileset dir="${basedir}/../com.stericsson.sdk.loader.communication.test/resources">
+				<include name="*.dll" />
+				<include name="*.so" />
+			</fileset>
+		</copy>
+
+		<!-- copy configuration -->
+		<copy todir="${flash-tool-backend.TEST_DIR}/osgi/configuration" file="${basedir}/configuration/osgi/config-test.ini" />
+		<move tofile="${flash-tool-backend.TEST_DIR}/osgi/configuration/config.ini" file="${flash-tool-backend.TEST_DIR}/osgi/configuration/config-test.ini" />
+
+		<copy todir="${flash-tool-backend.TEST_DIR}/configuration">
+			<fileset file="${basedir}/configuration/backend-test.mesp" />
+			<fileset file="${basedir}/configuration/profile-test.prfl" />
+			<fileset file="${basedir}/configuration/profile-test-u8500.prfl" />
+			<fileset file="${basedir}/configuration/profile-test-u5500.prfl" />
+			<fileset file="${basedir}/configuration/profile-test-m7x00.prfl" />
+			<fileset file="${basedir}/configuration/loader.ldr" />
+		</copy>
+
+		<move tofile="${flash-tool-backend.TEST_DIR}/configuration/backend.mesp" file="${flash-tool-backend.TEST_DIR}/configuration/backend-test.mesp" />
+
+		<path id="flash-tool-backend.EASYMOCK_BOOTCLASSPATH">
+			<fileset dir="${flash-tool-backend.easymock}" includes="easymock.jar" />
+		</path>
+
+		<!-- run osgi framework with  junit runner -->
+		<java fork="true" dir="${flash-tool-backend.TEST_DIR}" jar="${flash-tool-backend.TEST_DIR}/osgi/org.eclipse.osgi_3.5.0.jar" failonerror="true">
+			<jvmarg value="-Xbootclasspath/a:${toString:flash-tool-backend.EASYMOCK_BOOTCLASSPATH}" />
+			<jvmarg value="-Dosgi.compatibility.bootdelegation=true" />
+			<!-- should be removed java.library.path [release panic fix]-->
+			<jvmarg value="-Djava.library.path=${flash-tool-backend.TEST_DIR}/native" />
+			<jvmarg value="-Dnative.root=${flash-tool-backend.TEST_DIR}/native" />
+			<jvmarg value="-Dconfigurations.root=${flash-tool-backend.TEST_DIR}/configuration/backend.mesp" />
+			<jvmarg value="-Dprofiles.root=${flash-tool-backend.TEST_DIR}/configuration" />
+			<jvmarg value="-Dloaders.root=${flash-tool-backend.TEST_DIR}/configuration" />
+			<jvmarg value="-Dbackend.mode=test" />
+		</java>
+	</target>
+
+</project>

@@ -1,0 +1,42 @@
+# basic tests
+#          ---------------------------       
+#          |   OMX.ST.ImgEns_Test1 0 |----   
+#          ---------------------------        
+# set auto rotation) 
+
+
+OMX_GetHandle  ImgCpt OMX.ST.ImgEns_Test1
+
+OMX_SetState ImgCpt 
+
+
+OMX_SendCommand      ImgCpt OMX_CommandStateSet OMX_StateIdle
+#MMTE_AllocateBuffers ImgCpt S_INPUT_PORT_INDEX_0
+MMTE_WaitEvent       ImgCpt OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+OMX_SendCommand      ImgCpt OMX_CommandStateSet OMX_StateExecuting
+MMTE_WaitEvent       ImgCpt OMX_EventCmdComplete OMX_CommandStateSet OMX_StateExecuting
+
+alias TIMEOUT 0
+#MMTE_WaitEvent ImgCpt OMX_EventBufferFlag 1 TIMEOUT
+
+#return to idle
+OMX_SendCommand ImgCpt OMX_CommandStateSet OMX_StateIdle
+MMTE_WaitEvent  ImgCpt OMX_EventCmdComplete OMX_CommandStateSet OMX_StateIdle
+
+#return to Loaded
+OMX_SendCommand  ImgCpt OMX_CommandStateSet OMX_StateLoaded
+#MMTE_FreeBuffers ImgCpt S_INPUT_PORT_INDEX_0
+MMTE_WaitEvent   ImgCpt OMX_EventCmdComplete OMX_CommandStateSet OMX_StateLoaded
+
+
+OMX_FreeHandle ImgCpt
+
+
+ens_network_destroy
+
+test_end
+
+
+
+

@@ -1,0 +1,94 @@
+test_start SINKS_509 Playback_multisink_IHF_Earpiece_Vibra_Pause
+
+alias TIMEOUT 0
+ 
+OMX_GetHandle   renderer OMX.ST.AFM.IHF
+OMX_SendCommand renderer OMX_CommandPortDisable 1
+MMTE_WaitEvent  renderer OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_GetHandle    earpiece OMX.ST.AFM.EARPIECE
+OMX_SendCommand earpiece OMX_CommandPortDisable 1
+MMTE_WaitEvent  earpiece OMX_EventCmdComplete OMX_CommandPortDisable 1
+
+OMX_GetHandle    vibral OMX.ST.HAPTICS_RENDERER.PCM.VIBL
+
+#IHF (SetParameter)
+OMX_SetParameter    renderer OMX_IndexParamAudioPcm nPortIndex=0 nChannels=2 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       renderer 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/olivia.pcm 0 0 
+
+#Earpiece (SetParameter)
+OMX_SetParameter earpiece OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+ate_attach_io       earpiece 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/test_mono_48k_1k.pcm 0 0 0
+
+#Vibra (SetParameter)
+OMX_SetParameter vibral OMX_IndexParamAudioPcm nPortIndex=0 nChannels=1 nSamplingRate=48000 eEndian=OMX_EndianLittle
+OMX_GetParameter  vibral OMX_IndexParamAudioHapticsDriverProperties 
+ate_attach_io       vibral 0 MEM $(AUDIO_STREAMS)/audiocodec/streams/vibra_stream.pcm 0 0 0
+
+
+OMX_SetConfig renderer OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig renderer OMX_IndexConfigAudioChannelMute nPortIndex=0 nChannel=OMX_ALL bMute=OMX_FALSE
+MMTE_DispatchState OMX_StateIdle renderer:0
+
+
+OMX_SetConfig earpiece OMX_IndexConfigAudioVolume bLinear=OMX_TRUE sVolume.nValue=50
+OMX_SetConfig earpiece OMX_IndexConfigAudioMute nPortIndex=0 bMute=OMX_FALSE
+
+MMTE_DispatchState OMX_StateIdle earpiece:0
+
+MMTE_DispatchState OMX_StateIdle vibral:0
+
+mmte_sleep 1000
+MMTE_NMF_ListComponent
+
+#Start-pause_start
+MMTE_DispatchState OMX_StateExecuting renderer
+#pause-executing
+mmte_sleep 2000
+MMTE_DispatchState OMX_StatePause renderer
+mmte_sleep 100
+MMTE_DispatchState OMX_StateExecuting earpiece
+mmte_sleep 2000
+MMTE_DispatchState OMX_StatePause earpiece
+mmte_sleep 100
+MMTE_DispatchState OMX_StateExecuting vibral
+mmte_sleep 2000
+MMTE_DispatchState OMX_StatePause vibral
+mmte_sleep 2000
+MMTE_DispatchState OMX_StateExecuting earpiece renderer vibral
+
+
+
+
+
+
+#Wait EOS
+##headset
+MMTE_WaitEvent renderer OMX_EventBufferFlag 0 TIMEOUT
+##Earpiece
+MMTE_WaitEvent earpiece OMX_EventBufferFlag 0 TIMEOUT
+##Vibral
+MMTE_WaitEvent vibral OMX_EventBufferFlag 0 TIMEOUT
+
+
+#Stop
+##Headset
+MMTE_DispatchState OMX_StateIdle renderer
+MMTE_DispatchState OMX_StateLoaded renderer:0
+##Earpiece
+MMTE_DispatchState OMX_StateIdle earpiece
+MMTE_DispatchState OMX_StateLoaded earpiece:0
+##Vibral
+MMTE_DispatchState OMX_StateIdle vibral
+MMTE_DispatchState OMX_StateLoaded vibral:0
+
+
+ens_network_destroy
+MMTE_CheckMemoryStatus
+MMTE_NMF_ListComponent
+unalias TIMEOUT
+
+#check_test
+
+test_end
+

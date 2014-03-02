@@ -1,0 +1,41 @@
+primitive mpeg2dec.arm_nmf.parser extends fsm.component.armnmf_component
+{
+
+	// Constructor
+	provides lifecycle.constructor  as constructor
+
+	//input port
+	provides armnmf_emptythisbuffer	as 	emptythisbuffer prefix fromProcComp_
+	requires armnmf_fillthisbuffer  as      inputport
+    
+    
+	//output port
+	requires armnmf_emptythisbuffer	as	outputport
+	provides armnmf_fillthisbuffer  as      fillthisbuffer prefix fromProcComp_
+    
+	//header port   
+	requires mpeg2dec.mpc.api.emptythisheader   as  emptythisheader
+	provides mpeg2dec.mpc.api.fillthisheader    as  returnconsumedheader
+
+	//Port to shared buffer components
+	
+	// Port for bitstream buffer
+	requires armnmf_emptythisbuffer as emptythisbufferSharedBufIn
+	provides armnmf_fillthisbuffer  as sharedBufInEBD prefix fromSharedBufferComp_
+
+	// Port for Image buffer
+	provides armnmf_emptythisbuffer as sharedBufOutFBD prefix fromSharedBufferComp_
+	requires armnmf_fillthisbuffer  as fillthisbufferSharedBufOut
+	
+	//Header buffer requirement
+
+	provides mpeg2dec.arm_nmf.api.setConfig as iSetConfig
+        requires mpeg2dec.arm_nmf.api.portSettings       as iChangePortSettingsSignal
+        provides mpeg2dec.arm_nmf.api.sendportSettings as portSettingsInfoSignal
+	
+	// Interfaces for ddep
+	requires mpeg2dec.mpc.api.ddep    as iDdep  
+	
+	//option CFLAGS "-g -00"
+	option CFLAGS " -03"
+}

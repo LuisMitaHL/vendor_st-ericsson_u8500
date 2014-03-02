@@ -1,0 +1,121 @@
+1. Signing
+----------
+When security is enabled in the Platform, Flash Kit needs to have a sign server configured when signing the software. 
+There are several possbilities regarding signing using Sign tool CLI.
+The first option is to use <<global,*sign server*>> which should have all packages that you need.
+Another option is to set up local sign server which is not a standard part of delivery due to security reasons.
+And finally it is possible to sign <<local,*without using sign server*>>, if the switch --local is used in the signing command. +
+It is necessary to set *SIGNSERVER* and *SIGNPACKAGEROOT* (in Linux system) environment variables if a sign server is going to be used to do the signing.
+For correct IP for Sign Server in STE enviroment or gvfs setup info see official http://wiki.lud.stericsson.com/wiki/index.php/Flash_Kit#Configure_a_Sign_Server[wikipage].
+If local signing  is used, it is necessary to set *LOCAL_SIGNPACKAGEROOT*, *LOCAL_KEYROOT* and *LOCAL_SIGNKEYSANDPACKAGESROOT* environment variables.
+
+It is possible to overwrite the enviroment variables with program arguments.
+
+'For acces problems in STE environment see http://wiki.lud.stericsson.com/wiki/index.php/Signing_software[wikipage]' 
+
+1.1 Environment variables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*SIGNSERVER* [REQUIRED]::
+    Is to point to a server
+ 
+*SIGNPACKAGEROOT* [REQUIRED in Linux environment]::
+    Is to point to the share that contains the sign packages. 
+	
+*LOCAL_SIGNPACKAGEROOT* [OPTIONAL]::
+	Is to point to the local sign package root.
+
+*LOCAL_KEYROOT* [OPTIONAL]::
+	Is to point to the local key root (used for software signing).
+	
+*LOCAL_ENCRYPTIONKEYROOT* [OPTIONAL]::	
+  Is to point to the local encryptionkey root (used for loader encryption).
+
+*LOCAL_SIGNKEYSANDPACKAGESROOT* [OPTIONAL]::
+  Is to point to the local common folder where keys and packages are stored (used for software signing).
+
+1.2 Program arguments to overwrite enviroment variables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can set any of the above enviroment variables as program argument in command line and overwrite the value defined in the enviroment variable.
+
+*-ss or --sign-servers* [REQUIRED]::
+    To overwrtie SIGNSERVER enviroment variable you should use '-ss' or '--sign-servers' as program argument in command line.
+ 
+*-spr or --sign-package-root* [REQUIRED in Linux environment]::
+    To overwrtie SIGNPACKAGEROOT enviroment variable you should use '-spr' or '--sign-package-root' as program argument in command line.
+	
+*-lspr or --local-sign-package-root* [OPTIONAL]::
+	To overwrtie LOCAL_SIGNPACKAGEROOT enviroment variable you should use '-lspr' or '--local-sign-package-root' as program argument in command line.
+
+*-lkr or --local-key-root* [OPTIONAL]::
+	To overwrtie LOCAL_KEYROOT enviroment variable you should use '-lkr' or '--local-key-root' as program argument in command line.
+	
+*-lekr or --local-encription-key-root* [OPTIONAL]::	
+  	To overwrtie LOCAL_ENCRYPTIONKEYROOT enviroment variable you should use '-lekr' or '--local-encription-key-root' as program argument in command line. +
+  
+[[local]]
+2. Setting up enviroment for local signing
+------------------------------------------
+	
+2.1 Windows configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~
+You can set Environment variables permanently using Control panel -> System -> Advanced tab -> Environment variables or type them for current command line session using *SET* command. 
+
+*'SET LOCAL_ENCRYPTIONKEYROOT=* <local encryptionkeys directory>' +
+*'SET LOCAL_KEYROOT=* <local keys directory>' +
+*'SET LOCAL_SIGNPACKAGEROOT=* <local packages directory>'  +
+*'SET LOCAL_SIGNKEYSANDPACKAGESROOT=* <local common directory where keys and packages are stored>'  +
+*'SET SIGNSERVER=* <local sign directory>' +
+
+If you are trying to use local sign server, there is recommended to share your package folder using standard windows sharing. This will make folder easily accessible for linux machines.
+
+2.2 Linux configuration
+~~~~~~~~~~~~~~~~~~~~~~~
+There is several ways to set up environment variable under Linux.
+ You can add function to .bashrc located in your home folder, or you can write .sh script to do that (add this script to you profile.d folder to run script automatically after startup)
+ There is possibility to simply type variables to your terminal window using *export* command (only using profile.d located script, variables will be set permanently)
+
+*'export LOCAL_SIGNPACKAGEROOT*  <local packages directory>'  +
+*'export LOCAL_KEYROOT* <local keys directory>' +
+*'export LOCAL_ENCRYPTIONKEYROOT* <local encryptionkeys directory>'  +
+*'export LOCAL_SIGNKEYSANDPACKAGESROOT* <local common directory where keys and packages are stored>'  +
+
+If you are trying to acces local copy of sign server on linux you should mount windows package dir on sign server.
+----------------------------------------------------------------------------------------------------------------------------------- 
+Example:
+1) mkdir <mount-point folder>
+2) export SIGNPACKAGEROOT=<mount-point folder>
+3) root mount.ciffs  //<server IP>/ <shared folder name>  $SIGNPACKAGEROOT  –o user=USER_NAME  domain=DOMAIN
+-----------------------------------------------------------------------------------------------------------------------------------
+
+[[global]]
+3.  Setting up enviroment for Sign Server
+-----------------------------------------
+
+3.1 Windows configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~
+To use a sign server from a Windows workstation, the user must define one environment variable pointing out the sign server to use. +
+
+*'SET SIGNSERVER*=<sign server ip number>:<sign server port>' will set adress of sign server only for current console window +
+It is also possible to set more then one sign server. +
+*'SET SIGNSERVER*=<sign server 1 ip number>sign server 1 port>;<sign server 2 ip number>sign server 2 port>''
+
+
+It is also possible to set this value with the control panel for permanent usage. The computer has to be restarted after, but when this is done, the value will be set for the computer until it is removed. 
+
+Control panel -> System -> Advanced tab -> Environment variables ->
+Set a new “user variables” named 'SIGNSERVER' to value “<sign server ip number>:<sign server port>” 
+
+3.2 Linux configuration
+~~~~~~~~~~~~~~~~~~~~~~~
+To use a sign server from a Linux workstation, the user must define two enviroment variables. +
+
+*'export SIGNSERVER=*<sign server ip number>:<sign server port>' +
+*'export SIGNPACKAGEROOT*=<mount point>' +
+It is also possible to set more then one sign server. +
+*'export SIGNSERVER=*<sign server ip number>:<sign server port>;<sign server 2 ip number>sign server 2 port>' +
+*'export SIGNPACKAGEROOT*=<mount point1>;<mount point2>' +
+
+The user also has to mount a windows share where the sign packages are stored, because sign server is running on windows only. +
+'mount.cifs //<share ip number>/<share> $SIGNPACKAGEROOT -o user=$USER' +

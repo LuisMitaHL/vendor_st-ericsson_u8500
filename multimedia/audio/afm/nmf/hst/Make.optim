@@ -1,0 +1,56 @@
+# vim:syntax=make:
+# -*- Mode: Makefile -*-
+
+#-------------------------------
+# Default Config
+#-------------------------------
+MMBOARD=x
+MMSYSTEM=x
+USE_OPT_COMPILER=true
+
+           
+include $(MM_MAKEFILES_DIR)/AudioConfig.mk
+
+#----------------------------
+#     Entry for Make.rules
+#
+#VPATH    : Search Path for prerequisites.(see default value in Make.rules)
+#CFLAGS   : Extra flags to give to the C compiler. (see default value in Make.rules)
+#CXXFLAGS : Extra flags to give to the C++ compiler. (see default value in Make.rules)
+#CPPFLAGS : Extra flags to give to the C preprocessor.(see default value in Make.rules)
+#
+#DEP_DEP  : Dependencies of dependency files. 
+#           (for example generated header file before generating *.d)
+#TOBECLEAN: List of files you want to delete on realclean target.
+#
+#LIBNAME  : Name of the library without the prefix lib.
+#LIBOBJ   : List of object file to put in the lib
+#
+#EXENAME  : Name of executable
+#EXEOBJ   : List of object file needed to build executable
+#         For multiple executable, suffix these to variable with _1, _2 ...  
+#
+#----------------------------
+
+VPATH+= bindings/optim
+
+CPPFLAGS+= -I$(COMPONENT_TOP_DIR)/nmf/common/bindings -I$(COMPONENT_TOP_DIR)/proxy/include
+
+LIBOBJ         = bindings_optim
+LIBNAME        = st_afm_bindings_optim
+INSTALL_LIB    = libst_afm_bindings_optim.a
+INSTALL_HEADER = bindings_optim.h
+
+#WARNING todo target is MANDATORY (exe and/or lib)
+todo: lib 
+
+#-------------------------------
+# Generic Rules
+#-------------------------------
+include $(MM_MAKEFILES_DIR)/SharedRules.mk
+
+#-------------------------------
+# local Rules
+#-------------------------------
+test cleantest:
+	@echo "Test to be implemented ..."

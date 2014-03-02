@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- The following DTD must not be included in every configuration file. It is only used when   -->
+<!-- validating the XML document                                                                -->
+<!DOCTYPE target_configuration [
+
+    <!-- bax doctype configuration -->
+
+    <!ELEMENT target_configuration                      (bax:loadmodule?)>
+    <!ELEMENT bax:source                                (#PCDATA)>  
+    <!ELEMENT bax:loadmodule                            (bax:source*,bax:sign)>
+    <!ELEMENT bax:sign                                  (bax:attribute*)>
+    <!ELEMENT bax:attribute                             (#PCDATA)>
+    
+    <!ATTLIST target_configuration      xmlns:bax         CDATA                 #FIXED "TBD">
+    <!ATTLIST bax:sign                  platform          CDATA                 #REQUIRED>
+    <!ATTLIST bax:attribute             name              CDATA                 #REQUIRED>
+]>
+ 
+<target_configuration>
+	<bax:loadmodule>
+        <bax:source>elf.elf</bax:source>
+        <bax:source>elf1.elf</bax:source>
+        <bax:sign platform="u5500">            
+            <bax:attribute name="--sign-package">U8500</bax:attribute>
+            <bax:attribute name="--verbose"/>            
+        </bax:sign>
+	</bax:loadmodule>
+</target_configuration>
+
+      

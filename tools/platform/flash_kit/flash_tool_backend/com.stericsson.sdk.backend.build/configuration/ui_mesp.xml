@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<profile layout="grid" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ui_validator.xsd">
+
+	<section name="Configuration Settings" extendable="false" columns="1">
+	
+		<record match="Profile .*" minCount="1" maxCount="-1">
+			<attribute name="alias">
+				<visual label="Alias" type="TEXT_FIELD" />				
+			</attribute>
+			<attribute name="path">
+				<visual label="Path" type="PATH" />				
+			</attribute>
+		</record>
+		
+		<record match="ActiveProfile .*" minCount="1" maxCount="1">
+			<attribute name="alias">
+				<visual label="Alias" type="TEXT_FIELD" />
+			</attribute>
+		</record>
+		
+		<record match="USB .*" minCount="1" maxCount="1">
+			<attribute name="enabled">
+				<visual label="Enabled" type="CHECK_BUTTON">					
+				</visual>
+			</attribute>
+		</record>
+		
+		<record match="UART .*" minCount="1" maxCount="1">
+			<attribute name="alias">
+				<visual label="Alias" type="TEXT_FIELD"/>									
+			</attribute>
+			<attribute name="baudrate">
+				<visual label="Baud Rate" type="COMBO">
+					<option label="115200" value="115200"/>
+					<option label="9600" value="9600"/>
+				</visual>									
+			</attribute>
+			<attribute name="databits">
+				<visual label="Data bits" type="COMBO">
+					<option label="8" value="8"/>					
+				</visual>									
+			</attribute>
+			<attribute name="parity">
+				<visual label="Parity" type="COMBO">
+					<option label="Parity None" value="0"/>
+					<option label="Parity Even" value="1"/>
+					<option label="Parity Odd" value="2"/>
+					<option label="Parity Mark" value="3"/>
+					<option label="Parity Space" value="4"/>
+    			</visual>									
+			</attribute>
+		</record>
+		
+		<record match="monitor .*" minCount="0" maxCount="1">
+			<attribute name="acceptClients">
+				<visual label="Accept Clients" type="CHECK_BUTTON">									
+				</visual>
+			</attribute>
+			<attribute name="acceptEquipments">
+				<visual label="Accept Equipments" type="CHECK_BUTTON">									
+				</visual>
+			</attribute>
+		</record>
+				        		        
+	</section>
+
+	
+</profile>

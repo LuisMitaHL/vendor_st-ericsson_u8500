@@ -1,0 +1,21 @@
+# -*- Mode: Makefile -*-
+# vim:syntax=make:
+#
+
+OST_COMPILER = 1
+
+MY_TOP_DIR = $(COMPONENT_TOP_DIR)
+
+MODULE_NAME = ispproc
+OST_MODULE_ID = 0x20022E04
+# Translate value to hexa one for tracecompiler
+OST_COMPONENT_ID := $(shell printf "%d\n" $(OST_MODULE_ID))
+
+OST_COMPONENT_NAME = STE_CAMERA_ISPPROC
+OST_DICO_NAME = $(OST_COMPONENT_NAME)
+OST_COMPONENT_INC = $(MY_TOP_DIR)/include
+#Add support for fixed trace id group
+MY_OST_COMPILER_OPTION = --tgdf=$(MY_TOP_DIR)/fixed_id.txt --defines=module=$(MODULE_NAME)
+OST_SRC_DIR = src
+
+INSTALL_DICO = $(OST_DICO_NAME).xml

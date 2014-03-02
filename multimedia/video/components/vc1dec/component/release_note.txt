@@ -1,0 +1,115 @@
+MMD VC1 Decoder Release note 
+ 
+vc1dec
+
+Release number:	10.44.0 ( OSI week 2010 44 )
+Date:	 October 26, 2010
+Status:	Final
+
+Author:	Guillaume Kerrien
+Organization:	MMD
+
+
+(c) Copyright ST-Ericsson, 2010. All Rights Reserved.
+The contents of this document are subject to change without prior notice.
+ST-Ericsson makes no representation or warranty of any nature whatsoever (neither expressed nor implied) with respect to the
+matters addressed in this document, including but not limited to warranties of merchantability or fitness for a particular purpose,
+interpretability or interoperability or, against infringement of third party intellectual property rights, and in no event shall
+ST-Ericsson be liable to any party for any direct, indirect, incidental and or consequential damages and or loss whatsoever
+(including but not limited to monetary losses or loss of data), that might arise from the use of this document or the information
+in it.
+ST-Ericsson and the ST-Ericsson logo are trademarks of the ST-Ericsson group of companies or used under a license from
+STMicroelectronics NV or Telefonaktiebolaget LM Ericsson.
+All other names are the property of their respective owners.
+For more information on ST-Ericsson, visit www.stericsson.com
+
+
+
+1	GENERAL INFORMATION
+1.1	Release number
+1.2	Board configuration supported
+1.3	First level support contact
+1.4	Symbian baseport version
+1.5	Tools versioning
+2	Media component list versioning
+3	Release content
+3.1	New features
+3.2	Modified features
+3.3	Removed features
+3.4	Restrictions / Known issues
+4	Defect status
+4.1	Fixed defect list
+4.2	Active defect list
+5	Compilation rules
+5.1	Compilation procedure
+5.2	Compilation configurability
+6	QA check status
+6.1	Compilation warning / error
+6.2	Code Static analysis result
+6.3	Confidentiality safe
+7	documents
+8	Tests results
+Annex A: Usage
+
+
+3	RELEASE CONTENT
+
+3.1	New features:
+    - Support of last buffer empty with End Of Stream flag.
+    - Add SMPSAFE keyword in .mmp files.
+    - Coverity warnings removed.
+    - Support for scratch TCM memory (under compilation flag).
+
+3.2	Modified features:
+    N/A
+
+3.3	Removed features:
+    N/A
+
+3.4	Restrictions / Known issues:
+        Requires common component version 10.40.2 or later for support empty buffer with EOS.
+		
+
+5	COMPILATION RULES  	
+5.1	Compilation procedure
+	make all
+
+
+5.2	Compilation configurability		
+	NO_HAMAC=1 for software decoder
+
+
+6	QA CHECK STATUS
+6.1	Compilation warning
+		
+
+
+7	DOCUMENTS
+
+
+8	Test Results 
+
+    vc1dec/test/launcher_video/vtc/vc1dec_linux_vss.vtc: PASSED
+		
+ANNEX A: Usage
+- The VC1 decoder string for OMX_GetHandle is "OMX.ST.VFM.VC1Dec".
+- Decoding multiple streams at same time is NOT supported.
+- The VC1 decoder has one input port and one output port.
+The input port requires at least 5 buffers. Output port: 10 buffers.
+- The VC1 decoder requires buffers allocated in contiguous physical memory.
+Either ask the VC1 to allocate the buffers (OMX_AllocateBuffer())
+or use other components that allocate buffers in physical contiguous memory
+and link them in tunnel mode.
+- The VC1 requires ENS, VFM, HW buffer, and their auxilliary libraries to be present in image.
+- The VC1 decoder supports VC1 Simple and Main profile. It does NOT support Advanced Profile. The maximum resolution supported is 720P.
+- The VC1 decoder does NOT support Range Reduction nor Multi Resolution options.
+- The VC1 decoders requires input stream in .RCV file format. The first OpenMax buffer must contain 
+only STRUCT_C structure as defined in VC1 standard sequence header.
+The next Openmax buffers must contain raw encoded frames, one per buffer. 
+- The VC1 decoder ouputs only ST Ericsson's YUV420 Macro Block format. It must be converted to
+normal YUV420P or RGB by Video Post Processor component or other means. 
+The YUV420 Macro Block format requires that dimensions of image (width,height) must be
+multiple of 16 pixels.
+- VC1 frames can be splitted over several buffers. The last buffer of a frame must have EOF flag.
+If the VC1 frame is in one buffer, this buffer must have EOF flag.
+
